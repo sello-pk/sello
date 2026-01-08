@@ -1,0 +1,236 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Professional App Loader - Clean and Minimal */
+
+* {
+  font-family: "Outfit", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+/* Generic hide scrollbar helper */
+.hideScrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Horizontal sliders (popular makes, blog, etc.) */
+#popularMakesSlider {
+  scroll-behavior: smooth;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+
+#popularMakesSlider::-webkit-scrollbar {
+  display: none;
+}
+
+#blog {
+  scroll-behavior: smooth;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+
+#blogr::-webkit-scrollbar {
+  display: none;
+}
+
+.bottom-image-gallery::-webkit-scrollbar {
+  display: none;
+  scroll-behavior: smooth;
+}
+
+/* Support Button Wavy Animation */
+@keyframes wave {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.5);
+    opacity: 0.3;
+  }
+}
+
+@keyframes wavePulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+    box-shadow: 0 0 0 0 rgba(5, 11, 32, 0.7);
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 0.4;
+    box-shadow: 0 0 0 10px rgba(5, 11, 32, 0);
+  }
+
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+    box-shadow: 0 0 0 20px rgba(5, 11, 32, 0);
+  }
+}
+
+.support-ripple {
+  animation: wavePulse 2s ease-out infinite;
+  border: 3px solid rgba(5, 11, 32, 0.6);
+}
+
+.support-ripple-delay-1 {
+  animation: wavePulse 2s ease-out infinite;
+  animation-delay: 0.5s;
+  border: 3px solid rgba(5, 11, 32, 0.5);
+}
+
+.support-ripple-delay-2 {
+  animation: wavePulse 2s ease-out infinite;
+  animation-delay: 1s;
+  border: 3px solid rgba(5, 11, 32, 0.4);
+}
+
+/* Button pulse animation */
+@keyframes buttonPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(5, 11, 32, 0.7);
+  }
+
+  50% {
+    box-shadow: 0 0 0 15px rgba(5, 11, 32, 0);
+  }
+}
+
+.support-button-pulse {
+  animation: buttonPulse 2s ease-out infinite;
+}
+
+/* Generic fade-in used in modals/popups */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Hide scrollbars for custom scroll containers */
+.scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom scrollbar styling */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f1f1;
+}
+
+::selection {
+  background-color: #ffa602;
+  color: black;
+}
+
+/* Google Login Button Styling */
+.googleBtn {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  margin-bottom: 1rem !important;
+}
+
+.googleBtn > div {
+  width: 100% !important;
+}
+
+.googleBtn > div > div {
+  width: 100% !important;
+}
+
+.googleBtn > div > div > button {
+  width: 100% !important;
+  height: 3rem !important;
+  background: white !important;
+  border: 2px solid #d1d5db !important;
+  border-radius: 0.5rem !important;
+  font-weight: 500 !important;
+  transition: all 0.2s !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+  cursor: pointer !important;
+}
+
+.googleBtn > div > div > button:hover {
+  background: #f9fafb !important;
+  border-color: #9ca3af !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Fix Leaflet map z-index to prevent overlapping modal */
+.leaflet-container {
+  z-index: 1 !important;
+  position: relative !important;
+}
+
+.leaflet-pane {
+  z-index: 1 !important;
+}
+
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 10 !important;
+}
+
+.leaflet-control {
+  z-index: 10 !important;
+}
+
+/* Ensure modals appear above map */
+.modal {
+  z-index: 9999 !important;
+}
+
+.location-picker-modal {
+  z-index: 9999 !important;
+}
