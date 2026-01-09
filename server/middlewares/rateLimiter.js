@@ -41,7 +41,11 @@ export const apiLimiter = rateLimit({
   store: getStore(), // Use Database store
   // Skip rate limiting entirely in development
   skip: (req) => {
-    return process.env.NODE_ENV !== "production";
+    const isDev = process.env.NODE_ENV !== "production";
+    if (isDev) {
+      return true; // Skip all rate limiting in development
+    }
+    return false;
   },
   // Custom key generator to include user ID if authenticated
   keyGenerator: (req) => {
@@ -61,7 +65,7 @@ export const apiLimiter = rateLimit({
  */
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === "production" ? 20 : 100, // Increased for development
+  max: process.env.NODE_ENV === "production" ? 20 : 10000, // Very high limit in development
   message: {
     success: false,
     message:
@@ -73,7 +77,11 @@ export const authLimiter = rateLimit({
   skipSuccessfulRequests: true, // Don't count successful requests
   // Skip rate limiting entirely in development
   skip: (req) => {
-    return process.env.NODE_ENV !== "production";
+    const isDev = process.env.NODE_ENV !== "production";
+    if (isDev) {
+      return true; // Skip all rate limiting in development
+    }
+    return false;
   },
   keyGenerator: (req) => {
     // Always use IP for auth endpoints with IPv6 support
@@ -89,7 +97,7 @@ export const authLimiter = rateLimit({
  */
 export const passwordResetLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: process.env.NODE_ENV === "production" ? 3 : 100, // 3 attempts per hour in production
+  max: process.env.NODE_ENV === "production" ? 3 : 1000, // Much higher limit in development
   message: {
     success: false,
     message: "Too many password reset attempts, please try again after 1 hour.",
@@ -99,7 +107,11 @@ export const passwordResetLimiter = rateLimit({
   store: getStore(), // Use Database store
   // Skip rate limiting entirely in development
   skip: (req) => {
-    return process.env.NODE_ENV !== "production";
+    const isDev = process.env.NODE_ENV !== "production";
+    if (isDev) {
+      return true; // Skip all rate limiting in development
+    }
+    return false;
   },
   keyGenerator: (req) => {
     // Use email if provided, otherwise IP with IPv6 support
@@ -131,7 +143,7 @@ export const passwordResetLimiter = rateLimit({
  */
 export const uploadLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Limit each IP to 10 uploads per windowMs
+  max: process.env.NODE_ENV === "production" ? 10 : 10000, // Very high limit in development
   message: {
     success: false,
     message: "Too many file uploads, please try again later.",
@@ -139,6 +151,14 @@ export const uploadLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   store: getStore(), // Use Database store
+  // Skip rate limiting entirely in development
+  skip: (req) => {
+    const isDev = process.env.NODE_ENV !== "production";
+    if (isDev) {
+      return true; // Skip all rate limiting in development
+    }
+    return false;
+  },
   keyGenerator: (req) => {
     // Use user ID if authenticated, otherwise IP with IPv6 support
     if (req.user?._id) {
@@ -155,7 +175,7 @@ export const uploadLimiter = rateLimit({
  */
 export const contactFormLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5, // Limit each IP to 5 contact form submissions per hour
+  max: process.env.NODE_ENV === "production" ? 5 : 10000, // Very high limit in development
   message: {
     success: false,
     message: "Too many contact form submissions, please try again later.",
@@ -163,6 +183,14 @@ export const contactFormLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   store: getStore(), // Use Database store
+  // Skip rate limiting entirely in development
+  skip: (req) => {
+    const isDev = process.env.NODE_ENV !== "production";
+    if (isDev) {
+      return true; // Skip all rate limiting in development
+    }
+    return false;
+  },
   keyGenerator: (req) => {
     // Use email if provided, otherwise IP with IPv6 support
     if (req.body?.email || req.headers?.email) {
@@ -179,7 +207,7 @@ export const contactFormLimiter = rateLimit({
  */
 export const searchLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 30, // Limit each IP to 30 searches per minute
+  max: process.env.NODE_ENV === "production" ? 30 : 10000, // Very high limit in development
   message: {
     success: false,
     message: "Too many search requests, please slow down.",
@@ -187,6 +215,14 @@ export const searchLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   store: getStore(), // Use Database store
+  // Skip rate limiting entirely in development
+  skip: (req) => {
+    const isDev = process.env.NODE_ENV !== "production";
+    if (isDev) {
+      return true; // Skip all rate limiting in development
+    }
+    return false;
+  },
   keyGenerator: (req) => {
     // Use user ID if authenticated, otherwise IP with IPv6 support
     if (req.user?._id) {

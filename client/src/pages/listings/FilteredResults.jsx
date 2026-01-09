@@ -1,37 +1,60 @@
-import React, { useState, useMemo } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import FilterResultsSection from "../../components/sections/filter/FilterResultsSection";
 import SortAndViewOptions from "../../components/listings/SortAndViewOptions";
 import { FiX, FiFilter } from "react-icons/fi";
 import Breadcrumb from "../../components/common/Breadcrumb";
-import { useGetCarsQuery } from "../../redux/services/api";
+import { useGetFilteredCarsQuery } from "../../redux/services/api";
 
 const FilteredResults = () => {
-  const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { filteredCars, isLoading, filters } = location.state || {};
   const [sortBy, setSortBy] = useState("newest");
   const [viewMode, setViewMode] = useState("grid");
 
-  const searchTerm = searchParams.get("search") || filters?.search || "";
+  // Get search term from URL params (navbar search)
+  const searchTerm = searchParams.get("search") || "";
 
-  // Fetch search results from API if no location.state (direct navigation)
-  const { data: searchResults, isLoading: isSearchLoading } = useGetCarsQuery(
-    {
-      search: searchTerm,
-      limit: 50,
-      page: 1,
-    },
-    {
-      skip: !!location.state, // Skip if we have location.state data
+  // Redirect to home if no valid search parameters
+  useEffect(() => {
+    const hasValidParams = Array.from(searchParams.entries()).some(
+      ([, value]) => value && value.trim() !== ""
+    );
+
+    if (!hasValidParams) {
+      navigate("/", { replace: true });
     }
+  }, [searchParams, navigate]);
+
+  // Build query parameters based on URL params only
+  const queryParams = useMemo(() => {
+    // Build filters from URL params
+    const urlFilters = {};
+    searchParams.forEach((value, key) => {
+      if (value && value.trim() !== "") {
+        urlFilters[key] = value;
+      }
+    });
+
+    // If we have any URL params, use them
+    if (Object.keys(urlFilters).length > 0) {
+      return { ...urlFilters, limit: 50, page: 1 };
+    }
+
+    // No filters
+    return null;
+  }, [searchParams]);
+
+  // Fetch data using the correct query parameters
+  const { data: apiResults, isLoading: apiLoading } = useGetFilteredCarsQuery(
+    queryParams,
+    { skip: !queryParams }
   );
 
-  // Use location.state data if available, otherwise use API results
-  const carsData = location.state ? filteredCars : searchResults;
-  const carsLoading = location.state ? isLoading : isSearchLoading;
+  // Use API results only (ignore state to fix navigation issues)
+  const carsData = apiResults;
+  const carsLoading = apiLoading;
 
   // Sort cars based on selected option
   const sortedCars = useMemo(() => {
@@ -64,10 +87,17 @@ const FilteredResults = () => {
     }
   }, [carsData?.cars, sortBy]);
 
-  const activeFilters = filters
-    ? Object.entries(filters).filter(([, value]) => value)
-    : [];
-  const totalResults = sortedCars.length || carsData?.total || 0;
+  const activeFilters = useMemo(() => {
+    const filters = [];
+    searchParams.forEach((value, key) => {
+      if (value && value !== "") {
+        filters.push([key, value]);
+      }
+    });
+    return filters;
+  }, [searchParams]);
+
+  const totalResults = carsData?.total || 0;
 
   // Show loading while search is loading (for direct navigation)
   if (carsLoading) {
@@ -86,18 +116,17 @@ const FilteredResults = () => {
     { label: "Search Results", path: "/search-results" },
   ];
 
-  const removeFilter = (key) => {
-    // Navigate to filter page with updated filters
-    const newFilters = { ...filters };
-    delete newFilters[key];
+  const removeFilter = (keyToRemove) => {
+    // Remove filter from URL params
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete(keyToRemove);
 
-    // Build URL params from remaining filters
-    const params = new URLSearchParams();
-    Object.entries(newFilters).forEach(([k, v]) => {
-      if (v) params.set(k, v);
-    });
+    // Navigate with updated params
+    const newUrl = newParams.toString()
+      ? `/search-results?${newParams.toString()}`
+      : `/search-results`;
 
-    navigate(`/filter?${params.toString()}`);
+    navigate(newUrl);
   };
 
   return (
@@ -168,11 +197,49 @@ const FilteredResults = () => {
         )}
 
         {/* Results */}
-        <FilterResultsSection
-          filteredCars={{ ...carsData, cars: sortedCars }}
-          isLoading={carsLoading}
-          viewMode={viewMode}
-        />
+        {totalResults > 0 ? (
+          <FilterResultsSection
+            filteredCars={{ ...carsData, cars: sortedCars }}
+            isLoading={carsLoading}
+            viewMode={viewMode}
+          />
+        ) : (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+            <div className="text-gray-400 mb-4">
+              <svg
+                className="w-16 h-16 mx-auto"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              {searchTerm
+                ? `No results found for "${searchTerm}"`
+                : "No cars found"}
+            </h3>
+            <p className="text-gray-600 mb-4">
+              {searchTerm
+                ? "Try adjusting your search terms or browse all cars"
+                : "Check back later for new listings"}
+            </p>
+            {searchTerm && (
+              <button
+                onClick={() => navigate("/")}
+                className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors"
+              >
+                Browse All Cars
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

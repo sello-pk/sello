@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, lazy, Suspense, useMemo } from "react";
+import React, { useEffect, useRef, lazy, Suspense } from "react";
 import {
   Route,
   Routes,
@@ -46,9 +46,7 @@ const About = lazy(() => import("./pages/about/About.jsx"));
 const Contact = lazy(() => import("./pages/contact/Contact.jsx"));
 const AllBrands = lazy(() => import("./pages/AllBrands.jsx"));
 const FilterPage = lazy(() => import("./pages/filter/FilterPage.jsx"));
-const FilteredResults = lazy(() =>
-  import("./pages/listings/FilteredResults.jsx")
-);
+import FilteredResults from "./pages/listings/FilteredResults.jsx";
 const CategoryPage = lazy(() => import("./pages/categories/CategoryPage.jsx"));
 
 // Lazy load protected pages
@@ -202,8 +200,15 @@ const SupportRouteRedirect = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Only trigger if there's a chatId parameter
+    if (!chatId) {
+      // If no chatId, redirect to home page instead of going back
+      navigate("/");
+      return;
+    }
+
     // Open the support chat widget for this user
-    openSupportChat(chatId || null);
+    openSupportChat(chatId);
 
     // Go back to the previous page so the user stays where they were
     // (home, listing, etc.) with the chat widget open
@@ -218,11 +223,6 @@ const App = () => {
   const location = useLocation();
   const prevLocationRef = useRef(location.pathname);
 
-  // Create a navigation key that forces re-render on route changes
-  const navigationKey = useMemo(() => {
-    return `${location.pathname}${location.search}${location.hash}`;
-  }, [location.pathname, location.search, location.hash]);
-
   const hideNavbarFooter = [
     "/login",
     "/sign-up",
@@ -232,11 +232,6 @@ const App = () => {
     "/reset-success",
     "/accept-invite",
   ];
-
-  // Track route changes for scroll restoration
-  useEffect(() => {
-    prevLocationRef.current = location.pathname;
-  }, [location.pathname]);
 
   const shouldShowNavbarFooter =
     !hideNavbarFooter.includes(location.pathname) &&
@@ -255,13 +250,13 @@ const App = () => {
         </>
       )}
 
-      <Routes location={location} key={navigationKey}>
+      <Routes>
         {/* HOME - Exact path match, declared first */}
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
 
         {/* Car Listings - Use direct import, no Suspense needed */}
-        <Route path="/cars" element={<CarListings />} key="cars-listings" />
+        <Route path="/cars" element={<CarListings />} />
         {/* Car Details - Use direct import, no Suspense needed */}
         <Route path="/cars/:id" element={<CarDetails />} />
 
@@ -366,16 +361,8 @@ const App = () => {
             </Suspense>
           }
         />
-        <Route
-          path="/search-results"
-          element={
-            <Suspense fallback={<RouteLoader />}>
-              <FilteredResults />
-            </Suspense>
-          }
-          key="search-results"
-        />
-        <Route path="/blog" element={<Blog />} key="blog" />
+        <Route path="/search-results" element={<FilteredResults />} />
+        <Route path="/blog" element={<Blog />} />
         <Route
           path="/blog/all"
           element={
@@ -383,7 +370,6 @@ const App = () => {
               <AllBlog />
             </Suspense>
           }
-          key="blog-all"
         />
         <Route path="/blog/:id" element={<BlogDetails />} />
         <Route
@@ -591,7 +577,6 @@ const App = () => {
               </Suspense>
             </ProtectedRoute>
           }
-          key="create-post"
         />
         <Route
           path="/edit-car/:id"
@@ -602,7 +587,6 @@ const App = () => {
               </Suspense>
             </ProtectedRoute>
           }
-          key="edit-car"
         />
         <Route
           path="/my-listings"
@@ -613,7 +597,6 @@ const App = () => {
               </Suspense>
             </ProtectedRoute>
           }
-          key="my-listings"
         />
         <Route
           path="/profile"
@@ -624,7 +607,6 @@ const App = () => {
               </Suspense>
             </ProtectedRoute>
           }
-          key="profile"
         />
         <Route
           path="/saved-cars"
@@ -635,7 +617,6 @@ const App = () => {
               </Suspense>
             </ProtectedRoute>
           }
-          key="saved-cars"
         />
         <Route
           path="/my-chats"
@@ -912,10 +893,18 @@ const App = () => {
               </Suspense>
             }
           />
+          <Route
+            path="/create-post"
+            element={
+              <Suspense fallback={<RouteLoader />}>
+                <CreatePost />
+              </Suspense>
+            }
+          />
         </Route>
 
-        {/* Support route redirect - handles /support?chatId=xxx */}
-        <Route path="/support" element={<SupportRouteRedirect />} />
+        {/* Support route redirect - handles /support?chatId=xxx - TEMPORARILY DISABLED */}
+        {/* <Route path="/support" element={<SupportRouteRedirect />} /> */}
 
         {/* 404 Catch-all route */}
         <Route path="*" element={<NotFound />} />

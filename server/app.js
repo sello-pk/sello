@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 import Logger from "./utils/logger.js";
 import { performanceMonitor } from "./middlewares/performanceMiddleware.js";
 import { checkMaintenanceMode } from "./middlewares/maintenanceModeMiddleware.js";
+import { SERVER_CONFIG, SITE_CONFIG } from "./config/index.js";
 
 import {
   notFoundHandler,
@@ -22,12 +23,10 @@ dotenv.config();
 
 export const app = express();
 
-/* -------------------------------------------------------------------------- */
-/*                               SECURITY (HELMET)                             */
-/* -------------------------------------------------------------------------- */
+/* ---------------------------- SECURITY (HELMET) --------------------------- */
 app.use(
   helmet({
-    crossOriginOpenerPolicy: { policy: "unsafe-none" }, // Google OAuth
+    crossOriginOpenerPolicy: { policy: "unsafe-none" },
     crossOriginEmbedderPolicy: { policy: "unsafe-none" },
     contentSecurityPolicy: {
       directives: {
@@ -46,53 +45,25 @@ app.use(
   })
 );
 
-/* -------------------------------------------------------------------------- */
-/*                                COMPRESSION                                  */
-/* -------------------------------------------------------------------------- */
+/* -------------------------------- COMPRESSION -------------------------------- */
 app.use(compression());
 
-/* -------------------------------------------------------------------------- */
-/*                                   CORS 🔥                                   */
-/* -------------------------------------------------------------------------- */
-
-const allowedOrigins = [
-  "https://sello.pk",
-  "https://www.sello.pk",
-  "http://localhost:5173",
-  "http://127.0.0.1:5173",
-  "http://localhost:3000",
-  "http://127.0.0.1:3000",
-  "http://localhost:5174",
-  "http://127.0.0.1:5174",
-  "http://localhost:8080",
-  "http://127.0.0.1:8080",
-  // Add mobile development ports
-  "http://localhost:19006",
-  "http://127.0.0.1:19006",
-  "http://localhost:3001",
-  "http://127.0.0.1:3001",
-];
+/* ------------------------------------ CORS ----------------------------------- */
+const allowedOrigins = SERVER_CONFIG.getAllowedOrigins();
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // allow server-to-server, OAuth redirects, Postman
       if (!origin) return callback(null, true);
-
-      // Allow all localhost origins in development
       if (
-        process.env.NODE_ENV !== "production" &&
+        SERVER_CONFIG.NODE_ENV !== "production" &&
         (origin.includes("localhost") || origin.includes("127.0.0.1"))
-      ) {
+      )
         return callback(null, true);
-      }
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
+      if (allowedOrigins.includes(origin)) return callback(null, true);
 
       Logger.warn(`CORS blocked origin: ${origin}`);
-      return callback(null, false);
+      return callback(new Error("CORS not allowed"), false);
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -106,110 +77,127 @@ app.use(
   })
 );
 
-// Explicitly handle preflight (important for OAuth)
 app.options("*", cors());
 
-/* -------------------------------------------------------------------------- */
-/*                                BODY PARSERS                                 */
-/* -------------------------------------------------------------------------- */
+/* ---------------------------- BODY PARSERS --------------------------- */
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 
-/* -------------------------------------------------------------------------- */
-/*                                 MIDDLEWARES                                 */
-/* -------------------------------------------------------------------------- */
+/* ---------------------------- MIDDLEWARES --------------------------- */
 import requestIdMiddleware from "./middlewares/requestIdMiddleware.js";
 app.use(requestIdMiddleware);
-
 app.use(performanceMonitor);
-
 import { requestTimeout } from "./middlewares/requestTimeout.js";
-app.use(requestTimeout(60000)); // Increased from 30s to 60s
-
+app.use(requestTimeout(60000)); // 60s timeout
 import { sanitizeInput } from "./middlewares/sanitizeMiddleware.js";
-import { rateLimit } from "./middlewares/securityMiddleware.js";
-
 app.use(
   sanitizeInput([
     "password",
     "token",
-    "otp",
-    "content",
+    "email",
+    "name",
+    "title",
     "description",
-    "message",
-    "geoLocation",
+    "content",
   ])
 );
 
-app.use(rateLimit);
+/* ---------------------- MAINTENANCE MODE ---------------------- */
+app.use(checkMaintenanceMode);
 
-/* -------------------------------------------------------------------------- */
-/*                        AUTO TOKEN REFRESH MIDDLEWARE                          */
-/* -------------------------------------------------------------------------- */
-import autoRefreshToken from "./utils/tokenRefreshMiddleware.js";
-app.use(autoRefreshToken);
+/* ----------------------------- ROUTES ----------------------------- */
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import carRoutes from "./routes/carRoutes.js";
+import roleRoutes from "./routes/roleRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import subscriptionRoutes from "./routes/subscriptionRoutes.js";
+import contactFormRoutes from "./routes/contactFormRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
+import supportChatRoutes from "./routes/supportChatRoutes.js";
+import carChatRoutes from "./routes/carChatRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
+import savedSearchRoutes from "./routes/savedSearchRoutes.js";
+import testimonialRoutes from "./routes/testimonialRoutes.js";
+import customerRequestRoutes from "./routes/customerRequestRoutes.js";
+import newsletterRoutes from "./routes/newsletterRoutes.js";
+import blogRoutes from "./routes/blogRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
+import bannerRoutes from "./routes/bannerRoutes.js";
+import priceRoutes from "./routes/priceRoutes.js";
+import accountDeletionRoutes from "./routes/accountDeletionRoutes.js";
+import settingsRoutes from "./routes/settingsRoutes.js";
+import promotionRoutes from "./routes/promotionsRoutes.js";
+import verificationRoutes from "./routes/verificationRoutes.js";
+import boostRoutes from "./routes/boostRoutes.js";
+import mapsRoutes from "./routes/mapsRoutes.js";
 
-/* -------------------------------------------------------------------------- */
-/*                           MAINTENANCE MODE                                  */
-/* -------------------------------------------------------------------------- */
-app.use((req, res, next) => {
-  if (req.path.startsWith("/api/admin")) return next();
-  return checkMaintenanceMode(req, res, next);
-});
+// API Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/cars", carRoutes);
+app.use("/api/roles", roleRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/subscriptions", subscriptionRoutes);
+app.use("/api/contact", contactFormRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/support-chat", supportChatRoutes);
+app.use("/api/car-chat", carChatRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/saved-searches", savedSearchRoutes);
+app.use("/api/testimonials", testimonialRoutes);
+app.use("/api/customer-requests", customerRequestRoutes);
+app.use("/api/newsletter", newsletterRoutes);
+app.use("/api/blogs", blogRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/banners", bannerRoutes);
+app.use("/api/pricing", priceRoutes);
+app.use("/api/account-deletion", accountDeletionRoutes);
+app.use("/api/settings", settingsRoutes);
+app.use("/api/promotions", promotionRoutes);
+app.use("/api/verification", verificationRoutes);
+app.use("/api/boost", boostRoutes);
+app.use("/api/maps", mapsRoutes);
 
-/* -------------------------------------------------------------------------- */
-/*                                   ROUTES                                    */
-/* -------------------------------------------------------------------------- */
-import RouteRegistry from "./utils/routeRegistry.js";
-const routeRegistry = new RouteRegistry();
-routeRegistry.applyRoutes(app);
-
-/* -------------------------------------------------------------------------- */
-/*                               HEALTH CHECKS                                 */
-/* -------------------------------------------------------------------------- */
-app.get("/", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "SELLO API is running",
-    environment: process.env.NODE_ENV,
-    uptime: process.uptime(),
-  });
-});
-
-app.get("/health", (req, res) => {
-  const healthy = mongoose.connection.readyState === 1;
-  const memUsage = process.memoryUsage();
-  const uptime = process.uptime();
-
-  res.status(healthy ? 200 : 503).json({
-    success: healthy,
-    status: healthy ? "healthy" : "unhealthy",
-    database: {
-      connected: healthy,
-      state: mongoose.connection.readyState,
-      host: mongoose.connection.host,
-      name: mongoose.connection.name,
-    },
-    server: {
-      uptime: `${Math.floor(uptime / 60)}m ${Math.floor(uptime % 60)}s`,
-      memory: {
-        used: `${Math.round(memUsage.heapUsed / 1024 / 1024)}MB`,
-        total: `${Math.round(memUsage.heapTotal / 1024 / 1024)}MB`,
-        external: `${Math.round(memUsage.external / 1024 / 1024)}MB`,
-      },
-      nodeVersion: process.version,
-      platform: process.platform,
-    },
+/* ---------------------- HEALTH CHECK ---------------------- */
+app.get("/api/health", (req, res) => {
+  const health = {
+    status: "OK",
     timestamp: new Date().toISOString(),
-  });
+    environment: SERVER_CONFIG.NODE_ENV,
+    database:
+      mongoose.connection.readyState === 1 ? "Connected" : "Disconnected",
+    memory: process.memoryUsage(),
+    uptime: process.uptime(),
+  };
+
+  Logger.info("Health check accessed", { health });
+  res.status(200).json(health);
 });
 
-/* -------------------------------------------------------------------------- */
-/*                               ERROR HANDLING                                */
-/* -------------------------------------------------------------------------- */
+/* ---------------------- ERROR HANDLERS ---------------------- */
 app.use(notFoundHandler);
 app.use(validationErrorHandler);
 app.use(duplicateKeyErrorHandler);
 app.use(castErrorHandler);
 app.use(errorHandler);
+
+/* ---------------------- SERVER INFO ---------------------- */
+app.get("/", (req, res) => {
+  res.json({
+    message: `🚀 ${SITE_CONFIG.NAME} API Server`,
+    version: "2.0.0",
+    environment: SERVER_CONFIG.NODE_ENV,
+    documentation: `${req.protocol}://${req.get("host")}/api/health`,
+    endpoints: {
+      health: "/api/health",
+      auth: "/api/auth",
+      cars: "/api/cars",
+      users: "/api/users",
+      admin: "/api/admin",
+    },
+  });
+});
+
+export default app;

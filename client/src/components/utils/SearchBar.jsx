@@ -16,7 +16,6 @@ const SearchBar = () => {
     data: filteredCars,
     isLoading,
     isFetching,
-    error,
   } = useGetFilteredCarsQuery(triggerSearch, {
     skip: !triggerSearch,
     refetchOnMountOrArgChange: true, // Force refetch to avoid caching
@@ -28,36 +27,34 @@ const SearchBar = () => {
       toast.error("Please enter a search term");
       return;
     }
+
     // Clear cache for 'Cars' tag
     dispatch(api.util.invalidateTags(["Cars"]));
     const queryParams = { search: searchTerm.trim() }; // Simplified to only 'search'
-    const queryString = new URLSearchParams(queryParams).toString();
     setTriggerSearch(queryParams);
   };
 
   // Navigate to search results when fresh data is received
   useEffect(() => {
-    if (filteredCars && !isLoading && !isFetching) {
-      navigate("/search-results", {
-        state: { filteredCars, isLoading: false },
-      });
+    if (filteredCars && !isLoading && !isFetching && triggerSearch) {
+      // Navigate with URL parameters instead of state
+      const params = new URLSearchParams();
+      params.set("search", searchTerm.trim());
+
+      navigate(`/search-results?${params.toString()}`);
       setTriggerSearch(null); // Reset to prevent re-navigation
-      setSearchTerm(""); // Clear search input
-    }
-  }, [filteredCars, isLoading, isFetching, navigate]);
 
-  // Handle errors
-  useEffect(() => {
-    if (error) {
-      toast.error(error?.data?.message || "Failed to search cars");
+      // Clear search input after successful navigation
+      setTimeout(() => setSearchTerm(""), 100);
     }
-  }, [error]);
-
-  // Debug: Log when search is triggered
-  useEffect(() => {
-    if (triggerSearch) {
-    }
-  }, [triggerSearch]);
+  }, [
+    filteredCars,
+    isLoading,
+    isFetching,
+    navigate,
+    searchTerm,
+    triggerSearch,
+  ]);
 
   return (
     <form

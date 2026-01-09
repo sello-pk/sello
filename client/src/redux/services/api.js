@@ -7,17 +7,7 @@ import {
   shouldRefreshToken,
 } from "@utils/tokenRefresh";
 import { logger } from "@utils/logger";
-
-// Use environment variable or default to port 4000 (matching server)
-// VITE_API_URL is REQUIRED in production
-const BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV
-    ? "http://localhost:4000/api"
-    : (() => {
-        logger.error("VITE_API_URL is required in production!");
-        return ""; // Fail fast if not configured
-      })());
+import { API_BASE_URL } from "@redux/config";
 
 // Track if we're currently refreshing to avoid multiple simultaneous refresh attempts
 let isRefreshing = false;
@@ -33,7 +23,7 @@ export const api = createApi({
   baseQuery: async (args, api, extraOptions) => {
     try {
       const baseResult = await fetchBaseQuery({
-        baseUrl: BASE_URL,
+        baseUrl: API_BASE_URL,
         credentials: "include",
         prepareHeaders: (headers, { extra, endpoint }) => {
           const token = getAccessToken();
@@ -77,7 +67,7 @@ export const api = createApi({
             if (newToken) {
               // Retry the original request with the new access token
               return fetchBaseQuery({
-                baseUrl: BASE_URL,
+                baseUrl: API_BASE_URL,
                 credentials: "include",
                 prepareHeaders: (headers) => {
                   headers.set("Authorization", `Bearer ${newToken}`);

@@ -136,10 +136,7 @@ const Navbar = () => {
         }`}
       >
         {/* Logo */}
-        <Link
-          to="/"
-          className="cursor-pointer flex-shrink-0"
-        >
+        <Link to="/" className="cursor-pointer flex-shrink-0">
           <img
             className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto"
             src={
@@ -274,7 +271,7 @@ const Navbar = () => {
       {open && (
         <div
           ref={drawerRef}
-          className="fixed top-0 right-0 w-[85%] sm:w-[75%] md:w-[60%] h-full z-50 text-primary-500 px-4 sm:px-6 py-4 sm:py-6 bg-primary-300 shadow-xl lg:hidden"
+          className="fixed top-0 right-0 w-[85%] sm:w-[75%] md:w-[60%] h-full z-50 text-black px-4 sm:px-6 py-4 sm:py-6 bg-primary-400 shadow-xl lg:hidden"
         >
           {/* Close Button */}
           <div className="flex justify-end text-2xl sm:text-3xl mb-4 sm:mb-6">
@@ -296,7 +293,7 @@ const Navbar = () => {
                 to={link.path}
                 ref={(el) => (linkRefs.current[index] = el)}
                 onClick={closeDrawer}
-                className={`border-b border-primary-300 pb-2 ${
+                className={` pb-2 ${
                   isActive(link.path) ? "font-bold text-black" : ""
                 }`}
               >
@@ -310,7 +307,7 @@ const Navbar = () => {
                 closeDrawer();
                 navigate("/create-post");
               }}
-              className="mt-4 flex items-center gap-2 text-primary-500 text-base sm:text-lg"
+              className="mt-4 flex items-center gap-2 text-black text-base sm:text-lg"
             >
               <FaCirclePlus />
               Create Post

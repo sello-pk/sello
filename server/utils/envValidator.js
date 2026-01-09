@@ -20,17 +20,17 @@ const ENV_CONFIG = {
     // Recommended but not required
     MONGO_URI: {
       description: "MongoDB connection string",
-      default: "mongodb://127.0.0.1:27017/sello-db",
+      default: process.env.MONGO_URI || "mongodb://127.0.0.1:27017/sello-db",
       warning: "Using default MongoDB URI",
     },
     PORT: {
       description: "Server port",
-      default: "4000",
+      default: process.env.PORT || "4000",
       warning: "Using default port 4000",
     },
     CLIENT_URL: {
       description: "Frontend URL for CORS",
-      default: "http://localhost:5173",
+      default: process.env.CLIENT_URL || "http://localhost:5173",
       warning: "Using default CLIENT_URL",
     },
     // Email configuration

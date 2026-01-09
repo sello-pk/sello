@@ -1,8 +1,18 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaHome, FaSearch, FaArrowLeft } from "react-icons/fa";
 
 const NotFound = () => {
+  const navigate = useNavigate();
+
+  const handleGoBack = () => {
+    // Try to go back in React Router way
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate("/");
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">
       <div className="max-w-lg w-full text-center">
@@ -37,7 +47,7 @@ const NotFound = () => {
           </Link>
 
           <button
-            onClick={() => window.history.back()}
+            onClick={handleGoBack}
             className="inline-flex items-center justify-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold transition-all duration-200"
           >
             <FaArrowLeft className="text-sm" />

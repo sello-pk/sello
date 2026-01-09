@@ -12,6 +12,7 @@ import LazyImage from "../../components/common/LazyImage";
 import { images } from "../../assets/assets";
 import toast from "react-hot-toast";
 import BoostModal from "../listings/BoostModal";
+import { API_BASE_URL } from "@redux/config";
 
 const UserListings = () => {
   const navigate = useNavigate();
@@ -45,12 +46,7 @@ const UserListings = () => {
       try {
         setUpdatingCars((prev) => new Set(prev).add(car._id));
         const token = localStorage.getItem("token");
-        const BASE_URL =
-          import.meta.env.VITE_API_URL || "http://localhost:4000/api";
-        const API_URL = BASE_URL.endsWith("/api")
-          ? BASE_URL
-          : `${BASE_URL}/api`;
-        const response = await fetch(`${API_URL}/cars/${car._id}/sold`, {
+        const response = await fetch(`${API_BASE_URL}/cars/${car._id}/sold`, {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${token}`,

@@ -186,14 +186,13 @@ const HeroFilter = () => {
   // Navigate to results when search completes
   useEffect(() => {
     if (filteredCars && !isSearching && queryParams) {
-      // Use the normalized data directly from RTK Query
-      navigate("/search-results", {
-        state: {
-          filteredCars: filteredCars, // Already formatted as { cars, total, ... }
-          isLoading: isSearching,
-          filters: queryParams,
-        },
+      // Use URL parameters only (no state to avoid conflicts)
+      const params = new URLSearchParams();
+      Object.entries(queryParams).forEach(([key, value]) => {
+        if (value) params.set(key, value);
       });
+
+      navigate(`/search-results?${params.toString()}`);
     }
   }, [filteredCars, isSearching, queryParams, navigate]);
   const yearOptions = useMemo(() => {

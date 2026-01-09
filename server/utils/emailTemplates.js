@@ -270,7 +270,9 @@ export const getWelcomeTemplate = (userName) => `
         
         <div style="text-align: center; margin: 30px 0;">
           <a href="${
-            process.env.CLIENT_URL || "https://sello.com"
+            process.env.CLIENT_URL ||
+            process.env.FRONTEND_URL ||
+            "http://localhost:5173"
           }" class="button">
             Start Exploring
           </a>
@@ -415,7 +417,9 @@ export const getCarApprovedTemplate = (userName, carTitle, carId) => `
           </p>
           <div style="text-align: center;">
             <a href="${
-              process.env.CLIENT_URL || "https://sello.com"
+              process.env.CLIENT_URL ||
+              process.env.FRONTEND_URL ||
+              "http://localhost:5173"
             }/cars/${carId}" class="button" style="background: linear-gradient(135deg, #28a745 0%, #34ce57 100%);">
               View Your Listing
             </a>
@@ -502,7 +506,9 @@ export const getCarRejectedTemplate = (userName, carTitle, rejectionReason) => `
           }
           <div style="text-align: center; margin-top: 20px;">
             <a href="${
-              process.env.CLIENT_URL || "https://sello.com"
+              process.env.CLIENT_URL ||
+              process.env.FRONTEND_URL ||
+              "http://localhost:5173"
             }/edit-car" class="button" style="background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%);">
               Update Your Listing
             </a>
@@ -668,7 +674,9 @@ export const getAccountDeletionRejectedTemplate = (userName, reviewNotes) => `
         
         <div style="text-align: center; margin: 30px 0;">
           <a href="${
-            process.env.CLIENT_URL || "https://sello.com"
+            process.env.CLIENT_URL ||
+            process.env.FRONTEND_URL ||
+            "http://localhost:5173"
           }/profile" class="button">
             Go to Your Profile
           </a>

@@ -267,7 +267,10 @@ const GetAllCarsSection = () => {
   }, [cars, activeTab]);
 
   // Prevent rendering on search-results page to avoid conflicts
-  if (location.pathname === "/search-results") {
+  if (
+    location.pathname === "/search-results" ||
+    location.pathname.startsWith("/admin")
+  ) {
     return null;
   }
 
