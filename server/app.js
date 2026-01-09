@@ -176,13 +176,6 @@ app.get("/api/health", (req, res) => {
   res.status(200).json(health);
 });
 
-/* ---------------------- ERROR HANDLERS ---------------------- */
-app.use(notFoundHandler);
-app.use(validationErrorHandler);
-app.use(duplicateKeyErrorHandler);
-app.use(castErrorHandler);
-app.use(errorHandler);
-
 /* ---------------------- SERVER INFO ---------------------- */
 app.get("/", (req, res) => {
   res.json({
@@ -199,5 +192,12 @@ app.get("/", (req, res) => {
     },
   });
 });
+
+/* ---------------------- ERROR HANDLERS ---------------------- */
+app.use(notFoundHandler);
+app.use(validationErrorHandler);
+app.use(duplicateKeyErrorHandler);
+app.use(castErrorHandler);
+app.use(errorHandler);
 
 export default app;
