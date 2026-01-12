@@ -25,7 +25,18 @@ export const API_CONFIG = {
     const baseUrl =
       import.meta.env.VITE_API_URL ||
       (import.meta.env.DEV ? "http://localhost:4003/api" : "");
-    return baseUrl.endsWith("/api") ? baseUrl.replace("/api", "") : baseUrl;
+
+    if (!baseUrl) return "";
+
+    // Remove /api suffix if present
+    const socketUrl = baseUrl.endsWith("/api") ? baseUrl.slice(0, -4) : baseUrl;
+
+    // Ensure no double protocol issues
+    if (socketUrl.startsWith("http://") || socketUrl.startsWith("https://")) {
+      return socketUrl;
+    }
+
+    return socketUrl;
   })(),
 
   // Admin API route prefixes

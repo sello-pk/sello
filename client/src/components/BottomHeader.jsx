@@ -22,9 +22,6 @@ const BottomHeader = () => {
       <Link to={"/filter"} className="hover:underline">
         Filter
       </Link>
-      <Link to={"/"} className="hover:underline">
-        Shot
-      </Link>
     </div>
   );
 };

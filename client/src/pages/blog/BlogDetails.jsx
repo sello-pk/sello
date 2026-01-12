@@ -24,13 +24,19 @@ const BlogDetails = () => {
       ...(blog?._id && { exclude: blog._id }),
     },
     {
-      skip: !blog?.category?._id,
+      skip: !blog?.category?._id || !blog?._id,
     }
   );
 
-  const relatedBlogs =
-    relatedBlogsData?.blogs?.filter((b) => b._id !== blog?._id).slice(0, 3) ||
-    [];
+  const relatedBlogs = React.useMemo(() => {
+    if (!relatedBlogsData) return [];
+
+    const blogsArray =
+      relatedBlogsData?.blogs || relatedBlogsData?.data?.blogs || [];
+    return blogsArray
+      .filter((b) => b && b._id && b._id !== blog?._id)
+      .slice(0, 3);
+  }, [relatedBlogsData, blog?._id]);
 
   // Redirect to 404 or show error
   useEffect(() => {
@@ -144,10 +150,16 @@ const BlogDetails = () => {
 
         {/* Blog Content */}
         <div className="blog-content-wrapper mb-8">
-          <div
-            className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-headings:mt-8 prose-headings:mb-4 prose-h1:text-4xl prose-h1:font-bold prose-h1:mt-10 prose-h1:mb-6 prose-h2:text-3xl prose-h2:font-bold prose-h2:mt-8 prose-h2:mb-4 prose-h3:text-2xl prose-h3:font-bold prose-h3:mt-6 prose-h3:mb-3 prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6 prose-p:text-base prose-a:text-primary-500 prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 prose-strong:font-bold prose-img:rounded-lg prose-img:shadow-md prose-img:my-8 prose-img:w-full prose-ul:my-6 prose-ol:my-6 prose-li:my-2 prose-blockquote:border-l-4 prose-blockquote:border-primary-500 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:my-6"
-            dangerouslySetInnerHTML={{ __html: blog.content }}
-          />
+          {blog.content ? (
+            <div
+              className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-headings:mt-8 prose-headings:mb-4 prose-h1:text-4xl prose-h1:font-bold prose-h1:mt-10 prose-h1:mb-6 prose-h2:text-3xl prose-h2:font-bold prose-h2:mt-8 prose-h2:mb-4 prose-h3:text-2xl prose-h3:font-bold prose-h3:mt-6 prose-h3:mb-3 prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6 prose-p:text-base prose-a:text-primary-500 prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 prose-strong:font-bold prose-img:rounded-lg prose-img:shadow-md prose-img:my-8 prose-img:w-full prose-ul:my-6 prose-ol:my-6 prose-li:my-2 prose-blockquote:border-l-4 prose-blockquote:border-primary-500 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:my-6"
+              dangerouslySetInnerHTML={{ __html: blog.content }}
+            />
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <p>No content available for this blog post.</p>
+            </div>
+          )}
         </div>
         <style>{`
           .blog-content-wrapper {

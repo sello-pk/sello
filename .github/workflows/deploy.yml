@@ -1,0 +1,39 @@
+name: Deploy Sello (Production)
+
+
+on:
+  push:
+    branches:
+      - main
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          script: | 
+            set -e
+
+            echo "🚀 Deploy started..."
+
+            cd ${{ secrets.VPS_PATH }}
+            git pull origin main
+
+            echo "🔁 Backend deploy"
+            cd server
+            npm install --production
+            pm2 restart sello-backend || pm2 start server.js --name sello-backend
+
+            echo "🎨 Frontend build"
+            cd ../client
+            npm install
+            npm run build
+
+            echo "✅ Deployment finished"

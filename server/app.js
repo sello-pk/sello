@@ -132,6 +132,7 @@ import promotionRoutes from "./routes/promotionsRoutes.js";
 import verificationRoutes from "./routes/verificationRoutes.js";
 import boostRoutes from "./routes/boostRoutes.js";
 import mapsRoutes from "./routes/mapsRoutes.js";
+import uploadRoutes from "./routes/uploadRoutes.js";
 
 // API Routes
 app.use("/api/auth", authRoutes);
@@ -159,6 +160,7 @@ app.use("/api/promotions", promotionRoutes);
 app.use("/api/verification", verificationRoutes);
 app.use("/api/boost", boostRoutes);
 app.use("/api/maps", mapsRoutes);
+app.use("/api/upload", uploadRoutes);
 
 /* ---------------------- HEALTH CHECK ---------------------- */
 app.get("/api/health", (req, res) => {

@@ -48,7 +48,7 @@ const BrandsSection = () => {
   return (
     <section className="bg-[#F5F5F5] w-full px-3 sm:px-4 md:px-6 lg:px-8 md:py-8 md:rounded-tl-[80px]">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl md:text-3xl font-semibold">
+        <h2 className="text-xl md:text-3xl font-semibold py-2">
           Explore Our Premium Brands
         </h2>
         <Link

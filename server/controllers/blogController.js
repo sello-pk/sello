@@ -87,14 +87,81 @@ export const createBlog = async (req, res) => {
     // Handle featured image
     let featuredImage = null;
     if (req.files && req.files.featuredImage && req.files.featuredImage[0]) {
-      featuredImage = await uploadCloudinary(req.files.featuredImage[0].buffer);
+      const imageFile = req.files.featuredImage[0];
+
+      // Validate file type and size
+      const allowedTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/webp",
+      ];
+      const maxSize = 20 * 1024 * 1024; // 20MB
+
+      if (!allowedTypes.includes(imageFile.mimetype)) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Invalid image format. Only JPEG, PNG, and WebP are allowed.",
+        });
+      }
+
+      if (imageFile.size > maxSize) {
+        return res.status(400).json({
+          success: false,
+          message: "Image too large. Maximum size is 20MB.",
+        });
+      }
+
+      if (!imageFile.buffer || imageFile.buffer.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid image file. File appears to be corrupted.",
+        });
+      }
+
+      try {
+        featuredImage = await uploadCloudinary(imageFile.buffer);
+      } catch (uploadError) {
+        console.error("Cloudinary upload error:", uploadError);
+        return res.status(500).json({
+          success: false,
+          message: "Failed to upload featured image. Please try again.",
+        });
+      }
     }
 
     // Handle multiple images
     let images = [];
     if (req.files && req.files.images && req.files.images.length > 0) {
+      const allowedTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/webp",
+      ];
+      const maxSize = 20 * 1024 * 1024; // 20MB
+
       images = await Promise.all(
         req.files.images.map(async (file) => {
+          // Validate each image
+          if (!allowedTypes.includes(file.mimetype)) {
+            console.warn(`Skipping invalid image type: ${file.mimetype}`);
+            return null;
+          }
+
+          if (file.size > maxSize) {
+            console.warn(
+              `Skipping oversized image: ${file.originalname} (${file.size} bytes)`
+            );
+            return null;
+          }
+
+          if (!file.buffer || file.buffer.length === 0) {
+            console.warn(`Skipping corrupted image: ${file.originalname}`);
+            return null;
+          }
+
           try {
             return await uploadCloudinary(file.buffer);
           } catch (err) {
@@ -396,15 +463,80 @@ export const updateBlog = async (req, res) => {
 
     // Handle featured image update
     if (req.files && req.files.featuredImage && req.files.featuredImage[0]) {
-      blog.featuredImage = await uploadCloudinary(
-        req.files.featuredImage[0].buffer
-      );
+      const imageFile = req.files.featuredImage[0];
+
+      // Validate file type and size
+      const allowedTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/webp",
+      ];
+      const maxSize = 20 * 1024 * 1024; // 20MB
+
+      if (!allowedTypes.includes(imageFile.mimetype)) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Invalid image format. Only JPEG, PNG, and WebP are allowed.",
+        });
+      }
+
+      if (imageFile.size > maxSize) {
+        return res.status(400).json({
+          success: false,
+          message: "Image too large. Maximum size is 20MB.",
+        });
+      }
+
+      if (!imageFile.buffer || imageFile.buffer.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid image file. File appears to be corrupted.",
+        });
+      }
+
+      try {
+        blog.featuredImage = await uploadCloudinary(imageFile.buffer);
+      } catch (uploadError) {
+        console.error("Cloudinary upload error:", uploadError);
+        return res.status(500).json({
+          success: false,
+          message: "Failed to upload featured image. Please try again.",
+        });
+      }
     }
 
     // Handle additional images
     if (req.files && req.files.images && req.files.images.length > 0) {
+      const allowedTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/webp",
+      ];
+      const maxSize = 20 * 1024 * 1024; // 20MB
+
       const newImages = await Promise.all(
         req.files.images.map(async (file) => {
+          // Validate each image
+          if (!allowedTypes.includes(file.mimetype)) {
+            console.warn(`Skipping invalid image type: ${file.mimetype}`);
+            return null;
+          }
+
+          if (file.size > maxSize) {
+            console.warn(
+              `Skipping oversized image: ${file.originalname} (${file.size} bytes)`
+            );
+            return null;
+          }
+
+          if (!file.buffer || file.buffer.length === 0) {
+            console.warn(`Skipping corrupted image: ${file.originalname}`);
+            return null;
+          }
+
           try {
             return await uploadCloudinary(file.buffer);
           } catch (err) {
