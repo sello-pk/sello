@@ -5,9 +5,7 @@ import {
   apple,
   android,
   facebook,
-  twitter,
   instagram,
-  linkedin,
 } from "../assets/assets";
 import { FaYoutube } from "react-icons/fa";
 import { FaTiktok } from "react-icons/fa6";
