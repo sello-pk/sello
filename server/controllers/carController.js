@@ -1169,7 +1169,7 @@ export const getAllCars = async (req, res) => {
     // Sort: Featured first, then boosted (by priority), then by creation date
     const cars = await Car.find(query)
       .select(
-        "title make model year price images city location status isBoosted boostExpiry boostPriority featured condition fuelType transmission mileage postedBy createdAt views geoLocation vehicleType"
+        "title make model year price images city location status isBoosted boostExpiry boostPriority featured condition fuelType transmission mileage postedBy createdAt views geoLocation vehicleType features carDoors horsepower engineCapacity"
       )
       .skip(skip)
       .limit(limit)
@@ -1643,7 +1643,7 @@ export const getFilteredCars = async (req, res) => {
     try {
       // Build query with select to only get needed fields (performance optimization)
       const selectFields =
-        "title make model year condition price images city location mileage fuelType transmission bodyType regionalSpec postedBy createdAt views isBoosted featured";
+        "title make model year condition price images city location mileage fuelType transmission bodyType regionalSpec postedBy createdAt views isBoosted featured features carDoors horsepower engineCapacity";
 
       [cars, total] = await Promise.all([
         Car.find(finalFilter)

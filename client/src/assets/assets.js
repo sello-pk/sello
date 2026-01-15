@@ -105,7 +105,7 @@ import amingarageLogo from "./images/amingarage.png";
 import wbDigitalLogo from "./images/wbDigital.svg";
 
 // SELLO VIDEO
-import selloVido from "./selloVideo.mp4";
+import selloVideo from "./selloVideo.gif";
 
 export const images = {
   car1,
@@ -148,7 +148,7 @@ export const images = {
   comma,
   loanPlanHeroImg,
   mailbox,
-  selloVido,
+  selloVideo,
   electricSvg3,
   // Partener Logos
   servicoLogo,
@@ -796,26 +796,22 @@ export const carBrandsByCategory = {
     "Wagon Cars",
   ],
   brand: [
-    "Abarth Cars",
-    "Alfa Romeo Cars",
-    "Aston Martin Cars",
-    "Audi Cars",
-    "Bentley Cars",
+    "Suzuki Cars",
+    "Toyota Cars",
+    "Honda Cars",
+    "Haval Cars",
+    "Hyundai Cars",
+    "Kia Cars",
+    "MG Cars",
+    "BYD Cars",
     "BMW Cars",
-    "Bugatti Cars",
-    "Buick Cars",
-    "Cadillac Cars",
-    "Chevrolet Cars",
-    "Dodge Cars",
-    "Ferrari Cars",
-    "Fisker Cars",
-    "GMC Cars",
-    "Lamborghini Cars",
-    "Lotus Cars",
-    "Lucid Cars",
-    "Maserati Cars",
-    "McLaren Cars",
-    "Rolls-Royce Cars",
+    "Mercedes Cars",
+    "Lexus Cars",
+    "Chery Cars",
+    "Omoda Cars",
+    "ORA Cars",
+    "Seres Cars",
+    "Audi Cars",
   ],
 };
 

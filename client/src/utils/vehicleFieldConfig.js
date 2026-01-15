@@ -25,6 +25,8 @@ export const VEHICLE_FIELD_CONFIG = {
       "contactNumber",
       "warranty",
       "ownerType",
+      "carDoors",
+      "horsepower",
     ],
     optional: [
       "description",
@@ -33,16 +35,14 @@ export const VEHICLE_FIELD_CONFIG = {
       "mileage",
       "features",
       "location",
-      "carDoors",
-      "horsepower",
       "numberOfCylinders",
       "geoLocation", // Made optional - will use default if not provided
     ],
     fields: {
       bodyType: { visible: true, required: true },
       cylinders: { visible: true, required: false },
-      doors: { visible: true, required: false },
-      horsepower: { visible: true, required: false },
+      doors: { visible: true, required: true },
+      horsepower: { visible: true, required: true },
       engineCapacity: { visible: true, required: true },
       batteryRange: { visible: false, required: false },
       motorPower: { visible: false, required: false },

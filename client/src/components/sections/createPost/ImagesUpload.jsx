@@ -1,5 +1,6 @@
 // src/components/createPost/ImagesUpload.js
 import React, { useState, useRef } from "react";
+import toast from "react-hot-toast";
 
 const ImagesUpload = ({ onImagesChange }) => {
   const [uploads, setUploads] = useState([]);
@@ -41,13 +42,15 @@ const ImagesUpload = ({ onImagesChange }) => {
 
     const validFiles = files.filter((file) => {
       if (!allowedTypes.includes(file.type)) {
-        alert(
+        toast.error(
           `Invalid file type: ${file.type}. Only JPG, PNG, and WebP images are allowed.`
         );
         return false;
       }
       if (file.size > maxSize) {
-        alert(`File too large: ${file.name}. Maximum size is 20MB per image.`);
+        toast.error(
+          `File too large: ${file.name}. Maximum size is 20MB per image.`
+        );
         return false;
       }
       return true;
@@ -62,14 +65,14 @@ const ImagesUpload = ({ onImagesChange }) => {
     if (currentCount + validFiles.length > maxFiles) {
       const remainingSlots = maxFiles - currentCount;
       if (remainingSlots > 0) {
-        alert(
+        toast.error(
           `Only ${remainingSlots} more image${
             remainingSlots > 1 ? "s" : ""
           } can be uploaded. Maximum 10 images per post.`
         );
         validFiles.splice(remainingSlots);
       } else {
-        alert(
+        toast.error(
           "Maximum 10 images allowed per post. Please remove some images first."
         );
         return;

@@ -522,10 +522,37 @@ const CreatePostForm = () => {
       return;
     }
 
+    // Validate engine capacity (required for cars)
+    if (formData.vehicleType === "Car") {
+      const engineNum = parseInt(formData.engineCapacity);
+      if (isNaN(engineNum) || engineNum < 500 || engineNum > 10000) {
+        toast.error("Engine capacity must be between 500 and 10000 CC.");
+        return;
+      }
+    }
+
     // Validate contact number
     if (!/^\+?\d{9,15}$/.test(formData.contactNumber)) {
       toast.error("Invalid contact number. Must be 9-15 digits.");
       return;
+    }
+
+    // Validate car doors (required for cars)
+    if (formData.vehicleType === "Car") {
+      const doorsNum = parseInt(formData.carDoors);
+      if (isNaN(doorsNum) || doorsNum < 2 || doorsNum > 8) {
+        toast.error("Number of doors must be between 2 and 8.");
+        return;
+      }
+    }
+
+    // Validate horsepower (required for cars)
+    if (formData.vehicleType === "Car") {
+      const hpNum = parseInt(formData.horsepower);
+      if (isNaN(hpNum) || hpNum < 50 || hpNum > 2000) {
+        toast.error("Horsepower must be between 50 and 2000.");
+        return;
+      }
     }
     const data = prepareFormData();
 

@@ -7,14 +7,11 @@ const Video = () => {
     <div className="bg-gray-100 w-full py-8 md:py-16">
       <div className="px-3 sm:px-4 md:px-6 lg:px-8 mx-auto flex flex-col sm:flex-col md:flex-col lg:flex-row gap-10">
         <div className="video lg:w-1/2 md:w-full border-2 border-primary/70 rounded overflow-hidden">
-          <video
-            src={images.selloVido}
-            muted
-            loop
-            className="w-full h-auto object-cover rounded"
-            autoPlay
-            playsInline
-          ></video>
+          <img
+            src={images.selloVideo}
+            alt="Sello Video"
+            className="w-full h-auto rounded"
+          />
         </div>
         <div className="content">
           <h2 className="md:text-5xl text-3xl font-semibold max-w-4xl pb-5">
