@@ -63,7 +63,7 @@ const GetAllCarsSection = () => {
     undefined,
     {
       skip: !token, // Skip if no token
-    }
+    },
   );
   const { data: savedCarsData } = useGetSavedCarsQuery(undefined, {
     skip: !token || isLoadingUser || isUserError, // Only fetch if user is logged in
@@ -91,7 +91,7 @@ const GetAllCarsSection = () => {
       // Apply search term if present in URL
       ...(urlSearch && { search: urlSearch }),
     }),
-    [page, activeTab, limit, urlSearch]
+    [page, activeTab, limit, urlSearch],
   );
 
   // Call backend with pagination and filtering
@@ -116,7 +116,7 @@ const GetAllCarsSection = () => {
         setAllLoadedCars((prev) => {
           const existingIds = new Set(prev.map((c) => c._id));
           const newCars = carsData.cars.filter(
-            (c) => c?._id && !existingIds.has(c._id)
+            (c) => c?._id && !existingIds.has(c._id),
           );
           return [...prev, ...newCars];
         });
@@ -244,17 +244,17 @@ const GetAllCarsSection = () => {
         }
       }
     },
-    [savedCars, saveCar, unsaveCar, navigate]
+    [savedCars, saveCar, unsaveCar, navigate],
   );
 
   // Define the available tabs - memoized
   const tabs = useMemo(
     () => [
-      { id: "all", label: "All Cars" },
-      { id: "new", label: "New Cars" },
-      { id: "used", label: "Used Cars" },
+      { id: "all", label: "All Vehicles" },
+      { id: "new", label: "New Vehicles" },
+      { id: "used", label: "Used Vehicles" },
     ],
-    []
+    [],
   );
 
   // Filter cars based on active tab (client-side fallback) - memoized
@@ -262,7 +262,7 @@ const GetAllCarsSection = () => {
   const filteredCars = useMemo(() => {
     if (activeTab === "all") return cars;
     return cars.filter(
-      (car) => car.condition?.toLowerCase() === activeTab.toLowerCase()
+      (car) => car.condition?.toLowerCase() === activeTab.toLowerCase(),
     );
   }, [cars, activeTab]);
 
@@ -358,8 +358,8 @@ const GetAllCarsSection = () => {
           {filteredCars.length === 0 ? (
             <p className="col-span-full text-center text-gray-500 py-8">
               {activeTab === "all"
-                ? "No cars available at the moment."
-                : `No ${activeTab} cars found.`}
+                ? "No vehicles available at the moment."
+                : `No ${activeTab} vehicles found.`}
             </p>
           ) : (
             (isHomePage ? filteredCars.slice(0, 6) : filteredCars).map(
@@ -572,7 +572,7 @@ const GetAllCarsSection = () => {
                     </div>
                   </div>
                 );
-              }
+              },
             )
           )}
         </div>
@@ -586,7 +586,9 @@ const GetAllCarsSection = () => {
                 if (activeTab !== "all") {
                   params.append("condition", activeTab);
                 }
-                navigate(`/cars?${params.toString()}`);
+                navigate(
+                  `/listings${params.toString() ? "?" + params.toString() : ""}`,
+                );
               }}
               className="px-6 py-3 bg-primary-500 text-white rounded-lg hover:opacity-90 transition-colors font-medium flex items-center gap-2"
             >

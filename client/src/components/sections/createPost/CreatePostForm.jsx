@@ -711,7 +711,7 @@ const CreatePostForm = () => {
           Vehicle Type *
         </label>
         <div className="flex justify-center gap-3 flex-wrap">
-          {["Car", "Bus", "Truck", "Van", "Bike", "E-bike"].map((type) => (
+          {["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"].map((type) => (
             <button
               key={type}
               type="button"

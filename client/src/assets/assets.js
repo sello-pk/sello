@@ -20,7 +20,7 @@ import br3 from "./images/br3.svg";
 import br4 from "./images/br4.svg";
 import br5 from "./images/br5.svg";
 import br6 from "./images/br6.svg";
-import br7 from "./images/br7.svg";
+import br7 from "./images/br7.png";
 import satisficationSectionImage from "./images/satisficationSectionImage.png";
 import why1 from "./images/why1.svg";
 import why2 from "./images/why2.svg";
@@ -107,6 +107,31 @@ import wbDigitalLogo from "./images/wbDigital.svg";
 // SELLO VIDEO
 import selloVideo from "./selloVideo.gif";
 
+// Category Images
+import carCat from "./categories/carCat.svg";
+import busCat from "./categories/busCat.svg";
+import vanCat from "./categories/vanCat.svg";
+import farmCat from "./categories/farmCat.svg";
+import bikeCat from "./categories/bikeCat.svg";
+import ebikeCat from "./categories/ebikeCat.svg";
+import truckCat from "./categories/truckCat.svg";
+
+// Categories Blogs Images
+import bikeCatBlog from "./categories/catBlogs/bikeCatBlog.svg";
+import bikeCatBlog2 from "./categories/catBlogs/bikeCatBlog2.svg";
+import busCatBlog from "./categories/catBlogs/busCatBlog.svg";
+import busCatBlog2 from "./categories/catBlogs/busCatBlog2.svg";
+import carCatBlog from "./categories/catBlogs/carCatBlog.svg";
+import carCatBlog2 from "./categories/catBlogs/carCatBlog2.svg";
+import ebikeCatBlog from "./categories/catBlogs/ebikeCatBlog.svg";
+import ebikeCatBlog2 from "./categories/catBlogs/ebikeCatBlog2.svg";
+import farmCatBlog from "./categories/catBlogs/farmCatBlog.svg";
+import farmCatBlog2 from "./categories/catBlogs/farmCatBlog2.svg";
+import truckCatBlog from "./categories/catBlogs/tuckCatBlog.svg";
+import truckCatBlog2 from "./categories/catBlogs/truckCatBlog2.svg";
+import vanCatBlog from "./categories/catBlogs/vanCatBlog.svg";
+import vanCatBlog2 from "./categories/catBlogs/vanCatBlog2.svg";
+
 export const images = {
   car1,
   searchIcon,
@@ -167,7 +192,7 @@ export const menuLinks = [
     name: "Home",
   },
   {
-    path: "/cars",
+    path: "/listings",
     name: "Listings",
   },
   {
@@ -598,7 +623,7 @@ export const brandsCategory = [
   },
   {
     image: br7,
-    title: "Recently Looked Cars",
+    title: "Farm",
   },
 ];
 
@@ -1204,3 +1229,50 @@ export const reviews = [
     image: team4,
   },
 ];
+
+// Categories Image
+export const categories = {
+  carCat,
+  busCat,
+  truckCat,
+  bikeCat,
+  ebikeCat,
+  vanCat,
+  farmCat,
+};
+
+// Categories Blogs Images
+export const categoriesBlogsImages = {
+  carCatBlog,
+  carCatBlog2,
+  ebikeCatBlog,
+  ebikeCatBlog2,
+  farmCatBlog,
+  farmCatBlog2,
+  truckCatBlog,
+  truckCatBlog2,
+  vanCatBlog,
+  vanCatBlog2,
+  busCatBlog,
+  busCatBlog2,
+  bikeCatBlog,
+  bikeCatBlog2,
+};
+
+// Individual blog image exports for direct import
+export {
+  bikeCatBlog,
+  bikeCatBlog2,
+  busCatBlog,
+  busCatBlog2,
+  carCatBlog,
+  carCatBlog2,
+  ebikeCatBlog,
+  ebikeCatBlog2,
+  farmCatBlog,
+  farmCatBlog2,
+  truckCatBlog,
+  truckCatBlog2,
+  vanCatBlog,
+  vanCatBlog2,
+};

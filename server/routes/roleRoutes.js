@@ -18,7 +18,7 @@ import {
   fixCustomRoles,
 } from "../controllers/roleController.js";
 import { auth, authorize } from "../middlewares/authMiddleware.js";
-import { hasPermission } from "../middlewares/permissionMiddleware.js";
+import { hasPermission, hasAnyPermission } from "../middlewares/permissionMiddleware.js";
 
 const router = express.Router();
 
@@ -37,19 +37,31 @@ router.post("/initialize", hasPermission("createRoles"), initializeRoles);
 router.post("/fix-custom-roles", fixCustomRoles);
 
 // Role management routes - require appropriate permissions
-router.get("/", getAllRoles); // View roles - any admin
-router.get("/matrix", getPermissionMatrix); // View matrix - any admin
-router.get("/:roleId", getRoleById); // View role - any admin
-router.post("/", createRole); // Create role - admin only (already checked in controller)
-router.put("/:roleId", updateRole); // Update role - admin only (already checked in controller)
-router.delete("/:roleId", deleteRole); // Delete role - admin only (already checked in controller)
+router.get(
+  "/",
+  hasAnyPermission("manageUsers", "createRoles", "editRoles", "deleteRoles", "inviteUsers"),
+  getAllRoles
+); // View roles
+router.get(
+  "/matrix",
+  hasAnyPermission("manageUsers", "createRoles", "editRoles", "deleteRoles", "inviteUsers"),
+  getPermissionMatrix
+); // View matrix
+router.get(
+  "/:roleId",
+  hasAnyPermission("manageUsers", "createRoles", "editRoles", "deleteRoles", "inviteUsers"),
+  getRoleById
+); // View role
+router.post("/", hasPermission("createRoles"), createRole); // Create role
+router.put("/:roleId", hasPermission("editRoles"), updateRole); // Update role
+router.delete("/:roleId", hasPermission("deleteRoles"), deleteRole); // Delete role
 
 // Invite management routes - admin only
-router.post("/invite", inviteUser);
-router.get("/invites/all", getAllInvites);
-router.put("/invites/:inviteId", updateInvite); // Update invite
-router.delete("/invites/:inviteId", deleteInvite); // Delete invite
-router.post("/invites/:inviteId/resend", resendInvite); // Resend invite
-router.post("/invites/:inviteId/cancel", cancelInvite); // Cancel invite
+router.post("/invite", hasPermission("inviteUsers"), inviteUser);
+router.get("/invites/all", hasPermission("inviteUsers"), getAllInvites);
+router.put("/invites/:inviteId", hasPermission("inviteUsers"), updateInvite); // Update invite
+router.delete("/invites/:inviteId", hasPermission("inviteUsers"), deleteInvite); // Delete invite
+router.post("/invites/:inviteId/resend", hasPermission("inviteUsers"), resendInvite); // Resend invite
+router.post("/invites/:inviteId/cancel", hasPermission("inviteUsers"), cancelInvite); // Cancel invite
 
 export default router;

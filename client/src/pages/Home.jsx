@@ -1,9 +1,8 @@
-import React, { memo, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Hero from "../components/sections/home/Hero";
 import BrandsSection from "../components/sections/home/BrandsSection";
 import FeaturedCarsCarousel from "../components/sections/home/FeaturedCarsCarousel";
-import ShopBoxCar from "../components/sections/home/ShopBoxCarSection";
 import CustomerReview from "../components/sections/home/CustomerReview";
 import BlogSection from "../components/sections/home/BlogSection";
 import NewsLatter from "../components/utils/NewsLatter";
@@ -26,9 +25,9 @@ const Home = () => {
   return (
     <div className="">
       <SEO
-        title="Sello - Buy and Sell Cars in Pakistan"
-        description="Find your perfect car on Sello. Browse thousands of new and used cars from trusted sellers in Pakistan. Buy or sell your car today with confidence!"
-        keywords="buy cars Pakistan, sell cars Pakistan , used cars, new cars, car marketplace Pakistan, car dealers Pakistan"
+        title="Car for Sale in Pakistan | Buy & Sell Used Cars – Sello.pk"
+        description="Find the best car for sale in Pakistan on Sello.pk. Buy or sell used cars in Karachi, Lahore, Islamabad & beyond with verified sellers and fair pricing."
+        keywords="cars for sale, cars for sale in Pakistan"
       />
       {/* Structured Data for SEO */}
       <StructuredData.OrganizationSchema />
@@ -40,7 +39,6 @@ const Home = () => {
         <Video />
         <BannerCarousal />
         <FeaturedCarsCarousel />
-        <ShopBoxCar />
         <GetAllCarsSection />
         <CustomerReview key="customer-review" />
         <BlogSection />

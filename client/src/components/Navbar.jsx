@@ -81,7 +81,7 @@ const Navbar = () => {
       gsap.fromTo(
         drawerRef.current,
         { xPercent: 100 },
-        { xPercent: 0, duration: 0.8, ease: "bounce.out" }
+        { xPercent: 0, duration: 0.8, ease: "bounce.out" },
       );
       gsap.fromTo(
         linkRefs.current,
@@ -93,7 +93,7 @@ const Navbar = () => {
           ease: "back.out(1.7)",
           stagger: 0.1,
           delay: 0.2,
-        }
+        },
       );
     }, 10);
   };
@@ -120,7 +120,7 @@ const Navbar = () => {
     if (user.avatar) return user.avatar;
     const name = user.name || user.email || "User";
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      name.charAt(0)
+      name.charAt(0),
     )}`;
   };
 
@@ -128,7 +128,7 @@ const Navbar = () => {
     <>
       <nav
         className={`w-full px-3 sm:px-4 md:px-6 lg:px-8 py-2 flex items-center justify-between sticky top-0 z-50 ${
-          location.pathname === "/cars" ||
+          location.pathname === "/listings" ||
           location.pathname === "/users" ||
           location.pathname === "/blog"
             ? "md:bg-[#f5f5f5] md:text-gray-600"
@@ -140,7 +140,7 @@ const Navbar = () => {
           <img
             className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto"
             src={
-              location.pathname === "/cars" ||
+              location.pathname === "/listings" ||
               location.pathname === "/users" ||
               location.pathname === "/blog"
                 ? images.blackLogo
@@ -158,7 +158,7 @@ const Navbar = () => {
         {/* Desktop Links */}
         <div
           className={`hidden lg:flex items-center gap-4 xl:gap-6 text-sm lg:text-base ${
-            location.pathname === "/cars" ||
+            location.pathname === "/listings" ||
             location.pathname === "/users" ||
             location.pathname === "/blog"
               ? "text-gray-600"
@@ -184,7 +184,7 @@ const Navbar = () => {
           <button
             onClick={() => navigate("/create-post")}
             className={`hidden sm:flex gap-1 sm:gap-2 items-center text-xs sm:text-sm lg:text-base hover:opacity-80 transition-opacity ${
-              location.pathname === "/cars" ||
+              location.pathname === "/listings" ||
               location.pathname === "/users" ||
               location.pathname === "/blog"
                 ? "text-gray-600"
@@ -254,7 +254,7 @@ const Navbar = () => {
             onClick={openDrawer}
             title="Menu"
             className={`lg:hidden ${
-              location.pathname === "/cars" ||
+              location.pathname === "/listings" ||
               location.pathname === "/users" ||
               location.pathname === "/blog"
                 ? "text-gray-600"

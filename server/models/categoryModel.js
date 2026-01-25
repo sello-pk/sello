@@ -32,7 +32,7 @@ const categorySchema = new mongoose.Schema({
     // Vehicle type for car categories (makes/models/years) - links to vehicle types like Car, Bus, Truck, etc.
     vehicleType: {
         type: String,
-        enum: ["Car", "Bus", "Truck", "Van", "Bike", "E-bike", null],
+        enum: ["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm", null],
         default: null,
         index: true
     },

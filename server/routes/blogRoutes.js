@@ -62,8 +62,26 @@ router.post("/:blogId/comments", auth, createComment); // User creates comment
 router.delete("/comments/:commentId", auth, deleteComment); // User deletes own comment (or admin)
 
 // Admin Comment Routes
-router.get("/comments/all", auth, authorize("admin"), getAllComments); // Admin lists all
-router.put("/comments/:commentId/status", auth, authorize("admin"), updateCommentStatus); // Admin review
-router.delete("/comments/:commentId/admin", auth, authorize("admin"), deleteComment); // Admin delete
+router.get(
+  "/comments/all",
+  auth,
+  authorize("admin"),
+  hasPermission("moderateComments"),
+  getAllComments
+); // Admin lists all
+router.put(
+  "/comments/:commentId/status",
+  auth,
+  authorize("admin"),
+  hasPermission("moderateComments"),
+  updateCommentStatus
+); // Admin review
+router.delete(
+  "/comments/:commentId/admin",
+  auth,
+  authorize("admin"),
+  hasPermission("moderateComments"),
+  deleteComment
+); // Admin delete
 
 export default router;

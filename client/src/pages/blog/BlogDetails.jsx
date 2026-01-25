@@ -10,22 +10,29 @@ import SEO from "../../components/common/SEO";
 import Spinner from "../../components/Spinner";
 import { buildBlogUrl } from "../../utils/urlBuilders";
 import BlogCommentsSection from "../../components/sections/blogs/BlogCommentsSection";
+import { hardcodedBlogPosts } from "../../assets/blogs/blogAssets";
 
 const BlogDetails = () => {
   const { id } = useParams();
   const { data: blog, isLoading, error, isError } = useGetBlogByIdQuery(id);
+
+  // Check if this is a hardcoded blog post when backend query fails
+  const hardcodedBlog =
+    isError && error?.status === 404 ? hardcodedBlogPosts[id] : null;
 
   // Get related blogs (same category, excluding current blog)
   const { data: relatedBlogsData } = useGetBlogsQuery(
     {
       limit: 3,
       status: "published",
-      category: blog?.category?._id,
+      category: blog?.category?._id || hardcodedBlog?.category?._id,
       ...(blog?._id && { exclude: blog._id }),
     },
     {
-      skip: !blog?.category?._id || !blog?._id,
-    }
+      skip:
+        !(blog?.category?._id || hardcodedBlog?.category?._id) ||
+        !(blog?._id || hardcodedBlog?._id),
+    },
   );
 
   const relatedBlogs = React.useMemo(() => {
@@ -34,9 +41,12 @@ const BlogDetails = () => {
     const blogsArray =
       relatedBlogsData?.blogs || relatedBlogsData?.data?.blogs || [];
     return blogsArray
-      .filter((b) => b && b._id && b._id !== blog?._id)
+      .filter((b) => b && b._id && b._id !== (blog?._id || hardcodedBlog?._id))
       .slice(0, 3);
-  }, [relatedBlogsData, blog?._id]);
+  }, [relatedBlogsData, blog?._id, hardcodedBlog?._id]);
+
+  // Use either the backend blog or hardcoded blog
+  const currentBlog = blog || hardcodedBlog;
 
   // Redirect to 404 or show error
   useEffect(() => {
@@ -57,7 +67,7 @@ const BlogDetails = () => {
     );
   }
 
-  if (error || !blog) {
+  if (error && !hardcodedBlog && !currentBlog) {
     return (
       <div>
         <BlogsHeroSection />
@@ -85,23 +95,23 @@ const BlogDetails = () => {
   return (
     <div>
       <SEO
-        title={blog.metaTitle || blog.title}
+        title={currentBlog.metaTitle || currentBlog.title}
         description={
-          blog.metaDescription ||
-          blog.excerpt ||
-          blog.content?.replace(/<[^>]*>/g, "").substring(0, 160)
+          currentBlog.metaDescription ||
+          currentBlog.excerpt ||
+          currentBlog.content?.replace(/<[^>]*>/g, "").substring(0, 160)
         }
-        image={blog.featuredImage}
-        url={buildBlogUrl(blog)}
+        image={currentBlog.featuredImage}
+        url={buildBlogUrl(currentBlog)}
       />
       <BlogsHeroSection />
       <div className="max-w-4xl mx-auto px-4 md:px-6 py-8 md:py-12">
         {/* Featured Image */}
-        {blog.featuredImage && (
+        {currentBlog.featuredImage && (
           <div className="mb-8 rounded-lg overflow-hidden">
             <img
-              src={blog.featuredImage}
-              alt={blog.title}
+              src={currentBlog.featuredImage}
+              alt={currentBlog.title}
               className="w-full h-auto object-cover"
             />
           </div>
@@ -114,46 +124,48 @@ const BlogDetails = () => {
             <span>
               By{" "}
               <span className="font-semibold text-gray-900">
-                {blog.author?.name || "Admin"}
+                {currentBlog.author?.name || "Admin"}
               </span>
             </span>
             <span>|</span>
-            <span>{formatDate(blog.publishedAt || blog.createdAt)}</span>
+            <span>
+              {formatDate(currentBlog.publishedAt || currentBlog.createdAt)}
+            </span>
           </div>
 
           {/* Category and Meta Info */}
           <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-            {blog.category && (
+            {currentBlog.category && (
               <>
                 <Link
-                  to={`/blog?category=${blog.category._id}`}
+                  to={`/blog?category=${currentBlog.category._id}`}
                   className="text-primary-500 hover:underline font-medium"
                 >
-                  {blog.category.name}
+                  {currentBlog.category.name}
                 </Link>
                 <span>·</span>
               </>
             )}
-            <span>{blog.readTime || 5} min read</span>
-            {blog.views > 0 && (
+            <span>{currentBlog.readTime || 5} min read</span>
+            {currentBlog.views > 0 && (
               <>
                 <span>·</span>
-                <span>{blog.views} views</span>
+                <span>{currentBlog.views} views</span>
               </>
             )}
           </div>
 
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-8 leading-tight">
-            {blog.title}
+            {currentBlog.title}
           </h2>
         </div>
 
         {/* Blog Content */}
         <div className="blog-content-wrapper mb-8">
-          {blog.content ? (
+          {currentBlog.content ? (
             <div
               className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-headings:mt-8 prose-headings:mb-4 prose-h1:text-4xl prose-h1:font-bold prose-h1:mt-10 prose-h1:mb-6 prose-h2:text-3xl prose-h2:font-bold prose-h2:mt-8 prose-h2:mb-4 prose-h3:text-2xl prose-h3:font-bold prose-h3:mt-6 prose-h3:mb-3 prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6 prose-p:text-base prose-a:text-primary-500 prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 prose-strong:font-bold prose-img:rounded-lg prose-img:shadow-md prose-img:my-8 prose-img:w-full prose-ul:my-6 prose-ol:my-6 prose-li:my-2 prose-blockquote:border-l-4 prose-blockquote:border-primary-500 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:my-6"
-              dangerouslySetInnerHTML={{ __html: blog.content }}
+              dangerouslySetInnerHTML={{ __html: currentBlog.content }}
             />
           ) : (
             <div className="text-center py-8 text-gray-500">
@@ -311,9 +323,9 @@ const BlogDetails = () => {
         `}</style>
 
         {/* Tags */}
-        {blog.tags && blog.tags.length > 0 && (
+        {currentBlog.tags && currentBlog.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-8">
-            {blog.tags.map((tag, index) => (
+            {currentBlog.tags.map((tag, index) => (
               <span
                 key={index}
                 className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
@@ -352,7 +364,7 @@ const BlogDetails = () => {
                     </h4>
                     <p className="text-sm text-gray-500 mb-2">
                       {formatDate(
-                        relatedBlog.publishedAt || relatedBlog.createdAt
+                        relatedBlog.publishedAt || relatedBlog.createdAt,
                       )}
                     </p>
                     <p className="text-sm text-gray-600 line-clamp-2">
@@ -379,7 +391,7 @@ const BlogDetails = () => {
         </div>
 
         {/* Comments Section */}
-        {blog && <BlogCommentsSection blogId={blog._id} />}
+        {currentBlog && <BlogCommentsSection blogId={currentBlog._id} />}
       </div>
     </div>
   );

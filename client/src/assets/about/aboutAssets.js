@@ -1,12 +1,5 @@
-import hero from "./hero.png";
 import ourStoryImg from "./ourStoryImg.png";
 import selloGroupImg from "./selloGroupImg.png";
-import team from "./team.png";
-
-export const aboutImages = {
-  hero,
-  team,
-};
 
 export const ourStoryData = {
   title: "Your Trusted Car Marketplace in Pakistan",

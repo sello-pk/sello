@@ -34,14 +34,35 @@ const BrandsSection = () => {
         slug: "e-bike",
         description: "Electric bikes and scooters",
       },
+      Farm: {
+        slug: "farm",
+        description: "Farm vehicles and agricultural equipment",
+      },
     }),
-    []
+    [],
   );
 
   const handleCategoryClick = (title) => {
     const meta = categoryMeta[title];
     if (meta?.slug) {
-      navigate(`/category/${meta.slug}`);
+      // Map to correct route for each category
+      const routeMap = {
+        car: "/listings/car",
+        cars: "/listings/car",
+        bus: "/listings/bus",
+        buses: "/listings/bus",
+        truck: "/listings/truck",
+        trucks: "/listings/truck",
+        van: "/listings/van",
+        vans: "/listings/van",
+        bike: "/listings/bike",
+        bikes: "/listings/bike",
+        "e-bike": "/listings/e-bike",
+        "e-bikes": "/listings/e-bike",
+        farm: "/listings/farm",
+      };
+      const route = routeMap[meta.slug] || `/listings/${meta.slug}`;
+      navigate(route);
     }
   };
 
@@ -83,7 +104,7 @@ const BrandsSection = () => {
                 disabled={!meta?.slug}
               >
                 <img
-                  className="md:h-28 md:w-28"
+                  className={`md:h-28 md:w-28 ${isLastItem && isOddNumberOfItems ? "md:w-40 w-36" : ""}`}
                   src={brand.image}
                   alt="brand"
                   loading="lazy"

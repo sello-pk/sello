@@ -64,11 +64,21 @@ const CarCard = ({ car }) => {
 
   return (
     <div
-      className="md:px-6 md:py-8 bg-white rounded-lg shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+      className="md:px-6 md:py-6 bg-white rounded-lg cursor-pointer"
+      style={{
+        boxShadow: "none",
+        border: "none",
+      }}
       onClick={handleCardClick}
     >
-      <div className="w-full h-full border border-gray-100 rounded-bl-2xl rounded-br-2xl md:pb-8 pb-14">
-        <div className="h-48 relative">
+      <div
+        className="w-full h-full border-0 rounded-bl-2xl rounded-br-2xl md:pb-4 pb-8"
+        style={{
+          boxShadow: "none",
+          border: "none",
+        }}
+      >
+        <div className="h-64 relative">
           <LazyImage
             src={carImage}
             alt={`${carMake} ${carModel}`}
@@ -233,7 +243,9 @@ const CarCard = ({ car }) => {
 
           <div className="flex items-center justify-between mt-4">
             <div>
-              <p className="text-2xl font-bold text-primary-500">${carPrice}</p>
+              <p className="text-2xl font-bold text-primary-500">
+                PKR {carPrice}
+              </p>
             </div>
             <button
               onClick={(e) => {

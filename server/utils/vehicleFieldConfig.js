@@ -158,6 +158,26 @@ export const VEHICLE_FIELD_CONFIG = {
       "geoLocation",
     ],
   },
+  Farm: {
+    required: [
+      "title",
+      "make",
+      "model",
+      "year",
+      "condition",
+      "price",
+      "city",
+      "contactNumber",
+    ],
+    optional: [
+      "description",
+      "variant",
+      "mileage",
+      "location",
+      "fuelType",
+      "geoLocation",
+    ],
+  },
 };
 
 /**

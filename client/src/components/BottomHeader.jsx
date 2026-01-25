@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 const BottomHeader = () => {
   const location = useLocation();
 
-  if (location.pathname === "/cars") return null;
+  if (location.pathname === "/listings") return null;
   if (location.pathname === "/about") return null;
 
   return (

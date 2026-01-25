@@ -1,6 +1,7 @@
 import User from "../models/userModel.js";
 import { uploadCloudinary } from "../utils/cloudinary.js";
 import Logger from "../utils/logger.js";
+import Role from "../models/roleModel.js";
 
 /**
  * Get User Profile Controller
@@ -20,6 +21,29 @@ export const getUserProfile = async (req, res) => {
       });
     }
 
+    // Resolve effective permissions for admin users:
+    // - If roleId is set, prefer role.permissions and merge any user.permissions overrides.
+    // - This prevents UI access issues where the client relies on `user.permissions`.
+    let effectivePermissions = user.permissions || {};
+    if (user.role === "admin" && user.roleId) {
+      try {
+        const roleDoc = await Role.findById(user.roleId).select("permissions isActive");
+        if (roleDoc?.isActive) {
+          effectivePermissions = {
+            ...(roleDoc.permissions || {}),
+            ...(user.permissions || {}),
+          };
+        }
+      } catch (e) {
+        // Non-blocking: fall back to user.permissions
+        Logger.warn("Failed to resolve role permissions for user", {
+          userId: user._id,
+          roleId: user.roleId,
+          error: e?.message,
+        });
+      }
+    }
+
     return res.status(200).json({
       success: true,
       message: "User profile retrieved successfully.",
@@ -32,7 +56,7 @@ export const getUserProfile = async (req, res) => {
         role: user.role,
         adminRole: user.adminRole,
         roleId: user.roleId,
-        permissions: user.permissions || {},
+        permissions: effectivePermissions,
         status: user.status,
         verified: user.verified,
         isEmailVerified: user.isEmailVerified,

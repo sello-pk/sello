@@ -76,7 +76,7 @@ const ContactMap = () => {
       />
 
       {/* Card Overlay */}
-      <div className="absolute left-4 top-6 md:left-16 md:top-16 z-10">
+      <div className="absolute right-4 top-6 md:right-16 md:top-16 z-10">
         <ContactCard contact={contact} />
       </div>
     </section>

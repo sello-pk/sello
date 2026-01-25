@@ -40,7 +40,7 @@ const Categories = () => {
     imagePreview: null,
   });
 
-  const vehicleTypes = ["Car", "Bus", "Truck", "Van", "Bike", "E-bike"];
+  const vehicleTypes = ["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"];
 
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState("name");

@@ -33,6 +33,7 @@ const roleSchema = new mongoose.Schema(
 
       // Listings Management
       viewListings: { type: Boolean, default: false },
+      createListings: { type: Boolean, default: false },
       approveListings: { type: Boolean, default: false },
       editListings: { type: Boolean, default: false },
       deleteListings: { type: Boolean, default: false },
@@ -40,6 +41,7 @@ const roleSchema = new mongoose.Schema(
 
       // Dealers Management
       viewDealers: { type: Boolean, default: false },
+      createDealers: { type: Boolean, default: false },
       approveDealers: { type: Boolean, default: false },
       editDealers: { type: Boolean, default: false },
       deleteDealers: { type: Boolean, default: false },
@@ -73,6 +75,7 @@ const roleSchema = new mongoose.Schema(
       // Analytics & Reports
       viewAnalytics: { type: Boolean, default: false },
       viewFinancialReports: { type: Boolean, default: false },
+      createReports: { type: Boolean, default: false },
       exportReports: { type: Boolean, default: false },
 
       // Categories & Content

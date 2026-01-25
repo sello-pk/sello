@@ -124,7 +124,7 @@ export const createCar = async (req, res) => {
     };
 
     // Validate and set vehicleType first (needed for dynamic validation)
-    const validVehicleTypes = ["Car", "Bus", "Truck", "Van", "Bike", "E-bike"];
+    const validVehicleTypes = ["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"];
     const selectedVehicleType = (vehicleType || "Car").trim();
     if (!validVehicleTypes.includes(selectedVehicleType)) {
       return res.status(400).json({
@@ -568,6 +568,22 @@ export const createCar = async (req, res) => {
       }
     }
     // Don't set batteryRange/motorPower for non-E-bike vehicles
+
+    // Farm vehicle specific fields - provide defaults if not specified
+    if (selectedVehicleType === "Farm") {
+      // Farm vehicles typically use Diesel, but allow user to specify
+      if (!fuelType || fuelType.trim() === "") {
+        carData.fuelType = "Diesel"; // Default for farm equipment
+      }
+      // Transmission is optional for Farm vehicles (many tractors have manual, but allow user choice)
+      if (!transmission || transmission.trim() === "") {
+        carData.transmission = "Manual"; // Most farm vehicles are manual
+      }
+      // Don't require regionalSpec for Farm vehicles
+      if (!regionalSpec || regionalSpec.trim() === "") {
+        carData.regionalSpec = "GCC"; // Default regional spec
+      }
+    }
 
     const car = await Car.create(carData);
 
@@ -1090,18 +1106,51 @@ export const getAllCars = async (req, res) => {
     // Build initial filter
     let query = { ...baseQuery };
 
+    // Add vehicleType filter if provided (do this first before building $and queries)
+    let vehicleTypeFilter = null;
+    if (req.query.vehicleType) {
+      const validVehicleTypes = [
+        "Car",
+        "Bus",
+        "Truck",
+        "Van",
+        "Bike",
+        "E-bike",
+        "Farm",
+      ];
+      const vehicleTypes = Array.isArray(req.query.vehicleType)
+        ? req.query.vehicleType
+        : [req.query.vehicleType];
+      const validTypes = vehicleTypes.filter((vt) =>
+        validVehicleTypes.includes(vt)
+      );
+      if (validTypes.length > 0) {
+        vehicleTypeFilter = { vehicleType: { $in: validTypes } };
+      }
+    }
+
     // Apply advanced filters using buildCarQuery if search or other advanced params are present
     if (req.query.search || req.query.keyword || req.query.q) {
       try {
         const { filter: advancedFilter } = buildCarQuery(req.query);
-        // Merge advanced filter (like search) with baseQuery
+        // Merge baseQuery, advancedFilter, and vehicleTypeFilter
+        const filtersToCombine = [baseQuery, advancedFilter];
+        if (vehicleTypeFilter) {
+          filtersToCombine.push(vehicleTypeFilter);
+        }
         query = {
-          $and: [baseQuery, advancedFilter],
+          $and: filtersToCombine,
         };
       } catch (queryError) {
         Logger.warn("Invalid search in getAllCars", {
           error: queryError.message,
         });
+        // If search fails, still apply vehicleType filter
+        if (vehicleTypeFilter) {
+          query = {
+            $and: [baseQuery, vehicleTypeFilter],
+          };
+        }
       }
     } else if (req.query.condition) {
       // Add condition filter if provided (and no search)
@@ -1111,31 +1160,24 @@ export const getAllCars = async (req, res) => {
         conditionValue.charAt(0).toUpperCase() +
         conditionValue.slice(1).toLowerCase();
       if (normalizedCondition === "New" || normalizedCondition === "Used") {
+        const filtersToCombine = [...baseQuery.$and, { condition: normalizedCondition }];
+        if (vehicleTypeFilter) {
+          filtersToCombine.push(vehicleTypeFilter);
+        }
         query = {
-          $and: [...baseQuery.$and, { condition: normalizedCondition }],
+          $and: filtersToCombine,
+        };
+      } else if (vehicleTypeFilter) {
+        // Only vehicleType filter
+        query = {
+          $and: [baseQuery, vehicleTypeFilter],
         };
       }
-    }
-
-    // Add vehicleType filter if provided
-    if (req.query.vehicleType) {
-      const validVehicleTypes = [
-        "Car",
-        "Bus",
-        "Truck",
-        "Van",
-        "Bike",
-        "E-bike",
-      ];
-      const vehicleTypes = Array.isArray(req.query.vehicleType)
-        ? req.query.vehicleType
-        : [req.query.vehicleType];
-      const validTypes = vehicleTypes.filter((vt) =>
-        validVehicleTypes.includes(vt)
-      );
-      if (validTypes.length > 0) {
-        query.vehicleType = { $in: validTypes };
-      }
+    } else if (vehicleTypeFilter) {
+      // Only vehicleType filter, no search or condition
+      query = {
+        $and: [baseQuery, vehicleTypeFilter],
+      };
     }
 
     // Add vehicleTypeCategory filter if provided
@@ -1508,19 +1550,20 @@ export const getFilteredCars = async (req, res) => {
     const skip = (page - 1) * limit;
 
     // Build filter query - show approved cars (or cars without isApproved field)
-    let filter, locationFilter;
+    let filter = {};
+    let locationFilter = {};
     try {
       const queryResult = buildCarQuery(req.query);
-      filter = queryResult.filter;
-      locationFilter = queryResult.locationFilter;
+      filter = queryResult.filter || {};
+      locationFilter = queryResult.locationFilter || {};
     } catch (queryError) {
       Logger.warn("Invalid filter query parameters", {
         error: queryError.message,
         query: req.query,
       });
-      // Try a simple regex search as fallback
-      if (req.query.search) {
-        const searchTerm = req.query.search.trim();
+      // Try a simple regex search as fallback if search term exists
+      if (req.query.search || req.query.keyword || req.query.q) {
+        const searchTerm = (req.query.search || req.query.keyword || req.query.q).trim();
         if (searchTerm.length >= 2) {
           const searchRegex = new RegExp(searchTerm, "i");
           filter = {
@@ -1533,6 +1576,7 @@ export const getFilteredCars = async (req, res) => {
               { location: searchRegex },
             ],
           };
+          locationFilter = {};
         } else {
           return res.status(400).json({
             success: false,
@@ -1540,10 +1584,11 @@ export const getFilteredCars = async (req, res) => {
           });
         }
       } else {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid search parameters",
-        });
+        // If no search term but we have other filters (like vehicleType), use empty filter
+        // The vehicleType filter should have been applied by buildCarQuery before the error
+        // If buildCarQuery failed, we'll use an empty filter and let approval/visibility filters work
+        filter = {};
+        locationFilter = {};
       }
     }
 

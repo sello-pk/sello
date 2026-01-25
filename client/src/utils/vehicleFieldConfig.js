@@ -205,6 +205,32 @@ export const VEHICLE_FIELD_CONFIG = {
       mileage: { visible: true, required: false },
     },
   },
+  Farm: {
+    required: [
+      "title",
+      "make",
+      "model",
+      "year",
+      "condition",
+      "price",
+      "city",
+      "contactNumber",
+    ],
+    optional: ["description", "mileage", "location", "geoLocation", "fuelType"],
+    fields: {
+      bodyType: { visible: false, required: false },
+      cylinders: { visible: false, required: false },
+      doors: { visible: false, required: false },
+      horsepower: { visible: false, required: false },
+      engineCapacity: { visible: false, required: false },
+      batteryRange: { visible: false, required: false },
+      motorPower: { visible: false, required: false },
+      fuelType: { visible: true, required: false },
+      transmission: { visible: false, required: false },
+      regionalSpec: { visible: false, required: false },
+      mileage: { visible: true, required: false },
+    },
+  },
 };
 
 /**

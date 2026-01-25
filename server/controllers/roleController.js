@@ -700,7 +700,7 @@ export const inviteUser = async (req, res) => {
       fullName,
       phone,
       role,
-      roleId,
+      roleId: requestedRoleId,
       permissions,
       expirationDays,
       password,
@@ -821,6 +821,7 @@ export const inviteUser = async (req, res) => {
     let roleData = null;
     let rolePermissions = permissions || {};
     let finalRole = role;
+    let roleId = requestedRoleId;
 
     // If roleId is provided, fetch the role from database
     if (roleId) {

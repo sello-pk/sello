@@ -64,11 +64,11 @@ const carSchema = new mongoose.Schema(
       required: true,
       enum: ["GCC", "American", "Canadian", "European"],
     },
-    // Vehicle Type Category (Car, Bus, Truck, Van, Bike, E-bike)
+    // Vehicle Type Category (Car, Bus, Truck, Van, Bike, E-bike, Farm)
     vehicleType: {
       type: String,
       required: true,
-      enum: ["Car", "Bus", "Truck", "Van", "Bike", "E-bike"],
+      enum: ["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"],
       default: "Car",
       index: true,
     },

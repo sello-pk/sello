@@ -1,7 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useVehicleCategories } from "../../../hooks/useVehicleCategories";
-import { FaCar, FaBus, FaTruck, FaMotorcycle, FaBolt } from "react-icons/fa6";
+import {
+  FaCar,
+  FaBus,
+  FaTruck,
+  FaMotorcycle,
+  FaBolt,
+  FaTractor,
+} from "react-icons/fa6";
 import { FaShuttleVan } from "react-icons/fa";
 import BuySellCards from "../../utils/BuySellCards";
 
@@ -12,6 +19,7 @@ const categoryIcons = {
   Van: FaShuttleVan,
   Bike: FaMotorcycle,
   "E-bike": FaBolt,
+  Farm: FaTractor,
 };
 
 const fallbackDescriptions = {
@@ -26,8 +34,8 @@ const fallbackDescriptions = {
 const BrowsByTypeSection = () => {
   const { categories, isLoading } = useVehicleCategories();
 
-  // Default categories if none are loaded
-  const defaultCategories = [
+  // Fallback categories if backend returns empty
+  const fallbackCategories = [
     {
       name: "Car",
       slug: "car",
@@ -58,10 +66,35 @@ const BrowsByTypeSection = () => {
       slug: "e-bike",
       description: "Electric bikes and scooters",
     },
+    {
+      name: "Farm",
+      slug: "farm",
+      description: "Farm vehicles and agricultural equipment",
+    },
   ];
 
   const displayCategories =
-    categories.length > 0 ? categories : defaultCategories;
+    categories.length > 0 ? categories : fallbackCategories;
+
+  // Map category slugs to correct routes
+  const getCategoryRoute = (slug) => {
+    const routeMap = {
+      car: "/listings/car",
+      cars: "/listings/car",
+      bus: "/listings/bus",
+      buses: "/listings/bus",
+      truck: "/listings/truck",
+      trucks: "/listings/truck",
+      van: "/listings/van",
+      vans: "/listings/van",
+      bike: "/listings/bike",
+      bikes: "/listings/bike",
+      "e-bike": "/listings/e-bike",
+      "e-bikes": "/listings/e-bike",
+      farm: "/listings/farm",
+    };
+    return routeMap[slug] || `/listings/${slug}`;
+  };
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-gray-50 to-white py-12 px-3 sm:px-4 md:px-6 lg:px-8">
@@ -76,7 +109,7 @@ const BrowsByTypeSection = () => {
       </div>
 
       {/* Categories Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 max-w-7xl mx-auto">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4 md:gap-6 max-w-full mx-auto">
         {displayCategories.map((category) => {
           const description =
             category.description || fallbackDescriptions[category.name];
@@ -84,7 +117,7 @@ const BrowsByTypeSection = () => {
           return (
             <Link
               key={category._id || category.slug}
-              to={`/category/${category.slug}`}
+              to={getCategoryRoute(category.slug)}
               className="group relative bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden border border-gray-100 hover:border-primary-200"
             >
               {/* Card Content */}

@@ -23,6 +23,14 @@ import Home from "./pages/Home.jsx";
 import Login from "./pages/auth/Login.jsx";
 import Signup from "./pages/auth/SignUp.jsx";
 import CarListings from "./pages/listings/CarListings.jsx";
+import CategoryListings from "./pages/listings/CategoryListings.jsx";
+import CarCategoryPage from "./pages/listings/CarCategoryPage.jsx";
+import BusCategoryPage from "./pages/listings/BusCategoryPage.jsx";
+import TruckCategoryPage from "./pages/listings/TruckCategoryPage.jsx";
+import VanCategoryPage from "./pages/listings/VanCategoryPage.jsx";
+import BikeCategoryPage from "./pages/listings/BikeCategoryPage.jsx";
+import EBikeCategoryPage from "./pages/listings/EBikeCategoryPage.jsx";
+import FarmCategoryPage from "./pages/listings/FarmCategoryPage.jsx";
 import Blog from "./pages/blog/Blog.jsx";
 import AllBlog from "./pages/blog/AllBlog.jsx";
 import BlogDetails from "./pages/blog/BlogDetails.jsx";
@@ -35,11 +43,11 @@ const ResetSuccess = lazy(() => import("./pages/auth/ResetSuccess.jsx"));
 const AcceptInvite = lazy(() => import("./pages/auth/AcceptInvite.jsx"));
 
 // Lazy load public pages
-const OurPrivacyPolicy = lazy(() =>
-  import("./pages/ourPages/OurPrivacyPolicy.jsx")
+const OurPrivacyPolicy = lazy(
+  () => import("./pages/ourPages/OurPrivacyPolicy.jsx"),
 );
-const TermsCondition = lazy(() =>
-  import("./pages/ourPages/TermsCondition.jsx")
+const TermsCondition = lazy(
+  () => import("./pages/ourPages/TermsCondition.jsx"),
 );
 import CarDetails from "./pages/listings/CarDetails.jsx";
 const About = lazy(() => import("./pages/about/About.jsx"));
@@ -52,18 +60,18 @@ const CategoryPage = lazy(() => import("./pages/categories/CategoryPage.jsx"));
 // Lazy load protected pages
 const CreatePost = lazy(() => import("./pages/posts/CreatePost.jsx"));
 const EditCar = lazy(() => import("./pages/posts/EditCar.jsx"));
-const UserListingPage = lazy(() =>
-  import("./pages/userListings/UserListingPage.jsx")
+const UserListingPage = lazy(
+  () => import("./pages/userListings/UserListingPage.jsx"),
 );
 const ProfilePage = lazy(() => import("./pages/profile/ProfilePage.jsx"));
 const SavedCars = lazy(() => import("./pages/SavedCars.jsx"));
 const MyChats = lazy(() => import("./pages/chats/MyChats.jsx"));
 const SellerChats = lazy(() => import("./pages/seller/SellerChats.jsx"));
-const DealerDashboard = lazy(() =>
-  import("./pages/dashboards/DealerDashboard.jsx")
+const DealerDashboard = lazy(
+  () => import("./pages/dashboards/DealerDashboard.jsx"),
 );
-const SellerDashboard = lazy(() =>
-  import("./pages/dashboards/SellerDashboard.jsx")
+const SellerDashboard = lazy(
+  () => import("./pages/dashboards/SellerDashboard.jsx"),
 );
 
 // Lazy load help pages
@@ -91,8 +99,8 @@ const Developers = lazy(() => import("./pages/help/Developers.jsx"));
 const HelpSearch = lazy(() => import("./pages/help/HelpSearch.jsx"));
 
 // Lazy load payment pages
-const SubscriptionSuccess = lazy(() =>
-  import("./pages/payments/SubscriptionSuccess.jsx")
+const SubscriptionSuccess = lazy(
+  () => import("./pages/payments/SubscriptionSuccess.jsx"),
 );
 
 // Admin Pages
@@ -104,37 +112,37 @@ const AdminDealers = lazy(() => import("./pages/admin/Dealers.jsx"));
 const AdminCategories = lazy(() => import("./pages/admin/Categories.jsx"));
 const BlogEdit = lazy(() => import("./pages/admin/BlogEdit.jsx"));
 const AdminReports = lazy(() => import("./pages/admin/Reports.jsx"));
-const AdminChatMonitoring = lazy(() =>
-  import("./pages/admin/ChatMonitoring.jsx")
+const AdminChatMonitoring = lazy(
+  () => import("./pages/admin/ChatMonitoring.jsx"),
 );
 const AdminChatbot = lazy(() => import("./pages/admin/Chatbot.jsx"));
 const AdminPromotions = lazy(() => import("./pages/admin/Promotions.jsx"));
 const AdminPayments = lazy(() => import("./pages/admin/Payments.jsx"));
-const AdminNotifications = lazy(() =>
-  import("./pages/admin/Notifications.jsx")
+const AdminNotifications = lazy(
+  () => import("./pages/admin/Notifications.jsx"),
 );
 const SupportChat = lazy(() => import("./pages/admin/SupportChat.jsx"));
 const SupportChatbot = lazy(() => import("./pages/admin/SupportChatbot.jsx"));
-const CustomerRequests = lazy(() =>
-  import("./pages/admin/CustomerRequests.jsx")
+const CustomerRequests = lazy(
+  () => import("./pages/admin/CustomerRequests.jsx"),
 );
 const Banners = lazy(() => import("./pages/admin/Banners.jsx"));
 const Testimonials = lazy(() => import("./pages/admin/Testimonials.jsx"));
 const Settings = lazy(() => import("./pages/admin/Settings.jsx"));
 const ActivityLog = lazy(() => import("./pages/admin/ActivityLog.jsx"));
-const AccountDeletionRequests = lazy(() =>
-  import("./pages/admin/AccountDeletionRequests.jsx")
+const AccountDeletionRequests = lazy(
+  () => import("./pages/admin/AccountDeletionRequests.jsx"),
 );
 
 // New Blog Management Pages - Lazy loaded
 const BlogsOverview = lazy(() => import("./pages/admin/BlogsOverview.jsx"));
 const BlogCategories = lazy(() => import("./pages/admin/BlogCategories.jsx"));
-const BlogCreateEnhanced = lazy(() =>
-  import("./pages/admin/BlogCreateEnhanced.jsx")
+const BlogCreateEnhanced = lazy(
+  () => import("./pages/admin/BlogCreateEnhanced.jsx"),
 );
 const BlogComments = lazy(() => import("./pages/admin/BlogComments.jsx"));
-const BlogMediaLibrary = lazy(() =>
-  import("./pages/admin/BlogMediaLibrary.jsx")
+const BlogMediaLibrary = lazy(
+  () => import("./pages/admin/BlogMediaLibrary.jsx"),
 );
 
 // Protected Routes
@@ -220,7 +228,6 @@ const SupportRouteRedirect = () => {
 
 const App = () => {
   const location = useLocation();
-  const prevLocationRef = useRef(location.pathname);
 
   const hideNavbarFooter = [
     "/login",
@@ -254,9 +261,36 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
 
-        {/* Car Listings - Use direct import, no Suspense needed */}
-        <Route path="/cars" element={<CarListings />} />
-        {/* Car Details - Use direct import, no Suspense needed */}
+        {/* Category Page - Legacy route support */}
+        <Route
+          path="/category/:slug"
+          element={
+            <Suspense fallback={<RouteLoader />}>
+              <CategoryPage />
+            </Suspense>
+          }
+        />
+        {/* Vehicle Listings - Use direct import, no Suspense needed */}
+        <Route path="/listings" element={<CarListings />} />
+        {/* Specific Category Pages - Custom pages for each category */}
+        <Route path="/listings/car" element={<CarCategoryPage />} />
+        <Route path="/listings/cars" element={<CarCategoryPage />} />
+        <Route path="/listings/bus" element={<BusCategoryPage />} />
+        <Route path="/listings/buses" element={<BusCategoryPage />} />
+        <Route path="/listings/truck" element={<TruckCategoryPage />} />
+        <Route path="/listings/trucks" element={<TruckCategoryPage />} />
+        <Route path="/listings/van" element={<VanCategoryPage />} />
+        <Route path="/listings/vans" element={<VanCategoryPage />} />
+        <Route path="/listings/bike" element={<BikeCategoryPage />} />
+        <Route path="/listings/bikes" element={<BikeCategoryPage />} />
+        <Route path="/listings/e-bike" element={<EBikeCategoryPage />} />
+        <Route path="/listings/e-bikes" element={<EBikeCategoryPage />} />
+        <Route path="/listings/farm" element={<FarmCategoryPage />} />
+        {/* Fallback Category Listings - Use direct import, no Suspense needed */}
+        <Route path="/listings/:category" element={<CategoryListings />} />
+        {/* Vehicle Details - Use direct import, no Suspense needed */}
+        <Route path="/listings/:id" element={<CarDetails />} />
+        {/* Car Details - Alternative route for /cars/:id URLs */}
         <Route path="/cars/:id" element={<CarDetails />} />
 
         {/* Auth */}
@@ -317,14 +351,6 @@ const App = () => {
           element={
             <Suspense fallback={<RouteLoader />}>
               <TermsCondition />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/category/:slug"
-          element={
-            <Suspense fallback={<RouteLoader />}>
-              <CategoryPage />
             </Suspense>
           }
         />

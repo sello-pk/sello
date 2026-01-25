@@ -94,7 +94,7 @@ export const buildCarQuery = (query) => {
 
   // Vehicle Type filtering
   if (query.vehicleType) {
-    const validVehicleTypes = ["Car", "Bus", "Truck", "Van", "Bike", "E-bike"];
+    const validVehicleTypes = ["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"];
     const vehicleTypes = parseArray(query.vehicleType);
     if (vehicleTypes.length > 0) {
       const validTypes = vehicleTypes.filter((vt) =>

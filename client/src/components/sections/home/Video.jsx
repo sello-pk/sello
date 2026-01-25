@@ -5,12 +5,12 @@ import { images } from "../../../assets/assets";
 const Video = () => {
   return (
     <div className="bg-gray-100 w-full py-8 md:py-16">
-      <div className="px-3 sm:px-4 md:px-6 lg:px-8 mx-auto flex flex-col sm:flex-col md:flex-col lg:flex-row gap-10">
-        <div className="video lg:w-1/2 md:w-full border-2 border-primary/70 rounded overflow-hidden">
+      <div className="px-3 sm:px-4 md:px-6 lg:px-8 mx-auto flex items-center flex-col sm:flex-col md:flex-col lg:flex-row gap-10">
+        <div className="video bg-red-500 lg:w-1/2 md:w-full border-2 border-primary/70 rounded overflow-hidden">
           <img
             src={images.selloVideo}
-            alt="Sello Video"
-            className="w-full h-auto rounded"
+            alt="Sello"
+            className="w-full h-full rounded"
           />
         </div>
         <div className="content">

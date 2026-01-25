@@ -25,7 +25,7 @@ const OutStorySection = () => {
           }
         });
       },
-      { threshold: 0.2 }
+      { threshold: 0.2 },
     );
 
     if (storyRef.current) observer.observe(storyRef.current);
@@ -101,7 +101,7 @@ const OutStorySection = () => {
         </div>
 
         {/* Image */}
-        <div className="w-full md:w-[40%] border-2 border-primary-500 rounded-tr-[40px] rounded-bl-[40px] ">
+        <div className="w-full md:w-[40%] shadow-sm shadow-gray-300 border-2 overflow-hidden border-primary-500 rounded-xl ">
           <img
             src={ourStoryData.img}
             className="h-full w-full object-cover"
@@ -160,7 +160,7 @@ const OutStorySection = () => {
         </div>
 
         {/* Image */}
-        <div className="w-full md:w-[40%] border-2 border-primary-500 rounded-br-[40px] ">
+        <div className="w-full md:w-[40%] shadow-sm shadow-gray-300 border-2 overflow-hidden border-primary-500 rounded-xl ">
           <img
             src={selloGroupData.img}
             className="h-full w-full object-cover"

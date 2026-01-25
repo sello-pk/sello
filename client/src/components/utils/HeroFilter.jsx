@@ -9,7 +9,7 @@ const HeroFilter = () => {
   const navigate = useNavigate();
 
   // Vehicle type options - same as CreatePostForm
-  const vehicleTypeOptions = ["Car", "Bus", "Truck", "Van", "Bike", "E-bike"];
+  const vehicleTypeOptions = ["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"];
 
   // Vehicle type state
   const [vehicleType, setVehicleType] = useState("");
@@ -78,14 +78,14 @@ const HeroFilter = () => {
     const transmission = engineStr.toLowerCase().includes("manual")
       ? "Manual"
       : engineStr.toLowerCase().includes("auto")
-      ? "Automatic"
-      : null;
+        ? "Automatic"
+        : null;
 
     const fuelType = engineStr.toLowerCase().includes("electric")
       ? "Electric"
       : engineStr.toLowerCase().includes("hybrid")
-      ? "Hybrid"
-      : null;
+        ? "Hybrid"
+        : null;
 
     return { transmission, fuelType };
   };
@@ -178,7 +178,8 @@ const HeroFilter = () => {
   useEffect(() => {
     if (searchError) {
       toast.error(
-        searchError?.data?.message || "Failed to search cars. Please try again."
+        searchError?.data?.message ||
+          "Failed to search cars. Please try again.",
       );
     }
   }, [searchError]);
@@ -267,7 +268,7 @@ const HeroFilter = () => {
           {/* Header Section */}
           <div className="bg-[#050B20] px-6 py-2 border-b border-[#050B20]">
             <h2 className="text-xl font-bold text-white">
-              Find the Best Cars for Sale in Pakistan
+              Find the Best Vehicles for Sale in Pakistan
             </h2>
           </div>
 
@@ -313,8 +314,8 @@ const HeroFilter = () => {
                     categoriesLoading
                       ? "Loading..."
                       : yearOptions.length === 0
-                      ? "No years available"
-                      : ""
+                        ? "No years available"
+                        : ""
                   }
                 />
 
@@ -333,8 +334,8 @@ const HeroFilter = () => {
                     categoriesLoading
                       ? "Loading..."
                       : makeOptions.length === 0
-                      ? "No makes available"
-                      : ""
+                        ? "No makes available"
+                        : ""
                   }
                 />
 
@@ -349,8 +350,8 @@ const HeroFilter = () => {
                     categoriesLoading
                       ? "Loading..."
                       : modelOptions.length === 0
-                      ? "No models available"
-                      : ""
+                        ? "No models available"
+                        : ""
                   }
                 />
 
@@ -437,7 +438,7 @@ const HeroFilter = () => {
                     Searching...
                   </>
                 ) : (
-                  "Search Car"
+                  "Search Vehicle"
                 )}
               </button>
             </div>

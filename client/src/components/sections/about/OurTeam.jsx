@@ -78,7 +78,7 @@ const OurTeam = () => {
 
   return (
     <div className="py-16 lg:py-28 px-3 sm:px-4 md:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-full mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
           <div className="inline-block mb-6">
@@ -100,7 +100,7 @@ const OurTeam = () => {
         </div>
 
         {/* Team Members Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {teamMembers.map((member) => (
             <div
               key={member.id}

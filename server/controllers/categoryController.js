@@ -70,6 +70,7 @@ export const createCategory = async (req, res) => {
         "Van",
         "Bike",
         "E-bike",
+        "Farm",
       ];
       if (!vehicleType || !validVehicleTypes.includes(vehicleType)) {
         return res.status(400).json({

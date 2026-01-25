@@ -1,6 +1,10 @@
 import React, { useRef, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCarCategories } from "../hooks/useCarCategories";
+import {
+  MdOutlineKeyboardArrowLeft,
+  MdOutlineKeyboardArrowRight,
+} from "react-icons/md";
 
 const BrandMarquee = ({ brands: propBrands = [] }) => {
   const sliderRef = useRef(null);
@@ -85,27 +89,29 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
 
   return (
     <div className="w-full py-6 backdrop-blur-sm">
-      <div
-        className="relative rounded-xl px-10 py-4 overflow-hidden"
-      >
+      <div className="relative rounded-xl px-10 py-4 overflow-hidden">
         {/* Slider buttons */}
         {brands.length > 1 && (
           <>
             <button
               type="button"
               onClick={() => scroll("left")}
-              className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-white shadow-lg hover:bg-gray-100 transition-all hover:scale-110"
+              className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-white shadow-lg hover:bg-primary-500 hover:text-black transition-all hover:scale-110"
               aria-label="Previous brands"
             >
-              <span className="text-xl font-bold text-gray-700">&#8249;</span>
+              <span className="text-xl font-bold text-gray-700">
+                <MdOutlineKeyboardArrowLeft />
+              </span>
             </button>
             <button
               type="button"
               onClick={() => scroll("right")}
-              className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-white shadow-lg hover:bg-gray-100 transition-all hover:scale-110"
+              className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-white shadow-lg hover:bg-primary-500 hover:text-black transition-all hover:scale-110"
               aria-label="Next brands"
             >
-              <span className="text-xl font-bold text-gray-700">&#8250;</span>
+              <span className="text-xl font-bold text-gray-700">
+                <MdOutlineKeyboardArrowRight />
+              </span>
             </button>
           </>
         )}

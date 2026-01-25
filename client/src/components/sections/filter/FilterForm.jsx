@@ -33,7 +33,15 @@ const getVehicleLabel = (vehicleType, fieldType) => {
 
 const FilterForm = ({ onFilter }) => {
   // Vehicle type options - same as CreatePostForm and HeroFilter
-  const vehicleTypeOptions = ["Car", "Bus", "Truck", "Van", "Bike", "E-bike"];
+  const vehicleTypeOptions = [
+    "Car",
+    "Bus",
+    "Truck",
+    "Van",
+    "Bike",
+    "E-bike",
+    "Farm",
+  ];
   const [availableModels, setAvailableModels] = useState([]);
   const [availableStates, setAvailableStates] = useState([]);
   const [availableCities, setAvailableCities] = useState([]);
@@ -266,7 +274,7 @@ const FilterForm = ({ onFilter }) => {
   useEffect(() => {
     if (filters.country && countries.length > 0 && getStatesByCountry) {
       const selectedCountryObj = countries.find(
-        (c) => c.name === filters.country
+        (c) => c.name === filters.country,
       );
       if (selectedCountryObj) {
         const countryStates = getStatesByCountry[selectedCountryObj._id] || [];
@@ -284,13 +292,13 @@ const FilterForm = ({ onFilter }) => {
   useEffect(() => {
     if (filters.country && countries.length > 0) {
       const selectedCountryObj = countries.find(
-        (c) => c.name === filters.country
+        (c) => c.name === filters.country,
       );
       if (selectedCountryObj) {
         // If state is selected, filter cities by state, otherwise by country
         if (filters.state && getCitiesByState) {
           const selectedStateObj = availableStates.find(
-            (s) => s.name === filters.state
+            (s) => s.name === filters.state,
           );
           if (selectedStateObj && getCitiesByState[selectedStateObj._id]) {
             const stateCities = getCitiesByState[selectedStateObj._id] || [];
@@ -300,7 +308,7 @@ const FilterForm = ({ onFilter }) => {
             const countryCities =
               getCitiesByCountry[selectedCountryObj._id] || [];
             setAvailableCities(
-              countryCities.length > 0 ? countryCities : cities
+              countryCities.length > 0 ? countryCities : cities,
             );
           }
         } else {
@@ -451,7 +459,7 @@ const FilterForm = ({ onFilter }) => {
       Number(filters.minHorsePower) > Number(filters.maxHorsePower)
     ) {
       toast.error(
-        "Minimum horsepower cannot be greater than maximum horsepower"
+        "Minimum horsepower cannot be greater than maximum horsepower",
       );
       return false;
     }
@@ -461,7 +469,7 @@ const FilterForm = ({ onFilter }) => {
       Number(filters.minEngineCapacity) > Number(filters.maxEngineCapacity)
     ) {
       toast.error(
-        "Minimum engine capacity cannot be greater than maximum engine capacity"
+        "Minimum engine capacity cannot be greater than maximum engine capacity",
       );
       return false;
     }
@@ -707,8 +715,8 @@ const FilterForm = ({ onFilter }) => {
               {categoriesLoading
                 ? "Loading..."
                 : availableModels.length === 0
-                ? "No models available"
-                : "All Models"}
+                  ? "No models available"
+                  : "All Models"}
             </option>
             {availableModels.map((model) => (
               <option key={model._id} value={model.name}>
@@ -727,7 +735,9 @@ const FilterForm = ({ onFilter }) => {
                 inputType="number"
                 value={filters.minYear}
                 onChange={(e) => handleChange("minYear", e.target.value)}
-                placeholder="Min"
+                placeholder="1950"
+                min="1950"
+                max={new Date().getFullYear()}
               />
             </div>
             <div className="w-full sm:w-1/2">
@@ -736,30 +746,16 @@ const FilterForm = ({ onFilter }) => {
                 inputType="number"
                 value={filters.maxYear}
                 onChange={(e) => handleChange("maxYear", e.target.value)}
-                placeholder="Max"
+                placeholder={new Date().getFullYear().toString()}
+                min="1950"
+                max={new Date().getFullYear()}
               />
             </div>
           </div>
           <RangeFilter
             type="year"
-            min={
-              years && years.length > 0
-                ? Math.min(
-                    ...years
-                      .map((y) => parseInt(y.name) || 1990)
-                      .filter((y) => !isNaN(y))
-                  )
-                : 1990
-            }
-            max={
-              years && years.length > 0
-                ? Math.max(
-                    ...years
-                      .map((y) => parseInt(y.name) || new Date().getFullYear())
-                      .filter((y) => !isNaN(y))
-                  )
-                : new Date().getFullYear()
-            }
+            min={1950}
+            max={new Date().getFullYear()}
             onChange={(values) => handleRangeChange("year", values)}
           />
         </div>
@@ -1136,8 +1132,8 @@ const FilterForm = ({ onFilter }) => {
               {categoriesLoading
                 ? "Loading..."
                 : availableCities.length === 0
-                ? "No cities available"
-                : "All Cities"}
+                  ? "No cities available"
+                  : "All Cities"}
             </option>
             {availableCities.map((city) => (
               <option key={city._id} value={city.name}>

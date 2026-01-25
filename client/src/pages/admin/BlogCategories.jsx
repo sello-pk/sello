@@ -20,7 +20,9 @@ const BlogCategories = () => {
     const [formData, setFormData] = useState({
         name: "",
         slug: "",
-        description: ""
+        description: "",
+        image: null,
+        imagePreview: null,
     });
 
     const { data, isLoading, refetch } = useGetAllCategoriesQuery({ type: "blog" });
@@ -43,7 +45,9 @@ const BlogCategories = () => {
         setFormData({
             name: "",
             slug: "",
-            description: ""
+            description: "",
+            image: null,
+            imagePreview: null,
         });
         setShowModal(true);
     };
@@ -53,7 +57,9 @@ const BlogCategories = () => {
         setFormData({
             name: category.name || "",
             slug: category.slug || "",
-            description: category.description || ""
+            description: category.description || "",
+            image: null,
+            imagePreview: category.image || null,
         });
         setShowModal(true);
     };
@@ -87,6 +93,16 @@ const BlogCategories = () => {
             submitData.append("slug", formData.slug);
             submitData.append("description", formData.description);
             submitData.append("type", "blog");
+            if (formData.image) {
+                submitData.append("image", formData.image);
+            } else if (
+                formData.imagePreview &&
+                typeof formData.imagePreview === "string" &&
+                formData.imagePreview.startsWith("http")
+            ) {
+                // Preserve existing image when updating without selecting a new file
+                submitData.append("image", formData.imagePreview);
+            }
             
             if (editingCategory) {
                 await updateCategory({ 
@@ -104,11 +120,24 @@ const BlogCategories = () => {
             setFormData({
                 name: "",
                 slug: "",
-                description: ""
+                description: "",
+                image: null,
+                imagePreview: null,
             });
             refetch();
         } catch (error) {
             toast.error(error?.data?.message || "Failed to save category");
+        }
+    };
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setFormData((prev) => ({
+                ...prev,
+                image: file,
+                imagePreview: URL.createObjectURL(file),
+            }));
         }
     };
 
@@ -138,6 +167,7 @@ const BlogCategories = () => {
                             <tr className="bg-gray-50 border-b border-gray-200">
                                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Name</th>
                                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Slug</th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Image</th>
                                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Posts</th>
                                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Order</th>
                                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Action</th>
@@ -164,6 +194,19 @@ const BlogCategories = () => {
                                         </td>
                                         <td className="px-6 py-4 text-gray-500">
                                             {category.slug}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            {category.image ? (
+                                                <img
+                                                    src={category.image}
+                                                    alt={category.name}
+                                                    className="w-12 h-12 object-cover rounded"
+                                                />
+                                            ) : (
+                                                <span className="text-xs text-gray-400">
+                                                    No image
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 text-gray-600">
                                             0
@@ -243,6 +286,55 @@ const BlogCategories = () => {
                                     rows="3"
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                                 />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Category Image
+                                </label>
+                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                                    {formData.imagePreview ? (
+                                        <div className="space-y-2">
+                                            <img
+                                                src={formData.imagePreview}
+                                                alt="Preview"
+                                                className="w-24 h-24 object-cover mx-auto rounded"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setFormData((prev) => ({
+                                                        ...prev,
+                                                        image: null,
+                                                        imagePreview: null,
+                                                    }))
+                                                }
+                                                className="text-sm text-red-600 hover:text-red-800"
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            <p className="text-sm text-gray-600 mb-2">
+                                                Upload an image to represent this category.
+                                            </p>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleImageChange}
+                                                className="hidden"
+                                                id="blog-category-image-upload"
+                                            />
+                                            <label
+                                                htmlFor="blog-category-image-upload"
+                                                className="cursor-pointer inline-block px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90 text-sm"
+                                            >
+                                                Choose File
+                                            </label>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                             
                             <div className="flex justify-end gap-3 pt-4">

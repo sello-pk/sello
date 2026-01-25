@@ -1,7 +1,25 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { useRequestDealerMutation, useGetMeQuery } from "../../redux/services/api";
+import {
+  useRequestDealerMutation,
+  useGetMeQuery,
+} from "../../redux/services/api";
 import toast from "react-hot-toast";
-import { FiX, FiCheckCircle, FiAlertCircle, FiBriefcase, FiFileText, FiMapPin, FiPhone, FiUpload, FiChevronDown, FiGlobe, FiCalendar, FiUsers, FiTag, FiMessageCircle } from "react-icons/fi";
+import {
+  FiX,
+  FiCheckCircle,
+  FiAlertCircle,
+  FiBriefcase,
+  FiFileText,
+  FiMapPin,
+  FiPhone,
+  FiUpload,
+  FiChevronDown,
+  FiGlobe,
+  FiCalendar,
+  FiUsers,
+  FiTag,
+  FiMessageCircle,
+} from "react-icons/fi";
 import { FaPlus, FaTimes } from "react-icons/fa";
 import Spinner from "../Spinner";
 import { useCarCategories } from "../../hooks/useCarCategories";
@@ -9,7 +27,7 @@ import { useCarCategories } from "../../hooks/useCarCategories";
 const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 3;
-  
+
   const [formData, setFormData] = useState({
     // Step 1: Basic Information
     businessName: "",
@@ -22,7 +40,7 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
     city: "",
     area: "",
     vehicleTypes: "",
-    
+
     // Step 2: Business Details
     description: "",
     website: "",
@@ -37,20 +55,27 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
     twitter: "",
     linkedin: "",
   });
-  
+
   const [businessLicenseFile, setBusinessLicenseFile] = useState(null);
   const [errors, setErrors] = useState({});
   const [specialtyInput, setSpecialtyInput] = useState("");
   const [languageInput, setLanguageInput] = useState("");
   const [paymentMethodInput, setPaymentMethodInput] = useState("");
   const [serviceInput, setServiceInput] = useState("");
-  
+
   const [requestDealer, { isLoading }] = useRequestDealerMutation();
   const { data: user, refetch } = useGetMeQuery();
-  
+
   // Fetch categories from admin
-  const { countries, states, cities, getStatesByCountry, getCitiesByState, isLoading: categoriesLoading } = useCarCategories();
-  
+  const {
+    countries,
+    states,
+    cities,
+    getStatesByCountry,
+    getCitiesByState,
+    isLoading: categoriesLoading,
+  } = useCarCategories();
+
   // Filter states by selected country
   const availableStates = useMemo(() => {
     if (!formData.country) return [];
@@ -68,28 +93,56 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
   // Reset state when country changes
   useEffect(() => {
     if (formData.country) {
-      setFormData(prev => ({ ...prev, state: "", city: "" }));
+      setFormData((prev) => ({ ...prev, state: "", city: "" }));
     }
   }, [formData.country]);
 
   // Reset city when state changes
   useEffect(() => {
     if (formData.state) {
-      setFormData(prev => ({ ...prev, city: "" }));
+      setFormData((prev) => ({ ...prev, city: "" }));
     }
   }, [formData.state]);
 
   const employeeCountOptions = ["1-10", "11-50", "51-100", "100+"];
-  const commonSpecialties = ["Luxury Cars", "Budget Cars", "Electric Vehicles", "SUVs", "Sports Cars", "Classic Cars", "Commercial Vehicles"];
-  const commonLanguages = ["English", "Arabic", "Urdu", "Hindi", "French", "Spanish"];
-  const commonPaymentMethods = ["Cash", "Credit Card", "Bank Transfer", "Cheque", "Financing Available"];
-  const commonServices = ["Financing", "Trade-in", "Warranty", "Insurance", "Delivery", "Test Drive"];
+  const commonSpecialties = [
+    "Luxury Cars",
+    "Budget Cars",
+    "Electric Vehicles",
+    "SUVs",
+    "Sports Cars",
+    "Classic Cars",
+    "Commercial Vehicles",
+  ];
+  const commonLanguages = [
+    "English",
+    "Arabic",
+    "Urdu",
+    "Hindi",
+    "French",
+    "Spanish",
+  ];
+  const commonPaymentMethods = [
+    "Cash",
+    "Credit Card",
+    "Bank Transfer",
+    "Cheque",
+    "Financing Available",
+  ];
+  const commonServices = [
+    "Financing",
+    "Trade-in",
+    "Warranty",
+    "Insurance",
+    "Delivery",
+    "Test Drive",
+  ];
 
   const addToArray = (field, input, setInput) => {
     if (input.trim() && !formData[field].includes(input.trim())) {
       setFormData((prev) => ({
         ...prev,
-        [field]: [...prev[field], input.trim()]
+        [field]: [...prev[field], input.trim()],
       }));
       setInput("");
     }
@@ -98,13 +151,13 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
   const removeFromArray = (field, item) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: prev[field].filter((i) => i !== item)
+      [field]: prev[field].filter((i) => i !== item),
     }));
   };
 
   const validateStep1 = () => {
     const newErrors = {};
-    
+
     if (!formData.businessName.trim()) {
       newErrors.businessName = "Business name is required";
     } else if (formData.businessName.trim().length < 3) {
@@ -155,11 +208,16 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
     const file = e.target.files[0];
     if (file) {
       // Validate file type
-      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+      const allowedTypes = [
+        "application/pdf",
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+      ];
       if (!allowedTypes.includes(file.type)) {
         setErrors((prev) => ({
           ...prev,
-          businessLicenseFile: "Please upload a PDF, JPG, or PNG file"
+          businessLicenseFile: "Please upload a PDF, JPG, or PNG file",
         }));
         return;
       }
@@ -167,7 +225,7 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
       if (file.size > 5 * 1024 * 1024) {
         setErrors((prev) => ({
           ...prev,
-          businessLicenseFile: "File size must be less than 5MB"
+          businessLicenseFile: "File size must be less than 5MB",
         }));
         return;
       }
@@ -178,12 +236,32 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
     }
   };
 
+  const getFirstErrorMessage = (errors) => {
+    const errorFields = Object.keys(errors);
+    if (errorFields.length === 0) return null;
+
+    // Get the first error message
+    const firstField = errorFields[0];
+    const firstError = errors[firstField];
+
+    // If there are multiple errors, provide helpful context
+    if (errorFields.length > 1) {
+      const errorCount = errorFields.length - 1;
+      return `${firstError} (${errorCount} more field${errorCount > 1 ? "s" : ""} need attention)`;
+    }
+
+    return firstError;
+  };
+
   const handleNext = () => {
     if (currentStep === 1) {
       if (validateStep1()) {
         setCurrentStep(2);
       } else {
-        toast.error("Please fix the errors in the form");
+        const firstError = getFirstErrorMessage(errors);
+        toast.error(
+          firstError || "Please complete all required fields to continue",
+        );
       }
     } else if (currentStep === 2) {
       setCurrentStep(3);
@@ -198,14 +276,17 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (currentStep < totalSteps) {
       handleNext();
       return;
     }
 
     if (!validateStep1()) {
-      toast.error("Please fix the errors in the form");
+      const firstError = getFirstErrorMessage(errors);
+      toast.error(
+        firstError || "Please complete all required fields to continue",
+      );
       return;
     }
 
@@ -214,35 +295,57 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
       const formDataToSend = new FormData();
       formDataToSend.append("businessName", formData.businessName.trim());
       if (formData.businessLicense.trim()) {
-        formDataToSend.append("businessLicense", formData.businessLicense.trim());
+        formDataToSend.append(
+          "businessLicense",
+          formData.businessLicense.trim(),
+        );
       }
       formDataToSend.append("businessAddress", formData.businessAddress.trim());
       formDataToSend.append("businessPhone", formData.businessPhone.trim());
-      
+
       if (formData.whatsappNumber) {
         formDataToSend.append("whatsappNumber", formData.whatsappNumber.trim());
       }
-      
+
       // Location fields
       if (formData.country) formDataToSend.append("country", formData.country);
       if (formData.state) formDataToSend.append("state", formData.state);
       if (formData.city) formDataToSend.append("city", formData.city);
       if (formData.area) formDataToSend.append("area", formData.area.trim());
-      if (formData.vehicleTypes) formDataToSend.append("vehicleTypes", formData.vehicleTypes.trim());
-      
+      if (formData.vehicleTypes)
+        formDataToSend.append("vehicleTypes", formData.vehicleTypes.trim());
+
       // Enhanced business details
-      if (formData.description) formDataToSend.append("description", formData.description.trim());
-      if (formData.website) formDataToSend.append("website", formData.website.trim());
-      if (formData.establishedYear) formDataToSend.append("establishedYear", formData.establishedYear);
-      if (formData.employeeCount) formDataToSend.append("employeeCount", formData.employeeCount);
-      if (formData.specialties.length > 0) formDataToSend.append("specialties", JSON.stringify(formData.specialties));
-      if (formData.languages.length > 0) formDataToSend.append("languages", JSON.stringify(formData.languages));
-      if (formData.paymentMethods.length > 0) formDataToSend.append("paymentMethods", JSON.stringify(formData.paymentMethods));
-      if (formData.services.length > 0) formDataToSend.append("services", JSON.stringify(formData.services));
-      if (formData.facebook) formDataToSend.append("facebook", formData.facebook.trim());
-      if (formData.instagram) formDataToSend.append("instagram", formData.instagram.trim());
-      if (formData.twitter) formDataToSend.append("twitter", formData.twitter.trim());
-      if (formData.linkedin) formDataToSend.append("linkedin", formData.linkedin.trim());
+      if (formData.description)
+        formDataToSend.append("description", formData.description.trim());
+      if (formData.website)
+        formDataToSend.append("website", formData.website.trim());
+      if (formData.establishedYear)
+        formDataToSend.append("establishedYear", formData.establishedYear);
+      if (formData.employeeCount)
+        formDataToSend.append("employeeCount", formData.employeeCount);
+      if (formData.specialties.length > 0)
+        formDataToSend.append(
+          "specialties",
+          JSON.stringify(formData.specialties),
+        );
+      if (formData.languages.length > 0)
+        formDataToSend.append("languages", JSON.stringify(formData.languages));
+      if (formData.paymentMethods.length > 0)
+        formDataToSend.append(
+          "paymentMethods",
+          JSON.stringify(formData.paymentMethods),
+        );
+      if (formData.services.length > 0)
+        formDataToSend.append("services", JSON.stringify(formData.services));
+      if (formData.facebook)
+        formDataToSend.append("facebook", formData.facebook.trim());
+      if (formData.instagram)
+        formDataToSend.append("instagram", formData.instagram.trim());
+      if (formData.twitter)
+        formDataToSend.append("twitter", formData.twitter.trim());
+      if (formData.linkedin)
+        formDataToSend.append("linkedin", formData.linkedin.trim());
 
       // Append file if provided
       if (businessLicenseFile) {
@@ -252,10 +355,10 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
       // Use the API mutation - it should handle FormData
       const result = await requestDealer(formDataToSend).unwrap();
 
-      const message = result?.dealerInfo?.verified 
+      const message = result?.dealerInfo?.verified
         ? "Dealer account created and verified successfully!"
         : "Dealer request submitted successfully! Pending admin verification.";
-      
+
       toast.success(message);
       setFormData({
         businessName: "",
@@ -288,7 +391,10 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
       if (onSuccess) onSuccess();
       onClose();
     } catch (error) {
-      toast.error(error?.data?.message || "Failed to submit dealer request. Please try again.");
+      toast.error(
+        error?.data?.message ||
+          "Failed to submit dealer request. Please try again.",
+      );
     }
   };
 
@@ -299,9 +405,14 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
-    
+
     // Validate URL fields (social media and website)
-    if (['website', 'facebook', 'instagram', 'twitter', 'linkedin'].includes(name) && value) {
+    if (
+      ["website", "facebook", "instagram", "twitter", "linkedin"].includes(
+        name,
+      ) &&
+      value
+    ) {
       // Allow partial URLs - will be fixed on backend
     }
   };
@@ -326,21 +437,25 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
               <FiX size={24} />
             </button>
           </div>
-          
+
           <div className="p-6">
             {isVerifiedDealer ? (
               <div className="text-center">
                 <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
                   <FiCheckCircle className="text-green-600" size={32} />
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">Verified Dealer</h4>
+                <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                  Verified Dealer
+                </h4>
                 <p className="text-gray-600 mb-4">
                   Your dealer account has been verified by our admin team.
                 </p>
                 {user?.dealerInfo?.businessName && (
                   <div className="bg-gray-50 rounded-lg p-4 text-left">
                     <p className="text-sm text-gray-600 mb-1">Business Name</p>
-                    <p className="font-medium text-gray-900">{user.dealerInfo.businessName}</p>
+                    <p className="font-medium text-gray-900">
+                      {user.dealerInfo.businessName}
+                    </p>
                   </div>
                 )}
               </div>
@@ -349,19 +464,24 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                 <div className="mx-auto w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
                   <FiAlertCircle className="text-yellow-600" size={32} />
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">Pending Verification</h4>
+                <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                  Pending Verification
+                </h4>
                 <p className="text-gray-600 mb-4">
-                  Your dealer request is pending admin verification. You will be notified once your account is verified.
+                  Your dealer request is pending admin verification. You will be
+                  notified once your account is verified.
                 </p>
                 {user?.dealerInfo?.businessName && (
                   <div className="bg-gray-50 rounded-lg p-4 text-left">
                     <p className="text-sm text-gray-600 mb-1">Business Name</p>
-                    <p className="font-medium text-gray-900">{user.dealerInfo.businessName}</p>
+                    <p className="font-medium text-gray-900">
+                      {user.dealerInfo.businessName}
+                    </p>
                   </div>
                 )}
               </div>
             )}
-            
+
             <button
               onClick={onClose}
               className="w-full mt-6 px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90 transition-colors font-medium"
@@ -380,9 +500,12 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
         {/* Header */}
         <div className="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
           <div>
-            <h3 className="text-2xl font-bold text-white">Become a Verified Dealer</h3>
+            <h3 className="text-2xl font-bold text-white">
+              Become a Verified Dealer
+            </h3>
             <p className="text-primary-100 text-sm mt-1">
-              Step {currentStep} of {totalSteps} - Get verified and unlock dealer benefits
+              Step {currentStep} of {totalSteps} - Get verified and unlock
+              dealer benefits
             </p>
           </div>
           <button
@@ -398,17 +521,21 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
           <div className="flex items-center justify-between mb-2">
             {[1, 2, 3].map((step) => (
               <div key={step} className="flex items-center flex-1">
-                <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
-                  currentStep >= step 
-                    ? "bg-primary-500 border-primary-500 text-white" 
-                    : "bg-white border-gray-300 text-gray-400"
-                }`}>
+                <div
+                  className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
+                    currentStep >= step
+                      ? "bg-primary-500 border-primary-500 text-white"
+                      : "bg-white border-gray-300 text-gray-400"
+                  }`}
+                >
                   {step}
                 </div>
                 {step < 3 && (
-                  <div className={`flex-1 h-1 mx-2 ${
-                    currentStep > step ? "bg-primary-500" : "bg-gray-300"
-                  }`} />
+                  <div
+                    className={`flex-1 h-1 mx-2 ${
+                      currentStep > step ? "bg-primary-500" : "bg-gray-300"
+                    }`}
+                  />
                 )}
               </div>
             ))}
@@ -421,12 +548,17 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
         </div>
 
         {/* Body */}
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(100vh-300px)]">
+        <form
+          onSubmit={handleSubmit}
+          className="p-6 overflow-y-auto max-h-[calc(100vh-300px)]"
+        >
           {/* Step 1: Basic Information */}
           {currentStep === 1 && (
             <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Basic Information</h3>
-              
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                Basic Information
+              </h3>
+
               {/* Business Name */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -444,7 +576,9 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                   }`}
                 />
                 {errors.businessName && (
-                  <p className="text-red-500 text-xs mt-1">{errors.businessName}</p>
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.businessName}
+                  </p>
                 )}
               </div>
 
@@ -462,13 +596,19 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                     onChange={handleChange}
                     placeholder="Enter your business license number"
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all ${
-                      errors.businessLicense ? "border-red-500" : "border-gray-300"
+                      errors.businessLicense
+                        ? "border-red-500"
+                        : "border-gray-300"
                     }`}
                   />
                   {errors.businessLicense && (
-                    <p className="text-red-500 text-xs mt-1">{errors.businessLicense}</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.businessLicense}
+                    </p>
                   )}
-                  <div className="text-center text-gray-500 text-sm font-medium">OR</div>
+                  <div className="text-center text-gray-500 text-sm font-medium">
+                    OR
+                  </div>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-primary-500 transition-colors">
                     <input
                       type="file"
@@ -483,7 +623,9 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                     >
                       <FiUpload className="text-gray-400 mb-2" size={24} />
                       <span className="text-sm text-gray-600">
-                        {businessLicenseFile ? businessLicenseFile.name : "Click to upload license file"}
+                        {businessLicenseFile
+                          ? businessLicenseFile.name
+                          : "Click to upload license file"}
                       </span>
                       <span className="text-xs text-gray-500 mt-1">
                         PDF, JPG, PNG (Max 5MB)
@@ -492,7 +634,9 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                   </div>
                   {businessLicenseFile && (
                     <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg p-2">
-                      <span className="text-sm text-green-800">{businessLicenseFile.name}</span>
+                      <span className="text-sm text-green-800">
+                        {businessLicenseFile.name}
+                      </span>
                       <button
                         type="button"
                         onClick={() => setBusinessLicenseFile(null)}
@@ -503,11 +647,14 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                     </div>
                   )}
                   {errors.businessLicenseFile && (
-                    <p className="text-red-500 text-xs mt-1">{errors.businessLicenseFile}</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.businessLicenseFile}
+                    </p>
                   )}
                 </div>
                 <p className="text-gray-500 text-xs mt-2">
-                  Provide either license number or upload license document (will be verified by admin team)
+                  Provide either license number or upload license document (will
+                  be verified by admin team)
                 </p>
               </div>
 
@@ -524,11 +671,15 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                   placeholder="Enter your complete business address"
                   rows={3}
                   className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all resize-none ${
-                    errors.businessAddress ? "border-red-500" : "border-gray-300"
+                    errors.businessAddress
+                      ? "border-red-500"
+                      : "border-gray-300"
                   }`}
                 />
                 {errors.businessAddress && (
-                  <p className="text-red-500 text-xs mt-1">{errors.businessAddress}</p>
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.businessAddress}
+                  </p>
                 )}
               </div>
 
@@ -546,11 +697,15 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                     onChange={handleChange}
                     placeholder="+971 XX XXX XXXX"
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all ${
-                      errors.businessPhone ? "border-red-500" : "border-gray-300"
+                      errors.businessPhone
+                        ? "border-red-500"
+                        : "border-gray-300"
                     }`}
                   />
                   {errors.businessPhone && (
-                    <p className="text-red-500 text-xs mt-1">{errors.businessPhone}</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.businessPhone}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -587,7 +742,9 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                       disabled={categoriesLoading}
                     >
                       <option value="">
-                        {categoriesLoading ? "Loading countries..." : "Select Country"}
+                        {categoriesLoading
+                          ? "Loading countries..."
+                          : "Select Country"}
                       </option>
                       {countries.map((country) => (
                         <option key={country._id} value={country._id}>
@@ -598,7 +755,9 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                     <FiChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
                   </div>
                   {errors.country && (
-                    <p className="text-red-500 text-xs mt-1">{errors.country}</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.country}
+                    </p>
                   )}
                 </div>
 
@@ -617,7 +776,11 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                       disabled={!formData.country || categoriesLoading}
                     >
                       <option value="">
-                        {!formData.country ? "Select country first" : availableStates.length === 0 ? "No states available" : "Select State"}
+                        {!formData.country
+                          ? "Select country first"
+                          : availableStates.length === 0
+                            ? "No states available"
+                            : "Select State"}
                       </option>
                       {availableStates.map((state) => (
                         <option key={state._id} value={state._id}>
@@ -647,7 +810,11 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                       disabled={!formData.state || categoriesLoading}
                     >
                       <option value="">
-                        {!formData.state ? "Select state first" : availableCities.length === 0 ? "No cities available" : "Select City"}
+                        {!formData.state
+                          ? "Select state first"
+                          : availableCities.length === 0
+                            ? "No cities available"
+                            : "Select City"}
                       </option>
                       {availableCities.map((city) => (
                         <option key={city._id} value={city._id}>
@@ -702,7 +869,9 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                     Separate multiple types with commas
                   </p>
                   {errors.vehicleTypes && (
-                    <p className="text-red-500 text-xs mt-1">{errors.vehicleTypes}</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.vehicleTypes}
+                    </p>
                   )}
                 </div>
               </div>
@@ -712,8 +881,10 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
           {/* Step 2: Business Details */}
           {currentStep === 2 && (
             <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Business Details</h3>
-              
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                Business Details
+              </h3>
+
               {/* Description */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -801,7 +972,9 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                       {specialty}
                       <button
                         type="button"
-                        onClick={() => removeFromArray("specialties", specialty)}
+                        onClick={() =>
+                          removeFromArray("specialties", specialty)
+                        }
                         className="hover:text-primary-900"
                       >
                         <FaTimes size={12} />
@@ -817,7 +990,11 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                     onKeyPress={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
-                        addToArray("specialties", specialtyInput, setSpecialtyInput);
+                        addToArray(
+                          "specialties",
+                          specialtyInput,
+                          setSpecialtyInput,
+                        );
                       }
                     }}
                     className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
@@ -825,7 +1002,13 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                   />
                   <button
                     type="button"
-                    onClick={() => addToArray("specialties", specialtyInput, setSpecialtyInput)}
+                    onClick={() =>
+                      addToArray(
+                        "specialties",
+                        specialtyInput,
+                        setSpecialtyInput,
+                      )
+                    }
                     className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90"
                   >
                     <FaPlus />
@@ -840,7 +1023,7 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                         if (!formData.specialties.includes(specialty)) {
                           setFormData((prev) => ({
                             ...prev,
-                            specialties: [...prev.specialties, specialty]
+                            specialties: [...prev.specialties, specialty],
                           }));
                         }
                       }}
@@ -882,7 +1065,11 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                     onKeyPress={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
-                        addToArray("languages", languageInput, setLanguageInput);
+                        addToArray(
+                          "languages",
+                          languageInput,
+                          setLanguageInput,
+                        );
                       }
                     }}
                     className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
@@ -890,7 +1077,9 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                   />
                   <button
                     type="button"
-                    onClick={() => addToArray("languages", languageInput, setLanguageInput)}
+                    onClick={() =>
+                      addToArray("languages", languageInput, setLanguageInput)
+                    }
                     className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90"
                   >
                     <FaPlus />
@@ -905,7 +1094,7 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                         if (!formData.languages.includes(language)) {
                           setFormData((prev) => ({
                             ...prev,
-                            languages: [...prev.languages, language]
+                            languages: [...prev.languages, language],
                           }));
                         }
                       }}
@@ -931,7 +1120,9 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                       {method}
                       <button
                         type="button"
-                        onClick={() => removeFromArray("paymentMethods", method)}
+                        onClick={() =>
+                          removeFromArray("paymentMethods", method)
+                        }
                         className="hover:text-green-600"
                       >
                         <FaTimes size={12} />
@@ -948,7 +1139,7 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                         if (!formData.paymentMethods.includes(method)) {
                           setFormData((prev) => ({
                             ...prev,
-                            paymentMethods: [...prev.paymentMethods, method]
+                            paymentMethods: [...prev.paymentMethods, method],
                           }));
                         }
                       }}
@@ -991,7 +1182,7 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                         if (!formData.services.includes(service)) {
                           setFormData((prev) => ({
                             ...prev,
-                            services: [...prev.services, service]
+                            services: [...prev.services, service],
                           }));
                         }
                       }}
@@ -1067,39 +1258,56 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
           {/* Step 3: Review & Submit */}
           {currentStep === 3 && (
             <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Review Your Information</h3>
-              
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                Review Your Information
+              </h3>
+
               <div className="bg-gray-50 rounded-lg p-6 space-y-4">
                 <div>
-                  <h4 className="font-semibold text-gray-800 mb-2">Basic Information</h4>
+                  <h4 className="font-semibold text-gray-800 mb-2">
+                    Basic Information
+                  </h4>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <span className="text-gray-600">Business Name:</span>
-                      <p className="font-medium">{formData.businessName || "N/A"}</p>
+                      <p className="font-medium">
+                        {formData.businessName || "N/A"}
+                      </p>
                     </div>
                     <div>
                       <span className="text-gray-600">Phone:</span>
-                      <p className="font-medium">{formData.businessPhone || "N/A"}</p>
+                      <p className="font-medium">
+                        {formData.businessPhone || "N/A"}
+                      </p>
                     </div>
                     <div>
                       <span className="text-gray-600">Location:</span>
                       <p className="font-medium">
                         {formData.area || "N/A"}
-                        {formData.city && `, ${cities.find(c => c._id === formData.city)?.name || formData.city}`}
-                        {formData.state && `, ${states.find(s => s._id === formData.state)?.name || formData.state}`}
-                        {formData.country && `, ${countries.find(c => c._id === formData.country)?.name || formData.country}`}
+                        {formData.city &&
+                          `, ${cities.find((c) => c._id === formData.city)?.name || formData.city}`}
+                        {formData.state &&
+                          `, ${states.find((s) => s._id === formData.state)?.name || formData.state}`}
+                        {formData.country &&
+                          `, ${countries.find((c) => c._id === formData.country)?.name || formData.country}`}
                       </p>
                     </div>
                     <div>
                       <span className="text-gray-600">Vehicle Types:</span>
-                      <p className="font-medium">{formData.vehicleTypes || "N/A"}</p>
+                      <p className="font-medium">
+                        {formData.vehicleTypes || "N/A"}
+                      </p>
                     </div>
                   </div>
                 </div>
 
-                {(formData.description || formData.website || formData.specialties.length > 0) && (
+                {(formData.description ||
+                  formData.website ||
+                  formData.specialties.length > 0) && (
                   <div>
-                    <h4 className="font-semibold text-gray-800 mb-2">Business Details</h4>
+                    <h4 className="font-semibold text-gray-800 mb-2">
+                      Business Details
+                    </h4>
                     <div className="text-sm space-y-2">
                       {formData.description && (
                         <div>
@@ -1116,7 +1324,9 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                       {formData.specialties.length > 0 && (
                         <div>
                           <span className="text-gray-600">Specialties:</span>
-                          <p className="font-medium">{formData.specialties.join(", ")}</p>
+                          <p className="font-medium">
+                            {formData.specialties.join(", ")}
+                          </p>
                         </div>
                       )}
                     </div>
@@ -1126,7 +1336,9 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
 
               {/* Info Box */}
               <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
-                <h4 className="text-sm font-semibold text-primary-900 mb-2">What happens next?</h4>
+                <h4 className="text-sm font-semibold text-primary-900 mb-2">
+                  What happens next?
+                </h4>
                 <ul className="text-xs text-primary-800 space-y-1">
                   <li>• Your request will be reviewed by our admin team</li>
                   <li>• Verification typically takes 1-3 business days</li>
