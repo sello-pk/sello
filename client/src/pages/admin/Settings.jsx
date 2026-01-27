@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import AdminLayout from "../../components/admin/AdminLayout";
-import GeneralSettingsTab from "../../components/admin/settings/GeneralSettingsTab";
-import UserRolesTab from "../../components/admin/settings/UserRolesTab";
+import AdminLayout from "../../components/features/admin/AdminLayout";
+import GeneralSettingsTab from "../../components/features/admin/settings/GeneralSettingsTab";
+import UserRolesTab from "../../components/features/admin/settings/UserRolesTab";
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState("general"); // 'general' or 'roles'

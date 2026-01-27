@@ -42,7 +42,7 @@ app.use(
         ],
       },
     },
-  })
+  }),
 );
 
 /* -------------------------------- COMPRESSION -------------------------------- */
@@ -74,7 +74,7 @@ app.use(
       "email",
     ],
     optionsSuccessStatus: 200,
-  })
+  }),
 );
 
 app.options("*", cors());
@@ -100,7 +100,7 @@ app.use(
     "title",
     "description",
     "content",
-  ])
+  ]),
 );
 
 /* ---------------------- MAINTENANCE MODE ---------------------- */
@@ -129,9 +129,11 @@ import priceRoutes from "./routes/priceRoutes.js";
 import accountDeletionRoutes from "./routes/accountDeletionRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
 import promotionRoutes from "./routes/promotionsRoutes.js";
+import analyticsRoutes from "./routes/analyticsRoutes.js";
 import verificationRoutes from "./routes/verificationRoutes.js";
 import mapsRoutes from "./routes/mapsRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import vehicleAttributeRoutes from "./routes/vehicleAttributeRoutes.js";
 
 // API Routes
 app.use("/api/auth", authRoutes);
@@ -156,9 +158,11 @@ app.use("/api/pricing", priceRoutes);
 app.use("/api/account-deletion", accountDeletionRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/promotions", promotionRoutes);
+app.use("/api/analytics", analyticsRoutes);
 app.use("/api/verification", verificationRoutes);
 app.use("/api/maps", mapsRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/vehicle-attributes", vehicleAttributeRoutes);
 
 /* ---------------------- HEALTH CHECK ---------------------- */
 app.get("/api/health", (req, res) => {

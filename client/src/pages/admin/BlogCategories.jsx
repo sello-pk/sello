@@ -5,12 +5,12 @@ import {
     useUpdateCategoryMutation,
     useDeleteCategoryMutation,
 } from "../../redux/services/adminApi";
-import AdminLayout from "../../components/admin/AdminLayout";
-import Spinner from "../../components/Spinner";
+import AdminLayout from "../../components/features/admin/AdminLayout";
+import { Spinner } from "../../components/ui/Loading";
 import toast from "react-hot-toast";
 import { FiPlus, FiEdit, FiTrash2, FiX, FiBook } from "react-icons/fi";
-import ConfirmationModal from "../../components/admin/ConfirmationModal";
-import ActionDropdown from "../../components/admin/ActionDropdown";
+import ConfirmationModal from "../../components/features/admin/ConfirmationModal";
+import ActionDropdown from "../../components/features/admin/ActionDropdown";
 
 const BlogCategories = () => {
     const [showModal, setShowModal] = useState(false);

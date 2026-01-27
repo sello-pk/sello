@@ -14,6 +14,8 @@ import {
   verifyDealer,
   getListingHistory,
   getAuditLogsController,
+  getAnalyticsSummary,
+  trackAnalyticsEvent,
 } from "../controllers/adminController.js";
 import {
   getAllPayments,
@@ -53,18 +55,18 @@ router.get("/listings", hasPermission("viewListings"), getAllCars);
 router.put(
   "/listings/:carId/approve",
   hasPermission("approveListings"),
-  approveCar
+  approveCar,
 );
 router.put(
   "/listings/:carId/feature",
   hasPermission("featureListings"),
-  featureCar
+  featureCar,
 );
 router.delete("/listings/:carId", hasPermission("deleteListings"), deleteCar);
 router.get(
   "/listings/history",
   hasPermission("viewListings"),
-  getListingHistory
+  getListingHistory,
 );
 
 // Dealer Management - require viewDealers permission
@@ -72,7 +74,7 @@ router.get("/dealers", hasPermission("viewDealers"), getAllDealers);
 router.put(
   "/dealers/:userId/verify",
   hasPermission("approveDealers"),
-  verifyDealer
+  verifyDealer,
 );
 
 // Customer Management - require manageUsers permission
@@ -83,21 +85,25 @@ router.get("/payments", hasPermission("viewFinancialReports"), getAllPayments);
 router.get(
   "/subscriptions",
   hasPermission("viewFinancialReports"),
-  getAllSubscriptions
+  getAllSubscriptions,
 );
 router.put(
   "/subscriptions/:userId",
   hasPermission("viewFinancialReports"),
-  adminUpdateSubscription
+  adminUpdateSubscription,
 );
 router.delete(
   "/subscriptions/:userId",
   hasPermission("viewFinancialReports"),
-  adminCancelSubscription
+  adminCancelSubscription,
 );
 
 // Audit Logs - require manageUsers permission
 router.get("/audit-logs", hasPermission("manageUsers"), getAuditLogsController);
+
+// Analytics Routes (merged from analyticsRoutes.js)
+router.get("/analytics/summary", auth, authorize("admin"), getAnalyticsSummary);
+router.post("/analytics/track", auth, trackAnalyticsEvent);
 
 // Chat Management - require manageUsers permission
 router.get("/support-chats", hasPermission("manageUsers"), getAllSupportChats);
@@ -123,27 +129,27 @@ router.get("/support-chats-debug", auth, async (req, res) => {
 router.get(
   "/support-chats/:chatId/messages",
   hasPermission("manageUsers"),
-  getSupportChatMessagesAdmin
+  getSupportChatMessagesAdmin,
 );
 router.post(
   "/support-chats/:chatId/admin-response",
   hasPermission("manageUsers"),
-  sendAdminResponse
+  sendAdminResponse,
 );
 router.put(
   "/support-chats/:chatId/status",
   hasPermission("manageUsers"),
-  updateSupportChatStatus
+  updateSupportChatStatus,
 );
 router.delete(
   "/support-chats/:chatId",
   hasPermission("manageUsers"),
-  deleteSupportChat
+  deleteSupportChat,
 );
 router.post(
   "/start-chat/:userId",
   hasPermission("manageUsers"),
-  createAdminChatWithUser
+  createAdminChatWithUser,
 );
 
 // Settings Management - require manageSettings permission
@@ -158,7 +164,7 @@ router.post(
       const scriptPath = path.join(
         process.cwd(),
         "scripts",
-        "resetSubscriptionSettings.js"
+        "resetSubscriptionSettings.js",
       );
 
       exec(`node "${scriptPath}"`, (error, stdout, stderr) => {
@@ -187,7 +193,7 @@ router.post(
         message: "Server error resetting settings",
       });
     }
-  }
+  },
 );
 
 export default router;

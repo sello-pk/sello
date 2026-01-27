@@ -4,11 +4,11 @@ import {
   useCreateBlogMutation,
   useGetAllCategoriesQuery,
 } from "../../redux/services/adminApi";
-import AdminLayout from "../../components/admin/AdminLayout";
-import Spinner from "../../components/Spinner";
+import AdminLayout from "../../components/features/admin/AdminLayout";
+import { Spinner } from "../../components/ui/Loading";
 import toast from "react-hot-toast";
 import { FiSave, FiSend, FiArrowLeft } from "react-icons/fi";
-import TiptapEditor from "../../components/admin/TiptapEditor";
+import TiptapEditor from "../../components/features/admin/TiptapEditor";
 
 const BlogCreateEnhanced = () => {
   const navigate = useNavigate();

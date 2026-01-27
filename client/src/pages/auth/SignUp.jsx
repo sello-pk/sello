@@ -10,7 +10,7 @@ import {
   useRegisterUserMutation,
   useGoogleLoginMutation,
 } from "../../redux/services/api";
-import Spinner from "../../components/Spinner";
+import { Spinner } from "../../components/ui/Loading";
 import DealerSignup from "./DealerSignup";
 import { setAccessToken } from "../../utils/tokenRefresh.js";
 

@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-01-25T10:35:51.961Z",
+  "duplicateGroups": [
+    {
+      "hash": "8205e32b4e53a05da2684a00c31bbfc9",
+      "files": [
+        "blackLogo.svg",
+        "blackLogo.svg"
+      ],
+      "count": 2
+    },
+    {
+      "hash": "fed7ec82f63bbe21c2b0bfbeaa8254c1",
+      "files": [
+        "blogImg3.jpg",
+        "blogImg6.jpg"
+      ],
+      "count": 2
+    },
+    {
+      "hash": "a723c9302b7a698760fd680e47d532f1",
+      "files": [
+        "logo.svg",
+        "logo.svg"
+      ],
+      "count": 2
+    }
+  ]
+}

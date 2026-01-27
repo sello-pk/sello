@@ -1,17 +1,17 @@
 import { useState, useMemo } from "react";
-import AdminLayout from "../../components/admin/AdminLayout";
+import AdminLayout from "../../components/features/admin/AdminLayout";
 import {
     useGetAllTestimonialsQuery,
     useCreateTestimonialMutation,
     useUpdateTestimonialMutation,
     useDeleteTestimonialMutation,
 } from "../../redux/services/adminApi";
-import Spinner from "../../components/Spinner";
-import Pagination from "../../components/admin/Pagination";
+import { Spinner } from "../../components/ui/Loading";
+import Pagination from "../../components/features/admin/Pagination";
 import toast from "react-hot-toast";
 import { FiPlus, FiEdit, FiTrash2, FiX, FiStar, FiUser } from "react-icons/fi";
-import ConfirmModal from "../../components/admin/ConfirmModal";
-import ActionDropdown from "../../components/admin/ActionDropdown";
+import ConfirmModal from "../../components/features/admin/ConfirmModal";
+import ActionDropdown from "../../components/features/admin/ActionDropdown";
 
 const Testimonials = () => {
     const [showModal, setShowModal] = useState(false);

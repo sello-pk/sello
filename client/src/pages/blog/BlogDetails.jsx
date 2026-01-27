@@ -4,12 +4,12 @@ import {
   useGetBlogByIdQuery,
   useGetBlogsQuery,
 } from "../../redux/services/api";
-import { formatDate } from "../../utils/format";
-import BlogsHeroSection from "../../components/sections/blogs/BlogsHeroSection";
+import { formatDate } from "../../utils";
+import BlogsHeroSection from "../../components/features/blog/BlogsHeroSection";
 import SEO from "../../components/common/SEO";
-import Spinner from "../../components/Spinner";
+import { Spinner } from "../../components/ui/Loading";
 import { buildBlogUrl } from "../../utils/urlBuilders";
-import BlogCommentsSection from "../../components/sections/blogs/BlogCommentsSection";
+import BlogCommentsSection from "../../components/features/blog/BlogCommentsSection";
 import { hardcodedBlogPosts } from "../../assets/blogs/blogAssets";
 
 const BlogDetails = () => {

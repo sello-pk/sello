@@ -1,9 +1,12 @@
-import express from 'express';
-import { getVehicleTypes, getFieldsForType } from '../controllers/vehicleAttributeController.js';
+import express from "express";
+import {
+  getVehicleTypes,
+  getFieldsForType,
+} from "../controllers/categoryController.js";
 
 const router = express.Router();
 
-router.get('/types', getVehicleTypes);
-router.get('/types/:id/fields', getFieldsForType);
+router.get("/types", getVehicleTypes);
+router.get("/types/:id/fields", getFieldsForType);
 
 export default router;

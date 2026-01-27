@@ -1,7 +1,7 @@
 import { useState } from "react";
-import AdminLayout from "../../components/admin/AdminLayout";
+import AdminLayout from "../../components/features/admin/AdminLayout";
 import { useGetAnalyticsQuery } from "../../redux/services/adminApi";
-import Spinner from "../../components/Spinner";
+import { Spinner } from "../../components/ui/Loading";
 import { FiDownload, FiDollarSign, FiZap, FiEye, FiTrendingUp } from "react-icons/fi";
 import { HiCurrencyRupee } from "react-icons/hi";
 import jsPDF from "jspdf";

@@ -4,9 +4,9 @@ import {
   useGetAllCategoriesQuery,
   useDeleteBlogMutation,
 } from "../../redux/services/adminApi";
-import AdminLayout from "../../components/admin/AdminLayout";
-import Spinner from "../../components/Spinner";
-import Pagination from "../../components/admin/Pagination";
+import AdminLayout from "../../components/features/admin/AdminLayout";
+import { Spinner } from "../../components/ui/Loading";
+import Pagination from "../../components/features/admin/Pagination";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -25,8 +25,8 @@ import {
   FiSearch,
   FiX,
 } from "react-icons/fi";
-import ConfirmationModal from "../../components/admin/ConfirmationModal";
-import ActionDropdown from "../../components/admin/ActionDropdown";
+import ConfirmationModal from "../../components/features/admin/ConfirmationModal";
+import ActionDropdown from "../../components/features/admin/ActionDropdown";
 
 const BlogsOverview = () => {
   const navigate = useNavigate();

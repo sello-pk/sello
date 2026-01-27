@@ -312,3 +312,14 @@ export const getFieldLabel = (fieldName) => {
   };
   return labels[fieldName] || fieldName;
 };
+
+// Default export for backward compatibility
+export default {
+  VEHICLE_FIELD_CONFIG,
+  getRequiredFields,
+  getOptionalFields,
+  isFieldVisible,
+  isFieldRequired,
+  getVisibleFields,
+  getFieldLabel,
+};

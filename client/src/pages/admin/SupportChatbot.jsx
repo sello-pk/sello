@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import AdminLayout from "../../components/admin/AdminLayout";
+import AdminLayout from "../../components/features/admin/AdminLayout";
 import { io } from "socket.io-client";
 import {
     useGetAllSupportChatsQuery,
@@ -12,7 +12,7 @@ import {
     useUseQuickReplyMutation
 } from "../../redux/services/adminApi";
 import { useGetMeQuery } from "../../redux/services/api";
-import Spinner from "../../components/Spinner";
+import { Spinner } from "../../components/ui/Loading";
 import toast from "react-hot-toast";
 import { 
     FiSend, 

@@ -17,7 +17,7 @@ import {
   useDeleteCarChatMessageMutation,
   useGetMeQuery,
 } from "../../redux/services/api";
-import Spinner from "../../components/Spinner";
+import { Spinner } from "../../components/ui/Loading";
 import toast from "react-hot-toast";
 import { useSocket } from "../../contexts/SocketContext";
 
@@ -206,7 +206,7 @@ const SellerChats = () => {
   const buyer =
     selectedChatData?.buyer ||
     selectedChatData?.participants?.find(
-      (p) => p._id.toString() !== currentUser?._id?.toString()
+      (p) => p._id.toString() !== currentUser?._id?.toString(),
     );
 
   const getUnreadCount = (chat) => {
@@ -269,7 +269,8 @@ const SellerChats = () => {
                     const chatBuyer =
                       chat.buyer ||
                       chat.participants?.find(
-                        (p) => p._id.toString() !== currentUser?._id?.toString()
+                        (p) =>
+                          p._id.toString() !== currentUser?._id?.toString(),
                       );
                     const isSelected = chat._id === selectedChat;
 
@@ -461,7 +462,7 @@ const SellerChats = () => {
                                     >
                                       <span className="text-xs opacity-70">
                                         {new Date(
-                                          msg.createdAt
+                                          msg.createdAt,
                                         ).toLocaleTimeString([], {
                                           hour: "2-digit",
                                           minute: "2-digit",

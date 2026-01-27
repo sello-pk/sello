@@ -1,5 +1,5 @@
 import { useState } from "react";
-import AdminLayout from "../../components/admin/AdminLayout";
+import AdminLayout from "../../components/features/admin/AdminLayout";
 import {
     useGetAllPaymentsQuery,
     useGetAllSubscriptionsQuery,
@@ -11,12 +11,12 @@ import {
     useDeleteSubscriptionPlanMutation,
     useToggleSubscriptionPlanStatusMutation,
 } from "../../redux/services/adminApi";
-import Spinner from "../../components/Spinner";
+import { Spinner } from "../../components/ui/Loading";
 import { exportToCSV, formatDateForExport, formatCurrencyForExport } from "../../utils/exportUtils";
 import toast from "react-hot-toast";
 import { FiDollarSign, FiCreditCard, FiCalendar, FiUser, FiCheckCircle, FiXCircle, FiPlus, FiEdit2, FiTrash2, FiToggleLeft, FiToggleRight, FiDownload } from "react-icons/fi";
-import ConfirmModal from "../../components/admin/ConfirmModal";
-import PromptModal from "../../components/admin/PromptModal";
+import ConfirmModal from "../../components/features/admin/ConfirmModal";
+import PromptModal from "../../components/features/admin/PromptModal";
 
 const Payments = () => {
     const [activeTab, setActiveTab] = useState("payments"); // payments, subscriptions, or plans

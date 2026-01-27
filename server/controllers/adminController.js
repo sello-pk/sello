@@ -9,7 +9,9 @@ import {
 } from "../utils/emailTemplates.js";
 import CustomerRequest from "../models/customerRequestModel.js";
 import ListingHistory from "../models/listingHistoryModel.js";
-import { getAuditLogs } from "../utils/auditLogger.js";
+import { getAuditLogs } from "../utils/logger.js";
+import Analytics from "../models/analyticsModel.js";
+import { trackEvent, AnalyticsEvents } from "../utils/analytics.js";
 
 /**
  * Admin Dashboard Stats
@@ -34,7 +36,7 @@ export const getDashboardStats = async (req, res) => {
       23,
       59,
       59,
-      999
+      999,
     );
 
     const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -45,7 +47,7 @@ export const getDashboardStats = async (req, res) => {
       23,
       59,
       59,
-      999
+      999,
     );
 
     // Get current stats
@@ -234,10 +236,10 @@ export const getDashboardStats = async (req, res) => {
       const year = date.getFullYear();
 
       const salesData = salesTrends.find(
-        (s) => s._id.month === monthIndex + 1 && s._id.year === year
+        (s) => s._id.month === monthIndex + 1 && s._id.year === year,
       );
       const userData = userGrowth.find(
-        (u) => u._id.month === monthIndex + 1 && u._id.year === year
+        (u) => u._id.month === monthIndex + 1 && u._id.year === year,
       );
 
       salesTrendsData.push({
@@ -270,7 +272,7 @@ export const getDashboardStats = async (req, res) => {
             value: totalUsers,
             change: calculatePercentageChange(
               currentMonthUsers,
-              lastMonthUsers
+              lastMonthUsers,
             ),
             icon: "users",
           },
@@ -279,7 +281,7 @@ export const getDashboardStats = async (req, res) => {
             value: totalDealers,
             change: calculatePercentageChange(
               currentMonthDealers,
-              lastMonthDealers
+              lastMonthDealers,
             ),
             icon: "dealers",
           },
@@ -300,7 +302,7 @@ export const getDashboardStats = async (req, res) => {
             value: totalCarsSold,
             change: calculatePercentageChange(
               currentMonthCarsSold,
-              lastMonthCarsSold
+              lastMonthCarsSold,
             ),
             icon: "sold",
           },
@@ -940,7 +942,7 @@ export const approveCar = async (req, res) => {
           html = getCarRejectedTemplate(
             seller.name,
             car.title,
-            car.rejectionReason
+            car.rejectionReason,
           );
         }
 
@@ -948,14 +950,14 @@ export const approveCar = async (req, res) => {
         Logger.info(
           `Car ${car.isApproved ? "approval" : "rejection"} email sent to: ${
             seller.email
-          }`
+          }`,
         );
       }
     } catch (emailError) {
       Logger.warn(
         `Failed to send car ${
           car.isApproved ? "approval" : "rejection"
-        } email: ${emailError.message}`
+        } email: ${emailError.message}`,
       );
       // Don't break the approval process if email fails
     }
@@ -1017,9 +1019,8 @@ export const deleteCar = async (req, res) => {
     // Delete images from Cloudinary before deleting car
     if (car.images && Array.isArray(car.images) && car.images.length > 0) {
       try {
-        const { deleteCloudinaryImages } = await import(
-          "../utils/cloudinary.js"
-        );
+        const { deleteCloudinaryImages } =
+          await import("../utils/cloudinary.js");
         const deleteResult = await deleteCloudinaryImages(car.images);
         Logger.info("Deleted car images from Cloudinary (admin delete)", {
           carId,
@@ -1033,14 +1034,14 @@ export const deleteCar = async (req, res) => {
             {
               carId,
               failed: deleteResult.failed,
-            }
+            },
           );
         }
       } catch (imageError) {
         Logger.error(
           "Error deleting images from Cloudinary (admin delete)",
           imageError,
-          { carId }
+          { carId },
         );
         // Continue with deletion even if image deletion fails
       }
@@ -1066,7 +1067,7 @@ export const deleteCar = async (req, res) => {
       Logger.error(
         "Failed to create listing history on admin delete",
         historyError,
-        { carId }
+        { carId },
       );
       // Do not block deletion if history fails, but log it
     }
@@ -1230,7 +1231,7 @@ export const featureCar = async (req, res) => {
     // Use updateOne to avoid validation issues with required fields
     const updateResult = await Car.updateOne(
       { _id: carId },
-      { $set: { featured: featuredValue } }
+      { $set: { featured: featuredValue } },
     );
 
     if (updateResult.matchedCount === 0) {
@@ -1321,7 +1322,7 @@ export const getAllDealers = async (req, res) => {
           listingsCount,
           salesCount,
         };
-      })
+      }),
     );
 
     return res.status(200).json({
@@ -1560,3 +1561,127 @@ export const getAuditLogsController = async (req, res) => {
     });
   }
 };
+
+// Analytics Functions (merged from analyticsController.js)
+
+/**
+ * Track Event (Internal/Admin)
+ */
+export const trackAnalyticsEvent = async (req, res) => {
+  try {
+    const { event, metadata } = req.body;
+    const userId = req.user?._id || null;
+
+    if (!event) {
+      return res.status(400).json({
+        success: false,
+        message: "Event type is required.",
+      });
+    }
+
+    // Track event
+    await trackEvent(event, userId, {
+      ...metadata,
+      ipAddress: req.ip,
+      userAgent: req.get("user-agent"),
+    });
+
+    // Store in database
+    await Analytics.create({
+      event,
+      userId,
+      metadata: metadata || {},
+      ipAddress: req.ip,
+      userAgent: req.get("user-agent"),
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Event tracked successfully.",
+    });
+  } catch (error) {
+    Logger.error("Track analytics event error", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error tracking event.",
+    });
+  }
+};
+
+/**
+ * Get Analytics Summary (Admin)
+ */
+export const getAnalyticsSummary = async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Only admins can view analytics.",
+      });
+    }
+
+    const { startDate, endDate, eventType } = req.query;
+
+    const query = {};
+    if (startDate || endDate) {
+      query.createdAt = {};
+      if (startDate) query.createdAt.$gte = new Date(startDate);
+      if (endDate) query.createdAt.$lte = new Date(endDate);
+    }
+    if (eventType) query.event = eventType;
+
+    // Get event counts by type
+    const eventCounts = await Analytics.aggregate([
+      { $match: query },
+      {
+        $group: {
+          _id: "$event",
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } },
+    ]);
+
+    // Get total events
+    const totalEvents = await Analytics.countDocuments(query);
+
+    // Get unique users
+    const uniqueUsers = await Analytics.distinct("userId", query);
+
+    // Get top events
+    const topEvents = await Analytics.aggregate([
+      { $match: query },
+      {
+        $group: {
+          _id: "$event",
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } },
+      { $limit: 10 },
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      message: "Analytics summary retrieved successfully.",
+      data: {
+        totalEvents,
+        uniqueUsers: uniqueUsers.length,
+        eventCounts,
+        topEvents,
+        dateRange: {
+          startDate: startDate || null,
+          endDate: endDate || null,
+        },
+      },
+    });
+  } catch (error) {
+    Logger.error("Get analytics summary error", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error retrieving analytics.",
+    });
+  }
+};
+
+export { AnalyticsEvents };

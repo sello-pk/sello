@@ -8,6 +8,7 @@ export const ROUTES = {
   home: "/",
   cars: "/cars",
   carDetails: (id) => `/cars/${id}`,
+  carEstimator: "/car-estimator",
   blog: "/blog",
   blogDetails: (id) => `/blog/${id}`,
   about: "/about",

@@ -1,11 +1,11 @@
 import { useState } from "react";
-import AdminLayout from "../../components/admin/AdminLayout";
+import AdminLayout from "../../components/features/admin/AdminLayout";
 import {
     useGetAllChatsQuery,
     useGetChatStatisticsQuery,
     useGetAllSupportChatsQuery,
 } from "../../redux/services/adminApi";
-import Spinner from "../../components/Spinner";
+import { Spinner } from "../../components/ui/Loading";
 import { FiSearch, FiMessageSquare, FiTrendingUp, FiEye } from "react-icons/fi";
 import { HiChatBubbleLeftRight } from "react-icons/hi2";
 import { MdFlag } from "react-icons/md";

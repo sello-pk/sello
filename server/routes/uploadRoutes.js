@@ -1,5 +1,5 @@
 import express from "express";
-import { uploadFile } from "../controllers/uploadController.js";
+import { uploadFile } from "../controllers/settingsController.js";
 import { upload } from "../middlewares/multer.js";
 import { auth } from "../middlewares/authMiddleware.js";
 

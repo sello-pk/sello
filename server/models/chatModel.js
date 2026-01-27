@@ -66,7 +66,7 @@ const chatSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 chatSchema.index({ participants: 1 });
@@ -141,7 +141,7 @@ const messageSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 messageSchema.index({ chat: 1, createdAt: -1 });
@@ -149,4 +149,48 @@ messageSchema.index({ sender: 1 });
 
 const Message = mongoose.model("Message", messageSchema);
 
-export { Chat, Message };
+// Quick Reply Schema (merged from quickReplyModel.js)
+const quickReplySchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    message: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    category: {
+      type: String,
+      enum: ["greeting", "support", "pricing", "general", "other"],
+      default: "general",
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    usageCount: {
+      type: Number,
+      default: 0,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+quickReplySchema.index({ title: 1 });
+quickReplySchema.index({ category: 1 });
+quickReplySchema.index({ isActive: 1 });
+
+// IMPORTANT: Preserve the original collection name
+const QuickReply = mongoose.model("QuickReply", quickReplySchema);
+
+export { Chat, Message, QuickReply };

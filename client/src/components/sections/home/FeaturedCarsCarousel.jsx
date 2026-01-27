@@ -9,7 +9,7 @@ import {
 } from "react-icons/io";
 import { FiStar, FiZap } from "react-icons/fi";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
-import LazyImage from "../../common/LazyImage";
+import { Image as LazyImage } from "../../ui/Image";
 import {
   useSaveCarMutation,
   useUnsaveCarMutation,
@@ -59,7 +59,7 @@ const FeaturedCarsCarousel = () => {
           car.featured === true &&
           car.isApproved !== false &&
           car.status !== "sold" &&
-          !car.isSold
+          !car.isSold,
       )
       .slice(0, 12); // Show max 12 featured cars
     return filtered;
@@ -91,7 +91,7 @@ const FeaturedCarsCarousel = () => {
 
   const handlePrev = () => {
     setCurrentIndex(
-      (prev) => (prev - 1 + featuredCars.length) % featuredCars.length
+      (prev) => (prev - 1 + featuredCars.length) % featuredCars.length,
     );
   };
 

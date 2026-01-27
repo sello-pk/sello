@@ -15,7 +15,7 @@ import RouteLoader from "./components/common/RouteLoader";
 import Navbar from "./components/Navbar.jsx";
 import BottomHeader from "./components/BottomHeader.jsx";
 import Footer from "./components/Footer.jsx";
-import WhatsAppChatWidget from "./components/support/WhatsAppChatWidget.jsx";
+import WhatsAppChatWidget from "./components/features/help/WhatsAppChatWidget.jsx";
 import { useSupportChat } from "./contexts/SupportChatContext.jsx";
 
 // Critical pages - keep as regular imports for faster initial load
@@ -30,6 +30,7 @@ import TruckCategoryPage from "./pages/listings/TruckCategoryPage.jsx";
 import VanCategoryPage from "./pages/listings/VanCategoryPage.jsx";
 import BikeCategoryPage from "./pages/listings/BikeCategoryPage.jsx";
 import EBikeCategoryPage from "./pages/listings/EBikeCategoryPage.jsx";
+import CarEstimator from "./pages/features/CarEstimator.jsx";
 import FarmCategoryPage from "./pages/listings/FarmCategoryPage.jsx";
 import Blog from "./pages/blog/Blog.jsx";
 import AllBlog from "./pages/blog/AllBlog.jsx";
@@ -146,8 +147,10 @@ const BlogMediaLibrary = lazy(
 );
 
 // Protected Routes
-import ProtectedRoute from "./components/common/ProtectedRoute.jsx";
-import AdminRoute from "./components/common/AdminRoute.jsx";
+import {
+  ProtectedRoute,
+  AdminRoute,
+} from "./components/shared/RouteGuards.jsx";
 import { ErrorPage } from "./components/common/ErrorBoundary.jsx";
 import { ThemeProvider } from "./contexts/ThemeContext.jsx";
 import NotFound from "./pages/NotFound.jsx";
@@ -272,6 +275,8 @@ const App = () => {
         />
         {/* Vehicle Listings - Use direct import, no Suspense needed */}
         <Route path="/listings" element={<CarListings />} />
+        {/* Car Value Estimator */}
+        <Route path="/car-estimator" element={<CarEstimator />} />
         {/* Specific Category Pages - Custom pages for each category */}
         <Route path="/listings/car" element={<CarCategoryPage />} />
         <Route path="/listings/cars" element={<CarCategoryPage />} />

@@ -21,9 +21,9 @@ import {
   useLogoutMutation,
   useGetUserNotificationsQuery,
 } from "../../redux/services/api";
-import Spinner from "../../components/Spinner";
+import { Spinner } from "../../components/ui/Loading";
 import toast from "react-hot-toast";
-import LazyImage from "../../components/common/LazyImage";
+import { Image as LazyImage } from "../../components/ui/Image";
 import { images } from "../../assets/assets";
 
 const SellerDashboard = () => {
@@ -33,7 +33,7 @@ const SellerDashboard = () => {
   const { data: carsData, isLoading: carsLoading } = useGetMyCarsQuery();
   const { data: notificationsData } = useGetUserNotificationsQuery(
     { page: 1, limit: 10 },
-    { pollingInterval: 30000 }
+    { pollingInterval: 30000 },
   );
   const [logout] = useLogoutMutation();
 
@@ -169,8 +169,8 @@ const SellerDashboard = () => {
             {user?.role === "admin"
               ? "Admins should use the admin dashboard."
               : user?.dealerInfo?.verified
-              ? "Verified dealers should use the dealer dashboard."
-              : "This dashboard is only accessible to unverified dealers."}
+                ? "Verified dealers should use the dealer dashboard."
+                : "This dashboard is only accessible to unverified dealers."}
           </p>
           <div className="flex gap-3 justify-center">
             {user?.dealerInfo?.verified ? (

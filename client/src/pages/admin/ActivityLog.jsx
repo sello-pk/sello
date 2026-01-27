@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import AdminLayout from "../../components/admin/AdminLayout";
+import AdminLayout from "../../components/features/admin/AdminLayout";
 import { useGetAuditLogsQuery } from "../../redux/services/adminApi";
-import { TableSkeleton } from "../../components/Skeleton";
-import Pagination from "../../components/admin/Pagination";
-import FilterPanel from "../../components/admin/FilterPanel";
+import { TableSkeleton } from "../../components/ui/Loading";
+import Pagination from "../../components/features/admin/Pagination";
+import FilterPanel from "../../components/features/admin/FilterPanel";
 import toast from "react-hot-toast";
 import { FiSearch, FiClock, FiUser, FiActivity, FiInfo } from "react-icons/fi";
 

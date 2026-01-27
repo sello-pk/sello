@@ -260,3 +260,10 @@ export const canAccessMenu = (user, path) => {
 
   return false;
 };
+
+// Default export for backward compatibility
+export default {
+  isSuperAdmin,
+  getAllowedMenuPaths,
+  canAccessMenu,
+};

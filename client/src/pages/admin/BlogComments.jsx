@@ -4,12 +4,12 @@ import {
   useUpdateCommentStatusMutation,
   useDeleteCommentMutation,
 } from "../../redux/services/adminApi";
-import AdminLayout from "../../components/admin/AdminLayout";
-import Spinner from "../../components/Spinner";
+import AdminLayout from "../../components/features/admin/AdminLayout";
+import { Spinner } from "../../components/ui/Loading";
 import toast from "react-hot-toast";
 import { FiCheck, FiX, FiTrash2, FiSearch, FiMessageSquare, FiAlertCircle } from "react-icons/fi";
-import ConfirmationModal from "../../components/admin/ConfirmationModal";
-import { formatDate } from "../../utils/format";
+import ConfirmationModal from "../../components/features/admin/ConfirmationModal";
+import { formatDate } from "../../utils";
 import { Link } from "react-router-dom";
 
 const BlogComments = () => {

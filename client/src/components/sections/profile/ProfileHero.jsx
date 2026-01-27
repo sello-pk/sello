@@ -29,10 +29,10 @@ import {
 import { clearTokens } from "../../../utils/tokenRefresh";
 import { useSupportChat } from "../../../contexts/SupportChatContext";
 import NotificationsSection from "./NotificationsSection";
-import DealerRequestForm from "../../profile/DealerRequestForm";
+import DealerRequestForm from "../../features/profile/DealerRequestForm";
 import SubscriptionManagement from "../../subscriptions/SubscriptionManagement";
 import DealerProfileEditSection from "./DealerProfileEditSection";
-import AccountDeletionRequest from "../../profile/AccountDeletionRequest";
+import AccountDeletionRequest from "../../features/profile/AccountDeletionRequest";
 
 const ProfileHero = () => {
   const navigate = useNavigate();
@@ -149,7 +149,7 @@ const ProfileHero = () => {
         const earnings =
           user?.carsPurchased?.reduce(
             (sum, car) => sum + (car?.price || 0),
-            0
+            0,
           ) || 0;
         setMetrics({
           posts,
@@ -227,7 +227,7 @@ const ProfileHero = () => {
     } catch (err) {
       console.error("Update failed", err);
       alert(
-        err?.data?.message || "Failed to update profile. Please try again."
+        err?.data?.message || "Failed to update profile. Please try again.",
       );
     }
   };
@@ -416,7 +416,7 @@ const ProfileHero = () => {
                   src={
                     user?.avatar ||
                     `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                      user?.name || "User"
+                      user?.name || "User",
                     )}&background=FFA602&color=fff&size=200`
                   }
                   alt="Profile"
@@ -499,8 +499,8 @@ const ProfileHero = () => {
                         isActive
                           ? "bg-primary-50 text-primary-500"
                           : item.highlight
-                          ? "text-primary-500 hover:bg-primary-50"
-                          : "text-gray-700 hover:bg-gray-50"
+                            ? "text-primary-500 hover:bg-primary-50"
+                            : "text-gray-700 hover:bg-gray-50"
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -716,7 +716,7 @@ const ProfileHero = () => {
                     <p className="text-gray-600 mb-4">
                       Your subscription is active until{" "}
                       {new Date(
-                        subscriptionData.subscription.endDate
+                        subscriptionData.subscription.endDate,
                       ).toLocaleDateString()}
                     </p>
                     <p className="text-sm text-gray-500">
@@ -790,7 +790,7 @@ const ProfileHero = () => {
                       formData.avatarPreview ||
                       user?.avatar ||
                       `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                        user?.name || "User"
+                        user?.name || "User",
                       )}&background=FFA602&color=fff&size=200`
                     }
                     alt="Profile"

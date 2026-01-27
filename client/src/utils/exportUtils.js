@@ -115,7 +115,7 @@ export const exportToExcel = (
   data,
   headers,
   filename,
-  sheetName = "Sheet1"
+  sheetName = "Sheet1",
 ) => {
   try {
     if (!data || data.length === 0) {
@@ -170,7 +170,7 @@ export const exportToExcel = (
     // Fallback to CSV if Excel library not available
     exportToCSV(data, headers, filename);
     throw new Error(
-      "Excel export failed. CSV export used instead. Please install xlsx library for Excel support."
+      "Excel export failed. CSV export used instead. Please install xlsx library for Excel support.",
     );
   }
 };
@@ -197,4 +197,14 @@ export const formatCurrencyForExport = (amount, currency = "USD") => {
     style: "currency",
     currency: currency,
   }).format(amount);
+};
+
+// Default export for backward compatibility
+export default {
+  convertToCSV,
+  exportToCSV,
+  exportToExcel,
+  downloadCSV,
+  formatDateForExport,
+  formatCurrencyForExport,
 };

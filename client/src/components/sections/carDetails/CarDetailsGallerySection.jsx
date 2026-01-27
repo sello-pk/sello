@@ -19,7 +19,7 @@ import {
   useGetSavedCarsQuery,
 } from "../../../redux/services/api";
 import { images as placeholderImages } from "../../../assets/assets";
-import LazyImage from "../../common/LazyImage";
+import { Image as LazyImage } from "../../ui/Image";
 import toast from "react-hot-toast";
 import { extractCarIdFromSlug } from "../../../utils/urlBuilders";
 
@@ -400,7 +400,7 @@ const CarDetailsGallerySection = () => {
               <LazyImage
                 src={images[current]}
                 alt={`Car Image ${current + 1}`}
-                className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = placeholderImages.carPlaceholder;
@@ -743,7 +743,7 @@ const CarDetailsGallerySection = () => {
                   </div>
                 )}
               </div>,
-              document.body
+              document.body,
             )
           : null}
 

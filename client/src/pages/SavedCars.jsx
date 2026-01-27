@@ -6,7 +6,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 import { IoIosArrowRoundUp } from "react-icons/io";
-import LazyImage from "../components/common/LazyImage";
+import { Image as LazyImage } from "../components/ui/Image";
 import { images } from "../assets/assets";
 import toast from "react-hot-toast";
 import { buildCarUrl } from "../utils/urlBuilders";

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import AdminLayout from "../../components/admin/AdminLayout";
+import AdminLayout from "../../components/features/admin/AdminLayout";
 import {
     useGetChatbotStatsQuery,
     useGetAllSupportChatsQuery,
@@ -11,11 +11,11 @@ import {
     useDeleteQuickReplyMutation,
     useUseQuickReplyMutation,
 } from "../../redux/services/adminApi";
-import Spinner from "../../components/Spinner";
+import { Spinner } from "../../components/ui/Loading";
 import toast from "react-hot-toast";
 import { FiMessageSquare, FiSend, FiClock, FiCheckCircle, FiXCircle, FiSearch, FiPlus, FiTrash2, FiEdit2 } from "react-icons/fi";
 import { formatDistanceToNow } from "date-fns";
-import ConfirmModal from "../../components/admin/ConfirmModal";
+import ConfirmModal from "../../components/features/admin/ConfirmModal";
 
 const Chatbot = () => {
     const [selectedChat, setSelectedChat] = useState(null);

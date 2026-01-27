@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useGetRecentlyViewedQuery } from "../../../redux/services/api";
 import { Link } from "react-router-dom";
 import { FaCalendarAlt } from "react-icons/fa";
-import LazyImage from "../../common/LazyImage";
+import { Image as LazyImage } from "../../ui/Image";
 
 const PAGE_SIZE = 6; // show 6 at a time for a nice grid
 const MAX_LIMIT = 48; // hard cap from backend to avoid huge payloads
@@ -17,7 +17,7 @@ const RecentlyViewed = () => {
 
   const { data, isLoading, error } = useGetRecentlyViewedQuery(
     { limit: MAX_LIMIT },
-    { skip: !token }
+    { skip: !token },
   );
 
   const recentlyViewed = Array.isArray(data) ? data : [];
@@ -46,7 +46,7 @@ const RecentlyViewed = () => {
         root: null,
         rootMargin: "0px",
         threshold: 1.0,
-      }
+      },
     );
 
     observer.observe(node);
@@ -57,7 +57,10 @@ const RecentlyViewed = () => {
   }, [hasMore]);
 
   // Don't show anything on error or if no data after loading
-  if (error || (!isLoading && (!recentlyViewed || recentlyViewed.length === 0))) {
+  if (
+    error ||
+    (!isLoading && (!recentlyViewed || recentlyViewed.length === 0))
+  ) {
     return null;
   }
 
@@ -142,7 +145,10 @@ const RecentlyViewed = () => {
 
       {/* Infinite scroll sentinel */}
       {hasMore && (
-        <div ref={loadMoreRef} className="mt-6 h-6 w-full flex justify-center items-center">
+        <div
+          ref={loadMoreRef}
+          className="mt-6 h-6 w-full flex justify-center items-center"
+        >
           {/* subtle loading indicator when more is being revealed */}
           <span className="h-1 w-16 rounded-full bg-gray-200 animate-pulse" />
         </div>
@@ -152,4 +158,3 @@ const RecentlyViewed = () => {
 };
 
 export default RecentlyViewed;
-

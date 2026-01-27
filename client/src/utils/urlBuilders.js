@@ -62,4 +62,9 @@ export const buildBlogUrl = (blog) => {
   return "/blog";
 };
 
-
+// Default export for backward compatibility
+export default {
+  buildCarUrl,
+  extractCarIdFromSlug,
+  buildBlogUrl,
+};

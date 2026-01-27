@@ -11,40 +11,46 @@
  * @param {Function} setIndex - Function to set new index
  * @param {Function} onSelect - Function to call when item is selected (Enter/Space)
  */
-export const handleListNavigation = (event, items, currentIndex, setIndex, onSelect) => {
-    const { key } = event;
-    
-    switch (key) {
-        case 'ArrowDown':
-            event.preventDefault();
-            if (currentIndex < items.length - 1) {
-                setIndex(currentIndex + 1);
-            }
-            break;
-        case 'ArrowUp':
-            event.preventDefault();
-            if (currentIndex > 0) {
-                setIndex(currentIndex - 1);
-            }
-            break;
-        case 'Home':
-            event.preventDefault();
-            setIndex(0);
-            break;
-        case 'End':
-            event.preventDefault();
-            setIndex(items.length - 1);
-            break;
-        case 'Enter':
-        case ' ':
-            event.preventDefault();
-            if (onSelect && currentIndex >= 0 && currentIndex < items.length) {
-                onSelect(items[currentIndex], currentIndex);
-            }
-            break;
-        default:
-            break;
-    }
+export const handleListNavigation = (
+  event,
+  items,
+  currentIndex,
+  setIndex,
+  onSelect,
+) => {
+  const { key } = event;
+
+  switch (key) {
+    case "ArrowDown":
+      event.preventDefault();
+      if (currentIndex < items.length - 1) {
+        setIndex(currentIndex + 1);
+      }
+      break;
+    case "ArrowUp":
+      event.preventDefault();
+      if (currentIndex > 0) {
+        setIndex(currentIndex - 1);
+      }
+      break;
+    case "Home":
+      event.preventDefault();
+      setIndex(0);
+      break;
+    case "End":
+      event.preventDefault();
+      setIndex(items.length - 1);
+      break;
+    case "Enter":
+    case " ":
+      event.preventDefault();
+      if (onSelect && currentIndex >= 0 && currentIndex < items.length) {
+        onSelect(items[currentIndex], currentIndex);
+      }
+      break;
+    default:
+      break;
+  }
 };
 
 /**
@@ -53,46 +59,46 @@ export const handleListNavigation = (event, items, currentIndex, setIndex, onSel
  * @param {Function} onEscape - Function to call when Escape is pressed
  */
 export const trapFocus = (container, onEscape) => {
-    if (!container) return;
+  if (!container) return;
 
-    const focusableElements = container.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    
-    const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
+  const focusableElements = container.querySelectorAll(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+  );
 
-    const handleKeyDown = (event) => {
-        if (event.key === 'Escape' && onEscape) {
-            onEscape();
-            return;
-        }
+  const firstElement = focusableElements[0];
+  const lastElement = focusableElements[focusableElements.length - 1];
 
-        if (event.key !== 'Tab') return;
+  const handleKeyDown = (event) => {
+    if (event.key === "Escape" && onEscape) {
+      onEscape();
+      return;
+    }
 
-        if (event.shiftKey) {
-            // Shift + Tab
-            if (document.activeElement === firstElement) {
-                event.preventDefault();
-                lastElement?.focus();
-            }
-        } else {
-            // Tab
-            if (document.activeElement === lastElement) {
-                event.preventDefault();
-                firstElement?.focus();
-            }
-        }
-    };
+    if (event.key !== "Tab") return;
 
-    container.addEventListener('keydown', handleKeyDown);
-    
-    // Focus first element
-    firstElement?.focus();
+    if (event.shiftKey) {
+      // Shift + Tab
+      if (document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement?.focus();
+      }
+    } else {
+      // Tab
+      if (document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement?.focus();
+      }
+    }
+  };
 
-    return () => {
-        container.removeEventListener('keydown', handleKeyDown);
-    };
+  container.addEventListener("keydown", handleKeyDown);
+
+  // Focus first element
+  firstElement?.focus();
+
+  return () => {
+    container.removeEventListener("keydown", handleKeyDown);
+  };
 };
 
 /**
@@ -101,11 +107,11 @@ export const trapFocus = (container, onEscape) => {
  * @returns {NodeList} List of focusable elements
  */
 export const getFocusableElements = (container) => {
-    if (!container) return [];
-    
-    return container.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
+  if (!container) return [];
+
+  return container.querySelectorAll(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+  );
 };
 
 /**
@@ -113,9 +119,9 @@ export const getFocusableElements = (container) => {
  * @param {HTMLElement} element - Element to restore focus to
  */
 export const restoreFocus = (element) => {
-    if (element && typeof element.focus === 'function') {
-        element.focus();
-    }
+  if (element && typeof element.focus === "function") {
+    element.focus();
+  }
 };
 
 /**
@@ -123,6 +129,12 @@ export const restoreFocus = (element) => {
  * @returns {HTMLElement} Currently focused element
  */
 export const saveFocus = () => {
-    return document.activeElement;
+  return document.activeElement;
 };
 
+// Default export for backward compatibility
+export default {
+  trapFocus,
+  saveFocus,
+  restoreFocus,
+};

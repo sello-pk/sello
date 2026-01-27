@@ -1,18 +1,19 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import AdminLayout from "../../components/admin/AdminLayout";
+import AdminLayout from "../../components/features/admin/AdminLayout";
 import { usePolling } from "../../hooks/usePolling";
 import {
   useGetAllDeletionRequestsQuery,
   useReviewDeletionRequestMutation,
   useGetDeletionRequestStatsQuery,
 } from "../../redux/services/adminApi";
-import Spinner from "../../components/Spinner";
-import { TableSkeleton } from "../../components/Skeleton";
-import Pagination from "../../components/admin/Pagination";
-import FilterPanel from "../../components/admin/FilterPanel";
-import DataTable from "../../components/admin/DataTable";
-import Tooltip from "../../components/admin/Tooltip";
+import { Spinner } from "../../components/ui/Loading";
+import { TableSkeleton } from "../../components/ui/Loading";
+import Pagination from "../../components/features/admin/Pagination";
+import FilterPanel from "../../components/features/admin/FilterPanel";
+import DataTable from "../../components/features/admin/DataTable";
+import Tooltip from "../../components/features/admin/Tooltip";
+import ConfirmModal from "../../components/features/admin/ConfirmModal";
 import {
   notifyActionSuccess,
   notifyActionError,
@@ -29,7 +30,6 @@ import {
   FiAlertTriangle,
 } from "react-icons/fi";
 import { MdDeleteForever, MdCheckCircle, MdCancel } from "react-icons/md";
-import ConfirmModal from "../../components/admin/ConfirmModal";
 import toast from "react-hot-toast";
 
 const AccountDeletionRequests = () => {
@@ -53,7 +53,7 @@ const AccountDeletionRequests = () => {
       search,
       ...(statusFilter && statusFilter !== "all" && { status: statusFilter }),
     }),
-    [page, search, statusFilter]
+    [page, search, statusFilter],
   );
 
   const { data, isLoading, refetch } =
@@ -93,7 +93,7 @@ const AccountDeletionRequests = () => {
 
       notifyActionSuccess(
         reviewAction === "approved" ? "approved and deleted" : "rejected",
-        "Account deletion request"
+        "Account deletion request",
       );
       refetch();
       setShowReviewModal(false);
@@ -519,7 +519,7 @@ const AccountDeletionRequests = () => {
                       <p className="text-sm">
                         <span className="font-medium">Member Since:</span>{" "}
                         {new Date(
-                          selectedRequest.user?.createdAt
+                          selectedRequest.user?.createdAt,
                         ).toLocaleDateString()}
                       </p>
                     </div>
@@ -540,7 +540,7 @@ const AccountDeletionRequests = () => {
                       <p className="text-sm">
                         <span className="font-medium">Requested:</span>{" "}
                         {new Date(
-                          selectedRequest.createdAt
+                          selectedRequest.createdAt,
                         ).toLocaleDateString()}
                       </p>
                       <p className="text-sm">

@@ -4,9 +4,9 @@ import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 import { FiZap } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { buildCarUrl } from "../../../utils/urlBuilders";
-import { formatPrice } from "../../../utils/format";
+import { formatPrice } from "../../../utils";
 import { images } from "../../../assets/assets";
-import LazyImage from "../../common/LazyImage";
+import { Image as LazyImage } from "../../ui/Image";
 import {
   useGetMeQuery,
   useGetSavedCarsQuery,
@@ -49,7 +49,7 @@ const FilteredCarsResults = ({
     undefined,
     {
       skip: !token, // Skip if no token
-    }
+    },
   );
   const { data: savedCarsData } = useGetSavedCarsQuery(undefined, {
     skip: !userData || isLoadingUser || !token, // Only fetch if user is logged in
@@ -113,10 +113,10 @@ const FilteredCarsResults = ({
   const cars = Array.isArray(filteredCars?.cars)
     ? filteredCars.cars
     : Array.isArray(filteredCars?.data)
-    ? filteredCars.data
-    : Array.isArray(filteredCars)
-    ? filteredCars
-    : [];
+      ? filteredCars.data
+      : Array.isArray(filteredCars)
+        ? filteredCars
+        : [];
 
   const isGrid = viewMode === "grid";
 

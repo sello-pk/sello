@@ -83,7 +83,7 @@ const blogSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 blogSchema.index({ status: 1, publishedAt: -1 });
@@ -94,4 +94,38 @@ blogSchema.index({ isFeatured: 1, publishedAt: -1 });
 
 const Blog = mongoose.model("Blog", blogSchema);
 
-export default Blog;
+// Blog View Schema (merged from blogViewModel.js)
+const blogViewSchema = new mongoose.Schema(
+  {
+    blog: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Blog",
+      required: true,
+    },
+    ip: {
+      type: String,
+      required: false,
+    },
+    userAgent: {
+      type: String,
+      required: false,
+    },
+    // Optional: user if logged in
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+    },
+    // We can use createdAt for the timestamp
+  },
+  {
+    timestamps: true,
+  },
+);
+
+blogViewSchema.index({ blog: 1, createdAt: -1 });
+
+// IMPORTANT: Preserve the original collection name
+const BlogView = mongoose.model("BlogView", blogViewSchema);
+
+export { Blog, BlogView };

@@ -104,3 +104,6 @@ export const useDevLogger = (componentName) => {
     };
   }, [componentName]);
 };
+
+// Default export for backward compatibility
+export default logger;

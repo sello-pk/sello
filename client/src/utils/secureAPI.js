@@ -88,3 +88,9 @@ export const useSecureAPIKey = (service) => {
 
   return { apiKey, loading, error };
 };
+
+// Default export for backward compatibility
+export default {
+  secureAPIManager,
+  useSecureAPIKey,
+};

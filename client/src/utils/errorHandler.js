@@ -185,3 +185,11 @@ export const retryApiCall = async (fn, maxRetries = 3, delay = 1000) => {
 
   throw lastError;
 };
+
+// Default export for backward compatibility
+export default {
+  getErrorMessage,
+  isNetworkError,
+  isAuthError,
+  formatErrorBoundaryError,
+};

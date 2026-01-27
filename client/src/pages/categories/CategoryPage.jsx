@@ -4,8 +4,15 @@ import { useGetFilteredCarsQuery } from "../../redux/services/api";
 import { useVehicleCategories } from "../../hooks/useVehicleCategories";
 import CarCard from "../../components/common/CarCard";
 import FilterForm from "../../components/sections/filter/FilterForm";
-import LatestBlogsSection from "../../components/sections/blogs/LatestBlogsSection";
-import { FaCar, FaBus, FaTruck, FaMotorcycle, FaBolt, FaTractor } from "react-icons/fa6";
+import LatestBlogsSection from "../../components/features/blog/LatestBlogsSection";
+import {
+  FaCar,
+  FaBus,
+  FaTruck,
+  FaMotorcycle,
+  FaBolt,
+  FaTractor,
+} from "react-icons/fa6";
 import { FaShuttleVan } from "react-icons/fa";
 import { HiOutlineArrowLeft } from "react-icons/hi2";
 import { Link } from "react-router-dom";

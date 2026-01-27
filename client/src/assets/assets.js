@@ -8,6 +8,7 @@ import logo from "./images/logo.svg";
 import headerLogo from "./images/headerLogo.svg";
 import bell from "./images/bell.svg";
 import car from "./images/car.jpg";
+import carPlaceholder from "./images/car.jpg";
 import car2 from "./images/car2.jpg";
 import car3 from "./images/car3.jpg";
 import car4 from "./images/car4.jpg";
@@ -142,6 +143,8 @@ export const images = {
   headerLogo,
   logo,
   bell,
+  car,
+  carPlaceholder,
   car5,
   car6,
   car7,
@@ -194,6 +197,10 @@ export const menuLinks = [
   {
     path: "/listings",
     name: "Listings",
+  },
+  {
+    path: "/car-estimator",
+    name: "Car Value Estimator",
   },
   {
     path: "/blog",

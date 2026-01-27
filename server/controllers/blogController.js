@@ -1,6 +1,5 @@
-import Blog from "../models/blogModel.js";
+import { Blog, BlogView } from "../models/blogModel.js";
 import Category from "../models/categoryModel.js";
-import BlogView from "../models/blogViewModel.js";
 import mongoose from "mongoose";
 import { uploadCloudinary } from "../utils/cloudinary.js";
 
@@ -152,7 +151,7 @@ export const createBlog = async (req, res) => {
 
           if (file.size > maxSize) {
             console.warn(
-              `Skipping oversized image: ${file.originalname} (${file.size} bytes)`
+              `Skipping oversized image: ${file.originalname} (${file.size} bytes)`,
             );
             return null;
           }
@@ -168,7 +167,7 @@ export const createBlog = async (req, res) => {
             console.error("Error uploading image:", err);
             return null;
           }
-        })
+        }),
       );
       images = images.filter((url) => url);
     }
@@ -187,10 +186,10 @@ export const createBlog = async (req, res) => {
         ? typeof tags === "string" && tags.startsWith("[")
           ? JSON.parse(tags)
           : typeof tags === "string"
-          ? tags.split(",").map((t) => t.trim())
-          : Array.isArray(tags)
-          ? tags
-          : []
+            ? tags.split(",").map((t) => t.trim())
+            : Array.isArray(tags)
+              ? tags
+              : []
         : [],
       author: req.user._id,
       status: status || "draft",
@@ -201,8 +200,8 @@ export const createBlog = async (req, res) => {
       publishedAt: req.body.publishedAt
         ? new Date(req.body.publishedAt)
         : status === "published"
-        ? new Date()
-        : null,
+          ? new Date()
+          : null,
     });
 
     return res.status(201).json({
@@ -527,7 +526,7 @@ export const updateBlog = async (req, res) => {
 
           if (file.size > maxSize) {
             console.warn(
-              `Skipping oversized image: ${file.originalname} (${file.size} bytes)`
+              `Skipping oversized image: ${file.originalname} (${file.size} bytes)`,
             );
             return null;
           }
@@ -543,7 +542,7 @@ export const updateBlog = async (req, res) => {
             console.error("Error uploading image:", err);
             return null;
           }
-        })
+        }),
       );
       blog.images = [...(blog.images || []), ...newImages.filter((url) => url)];
     }

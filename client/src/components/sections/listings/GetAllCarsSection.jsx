@@ -11,8 +11,8 @@ import {
   useSaveCarMutation,
   useUnsaveCarMutation,
 } from "../../../redux/services/api";
-import LazyImage from "../../common/LazyImage";
-import { formatPrice } from "../../../utils/format";
+import { Image as LazyImage } from "../../ui/Image";
+import { formatPrice } from "../../../utils";
 import toast from "react-hot-toast";
 
 // Skeleton Loader Component

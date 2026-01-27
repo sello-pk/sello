@@ -16,7 +16,7 @@ import {
   useDeleteCarChatMessageMutation,
   useGetMeQuery,
 } from "../../redux/services/api";
-import Spinner from "../../components/Spinner";
+import { Spinner } from "../../components/ui/Loading";
 import toast from "react-hot-toast";
 import { useSocket } from "../../contexts/SocketContext";
 import { buildCarUrl } from "../../utils/urlBuilders";

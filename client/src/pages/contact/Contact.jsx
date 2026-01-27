@@ -1,6 +1,6 @@
 import React from "react";
 import ContactForm from "../../components/sections/contact/ContactForm";
-import ContactMap from "../../components/userListings/ContactMap";
+import ContactMap from "../../components/features/listings/ContactMap";
 import SEO from "../../components/common/SEO";
 
 const Contact = () => {

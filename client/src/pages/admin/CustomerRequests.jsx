@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import AdminLayout from "../../components/admin/AdminLayout";
+import AdminLayout from "../../components/features/admin/AdminLayout";
 import {
     useGetAllCustomerRequestsQuery,
     useGetCustomerRequestStatisticsQuery,
@@ -11,13 +11,13 @@ import {
     useDeleteContactFormMutation,
     useConvertToChatMutation,
 } from "../../redux/services/adminApi";
-import Spinner from "../../components/Spinner";
+import { Spinner } from "../../components/ui/Loading";
 import toast from "react-hot-toast";
 import { FiSearch, FiEdit2, FiTrash2, FiMessageSquare, FiClock, FiCheckCircle, FiEye, FiUser, FiX, FiMail } from "react-icons/fi";
 import { formatDistanceToNow } from "date-fns";
 import { ROUTES } from "../../routes";
-import ConfirmModal from "../../components/admin/ConfirmModal";
-import ActionDropdown from "../../components/admin/ActionDropdown";
+import ConfirmModal from "../../components/features/admin/ConfirmModal";
+import ActionDropdown from "../../components/features/admin/ActionDropdown";
 
 const CustomerRequests = () => {
     const [requestType, setRequestType] = useState("all"); // "all", "requests", "contact_forms"

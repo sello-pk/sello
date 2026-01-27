@@ -6,7 +6,7 @@ import {
   useGetMeQuery,
 } from "../../redux/services/api";
 import toast from "react-hot-toast";
-import Spinner from "../Spinner";
+import { Spinner } from "../ui/Loading";
 
 const UserReviewSection = ({ userId, carId, sellerName }) => {
   const [showReviewForm, setShowReviewForm] = useState(false);

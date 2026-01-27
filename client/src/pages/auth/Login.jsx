@@ -13,7 +13,7 @@ import {
 } from "../../redux/services/api";
 import { setAccessToken } from "../../utils/tokenRefresh.js";
 import { store } from "../../redux/store";
-import Spinner from "../../components/Spinner";
+import { Spinner } from "../../components/ui/Loading";
 
 // Check if Google OAuth is configured
 const hasGoogleClientId = !!import.meta.env.VITE_GOOGLE_CLIENT_ID;

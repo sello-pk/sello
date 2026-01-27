@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetAllBlogsQuery, useUpdateBlogMutation, useGetAllCategoriesQuery } from "../../redux/services/adminApi";
 import { useGetBlogByIdQuery } from "../../redux/services/api";
-import AdminLayout from "../../components/admin/AdminLayout";
-import Spinner from "../../components/Spinner";
+import AdminLayout from "../../components/features/admin/AdminLayout";
+import { Spinner } from "../../components/ui/Loading";
 import toast from "react-hot-toast";
 import { FiX, FiSave, FiArrowLeft, FiEye } from "react-icons/fi";
-import TiptapEditor from "../../components/admin/TiptapEditor";
+import TiptapEditor from "../../components/features/admin/TiptapEditor";
 
 const BlogEdit = () => {
     const { id } = useParams();

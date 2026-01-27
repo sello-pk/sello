@@ -7,7 +7,7 @@ export const optimizeImage = (src, options = {}) => {
     const transformations = [];
     if (width || height)
       transformations.push(
-        `c_limit,w_${width || "auto"},h_${height || "auto"}`
+        `c_limit,w_${width || "auto"},h_${height || "auto"}`,
       );
     if (quality !== 100) transformations.push(`q_${quality}`);
     if (format !== "auto") transformations.push(`f_${format}`);
@@ -26,7 +26,7 @@ export const optimizeImage = (src, options = {}) => {
 
 export const generateResponsiveSrcSet = (
   src,
-  sizes = [640, 768, 1024, 1280]
+  sizes = [640, 768, 1024, 1280],
 ) => {
   return sizes
     .map((size) => `${optimizeImage(src, { width: size })} ${size}w`)
@@ -41,4 +41,11 @@ export const preloadCriticalImages = (imageUrls) => {
     link.href = url;
     document.head.appendChild(link);
   });
+};
+
+// Default export for backward compatibility
+export default {
+  optimizeImage,
+  generateResponsiveSrcSet,
+  preloadCriticalImages,
 };

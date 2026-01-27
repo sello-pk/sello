@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import AdminLayout from "../../components/admin/AdminLayout";
+import AdminLayout from "../../components/features/admin/AdminLayout";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../routes";
 import { useGetAllContactFormsQuery, useConvertToChatMutation, useUpdateContactFormStatusMutation, useDeleteContactFormMutation } from "../../redux/services/adminApi";
-import Spinner from "../../components/Spinner";
+import { Spinner } from "../../components/ui/Loading";
 import toast from "react-hot-toast";
 import { FiSearch, FiTrash2, FiMessageSquare, FiCheckCircle, FiClock, FiXCircle, FiRefreshCw } from "react-icons/fi";
 import { formatDistanceToNow } from "date-fns";
-import ConfirmModal from "../../components/admin/ConfirmModal";
-import ActionDropdown from "../../components/admin/ActionDropdown";
+import ConfirmModal from "../../components/features/admin/ConfirmModal";
+import ActionDropdown from "../../components/features/admin/ActionDropdown";
 
 const ContactFormManagement = () => {
     const navigate = useNavigate();

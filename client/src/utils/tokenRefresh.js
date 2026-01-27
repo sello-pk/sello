@@ -95,3 +95,12 @@ export const shouldRefreshToken = (status, url) => {
   // Only refresh on 401 errors
   return status === 401;
 };
+
+// Default export for backward compatibility
+export default {
+  setAccessToken,
+  getAccessToken,
+  clearTokens,
+  refreshAccessToken,
+  shouldRefreshToken,
+};

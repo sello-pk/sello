@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGetDashboardStatsQuery } from "../../redux/services/adminApi";
-import AdminLayout from "../../components/admin/AdminLayout";
-import Spinner from "../../components/Spinner";
-import { StatsCardSkeleton, CardSkeleton } from "../../components/Skeleton";
+import AdminLayout from "../../components/features/admin/AdminLayout";
+import {
+  Spinner,
+  Skeleton,
+  StatsCardSkeleton,
+  CardSkeleton,
+} from "../../components/ui/Loading";
 import {
   FiUsers,
   FiTrendingUp,
@@ -15,7 +19,7 @@ import {
   FiGrid,
   FiLayout,
 } from "react-icons/fi";
-import TooltipComponent from "../../components/admin/Tooltip";
+import TooltipComponent from "../../components/features/admin/Tooltip";
 import { BiSolidCarGarage } from "react-icons/bi";
 import {
   AreaChart,

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import AdminLayout from "../../components/admin/AdminLayout";
+import AdminLayout from "../../components/features/admin/AdminLayout";
 import { usePolling } from "../../hooks/usePolling";
 import {
   useGetAllListingsQuery,
@@ -8,10 +8,10 @@ import {
   useDeleteCarMutation,
   usePromoteCarMutation,
 } from "../../redux/services/adminApi";
-import Spinner from "../../components/Spinner";
-import Pagination from "../../components/admin/Pagination";
-import BulkActionsToolbar from "../../components/admin/BulkActionsToolbar";
-import FilterPanel from "../../components/admin/FilterPanel";
+import { Spinner } from "../../components/ui/Loading";
+import Pagination from "../../components/features/admin/Pagination";
+import BulkActionsToolbar from "../../components/features/admin/BulkActionsToolbar";
+import FilterPanel from "../../components/features/admin/FilterPanel";
 import {
   exportToCSV,
   formatDateForExport,
@@ -24,7 +24,7 @@ import {
   notifyBulkActionError,
   notifyError,
 } from "../../utils/notifications";
-import { formatPrice } from "../../utils/format";
+import { formatPrice } from "../../utils";
 import toast from "react-hot-toast";
 import {
   FiSearch,
@@ -37,9 +37,9 @@ import {
   FiX,
   FiDownload,
 } from "react-icons/fi";
-import ConfirmModal from "../../components/admin/ConfirmModal";
-import PromptModal from "../../components/admin/PromptModal";
-import Tooltip from "../../components/admin/Tooltip";
+import ConfirmModal from "../../components/features/admin/ConfirmModal";
+import PromptModal from "../../components/features/admin/PromptModal";
+import Tooltip from "../../components/features/admin/Tooltip";
 
 const Listings = () => {
   const [page, setPage] = useState(1);
@@ -191,7 +191,7 @@ const Listings = () => {
     setIsBulkProcessing(true);
     try {
       const promises = Array.from(selectedCars).map((carId) =>
-        approveCar({ carId, isApproved: true }).unwrap()
+        approveCar({ carId, isApproved: true }).unwrap(),
       );
       await Promise.all(promises);
       notifyBulkActionSuccess("approved", selectedCars.size);
@@ -210,7 +210,7 @@ const Listings = () => {
     setIsBulkProcessing(true);
     try {
       const promises = Array.from(selectedCars).map((carId) =>
-        approveCar({ carId, isApproved: false }).unwrap()
+        approveCar({ carId, isApproved: false }).unwrap(),
       );
       await Promise.all(promises);
       notifyBulkActionSuccess("rejected", selectedCars.size);
@@ -229,7 +229,7 @@ const Listings = () => {
     setIsBulkProcessing(true);
     try {
       const promises = Array.from(selectedCars).map((carId) =>
-        deleteCar(carId).unwrap()
+        deleteCar(carId).unwrap(),
       );
       await Promise.all(promises);
       notifyBulkActionSuccess("deleted", selectedCars.size);
@@ -278,7 +278,7 @@ const Listings = () => {
     exportToCSV(
       cars,
       headers,
-      `listings_export_${new Date().toISOString().split("T")[0]}`
+      `listings_export_${new Date().toISOString().split("T")[0]}`,
     );
     notifyActionSuccess("exported", "Listings");
   };
@@ -381,7 +381,7 @@ const Listings = () => {
         `promoted for ${days} days${
           chargeUser ? " (user will be charged)" : " (free promotion)"
         }`,
-        "Car"
+        "Car",
       );
       refetch();
     } catch (error) {

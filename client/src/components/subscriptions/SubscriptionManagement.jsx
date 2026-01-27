@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { FiCheck, FiX, FiCreditCard, FiCalendar, FiZap, FiStar, FiTrendingUp, FiShield } from "react-icons/fi";
+import {
+  FiCheck,
+  FiX,
+  FiCreditCard,
+  FiCalendar,
+  FiZap,
+  FiStar,
+  FiTrendingUp,
+  FiShield,
+} from "react-icons/fi";
 import {
   useGetSubscriptionPlansQuery,
   useGetMySubscriptionQuery,
@@ -9,9 +18,9 @@ import {
   useCreateSubscriptionCheckoutMutation,
 } from "../../redux/services/api";
 import toast from "react-hot-toast";
-import Spinner from "../Spinner";
+import { Spinner } from "../ui/Loading";
 import { format } from "date-fns";
-import ConfirmModal from "../admin/ConfirmModal";
+import ConfirmModal from "../features/admin/ConfirmModal";
 
 const SubscriptionManagement = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -20,22 +29,37 @@ const SubscriptionManagement = () => {
   const [autoRenew, setAutoRenew] = useState(true);
   const [showCancelModal, setShowCancelModal] = useState(false);
 
-  const { data: plansData, isLoading: plansLoading } = useGetSubscriptionPlansQuery();
-  const { data: mySubscription, isLoading: subLoading, refetch: refetchSubscription } = useGetMySubscriptionQuery();
-  const { data: paymentHistory, isLoading: historyLoading } = useGetPaymentHistoryQuery();
-  const [purchaseSubscription, { isLoading: isPurchasing }] = usePurchaseSubscriptionMutation();
-  const [createSubscriptionCheckout, { isLoading: isCreatingCheckout }] = useCreateSubscriptionCheckoutMutation();
-  const [cancelSubscription, { isLoading: isCancelling }] = useCancelSubscriptionMutation();
+  const { data: plansData, isLoading: plansLoading } =
+    useGetSubscriptionPlansQuery();
+  const {
+    data: mySubscription,
+    isLoading: subLoading,
+    refetch: refetchSubscription,
+  } = useGetMySubscriptionQuery();
+  const { data: paymentHistory, isLoading: historyLoading } =
+    useGetPaymentHistoryQuery();
+  const [purchaseSubscription, { isLoading: isPurchasing }] =
+    usePurchaseSubscriptionMutation();
+  const [createSubscriptionCheckout, { isLoading: isCreatingCheckout }] =
+    useCreateSubscriptionCheckoutMutation();
+  const [cancelSubscription, { isLoading: isCancelling }] =
+    useCancelSubscriptionMutation();
 
   // Extract plans and payment system status
   const plans = plansData?.data || {};
-  const paymentSystemEnabled = plansData?.paymentSystemEnabled !== undefined ? plansData.paymentSystemEnabled : true;
+  const paymentSystemEnabled =
+    plansData?.paymentSystemEnabled !== undefined
+      ? plansData.paymentSystemEnabled
+      : true;
   const subscriptionPlans = plans;
   const currentSubscription = mySubscription?.subscription;
   const planDetails = mySubscription?.planDetails;
   const isActive = currentSubscription?.isActive || false;
   const daysRemaining = currentSubscription?.endDate
-    ? Math.ceil((new Date(currentSubscription.endDate) - new Date()) / (1000 * 60 * 60 * 24))
+    ? Math.ceil(
+        (new Date(currentSubscription.endDate) - new Date()) /
+          (1000 * 60 * 60 * 24),
+      )
     : 0;
 
   const handlePurchase = async () => {
@@ -69,9 +93,12 @@ const SubscriptionManagement = () => {
         return;
       }
 
-        toast.error("Failed to create checkout session");
+      toast.error("Failed to create checkout session");
     } catch (error) {
-      toast.error(error?.data?.message || "Failed to create checkout session. Please try again.");
+      toast.error(
+        error?.data?.message ||
+          "Failed to create checkout session. Please try again.",
+      );
     }
   };
 
@@ -120,7 +147,10 @@ const SubscriptionManagement = () => {
   if (Object.keys(subscriptionPlans).length === 0) {
     return (
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-        <p className="text-yellow-800">No subscription plans are currently available. Please check back later.</p>
+        <p className="text-yellow-800">
+          No subscription plans are currently available. Please check back
+          later.
+        </p>
       </div>
     );
   }
@@ -132,7 +162,9 @@ const SubscriptionManagement = () => {
         <div className="bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl shadow-lg p-6 text-white">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-2xl font-bold mb-2">Current Plan: {planDetails?.name || "Free"}</h3>
+              <h3 className="text-2xl font-bold mb-2">
+                Current Plan: {planDetails?.name || "Free"}
+              </h3>
               <div className="flex items-center gap-4 text-primary-100">
                 <div className="flex items-center gap-2">
                   <FiCalendar size={18} />
@@ -144,16 +176,24 @@ const SubscriptionManagement = () => {
                 </div>
                 {currentSubscription?.endDate && (
                   <span>
-                    Expires: {format(new Date(currentSubscription.endDate), "MMM dd, yyyy")}
+                    Expires:{" "}
+                    {format(
+                      new Date(currentSubscription.endDate),
+                      "MMM dd, yyyy",
+                    )}
                   </span>
                 )}
               </div>
               {currentSubscription?.autoRenew && (
-                <p className="text-sm text-primary-100 mt-2">Auto-renewal enabled</p>
+                <p className="text-sm text-primary-100 mt-2">
+                  Auto-renewal enabled
+                </p>
               )}
             </div>
             <div className="text-right">
-              <div className="text-3xl font-bold">{planDetails?.price ? `$${planDetails.price}` : "Free"}</div>
+              <div className="text-3xl font-bold">
+                {planDetails?.price ? `$${planDetails.price}` : "Free"}
+              </div>
               <div className="text-sm text-primary-100">per month</div>
             </div>
           </div>
@@ -188,8 +228,11 @@ const SubscriptionManagement = () => {
         </h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {Object.entries(subscriptionPlans).map(([planKey, plan]) => {
-            const isCurrentPlan = currentSubscription?.plan === planKey && isActive;
-            const isUpgrade = !isActive || (planKey !== "free" && plan.price > (planDetails?.price || 0));
+            const isCurrentPlan =
+              currentSubscription?.plan === planKey && isActive;
+            const isUpgrade =
+              !isActive ||
+              (planKey !== "free" && plan.price > (planDetails?.price || 0));
 
             return (
               <div
@@ -198,10 +241,10 @@ const SubscriptionManagement = () => {
                   isCurrentPlan
                     ? "border-primary-500 bg-primary-50"
                     : planKey === "premium"
-                    ? "border-yellow-300 bg-gradient-to-br from-yellow-50 to-white"
-                    : planKey === "dealer"
-                    ? "border-primary-300 bg-gradient-to-br from-primary-50 to-white"
-                    : "border-gray-200 bg-white hover:border-primary-300 hover:shadow-lg"
+                      ? "border-yellow-300 bg-gradient-to-br from-yellow-50 to-white"
+                      : planKey === "dealer"
+                        ? "border-primary-300 bg-gradient-to-br from-primary-50 to-white"
+                        : "border-gray-200 bg-white hover:border-primary-300 hover:shadow-lg"
                 }`}
               >
                 {planKey === "premium" && (
@@ -216,18 +259,30 @@ const SubscriptionManagement = () => {
                 )}
 
                 <div className="text-center mb-4">
-                  <div className="flex justify-center mb-2">{getPlanIcon(planKey)}</div>
-                  <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
+                  <div className="flex justify-center mb-2">
+                    {getPlanIcon(planKey)}
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">
+                    {plan.name}
+                  </h3>
                   <div className="mt-2">
-                    <span className="text-3xl font-bold text-gray-900">${plan.price}</span>
+                    <span className="text-3xl font-bold text-gray-900">
+                      ${plan.price}
+                    </span>
                     <span className="text-gray-600">/month</span>
                   </div>
                 </div>
 
                 <ul className="space-y-2 mb-6">
                   {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-start gap-2 text-sm text-gray-700">
-                      <FiCheck className="text-green-500 flex-shrink-0 mt-0.5" size={16} />
+                    <li
+                      key={index}
+                      className="flex items-start gap-2 text-sm text-gray-700"
+                    >
+                      <FiCheck
+                        className="text-green-500 flex-shrink-0 mt-0.5"
+                        size={16}
+                      />
                       <span>{feature}</span>
                     </li>
                   ))}
@@ -247,13 +302,17 @@ const SubscriptionManagement = () => {
                     isCurrentPlan
                       ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                       : planKey === "premium"
-                      ? "bg-yellow-500 hover:bg-yellow-600 text-white"
-                      : planKey === "dealer"
-                      ? "bg-primary-500 hover:opacity-90 text-white"
-                      : "bg-primary-500 hover:opacity-90 text-white"
+                        ? "bg-yellow-500 hover:bg-yellow-600 text-white"
+                        : planKey === "dealer"
+                          ? "bg-primary-500 hover:opacity-90 text-white"
+                          : "bg-primary-500 hover:opacity-90 text-white"
                   }`}
                 >
-                  {isCurrentPlan ? "Current Plan" : isUpgrade ? "Upgrade" : "Select Plan"}
+                  {isCurrentPlan
+                    ? "Current Plan"
+                    : isUpgrade
+                      ? "Upgrade"
+                      : "Select Plan"}
                 </button>
               </div>
             );
@@ -262,59 +321,68 @@ const SubscriptionManagement = () => {
       </div>
 
       {/* Payment History - Only show if enabled */}
-      {paymentHistory && paymentHistory.payments && paymentHistory.payments.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">Payment History</h3>
-          <div className="space-y-3">
-            {paymentHistory.payments
-              .filter((p) => p.purpose === "subscription")
-              .slice(0, 5)
-              .map((payment, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    <FiCreditCard className="text-primary-500" size={20} />
-                    <div>
-                      <p className="font-semibold text-gray-900">
-                        ${payment.amount} - {payment.purpose}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {format(new Date(payment.createdAt), "MMM dd, yyyy")}
-                      </p>
-                    </div>
-                  </div>
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      payment.status === "completed"
-                        ? "bg-green-100 text-green-700"
-                        : payment.status === "pending"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
+      {paymentHistory &&
+        paymentHistory.payments &&
+        paymentHistory.payments.length > 0 && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">
+              Payment History
+            </h3>
+            <div className="space-y-3">
+              {paymentHistory.payments
+                .filter((p) => p.purpose === "subscription")
+                .slice(0, 5)
+                .map((payment, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                   >
-                    {payment.status}
-                  </span>
-                </div>
-              ))}
-          </div>
-          {paymentHistory.totalSpent > 0 && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <p className="text-sm text-gray-600">
-                Total Spent: <span className="font-bold text-gray-900">${paymentHistory.totalSpent}</span>
-              </p>
+                    <div className="flex items-center gap-3">
+                      <FiCreditCard className="text-primary-500" size={20} />
+                      <div>
+                        <p className="font-semibold text-gray-900">
+                          ${payment.amount} - {payment.purpose}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {format(new Date(payment.createdAt), "MMM dd, yyyy")}
+                        </p>
+                      </div>
+                    </div>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        payment.status === "completed"
+                          ? "bg-green-100 text-green-700"
+                          : payment.status === "pending"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {payment.status}
+                    </span>
+                  </div>
+                ))}
             </div>
-          )}
-        </div>
-      )}
+            {paymentHistory.totalSpent > 0 && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <p className="text-sm text-gray-600">
+                  Total Spent:{" "}
+                  <span className="font-bold text-gray-900">
+                    ${paymentHistory.totalSpent}
+                  </span>
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
       {/* Payment Modal */}
       {showPaymentModal && selectedPlan && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
             <div className="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-4 flex justify-between items-center">
-              <h3 className="text-xl font-bold text-white">Complete Subscription</h3>
+              <h3 className="text-xl font-bold text-white">
+                Complete Subscription
+              </h3>
               <button
                 onClick={() => {
                   setShowPaymentModal(false);
@@ -342,10 +410,14 @@ const SubscriptionManagement = () => {
               <div className="bg-primary-50 rounded-lg p-4 border border-primary-200">
                 <div className="flex items-center gap-2 mb-2">
                   <FiCreditCard className="text-primary-600" size={16} />
-                  <span className="font-semibold text-gray-900">Secure Payment</span>
+                  <span className="font-semibold text-gray-900">
+                    Secure Payment
+                  </span>
                 </div>
                 <p className="text-sm text-gray-600">
-                  You will be redirected to Stripe for secure payment processing. Your subscription will be activated immediately after payment confirmation.
+                  You will be redirected to Stripe for secure payment
+                  processing. Your subscription will be activated immediately
+                  after payment confirmation.
                 </p>
               </div>
 
@@ -358,7 +430,9 @@ const SubscriptionManagement = () => {
                     className="w-5 h-5 text-primary-500 rounded focus:ring-primary-500"
                   />
                   <div>
-                    <div className="font-semibold text-gray-900">Auto-Renewal</div>
+                    <div className="font-semibold text-gray-900">
+                      Auto-Renewal
+                    </div>
                     <div className="text-sm text-gray-600">
                       Automatically renew this subscription each month
                     </div>
@@ -383,7 +457,7 @@ const SubscriptionManagement = () => {
                   disabled={isPurchasing || isCreatingCheckout}
                   className="px-6 py-2 bg-primary-500 hover:opacity-90 text-white rounded-lg font-medium shadow-md hover:shadow-lg transform active:scale-95 transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  {(isPurchasing || isCreatingCheckout) ? (
+                  {isPurchasing || isCreatingCheckout ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                       Processing...
@@ -405,4 +479,3 @@ const SubscriptionManagement = () => {
 };
 
 export default SubscriptionManagement;
-

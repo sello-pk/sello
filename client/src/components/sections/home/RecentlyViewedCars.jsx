@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecentlyViewedCars } from "../../../hooks/useRecentlyViewedCars";
-import LazyImage from "../../common/LazyImage";
+import { Image as LazyImage } from "../../ui/Image";
 import { images } from "../../../assets/assets";
 import { FaCar } from "react-icons/fa6";
-import { formatPrice } from "../../../utils/format";
+import { formatPrice } from "../../../utils";
 
 const RecentlyViewedCars = () => {
   const navigate = useNavigate();

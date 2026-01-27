@@ -27,11 +27,11 @@ import {
   useGetSubscriptionPlansQuery,
 } from "../../redux/services/api";
 import { useGetSellerBuyerChatsQuery } from "../../redux/services/api";
-import Spinner from "../../components/Spinner";
+import { Spinner } from "../../components/ui/Loading";
 import toast from "react-hot-toast";
-import LazyImage from "../../components/common/LazyImage";
+import { Image as LazyImage } from "../../components/ui/Image";
 import { images } from "../../assets/assets";
-import AccountDeletionRequest from "../../components/profile/AccountDeletionRequest";
+import AccountDeletionRequest from "../../components/features/profile/AccountDeletionRequest";
 
 const DealerDashboard = () => {
   const navigate = useNavigate();
@@ -54,7 +54,7 @@ const DealerDashboard = () => {
   });
   const { data: notificationsData } = useGetUserNotificationsQuery(
     { page: 1, limit: 10 },
-    { pollingInterval: 30000 }
+    { pollingInterval: 30000 },
   );
   const { data: subscriptionPlansData } = useGetSubscriptionPlansQuery();
   const [logout] = useLogoutMutation();
@@ -80,7 +80,7 @@ const DealerDashboard = () => {
   // Calculate statistics - handle undefined/null safely
   const activeListingsCount = Array.isArray(cars)
     ? cars.filter(
-        (c) => c && !c.isSold && (c.isActive || c.status === "active")
+        (c) => c && !c.isSold && (c.isActive || c.status === "active"),
       ).length
     : 0;
   const isSubscriptionActive =
@@ -511,7 +511,7 @@ const DealerDashboard = () => {
                       <p className="text-sm text-primary-100 mb-4">
                         Expires on:{" "}
                         {new Date(
-                          stats.subscriptionEndDate
+                          stats.subscriptionEndDate,
                         ).toLocaleDateString()}
                       </p>
                     )}
@@ -690,7 +690,7 @@ const DealerDashboard = () => {
                     showSubscriptionTab
                   ) {
                     toast.error(
-                      `You've reached your listing limit. Please upgrade your subscription.`
+                      `You've reached your listing limit. Please upgrade your subscription.`,
                     );
                     navigate("/profile");
                     return;

@@ -9,7 +9,6 @@ import blogRouter from "../routes/blogRoutes.js";
 import notificationRouter from "../routes/notificationRoutes.js";
 import chatRouter from "../routes/chatRoutes.js";
 import supportChatRouter from "../routes/supportChatRoutes.js";
-import analyticsRouter from "../routes/analyticsRoutes.js";
 import settingsRouter from "../routes/settingsRoutes.js";
 import promotionsRouter from "../routes/promotionsRoutes.js";
 import chatbotRouter from "../routes/chatbotRoutes.js";
@@ -19,7 +18,6 @@ import customerRequestRouter from "../routes/customerRequestRoutes.js";
 import bannerRouter from "../routes/bannerRoutes.js";
 import testimonialRouter from "../routes/testimonialRoutes.js";
 import roleRouter from "../routes/roleRoutes.js";
-import uploadRouter from "../routes/uploadRoutes.js";
 import newsletterRouter from "../routes/newsletterRoutes.js";
 import reviewRouter from "../routes/reviewRoutes.js";
 import recommendationsRouter from "../routes/recommendationsRoutes.js";
@@ -46,7 +44,7 @@ class RouteRegistry {
     this.register(
       "/api/account-deletion",
       accountDeletionRouter,
-      "Account Deletion"
+      "Account Deletion",
     );
 
     // Core business logic
@@ -69,13 +67,12 @@ class RouteRegistry {
 
     // Admin and management
     this.register("/api/admin", adminRouter, "Admin Panel");
-    this.register("/api/analytics", analyticsRouter, "Analytics");
     this.register("/api/settings", settingsRouter, "Settings");
     this.register("/api/promotions", promotionsRouter, "Promotions");
     this.register(
       "/api/customer-requests",
       customerRequestRouter,
-      "Customer Requests"
+      "Customer Requests",
     );
     this.register("/api/roles", roleRouter, "Role Management");
 
@@ -84,7 +81,7 @@ class RouteRegistry {
     this.register(
       "/api/subscription-plans",
       subscriptionPlanRouter,
-      "Subscription Plans"
+      "Subscription Plans",
     );
     this.register("/api/price", priceRouter, "Pricing");
 
@@ -95,12 +92,8 @@ class RouteRegistry {
     this.register(
       "/api/recommendations",
       recommendationsRouter,
-      "Recommendations"
+      "Recommendations",
     );
-
-    // Utilities
-    this.register("/api/upload", uploadRouter, "File Upload");
-    this.register("/api/maps", mapsRouter, "Google Maps Proxy");
 
     // SEO routes (must be after API routes to avoid conflicts)
     this.register("/", seoRouter, "SEO", true); // Root level

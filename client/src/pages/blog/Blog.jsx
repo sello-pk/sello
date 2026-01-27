@@ -1,12 +1,12 @@
 import React from "react";
-import BlogsHeroSection from "../../components/sections/blogs/BlogsHeroSection";
+import BlogsHeroSection from "../../components/features/blog/BlogsHeroSection";
 import { GoArrowUpRight } from "react-icons/go";
 import BrandMarquee from "../../components/BrandMarquee";
 import { Link } from "react-router-dom";
-import LatestBlogsSection from "../../components/sections/blogs/LatestBlogsSection";
-import NewTechnology from "../../components/sections/blogs/NewTechnology";
-import ReviewSliderBanner from "../../components/sections/blogs/ReviewSliderBanner";
-import BottomReviews from "../../components/sections/blogs/BottomReviews";
+import LatestBlogsSection from "../../components/features/blog/LatestBlogsSection";
+import NewTechnology from "../../components/features/blog/NewTechnology";
+import ReviewSliderBanner from "../../components/features/blog/ReviewSliderBanner";
+import BottomReviews from "../../components/features/blog/BottomReviews";
 import NewsLatter from "../../components/utils/NewsLatter";
 import SEO from "../../components/common/SEO";
 

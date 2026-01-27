@@ -13,3 +13,14 @@ export const lazyLoadRecharts = () =>
   import("recharts").then((module) => module.default);
 export const lazyLoadGoogleMaps = () =>
   import("@react-google-maps/api").then((module) => module.default);
+
+// Default export for backward compatibility
+export default {
+  lazyLoadTipTap,
+  lazyLoadGSAP,
+  lazyLoadLeaflet,
+  lazyLoadPDF,
+  lazyLoadXLSX,
+  lazyLoadRecharts,
+  lazyLoadGoogleMaps,
+};

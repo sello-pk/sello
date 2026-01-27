@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { buildCarUrl } from "../../utils/urlBuilders";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
-import LazyImage from "./LazyImage";
+import { Image as LazyImage } from "../ui/Image";
 import { images } from "../../assets/assets";
 import {
   useSaveCarMutation,
@@ -78,11 +78,11 @@ const CarCard = ({ car }) => {
           border: "none",
         }}
       >
-        <div className="h-64 relative">
+        <div className="h-64 relative overflow-hidden">
           <LazyImage
             src={carImage}
             alt={`${carMake} ${carModel}`}
-            className={`rounded-t-lg ${car?.isSold ? "opacity-60" : ""}`}
+            className={`rounded-t-lg w-full h-full object-cover ${car?.isSold ? "opacity-60" : ""}`}
             width="100%"
             height="100%"
           />

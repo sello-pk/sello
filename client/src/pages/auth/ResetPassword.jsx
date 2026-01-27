@@ -6,7 +6,7 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { useResetPasswordMutation } from "../../redux/services/api";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import Spinner from "../../components/Spinner";
+import { Spinner } from "../../components/ui/Loading";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");

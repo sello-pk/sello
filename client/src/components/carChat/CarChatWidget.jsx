@@ -8,7 +8,7 @@ import {
   useSendCarChatMessageMutation,
   useCreateCarChatMutation,
 } from "../../redux/services/api";
-import Spinner from "../Spinner";
+import { Spinner } from "../ui/Loading";
 import toast from "react-hot-toast";
 
 const CarChatWidget = ({ carId, carTitle, onClose }) => {
@@ -65,7 +65,7 @@ const CarChatWidget = ({ carId, carTitle, onClose }) => {
             `${API_BASE_URL}/car-chat/car/${carId}`,
             {
               headers: { Authorization: `Bearer ${token}` },
-            }
+            },
           );
           const existingChat = await response.json();
 
@@ -273,7 +273,7 @@ const CarChatWidget = ({ carId, carTitle, onClose }) => {
                               {
                                 hour: "2-digit",
                                 minute: "2-digit",
-                              }
+                              },
                             )}
                           </span>
                         </div>

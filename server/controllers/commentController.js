@@ -1,5 +1,5 @@
 import Comment from "../models/commentModel.js";
-import Blog from "../models/blogModel.js";
+import { Blog } from "../models/blogModel.js";
 import mongoose from "mongoose";
 
 /**
@@ -44,7 +44,7 @@ export const createComment = async (req, res) => {
 
     const populatedComment = await Comment.findById(comment._id).populate(
       "user",
-      "name avatar role"
+      "name avatar role",
     );
 
     return res.status(201).json({
@@ -131,7 +131,7 @@ export const getAllComments = async (req, res) => {
     }
 
     if (blogId) {
-        query.blog = blogId;
+      query.blog = blogId;
     }
 
     if (search) {
@@ -187,7 +187,7 @@ export const updateCommentStatus = async (req, res) => {
     const comment = await Comment.findByIdAndUpdate(
       commentId,
       { status },
-      { new: true }
+      { new: true },
     );
 
     if (!comment) {

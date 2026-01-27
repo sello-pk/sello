@@ -10,7 +10,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useRegisterUserMutation } from "../../redux/services/api";
-import Spinner from "../../components/Spinner";
+import { Spinner } from "../../components/ui/Loading";
 import { FiX, FiChevronDown } from "react-icons/fi";
 import { useCarCategories } from "../../hooks/useCarCategories";
 

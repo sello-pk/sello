@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import AdminLayout from "../../components/admin/AdminLayout";
+import AdminLayout from "../../components/features/admin/AdminLayout";
 import { io } from "socket.io-client";
 import {
     useGetAllSupportChatsQuery,
@@ -8,12 +8,12 @@ import {
     useUpdateSupportChatStatusMutation,
 } from "../../redux/services/adminApi";
 import { useGetMeQuery } from "../../redux/services/api";
-import Spinner from "../../components/Spinner";
+import { Spinner } from "../../components/ui/Loading";
 import toast from "react-hot-toast";
 import { FiSend, FiPaperclip, FiTrash2, FiSearch, FiMoreVertical, FiEdit2 } from "react-icons/fi";
 import { IoMdCheckmark, IoMdDoneAll } from "react-icons/io";
 import { formatDistanceToNow } from "date-fns";
-import ConfirmModal from "../../components/admin/ConfirmModal";
+import ConfirmModal from "../../components/features/admin/ConfirmModal";
 import { useSearchParams } from "react-router-dom";
 import { API_BASE_URL, SOCKET_BASE_URL } from "../../redux/config";
 

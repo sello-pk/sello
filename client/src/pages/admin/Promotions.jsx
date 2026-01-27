@@ -1,16 +1,16 @@
 import { useState } from "react";
-import AdminLayout from "../../components/admin/AdminLayout";
+import AdminLayout from "../../components/features/admin/AdminLayout";
 import {
     useGetAllPromotionsQuery,
     useCreatePromotionMutation,
     useUpdatePromotionMutation,
     useDeletePromotionMutation,
 } from "../../redux/services/adminApi";
-import Spinner from "../../components/Spinner";
+import { Spinner } from "../../components/ui/Loading";
 import toast from "react-hot-toast";
 import { FiPlus, FiX, FiEdit, FiTrash2 } from "react-icons/fi";
-import ConfirmModal from "../../components/admin/ConfirmModal";
-import ActionDropdown from "../../components/admin/ActionDropdown";
+import ConfirmModal from "../../components/features/admin/ConfirmModal";
+import ActionDropdown from "../../components/features/admin/ActionDropdown";
 
 const Promotions = () => {
     const [showModal, setShowModal] = useState(false);

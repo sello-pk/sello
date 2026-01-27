@@ -38,9 +38,8 @@ export const createCar = async (req, res) => {
 
     // Check subscription limits (only for non-admin users)
     if (req.user.role !== "admin") {
-      const { SUBSCRIPTION_PLANS } = await import(
-        "./subscriptionController.js"
-      );
+      const { SUBSCRIPTION_PLANS } =
+        await import("./subscriptionController.js");
       const user = await User.findById(req.user._id);
 
       // Check if subscription is active and not expired
@@ -118,19 +117,27 @@ export const createCar = async (req, res) => {
         .trim()
         .split(" ")
         .map(
-          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
         )
         .join(" ");
     };
 
     // Validate and set vehicleType first (needed for dynamic validation)
-    const validVehicleTypes = ["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"];
+    const validVehicleTypes = [
+      "Car",
+      "Bus",
+      "Truck",
+      "Van",
+      "Bike",
+      "E-bike",
+      "Farm",
+    ];
     const selectedVehicleType = (vehicleType || "Car").trim();
     if (!validVehicleTypes.includes(selectedVehicleType)) {
       return res.status(400).json({
         success: false,
         message: `Invalid vehicle type. Must be one of: ${validVehicleTypes.join(
-          ", "
+          ", ",
         )}`,
       });
     }
@@ -332,9 +339,8 @@ export const createCar = async (req, res) => {
       // Note: Requires 'sharp' package for full validation: npm install sharp
       if (process.env.ENABLE_IMAGE_QUALITY_VALIDATION === "true") {
         try {
-          const { validateMultipleImages } = await import(
-            "../utils/imageValidation.js"
-          );
+          const { validateMultipleImages } =
+            await import("../utils/cloudinary.js");
           const imageBuffers = validFiles.map((file) => file.buffer);
           const validation = await validateMultipleImages(imageBuffers, {
             minWidth: 400,
@@ -387,7 +393,7 @@ export const createCar = async (req, res) => {
             });
             return null;
           }
-        })
+        }),
       );
 
       // Remove null values and sort by order, then extract URLs
@@ -594,7 +600,7 @@ export const createCar = async (req, res) => {
 
     // Refresh user data to get updated role if it was upgraded
     const updatedUser = await User.findById(req.user._id).select(
-      "role name email"
+      "role name email",
     );
 
     return res.status(201).json({
@@ -691,7 +697,7 @@ export const editCar = async (req, res) => {
         .trim()
         .split(" ")
         .map(
-          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
         )
         .join(" ");
     }
@@ -700,7 +706,7 @@ export const editCar = async (req, res) => {
         .trim()
         .split(" ")
         .map(
-          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
         )
         .join(" ");
     }
@@ -752,7 +758,7 @@ export const editCar = async (req, res) => {
             });
             return null;
           }
-        })
+        }),
       );
       const newImages = uploadedImages
         .filter((item) => item !== null)
@@ -1099,7 +1105,7 @@ export const getAllCars = async (req, res) => {
           !(
             clause.$or &&
             clause.$or.some((c) => c.status && c.status.$ne === "sold")
-          )
+          ),
       );
     }
 
@@ -1122,7 +1128,7 @@ export const getAllCars = async (req, res) => {
         ? req.query.vehicleType
         : [req.query.vehicleType];
       const validTypes = vehicleTypes.filter((vt) =>
-        validVehicleTypes.includes(vt)
+        validVehicleTypes.includes(vt),
       );
       if (validTypes.length > 0) {
         vehicleTypeFilter = { vehicleType: { $in: validTypes } };
@@ -1160,7 +1166,10 @@ export const getAllCars = async (req, res) => {
         conditionValue.charAt(0).toUpperCase() +
         conditionValue.slice(1).toLowerCase();
       if (normalizedCondition === "New" || normalizedCondition === "Used") {
-        const filtersToCombine = [...baseQuery.$and, { condition: normalizedCondition }];
+        const filtersToCombine = [
+          ...baseQuery.$and,
+          { condition: normalizedCondition },
+        ];
         if (vehicleTypeFilter) {
           filtersToCombine.push(vehicleTypeFilter);
         }
@@ -1184,7 +1193,7 @@ export const getAllCars = async (req, res) => {
     if (req.query.vehicleTypeCategory) {
       if (mongoose.Types.ObjectId.isValid(req.query.vehicleTypeCategory)) {
         query.vehicleTypeCategory = new mongoose.Types.ObjectId(
-          req.query.vehicleTypeCategory
+          req.query.vehicleTypeCategory,
         );
       }
     }
@@ -1198,7 +1207,7 @@ export const getAllCars = async (req, res) => {
     // Sort: Featured first, then by creation date
     const cars = await Car.find(query)
       .select(
-        "title make model year price images city location status featured condition fuelType transmission mileage postedBy createdAt views geoLocation vehicleType features carDoors horsepower engineCapacity"
+        "title make model year price images city location status featured condition fuelType transmission mileage postedBy createdAt views geoLocation vehicleType features carDoors horsepower engineCapacity",
       )
       .skip(skip)
       .limit(limit)
@@ -1298,7 +1307,7 @@ export const getSingleCar = async (req, res) => {
         await RecentlyViewed.findOneAndUpdate(
           { user: req.user._id, car: car._id },
           { viewedAt: new Date() },
-          { upsert: true, new: true }
+          { upsert: true, new: true },
         );
       } catch (viewError) {
         // Don't fail the request if tracking fails
@@ -1310,9 +1319,8 @@ export const getSingleCar = async (req, res) => {
 
     // Track analytics
     try {
-      const { trackEvent, AnalyticsEvents } = await import(
-        "../utils/analytics.js"
-      );
+      const { trackEvent, AnalyticsEvents } =
+        await import("../utils/analytics.js");
       await trackEvent(AnalyticsEvents.LISTING_VIEW, req.user?._id, {
         carId: car._id.toString(),
         make: car.make,
@@ -1419,7 +1427,7 @@ export const markCarAsSold = async (req, res) => {
               24 *
               60 *
               60 *
-              1000
+              1000,
         ) // Configurable days (default: 30 days like PakWheels)
       : null;
 
@@ -1535,7 +1543,7 @@ export const getFilteredCars = async (req, res) => {
     try {
       await Car.updateMany(
         { isBoosted: true, boostExpiry: { $lt: new Date() } },
-        { $set: { isBoosted: false, boostPriority: 0 } }
+        { $set: { isBoosted: false, boostPriority: 0 } },
       );
     } catch (dbError) {
       // If updateMany fails, log but continue (non-critical operation)
@@ -1563,7 +1571,11 @@ export const getFilteredCars = async (req, res) => {
       });
       // Try a simple regex search as fallback if search term exists
       if (req.query.search || req.query.keyword || req.query.q) {
-        const searchTerm = (req.query.search || req.query.keyword || req.query.q).trim();
+        const searchTerm = (
+          req.query.search ||
+          req.query.keyword ||
+          req.query.q
+        ).trim();
         if (searchTerm.length >= 2) {
           const searchRegex = new RegExp(searchTerm, "i");
           filter = {

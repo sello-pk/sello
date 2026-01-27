@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 import { FiMail, FiUser, FiShield, FiClock, FiCheck } from "react-icons/fi";
 import toast from "react-hot-toast";
-import Spinner from "../../components/Spinner";
+import { Spinner } from "../../components/ui/Loading";
 import {
   useGetInviteByTokenQuery,
   useAcceptInviteMutation,

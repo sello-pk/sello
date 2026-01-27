@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import AdminLayout from "../../components/admin/AdminLayout";
+import AdminLayout from "../../components/features/admin/AdminLayout";
 import { ROUTES } from "../../routes";
 import { usePolling } from "../../hooks/usePolling";
 import {
@@ -9,18 +9,18 @@ import {
     useUpdateUserMutation,
     useDeleteUserMutation,
 } from "../../redux/services/adminApi";
-import Spinner from "../../components/Spinner";
-import { TableSkeleton } from "../../components/Skeleton";
-import Pagination from "../../components/admin/Pagination";
-import FilterPanel from "../../components/admin/FilterPanel";
-import DataTable from "../../components/admin/DataTable";
-import Tooltip from "../../components/admin/Tooltip";
+import { Spinner } from "../../components/ui/Loading";
+import { TableSkeleton } from "../../components/ui/Loading";
+import Pagination from "../../components/features/admin/Pagination";
+import FilterPanel from "../../components/features/admin/FilterPanel";
+import DataTable from "../../components/features/admin/DataTable";
+import Tooltip from "../../components/features/admin/Tooltip";
 import { exportToCSV, formatDateForExport } from "../../utils/exportUtils";
 import { notifyActionSuccess, notifyActionError, notifyError } from "../../utils/notifications";
 import toast from "react-hot-toast";
 import { FiSearch, FiEdit2, FiTrash2, FiX, FiSave, FiDownload } from "react-icons/fi";
 import { MdBlock, MdCheckCircle } from "react-icons/md";
-import ConfirmModal from "../../components/admin/ConfirmModal";
+import ConfirmModal from "../../components/features/admin/ConfirmModal";
 
 const Users = () => {
     const { userId } = useParams();

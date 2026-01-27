@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import { generateOtp } from "../utils/generateOtp.js";
+import { generateOtp } from "../utils/phoneVerification.js";
 import sendEmail from "../utils/sendEmail.js";
 import {
   getPasswordResetTemplate,
@@ -33,7 +33,7 @@ const generateAccessToken = (userId, email) => {
       expiresIn:
         process.env.JWT_ACCESS_EXPIRES_IN ||
         (process.env.NODE_ENV === "production" ? "2h" : "1h"), // Increased to 1h dev, 2h prod
-    }
+    },
   );
 };
 
@@ -52,7 +52,7 @@ const storeRefreshToken = async (
   refreshToken,
   userAgent,
   ipAddress,
-  ttlDays = 7
+  ttlDays = 7,
 ) => {
   try {
     const expiresAt = new Date();
@@ -90,7 +90,7 @@ const generateTokens = async (
   email,
   userAgent,
   ipAddress,
-  ttlDays = 7
+  ttlDays = 7,
 ) => {
   const accessToken = generateAccessToken(userId, email);
   const refreshToken = generateRefreshToken();
@@ -254,8 +254,8 @@ export const register = async (req, res) => {
         role === "dealer"
           ? "dealer"
           : role === "admin"
-          ? "admin"
-          : "individual",
+            ? "admin"
+            : "individual",
       status: "active",
       isEmailVerified: false,
     };
@@ -471,7 +471,7 @@ export const register = async (req, res) => {
       Logger.info(`Welcome email sent to: ${user.email}`);
     } catch (emailError) {
       Logger.warn(
-        `Failed to send welcome email to ${user.email}: ${emailError.message}`
+        `Failed to send welcome email to ${user.email}: ${emailError.message}`,
       );
       // Don't break registration if email fails
     }
@@ -508,7 +508,7 @@ export const register = async (req, res) => {
         Logger.error(
           "Error creating admin notification for dealer registration",
           notifError,
-          { userId: user._id, email: user.email }
+          { userId: user._id, email: user.email },
         );
         // Don't fail registration if notification fails
       }
@@ -521,7 +521,7 @@ export const register = async (req, res) => {
       user._id,
       user.email,
       userAgent,
-      ipAddress
+      ipAddress,
     );
 
     // Set access token in cookie as well (for compatibility)
@@ -689,7 +689,7 @@ export const login = async (req, res) => {
       user.email,
       userAgent,
       ipAddress,
-      refreshTtlDays
+      refreshTtlDays,
     );
 
     // Set access token in cookie as well (for compatibility)
@@ -779,7 +779,7 @@ export const forgotPassword = async (req, res) => {
       Logger.warn(
         `Password reset attempt for ${
           !user ? "non-existent" : "suspended"
-        } email: ${normalizedEmail}`
+        } email: ${normalizedEmail}`,
       );
 
       // USER-FRIENDLY APPROACH: Be honest with users
@@ -818,7 +818,7 @@ export const forgotPassword = async (req, res) => {
     } catch (emailError) {
       // Log the error but don't break the response
       Logger.error(
-        `Failed to send reset email to ${user.email}: ${emailError.message}`
+        `Failed to send reset email to ${user.email}: ${emailError.message}`,
       );
     }
 
@@ -875,7 +875,7 @@ export const verifyOtp = async (req, res) => {
     // 🔐 SECURITY: Don't reveal if user exists or not
     if (!user) {
       Logger.warn(
-        `OTP verification attempt for non-existent email: ${email.toLowerCase()}`
+        `OTP verification attempt for non-existent email: ${email.toLowerCase()}`,
       );
       return res.status(400).json({
         success: false,
@@ -894,7 +894,7 @@ export const verifyOtp = async (req, res) => {
     // Check if OTP exists and is valid
     if (!user.otp || user.otp !== otp.toString()) {
       Logger.warn(
-        `Invalid OTP attempt for email: ${user.email}. Expected: ${user.otp}, Got: ${otp}`
+        `Invalid OTP attempt for email: ${user.email}. Expected: ${user.otp}, Got: ${otp}`,
       );
       return res.status(400).json({
         success: false,
@@ -907,7 +907,7 @@ export const verifyOtp = async (req, res) => {
       Logger.warn(
         `Expired OTP attempt for email: ${
           user.email
-        }. OTP expired at: ${new Date(user.otpExpiry)}`
+        }. OTP expired at: ${new Date(user.otpExpiry)}`,
       );
       user.otp = null;
       user.otpExpiry = null;
@@ -924,7 +924,7 @@ export const verifyOtp = async (req, res) => {
     await user.save({ validateBeforeSave: false });
 
     Logger.info(
-      `OTP verified successfully for: ${user.email}. otpVerified set to: ${user.otpVerified}`
+      `OTP verified successfully for: ${user.email}. otpVerified set to: ${user.otpVerified}`,
     );
 
     return res.status(200).json({
@@ -973,7 +973,7 @@ export const resendOtp = async (req, res) => {
       Logger.warn(
         `Resend OTP attempt for ${
           !user ? "non-existent" : "suspended"
-        } email: ${normalizedEmail}`
+        } email: ${normalizedEmail}`,
       );
 
       // USER-FRIENDLY APPROACH: Be honest with users
@@ -1011,7 +1011,7 @@ export const resendOtp = async (req, res) => {
       await sendEmail(user.email, subject, html);
     } catch (emailError) {
       Logger.error(
-        `Failed to send reset email to ${user.email}: ${emailError.message}`
+        `Failed to send reset email to ${user.email}: ${emailError.message}`,
       );
     }
 
@@ -1075,7 +1075,7 @@ export const resetPassword = async (req, res) => {
     // 🔐 SECURITY: Don't reveal if user exists or not
     if (!user) {
       Logger.warn(
-        `Password reset attempt for non-existent email: ${email.toLowerCase()}`
+        `Password reset attempt for non-existent email: ${email.toLowerCase()}`,
       );
       return res.status(400).json({
         success: false,
@@ -1095,7 +1095,7 @@ export const resetPassword = async (req, res) => {
     // Verify OTP was verified (check both OTP exists and was verified)
     if (!user.otp) {
       Logger.warn(
-        `Password reset attempt without OTP for email: ${user.email}`
+        `Password reset attempt without OTP for email: ${user.email}`,
       );
       return res.status(400).json({
         success: false,
@@ -1105,7 +1105,7 @@ export const resetPassword = async (req, res) => {
 
     if (!user.otpVerified) {
       Logger.warn(
-        `Password reset attempt with unverified OTP for email: ${user.email}`
+        `Password reset attempt with unverified OTP for email: ${user.email}`,
       );
       return res.status(400).json({
         success: false,
@@ -1288,7 +1288,7 @@ export const googleLogin = async (req, res) => {
           avatar:
             picture ||
             `https://ui-avatars.com/api/?name=${encodeURIComponent(
-              (name || email.charAt(0)).toUpperCase()
+              (name || email.charAt(0)).toUpperCase(),
             )}`,
           password: randomPassword, // Secure placeholder password
           verified: true,
@@ -1347,7 +1347,7 @@ export const googleLogin = async (req, res) => {
       user._id,
       user.email,
       userAgent,
-      ipAddress
+      ipAddress,
     );
 
     // Set access token in cookie as well (for compatibility)
@@ -1486,7 +1486,7 @@ export const logout = async (req, res) => {
         {
           isRevoked: true,
           revokedAt: new Date(),
-        }
+        },
       );
 
       if (revoked.matchedCount === 0) {
@@ -1502,7 +1502,7 @@ export const logout = async (req, res) => {
         {
           isRevoked: true,
           revokedAt: new Date(),
-        }
+        },
       );
     }
 
@@ -1597,7 +1597,7 @@ export const refreshToken = async (req, res) => {
         {
           isRevoked: true,
           revokedAt: new Date(),
-        }
+        },
       );
 
       return res.status(403).json({
@@ -1631,7 +1631,7 @@ export const refreshToken = async (req, res) => {
       newRefreshToken,
       userAgent,
       ipAddress,
-      ttlDays
+      ttlDays,
     );
 
     // Set new access token in cookie
@@ -1689,7 +1689,7 @@ export const logoutAllDevices = async (req, res) => {
       {
         isRevoked: true,
         revokedAt: new Date(),
-      }
+      },
     );
 
     Logger.info("User logged out from all devices", {
@@ -1831,7 +1831,7 @@ export const verifyPhone = async (req, res) => {
     const isValid = verifyCode(
       user.phoneVerificationCode,
       code,
-      user.phoneVerificationExpiry
+      user.phoneVerificationExpiry,
     );
 
     if (!isValid) {

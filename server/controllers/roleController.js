@@ -2,7 +2,7 @@ import Role from "../models/roleModel.js";
 import User from "../models/userModel.js";
 import Invite from "../models/inviteModel.js";
 import Notification from "../models/notificationModel.js";
-import { createAuditLog } from "../utils/auditLogger.js";
+import { createAuditLog } from "../utils/logger.js";
 import sendEmail from "../utils/sendEmail.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -411,7 +411,7 @@ export const createRole = async (req, res) => {
         roleName: role.name,
       },
       null,
-      req
+      req,
     );
 
     return res.status(201).json({
@@ -493,7 +493,7 @@ export const updateRole = async (req, res) => {
         roleName: role.name,
       },
       null,
-      req
+      req,
     );
 
     return res.status(200).json({
@@ -570,7 +570,7 @@ export const deleteRole = async (req, res) => {
     try {
       // Add timeout to prevent hanging queries (increased to 30s)
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("User count query timeout")), 30000)
+        setTimeout(() => reject(new Error("User count query timeout")), 30000),
       );
 
       usersWithRole = await Promise.race([
@@ -616,7 +616,7 @@ export const deleteRole = async (req, res) => {
           roleId: role._id,
           roleName: role.name,
           conflictingInactiveRoleId: existingInactiveRole._id,
-        }
+        },
       );
 
       await Role.deleteOne({ _id: roleId });
@@ -625,7 +625,7 @@ export const deleteRole = async (req, res) => {
       await Role.findOneAndUpdate(
         { _id: roleId },
         { isActive: false },
-        { new: true }
+        { new: true },
       );
     }
 
@@ -658,7 +658,7 @@ export const deleteRole = async (req, res) => {
             roleDisplayName: role.displayName,
           },
           null,
-          req
+          req,
         );
       } catch (auditError) {
         Logger.error("Delete role - Audit log failed", auditError);
@@ -733,7 +733,7 @@ export const inviteUser = async (req, res) => {
           role: role,
         },
         null,
-        req
+        req,
       );
     } catch (auditError) {
       Logger.error("Audit log error (non-blocking)", auditError);
@@ -954,8 +954,8 @@ export const inviteUser = async (req, res) => {
                     <p>You have been invited by <strong>${
                       req.user.name
                     }</strong> (${
-      req.user.email
-    }) to join the <strong>${siteName}</strong> Admin Panel as <strong>${role}</strong>.</p>
+                      req.user.email
+                    }) to join the <strong>${siteName}</strong> Admin Panel as <strong>${role}</strong>.</p>
                     <div style="text-align: center; margin: 30px 0;">
                         <a href="${inviteUrl}" style="background-color: #FFA602; color: #111827; padding: 14px 28px; text-decoration: none; border-radius: 999px; display: inline-block; font-weight: 700; font-size: 16px; box-shadow: 0 10px 25px rgba(255, 166, 2, 0.35); letter-spacing: 0.3px;">Accept Invitation</a>
                     </div>
@@ -966,7 +966,7 @@ export const inviteUser = async (req, res) => {
                     <p style="color: #666; font-size: 14px; margin-bottom: 0;">
                         <strong>Important:</strong> This invitation will expire on <strong>${expiresAt.toLocaleDateString(
                           "en-US",
-                          { year: "numeric", month: "long", day: "numeric" }
+                          { year: "numeric", month: "long", day: "numeric" },
                         )}</strong>.
                     </p>
                     <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
@@ -987,7 +987,7 @@ export const inviteUser = async (req, res) => {
       const emailResult = await sendEmail(
         email,
         `Invitation to join ${siteName} Admin Panel`,
-        emailHtml
+        emailHtml,
       );
 
       // Check if email was actually sent (not just dev mode simulation)
@@ -1047,7 +1047,7 @@ export const inviteUser = async (req, res) => {
           emailSent: emailSent,
         },
         null,
-        req
+        req,
       );
     } catch (auditError) {
       Logger.error("Audit log error (non-blocking)", auditError);
@@ -1221,7 +1221,7 @@ export const updateInvite = async (req, res) => {
         targetEmail: invite.email,
       },
       null,
-      req
+      req,
     );
 
     return res.status(200).json({
@@ -1297,7 +1297,7 @@ export const deleteInvite = async (req, res) => {
         originalStatus: invite.status,
       },
       null,
-      req
+      req,
     );
 
     Logger.info("Delete invite - Success", { inviteId, email: invite.email });
@@ -1411,7 +1411,7 @@ export const resendInvite = async (req, res) => {
         targetEmail: invite.email,
       },
       null,
-      req
+      req,
     );
 
     return res.status(200).json({
@@ -1462,7 +1462,7 @@ export const cancelInvite = async (req, res) => {
         cancelledAt: new Date(),
         cancelledBy: req.user._id,
       },
-      { new: true }
+      { new: true },
     );
 
     if (!invite) {
@@ -1483,7 +1483,7 @@ export const cancelInvite = async (req, res) => {
           role: invite.role,
         },
         null,
-        req
+        req,
       );
     } catch (auditError) {
       Logger.error("Audit log error (non-blocking)", auditError);
@@ -1546,7 +1546,7 @@ export const getAllInvites = async (req, res) => {
     // Exclude cancelled invites from the response
     const invites = await Invite.find()
       .select(
-        "email fullName phone role roleId permissions token expiresAt status invitedBy acceptedBy acceptedAt createdAt updatedAt"
+        "email fullName phone role roleId permissions token expiresAt status invitedBy acceptedBy acceptedAt createdAt updatedAt",
       )
       .populate("invitedBy", "name email")
       .populate("acceptedBy", "name email")
@@ -1591,7 +1591,7 @@ export const fixCustomRoles = async (req, res) => {
       },
       {
         $set: { isPreset: false },
-      }
+      },
     );
 
     Logger.info("Fixed custom roles", {
@@ -1876,7 +1876,7 @@ export const acceptInvite = async (req, res) => {
       verified: true,
       isEmailVerified: true,
       avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
-        invite.fullName
+        invite.fullName,
       )}&background=4F46E5&color=fff`,
     });
 
@@ -1890,7 +1890,7 @@ export const acceptInvite = async (req, res) => {
     const jwtToken = jwt.sign(
       { id: user._id, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
+      { expiresIn: process.env.JWT_EXPIRES_IN || "7d" },
     );
 
     // Log the acceptance
@@ -1902,7 +1902,7 @@ export const acceptInvite = async (req, res) => {
         role: invite.role,
       },
       null,
-      req
+      req,
     );
 
     return res.status(201).json({

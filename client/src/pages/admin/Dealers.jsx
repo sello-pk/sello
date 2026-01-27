@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import AdminLayout from "../../components/admin/AdminLayout";
+import AdminLayout from "../../components/features/admin/AdminLayout";
 import { ROUTES } from "../../routes";
 import {
     useGetAllDealersQuery,
@@ -8,9 +8,9 @@ import {
     useGetUserByIdQuery,
     useDeleteUserMutation,
 } from "../../redux/services/adminApi";
-import ConfirmModal from "../../components/admin/ConfirmModal";
+import ConfirmModal from "../../components/features/admin/ConfirmModal";
 import { notifyActionSuccess, notifyActionError } from "../../utils/notifications";
-import Spinner from "../../components/Spinner";
+import { Spinner } from "../../components/ui/Loading";
 import toast from "react-hot-toast";
 import { FiSearch, FiGrid, FiCheckCircle, FiXCircle, FiEye, FiEdit2, FiX, FiTrash2 } from "react-icons/fi";
 
