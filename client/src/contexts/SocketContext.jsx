@@ -99,6 +99,15 @@ export const SocketProvider = ({ children }) => {
         console.error("❌ Socket connection error:", error.message);
         setSocketConnected(false);
 
+        // If it's an authentication error (like expired token), don't auto-reconnect
+        // This prevents infinite loops with an expired token
+        if (error.message.includes("Authentication error") || error.message.includes("Token expired")) {
+          console.warn("🛑 Stopping socket reconnection due to authentication failure.");
+          // Reset session storage error flag if it was an auth error
+          sessionStorage.removeItem("socketErrorShown");
+          return;
+        }
+
         // Show user-friendly error message only once per session
         const errorKey = "socketErrorShown";
         if (!sessionStorage.getItem(errorKey)) {
@@ -116,7 +125,7 @@ export const SocketProvider = ({ children }) => {
           sessionStorage.setItem(errorKey, "true");
         }
 
-        // Attempt to reconnect after a delay
+        // Attempt to reconnect after a delay for network issues
         reconnectTimeoutRef.current = setTimeout(() => {
           console.log("🔄 Attempting to reconnect socket...");
           newSocket.connect();

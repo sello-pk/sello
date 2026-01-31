@@ -36,19 +36,7 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
   };
 
   // Calculate confidence and scores based on form data
-  const calculateConfidence = () => {
-    let score = 85; // Base score
-    const formData = result.formData || {};
-
-    // Adjust based on condition
-    if (formData.engineCondition === "excellent") score += 5;
-    if (formData.bodyCondition === "excellent") score += 5;
-    if (formData.paintStatus === "Original") score += 3;
-    if (formData.mileage < 50000) score += 5;
-    if (formData.accidentHistory === "None") score += 5;
-
-    return Math.min(95, Math.max(60, score));
-  };
+  const confidence = result.confidence || 85;
 
   const calculateConditionScores = () => {
     const formData = result.formData || {};
@@ -86,7 +74,6 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
     };
   };
 
-  const confidence = calculateConfidence();
   const scores = calculateConditionScores();
   const avgPrice = (result.min + result.max) / 2;
 
@@ -157,10 +144,10 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
             </div>
             <div>
               <div className="text-sm opacity-90">
-                AI-Powered • Real-Time Market Data
+                {result.isAIPowered ? "OpenAI GPT-4o Enhanced" : "AI-Powered • Real-Time Market Data"}
               </div>
               <div className="text-xs opacity-75">
-                Get Your Car's True Value
+                {result.isAIPowered ? "Professional Market Analysis" : "Get Your Car's True Value"}
               </div>
             </div>
           </div>
@@ -174,8 +161,9 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
         </div>
 
         <div className="text-xs opacity-75">
-          Our AI analyzes real-time data from PakWheels, OLX & local dealerships
-          to give you the most accurate valuation for your car.
+          {result.isAIPowered 
+            ? "Enhanced with OpenAI GPT-4o for professional market analysis" 
+            : "Our AI analyzes real-time data from Sello & local dealerships to give you accurate valuations"}
         </div>
       </div>
 
@@ -288,31 +276,19 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
           {activeTab === "analysis" && (
             <div className="space-y-4">
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4" />
-                  AI Analysis Summary
+                <h3 className="font-semibold text-blue-900 mb-2 flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4" />
+                    AI Analysis Summary
+                  </span>
+                  {result.isAIPowered && (
+                    <span className="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">
+                      GPT-4o Professional
+                    </span>
+                  )}
                 </h3>
-                <p className="text-blue-800 text-sm leading-relaxed">
-                  The {result.formData?.year || "2025"}{" "}
-                  {result.formData?.make || "Toyota"}{" "}
-                  {result.formData?.model || "Corolla"}{" "}
-                  {result.formData?.variant || "XLi"}{" "}
-                  {result.formData?.transmission || "Automatic"} in{" "}
-                  {result.formData?.registrationCity || "Multan"}, with{" "}
-                  {result.formData?.mileage || "123,445"} km mileage, is
-                  estimated to be valued between {formatPriceFull(result.min)}{" "}
-                  and {formatPriceFull(result.max)}. This valuation considers
-                  the regional price adjustment for{" "}
-                  {result.formData?.registrationCity || "Multan"}, the automatic
-                  transmission premium, and the absence of premium features. The
-                  car's {result.formData?.engineCondition || "good"} engine,{" "}
-                  {result.formData?.bodyCondition || "good"} body, and{" "}
-                  {result.formData?.interiorCondition || "good"} interior
-                  conditions positively influence its value, while the{" "}
-                  {result.formData?.paintStatus || "repainting"} and higher
-                  mileage slightly reduce it. The market demand for this model
-                  is {getDemandLevel().toLowerCase()}, and the confidence level
-                  in this estimate is {getConfidenceLevel().toLowerCase()}.
+                <p className="text-blue-800 text-sm leading-relaxed whitespace-pre-line">
+                  {result.summary}
                 </p>
               </div>
             </div>
@@ -493,10 +469,10 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
                 ))}
               </div>
 
-              <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                <div className="text-xs text-blue-800">
-                  <strong>Data sourced from:</strong> PakWheels, OLX Pakistan &
-                  local dealerships
+              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="text-xs text-yellow-800">
+                  <strong>Note:</strong> Market comparison data is simulated based on typical pricing patterns. 
+                  For real-time market data, please check PakWheels, OLX Pakistan, and local dealerships directly.
                 </div>
               </div>
             </div>

@@ -7,7 +7,7 @@
 
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { sendSavedSearchAlerts } from '../controllers/savedSearchController.js';
+import { sendSavedSearchAlerts } from '../controllers/userDomainController.js';
 import connectDB from '../config/db.js';
 import Logger from '../utils/logger.js';
 

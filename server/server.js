@@ -7,7 +7,6 @@ import Logger from "./utils/logger.js";
 import mongoose from "mongoose";
 import validateEnvVars from "./utils/envValidator.js";
 import { SERVER_CONFIG, LOG_CONFIG } from "./config/index.js";
-import notificationRoutes from "./routes/notificationRoutes.js";
 
 // Validate environment variables before starting server
 validateEnvVars({ strict: process.env.NODE_ENV === "production" });
@@ -50,6 +49,8 @@ if (process.env.ENABLE_CRON_JOBS === "true") {
         const { default: runSubscriptionExpiration } = await import(
           "./scripts/subscriptionExpirationJob.js"
         );
+        await runSubscriptionExpiration(); // Actually execute the function
+        Logger.info("Subscription expiration job completed");
       } catch (error) {
         Logger.error("Subscription expiration cron job failed", error);
       }
@@ -60,7 +61,7 @@ if (process.env.ENABLE_CRON_JOBS === "true") {
       Logger.info("Running saved search alerts job...");
       try {
         const { sendSavedSearchAlerts } = await import(
-          "./controllers/savedSearchController.js"
+          "./controllers/userDomainController.js"
         );
         await sendSavedSearchAlerts();
       } catch (error) {

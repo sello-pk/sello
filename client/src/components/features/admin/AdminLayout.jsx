@@ -105,11 +105,18 @@ const AdminLayout = ({ children }) => {
     },
     { path: "/admin/activity-log", icon: FiActivity, label: "Activity Log" },
     { path: "/admin/chat", icon: FiMessageSquare, label: "Chat Monitoring" },
+    { path: "/admin/support-chat", icon: FiMessageSquare, label: "Support Chat" },
     { path: "/admin/chatbot", icon: FiCpu, label: "Support Chatbot" },
+
     {
       path: "/admin/customer-requests",
       icon: FiUser,
       label: "Customer Requests",
+    },
+    {
+      path: "/admin/valuations",
+      icon: FiActivity,
+      label: "Car Estimator",
     },
     {
       path: "/admin/account-deletion-requests",

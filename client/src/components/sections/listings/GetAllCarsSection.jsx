@@ -390,7 +390,7 @@ const GetAllCarsSection = () => {
                         <LazyImage
                           src={carImage}
                           alt={`${carMake} ${carModel}`}
-                          className={`rounded-t-lg`}
+                          className={`rounded-t object-cover`}
                           width="100%"
                           height="100%"
                           onError={() => {

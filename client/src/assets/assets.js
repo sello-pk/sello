@@ -21,7 +21,7 @@ import br3 from "./images/br3.svg";
 import br4 from "./images/br4.svg";
 import br5 from "./images/br5.svg";
 import br6 from "./images/br6.svg";
-import br7 from "./images/br7.png";
+import br7 from "./images/br7.PNG";
 import satisficationSectionImage from "./images/satisficationSectionImage.png";
 import why1 from "./images/why1.svg";
 import why2 from "./images/why2.svg";

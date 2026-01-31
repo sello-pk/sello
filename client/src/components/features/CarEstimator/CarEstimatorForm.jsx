@@ -16,6 +16,8 @@ import ExteriorColor from "../../../components/utils/filter/ExteriorColor";
 import FuelSpecs from "../../../components/utils/filter/FuelSpecs";
 import TransmissionSpecs from "../../../components/utils/filter/TransmissionSpecs";
 import EngineCapacitySpecs from "../../../components/utils/filter/EngineCapacitySpecs";
+import { useCreateValuationMutation } from "../../../redux/services/api";
+import toast from "react-hot-toast";
 
 // Remove hardcoded data - will use dynamic data from admin panel
 const accidentHistories = ["None", "Minor", "Major"];
@@ -152,7 +154,7 @@ export default function CarEstimatorForm({ onEstimate }) {
   });
 
   const [errors, setErrors] = useState({});
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [createValuation, { isLoading: isAnalyzing }] = useCreateValuationMutation();
 
   const isFormValid =
     formData.make &&
@@ -313,14 +315,45 @@ export default function CarEstimatorForm({ onEstimate }) {
     e.preventDefault();
 
     if (validateForm()) {
-      setIsAnalyzing(true);
+      try {
+        // Get actual make and model names from the selected IDs
+        const selectedMakeObj = makes.find(m => m._id === formData.make);
+        const selectedModelObj = availableModels.find(m => m._id === formData.model);
+        const selectedCityObj = cities.find(c => c._id === formData.registrationCity);
 
-      // Simulate API call
-      setTimeout(() => {
-        const result = calculateMockEstimation();
-        setIsAnalyzing(false);
-        onEstimate(result);
-      }, 2000);
+        // Prepare data with actual names instead of IDs for backend processing
+        const valuationData = {
+          ...formData,
+          make: selectedMakeObj?.name || formData.make,
+          model: selectedModelObj?.name || formData.model,
+          registrationCity: selectedCityObj?.name || formData.registrationCity,
+        };
+
+        const result = await createValuation(valuationData).unwrap();
+        
+        // Handle both possible response structures
+        const estimation = result.data?.estimation || result.estimation;
+        const vehicleData = result.data?.vehicleData || result.vehicleData || valuationData;
+
+        if (!estimation) {
+          throw new Error("Invalid response structure from server");
+        }
+
+        onEstimate({
+          min: estimation.minPrice,
+          max: estimation.maxPrice,
+          average: estimation.averagePrice,
+          confidence: estimation.confidenceScore,
+          summary: estimation.analysisSummary,
+          isAIPowered: estimation.isAIPowered || false,
+          formData: vehicleData
+        });
+        toast.success("Analysis complete!");
+      } catch (error) {
+        console.error("Valuation Error:", error);
+        const errorMessage = error?.data?.message || error?.message || "Failed to analyze car value. Please try again.";
+        toast.error(errorMessage);
+      }
     }
   };
 

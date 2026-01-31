@@ -176,6 +176,7 @@ export const adminApi = createApi({
     "Roles",
     "Invites",
     "SubscriptionPlans",
+    "Valuations",
   ],
   endpoints: (builder) => ({
     // Dashboard
@@ -1045,6 +1046,23 @@ export const adminApi = createApi({
       invalidatesTags: ["DeletionRequests", "Users"],
       transformResponse: (response) => response?.data || response,
     }),
+
+    // Valuation Management
+    getAllValuationsAdmin: builder.query({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams(params).toString();
+        return `/valuations/admin/all?${searchParams}`;
+      },
+      providesTags: ["Valuations"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    deleteValuationAdmin: builder.mutation({
+      query: (id) => ({
+        url: `/valuations/admin/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Valuations"],
+    }),
   }),
 });
 
@@ -1149,4 +1167,6 @@ export const {
   useGetAllDeletionRequestsQuery,
   useGetDeletionRequestStatsQuery,
   useReviewDeletionRequestMutation,
+  useGetAllValuationsAdminQuery,
+  useDeleteValuationAdminMutation,
 } = adminApi;

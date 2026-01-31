@@ -143,19 +143,23 @@ export const initializeSocket = (server) => {
         socket.user = user;
         next();
       } catch (jwtError) {
-        Logger.error("JWT verification error in socket", jwtError, {
-          socketId: socket.id,
-          errorType: jwtError.name,
-        });
-
-        // Handle specific JWT errors
         if (jwtError.name === "TokenExpiredError") {
+          // Token expired is a routine event, no need to log as warning
+          // Logger.warn("JWT token expired in socket", { socketId: socket.id });
           return next(
             new Error(
               "Authentication error: Token expired. Please refresh your session."
             )
           );
-        } else if (jwtError.name === "JsonWebTokenError") {
+        }
+
+        Logger.error("JWT verification error in socket", jwtError, {
+          socketId: socket.id,
+          errorType: jwtError.name,
+        });
+
+        // Handle other specific JWT errors
+        if (jwtError.name === "JsonWebTokenError") {
           return next(new Error("Authentication error: Invalid token format."));
         } else {
           return next(

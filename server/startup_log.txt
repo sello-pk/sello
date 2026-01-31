@@ -1,0 +1,37 @@
+﻿≡ƒöº Environment loaded from: E:\random\wb-digitech\sello\server\.env
+≡ƒöº ENABLE_EMAIL_NOTIFICATIONS: true
+≡ƒöº NODE_ENV: development
+[INFO] Stripe initialized successfully {}
+node : [WARN] Optional env var not set: 
+STRIPE_WEBHOOK_SECRET {
+At line:1 char:17
++ $env:PORT=5005; node server.js 2>&1 | Out-File 
+-FilePath startup_log. ...
++                 ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WARN] Opt 
+   ional...EBHOOK_SECRET {:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  description: 'Stripe webhook secret',
+  message: 'Stripe webhooks will not be verified',
+  default: undefined
+}
+ΓÜá∩╕Å  STRIPE_WEBHOOK_SECRET: Stripe webhook secret
+   Stripe webhooks will not be verified
+[INFO] Database cache initialized {}
+(node:1864) [MONGOOSE] Warning: Duplicate schema index 
+on {"featured":1} found. This is often due to declaring 
+an index using both "index: true" and "schema.index()". 
+Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the 
+warning was created)
+[INFO] MongoDb Connected Successfully... {}
+Γ£à MongoDB connected
+[INFO] ≡ƒöÉ Database roles initialized {}
+[INFO] ≡ƒÜÇ Server running on PORT:5005 {}
+[INFO] ≡ƒôí API available at http://localhost:5005/api {}
+[INFO] ≡ƒîì Environment: development {}
+[INFO] ≡ƒôè Database: Connected {}
+[INFO] ≡ƒöî Socket.io initialized {}
+[WARN] MongoDB disconnected {}
+[INFO] MongoDB reconnected {}

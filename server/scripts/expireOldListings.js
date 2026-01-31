@@ -18,7 +18,7 @@ import Logger from "../utils/logger.js";
 
 dotenv.config();
 
-const runExpireListings = async () => {
+export const runExpireListings = async () => {
   try {
     if (!process.env.MONGO_URI) {
       console.error("❌ MONGO_URI is not set in environment variables.");

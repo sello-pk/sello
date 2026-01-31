@@ -84,6 +84,20 @@ const CarDetailsHeroSection = () => {
               )}
             </div>
             <div className="flex items-center gap-2 flex-wrap justify-end">
+              {car.priceAnalysis && car.priceAnalysis.pricePosition && (
+                <span className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 border ${
+                  car.priceAnalysis.pricePosition.label === 'good_deal' 
+                    ? 'bg-green-50 text-green-700 border-green-200' 
+                    : car.priceAnalysis.pricePosition.label === 'high_price'
+                    ? 'bg-red-50 text-red-700 border-red-200'
+                    : 'bg-blue-50 text-blue-700 border-blue-200'
+                }`}>
+                  <FaStar size={10} className={car.priceAnalysis.pricePosition.label === 'good_deal' ? 'text-green-500' : ''} />
+                  {car.priceAnalysis.pricePosition.label === 'good_deal' ? 'GOOD DEAL' : 
+                   car.priceAnalysis.pricePosition.label === 'high_price' ? 'ABOVE MARKET' : 'FAIR PRICE'}
+                  {car.priceAnalysis.isAIPowered && <span className="ml-1 opacity-70">(AI)</span>}
+                </span>
+              )}
               {car.featured && (
                 <span className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
                   <FaStar size={12} />

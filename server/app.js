@@ -107,62 +107,11 @@ app.use(
 app.use(checkMaintenanceMode);
 
 /* ----------------------------- ROUTES ----------------------------- */
-import authRoutes from "./routes/authRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
-import carRoutes from "./routes/carRoutes.js";
-import roleRoutes from "./routes/roleRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
-import subscriptionRoutes from "./routes/subscriptionRoutes.js";
-import contactFormRoutes from "./routes/contactFormRoutes.js";
-import notificationRoutes from "./routes/notificationRoutes.js";
-import supportChatRoutes from "./routes/supportChatRoutes.js";
-import carChatRoutes from "./routes/carChatRoutes.js";
-import chatRoutes from "./routes/chatRoutes.js";
-import savedSearchRoutes from "./routes/savedSearchRoutes.js";
-import testimonialRoutes from "./routes/testimonialRoutes.js";
-import customerRequestRoutes from "./routes/customerRequestRoutes.js";
-import newsletterRoutes from "./routes/newsletterRoutes.js";
-import blogRoutes from "./routes/blogRoutes.js";
-import categoryRoutes from "./routes/categoryRoutes.js";
-import bannerRoutes from "./routes/bannerRoutes.js";
-import priceRoutes from "./routes/priceRoutes.js";
-import accountDeletionRoutes from "./routes/accountDeletionRoutes.js";
-import settingsRoutes from "./routes/settingsRoutes.js";
-import promotionRoutes from "./routes/promotionsRoutes.js";
-import analyticsRoutes from "./routes/analyticsRoutes.js";
-import verificationRoutes from "./routes/verificationRoutes.js";
-import mapsRoutes from "./routes/mapsRoutes.js";
-import uploadRoutes from "./routes/uploadRoutes.js";
-import vehicleAttributeRoutes from "./routes/vehicleAttributeRoutes.js";
+/* ----------------------------- ROUTES ----------------------------- */
+import apiRoutes from "./routes/index.js";
 
 // API Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/cars", carRoutes);
-app.use("/api/roles", roleRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/subscriptions", subscriptionRoutes);
-app.use("/api/contact", contactFormRoutes);
-app.use("/api/notifications", notificationRoutes);
-app.use("/api/support-chat", supportChatRoutes);
-app.use("/api/car-chat", carChatRoutes);
-app.use("/api/chat", chatRoutes);
-app.use("/api/saved-searches", savedSearchRoutes);
-app.use("/api/testimonials", testimonialRoutes);
-app.use("/api/customer-requests", customerRequestRoutes);
-app.use("/api/newsletter", newsletterRoutes);
-app.use("/api/blogs", blogRoutes);
-app.use("/api/categories", categoryRoutes);
-app.use("/api/banners", bannerRoutes);
-app.use("/api/pricing", priceRoutes);
-app.use("/api/account-deletion", accountDeletionRoutes);
-app.use("/api/settings", settingsRoutes);
-app.use("/api/promotions", promotionRoutes);
-app.use("/api/analytics", analyticsRoutes);
-app.use("/api/verification", verificationRoutes);
-app.use("/api/maps", mapsRoutes);
-app.use("/api/upload", uploadRoutes);
-app.use("/api/vehicle-attributes", vehicleAttributeRoutes);
+app.use("/api", apiRoutes);
 
 /* ---------------------- HEALTH CHECK ---------------------- */
 app.get("/api/health", (req, res) => {

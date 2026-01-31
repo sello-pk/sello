@@ -809,6 +809,24 @@ export const api = createApi({
       transformResponse: (response) => response?.data || response,
     }),
 
+    // Valuation / Car Estimator
+    createValuation: builder.mutation({
+      query: (vehicleData) => ({
+        url: "/valuations",
+        method: "POST",
+        body: vehicleData,
+      }),
+      transformResponse: (response) => response?.data || response,
+    }),
+    getValuationHistory: builder.query({
+      query: () => "/valuations/my-history",
+      transformResponse: (response) => response?.data || response,
+    }),
+    getValuationById: builder.query({
+      query: (id) => `/valuations/${id}`,
+      transformResponse: (response) => response?.data || response,
+    }),
+
     // Recommendations & Similar Listings
     getSimilarListings: builder.query({
       query: (carId) => ({
@@ -1092,4 +1110,7 @@ export const {
   useGetBlogCommentsQuery,
   useCreateCommentMutation,
   useDeleteCommentMutation,
+  useCreateValuationMutation,
+  useGetValuationHistoryQuery,
+  useGetValuationByIdQuery,
 } = api;

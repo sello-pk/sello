@@ -1,0 +1,52 @@
+name: Deploy Sello
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            # Stop script on first error
+            set -e
+
+            # 1. Navigate to project directory
+            # IMPORTANT: Change this to the actual path where you cloned the repo on your VPS
+            cd /root/apps/sello
+
+            # 2. Pull latest code
+            echo "⬇️ Pulling latest changes..."
+            git pull origin main
+
+            # 3. Server Setup
+            echo "🛠️ Installing Server Dependencies..."
+            cd server
+            npm install
+            
+            # 4. Client Setup
+            echo "🛠️ Building Client..."
+            cd ../client
+            npm install
+            npm run build
+
+            # 5. Restart Application
+            echo "🔄 Restarting Sello..."
+            # Restart the specific PM2 process named 'sello'
+            if command -v pm2 &> /dev/null; then
+                pm2 restart sello
+                pm2 save
+            else
+                echo "pm2 not found, skipping restart. Please ensure your app is running."
+            fi
+
+            echo "✅ Deployment Complete!"

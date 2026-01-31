@@ -73,5 +73,10 @@ const runSubscriptionExpiration = async () => {
     }
 };
 
-runSubscriptionExpiration();
+export default runSubscriptionExpiration;
+
+// Run if called directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+    runSubscriptionExpiration();
+}
 
