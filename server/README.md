@@ -253,3 +253,7 @@ If SMTP is not configured in development mode, OTPs will be logged to the server
 ---
 
 **For any issues, contact the maintainer or open an issue.**
+
+
+
+### BEST of Luck!
