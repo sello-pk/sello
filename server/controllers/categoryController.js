@@ -106,7 +106,7 @@ export const createCategory = async (req, res) => {
       if (subType === "city") {
         return res.status(400).json({
           success: false,
-          message: "City categories must have a state category as parent.",
+          message: "City categories must have a state or country category as parent.",
         });
       } else if (subType === "state") {
         return res.status(400).json({
@@ -140,26 +140,14 @@ export const createCategory = async (req, res) => {
         });
       }
 
-      // IMPORTANT: Cities depend ONLY on State, NOT on Country
-      // Cities must have a state as parent (not country)
-      // This validation MUST come FIRST and we skip all other validations for cities
+      // Cities can have state OR country as parent
       if (subType === "city") {
-        if (parent.subType !== "state") {
-          if (parent.subType === "country") {
-            return res.status(400).json({
-              success: false,
-              message:
-                "City categories must have a state category as parent, not a country. Please select a state.",
-            });
-          }
+        if (parent.subType !== "state" && parent.subType !== "country") {
           return res.status(400).json({
             success: false,
-            message: `City categories must have a state category as parent. Received parent type: "${parent.subType}"`,
+            message: `City categories must have a state or country category as parent. Received parent type: "${parent.subType}"`,
           });
         }
-        // CRITICAL: For cities, we ONLY check that parent is a state.
-        // We do NOT check if the state has a country parent - that's not our concern.
-        // Skip all other validations for cities.
       } else if (subType === "state") {
         // States must have a country as parent
         if (parent.subType !== "country") {
@@ -194,23 +182,6 @@ export const createCategory = async (req, res) => {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
 
-    // Check if category already exists (considering type, subType, vehicleType, and parent)
-    // Use name instead of slug for better duplicate detection
-    const query = { name: name.trim(), type };
-    if (subType) query.subType = subType;
-    if (vehicleType) query.vehicleType = vehicleType;
-    if (parentCategory) query.parentCategory = parentCategory;
-
-    const existingCategory = await Category.findOne(query);
-    if (existingCategory) {
-      return res.status(409).json({
-        success: false,
-        message: `Category "${name.trim()}" already exists${
-          vehicleType ? ` for ${vehicleType}` : ""
-        }.`,
-      });
-    }
-
     const category = await Category.create({
       name: name.trim(),
       slug,
@@ -234,7 +205,26 @@ export const createCategory = async (req, res) => {
       data: category,
     });
   } catch (error) {
+    // Handle specific duplicate key error from MongoDB
+    if (error.code === 11000) {
+       return res.status(409).json({
+        success: false,
+        message: "Category already exists.",
+      });
+    }
+
+    // Handle Mongoose Validation Errors
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map(val => val.message);
+      return res.status(400).json({
+        success: false,
+        message: messages.join('. ')
+      });
+    }
+
     Logger.error("Create Category Error", error);
+    console.error("Create Category Detailed Error:", error); 
+    
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -458,18 +448,11 @@ export const updateCategory = async (req, res) => {
         // Cities must have a state as parent (not country)
         // This validation MUST come FIRST and use else-if to prevent any confusion
         if (category.type === "location" && currentSubType === "city") {
-          if (parent.subType !== "state") {
-            if (parent.subType === "country") {
+          if (parent.subType !== "state" && parent.subType !== "country") {
               return res.status(400).json({
                 success: false,
-                message:
-                  "City categories must have a state category as parent, not a country. Please select a state.",
+                message: `City categories must have a state or country category as parent. Received parent type: "${parent.subType}"`,
               });
-            }
-            return res.status(400).json({
-              success: false,
-              message: `City categories must have a state category as parent. Received parent type: "${parent.subType}"`,
-            });
           }
           // City validation passed, no need to check anything else
         } else if (category.type === "location" && currentSubType === "state") {
@@ -508,28 +491,7 @@ export const updateCategory = async (req, res) => {
     if (isActive !== undefined) category.isActive = isActive;
     if (order !== undefined) category.order = order;
 
-    // Check for duplicates before saving (if name or vehicleType changed)
-    if (name !== undefined || vehicleType !== undefined) {
-      const checkQuery = {
-        name: category.name.trim(),
-        type: category.type,
-        _id: { $ne: category._id }, // Exclude current category
-      };
-      if (category.subType) checkQuery.subType = category.subType;
-      if (category.vehicleType) checkQuery.vehicleType = category.vehicleType;
-      if (category.parentCategory)
-        checkQuery.parentCategory = category.parentCategory;
-
-      const duplicate = await Category.findOne(checkQuery);
-      if (duplicate) {
-        return res.status(409).json({
-          success: false,
-          message: `Category "${category.name}" already exists${
-            category.vehicleType ? ` for ${category.vehicleType}` : ""
-          }.`,
-        });
-      }
-    }
+    // Check for duplicates via MongoDB Unique Index (handled in catch block)
 
     await category.save();
 
@@ -539,6 +501,12 @@ export const updateCategory = async (req, res) => {
       data: category,
     });
   } catch (error) {
+    if (error.code === 11000) {
+       return res.status(409).json({
+        success: false,
+        message: "Category already exists.",
+      });
+    }
     Logger.error("Update Category Error", error);
     return res.status(500).json({
       success: false,

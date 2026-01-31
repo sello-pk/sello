@@ -97,6 +97,7 @@ const AppRouter = () => {
         <Route path="/listings/:categoryType" element={<GenericVehicleCategoryPage />} />
         <Route path="/car-details/:id" element={<CarDetails />} />
         <Route path="/cars/:id" element={<CarDetails />} />
+        <Route path="/filter" element={<FilterPage />} />
         
         {/* Features */}
         <Route path="/car-estimator" element={<CarEstimator />} />

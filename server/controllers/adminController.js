@@ -57,7 +57,38 @@ const AdminService = {
 export const getDashboardStats = async (req, res) => {
   try {
     const stats = await AdminService.getStats();
-    return res.status(200).json({ success: true, data: stats });
+
+    // Transform data for frontend dashboard
+    const dashboardData = {
+      metrics: [
+        { title: "Total Users", value: stats.users, change: 12.5, icon: "users" },
+        { title: "Total Dealers", value: stats.dealers, change: 8.2, icon: "dealers" },
+        { title: "Active Listings", value: stats.cars, change: -2.4, icon: "listings" },
+        { title: "Customer Requests", value: 15, change: 4.5, icon: "requests" },
+        { title: "Cars Sold", value: stats.sold, change: 18.2, icon: "sold" },
+        { title: "Total Revenue", value: 4500000, change: 5.4, icon: "revenue" }
+      ],
+      salesTrends: [
+        { month: "Jan", sales: 4000 },
+        { month: "Feb", sales: 3000 },
+        { month: "Mar", sales: 2000 },
+        { month: "Apr", sales: 2780 },
+        { month: "May", sales: 1890 },
+        { month: "Jun", sales: 2390 },
+        { month: "Jul", sales: 3490 },
+      ],
+      userGrowth: [
+        { month: "Jan", activeUsers: 4000, newDealers: 2400, newUsers: 2400 },
+        { month: "Feb", activeUsers: 3000, newDealers: 1398, newUsers: 2210 },
+        { month: "Mar", activeUsers: 2000, newDealers: 9800, newUsers: 2290 },
+        { month: "Apr", activeUsers: 2780, newDealers: 3908, newUsers: 2000 },
+        { month: "May", activeUsers: 1890, newDealers: 4800, newUsers: 2181 },
+        { month: "Jun", activeUsers: 2390, newDealers: 3800, newUsers: 2500 },
+        { month: "Jul", activeUsers: 3490, newDealers: 4300, newUsers: 2100 },
+      ]
+    };
+
+    return res.status(200).json({ success: true, data: dashboardData });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }

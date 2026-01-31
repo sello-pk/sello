@@ -360,14 +360,15 @@ const Categories = () => {
         submitData.append("parentCategory", formData.country);
         submitData.append("isActive", formData.status === "active");
       } else if (activeTab === "city") {
-        if (!formData.state) {
-          toast.error("Please select a state");
+        if (!formData.state && !formData.country) {
+          toast.error("Please select a country or state");
           return;
         }
         submitData.append("name", formData.name);
         submitData.append("type", "location");
         submitData.append("subType", "city");
-        submitData.append("parentCategory", formData.state);
+        // Prioritize State as parent if selected, otherwise Country
+        submitData.append("parentCategory", formData.state || formData.country);
         submitData.append("isActive", formData.status === "active");
       } else if (activeTab === "country") {
         submitData.append("name", formData.name);
@@ -993,17 +994,41 @@ const Categories = () => {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        State *
+                        Country * (Select first if not choosing state)
+                      </label>
+                      <select
+                        name="country"
+                        value={formData.country}
+                        onChange={handleInputChange}
+                        required={!formData.state}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                      >
+                        <option value="">Select Country</option>
+                        {countries.map((country) => (
+                          <option key={country._id} value={country._id}>
+                            {country.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        State (Optional - filters cities by state)
                       </label>
                       <select
                         name="state"
                         value={formData.state}
                         onChange={handleInputChange}
-                        required
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                        disabled={!formData.country}
                       >
-                        <option value="">Select State</option>
-                        {states.map((state) => (
+                        <option value="">Select State (Optional)</option>
+                        {states
+                          .filter((state) => {
+                             const pId = typeof state.parentCategory === 'object' ? state.parentCategory._id : state.parentCategory;
+                             return formData.country && pId === formData.country;
+                          })
+                          .map((state) => (
                           <option key={state._id} value={state._id}>
                             {state.name}
                           </option>

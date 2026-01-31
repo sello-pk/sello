@@ -210,13 +210,28 @@ export const getBlogBySlug = async (req, res) => {
 
 export const getAllCategories = async (req, res) => {
     try {
-        const { type } = req.query;
-        const query = { parentCategory: null };
+        const { type, subType, parentCategory, isActive, vehicleType } = req.query;
+
+        const query = {};
         if (type) query.type = type;
-        
-        const categories = await Category.find(query).populate('children');
+        if (subType) query.subType = subType;
+        if (parentCategory) query.parentCategory = parentCategory;
+        if (isActive !== undefined) query.isActive = isActive === "true";
+        if (vehicleType) query.vehicleType = vehicleType;
+
+        const categories = await Category.find(query)
+            .populate("createdBy", "name email")
+            .populate("parentCategory", "name slug vehicleType")
+            .sort({ order: 1, createdAt: -1 });
+
         return res.status(200).json({ success: true, data: categories });
     } catch (err) {
-        return res.status(500).json({ success: false, message: "Server error." });
+        Logger.error("Get All Categories Error", err);
+        console.error("Get All Categories Detailed Error:", err);
+        return res.status(500).json({ 
+            success: false, 
+            message: "Server error.",
+            error: process.env.NODE_ENV === "development" ? err.message : undefined
+        });
     }
 };

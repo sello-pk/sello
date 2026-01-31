@@ -312,7 +312,7 @@ export const adminApi = createApi({
       },
       providesTags: ["Categories"],
       transformResponse: (response) => response?.data || response,
-      keepUnusedDataFor: 300, // Cache categories for 5 minutes (static data)
+      keepUnusedDataFor: 0, // Disable caching to ensure fresh list after adds
     }),
     createCategory: builder.mutation({
       query: (data) => {

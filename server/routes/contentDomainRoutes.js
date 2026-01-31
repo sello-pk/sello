@@ -39,6 +39,11 @@ router.put("/blogs/:blogId", auth, authorize("admin"), upload.single("image"), u
 router.delete("/blogs/:blogId", auth, authorize("admin"), deleteBlog);
 
 /* ------------------------------- CATEGORIES ------------------------------- */
+import { createCategory, updateCategory, deleteCategory } from "../controllers/categoryController.js";
+
 router.get("/categories", getAllCategories);
+router.post("/categories", auth, authorize("admin"), upload.single("image"), createCategory);
+router.put("/categories/:categoryId", auth, authorize("admin"), upload.single("image"), updateCategory);
+router.delete("/categories/:categoryId", auth, authorize("admin"), deleteCategory);
 
 export default router;
