@@ -2,12 +2,13 @@ name: Deploy Sello
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.0.3
@@ -15,38 +16,33 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_PORT || 22 }}
+          port: 22
           script: |
-            # Stop script on first error
             set -e
 
-            # 1. Navigate to project directory
-            # IMPORTANT: Change this to the actual path where you cloned the repo on your VPS
-            cd /root/apps/sello
+            echo "📂 Go to project directory"
+            cd /var/www/sello
 
-            # 2. Pull latest code
-            echo "⬇️ Pulling latest changes..."
-            git pull origin main
+            echo "⬇️ Sync repo with GitHub"
+            git fetch origin
+            git reset --hard origin/main
+            git clean -fd
 
-            # 3. Server Setup
-            echo "🛠️ Installing Server Dependencies..."
+            echo "🛠️ Install server dependencies"
             cd server
-            npm install
-            
-            # 4. Client Setup
-            echo "🛠️ Building Client..."
+            npm ci --omit=dev
+
+            echo "🛠️ Build client"
             cd ../client
-            npm install
+            npm ci
             npm run build
 
-            # 5. Restart Application
-            echo "🔄 Restarting Sello..."
-            # Restart the specific PM2 process named 'sello'
-            if command -v pm2 &> /dev/null; then
-                pm2 restart sello
-                pm2 save
+            echo "🔄 Restart app with PM2"
+            if command -v pm2 >/dev/null 2>&1; then
+              pm2 restart sello
+              pm2 save
             else
-                echo "pm2 not found, skipping restart. Please ensure your app is running."
+              echo "⚠️ PM2 not found"
             fi
 
-            echo "✅ Deployment Complete!"
+            echo "✅ Deployment finished"
