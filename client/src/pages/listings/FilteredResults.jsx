@@ -16,16 +16,12 @@ const FilteredResults = () => {
   // Get search term from URL params (navbar search)
   const searchTerm = searchParams.get("search") || "";
 
-  // Redirect to home if no valid search parameters
+  // No redirecting to home - let users browse even with no params
+  // or show empty state graciously below.
   useEffect(() => {
-    const hasValidParams = Array.from(searchParams.entries()).some(
-      ([, value]) => value && value.trim() !== ""
-    );
-
-    if (!hasValidParams) {
-      navigate("/", { replace: true });
-    }
-  }, [searchParams, navigate]);
+    // We can use this to perhaps sync state or log
+    console.log("Search results mounted with params:", searchParams.toString());
+  }, [searchParams]);
 
   // Build query parameters based on URL params only
   const queryParams = useMemo(() => {

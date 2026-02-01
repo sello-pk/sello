@@ -13,8 +13,15 @@
 }
 
 /* Generic hide scrollbar helper */
-.hideScrollbar::-webkit-scrollbar {
+.hideScrollbar::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+.hideScrollbar,
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Horizontal sliders (popular makes, blog, etc.) */
@@ -30,7 +37,7 @@
   display: none;
 }
 
-#blog {
+#blog, #blogr {
   scroll-behavior: smooth;
   overflow-x: scroll;
   overflow-y: hidden;
@@ -38,6 +45,7 @@
   scrollbar-width: none;
 }
 
+#blog::-webkit-scrollbar, 
 #blogr::-webkit-scrollbar {
   display: none;
 }

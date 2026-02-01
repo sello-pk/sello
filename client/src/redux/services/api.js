@@ -436,7 +436,17 @@ export const api = createApi({
       }),
       transformResponse: (response) => {
         const data = response?.data || response;
-        // Ensure we return an object with brand names as keys
+        // The backend returns an array: [{_id: "Brand", count: 10}]
+        // We need to transform it into an object: {"Brand": 10} for AllBrands.jsx
+        if (Array.isArray(data)) {
+          return data.reduce((acc, item) => {
+            if (item._id) {
+              acc[item._id] = item.count;
+            }
+            return acc;
+          }, {});
+        }
+        
         if (typeof data === "object" && data !== null) {
           return data;
         }

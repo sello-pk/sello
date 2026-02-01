@@ -120,9 +120,23 @@ export const getSingleCar = async (req, res) => {
 
 export const getCarCountsByMake = async (req, res) => {
   try {
+    const now = new Date();
     const counts = await Car.aggregate([
-      { $match: { status: "active" } },
-      { $group: { _id: "$make", count: { $sum: 1 } } },
+      { 
+        $match: { 
+          status: { $nin: ["deleted", "expired"] },
+          $or: [
+            { isApproved: true },
+            { isApproved: { $exists: false } }
+          ]
+        } 
+      },
+      {
+        $group: {
+          _id: { $toLower: { $trim: { input: "$make" } } },
+          count: { $sum: 1 }
+        }
+      },
       { $sort: { count: -1 } }
     ]);
     return res.status(200).json({ success: true, data: counts });

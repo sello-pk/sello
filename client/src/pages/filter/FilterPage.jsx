@@ -55,34 +55,8 @@ const FilterPage = () => {
     }
   }, [searchParams]);
 
-  // Navigate to results page when filtered cars are received - optimized
-  useEffect(() => {
-    // Only navigate if we have valid data and haven't navigated yet
-    if (!queryParams || hasNavigated.current || isLoading || isFetching) {
-      return;
-    }
-
-    if (filteredCars) {
-      // Data is already normalized by the API transformResponse
-      // Only navigate if we're not loading (handled by the if statement above)
-      navigate("/search-results", {
-        state: {
-          filteredCars: filteredCars,
-          isLoading: false,
-          filters: currentFilters,
-        },
-        replace: true, // Use replace to avoid back button issues
-      });
-      hasNavigated.current = true;
-    }
-  }, [
-    filteredCars,
-    isLoading,
-    isFetching,
-    queryParams,
-    navigate,
-    currentFilters,
-  ]);
+  // Navigation to results page is now handled directly by the FilterForm
+  // or other components, to prevent redirect loops and state issues.
 
   const handleFilter = (filters) => {
     // Reset navigation flag when new filters are applied

@@ -16,7 +16,7 @@ import HorsePowerSpecs from "../../utils/filter/HorsePowerSpecs";
 import EngineCapacitySpecs from "../../utils/filter/EngineCapacitySpecs";
 import TechnicalFeaturesSpecs from "../../utils/filter/TechnicalFeaturesSpecs";
 import LocationButton from "../../utils/filter/LocationButton";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useCarCategories } from "../../../hooks/useCarCategories";
 import { isFieldVisible } from "../../../utils/vehicleFieldConfig";
 
@@ -104,6 +104,7 @@ const FilterForm = ({ onFilter }) => {
   // Removed internal query - parent component handles it
   // const [queryParams, setQueryParams] = useState(null);
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   // Read URL parameters on mount and apply filters
   useEffect(() => {
@@ -540,11 +541,18 @@ const FilterForm = ({ onFilter }) => {
       }
     });
 
-    // Trigger filter callback
-    if (onFilter && Object.keys(cleanFilters).length > 0) {
-      onFilter(cleanFilters);
+    // Trigger filter callback and navigate to results page with URL params
+    if (Object.keys(cleanFilters).length > 0) {
+      if (onFilter) onFilter(cleanFilters);
+      
+      const params = new URLSearchParams();
+      Object.entries(cleanFilters).forEach(([key, value]) => {
+        if (value) params.set(key, value);
+      });
+      
+      navigate(`/search-results?${params.toString()}`);
       toast.success("Filters applied successfully!");
-    } else if (Object.keys(cleanFilters).length === 0) {
+    } else {
       toast.error("Please select at least one filter");
     }
   };

@@ -143,16 +143,65 @@ export const trackEvent = async (event, userId = null, metadata = {}) => {
 
 export const buildCarQuery = (query) => {
   const filter = {};
+
+  // 1. Keyword search (Across title, make, model, description)
   if (query.search) {
     const regex = new RegExp(query.search, "i");
-    filter.$or = [{ make: regex }, { model: regex }, { title: regex }];
+    filter.$or = [
+      { title: regex },
+      { make: regex },
+      { model: regex },
+      { description: regex },
+    ];
   }
-  if (query.priceMin || query.priceMax) {
-    filter.price = {};
-    if (query.priceMin) filter.price.$gte = Number(query.priceMin);
-    if (query.priceMax) filter.price.$lte = Number(query.priceMax);
-  }
-  // Simplified for brevity, add more fields as needed or keep full logic
+
+  // 2. Exact match fields
+  const exactMatchFields = [
+    "make",
+    "model",
+    "condition",
+    "transmission",
+    "fuelType",
+    "city",
+    "vehicleType",
+    "bodyType",
+    "regionalSpec",
+    "ownerType",
+    "warranty",
+  ];
+
+  exactMatchFields.forEach((field) => {
+    if (query[field]) {
+      // Use case-insensitive exact match for robustness
+      filter[field] = { $regex: new RegExp(`^${query[field]}$`, "i") };
+    }
+  });
+
+  // 3. Numeric range fields
+  const rangeFields = [
+    { key: "price", min: "priceMin", max: "priceMax" },
+    { key: "year", min: "yearMin", max: "yearMax" },
+    { key: "mileage", min: "mileageMin", max: "mileageMax" },
+    { key: "horsepower", min: "hpMin", max: "hpMax" },
+    { key: "engineCapacity", min: "engineMin", max: "engineMax" },
+    { key: "carDoors", min: "doorsMin", max: "doorsMax" },
+    { key: "numberOfCylinders", min: "cylMin", max: "cylMax" },
+    { key: "batteryRange", min: "batteryRangeMin", max: "batteryRangeMax" },
+    { key: "motorPower", min: "motorPowerMin", max: "motorPowerMax" },
+  ];
+
+  rangeFields.forEach(({ key, min, max }) => {
+    if (query[min] || query[max]) {
+      filter[key] = {};
+      if (query[min]) filter[key].$gte = Number(query[min]);
+      if (query[max]) filter[key].$lte = Number(query[max]);
+    }
+  });
+
+  // 4. Specific boolean / flag fields
+  if (query.featured === "true") filter.featured = true;
+  if (query.isApproved === "true") filter.isApproved = true;
+
   return { filter };
 };
 

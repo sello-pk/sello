@@ -8,19 +8,19 @@ const AllBrands = () => {
   const navigate = useNavigate();
   const { makes, isLoading: categoriesLoading } = useCarCategories();
 
-  // Fetch car counts by make from API
+  // Fetch car counts by make from API - always fresh
   const { data: carCountsByMake = {}, isLoading: countsLoading } =
-    useGetCarCountsByMakeQuery();
+    useGetCarCountsByMakeQuery(undefined, { refetchOnMountOrArgChange: true });
 
   // Filter active brands with images and sort by order
   const activeBrands = React.useMemo(() => {
     if (!makes || makes.length === 0) return [];
 
-    // Create a case-insensitive lookup map for counts
+    // Create a case-insensitive lookup map for counts (summing duplicates if any)
     const countsMapNormalized = {};
     Object.keys(carCountsByMake || {}).forEach((key) => {
       const normalizedKey = key.trim().toLowerCase();
-      countsMapNormalized[normalizedKey] = carCountsByMake[key];
+      countsMapNormalized[normalizedKey] = (countsMapNormalized[normalizedKey] || 0) + carCountsByMake[key];
     });
 
     return makes
@@ -47,8 +47,8 @@ const AllBrands = () => {
   const isLoading = categoriesLoading || countsLoading;
 
   const handleBrandClick = (brandName) => {
-    // Navigate to filter page with make parameter
-    navigate(`/filter?make=${encodeURIComponent(brandName)}`);
+    // Navigate to search results page with make parameter
+    navigate(`/search-results?make=${encodeURIComponent(brandName)}`);
   };
 
   return (

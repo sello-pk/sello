@@ -32,6 +32,10 @@ jobs:
             cd server
             npm ci --omit=dev
 
+            echo "🌱 Seeding Database"
+            node scripts/initializeVehicleCategories.js
+            node scripts/seedDynamicVehicleAttributes.js
+
             echo "🛠️ Build client"
             cd ../client
             npm ci
