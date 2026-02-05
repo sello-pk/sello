@@ -14,9 +14,9 @@ const FindOutMore = () => {
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-black/60 flex items-center justify-center flex-col text-center px-3 sm:px-4 md:px-6 lg:px-8">
-          <h1 className="text-3xl md:text-6xl lg:text-7xl max-w-3xl text-white font-bold leading-tight">
+          <h2 className="text-3xl md:text-6xl lg:text-7xl max-w-3xl text-white font-bold leading-tight">
             We Make Finding The Right Car Simple
-          </h1>
+          </h2>
 
           {/* Button */}
           <button

@@ -103,6 +103,11 @@ const BlogDetails = () => {
         }
         image={currentBlog.featuredImage}
         url={buildBlogUrl(currentBlog)}
+        canonical={
+          currentBlog
+            ? `https://sello.pk${buildBlogUrl(currentBlog)}`
+            : undefined
+        }
       />
       <BlogsHeroSection />
       <div className="max-w-4xl mx-auto px-4 md:px-6 py-8 md:py-12">

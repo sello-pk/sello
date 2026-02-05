@@ -6,11 +6,12 @@ import {
     useGetSupportChatMessagesAdminQuery,
     useSendAdminResponseMutation,
     useUpdateSupportChatStatusMutation,
+    useGetQuickRepliesQuery,
 } from "../../redux/services/adminApi";
 import { useGetMeQuery } from "../../redux/services/api";
 import { Spinner } from "../../components/ui/Loading";
 import toast from "react-hot-toast";
-import { FiSend, FiPaperclip, FiTrash2, FiSearch, FiMoreVertical, FiEdit2 } from "react-icons/fi";
+import { FiSend, FiPaperclip, FiTrash2, FiSearch, FiMoreVertical, FiEdit2, FiClock, FiZap } from "react-icons/fi";
 import { IoMdCheckmark, IoMdDoneAll } from "react-icons/io";
 import { formatDistanceToNow } from "date-fns";
 import ConfirmModal from "../../components/features/admin/ConfirmModal";
@@ -45,7 +46,11 @@ const SupportChat = () => {
     const messagesContainerRef = useRef(null);
     const typingTimeoutRef = useRef(null);
     const fileInputRef = useRef(null);
-    const shouldAutoScrollRef = useRef(true); // Track if we should auto-scroll
+    const [shouldAutoScrollRef] = useState({ current: true });
+    const [showQuickReplies, setShowQuickReplies] = useState(false);
+    
+    const { data: quickRepliesData } = useGetQuickRepliesQuery({ isActive: true });
+    const quickReplies = quickRepliesData || [];
 
     const token = localStorage.getItem("token");
 
@@ -77,17 +82,25 @@ const SupportChat = () => {
     const { data: adminUser } = useGetMeQuery();
     const adminId = adminUser?._id;
 
-    // Get chats from response - handle different response structures
+    // Get chats from response - be extremely defensive
     const chats = React.useMemo(() => {
         if (!chatsData) return [];
-        // Handle response structure: { chats: [...], pagination: {...} }
+        
+        // Structure: { data: { chats: [...] } }
+        if (chatsData.data?.chats && Array.isArray(chatsData.data.chats)) {
+            return chatsData.data.chats;
+        }
+        
+        // Structure: { chats: [...] }
         if (chatsData.chats && Array.isArray(chatsData.chats)) {
             return chatsData.chats;
         }
-        // Handle array response
+        
+        // Structure: [...]
         if (Array.isArray(chatsData)) {
             return chatsData;
         }
+        
         return [];
     }, [chatsData]);
     
@@ -135,13 +148,22 @@ const SupportChat = () => {
         });
 
         newSocket.on('new-message', (data) => {
-            if (data.chatId === selectedChat || data.chat?._id === selectedChat) {
+            const isCurrentChat = data.chatId === selectedChat || data.chat?._id === selectedChat;
+            if (isCurrentChat) {
                 setMessages(prev => {
                     const exists = prev.find(m => m._id === data.message._id);
                     if (exists) return prev;
                     return [...prev, data.message];
                 });
             }
+            
+            // Play sound for new messages if sender is not the current admin
+            const senderId = data.message.sender?._id || data.message.sender;
+            if (senderId !== adminId) {
+                const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3");
+                audio.play().catch(() => {});
+            }
+
             refetchChats();
             refetchMessages();
         });
@@ -296,7 +318,8 @@ const SupportChat = () => {
                 socket.emit('send-message', {
                     chatId: selectedChat,
                     message: messageText,
-                    messageType: 'text'
+                    messageType: 'text',
+                    isAdminReply: true
                 });
                 // Optimistically add message to local state
                 const tempMessage = {
@@ -304,7 +327,8 @@ const SupportChat = () => {
                     message: messageText,
                     sender: { _id: adminId, role: 'admin', name: adminUser?.name || 'Admin' },
                     createdAt: new Date(),
-                    isBot: false
+                    isBot: false,
+                    isAdminReply: true
                 };
                 setMessages(prev => [...prev, tempMessage]);
                 // Refetch to get actual message from server
@@ -425,7 +449,7 @@ const SupportChat = () => {
 
     const getUserById = (userId) => {
         if (!selectedChatData) return null;
-        return selectedChatData.participants?.find(p => p._id === userId);
+        return selectedChatData.participants?.find(p => (p._id?.toString() || p.toString()) === userId);
     };
 
     const getUnreadCount = (chat) => {
@@ -471,7 +495,7 @@ const SupportChat = () => {
                                 className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
                             />
                         </div>
-                        <div className="mt-2 flex gap-2">
+                        <div className="mt-2 flex gap-2 items-center">
                             <select
                                 value={filterStatus}
                                 onChange={(e) => setFilterStatus(e.target.value)}
@@ -482,6 +506,13 @@ const SupportChat = () => {
                                 <option value="resolved">Resolved</option>
                                 <option value="closed">Closed</option>
                             </select>
+                            <button 
+                                onClick={() => refetchChats()}
+                                className="p-2 text-gray-500 hover:text-primary-500 transition-colors"
+                                title="Refresh chats"
+                            >
+                                <FiClock size={18} />
+                            </button>
                         </div>
                     </div>
 
@@ -522,29 +553,28 @@ const SupportChat = () => {
                                                     getUserName(chat).charAt(0).toUpperCase()
                                                 )}
                                             </div>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex justify-between items-start mb-1">
-                                                    <p className="font-semibold text-gray-800 dark:text-white truncate">
-                                                        {getUserName(chat)}
-                                                    </p>
-                                                    <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0 ml-2">
-                                                        {formatTime(chat.lastMessageAt)}
-                                                    </span>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex justify-between items-start mb-1">
+                                                        <p className="font-semibold text-gray-900 dark:text-white truncate">
+                                                            {getUserName(chat)}
+                                                        </p>
+                                                        <span className="text-[10px] text-gray-400 font-medium">
+                                                            {formatTime(chat.lastMessageAt || chat.createdAt)}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center">
+                                                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate pr-2">
+                                                            {chat.lastMessage || chat.subject || 'No messages'}
+                                                        </p>
+                                                        {unreadCount > 0 && (
+                                                            <span className="bg-primary-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                                                                {unreadCount}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                                <p className="text-sm text-gray-600 dark:text-gray-400 truncate mb-1">
-                                                    {chat.subject || 'No subject'}
-                                                </p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                                    {chat.lastMessage || 'No messages'}
-                                                </p>
-                                                {unreadCount > 0 && (
-                                                    <span className="inline-block mt-1 bg-primary-500 text-white text-xs px-2 py-0.5 rounded-full">
-                                                        {unreadCount}
-                                                    </span>
-                                                )}
                                             </div>
                                         </div>
-                                    </div>
                                 );
                             })
                         )}
@@ -638,20 +668,29 @@ const SupportChat = () => {
                                             const msgSenderId = msg.sender?._id?.toString() || msg.sender?.toString();
                                             const currentAdminId = adminId?.toString();
                                             
-                                            // Check if current admin is the sender
-                                            const isCurrentAdmin = currentAdminId && msgSenderId && 
-                                                                   currentAdminId === msgSenderId;
+                                                                                                                                    // Robust ID comparison for alignment
+                                            const getMsgSenderId = (m) => {
+                                                const id = m.sender?._id || m.sender?.id || m.sender;
+                                                return id ? id.toString() : null;
+                                            };
+                                            const msgSenderIdStr = getMsgSenderId(msg);
+                                            const currentAdminIdStr = adminId ? adminId.toString() : null;
                                             
+                                            // Visual Alignment: Admins/Bots on right, Users on left
+                                            // We use isAdminReply flag for absolute correctness during testing
+                                            const isCurrentAdmin = msg.isAdminReply || msg.isBot || (currentAdminIdStr && msgSenderIdStr === currentAdminIdStr && msg.sender?.role === 'admin');
                                             const isBot = msg.isBot;
                                             
-                                            // Check if message sender is a user (not admin, not bot)
-                                            const isUserMessage = msgSenderId && msgSenderId !== currentAdminId && !isBot;
-                                            const senderUser = isUserMessage ? getUserById(msgSenderId) : null;
-                                            
-                                            // In admin view: only admin can edit/delete their own messages
-                                            // Users edit/delete from their own widget (SupportChatWidget)
-                                            const canEdit = isCurrentAdmin && !isBot && !msg.isDeleted;
-                                            const canDelete = isCurrentAdmin && !isBot && !msg.isDeleted;
+                                            // For testing: If IDs are the same (same account testing), we can't easily split.
+                                            // But if roles are different, we can use that as a secondary hint.
+                                            // However, ID match is the most standard way.
+
+                                            const isExactSender = currentAdminIdStr && msgSenderIdStr === currentAdminIdStr;
+                                            const canEdit = isExactSender && !isBot && !msg.isDeleted;
+                                            const canDelete = isExactSender && !isBot && !msg.isDeleted;
+
+                                            const isUserMessage = !isCurrentAdmin && !isBot;
+                                            const senderUser = isUserMessage ? getUserById(msgSenderIdStr) : null;
                                         
                                         return (
                                             <div
@@ -831,7 +870,28 @@ const SupportChat = () => {
                             </div>
 
                             {/* Message Input */}
-                            <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                            <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 relative">
+                                {showQuickReplies && quickReplies.length > 0 && (
+                                    <div className="absolute bottom-full left-4 mb-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-10 max-h-48 overflow-y-auto">
+                                        <div className="p-2 border-b border-gray-100 dark:border-gray-700 font-semibold text-xs flex justify-between items-center">
+                                            <span>Quick Replies</span>
+                                            <FiZap size={14} className="text-yellow-500" />
+                                        </div>
+                                        {quickReplies.map(reply => (
+                                            <button
+                                                key={reply._id}
+                                                onClick={() => {
+                                                    setMessage(reply.message);
+                                                    setShowQuickReplies(false);
+                                                }}
+                                                className="w-full text-left p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm border-b last:border-0 border-gray-100 dark:border-gray-700"
+                                            >
+                                                <p className="font-medium truncate">{reply.title}</p>
+                                                <p className="text-xs text-gray-500 truncate">{reply.message}</p>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                                 <div className="flex gap-2 items-center">
                                     <input
                                         ref={fileInputRef}
@@ -840,6 +900,13 @@ const SupportChat = () => {
                                         className="hidden"
                                         onChange={handleFileUpload}
                                     />
+                                    <button
+                                        onClick={() => setShowQuickReplies(!showQuickReplies)}
+                                        className={`p-2 transition-colors ${showQuickReplies ? 'text-primary-500' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-300'}`}
+                                        title="Quick Replies"
+                                    >
+                                        <FiZap size={20} />
+                                    </button>
                                     <button
                                         onClick={() => fileInputRef.current?.click()}
                                         className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-300"

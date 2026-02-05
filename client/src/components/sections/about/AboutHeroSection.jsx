@@ -8,9 +8,9 @@ const AboutHeroSection = () => {
       {/* Left Side */}
       <div className="w-full md:w-[60%]  px-3 sm:px-4 md:px-6 lg:px-8 py-10 md:py-0 ">
         <div className="">
-          <h1 className="md:text-5xl mb-16 text-3xl font-bold text-white">
+          <h2 className="md:text-5xl mb-16 text-3xl font-bold text-white">
             About Us
-          </h1>
+          </h2>
           <p className="text-lg text-gray-300 my-4">
             Sello has created a platform which makes it easy for Pakistan to buy
             and sell cars. We aim to present a very trusted and transparent

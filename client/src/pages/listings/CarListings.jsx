@@ -15,6 +15,7 @@ const CarListings = () => {
         title="Buy and Sell cars in Pakistan | Trusted Brands - Sello.pk"
         description="Buy and sell cars in Pakistan with Confidence. Explore premium brands, buy used cars, compare models and sell your car through trusted sellers on sello.pk"
         keywords="buy and sell cars, buy and sell cars in Pakistan"
+        canonical="https://sello.pk/cars"
       />
       <ListingHeroSection />
       <BrowsByTypeSection />

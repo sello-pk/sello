@@ -25,7 +25,7 @@ jobs:
 
             echo "⬇️ Sync repo with GitHub"
             git fetch origin
-            git reset --hard origin/main
+            git pull origin main
             git clean -fd
 
             echo "🛠️ Install server dependencies"
@@ -50,5 +50,3 @@ jobs:
             fi
 
             echo "✅ Deployment finished"
-
-            

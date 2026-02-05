@@ -4,7 +4,7 @@ import { ourTeams } from "../../../assets/assets";
 const OurTeamSection = () => {
   return (
     <section className="px-4 md:px-16 py-12 bg-[#F5F5F5]">
-      <h1 className="md:text-4xl text-2xl font-medium mb-8">Our Team</h1>
+      <h2 className="md:text-4xl text-2xl font-medium mb-8">Our Team</h2>
       <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-6">
         {ourTeams.map((item, index) => (
           <div

@@ -144,7 +144,7 @@ const ContactFormManagement = () => {
             <div className="p-6">
                 <div className="mb-6 flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-800 mb-2">Contact Form Management</h1>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-2">Contact Form Management</h2>
                         <p className="text-gray-600">
                             Manage and respond to contact form submissions
                             {contactForms.length > 0 && (

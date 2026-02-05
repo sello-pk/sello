@@ -12,10 +12,14 @@ const Settings = () => {
         {/* Page Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Settings</h1>
-            <p className="text-gray-700 dark:text-gray-300 mt-1">Configure your marketplace settings</p>
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+              Settings
+            </h2>
+            <p className="text-gray-700 dark:text-gray-300 mt-1">
+              Configure your marketplace settings
+            </p>
           </div>
-          
+
           {/* Tab Switcher */}
           <div className="bg-gray-100 dark:bg-gray-800 p-1 rounded-lg flex">
             <button
@@ -43,11 +47,7 @@ const Settings = () => {
 
         {/* Content Area */}
         <div className="animate-fade-in">
-          {activeTab === "general" ? (
-            <GeneralSettingsTab />
-          ) : (
-            <UserRolesTab />
-          )}
+          {activeTab === "general" ? <GeneralSettingsTab /> : <UserRolesTab />}
         </div>
       </div>
     </AdminLayout>

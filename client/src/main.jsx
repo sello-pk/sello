@@ -18,11 +18,11 @@ const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 if (!googleClientId) {
   if (import.meta.env.DEV) {
     logger.warn(
-      "VITE_GOOGLE_CLIENT_ID is not set. Google Login will not work."
+      "VITE_GOOGLE_CLIENT_ID is not set. Google Login will not work.",
     );
   } else {
     throw new Error(
-      "Google OAuth not configured. Please set VITE_GOOGLE_CLIENT_ID."
+      "Google OAuth not configured. Please set VITE_GOOGLE_CLIENT_ID.",
     );
   }
 }
@@ -44,6 +44,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         </BrowserRouter>
       </Provider>
     </AppRoot>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
-

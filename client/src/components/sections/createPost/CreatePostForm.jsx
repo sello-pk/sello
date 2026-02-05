@@ -123,7 +123,7 @@ const CreatePostForm = () => {
     }
 
     const selectedCountryObj = countries.find(
-      (c) => c.name === formData.country
+      (c) => c.name === formData.country,
     );
     if (selectedCountryObj && getCitiesByCountry[selectedCountryObj._id]) {
       const countryCities = getCitiesByCountry[selectedCountryObj._id];
@@ -189,7 +189,7 @@ const CreatePostForm = () => {
             const countryCities =
               getCitiesByCountry[selectedCountryObj._id] || [];
             setAvailableCities(
-              countryCities.length > 0 ? countryCities : cities
+              countryCities.length > 0 ? countryCities : cities,
             );
             // Reset city if it's not available for the new country
             if (
@@ -480,7 +480,7 @@ const CreatePostForm = () => {
       navigate(`/my-listings`);
     } catch (err) {
       toast.error(
-        err?.data?.message || err?.message || "Failed to create post"
+        err?.data?.message || err?.message || "Failed to create post",
       );
     }
   };
@@ -651,7 +651,7 @@ const CreatePostForm = () => {
       className="py-8 md:py-10"
       encType="multipart/form-data"
     >
-      <h1 className="text-center md:text-3xl font-semibold">Create Post</h1>
+      <h2 className="text-center md:text-3xl font-semibold">Create Post</h2>
 
       {/* Duplicate Warning Modal */}
       {showDuplicateWarning && (
@@ -711,41 +711,43 @@ const CreatePostForm = () => {
           Vehicle Type *
         </label>
         <div className="flex justify-center gap-3 flex-wrap">
-          {["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"].map((type) => (
-            <button
-              key={type}
-              type="button"
-              onClick={() => {
-                const newVehicleType = type;
-                handleChange("vehicleType", newVehicleType);
-                // Reset vehicleTypeCategory when vehicleType changes
-                handleChange("vehicleTypeCategory", "");
+          {["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"].map(
+            (type) => (
+              <button
+                key={type}
+                type="button"
+                onClick={() => {
+                  const newVehicleType = type;
+                  handleChange("vehicleType", newVehicleType);
+                  // Reset vehicleTypeCategory when vehicleType changes
+                  handleChange("vehicleTypeCategory", "");
 
-                // Clear fields that are not visible for the new vehicle type
-                if (!isFieldVisible(newVehicleType, "bodyType")) {
-                  handleChange("bodyType", "");
-                  setAvailableModels([]);
-                  setAvailableCities([]);
-                }
-                if (!isFieldVisible(newVehicleType, "fuelType")) {
-                  handleChange("fuelType", "");
-                }
-                if (!isFieldVisible(newVehicleType, "transmission")) {
-                  handleChange("transmission", "");
-                }
-                if (!isFieldVisible(newVehicleType, "regionalSpec")) {
-                  handleChange("regionalSpec", "");
-                }
-              }}
-              className={`group relative px-5 py-1.5 rounded font-semibold text-sm transition-all duration-300 transform hover:scale-105 active:scale-95 ${
-                formData.vehicleType === type
-                  ? "bg-primary-500 text-black shadow-lg shadow-primary-500/25 ring-2 ring-primary-500 ring-offset-2"
-                  : "bg-white text-gray-700 border-2 border-gray-200 hover:border-primary-500 hover:shadow-md hover:bg-primary-50"
-              }`}
-            >
-              {type}
-            </button>
-          ))}
+                  // Clear fields that are not visible for the new vehicle type
+                  if (!isFieldVisible(newVehicleType, "bodyType")) {
+                    handleChange("bodyType", "");
+                    setAvailableModels([]);
+                    setAvailableCities([]);
+                  }
+                  if (!isFieldVisible(newVehicleType, "fuelType")) {
+                    handleChange("fuelType", "");
+                  }
+                  if (!isFieldVisible(newVehicleType, "transmission")) {
+                    handleChange("transmission", "");
+                  }
+                  if (!isFieldVisible(newVehicleType, "regionalSpec")) {
+                    handleChange("regionalSpec", "");
+                  }
+                }}
+                className={`group relative px-5 py-1.5 rounded font-semibold text-sm transition-all duration-300 transform hover:scale-105 active:scale-95 ${
+                  formData.vehicleType === type
+                    ? "bg-primary-500 text-black shadow-lg shadow-primary-500/25 ring-2 ring-primary-500 ring-offset-2"
+                    : "bg-white text-gray-700 border-2 border-gray-200 hover:border-primary-500 hover:shadow-md hover:bg-primary-50"
+                }`}
+              >
+                {type}
+              </button>
+            ),
+          )}
         </div>
       </div>
 
@@ -805,10 +807,10 @@ const CreatePostForm = () => {
                 {categoriesLoading
                   ? "Loading..."
                   : availableModels.length === 0
-                  ? "No models available"
-                  : formData.make
-                  ? "Select Model"
-                  : "Select Model (or select Make to filter)"}
+                    ? "No models available"
+                    : formData.make
+                      ? "Select Model"
+                      : "Select Model (or select Make to filter)"}
               </option>
               {availableModels.map((model) => (
                 <option key={model._id} value={model.name}>
@@ -830,8 +832,8 @@ const CreatePostForm = () => {
                 {categoriesLoading
                   ? "Loading..."
                   : availableYears.length === 0
-                  ? "No years available (add in admin)"
-                  : "Select Year"}
+                    ? "No years available (add in admin)"
+                    : "Select Year"}
               </option>
               {availableYears.map((year) => (
                 <option key={year._id} value={year.name}>
@@ -913,10 +915,10 @@ const CreatePostForm = () => {
                 {categoriesLoading
                   ? "Loading..."
                   : availableCities.length === 0
-                  ? "No cities available"
-                  : formData.country
-                  ? "Select City"
-                  : "Select City (or select Country to filter)"}
+                    ? "No cities available"
+                    : formData.country
+                      ? "Select City"
+                      : "Select City (or select Country to filter)"}
               </option>
               {availableCities.map((city) => (
                 <option key={city._id} value={city.name}>

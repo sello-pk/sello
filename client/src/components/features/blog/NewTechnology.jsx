@@ -46,16 +46,16 @@ const NewTechnology = () => {
               to={`/blog/all?category=${cate._id}`}
               className="bg-[#D9D9D9] rounded-xl flex items-center flex-col p-5 hover:bg-[#C0C0C0] transition-colors group"
             >
-              <div className="w-full">
+              <div className="w-full h-40 overflow-hidden rounded-lg bg-gray-100 flex items-center justify-center">
                 {cate.image ? (
                   <img
                     src={cate.image}
-                    className="w-full h-full mx-auto object-cover rounded-lg"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     alt={cate.name}
                   />
                 ) : (
-                  <div className="w-full h-40 bg-gray-300 rounded-lg flex items-center justify-center">
-                    <span className="text-3xl font-semibold text-gray-600">
+                  <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                    <span className="text-3xl font-semibold text-gray-500">
                       {cate.name?.charAt(0).toUpperCase()}
                     </span>
                   </div>

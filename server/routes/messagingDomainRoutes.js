@@ -13,7 +13,7 @@ import {
     getAllChats as getAllAdminChats, getChatMessages as getAdminChatMessages, reportChat, deleteChat, getChatStatistics, sendChatMessage as sendAdminChatMessage, deleteMessage as deleteAdminChatMessage, editMessage as editAdminChatMessage, getAllMessages as getAllAdminMessages
 } from "../controllers/chatController.js";
 import {
-    submitContactForm, getAllContactForms as getAllSubmissions, getContactFormById as getSubmissionById, updateContactFormStatus as updateSubmissionStatus, deleteContactForm as deleteSubmission
+    submitContactForm, getAllContactForms as getAllSubmissions, getContactFormById as getSubmissionById, updateContactFormStatus as updateSubmissionStatus, deleteContactForm as deleteSubmission, convertToChat
 } from "../controllers/contactFormController.js";
 import {
     getAllCustomerRequests, getCustomerRequestById, createCustomerRequest, updateCustomerRequest, addResponse as addCustomerResponse, deleteCustomerRequest, getCustomerRequestStatistics
@@ -64,10 +64,16 @@ router.put("/chat/messages/:messageId", editAdminChatMessage);
 
 /* ------------------------------ CONTACT FORM ------------------------------ */
 router.post("/contact", submitContactForm);
+router.post("/contact-form", submitContactForm); // Alias for frontend
 router.get("/contact", auth, authorize("admin"), getAllSubmissions);
+router.get("/contact-form", auth, authorize("admin"), getAllSubmissions); // Alias for admin frontend
 router.get("/contact/:id", auth, authorize("admin"), getSubmissionById);
+router.get("/contact-form/:id", auth, authorize("admin"), getSubmissionById); // Alias
 router.put("/contact/:id", auth, authorize("admin"), updateSubmissionStatus);
+router.put("/contact-form/:id/status", auth, authorize("admin"), updateSubmissionStatus); // Match frontend status update path
 router.delete("/contact/:id", auth, authorize("admin"), deleteSubmission);
+router.delete("/contact-form/:id", auth, authorize("admin"), deleteSubmission); // Alias
+router.post("/contact-form/:id/convert-to-chat", auth, authorize("admin"), convertToChat); // Add missing conversion route
 
 /* --------------------------- CUSTOMER REQUESTS ---------------------------- */
 router.post("/customer-requests", auth, createCustomerRequest);

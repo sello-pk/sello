@@ -74,9 +74,9 @@ class ErrorBoundaryClass extends React.Component {
                 />
               </svg>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            <h2 className="text-4xl font-bold text-gray-900 mb-2">
               Something went wrong
-            </h1>
+            </h2>
             <p className="text-gray-600 mb-6">
               We're sorry, but something unexpected happened. Please try
               refreshing the page.
@@ -152,9 +152,9 @@ export const ErrorPage = () => {
           </svg>
         </div>
         {errorStatus && (
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          <h2 className="text-4xl font-bold text-gray-900 mb-2">
             {errorStatus}
-          </h1>
+          </h2>
         )}
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
           {errorStatus ? "Page Not Found" : "Something went wrong"}

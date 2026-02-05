@@ -19,9 +19,9 @@ const UserListingHero = () => {
       {/* Left Section */}
       <div className="w-full md:w-[60%] flex items-center px-3 sm:px-4 md:px-6 lg:px-8 py-10 md:py-0">
         <div>
-          <h1 className="text-2xl md:text-5xl font-bold mb-8 md:mb-14">
+          <h2 className="text-2xl md:text-5xl font-bold mb-8 md:mb-14">
             Your Listings
-          </h1>
+          </h2>
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 my-5 md:my-7">

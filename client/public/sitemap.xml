@@ -1,39 +1,110 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
   <url>
-    <loc>http://localhost:5173/</loc>
-    <lastmod>2025-01-10</lastmod>
-    <changefreq>daily</changefreq>
+    <loc>https://sello.pk/</loc>
     <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>http://localhost:5173/listings</loc>
-    <lastmod>2025-01-10</lastmod>
+    <lastmod>2026-02-05</lastmod>
     <changefreq>daily</changefreq>
+  </url>
+
+  <url>
+    <loc>https://sello.pk/cars</loc>
     <priority>0.9</priority>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>daily</changefreq>
   </url>
+
   <url>
-    <loc>http://localhost:5173/filter</loc>
-    <lastmod>2025-01-10</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://sello.pk/login</loc>
     <priority>0.8</priority>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>daily</changefreq>
   </url>
+
   <url>
-    <loc>http://localhost:5173/about</loc>
-    <lastmod>2025-01-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>http://localhost:5173/contact</loc>
-    <lastmod>2025-01-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>http://localhost:5173/blog</loc>
-    <lastmod>2025-01-10</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://sello.pk/dealer-signup</loc>
     <priority>0.8</priority>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>daily</changefreq>
   </url>
+
+  <url>
+    <loc>https://sello.pk/about</loc>
+    <priority>0.8</priority>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+
+  <url>
+    <loc>https://sello.pk/contact</loc>
+    <priority>0.8</priority>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+
+  <url>
+    <loc>https://sello.pk/blog</loc>
+    <priority>0.8</priority>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+
+  <url>
+    <loc>https://sello.pk/car-estimator</loc>
+    <priority>0.8</priority>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+
+  <url>
+    <loc>https://sello.pk/bikes</loc>
+    <priority>0.8</priority>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+
+  <url>
+    <loc>https://sello.pk/buses</loc>
+    <priority>0.8</priority>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+
+  <url>
+    <loc>https://sello.pk/trucks</loc>
+    <priority>0.8</priority>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+
+  <url>
+    <loc>https://sello.pk/vans</loc>
+    <priority>0.8</priority>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+
+  <url>
+    <loc>https://sello.pk/farm</loc>
+    <priority>0.8</priority>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+
+  <url>
+    <loc>https://sello.pk/e-bikes</loc>
+    <priority>0.8</priority>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+
+  <url>
+    <loc>https://sello.pk/brands</loc>
+    <priority>0.8</priority>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+
 </urlset>

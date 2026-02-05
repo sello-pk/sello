@@ -278,9 +278,9 @@ const GetAllCarsSection = () => {
   if (isLoading) {
     return (
       <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-[#F5F5F5]">
-        <h1 className="md:text-4xl text-2xl font-medium mb-8">
+        <h2 className="md:text-4xl text-2xl font-medium mb-8">
           Explore All Vehicles
-        </h1>
+        </h2>
         <div className="grid md:grid-cols-3 grid-cols-1 md:gap-10 gap-6">
           {[...Array(6)].map((_, index) => (
             <CarCardSkeleton key={index} />
@@ -317,9 +317,9 @@ const GetAllCarsSection = () => {
   return (
     <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-[#F5F5F5]">
       <div>
-        <h1 className="md:text-4xl text-2xl font-medium">
+        <h2 className="md:text-4xl text-2xl font-medium">
           Explore All Vehicles
-        </h1>
+        </h2>
 
         {/* Tabs */}
         <div className="flex space-x-8 border-b mt-5 border-gray-200 overflow-x-auto pb-2">

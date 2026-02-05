@@ -435,9 +435,9 @@ const ProfileHero = () => {
             {/* User Info */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 truncate">
+                <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 truncate">
                   {user?.name || "User"}
-                </h1>
+                </h2>
                 {user?.verified && (
                   <FiCheckCircle
                     className="text-primary-500 flex-shrink-0"

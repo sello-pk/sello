@@ -244,7 +244,7 @@ export const getAllCategories = async (req, res) => {
     if (type) query.type = type;
     if (subType) query.subType = subType;
     if (parentCategory) query.parentCategory = parentCategory;
-    if (isActive !== undefined) query.isActive = isActive === "true";
+    if (isActive !== undefined) query.isActive = isActive === "true" || isActive === true;
     if (vehicleType) query.vehicleType = vehicleType;
 
     const categories = await Category.find(query)

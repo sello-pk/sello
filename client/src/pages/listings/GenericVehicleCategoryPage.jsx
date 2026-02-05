@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useSearchParams, Link, useParams, useNavigate } from "react-router-dom";
+import {
+  useSearchParams,
+  Link,
+  useParams,
+  useNavigate,
+} from "react-router-dom";
 import { useGetFilteredCarsQuery } from "../../redux/services/api";
 import { HiOutlineArrowLeft } from "react-icons/hi2";
 import CarCard from "../../components/common/CarCard";
@@ -10,7 +15,7 @@ const GenericVehicleCategoryPage = () => {
   const { categoryType } = useParams();
   const navigate = useNavigate();
   const config = vehicleCategoryConfig[categoryType?.toLowerCase()];
-  
+
   const [searchParams] = useSearchParams();
   const [page, setPage] = useState(parseInt(searchParams.get("page")) || 1);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -56,7 +61,10 @@ const GenericVehicleCategoryPage = () => {
         newParams.set(key, value);
       }
     });
-    navigate(`/listings/${categoryType?.toLowerCase()}?${newParams.toString()}`, { replace: true });
+    navigate(
+      `/listings/${categoryType?.toLowerCase()}?${newParams.toString()}`,
+      { replace: true },
+    );
   };
 
   const handlePageChange = (newPage) => {
@@ -70,7 +78,9 @@ const GenericVehicleCategoryPage = () => {
     if (newPage > 1) {
       newParams.set("page", newPage.toString());
     }
-    navigate(`/listings/${categoryType?.toLowerCase()}?${newParams.toString()}`);
+    navigate(
+      `/listings/${categoryType?.toLowerCase()}?${newParams.toString()}`,
+    );
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -85,7 +95,7 @@ const GenericVehicleCategoryPage = () => {
           backgroundImage: `url("${config.bgImage}")`,
           backgroundSize: "cover",
           backgroundPosition: "center",
-          backgroundColor: "#1a1a1a"
+          backgroundColor: "#1a1a1a",
         }}
       >
         <div className="relative z-10 container mx-auto px-4 py-20 bg-black/40">
@@ -103,7 +113,9 @@ const GenericVehicleCategoryPage = () => {
               </div>
             </div>
 
-            <h1 className="text-5xl md:text-6xl font-bold mb-4">{config.title}</h1>
+            <h2 className="text-5xl md:text-6xl font-bold mb-4">
+              {config.title}
+            </h2>
             <p className="text-xl md:text-2xl text-white/95 mb-8 max-w-3xl mx-auto leading-relaxed">
               {config.description}
             </p>
@@ -136,17 +148,25 @@ const GenericVehicleCategoryPage = () => {
             {isLoading ? (
               <div className="text-center py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
-                <p className="mt-4 text-gray-600">Loading {categoryType} listings...</p>
+                <p className="mt-4 text-gray-600">
+                  Loading {categoryType} listings...
+                </p>
               </div>
             ) : error ? (
               <div className="text-center py-12">
-                <p className="text-red-600">Error loading listings. Please try again.</p>
+                <p className="text-red-600">
+                  Error loading listings. Please try again.
+                </p>
               </div>
             ) : cars.length === 0 ? (
               <div className="text-center py-12 bg-white rounded-lg shadow-sm">
                 <Icon className="text-6xl text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">No Listings Found</h3>
-                <p className="text-gray-600 mb-6">No {categoryType} listings match your filters.</p>
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                  No Listings Found
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  No {categoryType} listings match your filters.
+                </p>
                 <Link
                   to="/create-post"
                   className="inline-block px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition"

@@ -254,6 +254,7 @@ const SupportChatWidget = () => {
           chatId: selectedChat,
           message: messageText,
           messageType: "text",
+          isAdminReply: false,
         });
         // Optimistically add message
         const tempMessage = {
@@ -262,6 +263,7 @@ const SupportChatWidget = () => {
           sender: { _id: currentUser?._id, name: currentUser?.name || "You" },
           createdAt: new Date(),
           isBot: false,
+          isAdminReply: false,
         };
         setLiveMessages((prev) => [...prev, tempMessage]);
         setTimeout(() => {
@@ -518,10 +520,18 @@ const SupportChatWidget = () => {
                 ) : (
                   chatMessages.map((msg) => {
                     // Check if current user is the sender
-                    const isCurrentUser =
-                      currentUser?._id &&
-                      msg.sender?._id &&
-                      currentUser._id.toString() === msg.sender._id.toString();
+                                        // Robust ID comparison for alignment
+                    const getMsgSenderId = (m) => {
+                      const id = m.sender?._id || m.sender?.id || m.sender;
+                      return id ? id.toString() : null;
+                    };
+                    const msgSenderIdStr = getMsgSenderId(msg);
+                    const currentUserIdStr = currentUser?._id ? currentUser._id.toString() : null;
+
+                    // isCurrentUser = Should this message show on the RIGHT?
+                    // It should show on the right if it's from a Customer (isAdminReply = false).
+                    // This fixes alignment when an Admin tests from the user widget.
+                    const isCurrentUser = msg.isAdminReply === false || (currentUserIdStr && msgSenderIdStr === currentUserIdStr && msg.sender?.role !== 'admin');
                     const isBot = msg.isBot;
                     const canEdit = isCurrentUser && !isBot && !msg.isDeleted;
                     const canDelete = isCurrentUser && !isBot && !msg.isDeleted;

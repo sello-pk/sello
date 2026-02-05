@@ -178,7 +178,7 @@ const MyChats = () => {
   const getOtherParticipant = (chat) => {
     if (!currentUser || !chat.participants) return null;
     return chat.participants.find(
-      (p) => p._id.toString() !== currentUser._id.toString()
+      (p) => p._id.toString() !== currentUser._id.toString(),
     );
   };
 
@@ -189,7 +189,18 @@ const MyChats = () => {
   };
 
   const handleSendMessage = async () => {
-    if (!message.trim() || !selectedChat) return;
+    console.log("handleSendMessage called", {
+      message: message.trim(),
+      selectedChat,
+    });
+
+    if (!message.trim() || !selectedChat) {
+      console.log("Early return - missing message or chat", {
+        hasMessage: !!message.trim(),
+        hasSelectedChat: !!selectedChat,
+      });
+      return;
+    }
 
     const messageText = message.trim();
     setMessage("");
@@ -198,6 +209,8 @@ const MyChats = () => {
       selectedChat,
       messageText,
       socketConnected,
+      socketExists: !!socket,
+      socketState: socket?.connected,
     });
 
     try {
@@ -211,10 +224,11 @@ const MyChats = () => {
         refetchChats();
       } else {
         console.log("Sending via REST API (socket not connected)");
-        await sendMessage({
+        const result = await sendMessage({
           chatId: selectedChat,
           message: messageText,
         }).unwrap();
+        console.log("REST API result:", result);
         refetchMessages();
         refetchChats();
       }
@@ -377,7 +391,7 @@ const MyChats = () => {
                               {chat.lastMessageAt && (
                                 <p className="text-xs text-gray-400 mt-1">
                                   {new Date(
-                                    chat.lastMessageAt
+                                    chat.lastMessageAt,
                                   ).toLocaleDateString("en-US", {
                                     month: "short",
                                     day: "numeric",
@@ -489,7 +503,7 @@ const MyChats = () => {
                             <div
                               key={msg._id}
                               className={`flex mb-4 ${
-                                isCurrentUser ? "justify-start" : "justify-end"
+                                isCurrentUser ? "justify-end" : "justify-start"
                               } group`}
                             >
                               <div
@@ -577,8 +591,8 @@ const MyChats = () => {
                                   <div
                                     className={`flex items-center gap-1 mt-1 ${
                                       isCurrentUser
-                                        ? "justify-start"
-                                        : "justify-end"
+                                        ? "justify-end"
+                                        : "justify-start"
                                     }`}
                                   >
                                     <span
@@ -589,7 +603,7 @@ const MyChats = () => {
                                       }`}
                                     >
                                       {new Date(
-                                        msg.createdAt
+                                        msg.createdAt,
                                       ).toLocaleTimeString("en-US", {
                                         hour: "2-digit",
                                         minute: "2-digit",

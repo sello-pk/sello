@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ContactInformation from "./ContactInformation";
 import axios from "axios";
+import { API_BASE_URL } from "../../../redux/config";
 import toast from "react-hot-toast";
 import {
   FiSend,
@@ -21,8 +22,7 @@ const ContactForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
 
-  const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
-  const API_URL = BASE_URL.endsWith("/api") ? BASE_URL : `${BASE_URL}/api`;
+  const API_URL = API_BASE_URL;
 
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -122,9 +122,9 @@ const ContactForm = () => {
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Section */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             We’re Here to Help
-          </h1>
+          </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
             For information on buying or selling a car please get in touch with
             us. We will get back to you right away.

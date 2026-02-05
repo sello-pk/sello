@@ -104,9 +104,16 @@ const AdminLayout = ({ children }) => {
       label: "Reports & Analytics",
     },
     { path: "/admin/activity-log", icon: FiActivity, label: "Activity Log" },
-    { path: "/admin/chat", icon: FiMessageSquare, label: "Chat Monitoring" },
-    { path: "/admin/support-chat", icon: FiMessageSquare, label: "Support Chat" },
-    { path: "/admin/chatbot", icon: FiCpu, label: "Support Chatbot" },
+    {
+      path: "/admin/chat-monitoring",
+      icon: FiMessageSquare,
+      label: "Chat Monitoring",
+    },
+    {
+      path: "/admin/support-chat",
+      icon: FiMessageSquare,
+      label: "Support Chat",
+    },
 
     {
       path: "/admin/customer-requests",
@@ -176,13 +183,17 @@ const AdminLayout = ({ children }) => {
         {/* Logo - Primary Orange Header */}
         <div className="bg-primary-500 px-4 py-2 flex items-center justify-between">
           {sidebarOpen && (
-            <div className="flex items-center justify-center gap-1 h-full w-full">
+            <Link
+              to="/"
+              className="flex items-center justify-center gap-1 h-full w-full cursor-pointer hover:opacity-90 transition-opacity"
+              aria-label="Go to Home Page"
+            >
               <img
                 src={images.logo}
                 alt="logo"
                 className="w-24 h-24 scale-150 object-contain"
               />
-            </div>
+            </Link>
           )}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -259,7 +270,7 @@ const AdminLayout = ({ children }) => {
           >
             <FiMenu size={24} />
           </button>
-          <h1 className="text-lg font-bold">Admin Panel</h1>
+          <h2 className="text-lg font-bold">Admin Panel</h2>
           <button
             onClick={toggleTheme}
             className="p-2 hover:opacity-90 dark:hover:opacity-90 rounded-lg"

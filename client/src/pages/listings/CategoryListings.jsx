@@ -189,7 +189,7 @@ const CategoryListings = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div 
+      <div
         className="relative bg-gradient-to-br from-primary-500 to-primary-600 text-white"
         style={{
           backgroundImage: `url(${categoryBackgrounds[category] || "/assets/categories/carCat.svg"})`,
@@ -198,7 +198,6 @@ const CategoryListings = () => {
           backgroundRepeat: "no-repeat",
         }}
       >
-
         {/* Content */}
         <div className="relative z-10 container mx-auto px-4 py-20 bg-black/30 backdrop-blur-[2px]">
           <Link
@@ -218,9 +217,9 @@ const CategoryListings = () => {
             </div>
 
             {/* Title */}
-            <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
+            <h2 className="text-5xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
               {title}
-            </h1>
+            </h2>
 
             {/* Description */}
             <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
@@ -332,131 +331,6 @@ const CategoryListings = () => {
               </>
             )}
           </div>
-        </div>
-      </div>
-
-      {/* Blogs Section */}
-      <div className="mt-16 bg-gray-50 rounded-2xl p-8">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Latest {title} Blogs & Guides
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Discover expert tips, maintenance guides, and latest news about {title.toLowerCase()}s
-          </p>
-        </div>
-
-        {/* Hardcoded Blogs Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-8">
-          {/* Blog 1 */}
-          <Link
-            to="/blog/tips-for-buying-your-first-vehicle"
-            className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col"
-          >
-            {/* Blog Image */}
-            <div className="w-full h-48 md:h-56 overflow-hidden bg-gray-200">
-              <img
-                src="https://images.unsplash.com/photo-1549924231-f129b911e442?w=800&h=600&fit=crop"
-                alt="Tips for Buying Your First Vehicle"
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              />
-            </div>
-
-            {/* Blog Content */}
-            <div className="p-6 flex-1 flex flex-col">
-              {/* Category */}
-              <span className="inline-block text-xs font-semibold text-primary-500 mb-3 uppercase tracking-wide">
-                Buying Guide
-              </span>
-
-              {/* Title */}
-              <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-primary-500 transition-colors leading-tight">
-                Essential Tips for Buying Your First {title}
-              </h3>
-
-              {/* Description */}
-              <p className="text-gray-600 text-sm md:text-base leading-relaxed mb-4 line-clamp-4 flex-1">
-                Discover comprehensive tips and expert advice for purchasing your first {title.toLowerCase()}. This detailed guide covers everything from 
-                understanding financing options and loan pre-approval to conducting thorough inspections and negotiating the best price. Learn about 
-                essential documentation, insurance requirements, warranty considerations, and maintenance schedules. We also explore common mistakes 
-                buyers make and how to avoid them, plus expert recommendations on finding reliable dealers and private sellers.
-              </p>
-
-              {/* Author and Date Info */}
-              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white text-xs font-semibold">
-                    A
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">Admin</p>
-                    <p className="text-xs text-gray-500">Jan 15, 2024</p>
-                  </div>
-                </div>
-                <span className="text-xs text-gray-500">5 min</span>
-              </div>
-            </div>
-          </Link>
-
-          {/* Blog 2 */}
-          <Link
-            to="/blog/maintenance-guide-for-vehicle-owners"
-            className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col"
-          >
-            {/* Blog Image */}
-            <div className="w-full h-48 md:h-56 overflow-hidden bg-gray-200">
-              <img
-                src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=800&h=600&fit=crop"
-                alt="Maintenance Guide for Vehicle Owners"
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              />
-            </div>
-
-            {/* Blog Content */}
-            <div className="p-6 flex-1 flex flex-col">
-              {/* Category */}
-              <span className="inline-block text-xs font-semibold text-primary-500 mb-3 uppercase tracking-wide">
-                Maintenance
-              </span>
-
-              {/* Title */}
-              <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-primary-500 transition-colors leading-tight">
-                Complete {title} Maintenance Guide for 2024
-              </h3>
-
-              {/* Description */}
-              <p className="text-gray-600 text-sm md:text-base leading-relaxed mb-4 line-clamp-4 flex-1">
-                Keep your {title.toLowerCase()} running smoothly with our comprehensive maintenance guide for 2024. This in-depth resource covers 
-                everything from daily checks and weekly inspections to monthly and annual service schedules. Learn about engine oil changes, 
-                tire rotation, brake system maintenance, battery care, and fluid replacements. We provide detailed seasonal maintenance tips 
-                for winter preparation and summer care, plus troubleshooting common issues and when to seek professional help.
-              </p>
-
-              {/* Author and Date Info */}
-              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white text-xs font-semibold">
-                    E
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">Expert</p>
-                    <p className="text-xs text-gray-500">Jan 10, 2024</p>
-                  </div>
-                </div>
-                <span className="text-xs text-gray-500">7 min</span>
-              </div>
-            </div>
-          </Link>
-        </div>
-
-        <div className="text-center mt-8">
-          <Link
-            to="/blog"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary-500 border-2 border-primary-500 rounded-lg hover:bg-primary-50 transition-colors"
-          >
-            View All Blogs
-            <HiOutlineArrowLeft className="rotate-180" />
-          </Link>
         </div>
       </div>
     </div>

@@ -9,6 +9,7 @@ const Contact = () => {
       <SEO
         title="Contact Us | 24/7 Car Marketplace Support – Sello.pk"
         description="Need help buying or selling a car in Pakistan? Contact Sello.pk for fast, reliable support. We're here to guide you every step of the way."
+        canonical="https://sello.pk/contact"
       />
       <ContactForm />
       <ContactMap />

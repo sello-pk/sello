@@ -167,7 +167,7 @@ const EditCarForm = () => {
 
           if (car.model && makeModels.length > 0) {
             const selectedModelObj = makeModels.find(
-              (m) => m && m.name === car.model
+              (m) => m && m.name === car.model,
             );
             if (
               selectedModelObj &&
@@ -332,12 +332,12 @@ const EditCarForm = () => {
       } else if (key === "features") {
         // Append each feature individually to FormData
         defaults.features.forEach((feature) =>
-          data.append("features[]", feature)
+          data.append("features[]", feature),
         );
       } else {
         data.append(
           key,
-          defaults[key] !== undefined ? defaults[key] : formData[key]
+          defaults[key] !== undefined ? defaults[key] : formData[key],
         );
       }
     });
@@ -358,7 +358,7 @@ const EditCarForm = () => {
       className="px-4 md:px-20 py-12"
       encType="multipart/form-data"
     >
-      <h1 className="text-center md:text-3xl font-semibold">Edit Car</h1>
+      <h2 className="text-center md:text-3xl font-semibold">Edit Car</h2>
       {isLoadingCar && <p className="text-center">Loading car data...</p>}
       {carError && (
         <p className="text-center text-red-500">Failed to load car data</p>
@@ -386,7 +386,7 @@ const EditCarForm = () => {
                         setFormData((prev) => ({
                           ...prev,
                           existingImages: prev.existingImages.filter(
-                            (_, i) => i !== idx
+                            (_, i) => i !== idx,
                           ),
                         }));
                       }}
@@ -527,7 +527,7 @@ const EditCarForm = () => {
                           {year}
                         </option>
                       );
-                    }
+                    },
                   )}
             </select>
           </div>

@@ -13,6 +13,7 @@ import { useRegisterUserMutation } from "../../redux/services/api";
 import { Spinner } from "../../components/ui/Loading";
 import { FiX, FiChevronDown } from "react-icons/fi";
 import { useCarCategories } from "../../hooks/useCarCategories";
+import SEO from "../../components/common/SEO";
 
 const DealerSignup = ({ onBack }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -364,6 +365,11 @@ const DealerSignup = ({ onBack }) => {
 
   return (
     <>
+      <SEO
+        title="Dealer Signup | Sello.pk"
+        description="Register as a car dealer on Sello.pk. Start selling cars to thousands of buyers across Pakistan with our trusted platform."
+        canonical="https://sello.pk/dealer-signup"
+      />
       <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4 overflow-y-auto">
         <div className="bg-white rounded-lg shadow-2xl w-full max-w-5xl my-8">
           {/* Header */}

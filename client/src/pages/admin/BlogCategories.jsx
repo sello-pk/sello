@@ -25,7 +25,7 @@ const BlogCategories = () => {
         imagePreview: null,
     });
 
-    const { data, isLoading, refetch } = useGetAllCategoriesQuery({ type: "blog" });
+    const { data, isLoading, refetch } = useGetAllCategoriesQuery({});
     const [createCategory] = useCreateCategoryMutation();
     const [updateCategory] = useUpdateCategoryMutation();
     const [deleteCategory] = useDeleteCategoryMutation();
@@ -169,6 +169,7 @@ const BlogCategories = () => {
                                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Slug</th>
                                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Image</th>
                                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Posts</th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Type</th>
                                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Order</th>
                                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Action</th>
                             </tr>
@@ -209,7 +210,17 @@ const BlogCategories = () => {
                                             )}
                                         </td>
                                         <td className="px-6 py-4 text-gray-600">
-                                            0
+                                            {category.postCount || 0}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                category.type === "blog" ? "bg-blue-100 text-blue-800" :
+                                                category.type === "car" ? "bg-green-100 text-green-800" :
+                                                category.type === "location" ? "bg-purple-100 text-purple-800" :
+                                                "bg-gray-100 text-gray-800"
+                                            }`}>
+                                                {category.type}
+                                            </span>
                                         </td>
                                         <td className="px-6 py-4 text-gray-600">
                                             {category.order || 0}

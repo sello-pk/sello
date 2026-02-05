@@ -614,8 +614,11 @@ export const adminApi = createApi({
     // Support Chat (Admin)
     getAllSupportChats: builder.query({
       query: (params = {}) => {
-        const searchParams = new URLSearchParams(params).toString();
-        return `/support-chat?${searchParams}`;
+        const cleanParams = Object.fromEntries(
+          Object.entries(params).filter(([_, v]) => v !== undefined)
+        );
+        const searchParams = new URLSearchParams(cleanParams).toString();
+        return `/support-chat/admin?${searchParams}`;
       },
       providesTags: ["SupportChat"],
       transformResponse: (response) => {

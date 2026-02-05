@@ -13,6 +13,7 @@ const About = () => {
       <SEO
         title="About Us | Buy & Sell Cars Online in Pakistan – Sello.pk"
         description="Sello.pk is a secure and transparent platform to buy and sell cars in Pakistan. Discover our mission, values, and commitment to trusted car trading."
+        canonical="https://sello.pk/about"
       />
       <AboutHeroSection />
       <OutStorySection />

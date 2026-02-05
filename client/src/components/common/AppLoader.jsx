@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Professional App-Level Loader
@@ -14,9 +14,11 @@ const AppLoader = () => {
           <div className="absolute inset-0 border-4 border-gray-200 rounded-full"></div>
           <div className="absolute inset-0 border-4 border-primary-500 rounded-full border-t-transparent animate-spin"></div>
           {/* Sello text inside the circle */}
-          <h1 className="text-xl font-bold text-gray-900 relative z-10">Sello</h1>
+          <h2 className="text-xl font-bold text-gray-900 relative z-10">
+            Sello
+          </h2>
         </div>
-        
+
         {/* Loading Text */}
         <p className="text-sm text-gray-500">Loading...</p>
       </div>
@@ -25,4 +27,3 @@ const AppLoader = () => {
 };
 
 export default AppLoader;
-

@@ -408,6 +408,7 @@ export const sendSupportMessage = async (req, res) => {
         uploadedAttachments.length > 0
           ? uploadedAttachments
           : attachments || [],
+      isAdminReply: false,
     });
 
     // Update chat
@@ -492,8 +493,12 @@ export const getAllSupportChats = async (req, res) => {
     const { status, priority, search } = req.query;
 
     const query = { chatType: "support" };
-    if (status) query.status = status;
-    if (priority) query.priority = priority;
+    if (status && status !== "undefined" && status !== "all") {
+      query.status = status;
+    }
+    if (priority && priority !== "undefined" && priority !== "all") {
+      query.priority = priority;
+    }
 
     // Querying support chats
 
@@ -511,10 +516,11 @@ export const getAllSupportChats = async (req, res) => {
 
       // Processing participant data
       chatObj.participants = chatObj.participants.map((p) => ({
-        id: p._id,
+        _id: p._id,
         name: p.name,
         role: p.role,
         email: p.email,
+        avatar: p.avatar,
       }));
 
       // Simple approach: Find the user who is NOT the current admin
@@ -664,6 +670,7 @@ export const sendAdminResponse = async (req, res) => {
         uploadedAttachments.length > 0
           ? uploadedAttachments
           : attachments || [],
+      isAdminReply: true,
     });
 
     // Update chat

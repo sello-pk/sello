@@ -14,6 +14,7 @@ import {
 import { setAccessToken } from "../../utils/tokenRefresh.js";
 import { store } from "../../redux/store";
 import { Spinner } from "../../components/ui/Loading";
+import SEO from "../../components/common/SEO";
 
 // Check if Google OAuth is configured
 const hasGoogleClientId = !!import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -249,6 +250,11 @@ const Login = () => {
 
   return (
     <>
+      <SEO
+        title="Login | Sello.pk"
+        description="Login to your Sello.pk account to buy and sell cars in Pakistan. Access your dashboard, manage listings, and connect with buyers."
+        canonical="https://sello.pk/login"
+      />
       <div className="flex md:flex-row flex-col h-screen bg-gray-50">
         {/* Orange Header */}
         <HeaderLogo />
@@ -378,7 +384,7 @@ const Login = () => {
                         error?.message?.includes("GSI_LOGGER")
                       ) {
                         toast.error(
-                          "Google Sign-In configuration error. Please use email/password login."
+                          "Google Sign-In configuration error. Please use email/password login.",
                         );
                         return;
                       }

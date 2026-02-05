@@ -52,6 +52,7 @@ const AllBlog = () => {
       <SEO
         title="All Blog Posts | Sello"
         description="Browse all our blog posts about cars, automotive news, buying guides, and more."
+        canonical="https://sello.pk/blog"
       />
       <BlogsHeroSection />
 

@@ -156,11 +156,11 @@ const CategoryPage = () => {
             </div>
 
             {/* Title */}
-            <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
+            <h2 className="text-5xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
               {isShowingAllCategories
                 ? "All Vehicle Categories"
                 : `${currentCategory?.name}s`}
-            </h1>
+            </h2>
 
             {/* Description */}
             <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">

@@ -379,7 +379,7 @@ const SellerChats = () => {
                           <div
                             key={msg._id}
                             className={`flex mb-4 ${
-                              isCurrentUser ? "justify-start" : "justify-end"
+                              isCurrentUser ? "justify-end" : "justify-start"
                             }`}
                           >
                             <div
@@ -456,8 +456,8 @@ const SellerChats = () => {
                                     <div
                                       className={`flex items-center gap-1 mt-1 ${
                                         isCurrentUser
-                                          ? "justify-start"
-                                          : "justify-end"
+                                          ? "justify-end"
+                                          : "justify-start"
                                       }`}
                                     >
                                       <span className="text-xs opacity-70">

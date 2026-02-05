@@ -207,7 +207,7 @@ const CarChatWidget = ({ carId, carTitle, onClose }) => {
                   <div
                     key={msg._id}
                     className={`flex mb-4 ${
-                      isCurrentUser ? "justify-start" : "justify-end"
+                      isCurrentUser ? "justify-end" : "justify-start"
                     }`}
                   >
                     <div
@@ -258,7 +258,7 @@ const CarChatWidget = ({ carId, carTitle, onClose }) => {
                         {/* Message Footer */}
                         <div
                           className={`flex items-center gap-1 mt-1 ${
-                            isCurrentUser ? "justify-start" : "justify-end"
+                            isCurrentUser ? "justify-end" : "justify-start"
                           }`}
                         >
                           <span

@@ -32,6 +32,7 @@ router.post("/users/request-dealer", auth, upload.fields([{ name: 'businessLicen
 
 /* --------------------------- NOTIFICATIONS --------------------------- */
 router.get("/notifications", auth, getUserNotifications);
+router.get("/notifications/me", auth, getUserNotifications); // Alias for frontend
 router.put("/notifications/:notificationId/read", auth, markAsRead);
 router.put("/notifications/read-all", auth, markAllAsRead);
 // Admin

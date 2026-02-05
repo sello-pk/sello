@@ -137,9 +137,10 @@ export const getAllSubscribers = async (req, res) => {
 
 const blogBase = createBaseController(Blog, {
     resourceName: 'Blog',
-    populateFields: [{ path: 'author', select: 'name email' }],
+    populateFields: [{ path: 'author', select: 'name email' }, { path: 'category', select: 'name slug image' }],
     useCloudinary: true,
-    idParam: 'blogId'
+    idParam: 'blogId',
+    uploadField: 'featuredImage'
 });
 
 export const { 
@@ -149,21 +150,31 @@ export const {
 
 export const createBlog = async (req, res) => {
     try {
-        const { title, content, category, tags, status } = req.body;
+        const { title, content, category, tags, status, excerpt, readTime, isFeatured } = req.body;
         if (!title || !content) return res.status(400).json({ success: false, message: "Title and content required." });
 
         let imageUrl = null;
-        if (req.file) imageUrl = await uploadCloudinary(req.file.buffer);
+        if (req.file) {
+            const { uploadCloudinary } = await import('../utils/cloudinary.js');
+            imageUrl = await uploadCloudinary(req.file.buffer);
+        }
 
         const blog = await Blog.create({
             title, 
             content, 
-            category, 
+            excerpt: excerpt || content.substring(0, 150).replace(/<[^>]*>?/gm, '') + '...',
+            category: category || null, 
             tags: typeof tags === 'string' ? JSON.parse(tags) : tags,
             status: status || 'draft',
-            image: imageUrl,
+            featuredImage: imageUrl,
+            isFeatured: isFeatured === 'true',
+            readTime: parseInt(readTime) || 5,
             author: req.user._id,
-            slug: title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + '-' + Date.now().toString().slice(-4)
+            slug: title.toLowerCase()
+                .trim()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/[\s_-]+/g, '-')
+                .replace(/^-+|-+$/g, '') + '-' + Date.now().toString().slice(-4)
         });
 
         return res.status(201).json({ success: true, data: blog });
@@ -176,18 +187,65 @@ export const createBlog = async (req, res) => {
 export const getAllBlogs = async (req, res) => {
     try {
         const { status, category, search, page = 1, limit = 10 } = req.query;
-        const query = status ? { status } : { status: 'published' };
+        
+        // Build Filter Query
+        const query = {};
+        
+        // Handle admin "all" vs public default "published"
+        if (status && status !== 'all') {
+            query.status = status;
+        } else if (!status) {
+            query.status = 'published'; // Public default
+        }
+        
         if (category) query.category = category;
-        if (search) query.title = { $regex: search, $options: 'i' };
+        if (search) {
+            const regex = new RegExp(search, 'i');
+            query.$or = [{ title: regex }, { excerpt: regex }];
+        }
 
-        const blogs = await Blog.find(query)
-            .populate('author', 'name email')
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(limit);
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+
+        const [blogs, total, stats] = await Promise.all([
+            Blog.find(query)
+                .populate('author', 'name email')
+                .populate('category', 'name slug image')
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(parseInt(limit))
+                .lean(),
+            Blog.countDocuments(query),
+            Blog.aggregate([
+                { $group: { _id: "$status", count: { $sum: 1 } } }
+            ])
+        ]);
+
+        // Transform stats into a cleaner object
+        const metrics = {
+            total: await Blog.countDocuments(),
+            published: 0,
+            draft: 0,
+            pending: 0,
+            archived: 0,
+            scheduled: 0
+        };
+        stats.forEach(s => {
+            if (s._id) metrics[s._id] = s.count;
+        });
             
-        const total = await Blog.countDocuments(query);
-        return res.status(200).json({ success: true, data: blogs, pagination: { total, pages: Math.ceil(total / limit) } });
+        return res.status(200).json({ 
+            success: true, 
+            data: {
+                blogs,
+                pagination: {
+                    total,
+                    page: parseInt(page),
+                    pages: Math.ceil(total / parseInt(limit)),
+                    limit: parseInt(limit)
+                },
+                stats: metrics
+            }
+        });
     } catch (err) {
         Logger.error("Get Blogs Error", err);
         return res.status(500).json({ success: false, message: "Server error." });
@@ -216,15 +274,32 @@ export const getAllCategories = async (req, res) => {
         if (type) query.type = type;
         if (subType) query.subType = subType;
         if (parentCategory) query.parentCategory = parentCategory;
-        if (isActive !== undefined) query.isActive = isActive === "true";
+        if (isActive !== undefined) query.isActive = isActive === "true" || isActive === true;
         if (vehicleType) query.vehicleType = vehicleType;
 
-        const categories = await Category.find(query)
-            .populate("createdBy", "name email")
-            .populate("parentCategory", "name slug vehicleType")
-            .sort({ order: 1, createdAt: -1 });
+        const [categories, postCounts] = await Promise.all([
+            Category.find(query)
+                .populate("createdBy", "name email")
+                .populate("parentCategory", "name slug vehicleType")
+                .sort({ order: 1, createdAt: -1 })
+                .lean(),
+            Blog.aggregate([
+                { $group: { _id: "$category", count: { $sum: 1 } } }
+            ])
+        ]);
 
-        return res.status(200).json({ success: true, data: categories });
+        // Map post counts to categories
+        const countMap = {};
+        postCounts.forEach(c => {
+            if (c._id) countMap[c._id.toString()] = c.count;
+        });
+
+        const data = categories.map(cat => ({
+            ...cat,
+            postCount: countMap[cat._id.toString()] || 0
+        }));
+
+        return res.status(200).json({ success: true, data });
     } catch (err) {
         Logger.error("Get All Categories Error", err);
         console.error("Get All Categories Detailed Error:", err);

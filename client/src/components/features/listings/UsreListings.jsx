@@ -73,7 +73,7 @@ const UserListings = () => {
   if (isLoading) {
     return (
       <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-[#F5F5F5]">
-        <h1 className="md:text-4xl text-2xl font-medium mb-8">My Listings</h1>
+        <h2 className="md:text-4xl text-2xl font-medium mb-8">My Listings</h2>
         <p>Loading your cars...</p>
       </section>
     );
@@ -82,7 +82,7 @@ const UserListings = () => {
   if (listingsError) {
     return (
       <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-[#F5F5F5]">
-        <h1 className="md:text-4xl text-2xl font-medium mb-8">My Listings</h1>
+        <h2 className="md:text-4xl text-2xl font-medium mb-8">My Listings</h2>
         <p className="text-red-500">Error loading your listings</p>
       </section>
     );
@@ -92,7 +92,7 @@ const UserListings = () => {
 
   return (
     <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-[#F5F5F5]">
-      <h1 className="md:text-4xl text-2xl font-medium mb-8">My Listings</h1>
+      <h2 className="md:text-4xl text-2xl font-medium mb-8">My Listings</h2>
 
       {cars.length === 0 ? (
         <p>You haven’t posted any cars yet.</p>

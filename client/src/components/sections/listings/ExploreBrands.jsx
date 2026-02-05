@@ -11,9 +11,9 @@ const ExploreBrands = () => {
       <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-8">
         {/* Text Content */}
         <div className="w-full md:w-1/2">
-          <h1 className="md:text-4xl text-2xl font-semibold mb-4">
+          <h2 className="md:text-4xl text-2xl font-semibold mb-4">
             Explore Our Premium Brands
-          </h1>
+          </h2>
           <p className="text-base text-gray-700 leading-relaxed">
             Explore a curated collection of top automotive brands which present
             you with reliable cars for sale in Pakistan. As you compare models,

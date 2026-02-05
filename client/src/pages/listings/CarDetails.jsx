@@ -181,6 +181,9 @@ const CarDetails = () => {
         keywords={`${car?.make || ""} ${car?.model || ""}, ${
           car?.year || ""
         }, ${car?.condition || ""} car, ${car?.city || ""}, car for sale`}
+        canonical={
+          car ? `https://sello.pk/car/${car._id}/${car.slug}` : undefined
+        }
       />
       {/* Structured Data for SEO */}
       {car && (

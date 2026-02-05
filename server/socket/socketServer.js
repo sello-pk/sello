@@ -543,6 +543,9 @@ export const initializeSocket = (server) => {
             messageType,
             attachments,
             isBot: false,
+            // Trust the client if they say it's NOT an admin reply (useful for testing),
+            // but only allow true if they are actually an admin.
+            isAdminReply: (socket.user?.role === "admin") && (data.isAdminReply !== false),
           });
 
           // Populate sender
@@ -649,7 +652,7 @@ export const initializeSocket = (server) => {
                   if (recipientUser.role === "admin") {
                     // Admin receives support chat notification - direct to admin support chatbot
                     messageText = `${socket.user.name} sent you a support message`;
-                    actionUrl = `/admin/support-chatbot/${chatId}`;
+                    actionUrl = `/admin/support-chat?chatId=${chatId}`;
                   } else {
                     // Regular user receives support chat notification
                     messageText = `${socket.user.name} sent you a support message`;

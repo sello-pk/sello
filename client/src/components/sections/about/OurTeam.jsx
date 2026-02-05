@@ -86,9 +86,9 @@ const OurTeam = () => {
               Meet The Team
             </span>
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-6 leading-tight">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-6 leading-tight">
             Our Team
-          </h1>
+          </h2>
           <div className="flex items-center justify-center gap-4 mb-6">
             <div className="w-24 h-0.5 bg-primary-500 rounded-full"></div>
             <div className="w-2 h-2 bg-primary-500 rounded-full"></div>

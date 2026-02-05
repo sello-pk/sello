@@ -96,7 +96,6 @@ const AcceptInvite = () => {
       localStorage.removeItem("email");
       localStorage.removeItem("otp");
 
-
       // STEP 2: Store access token and user data (refresh token handled via httpOnly cookie)
       setAccessToken(tokenData);
 
@@ -125,7 +124,7 @@ const AcceptInvite = () => {
       toast.success(
         `Invitation accepted! Redirecting to admin panel as ${
           completeUserData.adminRole || inviteData?.role
-        }...`
+        }...`,
       );
 
       // STEP 4: Redirect immediately without delay to prevent any interference
@@ -134,7 +133,7 @@ const AcceptInvite = () => {
     } catch (err) {
       console.error("Accept invite error", err);
       toast.error(
-        err?.data?.message || err?.message || "Failed to accept invitation"
+        err?.data?.message || err?.message || "Failed to accept invitation",
       );
     }
   };
@@ -232,9 +231,9 @@ const AcceptInvite = () => {
                   <div className="w-20 h-20 bg-primary rounded-2xl flex items-center justify-center mb-4 shadow-lg">
                     <FiMail className="text-white text-4xl" />
                   </div>
-                  <h1 className="text-3xl font-bold text-gray-900">
+                  <h2 className="text-3xl font-bold text-gray-900">
                     You're Invited!
-                  </h1>
+                  </h2>
                   <p className="text-gray-600 mt-1">
                     Complete your account setup
                   </p>

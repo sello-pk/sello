@@ -155,6 +155,8 @@ const Dashboard = () => {
         return <FiList size={28} />;
       case "requests":
         return <FiFileText size={28} />;
+      case "blogs":
+        return <FiFileText size={28} />;
       case "sold":
         return <FiShoppingBag size={28} />;
       case "revenue":
@@ -222,9 +224,9 @@ const Dashboard = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
               Dashboard Overview
-            </h1>
+            </h2>
             <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
               Welcome back! Here's what's happening with your platform today.
             </p>
@@ -332,7 +334,7 @@ const Dashboard = () => {
           </div>
         ) : (
           /* Expanded View - Single row with spacing */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-4">
             {metrics.map((metric, index) => {
               const isPositive = metric.change >= 0;
               const changeText = Math.abs(metric.change).toFixed(0);

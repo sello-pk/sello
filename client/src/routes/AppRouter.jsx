@@ -55,7 +55,6 @@ const AdminDealers = lazy(() => import("../pages/admin/Dealers.jsx"));
 const AdminCategories = lazy(() => import("../pages/admin/Categories.jsx"));
 const AdminValuations = lazy(() => import("../pages/admin/Valuations.jsx"));
 const AdminChatMonitoring = lazy(() => import("../pages/admin/ChatMonitoring.jsx"));
-const AdminChatbot = lazy(() => import("../pages/admin/Chatbot.jsx"));
 const AdminPromotions = lazy(() => import("../pages/admin/Promotions.jsx"));
 const AdminPayments = lazy(() => import("../pages/admin/Payments.jsx"));
 const AdminNotifications = lazy(() => import("../pages/admin/Notifications.jsx"));
@@ -64,7 +63,6 @@ const ActivityLog = lazy(() => import("../pages/admin/ActivityLog.jsx"));
 const AccountDeletionRequests = lazy(() => import("../pages/admin/AccountDeletionRequests.jsx"));
 const Settings = lazy(() => import("../pages/admin/Settings.jsx"));
 const SupportChat = lazy(() => import("../pages/admin/SupportChat.jsx"));
-const SupportChatbot = lazy(() => import("../pages/admin/SupportChatbot.jsx"));
 const CustomerRequests = lazy(() => import("../pages/admin/CustomerRequests.jsx"));
 const Banners = lazy(() => import("../pages/admin/Banners.jsx"));
 const Testimonials = lazy(() => import("../pages/admin/Testimonials.jsx"));
@@ -134,9 +132,11 @@ const AppRouter = () => {
           <Route path="/admin/categories" element={<AdminCategories />} />
           <Route path="/admin/blogs" element={<BlogsOverview />} />
           <Route path="/admin/blogs/categories" element={<BlogCategories />} />
+          <Route path="/admin/blog-categories" element={<BlogCategories />} />
           <Route path="/admin/blogs/create" element={<BlogCreateEnhanced />} />
           <Route path="/admin/blogs/:id/edit" element={<BlogEdit />} />
           <Route path="/admin/blogs/comments" element={<BlogComments />} />
+          <Route path="/admin/blog-comments" element={<BlogComments />} />
           <Route path="/admin/blogs/media" element={<BlogMediaLibrary />} />
           <Route path="/admin/promotions" element={<AdminPromotions />} />
           <Route path="/admin/notifications" element={<AdminNotifications />} />
@@ -144,8 +144,7 @@ const AppRouter = () => {
           <Route path="/admin/analytics" element={<AdminReports />} />
           <Route path="/admin/activity-log" element={<ActivityLog />} />
           <Route path="/admin/account-deletion-requests" element={<AccountDeletionRequests />} />
-          <Route path="/admin/chat" element={<AdminChatMonitoring />} />
-          <Route path="/admin/chatbot" element={<SupportChatbot />} />
+          <Route path="/admin/chat-monitoring" element={<AdminChatMonitoring />} />
           <Route path="/admin/support-chat" element={<SupportChat />} />
           <Route path="/admin/customer-requests" element={<CustomerRequests />} />
           <Route path="/admin/banners" element={<Banners />} />

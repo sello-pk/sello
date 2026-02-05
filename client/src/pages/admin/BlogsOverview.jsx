@@ -40,6 +40,7 @@ const BlogsOverview = () => {
   const { data: blogsData, isLoading: blogsLoading, refetch: refetchBlogs } = useGetAllBlogsQuery({
     page,
     limit: 10,
+    status: 'all'
   });
   const { data: categoriesData } =
     useGetAllCategoriesQuery({ type: "blog" });
@@ -49,18 +50,12 @@ const BlogsOverview = () => {
   const pagination = blogsData?.pagination || {};
   const categories = categoriesData || [];
 
-  // Calculate metrics - need to get all blogs for accurate counts
-  const totalBlogs = blogsData?.pagination?.total || 0;
-  const publishedBlogs = blogs.filter(
-    (blog) => blog.status === "published"
-  ).length;
-  const draftBlogs = blogs.filter((blog) => blog.status === "draft").length;
-  const pendingBlogs = blogs.filter(
-    (blog) => blog.status === "pending" || !blog.status || blog.status === ""
-  ).length;
-  const reviewedBlogs = blogs.filter(
-    (blog) => blog.status === "archived"
-  ).length;
+  const stats = blogsData?.stats || {};
+  const totalBlogs = stats.total || 0;
+  const publishedBlogs = stats.published || 0;
+  const draftBlogs = stats.draft || 0;
+  const pendingBlogs = stats.pending || 0;
+  const reviewedBlogs = stats.archived || 0; // Matching "reviewed" to "archived" as per UI logic
   const totalCategories = categories.length;
   const totalComments = 0; // Placeholder - would need comments API
   const totalViews = blogs.reduce((sum, blog) => sum + (blog.views || 0), 0);
@@ -313,14 +308,14 @@ const BlogsOverview = () => {
         {/* Action Buttons */}
         <div className="flex gap-3 mb-6">
           <Link
-            to="/admin/blog-categories"
+            to="/admin/blogs/categories"
             className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-2 transition-colors"
           >
             <FiGrid size={18} />
             Categories
           </Link>
           <Link
-            to="/admin/blog-comments"
+            to="/admin/blogs/comments"
             className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-2 transition-colors"
           >
             <FiMessageSquare size={18} />
