@@ -55,9 +55,9 @@ const AllBrands = () => {
   return (
     <div className="min-h-screen bg-white pt-24 md:pt-28 pb-12 px-6 md:px-12">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-4 text-gray-900">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-4 text-gray-900">
           All Car Brands
-        </h2>
+        </h1>
         <p className="text-center text-gray-600 mb-12 text-sm md:text-base">
           Explore our wide selection of car brands
         </p>

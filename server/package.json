@@ -13,7 +13,9 @@
     "check:prod": "NODE_ENV=production node ./scripts/checkProduction.js",
     "reset:subscription-settings": "node ./scripts/resetSubscriptionSettings.js",
     "cron:auto-delete-sold": "node ./scripts/autoDeleteSoldCars.js",
-    "validate-env": "node ./scripts/validateEnv.js"
+    "validate-env": "node ./scripts/validateEnv.js",
+    "seed:blogs": "node ./scripts/seedBlogs.js",
+    "clear:blogs": "node ./scripts/clearBlogs.js"
   },
   "keywords": [],
   "author": "",

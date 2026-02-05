@@ -191,12 +191,18 @@ export const getAllBlogs = async (req, res) => {
         // Build Filter Query
         const query = {};
         
+        // DEBUG: Log which database we are using
+        if (mongoose.connection.db) {
+            console.log(`[DEBUG] Fetching blogs from database: ${mongoose.connection.db.databaseName}`);
+            const count = await Blog.countDocuments({});
+            console.log(`[DEBUG] Total blogs in collection (all statuses): ${count}`);
+        }
+
         // Handle admin "all" vs public default "published"
         if (status && status !== 'all') {
             query.status = status;
-        } else if (!status) {
-            query.status = 'published'; // Public default
         }
+        // Removed the default 'published' filter to see everything
         
         if (category) query.category = category;
         if (search) {

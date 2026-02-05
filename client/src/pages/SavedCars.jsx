@@ -32,7 +32,7 @@ const SavedCars = () => {
   return (
     <div className="min-h-screen bg-[#F5F5F5] px-4 md:px-16 py-12">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-semibold mb-8">Saved Cars</h2>
+        <h1 className="text-3xl md:text-4xl font-semibold mb-8">Saved Cars</h1>
 
         {isLoading ? (
           <div className="grid md:grid-cols-3 grid-cols-1 md:gap-10 gap-6">
@@ -52,9 +52,9 @@ const SavedCars = () => {
         ) : cars.length === 0 ? (
           <div className="bg-white rounded-lg shadow-sm p-12 text-center">
             <BsBookmark className="text-6xl text-gray-300 mx-auto mb-4" />
-            <h2 className="text-2xl font-semibold text-gray-700 mb-2">
+            <h1 className="text-2xl font-semibold text-gray-700 mb-2">
               No Saved Cars
-            </h2>
+            </h1>
             <p className="text-gray-500 mb-6">
               You haven't saved any cars yet. Start exploring and save your
               favorites!

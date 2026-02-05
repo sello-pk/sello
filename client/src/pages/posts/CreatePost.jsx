@@ -17,9 +17,9 @@ const CreatePost = () => {
       <BannerInFilter />
       <div className="py-12 bg-[#F5F5F5]">
         <div className="flex items-center justify-between">
-          <h2 className="md:text-4xl text-2xl font-semibold">
+          <h1 className="md:text-4xl text-2xl font-semibold">
             Explore Our Premium Brands
-          </h2>
+          </h1>
           <Link
             to="/view-all-brands"
             className="flex items-center gap-2 text-primary-500"

@@ -446,7 +446,7 @@ export const api = createApi({
             return acc;
           }, {});
         }
-        
+
         if (typeof data === "object" && data !== null) {
           return data;
         }
@@ -726,16 +726,31 @@ export const api = createApi({
         return `/blogs?${searchParams.toString()}`;
       },
       providesTags: ["Blog"],
-      transformResponse: (response) => response?.data || response,
+      transformResponse: (response) => {
+        // Return response.data so components can access data.blogs and data.pagination directly
+        return response?.data || response;
+      },
       // Refetch when component mounts or args change to ensure fresh data after admin updates
       refetchOnMountOrArgChange: true,
     }),
+
     getBlogById: builder.query({
-      query: (blogId) => `/blogs/${blogId}`,
-      providesTags: ["Blog"],
+      query: (id) => `/blogs/${id}`,
+      providesTags: (result, error, id) => [{ type: "Blog", id }],
       transformResponse: (response) => response?.data || response,
-      // Refetch when component mounts or args change to ensure fresh data after admin updates
-      refetchOnMountOrArgChange: true,
+    }),
+
+    // Categories (Public)
+    getCategories: builder.query({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        if (params.type) searchParams.append("type", params.type);
+        if (params.isActive !== undefined)
+          searchParams.append("isActive", params.isActive);
+        return `/categories?${searchParams.toString()}`;
+      },
+      providesTags: ["Category"],
+      transformResponse: (response) => response?.data || response,
     }),
 
     // Blog Comments (Public/User)
@@ -1089,6 +1104,7 @@ export const {
   useMarkAllNotificationsAsReadMutation,
   useGetBlogsQuery,
   useGetBlogByIdQuery,
+  useGetCategoriesQuery,
   useGetBannersQuery,
   useGetTestimonialsQuery,
   useSubmitReviewMutation,

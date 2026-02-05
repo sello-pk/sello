@@ -1,10 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useGetAllCategoriesQuery } from "../../../redux/services/adminApi";
+import { useGetCategoriesQuery } from "../../../redux/services/api";
 import { Spinner } from "../../ui/Loading";
 
 const NewTechnology = () => {
-  const { data: categoriesData, isLoading } = useGetAllCategoriesQuery({
+  const { data: categoriesData, isLoading } = useGetCategoriesQuery({
     type: "blog",
     isActive: true,
   });

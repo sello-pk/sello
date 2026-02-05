@@ -71,28 +71,28 @@ const BlogEdit = () => {
         e.preventDefault();
         try {
             const formDataToSend = new FormData();
-            Object.keys(formData).forEach((key) => {
-                if (key === "featuredImage" && formData[key]) {
-                    formDataToSend.append("featuredImage", formData[key]);
-                } else if (key === "tags" && formData[key]) {
-                    // Convert tags string to array
-                    const tagsArray = formData[key]
-                        .split(",")
-                        .map((tag) => tag.trim())
-                        .filter((tag) => tag);
-                    formDataToSend.append("tags", JSON.stringify(tagsArray));
-                } else if (formData[key] && key !== "category") {
-                    formDataToSend.append(key, formData[key]);
-                }
-            });
             
-            // Only append category if it's provided
-            if (formData.category) {
-                formDataToSend.append("category", formData.category);
-            }
-            
-            // Handle isFeatured
+            formDataToSend.append("title", formData.title);
+            formDataToSend.append("slug", formData.slug);
+            formDataToSend.append("content", formData.content);
+            formDataToSend.append("excerpt", formData.excerpt);
+            formDataToSend.append("status", formData.status);
+            formDataToSend.append("category", formData.category);
             formDataToSend.append("isFeatured", formData.isFeatured ? "true" : "false");
+            formDataToSend.append("metaTitle", formData.metaTitle || "");
+            formDataToSend.append("metaDescription", formData.metaDescription || "");
+            
+            if (formData.tags) {
+                const tagsArray = formData.tags
+                    .split(",")
+                    .map((tag) => tag.trim())
+                    .filter((tag) => tag);
+                formDataToSend.append("tags", JSON.stringify(tagsArray));
+            }
+
+            if (formData.featuredImage) {
+                formDataToSend.append("featuredImage", formData.featuredImage);
+            }
 
             await updateBlog({ blogId: id, formData: formDataToSend }).unwrap();
             toast.success("Blog updated successfully! Changes will reflect on the public site immediately.");

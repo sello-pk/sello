@@ -25,7 +25,7 @@ const BlogCategories = () => {
         imagePreview: null,
     });
 
-    const { data, isLoading, refetch } = useGetAllCategoriesQuery({});
+    const { data, isLoading, refetch } = useGetAllCategoriesQuery({ type: "blog" });
     const [createCategory] = useCreateCategoryMutation();
     const [updateCategory] = useUpdateCategoryMutation();
     const [deleteCategory] = useDeleteCategoryMutation();

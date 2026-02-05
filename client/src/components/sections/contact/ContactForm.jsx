@@ -122,9 +122,9 @@ const ContactForm = () => {
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Section */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             We’re Here to Help
-          </h2>
+          </h1>
           <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
             For information on buying or selling a car please get in touch with
             us. We will get back to you right away.

@@ -13,9 +13,9 @@ const AuthLayout = ({ children, title, subtitle }) => {
             alt="Sello Logo"
             className="w-32 h-auto mb-8"
           />
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
             Welcome to Sello
-          </h2>
+          </h1>
           <p className="text-white text-opacity-90 text-lg lg:text-xl">
             Your trusted partner in finding the perfect vehicle
           </p>

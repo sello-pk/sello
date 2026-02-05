@@ -4,9 +4,9 @@ const OurPrivacyPolicy = () => {
   return (
     <div className="bg-gradient-to-b from-gray-50 to-white min-h-screen py-12">
       <div className="container mx-auto px-4 max-w-4xl text-gray-800">
-        <h2 className="text-4xl font-extrabold mb-8 text-center text-gray-900">
+        <h1 className="text-4xl font-extrabold mb-8 text-center text-gray-900">
           Privacy Policy – Sello.pk
-        </h2>
+        </h1>
         <section className="mb-8">
           <p className="mb-4 text-sm text-gray-500 text-center">
             Last updated: July 21, 2025

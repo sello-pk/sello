@@ -61,9 +61,9 @@ const SubscriptionSuccess = () => {
                 <FiCheckCircle className="text-5xl text-green-500" />
               </div>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
               Payment Successful!
-            </h2>
+            </h1>
             <p className="text-gray-600 mb-6">
               Your subscription has been activated successfully. You can now
               enjoy all the premium features.
@@ -92,9 +92,9 @@ const SubscriptionSuccess = () => {
                 <FiXCircle className="text-5xl text-red-500" />
               </div>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
               Payment Verification Failed
-            </h2>
+            </h1>
             <p className="text-gray-600 mb-6">
               We couldn't verify your payment. If you were charged, please
               contact support with your session ID.

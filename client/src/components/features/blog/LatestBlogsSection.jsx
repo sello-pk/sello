@@ -10,7 +10,14 @@ const LatestBlogsSection = () => {
     status: "published",
   });
 
-  const blogs = data?.blogs || [];
+  console.log("Raw API data:", data);
+  console.log("Data type:", typeof data);
+  console.log("Is array?", Array.isArray(data));
+
+  // Robust blog data access
+  const blogs = data?.blogs || data?.data?.blogs || (Array.isArray(data) ? data : []);
+
+  console.log("Final blogs array:", blogs);
 
   // Show skeleton while loading
   if (isLoading) {

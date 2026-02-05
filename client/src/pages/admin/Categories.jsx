@@ -50,8 +50,11 @@ const Categories = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
 
-  // Fetch all categories (car + location, active + inactive)
-  const { data, isLoading, refetch } = useGetAllCategoriesQuery({});
+  // Fetch all categories (excluding blogs for this view)
+  const { data, isLoading, refetch } = useGetAllCategoriesQuery({ 
+      // We'll leave this empty for now but ensure memory filtering is robust,
+      // as this page handles multiple types (car, location).
+  });
 
   const [createCategory, { isLoading: isCreating }] =
     useCreateCategoryMutation();

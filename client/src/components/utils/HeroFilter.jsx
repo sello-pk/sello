@@ -9,7 +9,15 @@ const HeroFilter = () => {
   const navigate = useNavigate();
 
   // Vehicle type options - same as CreatePostForm
-  const vehicleTypeOptions = ["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"];
+  const vehicleTypeOptions = [
+    "Car",
+    "Bus",
+    "Truck",
+    "Van",
+    "Bike",
+    "E-bike",
+    "Farm",
+  ];
 
   // Vehicle type state
   const [vehicleType, setVehicleType] = useState("");
@@ -267,9 +275,9 @@ const HeroFilter = () => {
         <div className=" rounded-xl shadow-2xl overflow-hidden border-4  bg-primary-500">
           {/* Header Section */}
           <div className="bg-[#050B20] px-6 py-2 border-b border-[#050B20]">
-            <h2 className="text-xl font-bold text-white">
+            <h1 className="text-xl font-bold text-white">
               Find the Best Vehicles for Sale in Pakistan
-            </h2>
+            </h1>
           </div>
 
           {/* Tabs Section */}

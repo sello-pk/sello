@@ -34,8 +34,8 @@ router.get("/newsletter/subscribers", auth, getAllSubscribers); // Auth only, as
 /* --------------------------------- BLOGS ---------------------------------- */
 router.get("/blogs", getAllBlogs);
 router.get("/blogs/:slug", getBlogBySlug);
-router.post("/blogs", auth, authorize("admin"), upload.single("image"), createBlog);
-router.put("/blogs/:blogId", auth, authorize("admin"), upload.single("image"), updateBlog);
+router.post("/blogs", auth, authorize("admin"), upload.single("featuredImage"), createBlog);
+router.put("/blogs/:blogId", auth, authorize("admin"), upload.single("featuredImage"), updateBlog);
 router.delete("/blogs/:blogId", auth, authorize("admin"), deleteBlog);
 
 /* ------------------------------- CATEGORIES ------------------------------- */

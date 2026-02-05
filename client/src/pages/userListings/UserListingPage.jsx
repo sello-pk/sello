@@ -15,9 +15,9 @@ const UserListingPage = () => {
       <UserListingHero />
       <div className="py-5 px-3 sm:px-4 md:px-6 lg:px-8">
         <div className=" flex items-center justify-between w-full">
-          <h2 className="md:text-3xl text-xl font-semibold">
+          <h1 className="md:text-3xl text-xl font-semibold">
             Explore Our Premium Brands
-          </h2>
+          </h1>
           <Link
             to={"/view-all-brands"}
             className="flex items-center gap-2 text-lg"

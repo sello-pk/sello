@@ -27,9 +27,9 @@ const NotFound = () => {
         </div>
 
         {/* Error Message */}
-        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
           Page Not Found
-        </h2>
+        </h1>
 
         <p className="text-lg text-gray-600 mb-8 leading-relaxed">
           Oops! The page you're looking for seems to have gone missing. It might

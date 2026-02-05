@@ -8,9 +8,9 @@ const BlogsHeroSection = () => {
       {/* Left Side */}
       <div className="w-full md:w-[60%]  px-3 sm:px-4 md:px-6 lg:px-8 py-10 md:py-0 ">
         <div className="">
-          <h2 className="md:text-5xl mb-16 text-3xl font-bold text-white">
+          <h1 className="md:text-5xl mb-16 text-3xl font-bold text-white">
             Your Journey Your Car Your Way
-          </h2>
+          </h1>
           <p className="text-lg text-gray-100">
             We are a platform that connects you with the right car for you.
             Whether you are looking for a new car or a used car, we have the
