@@ -20,35 +20,48 @@ jobs:
           script: |
             set -e
 
-            echo "📂 Go to project directory"
+            echo "📦 Loading NVM..."
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+            echo "🟢 Switching to Node 22..."
+            nvm use 22 || nvm install 22
+
+            echo "📂 Moving to project directory..."
             cd /var/www/sello
 
-            echo "⬇️ Sync repo with GitHub"
+            echo "⬇️ Syncing with GitHub (Main Branch)..."
             git fetch origin
-            git pull origin main
-            git clean -fd
+            git reset --hard origin/main
 
-            echo "🛠️ Install server dependencies"
+            echo "🧹 Cleaning old build and untracked files..."
+            git clean -fd -e .env -e uploads -e client/node_modules -e server/node_modules -e client/dist
+
+            echo "🛠️ Installing Server Dependencies..."
             cd server
             npm ci --omit=dev
 
-            echo "🌱 Seeding Database"
-            node scripts/initializeVehicleCategories.js
-            node scripts/seedDynamicVehicleAttributes.js
+            echo "🌱 Running Database Sync Scripts..."
+            node scripts/initializeVehicleCategories.js || echo "⚠️ Warning: Category initialization script failed"
+            node scripts/seedDynamicVehicleAttributes.js || echo "⚠️ Warning: Seeding attributes failed"
 
-            echo "🛠️ Build client"
+            echo "🛠️ Building Client Application..."
             cd ../client
             npm ci
             npm run build
 
-            echo "🔄 Restart app with PM2"
-            if command -v pm2 >/dev/null 2>&1; then
-              pm2 restart sello
-              pm2 save
-            else
-              echo "⚠️ PM2 not found"
+            # Ensure Vite output matches Nginx root
+            if [ -d "build" ]; then
+              rm -rf dist
+              mv build dist
             fi
 
-            echo "✅ Deployment finished"
+            echo "🔄 Restarting Backend with PM2..."
+            cd ../server
+            pm2 reload ecosystem.config.cjs --env production --update-env || pm2 start ecosystem.config.cjs --env production
+            pm2 save
 
-            
+            echo "♻️ Reloading Nginx Configuration..."
+            sudo systemctl reload nginx
+
+            echo "✅ Deployment Successful!"

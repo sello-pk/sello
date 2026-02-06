@@ -201,13 +201,21 @@ export const getAllBlogs = async (req, res) => {
         // Handle admin "all" vs public default "published"
         if (status && status !== 'all') {
             query.status = status;
+        } else if (!status) {
+            query.status = "published";
         }
-        // Removed the default 'published' filter to see everything
         
-        if (category) query.category = category;
+        if (category && mongoose.Types.ObjectId.isValid(category)) {
+            query.category = category;
+        }
+        
+        if (req.query.isFeatured !== undefined) {
+            query.isFeatured = req.query.isFeatured === 'true';
+        }
+
         if (search) {
             const regex = new RegExp(search, 'i');
-            query.$or = [{ title: regex }, { excerpt: regex }];
+            query.$or = [{ title: regex }, { excerpt: regex }, { content: regex }];
         }
 
         const skip = (parseInt(page) - 1) * parseInt(limit);

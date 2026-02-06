@@ -21,9 +21,12 @@ const BlogSection = () => {
     }
   );
 
-  const blogs =
-    data?.blogs?.length > 0 ? data.blogs : allBlogsData?.blogs || [];
-  const isLoading = featuredLoading || (!data?.blogs?.length && allLoading);
+  // Robust blog data access
+  const featuredBlogs = data?.blogs || data?.data?.blogs || [];
+  const allBlogs = allBlogsData?.blogs || allBlogsData?.data?.blogs || [];
+  
+  const blogs = featuredBlogs.length > 0 ? featuredBlogs : allBlogs;
+  const isLoading = featuredLoading || (featuredBlogs.length === 0 && allLoading);
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
