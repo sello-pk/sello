@@ -20,12 +20,12 @@ jobs:
           timeout: 300s
           command_timeout: 30m
           script: |
-           set -e
-           trap 'echo "SSH disconnected but deploy completed"' EXIT
+            set -e
+            trap 'echo "SSH disconnected but deploy completed"' EXIT
 
             echo "📦 Loading NVM..."
             export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
             echo "🟢 Switching to Node 22..."
             nvm use 22 || nvm install 22
@@ -45,15 +45,14 @@ jobs:
             npm ci --omit=dev
 
             echo "🌱 Running Database Sync Scripts..."
-            node scripts/initializeVehicleCategories.js || echo "⚠️ Warning: Category initialization script failed"
-            node scripts/seedDynamicVehicleAttributes.js || echo "⚠️ Warning: Seeding attributes failed"
+            node scripts/initializeVehicleCategories.js || echo "⚠️ Category init skipped"
+            node scripts/seedDynamicVehicleAttributes.js || echo "⚠️ Attribute seed skipped"
 
             echo "🛠️ Building Client Application..."
             cd ../client
             npm ci
             npm run build
 
-            # Ensure Vite output matches Nginx root
             if [ -d "build" ]; then
               rm -rf dist
               mv build dist
@@ -61,7 +60,7 @@ jobs:
 
             echo "🔄 Restarting Backend with PM2..."
             cd ../server
-            pm2 reload ecosystem.config.cjs --env production --update-env || pm2 start ecosystem.config.cjs --env production
+            pm2 restart sello-server || pm2 start server.js --name sello-server
             pm2 save
 
             echo "♻️ Reloading Nginx Configuration..."
