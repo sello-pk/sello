@@ -2,7 +2,7 @@ import React from "react";
 import ceoImage from "../../../assets/images/team/ceo.jpg";
 import contentWriterImage from "../../../assets/images/team/contentWriter.jpeg";
 import managingDirectorImage from "../../../assets/images/team/managingDirector.jpeg";
-import graphicDesignerImage from "../../../assets/images/team/graphicDesigner.jpeg";
+
 import generalManagerImage from "../../../assets/images/team/generalManager.jpeg";
 import developerImage from "../../../assets/images/team/developer.png";
 import seoExpertImage from "../../../assets/images/team/seoExpert.jpg";
@@ -50,14 +50,7 @@ const OurTeam = () => {
         "Creating engaging social media campaigns and building brand communities across multiple platforms to drive audience engagement.",
       image: socialMediaMarketerImage,
     },
-    {
-      id: 6,
-      name: "Haris Mujahid",
-      position: "Graphic Designer",
-      description:
-        "Creating stunning visual designs and brand identities that captivate audiences and communicate our brand message effectively.",
-      image: graphicDesignerImage,
-    },
+
     {
       id: 7,
       name: "Aznain Hameed",

@@ -275,9 +275,9 @@ const HeroFilter = () => {
         <div className=" rounded-xl shadow-2xl overflow-hidden border-4  bg-primary-500">
           {/* Header Section */}
           <div className="bg-[#050B20] px-6 py-2 border-b border-[#050B20]">
-            <h1 className="text-xl font-bold text-white">
+            <h2 className="text-xl font-bold text-white">
               Find the Best Vehicles for Sale in Pakistan
-            </h1>
+            </h2>
           </div>
 
           {/* Tabs Section */}

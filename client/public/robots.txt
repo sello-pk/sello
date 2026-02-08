@@ -1,5 +1,4 @@
 User-agent: *
-Allow: /
 Disallow: /admin/
 Disallow: /api/
 Disallow: /login
@@ -8,6 +7,7 @@ Disallow: /forgot-password
 Disallow: /reset-password
 Disallow: /verify-otp
 
+Allow: /
 # Sitemap
-Sitemap: http://localhost:5173/sitemap.xml
+Sitemap: https://sello.pk/sitemap.xml
 

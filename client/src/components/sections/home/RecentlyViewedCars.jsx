@@ -42,7 +42,7 @@ const RecentlyViewedCars = () => {
 
   return (
     <section className="py-16 bg-gray-50 w-full">
-      <div className="px-3 sm:px-4 md:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div className="px-3 sm:px-4 md:px-0 lg:px-0 max-w-full mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">

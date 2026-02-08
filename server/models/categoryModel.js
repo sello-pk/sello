@@ -1,61 +1,71 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const categorySchema = new mongoose.Schema({
+const categorySchema = new mongoose.Schema(
+  {
     name: {
-        type: String,
-        required: true,
-        trim: true
+      type: String,
+      required: true,
+      trim: true,
+      set: function (value) {
+        // Normalize name to title case for consistency
+        if (value && typeof value === "string") {
+          return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+        }
+        return value;
+      },
     },
     slug: {
-        type: String,
-        required: true,
-        lowercase: true
+      type: String,
+      required: true,
+      lowercase: true,
     },
     description: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     image: {
-        type: String,
-        default: null
+      type: String,
+      default: null,
     },
     type: {
-        type: String,
-        enum: ["car", "blog", "location", "vehicle"],
-        required: true
+      type: String,
+      enum: ["car", "blog", "location", "vehicle"],
+      required: true,
     },
     subType: {
-        type: String,
-        enum: ["make", "model", "year", "country", "city", "state", null],
-        default: null
+      type: String,
+      enum: ["make", "model", "year", "country", "city", "state", null],
+      default: null,
     },
     // Vehicle type for car categories (makes/models/years) - links to vehicle types like Car, Bus, Truck, etc.
     vehicleType: {
-        type: String,
-        enum: ["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm", null],
-        default: null,
-        index: true
+      type: String,
+      enum: ["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm", null],
+      default: null,
+      index: true,
     },
     parentCategory: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Category",
-        default: null
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      default: null,
     },
     isActive: {
-        type: Boolean,
-        default: true
+      type: Boolean,
+      default: true,
     },
     order: {
-        type: Number,
-        default: 0
+      type: Number,
+      default: 0,
     },
     createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    }
-}, {
-    timestamps: true
-});
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
 
 categorySchema.index({ type: 1, isActive: 1 });
 categorySchema.index({ type: 1, subType: 1, isActive: 1 });
@@ -64,30 +74,87 @@ categorySchema.index({ parentCategory: 1 });
 
 // Compound unique index: name + vehicleType + subType must be unique for car categories
 // This allows same make name for different vehicle types (e.g., "Toyota" for Car and "Toyota" for Truck)
+// Using collation for case-insensitive comparison
 categorySchema.index(
-    { name: 1, vehicleType: 1, subType: 1, type: 1 },
-    { 
-        unique: true,
-        partialFilterExpression: { 
-            type: "car",
-            vehicleType: { $ne: null }
-        }
-    }
+  { name: 1, vehicleType: 1, subType: 1, type: 1 },
+  {
+    unique: true,
+    collation: { locale: "en", strength: 2 }, // Case-insensitive comparison
+    partialFilterExpression: {
+      type: "car",
+      vehicleType: { $ne: null },
+    },
+  },
+);
+
+// Unique index for years (name + subType must be unique for years)
+// Using collation for case-insensitive comparison
+categorySchema.index(
+  { name: 1, subType: 1, type: 1 },
+  {
+    unique: true,
+    collation: { locale: "en", strength: 2 }, // Case-insensitive comparison
+    partialFilterExpression: {
+      type: "car",
+      subType: "year",
+    },
+  },
+);
+
+// Unique index for countries (name + subType must be unique for countries)
+// Using collation for case-insensitive comparison
+categorySchema.index(
+  { name: 1, subType: 1, type: 1 },
+  {
+    unique: true,
+    collation: { locale: "en", strength: 2 }, // Case-insensitive comparison
+    partialFilterExpression: {
+      type: "location",
+      subType: "country",
+    },
+  },
+);
+
+// Unique index for states (name + parentCategory + subType must be unique for states)
+// Using collation for case-insensitive comparison
+categorySchema.index(
+  { name: 1, parentCategory: 1, subType: 1, type: 1 },
+  {
+    unique: true,
+    collation: { locale: "en", strength: 2 }, // Case-insensitive comparison
+    partialFilterExpression: {
+      type: "location",
+      subType: "state",
+    },
+  },
+);
+
+// Unique index for cities (name + parentCategory + subType must be unique for cities)
+// Using collation for case-insensitive comparison
+categorySchema.index(
+  { name: 1, parentCategory: 1, subType: 1, type: 1 },
+  {
+    unique: true,
+    collation: { locale: "en", strength: 2 }, // Case-insensitive comparison
+    partialFilterExpression: {
+      type: "location",
+      subType: "city",
+    },
+  },
 );
 
 // Unique slug per vehicle type for car categories
 categorySchema.index(
-    { slug: 1, vehicleType: 1, type: 1 },
-    { 
-        unique: true,
-        partialFilterExpression: { 
-            type: "car",
-            vehicleType: { $ne: null }
-        }
-    }
+  { slug: 1, vehicleType: 1, type: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      type: "car",
+      vehicleType: { $ne: null },
+    },
+  },
 );
 
 const Category = mongoose.model("Category", categorySchema);
 
 export default Category;
-

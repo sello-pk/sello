@@ -11,9 +11,29 @@ import { Link as RouterLink } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const BlogCommentsSection = ({ blogId }) => {
-  // Get user data using RTK Query instead of useSelector
-  const { data: userData } = useGetMeQuery();
-  const user = userData?.user;
+  // Get token from localStorage
+  const token = localStorage.getItem("token");
+
+  // Get user data using RTK Query with skip option like other components
+  const { data: userData } = useGetMeQuery(undefined, {
+    skip: !token,
+  });
+
+  // Get cached user as fallback like Navbar component
+  const getCachedUser = () => {
+    try {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        return JSON.parse(storedUser);
+      }
+    } catch {
+      // Error parsing cached user - silent fail
+    }
+    return null;
+  };
+
+  const cachedUser = getCachedUser();
+  const user = userData?.user || cachedUser;
 
   const [page, setPage] = useState(1);
   const [commentContent, setCommentContent] = useState("");

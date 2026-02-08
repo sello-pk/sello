@@ -740,6 +740,12 @@ export const api = createApi({
       transformResponse: (response) => response?.data || response,
     }),
 
+    getBlogBySlug: builder.query({
+      query: (slug) => `/blogs/slug/${slug}`,
+      providesTags: (result, error, slug) => [{ type: "Blog", id: slug }],
+      transformResponse: (response) => response?.data || response,
+    }),
+
     // Categories (Public)
     getCategories: builder.query({
       query: (params = {}) => {
@@ -1104,6 +1110,7 @@ export const {
   useMarkAllNotificationsAsReadMutation,
   useGetBlogsQuery,
   useGetBlogByIdQuery,
+  useGetBlogBySlugQuery,
   useGetCategoriesQuery,
   useGetBannersQuery,
   useGetTestimonialsQuery,

@@ -76,7 +76,7 @@ import team2 from "./images/team2.png";
 import team3 from "./images/team3.png";
 import team4 from "./images/team4.png";
 import team5 from "./images/team5.png";
-import mutlipleBrandsLogo from "./images/mutlipleBrandsLogo.svg";
+import mutlipleBrandsLogo from "./images/mutlipleBrandsLogo.gif";
 import callIcon from "./images/carDetails/callIcon.svg";
 import chatIcon from "./images/carDetails/chatIcon.svg";
 import shareIcon from "./images/carDetails/shareIcon.svg";

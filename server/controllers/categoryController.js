@@ -1,6 +1,4 @@
 import Category from "../models/categoryModel.js";
-import VehicleType from "../models/vehicleTypeModel.js";
-import CategoryField from "../models/categoryFieldModel.js";
 import mongoose from "mongoose";
 import { uploadCloudinary } from "../utils/cloudinary.js";
 import Logger from "../utils/logger.js";
@@ -19,14 +17,13 @@ export const createCategory = async (req, res) => {
 
     const {
       name,
-      description,
-      image,
       type,
       subType,
+      vehicleType,
       parentCategory,
+      description,
       order,
       isActive,
-      vehicleType,
     } = req.body;
 
     if (!name || !type) {
@@ -36,144 +33,28 @@ export const createCategory = async (req, res) => {
       });
     }
 
-    // Handle image upload
-    let imageUrl = image || null;
-    if (req.file) {
-      try {
-        imageUrl = await uploadCloudinary(req.file.buffer);
-      } catch (error) {
-        Logger.error("Error uploading category image", error);
-        return res.status(500).json({
-          success: false,
-          message: "Failed to upload image.",
-        });
-      }
-    }
-
-    // Validate subType for car categories
+    // Validate vehicle type for car categories
     if (
       type === "car" &&
-      subType &&
-      !["make", "model", "year"].includes(subType)
+      (subType === "make" || subType === "model") &&
+      !vehicleType
     ) {
       return res.status(400).json({
         success: false,
-        message:
-          "Invalid subType for car category. Must be 'make', 'model', or 'year'.",
+        message: "Vehicle type is required for makes and models.",
       });
     }
 
-    // Validate vehicleType for car categories (but not for years - years are independent)
-    if (type === "car" && subType && ["make", "model"].includes(subType)) {
-      const validVehicleTypes = [
-        "Car",
-        "Bus",
-        "Truck",
-        "Van",
-        "Bike",
-        "E-bike",
-        "Farm",
-      ];
-      if (!vehicleType || !validVehicleTypes.includes(vehicleType)) {
-        return res.status(400).json({
-          success: false,
-          message: `vehicleType is required for car categories. Must be one of: ${validVehicleTypes.join(
-            ", ",
-          )}`,
-        });
-      }
-    }
-
-    // Validate subType for location categories
+    // Validate parent category for location categories
     if (
       type === "location" &&
-      subType &&
-      !["country", "city", "state"].includes(subType)
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Invalid subType for location category. Must be 'country', 'city', or 'state'.",
-      });
-    }
-
-    // Cities and states require a parentCategory
-    if (
-      type === "location" &&
-      (subType === "city" || subType === "state") &&
+      (subType === "state" || subType === "city") &&
       !parentCategory
     ) {
-      if (subType === "city") {
-        return res.status(400).json({
-          success: false,
-          message: "City categories must have a state or country category as parent.",
-        });
-      } else if (subType === "state") {
-        return res.status(400).json({
-          success: false,
-          message: "State categories must have a country category as parent.",
-        });
-      }
-    }
-
-    // Validate parentCategory if provided
-    if (parentCategory) {
-      if (!mongoose.Types.ObjectId.isValid(parentCategory)) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid parent category ID.",
-        });
-      }
-      const parent = await Category.findById(parentCategory);
-      if (!parent) {
-        return res.status(404).json({
-          success: false,
-          message: "Parent category not found.",
-        });
-      }
-
-      // Ensure parent is a location type category
-      if (type === "location" && parent.type !== "location") {
-        return res.status(400).json({
-          success: false,
-          message: `Parent category must be a location type category. Received type: "${parent.type}"`,
-        });
-      }
-
-      // Cities can have state OR country as parent
-      if (subType === "city") {
-        if (parent.subType !== "state" && parent.subType !== "country") {
-          return res.status(400).json({
-            success: false,
-            message: `City categories must have a state or country category as parent. Received parent type: "${parent.subType}"`,
-          });
-        }
-      } else if (subType === "state") {
-        // States must have a country as parent
-        if (parent.subType !== "country") {
-          return res.status(400).json({
-            success: false,
-            message: "State categories must have a country category as parent.",
-          });
-        }
-      } else if (subType === "model") {
-        // Models must have a make as parent
-        if (parent.subType !== "make") {
-          return res.status(400).json({
-            success: false,
-            message: "Model categories must have a make category as parent.",
-          });
-        }
-        // Ensure parent make has the same vehicleType
-        if (vehicleType && parent.vehicleType !== vehicleType) {
-          return res.status(400).json({
-            success: false,
-            message: `Model vehicle type (${vehicleType}) must match parent brand vehicle type (${
-              parent.vehicleType || "none"
-            }).`,
-          });
-        }
-      }
+      return res.status(400).json({
+        success: false,
+        message: "Parent category is required for states and cities.",
+      });
     }
 
     // Generate slug from name
@@ -181,6 +62,69 @@ export const createCategory = async (req, res) => {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
+
+    // Check for duplicates before creating (case-insensitive)
+    const duplicateQuery = {
+      name: { $regex: new RegExp(`^${name.trim()}$`, "i") },
+    };
+
+    if (type === "car") {
+      duplicateQuery.type = "car";
+      if (subType === "make" || subType === "model") {
+        duplicateQuery.subType = subType;
+        duplicateQuery.vehicleType = vehicleType;
+      } else if (subType === "year") {
+        duplicateQuery.subType = "year";
+        // Years are independent of vehicleType
+      }
+    } else if (type === "location") {
+      duplicateQuery.type = "location";
+      duplicateQuery.subType = subType;
+
+      // For location categories, also check parent hierarchy
+      if (subType === "state" && parentCategory) {
+        duplicateQuery.parentCategory = parentCategory;
+      } else if (subType === "city" && parentCategory) {
+        duplicateQuery.parentCategory = parentCategory;
+      } else if (subType === "country") {
+        // Countries are standalone
+      }
+    }
+
+    const existingCategory = await Category.findOne(duplicateQuery);
+    if (existingCategory) {
+      let errorMessage = "Category already exists.";
+
+      // Provide more specific error messages
+      if (type === "car") {
+        if (subType === "make") {
+          errorMessage = `Brand "${name}" already exists for vehicle type "${vehicleType}".`;
+        } else if (subType === "model") {
+          errorMessage = `Model "${name}" already exists for this brand and vehicle type.`;
+        } else if (subType === "year") {
+          errorMessage = `Year "${name}" already exists.`;
+        }
+      } else if (type === "location") {
+        if (subType === "country") {
+          errorMessage = `Country "${name}" already exists.`;
+        } else if (subType === "state") {
+          errorMessage = `State "${name}" already exists in this country.`;
+        } else if (subType === "city") {
+          errorMessage = `City "${name}" already exists in this state/country.`;
+        }
+      }
+
+      return res.status(409).json({
+        success: false,
+        message: errorMessage,
+      });
+    }
+
+    // Handle image upload
+    let imageUrl = null;
+    if (req.file) {
+      imageUrl = await uploadCloudinary(req.file.buffer);
+    }
 
     const category = await Category.create({
       name: name.trim(),
@@ -205,101 +149,55 @@ export const createCategory = async (req, res) => {
       data: category,
     });
   } catch (error) {
-    // Handle specific duplicate key error from MongoDB
-    if (error.code === 11000) {
-       return res.status(409).json({
-        success: false,
-        message: "Category already exists.",
-      });
-    }
-
-    // Handle Mongoose Validation Errors
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map(val => val.message);
-      return res.status(400).json({
-        success: false,
-        message: messages.join('. ')
-      });
-    }
-
     Logger.error("Create Category Error", error);
-    console.error("Create Category Detailed Error:", error); 
-    
-    return res.status(500).json({
-      success: false,
-      message: "Server error. Please try again later.",
-      error: process.env.NODE_ENV === "development" ? error.message : undefined,
-    });
-  }
-};
 
-/**
- * Get All Categories
- */
-export const getAllCategories = async (req, res) => {
-  try {
-    const { type, subType, parentCategory, isActive, vehicleType } = req.query;
-
-    const query = {};
-    if (type) query.type = type;
-    if (subType) query.subType = subType;
-    if (parentCategory) query.parentCategory = parentCategory;
-    if (isActive !== undefined) query.isActive = isActive === "true" || isActive === true;
-    if (vehicleType) query.vehicleType = vehicleType;
-
-    const categories = await Category.find(query)
-      .populate("createdBy", "name email")
-      .populate("parentCategory", "name slug vehicleType")
-      .sort({ order: 1, createdAt: -1 });
-
-    return res.status(200).json({
-      success: true,
-      message: "Categories retrieved successfully.",
-      data: categories,
-    });
-  } catch (error) {
-    Logger.error("Get All Categories Error", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error. Please try again later.",
-      error: process.env.NODE_ENV === "development" ? error.message : undefined,
-    });
-  }
-};
-
-/**
- * Get Single Category
- */
-export const getCategoryById = async (req, res) => {
-  try {
-    const { categoryId } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+    if (error.name === "ValidationError") {
+      const errors = Object.values(error.errors).map((err) => err.message);
       return res.status(400).json({
         success: false,
-        message: "Invalid category ID.",
+        message: "Validation failed.",
+        errors,
       });
     }
 
-    const category = await Category.findById(categoryId).populate(
-      "createdBy",
-      "name email",
-    );
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern)[0];
+      let errorMessage = "Category already exists.";
 
-    if (!category) {
-      return res.status(404).json({
+      // Provide specific messages based on the field that caused the duplicate
+      if (
+        error.keyPattern.name &&
+        error.keyPattern.vehicleType &&
+        error.keyPattern.subType
+      ) {
+        errorMessage = `This ${error.keyPattern.subType} already exists for this vehicle type.`;
+      } else if (error.keyPattern.name && error.keyPattern.subType === "year") {
+        errorMessage = `This year already exists.`;
+      } else if (
+        error.keyPattern.name &&
+        error.keyPattern.subType === "country"
+      ) {
+        errorMessage = `This country already exists.`;
+      } else if (
+        error.keyPattern.name &&
+        error.keyPattern.parentCategory &&
+        error.keyPattern.subType === "state"
+      ) {
+        errorMessage = `This state already exists in this country.`;
+      } else if (
+        error.keyPattern.name &&
+        error.keyPattern.parentCategory &&
+        error.keyPattern.subType === "city"
+      ) {
+        errorMessage = `This city already exists in this state/country.`;
+      }
+
+      return res.status(409).json({
         success: false,
-        message: "Category not found.",
+        message: errorMessage,
       });
     }
 
-    return res.status(200).json({
-      success: true,
-      message: "Category retrieved successfully.",
-      data: category,
-    });
-  } catch (error) {
-    Logger.error("Get Category Error", error);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -323,31 +221,14 @@ export const updateCategory = async (req, res) => {
     const { categoryId } = req.params;
     const {
       name,
-      description,
-      image,
+      type,
       subType,
-      parentCategory,
-      isActive,
-      order,
       vehicleType,
+      parentCategory,
+      description,
+      order,
+      isActive,
     } = req.body;
-
-    // Handle image upload if new file is provided
-    let imageUrl = image;
-    if (req.file) {
-      try {
-        imageUrl = await uploadCloudinary(req.file.buffer);
-      } catch (error) {
-        Logger.error("Error uploading category image", error);
-        return res.status(500).json({
-          success: false,
-          message: "Failed to upload image.",
-        });
-      }
-    } else if (image !== undefined) {
-      // If image is explicitly set (even if null), use it
-      imageUrl = image;
-    }
 
     if (!mongoose.Types.ObjectId.isValid(categoryId)) {
       return res.status(400).json({
@@ -365,7 +246,7 @@ export const updateCategory = async (req, res) => {
     }
 
     // Update fields
-    if (name !== undefined && name !== null) {
+    if (name) {
       category.name = name.trim();
       category.slug = name
         .toLowerCase()
@@ -373,125 +254,93 @@ export const updateCategory = async (req, res) => {
         .replace(/(^-|-$)/g, "");
     }
     if (description !== undefined) category.description = description;
-    if (imageUrl !== undefined) category.image = imageUrl;
-    if (isActive !== undefined) {
-      category.isActive = isActive === "true" || isActive === true;
-    }
-    if (subType !== undefined) {
-      if (
-        category.type === "car" &&
-        subType &&
-        !["make", "model", "year"].includes(subType)
-      ) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid subType for car category.",
-        });
-      }
-      if (
-        category.type === "location" &&
-        subType &&
-        !["country", "city", "state"].includes(subType)
-      ) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid subType for location category.",
-        });
-      }
-      category.subType = subType;
-    }
-    if (vehicleType !== undefined && category.type === "car") {
-      // Only validate vehicleType for make and model, not for years (years are independent)
-      if (category.subType && ["make", "model"].includes(category.subType)) {
-        const validVehicleTypes = [
-          "Car",
-          "Bus",
-          "Truck",
-          "Van",
-          "Bike",
-          "E-bike",
-        ];
-        if (vehicleType && !validVehicleTypes.includes(vehicleType)) {
-          return res.status(400).json({
-            success: false,
-            message: `Invalid vehicleType. Must be one of: ${validVehicleTypes.join(
-              ", ",
-            )}`,
-          });
-        }
-        category.vehicleType = vehicleType || null;
-      }
-      // For years, don't set vehicleType (keep it null/undefined)
-    }
-    if (parentCategory !== undefined) {
-      if (parentCategory && !mongoose.Types.ObjectId.isValid(parentCategory)) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid parent category ID.",
-        });
-      }
-
-      if (parentCategory) {
-        const parent = await Category.findById(parentCategory);
-        if (!parent) {
-          return res.status(404).json({
-            success: false,
-            message: "Parent category not found.",
-          });
-        }
-
-        // Use the updated subType if it was provided, otherwise use the existing one
-        const currentSubType =
-          subType !== undefined ? subType : category.subType;
-
-        // IMPORTANT: Cities depend ONLY on State, NOT on Country
-        // Cities must have a state as parent (not country)
-        // This validation MUST come FIRST and use else-if to prevent any confusion
-        if (category.type === "location" && currentSubType === "city") {
-          if (parent.subType !== "state" && parent.subType !== "country") {
-              return res.status(400).json({
-                success: false,
-                message: `City categories must have a state or country category as parent. Received parent type: "${parent.subType}"`,
-              });
-          }
-          // City validation passed, no need to check anything else
-        } else if (category.type === "location" && currentSubType === "state") {
-          // States must have a country as parent
-          if (parent.subType !== "country") {
-            return res.status(400).json({
-              success: false,
-              message:
-                "State categories must have a country category as parent.",
-            });
-          }
-        } else if (category.type === "car" && currentSubType === "model") {
-          // Models must have a make as parent
-          if (parent.subType !== "make") {
-            return res.status(400).json({
-              success: false,
-              message: "Model categories must have a make category as parent.",
-            });
-          }
-          // Ensure parent make has the same vehicleType
-          const currentVehicleType =
-            vehicleType !== undefined ? vehicleType : category.vehicleType;
-          if (currentVehicleType && parent.vehicleType !== currentVehicleType) {
-            return res.status(400).json({
-              success: false,
-              message: `Model vehicle type (${currentVehicleType}) must match parent brand vehicle type (${
-                parent.vehicleType || "none"
-              }).`,
-            });
-          }
-        }
-      }
-
-      category.parentCategory = parentCategory || null;
-    }
+    if (type !== undefined) category.type = type;
+    if (subType !== undefined) category.subType = subType;
+    if (vehicleType !== undefined) category.vehicleType = vehicleType;
+    if (parentCategory !== undefined) category.parentCategory = parentCategory;
     if (isActive !== undefined) category.isActive = isActive;
     if (order !== undefined) category.order = order;
 
-    // Check for duplicates via MongoDB Unique Index (handled in catch block)
+    // Check for duplicates before updating (excluding current category, case-insensitive)
+    const duplicateQuery = {
+      name: { $regex: new RegExp(`^${name.trim()}$`, "i") },
+      _id: { $ne: categoryId },
+    };
+
+    if (category.type === "car") {
+      duplicateQuery.type = "car";
+      const currentSubType = subType !== undefined ? subType : category.subType;
+      const currentVehicleType =
+        vehicleType !== undefined ? vehicleType : category.vehicleType;
+
+      if (currentSubType === "make" || currentSubType === "model") {
+        duplicateQuery.subType = currentSubType;
+        duplicateQuery.vehicleType = currentVehicleType;
+      } else if (currentSubType === "year") {
+        duplicateQuery.subType = "year";
+        // Years are independent of vehicleType
+      }
+    } else if (category.type === "location") {
+      duplicateQuery.type = "location";
+      duplicateQuery.subType =
+        subType !== undefined ? subType : category.subType;
+
+      // For location categories, also check parent hierarchy
+      const currentSubType = subType !== undefined ? subType : category.subType;
+      const currentParent =
+        parentCategory !== undefined ? parentCategory : category.parentCategory;
+
+      if (currentSubType === "state" && currentParent) {
+        duplicateQuery.parentCategory = currentParent;
+      } else if (currentSubType === "city" && currentParent) {
+        duplicateQuery.parentCategory = currentParent;
+      } else if (currentSubType === "country") {
+        // Countries are standalone
+      }
+    }
+
+    const existingCategory = await Category.findOne(duplicateQuery);
+    if (existingCategory) {
+      let errorMessage = "Category already exists.";
+
+      // Provide more specific error messages
+      if (category.type === "car") {
+        const currentSubType =
+          subType !== undefined ? subType : category.subType;
+        const currentVehicleType =
+          vehicleType !== undefined ? vehicleType : category.vehicleType;
+
+        if (currentSubType === "make") {
+          errorMessage = `Brand "${name}" already exists for vehicle type "${currentVehicleType}".`;
+        } else if (currentSubType === "model") {
+          errorMessage = `Model "${name}" already exists for this brand and vehicle type.`;
+        } else if (currentSubType === "year") {
+          errorMessage = `Year "${name}" already exists.`;
+        }
+      } else if (category.type === "location") {
+        const currentSubType =
+          subType !== undefined ? subType : category.subType;
+
+        if (currentSubType === "country") {
+          errorMessage = `Country "${name}" already exists.`;
+        } else if (currentSubType === "state") {
+          errorMessage = `State "${name}" already exists in this country.`;
+        } else if (currentSubType === "city") {
+          errorMessage = `City "${name}" already exists in this state/country.`;
+        }
+      }
+
+      return res.status(409).json({
+        success: false,
+        message: errorMessage,
+      });
+    }
+
+    // Handle image upload
+    if (req.file) {
+      const imageUrl = await uploadCloudinary(req.file.buffer);
+      category.image = imageUrl;
+    }
 
     await category.save();
 
@@ -501,13 +350,46 @@ export const updateCategory = async (req, res) => {
       data: category,
     });
   } catch (error) {
+    Logger.error("Update Category Error", error);
+
     if (error.code === 11000) {
-       return res.status(409).json({
+      const field = Object.keys(error.keyPattern)[0];
+      let errorMessage = "Category already exists.";
+
+      // Provide specific messages based on the field that caused the duplicate
+      if (
+        error.keyPattern.name &&
+        error.keyPattern.vehicleType &&
+        error.keyPattern.subType
+      ) {
+        errorMessage = `This ${error.keyPattern.subType} already exists for this vehicle type.`;
+      } else if (error.keyPattern.name && error.keyPattern.subType === "year") {
+        errorMessage = `This year already exists.`;
+      } else if (
+        error.keyPattern.name &&
+        error.keyPattern.subType === "country"
+      ) {
+        errorMessage = `This country already exists.`;
+      } else if (
+        error.keyPattern.name &&
+        error.keyPattern.parentCategory &&
+        error.keyPattern.subType === "state"
+      ) {
+        errorMessage = `This state already exists in this country.`;
+      } else if (
+        error.keyPattern.name &&
+        error.keyPattern.parentCategory &&
+        error.keyPattern.subType === "city"
+      ) {
+        errorMessage = `This city already exists in this state/country.`;
+      }
+
+      return res.status(409).json({
         success: false,
-        message: "Category already exists.",
+        message: errorMessage,
       });
     }
-    Logger.error("Update Category Error", error);
+
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -561,29 +443,336 @@ export const deleteCategory = async (req, res) => {
   }
 };
 
-// Vehicle Attribute Functions (merged from vehicleAttributeController.js)
-
-// Get all active vehicle types
+/**
+ * Get Vehicle Types
+ * Returns available vehicle types for car categories
+ */
 export const getVehicleTypes = async (req, res) => {
   try {
-    const types = await VehicleType.find({ isActive: true }).select(
-      "name slug _id",
-    );
-    res.status(200).json(types);
+    const vehicleTypes = [
+      "Car",
+      "Bus",
+      "Truck",
+      "Van",
+      "Bike",
+      "E-bike",
+      "Farm",
+    ];
+
+    return res.status(200).json({
+      success: true,
+      data: vehicleTypes,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    Logger.error("Get Vehicle Types Error", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+    });
   }
 };
 
-// Get fields for a specific vehicle type
+/**
+ * Get Fields for Vehicle Type
+ * Returns dynamic fields configuration based on vehicle type
+ */
 export const getFieldsForType = async (req, res) => {
   try {
-    const { id } = req.params;
-    const fields = await CategoryField.find({ vehicleType: id }).sort({
-      order: 1,
+    const { id } = req.params; // vehicle type
+
+    // Define fields for each vehicle type
+    const vehicleTypeFields = {
+      Car: {
+        makes: [
+          "Toyota",
+          "Honda",
+          "Ford",
+          "BMW",
+          "Mercedes",
+          "Audi",
+          "Volkswagen",
+          "Nissan",
+          "Hyundai",
+          "Kia",
+        ],
+        conditions: ["New", "Like New", "Excellent", "Good", "Fair"],
+        fuelTypes: ["Petrol", "Diesel", "Hybrid", "Electric", "CNG"],
+        transmissions: ["Manual", "Automatic", "CVT", "Semi-Automatic"],
+        bodyTypes: [
+          "Sedan",
+          "SUV",
+          "Hatchback",
+          "Coupe",
+          "Convertible",
+          "Wagon",
+          "Pickup",
+        ],
+        colors: [
+          "White",
+          "Black",
+          "Silver",
+          "Gray",
+          "Red",
+          "Blue",
+          "Green",
+          "Brown",
+          "Yellow",
+          "Orange",
+        ],
+        features: [
+          "Air Conditioning",
+          "Power Steering",
+          "Anti-lock Braking",
+          "Airbags",
+          "Cruise Control",
+          "Parking Sensors",
+          "Camera",
+          "Bluetooth",
+          "USB",
+          "Leather Seats",
+        ],
+      },
+      Bike: {
+        makes: [
+          "Honda",
+          "Yamaha",
+          "Suzuki",
+          "Kawasaki",
+          "Ducati",
+          "BMW",
+          "Harley-Davidson",
+          "Royal Enfield",
+          "TVS",
+          "Bajaj",
+        ],
+        conditions: ["New", "Like New", "Excellent", "Good", "Fair"],
+        fuelTypes: ["Petrol", "Diesel", "Electric"],
+        transmissions: ["Manual", "Automatic"],
+        bodyTypes: [
+          "Sport",
+          "Cruiser",
+          "Touring",
+          "Off-road",
+          "Scooter",
+          "Standard",
+        ],
+        colors: [
+          "Black",
+          "Red",
+          "Blue",
+          "White",
+          "Gray",
+          "Green",
+          "Yellow",
+          "Orange",
+        ],
+        features: [
+          "Disc Brakes",
+          "ABS",
+          "LED Lights",
+          "Digital Display",
+          "Bluetooth",
+          "USB Charging",
+          "Quick Shifter",
+          "Traction Control",
+        ],
+      },
+      Truck: {
+        makes: [
+          "Isuzu",
+          "Tata",
+          "Ashok Leyland",
+          "Mahindra",
+          "Volvo",
+          "Scania",
+          "Mercedes-Benz",
+          "MAN",
+        ],
+        conditions: ["New", "Like New", "Excellent", "Good", "Fair"],
+        fuelTypes: ["Diesel", "CNG", "Electric"],
+        transmissions: ["Manual", "Automatic", "Semi-Automatic"],
+        bodyTypes: [
+          "Pickup",
+          "Flatbed",
+          "Tanker",
+          "Container",
+          "Refrigerated",
+          "Dump Truck",
+        ],
+        colors: ["White", "Blue", "Red", "Yellow", "Green", "Gray", "Black"],
+        features: [
+          "Power Steering",
+          "Air Conditioning",
+          "Hydraulic Lift",
+          "GPS",
+          "Tachometer",
+          "Air Brakes",
+          "Cruise Control",
+        ],
+      },
+      Bus: {
+        makes: [
+          "Tata",
+          "Ashok Leyland",
+          "Volvo",
+          "Scania",
+          "Mercedes-Benz",
+          "Isuzu",
+          "Mahindra",
+        ],
+        conditions: ["New", "Like New", "Excellent", "Good", "Fair"],
+        fuelTypes: ["Diesel", "CNG", "Electric"],
+        transmissions: ["Manual", "Automatic"],
+        bodyTypes: [
+          "Minibus",
+          "Coach",
+          "School Bus",
+          "City Bus",
+          "Luxury Bus",
+          "Articulated",
+        ],
+        colors: ["White", "Yellow", "Blue", "Red", "Green", "Gray"],
+        features: [
+          "Air Conditioning",
+          "GPS",
+          "CCTV",
+          "Emergency Exit",
+          "Wheelchair Access",
+          "Audio System",
+          "LED Display",
+        ],
+      },
+      Van: {
+        makes: [
+          "Ford",
+          "Mercedes-Benz",
+          "Volkswagen",
+          "Renault",
+          "Nissan",
+          "Toyota",
+          "Peugeot",
+          "Fiat",
+        ],
+        conditions: ["New", "Like New", "Excellent", "Good", "Fair"],
+        fuelTypes: ["Petrol", "Diesel", "Electric", "Hybrid"],
+        transmissions: ["Manual", "Automatic"],
+        bodyTypes: [
+          "Cargo Van",
+          "Passenger Van",
+          "Minivan",
+          "Panel Van",
+          "Crew Van",
+        ],
+        colors: ["White", "Silver", "Black", "Blue", "Gray", "Red"],
+        features: [
+          "Sliding Doors",
+          "Air Conditioning",
+          "Parking Sensors",
+          "Bluetooth",
+          "USB",
+          "Cargo Space",
+          "Rear Camera",
+        ],
+      },
+      "E-bike": {
+        makes: [
+          "Hero Electric",
+          "Ather",
+          "Ola Electric",
+          "TVS",
+          "Bajaj",
+          "Revolt",
+          "Pure EV",
+          "Okaya",
+        ],
+        conditions: ["New", "Like New", "Excellent", "Good", "Fair"],
+        fuelTypes: ["Electric"],
+        transmissions: ["Automatic"],
+        bodyTypes: [
+          "Scooter",
+          "Mountain",
+          "Road",
+          "Hybrid",
+          "Folding",
+          "Fat Tire",
+        ],
+        colors: [
+          "Black",
+          "White",
+          "Red",
+          "Blue",
+          "Green",
+          "Gray",
+          "Yellow",
+          "Orange",
+        ],
+        features: [
+          "LED Display",
+          "USB Charging",
+          "Disc Brakes",
+          "LED Lights",
+          "Mobile App",
+          "GPS",
+          "Regenerative Braking",
+        ],
+      },
+      Farm: {
+        makes: [
+          "John Deere",
+          "Mahindra",
+          "TAFE",
+          "Sonalika",
+          "Escorts",
+          "New Holland",
+          "Kubota",
+          "Massey Ferguson",
+        ],
+        conditions: ["New", "Like New", "Excellent", "Good", "Fair"],
+        fuelTypes: ["Diesel", "Petrol", "CNG"],
+        transmissions: ["Manual", "Automatic"],
+        bodyTypes: [
+          "Tractor",
+          "Harvester",
+          "Plow",
+          "Seeder",
+          "Sprayer",
+          "Thresher",
+          "Cultivator",
+        ],
+        colors: ["Green", "Red", "Blue", "Yellow", "Orange", "Gray", "Black"],
+        features: [
+          "4WD",
+          "Power Steering",
+          "Hydraulic Lift",
+          "PTO",
+          "Cruise Control",
+          "GPS",
+          "Air Conditioning",
+        ],
+      },
+    };
+
+    const fields = vehicleTypeFields[id];
+
+    if (!fields) {
+      return res.status(404).json({
+        success: false,
+        message: "Vehicle type not found.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        vehicleType: id,
+        fields,
+      },
     });
-    res.status(200).json(fields);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    Logger.error("Get Fields For Type Error", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+    });
   }
 };

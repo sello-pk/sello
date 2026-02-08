@@ -7,7 +7,8 @@ import mongoose from "mongoose";
  */
 export const createComment = async (req, res) => {
   try {
-    const { content, blogId } = req.body;
+    const { content } = req.body;
+    const { blogId } = req.params;
     const userId = req.user._id;
 
     if (!content) {
@@ -82,7 +83,7 @@ export const getBlogComments = async (req, res) => {
       });
     }
 
-    const query = { blog: blogId, status: "approved" };
+    const query = { blog: blogId, status: { $in: ["approved", "pending"] } };
 
     const comments = await Comment.find(query)
       .populate("user", "name avatar role")

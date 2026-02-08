@@ -122,13 +122,13 @@ const CustomerReview = () => {
 
       await submitReview(formDataToSend).unwrap();
       toast.success(
-        "Review submitted successfully! It will be published after admin approval."
+        "Review submitted successfully! It will be published after admin approval.",
       );
       setFormData({ name: user?.name || "", role: "", text: "", rating: 5 });
       setShowReviewForm(false);
     } catch (error) {
       toast.error(
-        error?.data?.message || "Failed to submit review. Please try again."
+        error?.data?.message || "Failed to submit review. Please try again.",
       );
     }
   };
@@ -141,7 +141,7 @@ const CustomerReview = () => {
       <div className="absolute top-0 right-1/4 w-72 h-72  rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
       <div className="absolute -bottom-8 left-1/3 w-72 h-72 bg-primary-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
 
-      <div className="relative max-w-7xl mx-auto">
+      <div className="relative max-w-full mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent mb-4">
@@ -153,7 +153,7 @@ const CustomerReview = () => {
         </div>
 
         {/* Review Cards - 3 cards on desktop, slider on mobile */}
-        <div className="relative max-w-6xl mx-auto">
+        <div className="relative max-w-full mx-auto">
           {/* Desktop: Show 3 cards */}
           <div className="hidden lg:grid lg:grid-cols-3 lg:gap-8 mb-12">
             {allReviews.map((review, index) => (
@@ -283,8 +283,8 @@ const CustomerReview = () => {
                     index === currentReview
                       ? "opacity-100 translate-x-0 scale-100"
                       : index < currentReview
-                      ? "opacity-0 -translate-x-full scale-95"
-                      : "opacity-0 translate-x-full scale-95"
+                        ? "opacity-0 -translate-x-full scale-95"
+                        : "opacity-0 translate-x-full scale-95"
                   }`}
                 >
                   <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20 p-8 h-full flex flex-col justify-between">
@@ -398,7 +398,7 @@ const CustomerReview = () => {
             <button
               onClick={() =>
                 setCurrentReview(
-                  (prev) => (prev - 1 + allReviews.length) % allReviews.length
+                  (prev) => (prev - 1 + allReviews.length) % allReviews.length,
                 )
               }
               className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white hover:shadow-xl transition-all duration-200 hover:scale-105 group"

@@ -12,7 +12,6 @@ import BannerCarousal from "../components/utils/BannerCarousal";
 import SEO from "../components/common/SEO";
 import StructuredData from "../components/common/StructuredData";
 import Video from "../components/sections/home/Video";
-import MainHeading from "../components/sections/home/MainHeading";
 
 const Home = () => {
   const location = useLocation();
@@ -34,7 +33,9 @@ const Home = () => {
       <StructuredData.OrganizationSchema />
       <StructuredData.WebSiteSchema />
       <div className="">
-        <MainHeading />
+        <h1 className="text-4xl md:text-5xl font-bold text-center text-primary-500 my-4">
+          Buy and Sell Cars in Pakistan
+        </h1>
         <Hero />
         <BrandsSection />
         <Video />
@@ -49,7 +50,5 @@ const Home = () => {
     </div>
   );
 };
-
-
 
 export default Home;

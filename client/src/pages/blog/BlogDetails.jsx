@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   useGetBlogByIdQuery,
+  useGetBlogBySlugQuery,
   useGetBlogsQuery,
 } from "../../redux/services/api";
 import { formatDate } from "../../utils";
@@ -14,11 +15,35 @@ import { hardcodedBlogPosts } from "../../assets/blogs/blogAssets";
 
 const BlogDetails = () => {
   const { id } = useParams();
-  const { data: blog, isLoading, error, isError } = useGetBlogByIdQuery(id);
+
+  // Check if id looks like a MongoDB ObjectId (24 hex characters)
+  const isObjectId = /^[0-9a-fA-F]{24}$/.test(id);
+
+  // Always call hooks in the same order
+  const {
+    data: blogById,
+    isLoading: isLoadingById,
+    isError: isErrorById,
+  } = useGetBlogByIdQuery(id);
+  const {
+    data: blogBySlug,
+    isLoading: isLoadingBySlug,
+    isError: isErrorBySlug,
+  } = useGetBlogBySlugQuery(id);
+
+  // Use appropriate data based on ObjectId detection
+  const blog = isObjectId ? blogById : blogBySlug;
+  const isLoading = isObjectId ? isLoadingById : isLoadingBySlug;
+  const isError = isObjectId ? isErrorById : isErrorBySlug;
 
   // Check if this is a hardcoded blog post when backend query fails
   const hardcodedBlog =
-    isError && error?.status === 404 ? hardcodedBlogPosts[id] : null;
+    isLoadingById &&
+    isLoadingBySlug &&
+    isError &&
+    (isErrorById?.status === 404 || isErrorBySlug?.status === 404)
+      ? hardcodedBlogPosts[isObjectId ? id : id]
+      : null;
 
   // Get related blogs (same category, excluding current blog)
   const { data: relatedBlogsData } = useGetBlogsQuery(
@@ -50,10 +75,10 @@ const BlogDetails = () => {
 
   // Redirect to 404 or show error
   useEffect(() => {
-    if (isError && error?.status === 404) {
+    if (isErrorById?.status === 404 || isErrorBySlug?.status === 404) {
       // Blog not found - could redirect or show error
     }
-  }, [isError, error]);
+  }, [isErrorById, isErrorBySlug]);
 
   // Show skeleton while loading
   if (isLoading) {
@@ -67,7 +92,7 @@ const BlogDetails = () => {
     );
   }
 
-  if (error && !hardcodedBlog && !currentBlog) {
+  if (isError && !hardcodedBlog && !currentBlog) {
     return (
       <div>
         <BlogsHeroSection />
@@ -110,7 +135,7 @@ const BlogDetails = () => {
         }
       />
       <BlogsHeroSection />
-      <div className="max-w-4xl mx-auto px-4 md:px-6 py-8 md:py-12">
+      <div className="w-full px-4 md:px-6 py-8 md:py-12">
         {/* Featured Image */}
         {currentBlog.featuredImage && (
           <div className="mb-8 rounded-lg overflow-hidden">
