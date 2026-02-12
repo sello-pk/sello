@@ -1,6 +1,9 @@
 import { useState } from "react";
 import AdminLayout from "../../components/features/admin/AdminLayout";
-import { useGetAllValuationsAdminQuery, useDeleteValuationAdminMutation } from "../../redux/services/adminApi";
+import {
+  useGetAllValuationsAdminQuery,
+  useDeleteValuationAdminMutation,
+} from "../../redux/services/adminApi";
 import { Spinner } from "../../components/ui/Loading";
 import Pagination from "../../components/features/admin/Pagination";
 import { FiSearch, FiTrash2, FiEye, FiDownload } from "react-icons/fi";
@@ -70,7 +73,10 @@ const Valuations = () => {
         {/* Search */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6 p-4">
           <div className="relative max-w-md">
-            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            <FiSearch
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={18}
+            />
             <input
               type="text"
               placeholder="Search by make or model..."
@@ -88,7 +94,9 @@ const Valuations = () => {
           </div>
         ) : valuations.length === 0 ? (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
-            <p className="text-gray-500 dark:text-gray-400 text-lg">No valuations found</p>
+            <p className="text-gray-500 dark:text-gray-400 text-lg">
+              No valuations found
+            </p>
           </div>
         ) : (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -96,51 +104,101 @@ const Valuations = () => {
               <table className="w-full">
                 <thead>
                   <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">Vehicle</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">Estimated Value</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">Confidence</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">User</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">Actions</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
+                      Vehicle
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
+                      Estimated Value
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
+                      Confidence
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
+                      User
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   {valuations.map((v) => (
-                    <tr key={v._id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <tr
+                      key={v._id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    >
                       <td className="px-6 py-4">
                         <div className="text-sm font-medium text-gray-900 dark:text-white">
-                          {v.vehicleData.year} {v.vehicleData.make} {v.vehicleData.model}
+                          {v.vehicleData.year} {v.vehicleData.make}{" "}
+                          {v.vehicleData.model}
                         </div>
-                        <div className="text-xs text-gray-500">{v.vehicleData.mileage.toLocaleString()} KM • {v.vehicleData.fuelType}</div>
+                        <div className="text-xs text-gray-500">
+                          {v.vehicleData.mileage.toLocaleString()} KM •{" "}
+                          {v.vehicleData.fuelType}
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm font-semibold text-primary-600">
                           PKR {v.estimation.averagePrice.toLocaleString()}
                         </div>
                         <div className="text-xs text-gray-500">
-                          Range: {v.estimation.minPrice.toLocaleString()} - {v.estimation.maxPrice.toLocaleString()}
+                          Range: {v.estimation.minPrice.toLocaleString()} -{" "}
+                          {v.estimation.maxPrice.toLocaleString()}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <div className="w-16 bg-gray-200 rounded-full h-1.5">
-                            <div className="bg-primary-500 h-1.5 rounded-full" style={{ width: `${v.estimation.confidenceScore}%` }}></div>
-                          </div>
-                          <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{v.estimation.confidenceScore}%</span>
-                        </div>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                         {v.estimation.isAIPowered && (
-                          <div className="mt-1">
+                          <div className="mb-2">
                             <span className="text-[10px] bg-blue-100 text-blue-700 font-bold px-1.5 py-0.5 rounded border border-blue-200 uppercase">
                               AI Enhanced
                             </span>
+                            <span className="ml-2 text-xs text-gray-500">
+                              Real-time market analysis
+                            </span>
                           </div>
                         )}
+                        {v.estimation.marketFactors && (
+                          <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
+                            <div className="font-medium text-gray-700 mb-1">
+                              Market Factors:
+                            </div>
+                            <div className="text-gray-600">
+                              {v.estimation.marketFactors.dataSources?.join(
+                                ", ",
+                              ) || "Internal Database"}
+                            </div>
+                            {v.estimation.marketFactors.considerations && (
+                              <div className="mt-1">
+                                {v.estimation.marketFactors.considerations.map(
+                                  (factor, index) => (
+                                    <div
+                                      key={index}
+                                      className="flex items-center gap-1"
+                                    >
+                                      <span className="w-1.5 h-1.5 bg-blue-100 rounded-full"></span>
+                                      <span>{factor}</span>
+                                    </div>
+                                  ),
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        <div className="text-xs text-gray-500">
+                          Confidence: {v.estimation.confidenceScore}%
+                          {v.estimation.isAIPowered && "• AI Powered"}
+                        </div>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                         {v.userId ? (
                           <div>
                             <p>{v.userId.name}</p>
-                            <p className="text-xs opacity-75">{v.userId.email}</p>
+                            <p className="text-xs opacity-75">
+                              {v.userId.email}
+                            </p>
                           </div>
                         ) : (
                           "Anonymous User"
@@ -152,7 +210,10 @@ const Valuations = () => {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           {/* We can add a view details modal later if needed */}
-                          <button onClick={() => handleDelete(v._id)} className="text-red-600 hover:text-red-700 transition-colors">
+                          <button
+                            onClick={() => handleDelete(v._id)}
+                            className="text-red-600 hover:text-red-700 transition-colors"
+                          >
                             <FiTrash2 size={18} />
                           </button>
                         </div>

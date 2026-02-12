@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useCreateCarMutation } from "../../../redux/services/api";
+import { capitalize } from "../../../utils/formatters";
 
 import ImagesUpload from "../createPost/ImagesUpload";
 import Input from "../../utils/filter/Input";
@@ -787,7 +788,7 @@ const CreatePostForm = () => {
               <option value="">Select Make</option>
               {makes.map((make) => (
                 <option key={make._id} value={make.name}>
-                  {make.name}
+                  {capitalize(make.name)}
                 </option>
               ))}
             </select>
@@ -814,7 +815,7 @@ const CreatePostForm = () => {
               </option>
               {availableModels.map((model) => (
                 <option key={model._id} value={model.name}>
-                  {model.name}
+                  {capitalize(model.name)}
                 </option>
               ))}
             </select>

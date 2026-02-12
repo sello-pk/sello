@@ -2,162 +2,303 @@ import Car from "../models/carModel.js";
 import Logger from "./logger.js";
 import fetch from "node-fetch";
 
-/**
- * Call OpenAI API to get a professional valuation based on market trends
- */
-const getAIPriceEstimation = async (vehicleData, baselineEstimation) => {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey || apiKey === "your_openai_api_key_here") {
-    Logger.warn("OpenAI API Key not found or invalid. Skipping AI valuation.");
-    return null;
+/* --------------------------------------------------
+   STEP 0: BASELINE ESTIMATION FALLBACK
+-------------------------------------------------- */
+const getEstimatedBaseline = (vehicleData) => {
+  const { make, model, year } = vehicleData;
+
+  // Pakistani market baseline estimates 2024
+  const brandBaselines = {
+    // Luxury Foreign Brands
+    audi: {
+      2010: 4500000,
+      2011: 4800000,
+      2012: 5100000,
+      2013: 5400000,
+      2014: 5700000,
+      2015: 6000000,
+    },
+    bmw: {
+      2010: 4200000,
+      2011: 4500000,
+      2012: 4800000,
+      2013: 5100000,
+      2014: 5400000,
+      2015: 5700000,
+    },
+    mercedes: {
+      2010: 4400000,
+      2011: 4700000,
+      2012: 5000000,
+      2013: 5300000,
+      2014: 5600000,
+      2015: 5900000,
+    },
+
+    // Japanese Brands (Better Resale)
+    toyota: {
+      2010: 2800000,
+      2011: 3000000,
+      2012: 3200000,
+      2013: 3400000,
+      2014: 3600000,
+      2015: 3800000,
+    },
+    honda: {
+      2010: 2600000,
+      2011: 2800000,
+      2012: 3000000,
+      2013: 3200000,
+      2014: 3400000,
+      2015: 3600000,
+    },
+    suzuki: {
+      2010: 1800000,
+      2011: 2000000,
+      2012: 2200000,
+      2013: 2400000,
+      2014: 2600000,
+      2015: 2800000,
+    },
+
+    // Other Brands
+    hyundai: {
+      2010: 2200000,
+      2011: 2400000,
+      2012: 2600000,
+      2013: 2800000,
+      2014: 3000000,
+      2015: 3200000,
+    },
+    kia: {
+      2010: 2100000,
+      2011: 2300000,
+      2012: 2500000,
+      2013: 2700000,
+      2014: 2900000,
+      2015: 3100000,
+    },
+  };
+
+  const makeLower = make.toLowerCase();
+  const yearNum = Number(year);
+
+  if (brandBaselines[makeLower] && brandBaselines[makeLower][yearNum]) {
+    return brandBaselines[makeLower][yearNum];
   }
 
-  try {
-    const prompt = `
-      You are an expert Pakistani automotive market analyst. 
-      Your task is to provide a highly accurate car valuation based on specific vehicle data and current market trends in Pakistan (platforms like PakWheels and OLX).
-      
-      Vehicle Details:
-      Make: ${vehicleData.make}
-      Model: ${vehicleData.model}
-      Year: ${vehicleData.year}
-      Mileage: ${vehicleData.mileage} KM
-      Fuel Type: ${vehicleData.fuelType}
-      Transmission: ${vehicleData.transmission || 'N/A'}
-      Engine Condition: ${vehicleData.engineCondition || vehicleData.condition?.engine || 'Good'}
-      Body Condition: ${vehicleData.bodyCondition || vehicleData.condition?.body || 'Good'}
-      Interior Condition: ${vehicleData.interiorCondition || vehicleData.condition?.interior || 'Good'}
-      
-      Internal Market Data Baseline (from our database):
-      Average Price Found: PKR ${baselineEstimation.averagePrice.toLocaleString()}
-      Similar Listings Found: ${baselineEstimation.marketContext.similarListingsCount}
-      Data Quality: ${baselineEstimation.marketContext.priceIndicator}
-      
-      Instructions:
-      1. Analyze the vehicle data. Adjust the baseline price based on mileage, condition, and market demand in Pakistan.
-      2. Factor in Pakistani market nuances (e.g., 'total genuine', 'first owner', 'registration city impact', 'accident-free').
-      3. Consider current fuel prices and economic conditions in Pakistan.
-      4. ${baselineEstimation.marketContext.similarListingsCount < 3 ? 'NOTE: Limited market data available. Use industry depreciation standards and comparable vehicle analysis.' : 'Use the market data as a strong baseline.'}
-      5. Return a JSON object with EXACTLY these fields:
-         - averagePrice (Number): Most likely selling price
-         - minPrice (Number): Conservative estimate (10-15% below average)
-         - maxPrice (Number): Optimistic estimate (10-15% above average)
-         - analysisSummary (String): A professional 2-3 sentence analysis explaining the valuation
-         - confidenceScore (Number): 1-100 based on data availability and market conditions
-    `;
+  // Default fallback based on year
+  const yearBaselines = {
+    2010: 2500000,
+    2011: 2700000,
+    2012: 2900000,
+    2013: 3100000,
+    2014: 3300000,
+    2015: 3500000,
+    2016: 3700000,
+    2017: 3900000,
+    2018: 4100000,
+    2019: 4300000,
+    2020: 4500000,
+    2021: 4700000,
+    2022: 4900000,
+    2023: 5100000,
+    2024: 5300000,
+    2025: 5500000,
+  };
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: "gpt-4o",
-        messages: [
-          { role: "system", content: "You are a professional car valuation expert specialized in the Pakistani market. Always respond in JSON format." },
-          { role: "user", content: prompt }
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0.7
-      })
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      Logger.error("OpenAI API Error:", errorText);
-      return null;
-    }
-
-    const data = await response.json();
-    const result = JSON.parse(data.choices[0].message.content);
-    
-    return {
-      averagePrice: Number(result.averagePrice),
-      minPrice: Number(result.minPrice),
-      maxPrice: Number(result.maxPrice),
-      confidenceScore: Number(result.confidenceScore),
-      analysisSummary: String(result.analysisSummary),
-      isAIPowered: true
-    };
-  } catch (error) {
-    Logger.error("AI Estimation Exception:", error);
-    return null;
-  }
+  return yearBaselines[yearNum] || 3000000; // Default 30 lakh
 };
 
-/**
- * Calculate estimation based on database listings OR AI if available
- */
-export const calculateEstimation = async (vehicleData) => {
-  const { make, model, year, mileage, condition, fuelType } = vehicleData;
+/* --------------------------------------------------
+   STEP 1: CLEAN OUTLIERS (Very Important)
+-------------------------------------------------- */
+const removeOutliers = (cars) => {
+  if (cars.length < 3) return cars;
 
-  try {
-    // 1. Get Baseline from Database
-    const similarCars = await Car.find({
+  const prices = cars.map((c) => c.price).sort((a, b) => a - b);
+  const q1 = prices[Math.floor(prices.length * 0.25)];
+  const q3 = prices[Math.floor(prices.length * 0.75)];
+  const iqr = q3 - q1;
+
+  return cars.filter(
+    (c) => c.price >= q1 - 1.5 * iqr && c.price <= q3 + 1.5 * iqr,
+  );
+};
+
+/* --------------------------------------------------
+   STEP 2: AI ADJUSTMENT (ONLY % BASED)
+-------------------------------------------------- */
+export const getAIAdjustment = async (vehicleData, baselinePrice) => {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error("OpenAI API Key missing");
+
+  const prompt = `
+You are a Pakistani car market analyst.
+
+Baseline price from database:
+PKR ${baselinePrice}
+
+Vehicle:
+Mileage: ${vehicleData.mileage} KM
+Condition: ${vehicleData.condition || "Good"}
+
+Rules:
+- High mileage (>120k KM): reduce 5–12%
+- Very low mileage (<40k KM): increase 3–8%
+- Excellent condition: +5%
+- Poor condition: -10%
+- Normal used car: 0 to -5%
+
+IMPORTANT:
+You may adjust ONLY within ±10% of baseline.
+Do NOT invent new base price.
+
+Return JSON:
+{
+ "adjustmentPercent": number,
+ "reason": "short explanation",
+ "confidenceScore": number
+}
+`;
+
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You adjust car prices based strictly on baseline data. Never hallucinate market prices.",
+        },
+        { role: "user", content: prompt },
+      ],
+      response_format: { type: "json_object" },
+      temperature: 0.2,
+      max_tokens: 150,
+    }),
+  });
+
+  const data = await response.json();
+  const result = JSON.parse(data.choices[0].message.content);
+
+  const adjustment = Math.max(-10, Math.min(10, result.adjustmentPercent));
+  const adjustedPrice = Math.round(baselinePrice * (1 + adjustment / 100));
+
+  return {
+    adjustedPrice,
+    adjustmentPercent: adjustment,
+    reason: result.reason,
+    confidenceScore: result.confidenceScore || 80,
+  };
+};
+
+/* --------------------------------------------------
+   STEP 3: MAIN ESTIMATION LOGIC
+-------------------------------------------------- */
+export const calculateEstimation = async (vehicleData) => {
+  const { make, model, year, mileage, condition } = vehicleData;
+
+  const similarCars = await Promise.race([
+    Car.find({
       make: new RegExp(make, "i"),
       model: new RegExp(model, "i"),
       year: { $gte: Number(year) - 2, $lte: Number(year) + 2 },
       status: "active",
-    }).select("price mileage year");
+    }).select("price mileage year"),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Database timeout")), 5000),
+    ),
+  ]).catch(() => []);
 
-    let basePrice = 2000000; 
-    let count = similarCars.length;
+  // If no similar cars, use broader search or fallback
+  let baselinePrice = 0;
+  let cleanedCars = [];
 
-    if (count >= 3) {
-      const sum = similarCars.reduce((acc, car) => acc + car.price, 0);
-      basePrice = sum / count;
+  if (similarCars.length > 0) {
+    // Remove price outliers
+    cleanedCars = removeOutliers(similarCars);
+
+    // Calculate baseline average
+    const avgPrice =
+      cleanedCars.reduce((sum, car) => sum + car.price, 0) / cleanedCars.length;
+
+    baselinePrice = Math.round(avgPrice);
+  } else {
+    // Fallback: Use broader search or estimated baseline
+    const anyCars = await Promise.race([
+      Car.find({
+        make: new RegExp(make, "i"),
+        status: "active",
+      })
+        .select("price mileage year")
+        .limit(10),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Database timeout")), 5000),
+      ),
+    ]).catch(() => []);
+
+    if (anyCars.length > 0) {
+      const avgPrice =
+        anyCars.reduce((sum, car) => sum + car.price, 0) / anyCars.length;
+      baselinePrice = Math.round(avgPrice);
+      cleanedCars = anyCars;
     } else {
-      const yearDiff = new Date().getFullYear() - Number(year);
-      basePrice = Math.max(500000, 3000000 - yearDiff * 150000 - (mileage / 1000) * 2000);
+      // Final fallback: Use estimated baseline based on Pakistani market
+      baselinePrice = getEstimatedBaseline(vehicleData);
+      cleanedCars = [{ price: baselinePrice }]; // Dummy for confidence calculation
     }
-
-    // 2. Adjustments for local calculation (serves as fallback)
-    let factor = 1.0;
-    const cond = (condition?.engine || condition || "good").toLowerCase();
-    if (cond === "excellent") factor *= 1.15;
-    if (cond === "fair") factor *= 0.85;
-    if (cond === "poor") factor *= 0.7;
-
-    const fuel = (fuelType || "petrol").toLowerCase();
-    if (fuel === "hybrid") factor *= 1.2;
-    if (fuel === "electric") factor *= 1.3;
-
-    const localEstimation = {
-      averagePrice: Math.round(basePrice * factor),
-      minPrice: Math.round(basePrice * factor * 0.9),
-      maxPrice: Math.round(basePrice * factor * 1.1),
-      confidenceScore: count >= 5 ? 90 : count >= 2 ? 75 : 60,
-      isAIPowered: false,
-      marketContext: {
-        similarListingsCount: count,
-        priceIndicator: count >= 3 ? "market_based" : "estimate_based",
-      },
-      analysisSummary: `Based on our database of ${count} similar listings and your vehicle specifications, your ${year} ${make} ${model} is estimated at PKR ${Math.round(basePrice * factor).toLocaleString()}. ${count >= 3 ? 'This valuation is based on real market data.' : 'Limited market data available - estimate based on depreciation model.'}`
-    };
-
-    // 3. Attempt to enhance with AI
-    const aiEstimation = await getAIPriceEstimation(vehicleData, localEstimation);
-
-    if (aiEstimation) {
-      return {
-        ...aiEstimation,
-        marketContext: localEstimation.marketContext // Keep the listing count context
-      };
-    }
-
-    // Fallback to local logic if AI unavailable
-    return localEstimation;
-    
-  } catch (error) {
-    Logger.error("Error in calculateEstimation:", error);
-    throw error;
   }
+
+  /* -----------------------------------------
+     STEP 4: HARD LOGIC (NOT AI)
+  ------------------------------------------*/
+
+  let factor = 1.0;
+
+  // Mileage depreciation curve
+  if (mileage > 150000) factor *= 0.88;
+  else if (mileage > 120000) factor *= 0.92;
+  else if (mileage < 40000) factor *= 1.05;
+
+  const cond = (condition || "good").toLowerCase();
+  if (cond === "excellent") factor *= 1.07;
+  if (cond === "fair") factor *= 0.9;
+  if (cond === "poor") factor *= 0.75;
+
+  baselinePrice = Math.round(baselinePrice * factor);
+
+  /* -----------------------------------------
+     STEP 5: AI ADJUSTMENT (Small % Only)
+  ------------------------------------------*/
+
+  const aiAdjustment = await getAIAdjustment(vehicleData, baselinePrice);
+
+  return {
+    averagePrice: aiAdjustment.adjustedPrice,
+    minPrice: Math.round(aiAdjustment.adjustedPrice * 0.93),
+    maxPrice: Math.round(aiAdjustment.adjustedPrice * 1.07),
+    confidenceScore:
+      cleanedCars.length >= 5 ? 90 : cleanedCars.length >= 3 ? 75 : 60,
+    analysisSummary: aiAdjustment.reason,
+    marketContext: {
+      similarListingsCount: cleanedCars.length,
+      dataSource:
+        similarCars.length > 0 ? "Similar Cars" : "Brand Average + AI",
+    },
+    isAIPowered: true,
+  };
 };
 
-/**
- * Get price analysis for a specific car listing
- */
+/* --------------------------------------------------
+   STEP 6: PRICE ANALYSIS FOR LISTING
+-------------------------------------------------- */
 export const getPriceAnalysis = async (car) => {
   const estimation = await calculateEstimation({
     make: car.make,
@@ -165,20 +306,14 @@ export const getPriceAnalysis = async (car) => {
     year: car.year,
     mileage: car.mileage,
     condition: car.condition,
-    fuelType: car.fuelType,
-    transmission: car.transmission
   });
-
-  const { averagePrice } = estimation;
-  const diff = ((car.price - averagePrice) / averagePrice) * 100;
-
-  let label = "fair";
-  let color = "blue";
-  if (diff < -10) { label = "good_deal"; color = "green"; }
-  else if (diff > 10) { label = "high_price"; color = "red"; }
 
   return {
     ...estimation,
-    pricePosition: { diff, label, color }
+    isListed: true,
+    listedPrice: car.price,
+    priceDifference: car.price - estimation.averagePrice,
+    priceDifferencePercent:
+      ((car.price - estimation.averagePrice) / estimation.averagePrice) * 100,
   };
 };

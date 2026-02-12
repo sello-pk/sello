@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useCarCategories } from "../../hooks/useCarCategories";
 import { useGetFilteredCarsQuery } from "../../redux/services/api";
 import toast from "react-hot-toast";
+import { capitalize } from "../../utils/formatters";
 
 const HeroFilter = () => {
   const [activeTab, setActiveTab] = useState("all");
@@ -219,7 +220,7 @@ const HeroFilter = () => {
   const makeOptions = useMemo(() => {
     if (makes && makes.length > 0) {
       return makes
-        .map((m) => m.name)
+        .map((m) => capitalize(m.name))
         .filter(Boolean)
         .sort((a, b) => a.localeCompare(b));
     }
@@ -245,7 +246,7 @@ const HeroFilter = () => {
       }
       // Sort models alphabetically
       return modelList
-        .map((m) => m.name)
+        .map((m) => capitalize(m.name))
         .filter(Boolean)
         .sort((a, b) => a.localeCompare(b));
     }

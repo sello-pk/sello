@@ -33,6 +33,8 @@ const CarEstimatorPage = () => {
 
   const handleEstimate = (estimationResult) => {
     setResult(estimationResult);
+    // Auto-switch to result tab after successful valuation
+    setActiveTab("result");
   };
 
   const handleReset = () => {

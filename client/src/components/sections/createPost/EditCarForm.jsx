@@ -7,6 +7,7 @@ import {
   useGetMeQuery,
 } from "../../../redux/services/api";
 import toast from "react-hot-toast";
+import { capitalize } from "../../../utils/formatters";
 
 import ImagesUpload from "../createPost/ImagesUpload";
 import Input from "../../utils/filter/Input";
@@ -474,7 +475,7 @@ const EditCarForm = () => {
               <option value="">Select Make</option>
               {makes.map((make) => (
                 <option key={make._id} value={make.name}>
-                  {make.name}
+                  {capitalize(make.name)}
                 </option>
               ))}
             </select>
@@ -493,7 +494,7 @@ const EditCarForm = () => {
               <option value="">Select Model</option>
               {availableModels.map((model) => (
                 <option key={model._id} value={model.name}>
-                  {model.name}
+                  {capitalize(model.name)}
                 </option>
               ))}
             </select>

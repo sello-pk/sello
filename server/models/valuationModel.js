@@ -14,9 +14,8 @@ const valuationSchema = new mongoose.Schema(
       mileage: { type: Number, required: true },
       variant: { type: String },
       registrationCity: { type: String },
-      fuelType: { type: String, required: true },
+      engineType: { type: String, required: true },
       transmission: { type: String, required: true },
-      engineType: { type: String },
       engineCapacity: { type: String },
       exteriorColor: { type: String },
       condition: {
@@ -59,7 +58,7 @@ const valuationSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Valuation = mongoose.model("Valuation", valuationSchema);

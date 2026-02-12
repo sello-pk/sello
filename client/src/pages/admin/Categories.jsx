@@ -20,6 +20,7 @@ import {
 } from "react-icons/fi";
 import ConfirmModal from "../../components/features/admin/ConfirmModal";
 import ActionDropdown from "../../components/features/admin/ActionDropdown";
+import { capitalize } from "../../utils/formatters";
 
 const Categories = () => {
   const [activeTab, setActiveTab] = useState("brands"); // brands, models, years, country, state, city
@@ -51,9 +52,9 @@ const Categories = () => {
   const [categoryToDelete, setCategoryToDelete] = useState(null);
 
   // Fetch all categories (excluding blogs for this view)
-  const { data, isLoading, refetch } = useGetAllCategoriesQuery({ 
-      // We'll leave this empty for now but ensure memory filtering is robust,
-      // as this page handles multiple types (car, location).
+  const { data, isLoading, refetch } = useGetAllCategoriesQuery({
+    // We'll leave this empty for now but ensure memory filtering is robust,
+    // as this page handles multiple types (car, location).
   });
 
   const [createCategory, { isLoading: isCreating }] =
@@ -70,32 +71,32 @@ const Categories = () => {
 
     if (activeTab === "brands") {
       filtered = categories.filter(
-        (cat) => cat.subType === "make" && cat.type === "car"
+        (cat) => cat.subType === "make" && cat.type === "car",
       );
     } else if (activeTab === "models") {
       filtered = categories.filter(
-        (cat) => cat.subType === "model" && cat.type === "car"
+        (cat) => cat.subType === "model" && cat.type === "car",
       );
     } else if (activeTab === "years") {
       filtered = categories.filter((cat) => cat.subType === "year");
     } else if (activeTab === "city") {
       filtered = categories.filter(
-        (cat) => cat.subType === "city" && cat.type === "location"
+        (cat) => cat.subType === "city" && cat.type === "location",
       );
     } else if (activeTab === "state") {
       filtered = categories.filter(
-        (cat) => cat.subType === "state" && cat.type === "location"
+        (cat) => cat.subType === "state" && cat.type === "location",
       );
     } else if (activeTab === "country") {
       filtered = categories.filter(
-        (cat) => cat.subType === "country" && cat.type === "location"
+        (cat) => cat.subType === "country" && cat.type === "location",
       );
     }
 
     // Filter by vehicle type for car categories (brands, models only)
     if (selectedVehicleType && ["brands", "models"].includes(activeTab)) {
       filtered = filtered.filter(
-        (cat) => cat.vehicleType === selectedVehicleType
+        (cat) => cat.vehicleType === selectedVehicleType,
       );
     }
 
@@ -133,7 +134,7 @@ const Categories = () => {
 
   const totalPages = Math.max(
     1,
-    Math.ceil(processedCategories.length / pageSize)
+    Math.ceil(processedCategories.length / pageSize),
   );
 
   const pagedCategories = useMemo(() => {
@@ -155,14 +156,14 @@ const Categories = () => {
   // Get brands for model/year parent selection (filtered by vehicle type if selected)
   const brands = useMemo(() => {
     let filtered = categories.filter(
-      (cat) => cat.subType === "make" && cat.isActive && cat.type === "car"
+      (cat) => cat.subType === "make" && cat.isActive && cat.type === "car",
     );
     // Filter by vehicle type if specified in form or if editing a category with vehicle type
     const vehicleTypeFilter =
       formData.vehicleType || editingCategory?.vehicleType;
     if (vehicleTypeFilter) {
       filtered = filtered.filter(
-        (cat) => cat.vehicleType === vehicleTypeFilter
+        (cat) => cat.vehicleType === vehicleTypeFilter,
       );
     }
     return filtered.sort((a, b) => {
@@ -188,7 +189,7 @@ const Categories = () => {
   // Countries for state parent selection
   const countries = useMemo(() => {
     return categories.filter(
-      (cat) => cat.subType === "country" && cat.isActive
+      (cat) => cat.subType === "country" && cat.isActive,
     );
   }, [categories]);
 
@@ -219,7 +220,7 @@ const Categories = () => {
   const getCitiesByState = useMemo(() => {
     const map = {};
     const cities = categories.filter(
-      (cat) => cat.subType === "city" && cat.isActive
+      (cat) => cat.subType === "city" && cat.isActive,
     );
     cities.forEach((city) => {
       const stateId =
@@ -448,7 +449,7 @@ const Categories = () => {
       toast.success(
         `Category ${
           !category.isActive ? "activated" : "deactivated"
-        } successfully`
+        } successfully`,
       );
       refetch();
     } catch (error) {
@@ -487,7 +488,7 @@ const Categories = () => {
                     >
                       {tab.charAt(0).toUpperCase() + tab.slice(1)}
                     </button>
-                  )
+                  ),
                 )}
               </div>
               {/* Vehicle Type Filter for Car Categories */}
@@ -552,7 +553,7 @@ const Categories = () => {
                       onClick={() => {
                         setSortField("name");
                         setSortDirection((prev) =>
-                          prev === "asc" ? "desc" : "asc"
+                          prev === "asc" ? "desc" : "asc",
                         );
                       }}
                     >
@@ -573,7 +574,7 @@ const Categories = () => {
                       onClick={() => {
                         setSortField("status");
                         setSortDirection((prev) =>
-                          prev === "asc" ? "desc" : "asc"
+                          prev === "asc" ? "desc" : "asc",
                         );
                       }}
                     >
@@ -586,8 +587,8 @@ const Categories = () => {
                         {activeTab === "models"
                           ? "Brand"
                           : activeTab === "state"
-                          ? "Country"
-                          : "State"}
+                            ? "Country"
+                            : "State"}
                       </th>
                     )}
                     <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
@@ -607,12 +608,12 @@ const Categories = () => {
                       <td className="px-6 py-4">
                         <div>
                           <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            {category.name}
+                            {capitalize(category.name)}
                           </p>
                           {category.parentCategory && (
                             <p className="text-xs text-gray-500 dark:text-gray-400">
                               {typeof category.parentCategory === "object"
-                                ? category.parentCategory.name
+                                ? capitalize(category.parentCategory.name)
                                 : "Parent"}
                             </p>
                           )}
@@ -658,7 +659,7 @@ const Categories = () => {
                           <p className="text-sm text-gray-700 dark:text-gray-300">
                             {category.parentCategory
                               ? typeof category.parentCategory === "object"
-                                ? category.parentCategory.name
+                                ? capitalize(category.parentCategory.name)
                                 : "N/A"
                               : "N/A"}
                           </p>
@@ -772,7 +773,7 @@ const Categories = () => {
                       <input
                         type="text"
                         name="name"
-                        value={formData.name}
+                        value={capitalize(formData.name)}
                         onChange={handleInputChange}
                         placeholder="Enter brand name"
                         required
@@ -900,7 +901,7 @@ const Categories = () => {
                       <input
                         type="text"
                         name="name"
-                        value={formData.name}
+                        value={capitalize(formData.name)}
                         onChange={handleInputChange}
                         placeholder="Enter model name"
                         required
@@ -988,7 +989,7 @@ const Categories = () => {
                       <input
                         type="text"
                         name="name"
-                        value={formData.name}
+                        value={capitalize(formData.name)}
                         onChange={handleInputChange}
                         placeholder="Enter city name"
                         required
@@ -1009,7 +1010,7 @@ const Categories = () => {
                         <option value="">Select Country</option>
                         {countries.map((country) => (
                           <option key={country._id} value={country._id}>
-                            {country.name}
+                            {capitalize(country.name)}
                           </option>
                         ))}
                       </select>
@@ -1028,14 +1029,17 @@ const Categories = () => {
                         <option value="">Select State (Optional)</option>
                         {states
                           .filter((state) => {
-                             const pId = typeof state.parentCategory === 'object' ? state.parentCategory._id : state.parentCategory;
-                             return formData.country && pId === formData.country;
+                            const pId =
+                              typeof state.parentCategory === "object"
+                                ? state.parentCategory._id
+                                : state.parentCategory;
+                            return formData.country && pId === formData.country;
                           })
                           .map((state) => (
-                          <option key={state._id} value={state._id}>
-                            {state.name}
-                          </option>
-                        ))}
+                            <option key={state._id} value={state._id}>
+                              {capitalize(state.name)}
+                            </option>
+                          ))}
                       </select>
                     </div>
                     <div>
@@ -1064,7 +1068,7 @@ const Categories = () => {
                       <input
                         type="text"
                         name="name"
-                        value={formData.name}
+                        value={capitalize(formData.name)}
                         onChange={handleInputChange}
                         placeholder="Enter state name"
                         required
@@ -1085,7 +1089,7 @@ const Categories = () => {
                         <option value="">Select Country</option>
                         {countries.map((country) => (
                           <option key={country._id} value={country._id}>
-                            {country.name}
+                            {capitalize(country.name)}
                           </option>
                         ))}
                       </select>
@@ -1116,7 +1120,7 @@ const Categories = () => {
                       <input
                         type="text"
                         name="name"
-                        value={formData.name}
+                        value={capitalize(formData.name)}
                         onChange={handleInputChange}
                         placeholder="Enter country name"
                         required

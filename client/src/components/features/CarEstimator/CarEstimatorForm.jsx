@@ -11,9 +11,9 @@ import {
   Palette,
 } from "lucide-react";
 import { useCarCategories } from "../../../hooks/useCarCategories";
+import { capitalize } from "../../../utils/formatters";
 import Input from "../../../components/utils/filter/Input";
 import ExteriorColor from "../../../components/utils/filter/ExteriorColor";
-import FuelSpecs from "../../../components/utils/filter/FuelSpecs";
 import TransmissionSpecs from "../../../components/utils/filter/TransmissionSpecs";
 import EngineCapacitySpecs from "../../../components/utils/filter/EngineCapacitySpecs";
 import { useCreateValuationMutation } from "../../../redux/services/api";
@@ -40,21 +40,15 @@ const conditions = [
   { value: "poor", label: "Poor" },
 ];
 
-// Dynamic engine types
+// Combined engine and fuel types
 const engineTypes = [
   { value: "naturally_aspirated", label: "Naturally Aspirated" },
   { value: "turbo", label: "Turbo" },
   { value: "supercharged", label: "Supercharged" },
-  { value: "hybrid", label: "Hybrid" },
-  { value: "electric", label: "Electric" },
-];
-
-// Dynamic fuel types
-const fuelTypes = [
   { value: "petrol", label: "Petrol" },
   { value: "diesel", label: "Diesel" },
-  { value: "electric", label: "Electric" },
   { value: "hybrid", label: "Hybrid" },
+  { value: "electric", label: "Electric" },
   { value: "cng", label: "CNG" },
   { value: "petrol+cng", label: "Petrol + CNG" },
 ];
@@ -88,13 +82,13 @@ const FormSection = ({ title, subtitle, icon: Icon, color, children }) => (
 
 const ConditionSelector = ({ value, onChange, options }) => {
   return (
-    <div className="flex gap-2 flex-wrap">
+    <div className="flex gap-3 flex-wrap">
       {options.map((option) => (
         <button
           key={option}
           type="button"
           onClick={() => onChange(option)}
-          className={`py-1 px-2 rounded text-xs font-medium transition-all ${
+          className={`py-2 px-4 rounded text-sm font-medium transition-all ${
             value === option
               ? "bg-primary-500 text-white border-primary-500"
               : "bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100"
@@ -136,7 +130,6 @@ export default function CarEstimatorForm({ onEstimate }) {
     engineType: "",
     engineCapacity: "",
     transmission: "",
-    fuelType: "",
     bodyCondition: "",
     paintStatus: "",
     tireCondition: "",
@@ -154,83 +147,24 @@ export default function CarEstimatorForm({ onEstimate }) {
   });
 
   const [errors, setErrors] = useState({});
-  const [createValuation, { isLoading: isAnalyzing }] = useCreateValuationMutation();
+  const [createValuation, { isLoading: isAnalyzing }] =
+    useCreateValuationMutation();
 
   const isFormValid =
     formData.make &&
     formData.model &&
     formData.year &&
     formData.mileage &&
-    formData.fuelType &&
     formData.transmission;
 
   const calculateMockEstimation = () => {
-    // Base value calculation in PKR (mocked)
-    let baseValue = 2000000; // Base value 20 lakh PKR
-
-    // Adjust based on year
-    const yearNum = parseInt(formData.year);
-    const currentYear = new Date().getFullYear();
-    const yearDepreciation = (currentYear - yearNum) * 50000; // 50k per year
-    baseValue -= yearDepreciation;
-
-    // Adjust based on mileage
-    const mileageNum = parseInt(formData.mileage);
-    const mileageDepreciation = Math.floor(mileageNum / 1000) * 5000; // 5k per 1000 km
-    baseValue -= mileageDepreciation;
-
-    // Adjust based on condition
-    const conditionMultipliers = {
-      excellent: 1.2,
-      good: 1.0,
-      fair: 0.8,
-      poor: 0.6,
-    };
-
-    // Use engine condition if available, otherwise skip condition multiplier
-    if (formData.engineCondition) {
-      baseValue *=
-        conditionMultipliers[formData.engineCondition.toLowerCase()] || 1.0;
-    }
-
-    // Adjust based on fuel type
-    const fuelMultipliers = {
-      electric: 1.3,
-      hybrid: 1.2,
-      diesel: 1.0,
-      petrol: 0.9,
-      cng: 0.8,
-      "petrol+cng": 0.85,
-    };
-    baseValue *= fuelMultipliers[formData.fuelType.toLowerCase()] || 1.0;
-
-    // Add value for additional features
-    const featureValues = {
-      sunroof: 100000, // 1 lakh PKR
-      leatherSeats: 150000, // 1.5 lakh PKR
-      navigation: 80000, // 80k PKR
-      bluetooth: 20000, // 20k PKR
-      cruiseControl: 50000, // 50k PKR
-    };
-
-    Object.keys(formData.additionalFeatures).forEach((feature) => {
-      if (formData.additionalFeatures[feature]) {
-        baseValue += featureValues[feature] || 0;
-      }
-    });
-
-    // Ensure minimum value
-    baseValue = Math.max(baseValue, 200000); // 2 lakh minimum
-
-    // Create range (±20%)
-    const min = Math.floor(baseValue * 0.8);
-    const max = Math.floor(baseValue * 1.2);
-
+    // This function now calls the real backend API
+    // Mock calculation removed - using real AI-powered backend valuation
     return {
-      min,
-      max,
+      min: 0,
+      max: 0,
       formData,
-      summary: `Based on the ${formData.engineCondition || "good"} condition of your ${formData.year} ${formData.make} ${formData.model}, with ${formData.mileage} km mileage, the estimated value reflects current market trends in Pakistan.`,
+      summary: "Getting real-time market valuation...",
     };
   };
 
@@ -283,7 +217,6 @@ export default function CarEstimatorForm({ onEstimate }) {
     if (!formData.model) newErrors.model = "Car model is required";
     if (!formData.year) newErrors.year = "Year is required";
     if (!formData.mileage) newErrors.mileage = "Mileage is required";
-    if (!formData.fuelType) newErrors.fuelType = "Fuel type is required";
     if (!formData.transmission)
       newErrors.transmission = "Transmission is required";
 
@@ -317,9 +250,13 @@ export default function CarEstimatorForm({ onEstimate }) {
     if (validateForm()) {
       try {
         // Get actual make and model names from the selected IDs
-        const selectedMakeObj = makes.find(m => m._id === formData.make);
-        const selectedModelObj = availableModels.find(m => m._id === formData.model);
-        const selectedCityObj = cities.find(c => c._id === formData.registrationCity);
+        const selectedMakeObj = makes.find((m) => m._id === formData.make);
+        const selectedModelObj = availableModels.find(
+          (m) => m._id === formData.model,
+        );
+        const selectedCityObj = cities.find(
+          (c) => c._id === formData.registrationCity,
+        );
 
         // Prepare data with actual names instead of IDs for backend processing
         const valuationData = {
@@ -330,10 +267,11 @@ export default function CarEstimatorForm({ onEstimate }) {
         };
 
         const result = await createValuation(valuationData).unwrap();
-        
+
         // Handle both possible response structures
         const estimation = result.data?.estimation || result.estimation;
-        const vehicleData = result.data?.vehicleData || result.vehicleData || valuationData;
+        const vehicleData =
+          result.data?.vehicleData || result.vehicleData || valuationData;
 
         if (!estimation) {
           throw new Error("Invalid response structure from server");
@@ -346,12 +284,15 @@ export default function CarEstimatorForm({ onEstimate }) {
           confidence: estimation.confidenceScore,
           summary: estimation.analysisSummary,
           isAIPowered: estimation.isAIPowered || false,
-          formData: vehicleData
+          formData: vehicleData,
         });
         toast.success("Analysis complete!");
       } catch (error) {
         console.error("Valuation Error:", error);
-        const errorMessage = error?.data?.message || error?.message || "Failed to analyze car value. Please try again.";
+        const errorMessage =
+          error?.data?.message ||
+          error?.message ||
+          "Failed to analyze car value. Please try again.";
         toast.error(errorMessage);
       }
     }
@@ -400,7 +341,7 @@ export default function CarEstimatorForm({ onEstimate }) {
                 <option value="">Select make</option>
                 {makes.map((make) => (
                   <option key={make._id} value={make._id}>
-                    {make.name}
+                    {capitalize(make.name)}
                   </option>
                 ))}
               </select>
@@ -426,7 +367,7 @@ export default function CarEstimatorForm({ onEstimate }) {
                 </option>
                 {availableModels.map((model) => (
                   <option key={model._id} value={model._id}>
-                    {model.name}
+                    {capitalize(model.name)}
                   </option>
                 ))}
               </select>
@@ -513,7 +454,7 @@ export default function CarEstimatorForm({ onEstimate }) {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Engine Type
+                Engine/Fuel Type
               </label>
               <select
                 name="engineType"
@@ -529,7 +470,7 @@ export default function CarEstimatorForm({ onEstimate }) {
                 ))}
               </select>
               <p className="text-xs text-gray-500 mt-1">
-                Engine aspiration type
+                Select engine aspiration or fuel type
               </p>
             </div>
 
@@ -587,17 +528,17 @@ export default function CarEstimatorForm({ onEstimate }) {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Tire Condition
+                Interior Condition
               </label>
               <ConditionSelector
-                value={formData.tireCondition}
+                value={formData.interiorCondition}
                 onChange={(v) =>
-                  setFormData((prev) => ({ ...prev, tireCondition: v }))
+                  setFormData((prev) => ({ ...prev, interiorCondition: v }))
                 }
-                options={["New", "Good", "Worn"]}
+                options={conditions.map((c) => c.label)}
               />
               <p className="text-xs text-gray-500 mt-1">
-                Check the current condition of your tires
+                Check the condition of seats, dashboard, and interior panels
               </p>
             </div>
 
@@ -619,17 +560,17 @@ export default function CarEstimatorForm({ onEstimate }) {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Interior Condition
+                Tire Condition
               </label>
               <ConditionSelector
-                value={formData.interiorCondition}
+                value={formData.tireCondition}
                 onChange={(v) =>
-                  setFormData((prev) => ({ ...prev, interiorCondition: v }))
+                  setFormData((prev) => ({ ...prev, tireCondition: v }))
                 }
-                options={conditions.map((c) => c.label)}
+                options={["New", "Good", "Worn"]}
               />
               <p className="text-xs text-gray-500 mt-1">
-                Check the condition of seats, dashboard, and interior panels
+                Check the current condition of your tires
               </p>
             </div>
 
@@ -638,7 +579,7 @@ export default function CarEstimatorForm({ onEstimate }) {
                 Accident History
               </label>
 
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-3 flex-wrap">
                 {accidentHistories.map((history) => (
                   <button
                     key={history}
@@ -649,7 +590,7 @@ export default function CarEstimatorForm({ onEstimate }) {
                         accidentHistory: history,
                       }))
                     }
-                    className={`py-1 px-2 rounded text-xs font-medium transition-all ${
+                    className={`py-2 px-4 rounded text-sm font-medium transition-all ${
                       formData.accidentHistory === history
                         ? "bg-primary-500 text-white border-primary-500"
                         : "bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100"
@@ -674,19 +615,6 @@ export default function CarEstimatorForm({ onEstimate }) {
                   setFormData((prev) => ({ ...prev, exteriorColor: value }))
                 }
               />
-            </div>
-
-            <div className="lg:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Fuel Type <span className="text-red-500">*</span>
-              </label>
-              <FuelSpecs
-                value={formData.fuelType}
-                onChange={(value) =>
-                  setFormData((prev) => ({ ...prev, fuelType: value }))
-                }
-              />
-              <p className="text-xs text-gray-500 mt-1">Select fuel type</p>
             </div>
 
             <div className="lg:col-span-2 pl-4">

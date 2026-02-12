@@ -113,6 +113,27 @@ export const formatPhoneNumber = (phone) => {
   return phone; // Return original if can't format
 };
 
+/**
+ * Capitalize first letter of each word in a string
+ * @param {string} text - The text to capitalize
+ * @returns {string} Capitalized text
+ */
+export const capitalize = (text) => {
+  if (!text || typeof text !== "string") return "";
+
+  return text
+    .toLowerCase()
+    .split(" ")
+    .map((word) => {
+      // Handle hyphenated words by capitalizing each part
+      return word
+        .split("-")
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join("-");
+    })
+    .join(" ");
+};
+
 // Re-export all functions for backward compatibility
 export default {
   formatPrice,
@@ -122,4 +143,5 @@ export default {
   formatCurrencyForExport,
   formatFileSize,
   formatPhoneNumber,
+  capitalize,
 };
