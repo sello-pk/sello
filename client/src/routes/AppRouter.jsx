@@ -1,18 +1,10 @@
 import React, { lazy, Suspense } from "react";
-import {
-  Route,
-  Routes,
-  Navigate,
-  useSearchParams,
-  useNavigate,
-} from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import RouteLoader from "../components/common/RouteLoader";
 import {
   ProtectedRoute,
   AdminRoute,
 } from "../components/shared/RouteGuards.jsx";
-import { useSupportChat } from "../contexts/SupportChatContext.jsx";
-import { useEffect } from "react";
 
 // Critical pages
 import Home from "../pages/Home.jsx";
@@ -28,6 +20,7 @@ import BlogDetails from "../pages/blog/BlogDetails.jsx";
 import CarEstimator from "../pages/features/CarEstimator.jsx";
 import AuctionsActions from "../pages/features/auctions/Actions.jsx";
 import LiveAuction from "../pages/features/auctions/LiveAuction.jsx";
+import AuctionSchedule from "../pages/features/auctions/AuctionSchedule.jsx";
 import FilteredResults from "../pages/listings/FilteredResults.jsx";
 import NotFound from "../pages/NotFound.jsx";
 
@@ -140,6 +133,7 @@ const AppRouter = () => {
         <Route path="/car-estimator" element={<CarEstimator />} />
         <Route path="/auctions" element={<AuctionsActions />} />
         <Route path="/auctions/live" element={<LiveAuction />} />
+        <Route path="/auctions/schedule" element={<AuctionSchedule />} />
 
         {/* Auth Flow */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
