@@ -229,7 +229,7 @@ export default function AuctionsActions() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/auction/live">
+                <Link to="/auctions/live">
                   <Button size="lg" className="w-full sm:w-auto">
                     <Play className="w-5 h-5 mr-2" />
                     View Live Auction
@@ -357,7 +357,7 @@ export default function AuctionsActions() {
           ))}
         </div>
         <div className="text-center mt-10">
-          <Link to="/auctions">
+          <Link to="/auctions/live">
             <Button
               variant="outline"
               className="border-[#FFA602] text-[#FFA602] hover:bg-[#FFA602] hover:text-white"

@@ -27,6 +27,7 @@ import AllBlog from "../pages/blog/AllBlog.jsx";
 import BlogDetails from "../pages/blog/BlogDetails.jsx";
 import CarEstimator from "../pages/features/CarEstimator.jsx";
 import AuctionsActions from "../pages/features/auctions/Actions.jsx";
+import LiveAuction from "../pages/features/auctions/LiveAuction.jsx";
 import FilteredResults from "../pages/listings/FilteredResults.jsx";
 import NotFound from "../pages/NotFound.jsx";
 
@@ -138,6 +139,7 @@ const AppRouter = () => {
         {/* Features */}
         <Route path="/car-estimator" element={<CarEstimator />} />
         <Route path="/auctions" element={<AuctionsActions />} />
+        <Route path="/auctions/live" element={<LiveAuction />} />
 
         {/* Auth Flow */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
