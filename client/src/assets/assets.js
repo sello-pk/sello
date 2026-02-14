@@ -199,6 +199,10 @@ export const menuLinks = [
     name: "Listings",
   },
   {
+    path: "/auctions",
+    name: "Live Auctions",
+  },
+  {
     path: "/car-estimator",
     name: "Car Value Estimator",
   },
