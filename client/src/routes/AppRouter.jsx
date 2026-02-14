@@ -21,6 +21,7 @@ import CarEstimator from "../pages/features/CarEstimator.jsx";
 import AuctionsActions from "../pages/features/auctions/Actions.jsx";
 import LiveAuction from "../pages/features/auctions/LiveAuction.jsx";
 import AuctionSchedule from "../pages/features/auctions/AuctionSchedule.jsx";
+import TrustLegal from "../pages/features/auctions/TrustLegal.jsx";
 import FilteredResults from "../pages/listings/FilteredResults.jsx";
 import NotFound from "../pages/NotFound.jsx";
 
@@ -134,6 +135,7 @@ const AppRouter = () => {
         <Route path="/auctions" element={<AuctionsActions />} />
         <Route path="/auctions/live" element={<LiveAuction />} />
         <Route path="/auctions/schedule" element={<AuctionSchedule />} />
+        <Route path="/auctions/trust-legal" element={<TrustLegal />} />
 
         {/* Auth Flow */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
