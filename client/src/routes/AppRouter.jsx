@@ -27,6 +27,7 @@ import AuctionResult from "../pages/features/auctions/AuctionResult.jsx";
 import BuyerTransactions from "../pages/features/auctions/BuyerTransactions.jsx";
 import CarDetail from "../pages/features/auctions/CarDetail.jsx";
 import TokenPayment from "../pages/features/auctions/TokenPayment.jsx";
+import Watchlist from "../pages/features/auctions/Watchlist.jsx";
 import FilteredResults from "../pages/listings/FilteredResults.jsx";
 import NotFound from "../pages/NotFound.jsx";
 
@@ -153,6 +154,7 @@ const AppRouter = () => {
           element={<AuctionSellerDashboard />}
         />
         <Route path="/auctions/token-payment" element={<TokenPayment />} />
+        <Route path="/auctions/watchlist" element={<Watchlist />} />
 
         {/* Auth Flow */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
