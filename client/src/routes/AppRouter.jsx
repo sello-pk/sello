@@ -24,6 +24,7 @@ import AuctionSchedule from "../pages/features/auctions/AuctionSchedule.jsx";
 import TrustLegal from "../pages/features/auctions/TrustLegal.jsx";
 import BuyerDashboard from "../pages/features/auctions/BuyerDashboard.jsx";
 import AuctionResult from "../pages/features/auctions/AuctionResult.jsx";
+import BuyerTransactions from "../pages/features/auctions/BuyerTransactions.jsx";
 import FilteredResults from "../pages/listings/FilteredResults.jsx";
 import NotFound from "../pages/NotFound.jsx";
 
@@ -140,6 +141,7 @@ const AppRouter = () => {
         <Route path="/auctions/trust-legal" element={<TrustLegal />} />
         <Route path="/auctions/dashboard" element={<BuyerDashboard />} />
         <Route path="/auctions/result" element={<AuctionResult />} />
+        <Route path="/auctions/transactions" element={<BuyerTransactions />} />
 
         {/* Auth Flow */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
