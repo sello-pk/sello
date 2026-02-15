@@ -22,7 +22,6 @@ import AuctionsActions from "../pages/features/auctions/Actions.jsx";
 import LiveAuction from "../pages/features/auctions/LiveAuction.jsx";
 import AuctionSchedule from "../pages/features/auctions/AuctionSchedule.jsx";
 import TrustLegal from "../pages/features/auctions/TrustLegal.jsx";
-import BuyerDashboard from "../pages/features/auctions/BuyerDashboard.jsx";
 import AuctionResult from "../pages/features/auctions/AuctionResult.jsx";
 import BuyerTransactions from "../pages/features/auctions/BuyerTransactions.jsx";
 import CarDetail from "../pages/features/auctions/CarDetail.jsx";
@@ -66,9 +65,6 @@ const DealerDashboard = lazy(
 );
 const SellerDashboard = lazy(
   () => import("../pages/dashboards/SellerDashboard.jsx"),
-);
-const AuctionSellerDashboard = lazy(
-  () => import("../pages/features/auctions/SellerDashboard.jsx"),
 );
 
 // Admin (Lazy)
@@ -145,14 +141,9 @@ const AppRouter = () => {
         <Route path="/auctions/live" element={<LiveAuction />} />
         <Route path="/auctions/schedule" element={<AuctionSchedule />} />
         <Route path="/auctions/trust-legal" element={<TrustLegal />} />
-        <Route path="/auctions/dashboard" element={<BuyerDashboard />} />
         <Route path="/auctions/result" element={<AuctionResult />} />
         <Route path="/auctions/transactions" element={<BuyerTransactions />} />
         <Route path="/auctions/car-detail" element={<CarDetail />} />
-        <Route
-          path="/auctions/seller-dashboard"
-          element={<AuctionSellerDashboard />}
-        />
         <Route path="/auctions/token-payment" element={<TokenPayment />} />
         <Route path="/auctions/watchlist" element={<Watchlist />} />
 
