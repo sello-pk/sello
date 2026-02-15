@@ -73,6 +73,15 @@ export const createCategory = async (req, res) => {
       if (subType === "make" || subType === "model") {
         duplicateQuery.subType = subType;
         duplicateQuery.vehicleType = vehicleType;
+
+        // For models, also check parentCategory (brand) to ensure uniqueness within brand+vehicleType
+        if (subType === "model" && parentCategory) {
+          duplicateQuery.parentCategory = parentCategory;
+          console.log(
+            "Model duplicate check:",
+            JSON.stringify(duplicateQuery, null, 2),
+          );
+        }
       } else if (subType === "year") {
         duplicateQuery.subType = "year";
         // Years are independent of vehicleType
@@ -91,6 +100,10 @@ export const createCategory = async (req, res) => {
       }
     }
 
+    console.log(
+      "Final duplicate query:",
+      JSON.stringify(duplicateQuery, null, 2),
+    );
     const existingCategory = await Category.findOne(duplicateQuery);
     if (existingCategory) {
       let errorMessage = "Category already exists.";
@@ -100,7 +113,10 @@ export const createCategory = async (req, res) => {
         if (subType === "make") {
           errorMessage = `Brand "${name}" already exists for vehicle type "${vehicleType}".`;
         } else if (subType === "model") {
-          errorMessage = `Model "${name}" already exists for this brand and vehicle type.`;
+          // Get brand name for better error message
+          const brandName =
+            existingCategory.parentCategory?.name || "this brand";
+          errorMessage = `Model "${name}" already exists for brand "${brandName}" and vehicle type "${vehicleType}".`;
         } else if (subType === "year") {
           errorMessage = `Year "${name}" already exists.`;
         }
@@ -276,6 +292,17 @@ export const updateCategory = async (req, res) => {
       if (currentSubType === "make" || currentSubType === "model") {
         duplicateQuery.subType = currentSubType;
         duplicateQuery.vehicleType = currentVehicleType;
+
+        // For models, also check parentCategory (brand) to ensure uniqueness within brand+vehicleType
+        if (currentSubType === "model") {
+          const currentParent =
+            parentCategory !== undefined
+              ? parentCategory
+              : category.parentCategory;
+          if (currentParent) {
+            duplicateQuery.parentCategory = currentParent;
+          }
+        }
       } else if (currentSubType === "year") {
         duplicateQuery.subType = "year";
         // Years are independent of vehicleType
@@ -313,7 +340,14 @@ export const updateCategory = async (req, res) => {
         if (currentSubType === "make") {
           errorMessage = `Brand "${name}" already exists for vehicle type "${currentVehicleType}".`;
         } else if (currentSubType === "model") {
-          errorMessage = `Model "${name}" already exists for this brand and vehicle type.`;
+          // Get brand name for better error message
+          const brandName =
+            existingCategory.parentCategory?.name ||
+            (existingCategory.parentCategory === category.parentCategory
+              ? category.parentCategory?.name
+              : null) ||
+            "this brand";
+          errorMessage = `Model "${name}" already exists for brand "${brandName}" and vehicle type "${currentVehicleType}".`;
         } else if (currentSubType === "year") {
           errorMessage = `Year "${name}" already exists.`;
         }

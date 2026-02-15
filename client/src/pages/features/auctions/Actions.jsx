@@ -181,7 +181,7 @@ export default function AuctionsActions() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen w-full bg-slate-50">
       {/* ========== HERO SECTION ========== */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden">
         {/* Background */}
@@ -195,7 +195,7 @@ export default function AuctionsActions() {
         </div>
 
         {/* Hero Content */}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="relative max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
             <motion.div
@@ -210,22 +210,23 @@ export default function AuctionsActions() {
                 </Badge>
               )}
 
-              <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-                Pakistan's Premier
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+                Pakistan’s Largest Hybrid
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#FFA602] to-amber-500">
                   Car Auction
                 </span>
+                Platform
               </h1>
 
               <p className="text-lg text-slate-300 mb-8 max-w-xl">
-                Join Pakistan's most trusted hybrid auction platform. Bid online
-                or visit our Okara yard. Every second day, great cars find new
-                owners.
+                Buy, sell, or bid on verified cars across Pakistan. Join live
+                online auctions or attend our physical auction events. Get
+                instant AI-powered car price estimation before you decide.
               </p>
 
               <div className="flex items-center gap-2 text-slate-400 mb-8">
                 <MapPin className="w-5 h-5 text-[#FFA602]" />
-                <span>Okara Auction Yard, Punjab, Pakistan</span>
+                <span>Serving Buyers & Sellers Across Pakistan</span>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">

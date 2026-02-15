@@ -87,6 +87,22 @@ categorySchema.index(
   },
 );
 
+// Compound unique index for models: name + vehicleType + subType + type + parentCategory must be unique
+// This ensures models are unique within each brand/make
+// Using collation for case-insensitive comparison
+categorySchema.index(
+  { name: 1, vehicleType: 1, subType: 1, type: 1, parentCategory: 1 },
+  {
+    unique: true,
+    collation: { locale: "en", strength: 2 }, // Case-insensitive comparison
+    partialFilterExpression: {
+      type: "car",
+      subType: "model",
+      parentCategory: { $ne: null },
+    },
+  },
+);
+
 // Unique index for years (name + subType must be unique for years)
 // Using collation for case-insensitive comparison
 categorySchema.index(
