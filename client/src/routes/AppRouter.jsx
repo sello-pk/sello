@@ -65,6 +65,9 @@ const DealerDashboard = lazy(
 const SellerDashboard = lazy(
   () => import("../pages/dashboards/SellerDashboard.jsx"),
 );
+const AuctionSellerDashboard = lazy(
+  () => import("../pages/features/auctions/SellerDashboard.jsx"),
+);
 
 // Admin (Lazy)
 const AdminDashboard = lazy(() => import("../pages/admin/Dashboard.jsx"));
@@ -144,6 +147,10 @@ const AppRouter = () => {
         <Route path="/auctions/result" element={<AuctionResult />} />
         <Route path="/auctions/transactions" element={<BuyerTransactions />} />
         <Route path="/auctions/car-detail" element={<CarDetail />} />
+        <Route
+          path="/auctions/seller-dashboard"
+          element={<AuctionSellerDashboard />}
+        />
 
         {/* Auth Flow */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
