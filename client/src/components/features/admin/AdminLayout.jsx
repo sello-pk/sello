@@ -114,7 +114,6 @@ const AdminLayout = ({ children }) => {
       icon: FiMessageSquare,
       label: "Support Chat",
     },
-
     {
       path: "/admin/customer-requests",
       icon: FiUser,
@@ -133,6 +132,7 @@ const AdminLayout = ({ children }) => {
     { path: "/admin/promotions", icon: FiHeart, label: "Promotions" },
     { path: "/admin/payments", icon: FiDollarSign, label: "Payments" },
     { path: "/admin/notifications", icon: FiBell, label: "Notifications" },
+    { path: "/admin/auctions", icon: FiActivity, label: "Auction Management" },
     { path: "/admin/settings", icon: FiSettings, label: "Settings" },
   ];
 

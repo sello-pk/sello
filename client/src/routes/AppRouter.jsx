@@ -94,6 +94,9 @@ const CustomerRequests = lazy(
 );
 const Banners = lazy(() => import("../pages/admin/Banners.jsx"));
 const Testimonials = lazy(() => import("../pages/admin/Testimonials.jsx"));
+const AuctionManagement = lazy(
+  () => import("../pages/admin/AuctionManagement.jsx"),
+);
 
 // Blog Admin (Lazy)
 const BlogsOverview = lazy(() => import("../pages/admin/BlogsOverview.jsx"));
@@ -202,6 +205,7 @@ const AppRouter = () => {
           />
           <Route path="/admin/banners" element={<Banners />} />
           <Route path="/admin/testimonials" element={<Testimonials />} />
+          <Route path="/admin/auctions" element={<AuctionManagement />} />
           <Route path="/admin/settings" element={<Settings />} />
 
           {/* Add other admin routes as needed */}
