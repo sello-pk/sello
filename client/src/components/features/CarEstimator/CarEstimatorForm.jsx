@@ -322,11 +322,11 @@ export default function CarEstimatorForm({ onEstimate }) {
     <div className="bg-gray-50 min-h-screen">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-full mx-auto px-4 sm:px-0 lg:px-0 space-y-6"
+        className="w-full max-w-full mx-auto px-4 sm:px-6 lg:px-8 space-y-6"
       >
         {/* Car Information */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Make <span className="text-red-500">*</span>
@@ -335,7 +335,7 @@ export default function CarEstimatorForm({ onEstimate }) {
                 name="make"
                 value={formData.make}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
                 required
               >
                 <option value="">Select make</option>
@@ -359,7 +359,7 @@ export default function CarEstimatorForm({ onEstimate }) {
                 value={formData.model}
                 onChange={handleChange}
                 disabled={!formData.make}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-sm"
                 required
               >
                 <option value="">
@@ -384,7 +384,7 @@ export default function CarEstimatorForm({ onEstimate }) {
                 name="year"
                 value={formData.year}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
                 required
               >
                 <option value="">Select year</option>
@@ -438,7 +438,7 @@ export default function CarEstimatorForm({ onEstimate }) {
                 name="registrationCity"
                 value={formData.registrationCity}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
               >
                 <option value="">Select city</option>
                 {cities.map((city) => (
@@ -460,7 +460,7 @@ export default function CarEstimatorForm({ onEstimate }) {
                 name="engineType"
                 value={formData.engineType}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
               >
                 <option value="">Select</option>
                 {engineTypes.map((type) => (
@@ -482,7 +482,7 @@ export default function CarEstimatorForm({ onEstimate }) {
                 name="paintStatus"
                 value={formData.paintStatus}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
               >
                 <option value="">Select</option>
                 <option value="original">Original</option>
@@ -605,7 +605,7 @@ export default function CarEstimatorForm({ onEstimate }) {
               </p>
             </div>
 
-            <div className="lg:col-span-4">
+            <div className="col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Exterior Color
               </label>
@@ -617,20 +617,7 @@ export default function CarEstimatorForm({ onEstimate }) {
               />
             </div>
 
-            <div className="lg:col-span-2 pl-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Engine Capacity
-              </label>
-              <EngineCapacitySpecs
-                value={formData.engineCapacity}
-                onChange={(value) =>
-                  setFormData((prev) => ({ ...prev, engineCapacity: value }))
-                }
-              />
-              <p className="text-xs text-gray-500 mt-1">Engine displacement</p>
-            </div>
-
-            <div className="lg:col-span-4">
+            <div className="col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Transmission <span className="text-red-500">*</span>
               </label>
@@ -643,7 +630,7 @@ export default function CarEstimatorForm({ onEstimate }) {
               <p className="text-xs text-gray-500 mt-1">Gearbox type</p>
             </div>
 
-            <div className="lg:col-span-4">
+            <div className="col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Additional Notes
               </label>
@@ -652,7 +639,7 @@ export default function CarEstimatorForm({ onEstimate }) {
                 value={formData.additionalNotes}
                 onChange={handleChange}
                 rows={4}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
                 placeholder="Enter any additional information about your car that might affect its value..."
               />
             </div>
@@ -664,37 +651,46 @@ export default function CarEstimatorForm({ onEstimate }) {
           <button
             type="submit"
             disabled={!isFormValid || isAnalyzing}
-            className="w-full h-12 bg-primary-500 hover:bg-opacity-90 text-white font-semibold rounded-lg shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full h-12 sm:h-14 bg-primary-500 hover:bg-opacity-90 text-white font-semibold rounded-lg shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
           >
             {isAnalyzing ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                Analyzing with Real-Time Market Data...
+                <span className="hidden sm:inline">
+                  Analyzing with Real-Time Market Data...
+                </span>
+                <span className="sm:hidden">Analyzing...</span>
               </>
             ) : (
               <>
                 <Sparkles className="w-5 h-5" />
-                Get AI-Powered Valuation
-                <ArrowRight className="w-5 h-5" />
+                <span className="hidden sm:inline">
+                  Get AI-Powered Valuation
+                </span>
+                <span className="sm:hidden">Get Valuation</span>
+                <ArrowRight className="w-5 h-5 hidden sm:inline" />
               </>
             )}
           </button>
-          <p className="text-center text-sm text-gray-500 mt-3">
+          <p className="text-center text-xs sm:text-sm text-gray-500 mt-3 px-4">
             <Info className="w-4 h-4 inline mr-1" />
-            Powered by real-time data from Sello & local dealerships
+            <span className="hidden sm:inline">
+              Powered by real-time data from Sello & local dealerships
+            </span>
+            <span className="sm:hidden">Real-time market data analysis</span>
           </p>
         </div>
 
         {/* Error Display */}
         {Object.keys(errors).length > 0 && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mx-4 sm:mx-0">
             <div className="text-red-800">
-              <p className="font-medium mb-2">
+              <p className="font-medium mb-2 text-sm sm:text-base">
                 Please fix the following errors:
               </p>
               <ul className="mt-2 space-y-1">
                 {Object.entries(errors).map(([field, error]) => (
-                  <li key={field} className="flex items-start gap-2">
+                  <li key={field} className="flex items-start gap-2 text-sm">
                     <span className="text-red-500 mt-1">•</span>
                     <span>{error}</span>
                   </li>
