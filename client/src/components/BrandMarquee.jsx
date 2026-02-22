@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCarCategories } from "../hooks/useCarCategories";
+import { fixImageUrl } from "../utils/imageUtils";
 import {
   MdOutlineKeyboardArrowLeft,
   MdOutlineKeyboardArrowRight,
@@ -27,7 +28,7 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
   const items = useMemo(() => {
     if (brands.length === 0) return [];
     if (brands.length === 1) return brands;
-    
+
     // Repeat enough to fill screens and loop
     const repeatCount = brands.length < 10 ? 4 : 2;
     let result = [];
@@ -62,7 +63,7 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
     const animationName = `marquee-${brands.length}-${Date.now()}`;
     const animationDuration = Math.max(25, brands.length * 6); // Slow, premium speed
     const repeatCount = brands.length < 10 ? 4 : 2;
-    const translatePercent = (100 / repeatCount);
+    const translatePercent = 100 / repeatCount;
 
     const styleSheet = document.createElement("style");
     styleSheet.textContent = `
@@ -113,22 +114,34 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
               className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-20 h-10 w-10 items-center justify-center rounded-full bg-white shadow-lg hover:bg-primary-500 hover:text-black transition-all hover:scale-110 border border-gray-100"
               aria-label="Next brands"
             >
-              <MdOutlineKeyboardArrowRight size={24} className="text-gray-700" />
+              <MdOutlineKeyboardArrowRight
+                size={24}
+                className="text-gray-700"
+              />
             </button>
           </>
         )}
 
         {/* Slider track */}
-        <div className="overflow-x-auto scrollbar-hide w-full" style={{ scrollBehavior: 'smooth' }}>
+        <div
+          className="overflow-x-auto scrollbar-hide w-full"
+          style={{ scrollBehavior: "smooth" }}
+        >
           <div ref={sliderRef} className="flex gap-8 md:gap-14">
             {isLoading ? (
-              <div className="flex items-center justify-center w-full py-8 text-gray-400">Loading...</div>
+              <div className="flex items-center justify-center w-full py-8 text-gray-400">
+                Loading...
+              </div>
             ) : items.length === 0 ? (
-              <div className="flex items-center justify-center w-full py-8 text-gray-400">No brands</div>
+              <div className="flex items-center justify-center w-full py-8 text-gray-400">
+                No brands
+              </div>
             ) : (
               items.map((brand, index) => {
                 const brandName = brand.name || brand.brandName || "Brand";
                 const brandImage = brand.image || brand.img;
+                // Fix image URL format using utility function
+                const fixedImage = fixImageUrl(brandImage);
                 return (
                   <div
                     key={`${brand._id || brandName}-${index}`}
@@ -137,13 +150,26 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
                   >
                     <div className="flex-1 flex items-center justify-center mb-2">
                       <img
-                        src={brandImage}
+                        src={fixedImage}
                         alt={brandName}
                         className="object-contain w-full h-full max-h-16 md:max-h-20"
                         loading="lazy"
+                        onLoad={() => {
+                          console.log(
+                            "BrandMarquee - Image loaded successfully:",
+                            fixedImage,
+                          );
+                        }}
                         onError={(e) => {
+                          console.log(
+                            "BrandMarquee - Image failed to load:",
+                            fixedImage,
+                          );
+                          console.log("BrandMarquee - Error event:", e);
                           e.target.style.display = "none";
-                          if (e.target.parentElement) e.target.parentElement.innerHTML = '<div class="text-xs text-gray-300">No logo</div>';
+                          if (e.target.parentElement)
+                            e.target.parentElement.innerHTML =
+                              '<div class="text-xs text-gray-300">No logo</div>';
                         }}
                       />
                     </div>

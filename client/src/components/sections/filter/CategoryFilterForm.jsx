@@ -80,7 +80,6 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
     makes,
     models,
     getModelsByMake,
-    years,
     countries,
     states,
     cities,
@@ -156,7 +155,7 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
         const selectedMakeObj = makes.find((m) => m.name === value);
         if (selectedMakeObj) {
           const makeModels = getModelsByMake[selectedMakeObj._id] || [];
-          setAvailableModels(makeModels.length > 0 ? makeModels : models);
+          setAvailableModels(makeModels);
           // Reset model if it's not available for the new make
           if (
             filters.model &&
@@ -166,11 +165,12 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
             setFilters((prev) => ({ ...prev, model: "" }));
           }
         } else {
-          setAvailableModels(models);
+          setAvailableModels([]);
         }
       } else {
         // Show all models when make is cleared
         setAvailableModels(models);
+        setFilters((prev) => ({ ...prev, model: "" }));
       }
     }
 
@@ -206,9 +206,9 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
       const selectedMakeObj = makes.find((m) => m.name === filters.make);
       if (selectedMakeObj) {
         const makeModels = getModelsByMake[selectedMakeObj._id] || [];
-        setAvailableModels(makeModels.length > 0 ? makeModels : models);
+        setAvailableModels(makeModels);
       } else {
-        setAvailableModels(models);
+        setAvailableModels([]);
       }
     } else {
       // Show all models when no make is selected
@@ -336,25 +336,6 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
         minMotorPower: values[0],
         maxMotorPower: values[1],
       }));
-    }
-  };
-
-  const handleLocationChange = (locationData) => {
-    if (locationData && locationData.coordinates) {
-      // Store coordinates for location-based filtering
-      handleChange("userLat", locationData.coordinates.lat.toString());
-      handleChange("userLng", locationData.coordinates.lng.toString());
-
-      // Also update city if address is provided
-      if (locationData.address) {
-        // Extract city from address if possible
-        const addressParts = locationData.address.split(",");
-        if (addressParts.length > 0) {
-          handleChange("city", addressParts[addressParts.length - 1].trim());
-        }
-      }
-    } else if (typeof locationData === "string") {
-      handleChange("city", locationData);
     }
   };
 

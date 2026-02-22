@@ -217,6 +217,17 @@ const EditCarForm = () => {
     } else {
       setFormData((prev) => ({ ...prev, [field]: value }));
 
+      // When vehicle type changes, reset dependent fields
+      if (field === "vehicleType") {
+        setFormData((prev) => ({
+          ...prev,
+          make: "", // Reset make when vehicle type changes
+          model: "", // Reset model when vehicle type changes
+        }));
+        setSelectedMake(""); // Reset selected make
+        setAvailableModels([]); // Reset available models
+      }
+
       // When make changes, update available models
       if (field === "make") {
         setSelectedMake(value);
@@ -228,13 +239,15 @@ const EditCarForm = () => {
           const makeModels =
             (getModelsByMake && getModelsByMake[selectedMakeObj._id]) || [];
           setAvailableModels(makeModels);
-          // Reset model if it's not available for the new make
+          // Reset model if it's not available for new make
           if (
             formData.model &&
             !makeModels.find((m) => m && m.name === formData.model)
           ) {
             setFormData((prev) => ({ ...prev, model: "" }));
           }
+        } else {
+          setAvailableModels([]);
         }
       }
 
@@ -468,11 +481,17 @@ const EditCarForm = () => {
             <select
               value={formData.make}
               onChange={(e) => handleChange("make", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
               required
-              disabled={categoriesLoading}
+              disabled={!formData.vehicleType || categoriesLoading}
             >
-              <option value="">Select Make</option>
+              <option value="">
+                {!formData.vehicleType
+                  ? "Select vehicle type first"
+                  : categoriesLoading
+                    ? "Loading..."
+                    : "Select Make"}
+              </option>
               {makes.map((make) => (
                 <option key={make._id} value={make.name}>
                   {capitalize(make.name)}
@@ -487,11 +506,21 @@ const EditCarForm = () => {
             <select
               value={formData.model}
               onChange={(e) => handleChange("model", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
               required
-              disabled={categoriesLoading || !formData.make}
+              disabled={
+                !formData.vehicleType || !formData.make || categoriesLoading
+              }
             >
-              <option value="">Select Model</option>
+              <option value="">
+                {!formData.vehicleType
+                  ? "Select vehicle type first"
+                  : !formData.make
+                    ? "Select make first"
+                    : categoriesLoading
+                      ? "Loading..."
+                      : "Select Model"}
+              </option>
               {availableModels.map((model) => (
                 <option key={model._id} value={model.name}>
                   {capitalize(model.name)}

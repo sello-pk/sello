@@ -19,6 +19,7 @@ import LocationButton from "../../utils/filter/LocationButton";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useCarCategories } from "../../../hooks/useCarCategories";
 import { isFieldVisible } from "../../../utils/vehicleFieldConfig";
+import { fixImageUrl } from "../../../utils/imageUtils";
 
 // Helper function to get dynamic labels based on vehicle type
 const getVehicleLabel = (vehicleType, fieldType) => {
@@ -48,7 +49,7 @@ const FilterForm = ({ onFilter }) => {
 
   const [filters, setFilters] = useState({
     search: "",
-    vehicleType: "",
+    vehicleType: "Car",
     minPrice: "",
     maxPrice: "",
     make: "",
@@ -165,9 +166,11 @@ const FilterForm = ({ onFilter }) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
 
     if (field === "vehicleType") {
-      // Clear fields that are not relevant to selected type
+      // Clear fields that are not relevant to selected type and reset dependent fields
       setFilters((prev) => ({
         ...prev,
+        make: "", // Reset make when vehicle type changes
+        model: "", // Reset model when vehicle type changes
         bodyType: isFieldVisible(value, "bodyType") ? prev.bodyType : "",
         minCylinders: isFieldVisible(value, "cylinders")
           ? prev.minCylinders
@@ -211,7 +214,7 @@ const FilterForm = ({ onFilter }) => {
         const selectedMakeObj = makes.find((m) => m.name === value);
         if (selectedMakeObj) {
           const makeModels = getModelsByMake[selectedMakeObj._id] || [];
-          setAvailableModels(makeModels.length > 0 ? makeModels : models);
+          setAvailableModels(makeModels);
           // Reset model if it's not available for the new make
           if (
             filters.model &&
@@ -221,11 +224,13 @@ const FilterForm = ({ onFilter }) => {
             setFilters((prev) => ({ ...prev, model: "" }));
           }
         } else {
-          setAvailableModels(models);
+          setAvailableModels([]);
         }
       } else {
         // Show all models when make is cleared
         setAvailableModels(models);
+        // Reset model when make is cleared
+        setFilters((prev) => ({ ...prev, model: "" }));
       }
     }
 
@@ -261,9 +266,16 @@ const FilterForm = ({ onFilter }) => {
       const selectedMakeObj = makes.find((m) => m.name === filters.make);
       if (selectedMakeObj) {
         const makeModels = getModelsByMake[selectedMakeObj._id] || [];
-        setAvailableModels(makeModels.length > 0 ? makeModels : models);
+        setAvailableModels(makeModels);
+        // Debug logging
+        console.log("FilterForm - Selected Make:", filters.make);
+        console.log(
+          "FilterForm - Available Models for Make:",
+          makeModels.length,
+          makeModels.map((m) => m.name),
+        );
       } else {
-        setAvailableModels(models);
+        setAvailableModels([]);
       }
     } else {
       // Show all models when no make is selected
@@ -544,12 +556,12 @@ const FilterForm = ({ onFilter }) => {
     // Trigger filter callback and navigate to results page with URL params
     if (Object.keys(cleanFilters).length > 0) {
       if (onFilter) onFilter(cleanFilters);
-      
+
       const params = new URLSearchParams();
       Object.entries(cleanFilters).forEach(([key, value]) => {
         if (value) params.set(key, value);
       });
-      
+
       navigate(`/search-results?${params.toString()}`);
       toast.success("Filters applied successfully!");
     } else {
@@ -560,7 +572,7 @@ const FilterForm = ({ onFilter }) => {
   const handleClearFilters = () => {
     setFilters({
       search: "",
-      vehicleType: "",
+      vehicleType: "Car",
       minPrice: "",
       maxPrice: "",
       make: "",
@@ -696,10 +708,16 @@ const FilterForm = ({ onFilter }) => {
           <select
             value={filters.make}
             onChange={(e) => handleChange("make", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-            disabled={categoriesLoading}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            disabled={!filters.vehicleType || categoriesLoading}
           >
-            <option value="">All Makes</option>
+            <option value="">
+              {!filters.vehicleType
+                ? "Select vehicle type first"
+                : categoriesLoading
+                  ? "Loading..."
+                  : "All Makes"}
+            </option>
             {makes.map((make) => (
               <option key={make._id} value={make.name}>
                 {make.name}
@@ -717,14 +735,20 @@ const FilterForm = ({ onFilter }) => {
             value={filters.model}
             onChange={(e) => handleChange("model", e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-            disabled={categoriesLoading}
+            disabled={
+              !filters.vehicleType || !filters.make || categoriesLoading
+            }
           >
             <option value="">
-              {categoriesLoading
-                ? "Loading..."
-                : availableModels.length === 0
-                  ? "No models available"
-                  : "All Models"}
+              {!filters.vehicleType
+                ? "Select vehicle type first"
+                : !filters.make
+                  ? "Select make first"
+                  : categoriesLoading
+                    ? "Loading..."
+                    : availableModels.length === 0
+                      ? "No models available"
+                      : "All Models"}
             </option>
             {availableModels.map((model) => (
               <option key={model._id} value={model.name}>

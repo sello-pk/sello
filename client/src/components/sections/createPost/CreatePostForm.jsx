@@ -105,9 +105,16 @@ const CreatePostForm = () => {
     const selectedMakeObj = makes.find((m) => m.name === formData.make);
     if (selectedMakeObj && getModelsByMake[selectedMakeObj._id]) {
       const makeModels = getModelsByMake[selectedMakeObj._id];
-      setAvailableModels(makeModels.length > 0 ? makeModels : models);
+      setAvailableModels(makeModels);
+      // Debug logging
+      console.log("CreatePostForm - Selected Make:", formData.make);
+      console.log(
+        "CreatePostForm - Available Models for Make:",
+        makeModels.length,
+        makeModels.map((m) => m.name),
+      );
     } else {
-      setAvailableModels(models);
+      setAvailableModels([]);
     }
   }, [formData.make, makes, models, getModelsByMake]);
 
@@ -151,13 +158,24 @@ const CreatePostForm = () => {
     } else {
       setFormData((prev) => ({ ...prev, [field]: value }));
 
+      // When vehicle type changes, reset dependent fields
+      if (field === "vehicleType") {
+        setFormData((prev) => ({
+          ...prev,
+          make: "", // Reset make when vehicle type changes
+          model: "", // Reset model when vehicle type changes
+        }));
+        // Reset available models when vehicle type changes
+        setAvailableModels(models);
+      }
+
       // When make changes, update available models
       if (field === "make") {
         if (value) {
           const selectedMakeObj = makes.find((m) => m.name === value);
           if (selectedMakeObj) {
             const makeModels = getModelsByMake[selectedMakeObj._id] || [];
-            setAvailableModels(makeModels.length > 0 ? makeModels : models);
+            setAvailableModels(makeModels);
             // Reset model if it's not available for the new make
             if (
               formData.model &&
@@ -167,11 +185,13 @@ const CreatePostForm = () => {
               setFormData((prev) => ({ ...prev, model: "" }));
             }
           } else {
-            setAvailableModels(models);
+            setAvailableModels([]);
           }
         } else {
           // Show all models when make is cleared
           setAvailableModels(models);
+          // Reset model when make is cleared
+          setFormData((prev) => ({ ...prev, model: "" }));
         }
       }
 
@@ -781,11 +801,17 @@ const CreatePostForm = () => {
             <select
               value={formData.make}
               onChange={(e) => handleChange("make", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
               required
-              disabled={categoriesLoading}
+              disabled={!formData.vehicleType || categoriesLoading}
             >
-              <option value="">Select Make</option>
+              <option value="">
+                {!formData.vehicleType
+                  ? "Select vehicle type first"
+                  : categoriesLoading
+                    ? "Loading..."
+                    : "Select Make"}
+              </option>
               {makes.map((make) => (
                 <option key={make._id} value={make.name}>
                   {capitalize(make.name)}
@@ -802,16 +828,20 @@ const CreatePostForm = () => {
               onChange={(e) => handleChange("model", e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
               required
-              disabled={categoriesLoading}
+              disabled={
+                !formData.vehicleType || !formData.make || categoriesLoading
+              }
             >
               <option value="">
-                {categoriesLoading
-                  ? "Loading..."
-                  : availableModels.length === 0
-                    ? "No models available"
-                    : formData.make
-                      ? "Select Model"
-                      : "Select Model (or select Make to filter)"}
+                {!formData.vehicleType
+                  ? "Select vehicle type first"
+                  : !formData.make
+                    ? "Select make first"
+                    : categoriesLoading
+                      ? "Loading..."
+                      : availableModels.length === 0
+                        ? "No models available"
+                        : "Select Model"}
               </option>
               {availableModels.map((model) => (
                 <option key={model._id} value={model.name}>

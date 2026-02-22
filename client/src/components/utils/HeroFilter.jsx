@@ -4,6 +4,7 @@ import { useCarCategories } from "../../hooks/useCarCategories";
 import { useGetFilteredCarsQuery } from "../../redux/services/api";
 import toast from "react-hot-toast";
 import { capitalize } from "../../utils/formatters";
+import { fixImageUrl } from "../../utils/imageUtils";
 
 const HeroFilter = () => {
   const [activeTab, setActiveTab] = useState("all");
@@ -21,7 +22,7 @@ const HeroFilter = () => {
   ];
 
   // Vehicle type state
-  const [vehicleType, setVehicleType] = useState("");
+  const [vehicleType, setVehicleType] = useState("Car");
 
   // Dynamic categories from admin panel - filtered by vehicle type
   const {
@@ -30,7 +31,7 @@ const HeroFilter = () => {
     years,
     getModelsByMake,
     isLoading: categoriesLoading,
-  } = useCarCategories(vehicleType || null);
+  } = useCarCategories(vehicleType);
 
   const [filters, setFilters] = useState({
     year: "",
@@ -54,10 +55,22 @@ const HeroFilter = () => {
   const handleChange = (field, value) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
 
-    // Reset make and model when vehicle type changes
+    // Reset dependent fields when vehicle type changes
     if (field === "vehicleType") {
       setVehicleType(value);
-      setFilters((prev) => ({ ...prev, make: "", model: "" }));
+      setFilters((prev) => ({
+        ...prev,
+        make: "",
+        model: "",
+      }));
+    }
+
+    // Reset model when make changes
+    if (field === "make") {
+      setFilters((prev) => ({
+        ...prev,
+        model: "",
+      }));
     }
   };
 
@@ -205,6 +218,7 @@ const HeroFilter = () => {
       navigate(`/search-results?${params.toString()}`);
     }
   }, [filteredCars, isSearching, queryParams, navigate]);
+
   const yearOptions = useMemo(() => {
     if (years && years.length > 0) {
       return years
@@ -219,10 +233,11 @@ const HeroFilter = () => {
   // Make options from categories - only use dynamic data from admin
   const makeOptions = useMemo(() => {
     if (makes && makes.length > 0) {
-      return makes
-        .map((m) => capitalize(m.name))
-        .filter(Boolean)
-        .sort((a, b) => a.localeCompare(b));
+      return makes.map((make) => ({
+        value: make.name,
+        label: capitalize(make.name),
+        image: fixImageUrl(make.image),
+      }));
     }
     // Return empty array if no categories - no fallback dummy data
     return [];
@@ -236,8 +251,17 @@ const HeroFilter = () => {
         const selectedMake = makes.find((m) => m.name === filters.make);
         if (selectedMake) {
           const listForMake = getModelsByMake[selectedMake._id] || [];
-          modelList = listForMake.length > 0 ? listForMake : models;
+          // Only show models that belong to the selected make
+          modelList = listForMake;
+          // Debug logging
+          console.log("HeroFilter - Selected Make:", filters.make);
+          console.log(
+            "HeroFilter - Available Models for Make:",
+            listForMake.length,
+            listForMake.map((m) => m.name),
+          );
         } else {
+          // No valid make selected → show all models
           modelList = models;
         }
       } else {
@@ -309,7 +333,7 @@ const HeroFilter = () => {
                   label="Vehicle Type"
                   value={vehicleType}
                   onChange={(v) => handleChange("vehicleType", v)}
-                  options={["", ...vehicleTypeOptions]}
+                  options={vehicleTypeOptions}
                 />
 
                 {/* Year Filter */}
@@ -317,7 +341,7 @@ const HeroFilter = () => {
                   label="Year"
                   value={filters.year}
                   onChange={(v) => handleChange("year", v)}
-                  options={["", ...yearOptions]}
+                  options={yearOptions}
                   disabled={categoriesLoading}
                   emptyMessage={
                     categoriesLoading
@@ -328,8 +352,8 @@ const HeroFilter = () => {
                   }
                 />
 
-                {/* Make Filter */}
-                <FilterSelect
+                {/* Make Filter - Now using BrandSelect without logo */}
+                <BrandSelect
                   label="Make"
                   value={filters.make}
                   onChange={(v) => {
@@ -337,14 +361,16 @@ const HeroFilter = () => {
                     // Reset model when make changes
                     if (!v) handleChange("model", "");
                   }}
-                  options={["", ...makeOptions]}
-                  disabled={categoriesLoading}
+                  options={makeOptions}
+                  disabled={!vehicleType || categoriesLoading}
                   emptyMessage={
-                    categoriesLoading
-                      ? "Loading..."
-                      : makeOptions.length === 0
-                        ? "No makes available"
-                        : ""
+                    !vehicleType
+                      ? "Select vehicle type first"
+                      : categoriesLoading
+                        ? "Loading..."
+                        : makeOptions.length === 0
+                          ? "No makes available"
+                          : ""
                   }
                 />
 
@@ -353,14 +379,18 @@ const HeroFilter = () => {
                   label="Model"
                   value={filters.model}
                   onChange={(v) => handleChange("model", v)}
-                  options={["", ...modelOptions]}
-                  disabled={categoriesLoading}
+                  options={modelOptions}
+                  disabled={!vehicleType || !filters.make || categoriesLoading}
                   emptyMessage={
-                    categoriesLoading
-                      ? "Loading..."
-                      : modelOptions.length === 0
-                        ? "No models available"
-                        : ""
+                    !vehicleType
+                      ? "Select vehicle type first"
+                      : !filters.make
+                        ? "Select make first"
+                        : categoriesLoading
+                          ? "Loading..."
+                          : modelOptions.length === 0
+                            ? "No models available"
+                            : ""
                   }
                 />
 
@@ -458,8 +488,47 @@ const HeroFilter = () => {
   );
 };
 
-/* Reusable Components */
+// ========== FIXED COMPONENTS ==========
 
+// Brand Select component - WITHOUT logo display (fixed version)
+const BrandSelect = ({
+  label,
+  value,
+  onChange,
+  options,
+  disabled,
+  emptyMessage,
+}) => {
+  return (
+    <div className="flex flex-col">
+      <label className="text-gray-900 text-xs font-bold mb-1 uppercase">
+        {label}
+      </label>
+      <select
+        className="w-full h-9 px-3 rounded-md bg-white text-gray-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 border border-gray-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+      >
+        <option value="">Select {label}</option>
+        {options.length === 0 && emptyMessage ? (
+          <option value="" disabled>
+            {emptyMessage}
+          </option>
+        ) : (
+          options.map((opt, idx) => (
+            <option key={idx} value={opt.value}>
+              {opt.label}
+            </option>
+          ))
+        )}
+      </select>
+      {/* Image display completely removed */}
+    </div>
+  );
+};
+
+// Standard Filter Select component (unchanged)
 const FilterSelect = ({
   label,
   value,
@@ -478,12 +547,15 @@ const FilterSelect = ({
       onChange={(e) => onChange(e.target.value)}
       disabled={disabled}
     >
+      <option value="">Select {label}</option>
       {options.length === 0 && emptyMessage ? (
-        <option value="">{emptyMessage}</option>
+        <option value="" disabled>
+          {emptyMessage}
+        </option>
       ) : (
         options.map((opt, idx) => (
           <option key={idx} value={opt}>
-            {opt || `Select ${label}`}
+            {opt}
           </option>
         ))
       )}
