@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import RangeFilter from "../../utils/filter/RangeFilter";
 import Input from "../../utils/filter/Input";
+import SearchableSelect from "../../common/SearchableSelect";
 import BodyTypes from "../../utils/filter/BodyTypes";
 import RegionalSpecs from "../../utils/filter/RegionalSpecs";
 import FuelSpecs from "../../utils/filter/FuelSpecs";
@@ -705,25 +706,23 @@ const FilterForm = ({ onFilter }) => {
           <label className="block mb-2 text-sm font-medium text-gray-700">
             {getVehicleLabel(filters.vehicleType || "Vehicle", "make")}
           </label>
-          <select
+          <SearchableSelect
             value={filters.make}
-            onChange={(e) => handleChange("make", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-            disabled={!filters.vehicleType || categoriesLoading}
-          >
-            <option value="">
-              {!filters.vehicleType
+            onChange={(value) => handleChange("make", value)}
+            options={makes.map((make) => ({
+              value: make.name,
+              label: make.name,
+            }))}
+            placeholder={
+              !filters.vehicleType
                 ? "Select vehicle type first"
                 : categoriesLoading
                   ? "Loading..."
-                  : "All Makes"}
-            </option>
-            {makes.map((make) => (
-              <option key={make._id} value={make.name}>
-                {make.name}
-              </option>
-            ))}
-          </select>
+                  : "All Makes"
+            }
+            disabled={!filters.vehicleType || categoriesLoading}
+            isLoading={categoriesLoading}
+          />
         </div>
 
         {/* Vehicle Model */}
@@ -731,16 +730,15 @@ const FilterForm = ({ onFilter }) => {
           <label className="block mb-2 text-sm font-medium text-gray-700">
             {getVehicleLabel(filters.vehicleType || "Vehicle", "model")}
           </label>
-          <select
+          <SearchableSelect
             value={filters.model}
-            onChange={(e) => handleChange("model", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-            disabled={
-              !filters.vehicleType || !filters.make || categoriesLoading
-            }
-          >
-            <option value="">
-              {!filters.vehicleType
+            onChange={(value) => handleChange("model", value)}
+            options={availableModels.map((model) => ({
+              value: model.name,
+              label: model.name,
+            }))}
+            placeholder={
+              !filters.vehicleType
                 ? "Select vehicle type first"
                 : !filters.make
                   ? "Select make first"
@@ -748,14 +746,13 @@ const FilterForm = ({ onFilter }) => {
                     ? "Loading..."
                     : availableModels.length === 0
                       ? "No models available"
-                      : "All Models"}
-            </option>
-            {availableModels.map((model) => (
-              <option key={model._id} value={model.name}>
-                {model.name}
-              </option>
-            ))}
-          </select>
+                      : "All Models"
+            }
+            disabled={
+              !filters.vehicleType || !filters.make || categoriesLoading
+            }
+            isLoading={categoriesLoading}
+          />
         </div>
 
         {/* Year */}
@@ -1134,19 +1131,17 @@ const FilterForm = ({ onFilter }) => {
           <label className="block mb-2 text-sm font-medium text-gray-700">
             Country
           </label>
-          <select
+          <SearchableSelect
             value={filters.country}
-            onChange={(e) => handleChange("country", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+            onChange={(value) => handleChange("country", value)}
+            options={countries.map((country) => ({
+              value: country.name,
+              label: country.name,
+            }))}
+            placeholder="All Countries"
             disabled={categoriesLoading}
-          >
-            <option value="">All Countries</option>
-            {countries.map((country) => (
-              <option key={country._id} value={country.name}>
-                {country.name}
-              </option>
-            ))}
-          </select>
+            isLoading={categoriesLoading}
+          />
         </div>
 
         {/* City - Full Width */}
@@ -1154,25 +1149,25 @@ const FilterForm = ({ onFilter }) => {
           <label className="block mb-2 text-sm font-medium text-gray-700">
             City
           </label>
-          <select
+          <SearchableSelect
             value={filters.city}
-            onChange={(e) => handleChange("city", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-            disabled={categoriesLoading}
-          >
-            <option value="">
-              {categoriesLoading
+            onChange={(value) => handleChange("city", value)}
+            options={availableCities.map((city) => ({
+              value: city.name,
+              label: city.name,
+            }))}
+            placeholder={
+              categoriesLoading
                 ? "Loading..."
                 : availableCities.length === 0
                   ? "No cities available"
-                  : "All Cities"}
-            </option>
-            {availableCities.map((city) => (
-              <option key={city._id} value={city.name}>
-                {city.name}
-              </option>
-            ))}
-          </select>
+                  : filters.country
+                    ? "All Cities"
+                    : "All Cities (select Country to filter)"
+            }
+            disabled={categoriesLoading}
+            isLoading={categoriesLoading}
+          />
         </div>
 
         {/* Location Picker */}

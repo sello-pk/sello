@@ -11,6 +11,7 @@ import { capitalize } from "../../../utils/formatters";
 
 import ImagesUpload from "../createPost/ImagesUpload";
 import Input from "../../utils/filter/Input";
+import SearchableSelect from "../../common/SearchableSelect";
 import BodyTypes from "../../utils/filter/BodyTypes";
 import RegionalSpecs from "../../utils/filter/RegionalSpecs";
 import FuelSpecs from "../../utils/filter/FuelSpecs";
@@ -478,88 +479,84 @@ const EditCarForm = () => {
             <label className="block mb-1">
               {getVehicleLabel(formData.vehicleType, "make")} *
             </label>
-            <select
+            <SearchableSelect
               value={formData.make}
-              onChange={(e) => handleChange("make", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-              required
-              disabled={!formData.vehicleType || categoriesLoading}
-            >
-              <option value="">
-                {!formData.vehicleType
+              onChange={(value) => handleChange("make", value)}
+              options={makes.map((make) => ({
+                value: make.name,
+                label: capitalize(make.name),
+              }))}
+              placeholder={
+                !formData.vehicleType
                   ? "Select vehicle type first"
                   : categoriesLoading
                     ? "Loading..."
-                    : "Select Make"}
-              </option>
-              {makes.map((make) => (
-                <option key={make._id} value={make.name}>
-                  {capitalize(make.name)}
-                </option>
-              ))}
-            </select>
+                    : "Select Make"
+              }
+              disabled={!formData.vehicleType || categoriesLoading}
+              isLoading={categoriesLoading}
+              required
+            />
           </div>
           <div className="w-1/2">
             <label className="block mb-1">
               {getVehicleLabel(formData.vehicleType, "model")} *
             </label>
-            <select
+            <SearchableSelect
               value={formData.model}
-              onChange={(e) => handleChange("model", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-              required
-              disabled={
-                !formData.vehicleType || !formData.make || categoriesLoading
-              }
-            >
-              <option value="">
-                {!formData.vehicleType
+              onChange={(value) => handleChange("model", value)}
+              options={availableModels.map((model) => ({
+                value: model.name,
+                label: capitalize(model.name),
+              }))}
+              placeholder={
+                !formData.vehicleType
                   ? "Select vehicle type first"
                   : !formData.make
                     ? "Select make first"
                     : categoriesLoading
                       ? "Loading..."
-                      : "Select Model"}
-              </option>
-              {availableModels.map((model) => (
-                <option key={model._id} value={model.name}>
-                  {capitalize(model.name)}
-                </option>
-              ))}
-            </select>
+                      : availableModels.length === 0
+                        ? "No models available"
+                        : "Select Model"
+              }
+              disabled={
+                !formData.vehicleType || !formData.make || categoriesLoading
+              }
+              isLoading={categoriesLoading}
+              required
+            />
           </div>
         </div>
 
         <div className="flex gap-6 my-2 w-full items-center">
           <div className="w-1/2">
             <label className="block mb-1">Year *</label>
-            <select
+            <SearchableSelect
               value={formData.year}
-              onChange={(e) => handleChange("year", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              required
+              onChange={(value) => handleChange("year", value)}
+              options={
+                availableYears.length > 0
+                  ? availableYears.map((year) => ({
+                      value: year.name,
+                      label: year.name,
+                    }))
+                  : Array.from(
+                      { length: new Date().getFullYear() - 1989 },
+                      (_, i) => {
+                        const year = new Date().getFullYear() - i;
+                        return {
+                          value: year,
+                          label: year.toString(),
+                        };
+                      },
+                    )
+              }
+              placeholder="Select Year"
               disabled={categoriesLoading || !formData.model}
-            >
-              <option value="">Select Year</option>
-              {availableYears.length > 0
-                ? availableYears.map((year) => (
-                    <option key={year._id} value={year.name}>
-                      {year.name}
-                    </option>
-                  ))
-                : // Fallback: show years from 1990 to current year if no categories
-                  Array.from(
-                    { length: new Date().getFullYear() - 1989 },
-                    (_, i) => {
-                      const year = new Date().getFullYear() - i;
-                      return (
-                        <option key={year} value={year}>
-                          {year}
-                        </option>
-                      );
-                    },
-                  )}
-            </select>
+              isLoading={categoriesLoading}
+              required
+            />
           </div>
           <div className="w-1/2">
             <label className="block mb-1">Mileage (km)</label>

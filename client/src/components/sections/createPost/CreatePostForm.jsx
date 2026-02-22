@@ -6,6 +6,7 @@ import { capitalize } from "../../../utils/formatters";
 
 import ImagesUpload from "../createPost/ImagesUpload";
 import Input from "../../utils/filter/Input";
+import SearchableSelect from "../../common/SearchableSelect";
 import BodyTypes from "../../utils/filter/BodyTypes";
 import RegionalSpecs from "../../utils/filter/RegionalSpecs";
 import FuelSpecs from "../../utils/filter/FuelSpecs";
@@ -798,42 +799,38 @@ const CreatePostForm = () => {
             <label className="block mb-1">
               {getVehicleLabel(formData.vehicleType, "make")} *
             </label>
-            <select
+            <SearchableSelect
               value={formData.make}
-              onChange={(e) => handleChange("make", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-              required
-              disabled={!formData.vehicleType || categoriesLoading}
-            >
-              <option value="">
-                {!formData.vehicleType
+              onChange={(value) => handleChange("make", value)}
+              options={makes.map((make) => ({
+                value: make.name,
+                label: capitalize(make.name),
+              }))}
+              placeholder={
+                !formData.vehicleType
                   ? "Select vehicle type first"
                   : categoriesLoading
                     ? "Loading..."
-                    : "Select Make"}
-              </option>
-              {makes.map((make) => (
-                <option key={make._id} value={make.name}>
-                  {capitalize(make.name)}
-                </option>
-              ))}
-            </select>
+                    : "Select Make"
+              }
+              disabled={!formData.vehicleType || categoriesLoading}
+              isLoading={categoriesLoading}
+              required
+            />
           </div>
           <div>
             <label className="block mb-1">
               {getVehicleLabel(formData.vehicleType, "model")} *
             </label>
-            <select
+            <SearchableSelect
               value={formData.model}
-              onChange={(e) => handleChange("model", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-              required
-              disabled={
-                !formData.vehicleType || !formData.make || categoriesLoading
-              }
-            >
-              <option value="">
-                {!formData.vehicleType
+              onChange={(value) => handleChange("model", value)}
+              options={availableModels.map((model) => ({
+                value: model.name,
+                label: capitalize(model.name),
+              }))}
+              placeholder={
+                !formData.vehicleType
                   ? "Select vehicle type first"
                   : !formData.make
                     ? "Select make first"
@@ -841,37 +838,35 @@ const CreatePostForm = () => {
                       ? "Loading..."
                       : availableModels.length === 0
                         ? "No models available"
-                        : "Select Model"}
-              </option>
-              {availableModels.map((model) => (
-                <option key={model._id} value={model.name}>
-                  {capitalize(model.name)}
-                </option>
-              ))}
-            </select>
+                        : "Select Model"
+              }
+              disabled={
+                !formData.vehicleType || !formData.make || categoriesLoading
+              }
+              isLoading={categoriesLoading}
+              required
+            />
           </div>
           <div>
             <label className="block mb-1">Year *</label>
-            <select
+            <SearchableSelect
               value={formData.year}
-              onChange={(e) => handleChange("year", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              required
-              disabled={categoriesLoading}
-            >
-              <option value="">
-                {categoriesLoading
+              onChange={(value) => handleChange("year", value)}
+              options={availableYears.map((year) => ({
+                value: year.name,
+                label: year.name,
+              }))}
+              placeholder={
+                categoriesLoading
                   ? "Loading..."
                   : availableYears.length === 0
                     ? "No years available (add in admin)"
-                    : "Select Year"}
-              </option>
-              {availableYears.map((year) => (
-                <option key={year._id} value={year.name}>
-                  {year.name}
-                </option>
-              ))}
-            </select>
+                    : "Select Year"
+              }
+              disabled={categoriesLoading}
+              isLoading={categoriesLoading}
+              required
+            />
           </div>
         </div>
 
@@ -918,45 +913,41 @@ const CreatePostForm = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2 pl-2">
           <div>
             <label className="block mb-1">Country</label>
-            <select
+            <SearchableSelect
               value={formData.country || ""}
-              onChange={(e) => handleChange("country", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              required
+              onChange={(value) => handleChange("country", value)}
+              options={countries.map((country) => ({
+                value: country.name,
+                label: country.name,
+              }))}
+              placeholder="Select Country"
               disabled={categoriesLoading}
-            >
-              <option value="">Select Country</option>
-              {countries.map((country) => (
-                <option key={country._id} value={country.name}>
-                  {country.name}
-                </option>
-              ))}
-            </select>
+              isLoading={categoriesLoading}
+              required
+            />
           </div>
           <div>
             <label className="block mb-1">City</label>
-            <select
+            <SearchableSelect
               value={formData.city}
-              onChange={(e) => handleChange("city", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-              required
-              disabled={categoriesLoading}
-            >
-              <option value="">
-                {categoriesLoading
+              onChange={(value) => handleChange("city", value)}
+              options={availableCities.map((city) => ({
+                value: city.name,
+                label: city.name,
+              }))}
+              placeholder={
+                categoriesLoading
                   ? "Loading..."
                   : availableCities.length === 0
                     ? "No cities available"
                     : formData.country
                       ? "Select City"
-                      : "Select City (or select Country to filter)"}
-              </option>
-              {availableCities.map((city) => (
-                <option key={city._id} value={city.name}>
-                  {city.name}
-                </option>
-              ))}
-            </select>
+                      : "Select City (or select Country to filter)"
+              }
+              disabled={categoriesLoading}
+              isLoading={categoriesLoading}
+              required
+            />
           </div>
           <div>
             <label className="block mb-1">Address</label>

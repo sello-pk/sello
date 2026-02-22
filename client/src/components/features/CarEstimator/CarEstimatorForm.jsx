@@ -18,6 +18,7 @@ import TransmissionSpecs from "../../../components/utils/filter/TransmissionSpec
 import EngineCapacitySpecs from "../../../components/utils/filter/EngineCapacitySpecs";
 import { useCreateValuationMutation } from "../../../redux/services/api";
 import toast from "react-hot-toast";
+import Select from "react-select";
 
 // Remove hardcoded data - will use dynamic data from admin panel
 const accidentHistories = ["None", "Minor", "Major"];
@@ -331,69 +332,179 @@ export default function CarEstimatorForm({ onEstimate }) {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Make <span className="text-red-500">*</span>
               </label>
-              <select
-                name="make"
-                value={formData.make}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
-                required
-              >
-                <option value="">Select make</option>
-                {makes.map((make) => (
-                  <option key={make._id} value={make._id}>
-                    {capitalize(make.name)}
-                  </option>
-                ))}
-              </select>
+              <Select
+                value={
+                  makes.find((make) => make._id === formData.make)
+                    ? {
+                        value: formData.make,
+                        label: capitalize(
+                          makes.find((make) => make._id === formData.make)
+                            ?.name,
+                        ),
+                      }
+                    : null
+                }
+                onChange={(selectedOption) =>
+                  handleChange({
+                    target: {
+                      name: "make",
+                      value: selectedOption ? selectedOption.value : "",
+                    },
+                  })
+                }
+                options={makes.map((make) => ({
+                  value: make._id,
+                  label: capitalize(make.name),
+                }))}
+                placeholder="Select make"
+                isClearable
+                isSearchable
+                styles={{
+                  control: (baseStyles, state) => ({
+                    ...baseStyles,
+                    height: "36px",
+                    minHeight: "36px",
+                    fontSize: "14px",
+                    borderColor: state.isFocused ? "#3b82f6" : "#d1d5db",
+                    "&:hover": {
+                      borderColor: "#9ca3af",
+                    },
+                    boxShadow: state.isFocused
+                      ? "0 0 0 2px rgba(59, 130, 246, 0.5)"
+                      : "none",
+                  }),
+                  menu: (baseStyles) => ({
+                    ...baseStyles,
+                    zIndex: 9999,
+                  }),
+                  menuPortal: (baseStyles) => ({
+                    ...baseStyles,
+                    zIndex: 9999,
+                  }),
+                }}
+                menuPortalTarget={document.body}
+              />
               <p className="text-xs text-gray-500 mt-1">
                 Select your car manufacturer
               </p>
             </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Model <span className="text-red-500">*</span>
               </label>
-              <select
-                name="model"
-                value={formData.model}
-                onChange={handleChange}
-                disabled={!formData.make}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-sm"
-                required
-              >
-                <option value="">
-                  {formData.make ? "Select model" : "Select make first"}
-                </option>
-                {availableModels.map((model) => (
-                  <option key={model._id} value={model._id}>
-                    {capitalize(model.name)}
-                  </option>
-                ))}
-              </select>
+              <Select
+                value={
+                  availableModels.find((model) => model._id === formData.model)
+                    ? {
+                        value: formData.model,
+                        label: capitalize(
+                          availableModels.find(
+                            (model) => model._id === formData.model,
+                          )?.name,
+                        ),
+                      }
+                    : null
+                }
+                onChange={(selectedOption) =>
+                  handleChange({
+                    target: {
+                      name: "model",
+                      value: selectedOption ? selectedOption.value : "",
+                    },
+                  })
+                }
+                options={availableModels.map((model) => ({
+                  value: model._id,
+                  label: capitalize(model.name),
+                }))}
+                placeholder={
+                  formData.make ? "Select model" : "Select make first"
+                }
+                isDisabled={!formData.make}
+                isClearable
+                isSearchable
+                noOptionsMessage={() =>
+                  formData.make ? "No models available" : "Select make first"
+                }
+                styles={{
+                  control: (baseStyles, state) => ({
+                    ...baseStyles,
+                    height: "36px",
+                    minHeight: "36px",
+                    fontSize: "14px",
+                    borderColor: state.isFocused ? "#3b82f6" : "#d1d5db",
+                    "&:hover": {
+                      borderColor: "#9ca3af",
+                    },
+                    boxShadow: state.isFocused
+                      ? "0 0 0 2px rgba(59, 130, 246, 0.5)"
+                      : "none",
+                  }),
+                  menu: (baseStyles) => ({
+                    ...baseStyles,
+                    zIndex: 9999,
+                  }),
+                  menuPortal: (baseStyles) => ({
+                    ...baseStyles,
+                    zIndex: 9999,
+                  }),
+                }}
+                menuPortalTarget={document.body}
+              />
               <p className="text-xs text-gray-500 mt-1">
                 Choose the exact model
               </p>
             </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Year <span className="text-red-500">*</span>
               </label>
-              <select
-                name="year"
-                value={formData.year}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
-                required
-              >
-                <option value="">Select year</option>
-                {years.map((year) => (
-                  <option key={year._id} value={year.name}>
-                    {year.name}
-                  </option>
-                ))}
-              </select>
+              <Select
+                value={
+                  years.find((year) => year.name === formData.year)
+                    ? { value: formData.year, label: formData.year }
+                    : null
+                }
+                onChange={(selectedOption) =>
+                  handleChange({
+                    target: {
+                      name: "year",
+                      value: selectedOption ? selectedOption.value : "",
+                    },
+                  })
+                }
+                options={years.map((year) => ({
+                  value: year.name,
+                  label: year.name,
+                }))}
+                placeholder="Select year"
+                isClearable
+                isSearchable
+                styles={{
+                  control: (baseStyles, state) => ({
+                    ...baseStyles,
+                    height: "36px",
+                    minHeight: "36px",
+                    fontSize: "14px",
+                    borderColor: state.isFocused ? "#3b82f6" : "#d1d5db",
+                    "&:hover": {
+                      borderColor: "#9ca3af",
+                    },
+                    boxShadow: state.isFocused
+                      ? "0 0 0 2px rgba(59, 130, 246, 0.5)"
+                      : "none",
+                  }),
+                  menu: (baseStyles) => ({
+                    ...baseStyles,
+                    zIndex: 9999,
+                  }),
+                  menuPortal: (baseStyles) => ({
+                    ...baseStyles,
+                    zIndex: 9999,
+                  }),
+                }}
+                menuPortalTarget={document.body}
+              />
               <p className="text-xs text-gray-500 mt-1">Manufacturing year</p>
             </div>
 
@@ -434,19 +545,57 @@ export default function CarEstimatorForm({ onEstimate }) {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Registration City
               </label>
-              <select
-                name="registrationCity"
-                value={formData.registrationCity}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
-              >
-                <option value="">Select city</option>
-                {cities.map((city) => (
-                  <option key={city._id} value={city._id}>
-                    {city.name}
-                  </option>
-                ))}
-              </select>
+              <Select
+                value={
+                  cities.find((city) => city._id === formData.registrationCity)
+                    ? {
+                        value: formData.registrationCity,
+                        label: cities.find(
+                          (city) => city._id === formData.registrationCity,
+                        )?.name,
+                      }
+                    : null
+                }
+                onChange={(selectedOption) =>
+                  handleChange({
+                    target: {
+                      name: "registrationCity",
+                      value: selectedOption ? selectedOption.value : "",
+                    },
+                  })
+                }
+                options={cities.map((city) => ({
+                  value: city._id,
+                  label: city.name,
+                }))}
+                placeholder="Select city"
+                isClearable
+                isSearchable
+                styles={{
+                  control: (baseStyles, state) => ({
+                    ...baseStyles,
+                    height: "36px",
+                    minHeight: "36px",
+                    fontSize: "14px",
+                    borderColor: state.isFocused ? "#3b82f6" : "#d1d5db",
+                    "&:hover": {
+                      borderColor: "#9ca3af",
+                    },
+                    boxShadow: state.isFocused
+                      ? "0 0 0 2px rgba(59, 130, 246, 0.5)"
+                      : "none",
+                  }),
+                  menu: (baseStyles) => ({
+                    ...baseStyles,
+                    zIndex: 9999,
+                  }),
+                  menuPortal: (baseStyles) => ({
+                    ...baseStyles,
+                    zIndex: 9999,
+                  }),
+                }}
+                menuPortalTarget={document.body}
+              />
               <p className="text-xs text-gray-500 mt-1">
                 Affects regional pricing
               </p>
@@ -456,19 +605,54 @@ export default function CarEstimatorForm({ onEstimate }) {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Engine/Fuel Type
               </label>
-              <select
-                name="engineType"
-                value={formData.engineType}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
-              >
-                <option value="">Select</option>
-                {engineTypes.map((type) => (
-                  <option key={type.value} value={type.value}>
-                    {type.label}
-                  </option>
-                ))}
-              </select>
+              <Select
+                value={
+                  engineTypes.find((type) => type.value === formData.engineType)
+                    ? {
+                        value: formData.engineType,
+                        label: engineTypes.find(
+                          (type) => type.value === formData.engineType,
+                        )?.label,
+                      }
+                    : null
+                }
+                onChange={(selectedOption) =>
+                  handleChange({
+                    target: {
+                      name: "engineType",
+                      value: selectedOption ? selectedOption.value : "",
+                    },
+                  })
+                }
+                options={engineTypes}
+                placeholder="Select"
+                isClearable
+                isSearchable
+                styles={{
+                  control: (baseStyles, state) => ({
+                    ...baseStyles,
+                    height: "36px",
+                    minHeight: "36px",
+                    fontSize: "14px",
+                    borderColor: state.isFocused ? "#3b82f6" : "#d1d5db",
+                    "&:hover": {
+                      borderColor: "#9ca3af",
+                    },
+                    boxShadow: state.isFocused
+                      ? "0 0 0 2px rgba(59, 130, 246, 0.5)"
+                      : "none",
+                  }),
+                  menu: (baseStyles) => ({
+                    ...baseStyles,
+                    zIndex: 9999,
+                  }),
+                  menuPortal: (baseStyles) => ({
+                    ...baseStyles,
+                    zIndex: 9999,
+                  }),
+                }}
+                menuPortalTarget={document.body}
+              />
               <p className="text-xs text-gray-500 mt-1">
                 Select engine aspiration or fuel type
               </p>
@@ -478,17 +662,64 @@ export default function CarEstimatorForm({ onEstimate }) {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Paint Status
               </label>
-              <select
-                name="paintStatus"
-                value={formData.paintStatus}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
-              >
-                <option value="">Select</option>
-                <option value="original">Original</option>
-                <option value="repainted">Repainted</option>
-                <option value="partially_repainted">Partially Repainted</option>
-              </select>
+              <Select
+                value={
+                  formData.paintStatus
+                    ? {
+                        value: formData.paintStatus,
+                        label:
+                          formData.paintStatus === "original"
+                            ? "Original"
+                            : formData.paintStatus === "repainted"
+                              ? "Repainted"
+                              : "Partially Repainted",
+                      }
+                    : null
+                }
+                onChange={(selectedOption) =>
+                  handleChange({
+                    target: {
+                      name: "paintStatus",
+                      value: selectedOption ? selectedOption.value : "",
+                    },
+                  })
+                }
+                options={[
+                  { value: "original", label: "Original" },
+                  { value: "repainted", label: "Repainted" },
+                  {
+                    value: "partially_repainted",
+                    label: "Partially Repainted",
+                  },
+                ]}
+                placeholder="Select"
+                isClearable
+                isSearchable={false}
+                styles={{
+                  control: (baseStyles, state) => ({
+                    ...baseStyles,
+                    height: "36px",
+                    minHeight: "36px",
+                    fontSize: "14px",
+                    borderColor: state.isFocused ? "#3b82f6" : "#d1d5db",
+                    "&:hover": {
+                      borderColor: "#9ca3af",
+                    },
+                    boxShadow: state.isFocused
+                      ? "0 0 0 2px rgba(59, 130, 246, 0.5)"
+                      : "none",
+                  }),
+                  menu: (baseStyles) => ({
+                    ...baseStyles,
+                    zIndex: 9999,
+                  }),
+                  menuPortal: (baseStyles) => ({
+                    ...baseStyles,
+                    zIndex: 9999,
+                  }),
+                }}
+                menuPortalTarget={document.body}
+              />
               <p className="text-xs text-gray-500 mt-1">
                 Specify if the paint is original or repainted
               </p>
