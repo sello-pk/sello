@@ -41,17 +41,20 @@ const conditions = [
   { value: "poor", label: "Poor" },
 ];
 
-// Combined engine and fuel types
+// Combined engine and fuel types (matching HeroFilter)
 const engineTypes = [
-  { value: "naturally_aspirated", label: "Naturally Aspirated" },
-  { value: "turbo", label: "Turbo" },
-  { value: "supercharged", label: "Supercharged" },
-  { value: "petrol", label: "Petrol" },
-  { value: "diesel", label: "Diesel" },
-  { value: "hybrid", label: "Hybrid" },
+  { value: "5_speed_manual", label: "5 Speed Manual" },
+  { value: "6_speed_manual", label: "6 Speed Manual" },
+  { value: "4_speed_auto", label: "4 Speed Auto" },
+  { value: "5_speed_auto", label: "5 Speed Auto" },
+  { value: "6_speed_auto", label: "6 Speed Auto" },
+  { value: "7_plus_speed_auto", label: "7+ Speed Auto" },
+  { value: "cvt", label: "CVT" },
+  { value: "dct", label: "DCT" },
   { value: "electric", label: "Electric" },
+  { value: "hybrid", label: "Hybrid" },
+  { value: "diesel", label: "Diesel" },
   { value: "cng", label: "CNG" },
-  { value: "petrol+cng", label: "Petrol + CNG" },
 ];
 
 // Dynamic transmission types
@@ -60,6 +63,35 @@ const transmissions = [
   { value: "automatic", label: "Automatic" },
   { value: "semi-automatic", label: "Semi-Automatic" },
   { value: "cvt", label: "CVT" },
+];
+
+// Custom theme for React Select to override default blue colors
+const customTheme = (theme) => ({
+  ...theme,
+  colors: {
+    ...theme.colors,
+    primary: "#3b82f6",
+    primary75: "rgba(59, 130, 246, 0.75)",
+    primary50: "rgba(59, 130, 246, 0.5)",
+    primary25: "rgba(59, 130, 246, 0.25)",
+  },
+});
+
+// Mileage options (matching HeroFilter)
+const mileageOptions = [
+  { value: "", label: "Select mileage" },
+  { value: "< 5,000", label: "< 5,000" },
+  { value: "5,000 - 10,000", label: "5,000 - 10,000" },
+  { value: "10,000 - 20,000", label: "10,000 - 20,000" },
+  { value: "20,000 - 30,000", label: "20,000 - 30,000" },
+  { value: "30,000 - 40,000", label: "30,000 - 40,000" },
+  { value: "40,000 - 50,000", label: "40,000 - 50,000" },
+  { value: "50,000 - 60,000", label: "50,000 - 60,000" },
+  { value: "60,000 - 75,000", label: "60,000 - 75,000" },
+  { value: "75,000 - 100,000", label: "75,000 - 100,000" },
+  { value: "100,000 - 125,000", label: "100,000 - 125,000" },
+  { value: "125,000 - 150,000", label: "125,000 - 150,000" },
+  { value: "150,000+", label: "150,000+" },
 ];
 
 const FormSection = ({ title, subtitle, icon: Icon, color, children }) => (
@@ -359,18 +391,21 @@ export default function CarEstimatorForm({ onEstimate }) {
                 placeholder="Select make"
                 isClearable
                 isSearchable
+                theme={customTheme}
                 styles={{
                   control: (baseStyles, state) => ({
                     ...baseStyles,
                     height: "36px",
                     minHeight: "36px",
                     fontSize: "14px",
-                    borderColor: state.isFocused ? "#3b82f6" : "#d1d5db",
+                    borderColor: state.isFocused
+                      ? "#3b82f6 !important"
+                      : "#d1d5db",
                     "&:hover": {
                       borderColor: "#9ca3af",
                     },
                     boxShadow: state.isFocused
-                      ? "0 0 0 2px rgba(59, 130, 246, 0.5)"
+                      ? "0 0 0 2px rgba(59, 130, 246, 0.5) !important"
                       : "none",
                   }),
                   menu: (baseStyles) => ({
@@ -423,6 +458,7 @@ export default function CarEstimatorForm({ onEstimate }) {
                 isDisabled={!formData.make}
                 isClearable
                 isSearchable
+                theme={customTheme}
                 noOptionsMessage={() =>
                   formData.make ? "No models available" : "Select make first"
                 }
@@ -432,12 +468,14 @@ export default function CarEstimatorForm({ onEstimate }) {
                     height: "36px",
                     minHeight: "36px",
                     fontSize: "14px",
-                    borderColor: state.isFocused ? "#3b82f6" : "#d1d5db",
+                    borderColor: state.isFocused
+                      ? "#3b82f6 !important"
+                      : "#d1d5db",
                     "&:hover": {
                       borderColor: "#9ca3af",
                     },
                     boxShadow: state.isFocused
-                      ? "0 0 0 2px rgba(59, 130, 246, 0.5)"
+                      ? "0 0 0 2px rgba(59, 130, 246, 0.5) !important"
                       : "none",
                   }),
                   menu: (baseStyles) => ({
@@ -480,18 +518,21 @@ export default function CarEstimatorForm({ onEstimate }) {
                 placeholder="Select year"
                 isClearable
                 isSearchable
+                theme={customTheme}
                 styles={{
                   control: (baseStyles, state) => ({
                     ...baseStyles,
                     height: "36px",
                     minHeight: "36px",
                     fontSize: "14px",
-                    borderColor: state.isFocused ? "#3b82f6" : "#d1d5db",
+                    borderColor: state.isFocused
+                      ? "#3b82f6 !important"
+                      : "#d1d5db",
                     "&:hover": {
                       borderColor: "#9ca3af",
                     },
                     boxShadow: state.isFocused
-                      ? "0 0 0 2px rgba(59, 130, 246, 0.5)"
+                      ? "0 0 0 2px rgba(59, 130, 246, 0.5) !important"
                       : "none",
                   }),
                   menu: (baseStyles) => ({
@@ -510,15 +551,53 @@ export default function CarEstimatorForm({ onEstimate }) {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Mileage (KM) <span className="text-red-500">*</span>
+                Mileage <span className="text-red-500">*</span>
               </label>
-              <Input
-                inputType="number"
-                name="mileage"
-                value={formData.mileage}
-                onChange={handleChange}
-                placeholder="e.g., 50000"
-                min="0"
+              <Select
+                value={
+                  mileageOptions.find(
+                    (option) => option.value === formData.mileage,
+                  ) || null
+                }
+                onChange={(selectedOption) =>
+                  handleChange({
+                    target: {
+                      name: "mileage",
+                      value: selectedOption ? selectedOption.value : "",
+                    },
+                  })
+                }
+                options={mileageOptions}
+                placeholder="Select mileage"
+                isClearable
+                isSearchable
+                theme={customTheme}
+                styles={{
+                  control: (baseStyles, state) => ({
+                    ...baseStyles,
+                    height: "36px",
+                    minHeight: "36px",
+                    fontSize: "14px",
+                    borderColor: state.isFocused
+                      ? "#3b82f6 !important"
+                      : "#d1d5db",
+                    "&:hover": {
+                      borderColor: "#9ca3af",
+                    },
+                    boxShadow: state.isFocused
+                      ? "0 0 0 2px rgba(59, 130, 246, 0.5) !important"
+                      : "none",
+                  }),
+                  menu: (baseStyles) => ({
+                    ...baseStyles,
+                    zIndex: 9999,
+                  }),
+                  menuPortal: (baseStyles) => ({
+                    ...baseStyles,
+                    zIndex: 9999,
+                  }),
+                }}
+                menuPortalTarget={document.body}
               />
               <p className="text-xs text-gray-500 mt-1">
                 Total kilometers driven
@@ -571,18 +650,21 @@ export default function CarEstimatorForm({ onEstimate }) {
                 placeholder="Select city"
                 isClearable
                 isSearchable
+                theme={customTheme}
                 styles={{
                   control: (baseStyles, state) => ({
                     ...baseStyles,
                     height: "36px",
                     minHeight: "36px",
                     fontSize: "14px",
-                    borderColor: state.isFocused ? "#3b82f6" : "#d1d5db",
+                    borderColor: state.isFocused
+                      ? "#3b82f6 !important"
+                      : "#d1d5db",
                     "&:hover": {
                       borderColor: "#9ca3af",
                     },
                     boxShadow: state.isFocused
-                      ? "0 0 0 2px rgba(59, 130, 246, 0.5)"
+                      ? "0 0 0 2px rgba(59, 130, 246, 0.5) !important"
                       : "none",
                   }),
                   menu: (baseStyles) => ({
@@ -628,18 +710,21 @@ export default function CarEstimatorForm({ onEstimate }) {
                 placeholder="Select"
                 isClearable
                 isSearchable
+                theme={customTheme}
                 styles={{
                   control: (baseStyles, state) => ({
                     ...baseStyles,
                     height: "36px",
                     minHeight: "36px",
                     fontSize: "14px",
-                    borderColor: state.isFocused ? "#3b82f6" : "#d1d5db",
+                    borderColor: state.isFocused
+                      ? "#3b82f6 !important"
+                      : "#d1d5db",
                     "&:hover": {
                       borderColor: "#9ca3af",
                     },
                     boxShadow: state.isFocused
-                      ? "0 0 0 2px rgba(59, 130, 246, 0.5)"
+                      ? "0 0 0 2px rgba(59, 130, 246, 0.5) !important"
                       : "none",
                   }),
                   menu: (baseStyles) => ({
@@ -701,12 +786,14 @@ export default function CarEstimatorForm({ onEstimate }) {
                     height: "36px",
                     minHeight: "36px",
                     fontSize: "14px",
-                    borderColor: state.isFocused ? "#3b82f6" : "#d1d5db",
+                    borderColor: state.isFocused
+                      ? "#3b82f6 !important"
+                      : "#d1d5db",
                     "&:hover": {
                       borderColor: "#9ca3af",
                     },
                     boxShadow: state.isFocused
-                      ? "0 0 0 2px rgba(59, 130, 246, 0.5)"
+                      ? "0 0 0 2px rgba(59, 130, 246, 0.5) !important"
                       : "none",
                   }),
                   menu: (baseStyles) => ({

@@ -264,18 +264,34 @@ const HeroFilter = () => {
 
   const mileageOptions = [
     "",
-    "< 10000",
-    "10000-25000",
-    "25000-50000",
-    "50000+",
+    "< 5,000",
+    "5,000 - 10,000",
+    "10,000 - 20,000",
+    "20,000 - 30,000",
+    "30,000 - 40,000",
+    "40,000 - 50,000",
+    "50,000 - 60,000",
+    "60,000 - 75,000",
+    "75,000 - 100,000",
+    "100,000 - 125,000",
+    "125,000 - 150,000",
+    "150,000+",
   ];
 
   const engineOptions = [
     "",
     "5 Speed Manual",
+    "6 Speed Manual",
+    "4 Speed Auto",
+    "5 Speed Auto",
     "6 Speed Auto",
+    "7+ Speed Auto",
+    "CVT",
+    "DCT",
     "Electric",
     "Hybrid",
+    "Diesel",
+    "CNG",
   ];
 
   return (
