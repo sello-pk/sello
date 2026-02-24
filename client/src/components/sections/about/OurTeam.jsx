@@ -20,7 +20,7 @@ const OurTeam = () => {
     },
     {
       id: 2,
-      name: "Faisal Zakria",
+      name: "Mian Muddasar",
       position: "Managing Director",
       description:
         "Overseeing daily operations and strategic initiatives to ensure smooth business execution and sustainable growth for organization.",
@@ -28,7 +28,7 @@ const OurTeam = () => {
     },
     {
       id: 3,
-      name: "Zain Riaz",
+      name: "Muhammad Awais",
       position: "General Manager",
       description:
         "Driving sales growth and building strong client relationships with strategic market analysis and team leadership expertise.",

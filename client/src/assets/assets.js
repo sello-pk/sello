@@ -104,6 +104,7 @@ import electricSvg3 from "./images/electricSvg3.png";
 import servicoLogo from "./images/servico.png";
 import amingarageLogo from "./images/amingarage.png";
 import wbDigitalLogo from "./images/wbDigital.svg";
+import mianMotors from "./images/mianMotors.png";
 
 // SELLO VIDEO
 import selloVideo from "./selloVideo.gif";
@@ -182,6 +183,7 @@ export const images = {
   servicoLogo,
   amingarageLogo,
   wbDigitalLogo,
+  mianMotors,
 };
 
 // Export app and social media icons for footer

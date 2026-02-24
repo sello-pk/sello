@@ -4,6 +4,12 @@ import { images } from "../../../assets/assets";
 import { FaArrowRight } from "react-icons/fa6";
 
 const PartnerOffersSection = () => {
+  const partners = [
+    { link: "https://amingarage.com", logo: images.amingarageLogo, alt: "Amin Garage" },
+    { link: "https://wbdigitech.ae", logo: images.wbDigitalLogo, alt: "WB Digitech" },
+    { link: "https://mianmotors.com", logo: images.mianMotors, alt: "Mian Motors" },
+  ];
+
   return (
     <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-white">
       {/* Exclusive Partner Offers */}
@@ -12,28 +18,23 @@ const PartnerOffersSection = () => {
           Exclusive partner offers for you:
         </h2>
         <div className="flex items-center justify-center gap-8 flex-wrap">
-          {["https://amingarage.com", "https://wbdigitech.ae"].map(
-            (link, index) => {
+          {partners.map((partner) => {
               return (
                 <div
                   className="relative group border-2 border-gray-100 rounded-2xl overflow-hidden bg-gradient-to-br from-white to-gray-50 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-110 hover:border-primary hover:rotate-1 cursor-pointer"
-                  key={link}
+                  key={partner.link}
                 >
                   <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   <Link
-                    to={link}
+                    to={partner.link}
                     className="inline-block w-[140px] h-[90px] relative overflow-hidden"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     <div className="absolute inset-0 flex items-center justify-center">
                       <img
-                        src={
-                          index === 0
-                            ? images.amingarageLogo
-                            : images.wbDigitalLogo
-                        }
-                        alt="Partner Logo"
+                        src={partner.logo}
+                        alt={partner.alt}
                         className="w-full h-full object-contain p-4 transition-all duration-500 group-hover:scale-125 group-hover:brightness-110 filter drop-shadow-sm"
                       />
                     </div>
@@ -46,8 +47,7 @@ const PartnerOffersSection = () => {
                   </Link>
                 </div>
               );
-            }
-          )}
+            })}
         </div>
       </div>
 
