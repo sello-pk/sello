@@ -10,6 +10,8 @@ import userDomainRoutes from "./userDomainRoutes.js";
 import inventoryDomainRoutes from "./inventoryDomainRoutes.js";
 import billingDomainRoutes from "./billingDomainRoutes.js";
 import utilityDomainRoutes from "./utilityDomainRoutes.js";
+import auctionRoutes from "./auctionRoutes.js";
+import paymentRoutes from "./paymentRoutes.js";
 
 // Mapping
 router.use("/auth", authRoutes); // Auth remains separate as it's the core entry point
@@ -20,5 +22,7 @@ router.use("/", userDomainRoutes); // /users, /notifications, /verification, /ac
 router.use("/", inventoryDomainRoutes); // /cars, /valuations, /vehicle-attributes
 router.use("/", billingDomainRoutes); // /billing, /subscription-plans
 router.use("/", utilityDomainRoutes); // /utility (analytics, maps, upload, seo)
+router.use("/auctions", auctionRoutes); // /auctions (live auction system)
+router.use("/payments", paymentRoutes); // /payments (wallet, deposits, refunds)
 
 export default router;

@@ -82,6 +82,18 @@ if (process.env.ENABLE_CRON_JOBS === "true") {
       }
     });
 
+    // Run auction lifecycle every 2 minutes (auto-start / auto-end)
+    cron.default.schedule("*/2 * * * *", async () => {
+      try {
+        const { runAuctionLifecycle } = await import(
+          "./controllers/auctionController.js"
+        );
+        await runAuctionLifecycle();
+      } catch (error) {
+        Logger.error("Auction lifecycle cron job failed", error);
+      }
+    });
+
     // Run refresh token cleanup daily at 3 AM
     cron.default.schedule("0 3 * * *", async () => {
       Logger.info("Running refresh token cleanup job...");

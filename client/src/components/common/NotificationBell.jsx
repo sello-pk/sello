@@ -9,7 +9,7 @@ import {
   FaTag,
   FaCalendar,
   FaPercent,
-  FaDollarSign,
+  FaMoneyBillWave,
 } from "react-icons/fa";
 import { MdNotifications, MdNotificationsActive } from "react-icons/md";
 import {
@@ -401,7 +401,7 @@ const NotificationBell = () => {
                       {selectedPromotion.discountType === "percentage" ? (
                         <FaPercent />
                       ) : (
-                        <FaDollarSign />
+                        <FaMoneyBillWave />
                       )}
                       Your Discount:
                     </span>

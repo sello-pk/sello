@@ -13,7 +13,7 @@ import {
   FiTrendingUp,
   FiTrendingDown,
   FiList,
-  FiDollarSign,
+  FiCreditCard,
   FiShoppingBag,
   FiFileText,
   FiGrid,
@@ -160,7 +160,7 @@ const Dashboard = () => {
       case "sold":
         return <FiShoppingBag size={28} />;
       case "revenue":
-        return <FiDollarSign size={28} />;
+        return <FiCreditCard size={28} />;
       default:
         return <FiUsers size={28} />;
     }

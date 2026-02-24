@@ -10,7 +10,7 @@ import {
   createDeletionRequest, getDeletionRequestStatus, getAllDeletionRequests, getDeletionRequestStats, reviewDeletionRequest,
   getSavedSearches, createSavedSearch, getSavedSearch, updateSavedSearch, deleteSavedSearch, executeSavedSearch,
   addReview, getUserReviews, moderateReview, reportReview, getAllReviews,
-  createReport, getReports, updateReportStatus
+  createReport, getReports, updateReportStatus, submitAuctionAccessRequest, getMyAuctionAccessStatus
 } from "../controllers/userDomainController.js";
 
 const router = express.Router();
@@ -29,6 +29,13 @@ router.get("/users/wishlist", auth, getSavedCars);
 // Roles/Requests
 router.post("/users/request-seller", auth, requestSeller);
 router.post("/users/request-dealer", auth, upload.fields([{ name: 'businessLicense', maxCount: 1 }]), requestDealer);
+router.post(
+  "/users/auction-access/request",
+  auth,
+  upload.fields([{ name: "documents", maxCount: 10 }, { name: "businessLicense", maxCount: 1 }]),
+  submitAuctionAccessRequest
+);
+router.get("/users/auction-access/status", auth, getMyAuctionAccessStatus);
 
 /* --------------------------- NOTIFICATIONS --------------------------- */
 router.get("/notifications", auth, getUserNotifications);

@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/userModel.js';
 import Logger from '../utils/logger.js';
+import { evaluateAuctionBidAccess } from "../utils/auctionAccess.js";
 
 /**
  * Authentication Middleware
@@ -115,5 +116,54 @@ export const authorize = (...roles) => {
 
         next();
     };
+};
+
+/**
+ * Auction Bid Access Middleware
+ * Centralized capability + verification enforcement for bidding APIs.
+ */
+export const requireAuctionBidAccess = (req, res, next) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: "Not authorized. Please login first."
+            });
+        }
+
+        const access = evaluateAuctionBidAccess(req.user);
+        req.auctionAccess = access;
+
+        if (!access.allowed) {
+            Logger.warn("Auction bid access denied", {
+                userId: req.user?._id,
+                role: req.user?.role,
+                mode: access.mode,
+                capabilities: access.capabilities,
+                path: req.originalUrl
+            });
+            return res.status(403).json({
+                success: false,
+                message: access.reason,
+                code: "AUCTION_ACCESS_DENIED",
+                data: {
+                    mode: access.mode,
+                    capabilities: access.capabilities
+                }
+            });
+        }
+
+        if (access.warning) {
+            res.setHeader("x-auction-access-warning", access.warning);
+        }
+
+        next();
+    } catch (error) {
+        Logger.error("Auction access middleware error", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to validate auction access."
+        });
+    }
 };
 

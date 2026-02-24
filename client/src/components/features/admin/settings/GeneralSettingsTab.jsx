@@ -10,7 +10,7 @@ import {
   FaBell,
   FaCamera,
   FaUpload,
-  FaDollarSign,
+  FaMoneyBillWave,
 } from "react-icons/fa";
 import Tooltip from "../Tooltip";
 import { API_BASE_URL } from "../../../../redux/config";
@@ -699,7 +699,7 @@ const GeneralSettingsTab = () => {
       {/* Payment System Settings */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex items-center gap-2">
-          <FaDollarSign className="text-primary-500" />
+          <FaMoneyBillWave className="text-primary-500" />
           <h3 className="font-bold text-gray-800 dark:text-white">
             Payment System Control
           </h3>

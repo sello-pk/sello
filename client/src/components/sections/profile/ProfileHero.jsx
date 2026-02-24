@@ -19,7 +19,7 @@ import {
   FiHelpCircle,
   FiActivity,
   FiTrendingUp,
-  FiDollarSign,
+  FiCreditCard,
   FiCalendar,
   FiClock,
   FiBell,
@@ -35,6 +35,12 @@ import {
   useUpdateDealerProfileMutation,
   useGetSavedCarsQuery,
   useGetMySubscriptionQuery,
+  useGetMyTokenPaymentsQuery,
+  useGetMyWonAuctionsQuery,
+  useGetMyAuctionWatchlistQuery,
+  useGetAuctionsQuery,
+  useGetLiveAuctionQuery,
+  useGetMyAuctionAccessStatusQuery,
 } from "../../../redux/services/api";
 import { clearTokens } from "../../../utils/tokenRefresh";
 import { useSupportChat } from "../../../contexts/SupportChatContext";
@@ -51,13 +57,24 @@ const ProfileHero = () => {
   const [showDealerForm, setShowDealerForm] = useState(false);
   const [activeSection, setActiveSection] = useState("overview");
   const [isEditing, setIsEditing] = useState(false);
-  const [auctionStats, setAuctionStats] = useState({
-    totalAuctions: 0,
-    activeAuctions: 0,
-    wonAuctions: 0,
-    totalBids: 0,
-    tokenBalance: 0,
+  const { data: tokenData } = useGetMyTokenPaymentsQuery();
+  const { data: wonAuctions = [] } = useGetMyWonAuctionsQuery();
+  const { data: watchlistItems = [] } = useGetMyAuctionWatchlistQuery();
+  const { data: upcomingAuctions = [] } = useGetAuctionsQuery({ status: "scheduled", limit: 5 });
+  const { data: liveAuction } = useGetLiveAuctionQuery();
+  const { data: auctionAccess } = useGetMyAuctionAccessStatusQuery(undefined, {
+    skip: !localStorage.getItem("token"),
   });
+
+  const auctionStats = {
+    totalAuctions: wonAuctions.length,
+    activeAuctions: liveAuction ? 1 : 0,
+    wonAuctions: wonAuctions.length,
+    totalBids: wonAuctions.reduce((sum, w) => sum + (w.bidCount || 0), 0),
+    tokenBalance: tokenData?.tokenBalance || 0,
+    hasVerifiedToken: tokenData?.hasVerifiedToken || false,
+    watchlistCount: watchlistItems.length,
+  };
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -132,15 +149,6 @@ const ProfileHero = () => {
           email: user?.email || "",
           avatar: null,
           avatarPreview: user?.avatar || null,
-        });
-
-        // Set auction stats - in real app, this would come from API
-        setAuctionStats({
-          totalAuctions: 8,
-          activeAuctions: 2,
-          wonAuctions: 5,
-          totalBids: 23,
-          tokenBalance: 5000,
         });
 
         // Set dealer form data if user is a dealer
@@ -326,6 +334,10 @@ const ProfileHero = () => {
     );
   }
 
+  const bidderStatus = auctionAccess?.auctionCapabilities?.auctionBidder?.status || "not_requested";
+  const dealerAccessStatus = auctionAccess?.auctionCapabilities?.auctionDealer?.status || "not_requested";
+  const canBidAuctions = bidderStatus === "approved" || dealerAccessStatus === "approved";
+
   const menuItems = [
     {
       id: "auctions",
@@ -381,10 +393,7 @@ const ProfileHero = () => {
       ? [
           {
             id: "become-dealer",
-            label:
-              user?.role === "dealer" && !user?.dealerInfo?.verified
-                ? "Verification Pending"
-                : "Become a Dealer",
+            label: "Dealer / Bidder Request",
             icon: FiStar,
             onClick: () => setShowDealerForm(true),
             highlight: !(
@@ -715,90 +724,26 @@ const ProfileHero = () => {
                     </Link>
                   </div>
                   <div className="space-y-3">
-                    <div className="p-3 border border-gray-200 rounded-lg bg-blue-50">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium text-gray-900">
-                          Auction #102
-                        </span>
-                        <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">
-                          18 Cars
-                        </span>
+                    {liveAuction && (
+                      <Link to="/auctions/live" className="block p-3 border border-red-200 rounded-lg bg-red-50 hover:bg-red-100 transition-colors">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-medium text-gray-900">{liveAuction.title}</span>
+                          <span className="text-xs bg-red-500 text-white px-2 py-1 rounded animate-pulse">LIVE</span>
+                        </div>
+                        <div className="text-sm text-gray-600">{liveAuction.totalCars || 0} cars • {liveAuction.totalBids || 0} bids</div>
+                      </Link>
+                    )}
+                    {upcomingAuctions.length > 0 ? upcomingAuctions.slice(0, 3).map((a) => (
+                      <div key={a._id} className="p-3 border border-gray-200 rounded-lg bg-blue-50">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-medium text-gray-900">{a.title}</span>
+                          <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">{a.totalCars || 0} Cars</span>
+                        </div>
+                        <div className="text-sm text-gray-600">Starts: {new Date(a.startTime).toLocaleDateString("en-PK", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</div>
                       </div>
-                      <div className="text-sm text-gray-600">
-                        Starts in:{" "}
-                        <span className="font-medium">2d 12h 45m</span>
-                      </div>
-                    </div>
-
-                    <div className="p-3 border border-gray-200 rounded-lg bg-blue-50">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium text-gray-900">
-                          Auction #103
-                        </span>
-                        <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">
-                          22 Cars
-                        </span>
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        Starts in:{" "}
-                        <span className="font-medium">4d 8h 30m</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Auction Notifications */}
-                <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      Auction Notifications
-                    </h3>
-                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                      2 New
-                    </span>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                      <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
-                        <FiBell className="text-amber-600" size={16} />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900">
-                          Outbid Alert
-                        </p>
-                        <p className="text-xs text-gray-600">
-                          You have been outbid on Toyota Corolla 2022
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <FiCalendar className="text-blue-600" size={16} />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900">
-                          Auction Starting
-                        </p>
-                        <p className="text-xs text-gray-600">
-                          Auction #102 starts in 1 hour
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-3 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                      <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
-                        <FiCheckCircle className="text-emerald-600" size={16} />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900">
-                          Verification Complete
-                        </p>
-                        <p className="text-xs text-gray-600">
-                          Your CNIC has been verified successfully
-                        </p>
-                      </div>
-                    </div>
+                    )) : !liveAuction && (
+                      <p className="text-sm text-gray-500 text-center py-4">No upcoming auctions scheduled</p>
+                    )}
                   </div>
                 </div>
 
@@ -877,7 +822,7 @@ const ProfileHero = () => {
                     <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
                       <div className="flex items-center justify-between mb-3">
                         <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
-                          <FiDollarSign className="text-white" size={24} />
+                          <FiCreditCard className="text-white" size={24} />
                         </div>
                         <span className="text-2xl font-bold text-purple-600">
                           PKR {auctionStats.tokenBalance.toLocaleString()}
@@ -893,17 +838,17 @@ const ProfileHero = () => {
                   </div>
                 </div>
 
-                {/* Enhanced Active Bids Section */}
+                {/* Won Auctions */}
                 <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-6">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                       <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
                         <FiActivity className="text-emerald-600" size={20} />
                       </div>
-                      Your Active Bids
+                      Your Won Auctions
                     </h3>
                     <Link
-                      to="/auctions/live"
+                      to="/auctions/transactions"
                       className="text-orange-500 hover:text-orange-600 font-medium flex items-center gap-1"
                     >
                       View All
@@ -911,184 +856,97 @@ const ProfileHero = () => {
                     </Link>
                   </div>
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 border-2 border-emerald-200 rounded-xl bg-emerald-50 hover:shadow-md transition-shadow">
-                      <div className="flex items-center gap-4">
-                        <div className="w-20 h-16 bg-gray-200 rounded-lg overflow-hidden">
-                          <img
-                            src="https://images.unsplash.com/photo-1590362891991-f776e747a588?w=200"
-                            alt="Car"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div>
-                          <h4 className="font-bold text-gray-900 text-lg">
-                            Toyota Corolla 2022
-                          </h4>
-                          <p className="text-sm text-gray-600">
-                            Your bid:{" "}
-                            <span className="font-semibold text-emerald-600">
-                              PKR 3.85M
-                            </span>
-                          </p>
-                        </div>
+                    {wonAuctions.length === 0 ? (
+                      <div className="text-center py-6">
+                        <FiActivity className="mx-auto text-gray-300 mb-2" size={32} />
+                        <p className="text-sm text-gray-500">No won auctions yet. Start bidding on live auctions!</p>
+                        <Link to="/auctions/live" className="text-orange-500 hover:text-orange-600 text-sm font-medium mt-2 inline-block">Browse Live Auction</Link>
                       </div>
-                      <div className="text-right">
-                        <div className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium mb-2">
-                          <FiCheckCircle size={14} />
-                          Highest Bid
-                        </div>
-                        <p className="text-xs text-gray-500">2h 15m left</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between p-4 border-2 border-amber-200 rounded-xl bg-amber-50 hover:shadow-md transition-shadow">
-                      <div className="flex items-center gap-4">
-                        <div className="w-20 h-16 bg-gray-200 rounded-lg overflow-hidden">
-                          <img
-                            src="https://images.unsplash.com/photo-1590362891991-f776e747a588?w=200"
-                            alt="Car"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div>
-                          <h4 className="font-bold text-gray-900 text-lg">
-                            Honda Civic 2021
-                          </h4>
-                          <p className="text-sm text-gray-600">
-                            Your bid:{" "}
-                            <span className="font-semibold text-amber-600">
-                              PKR 2.70M
-                            </span>
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-sm font-medium mb-2">
-                          <FiBell size={14} />
-                          Outbid
-                        </div>
-                        <p className="text-xs text-gray-500">1h 30m left</p>
-                      </div>
-                    </div>
+                    ) : wonAuctions.slice(0, 3).map((item) => {
+                      const car = item.car || {};
+                      const img = Array.isArray(car.images) ? car.images[0] : car.images;
+                      return (
+                        <Link key={item._id} to={`/auctions/result?car_id=${item._id}`} className="flex items-center justify-between p-4 border-2 border-emerald-200 rounded-xl bg-emerald-50 hover:shadow-md transition-shadow">
+                          <div className="flex items-center gap-4">
+                            <div className="w-20 h-16 bg-gray-200 rounded-lg overflow-hidden">
+                              {img && <img src={img} alt={`${car.make} ${car.model}`} className="w-full h-full object-cover" />}
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-gray-900 text-lg">{car.year} {car.make} {car.model}</h4>
+                              <p className="text-sm text-gray-600">Final Price: <span className="font-semibold text-emerald-600">PKR {item.finalPrice?.toLocaleString()}</span></p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">
+                              <FiCheckCircle size={14} />Won
+                            </div>
+                          </div>
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
 
-                {/* Auction Management */}
+                {/* Auction Summary */}
                 <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-6">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                       <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
                         <FiSettings className="text-purple-600" size={20} />
                       </div>
-                      Auction Management
+                      Auction Summary
                     </h3>
-                    <button className="text-orange-500 hover:text-orange-600 font-medium text-sm">
-                      Manage All
-                    </button>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <Link to="/auctions/transactions" className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-gray-700">
-                          Active Listings
-                        </span>
-                        <FiEdit className="text-gray-400" size={16} />
+                        <span className="text-sm font-medium text-gray-700">Won Auctions</span>
+                        <FiTrendingUp className="text-emerald-500" size={16} />
                       </div>
-                      <p className="text-2xl font-bold text-gray-900 mb-1">2</p>
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-gray-600">Toyota Corolla</span>
-                          <button className="text-orange-500 hover:text-orange-600">
-                            Edit
-                          </button>
-                        </div>
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-gray-600">Honda Civic</span>
-                          <button className="text-orange-500 hover:text-orange-600">
-                            Edit
-                          </button>
-                        </div>
+                      <p className="text-2xl font-bold text-gray-900 mb-1">{wonAuctions.length}</p>
+                      <p className="text-sm text-gray-600">Cars you've won</p>
+                    </Link>
+
+                    <Link to="/auctions/watchlist" className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium text-gray-700">Watchlist</span>
+                        <FiHeart className="text-red-400" size={16} />
                       </div>
-                    </div>
+                      <p className="text-2xl font-bold text-gray-900 mb-1">{watchlistItems.length}</p>
+                      <p className="text-sm text-gray-600">Cars you're following</p>
+                    </Link>
+
+                    <Link to="/auctions/token-payment" className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium text-gray-700">Token Status</span>
+                        <FiCreditCard className="text-purple-500" size={16} />
+                      </div>
+                      <p className="text-2xl font-bold text-gray-900 mb-1">PKR {auctionStats.tokenBalance.toLocaleString()}</p>
+                      <p className="text-sm text-gray-600">{auctionStats.hasVerifiedToken ? "✓ Verified — Ready to bid" : "Not verified"}</p>
+                    </Link>
 
                     <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-gray-700">
-                          Bid Management
-                        </span>
-                        <FiDollarSign className="text-gray-400" size={16} />
+                        <span className="text-sm font-medium text-gray-700">Live Status</span>
+                        <FiZap className={liveAuction ? "text-red-500" : "text-gray-400"} size={16} />
                       </div>
-                      <p className="text-2xl font-bold text-gray-900 mb-1">8</p>
-                      <p className="text-sm text-gray-600 mb-3">Active bids</p>
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-gray-600">Highest bid</span>
-                          <span className="font-medium text-green-600">
-                            PKR 1.8M
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-gray-600">Winning</span>
-                          <span className="font-medium text-green-600">2</span>
-                        </div>
-                        <button className="w-full text-center text-orange-500 hover:text-orange-600 text-sm font-medium">
-                          View All Bids
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-gray-700">
-                          Watchlist
-                        </span>
-                        <FiHeart className="text-gray-400" size={16} />
-                      </div>
-                      <p className="text-2xl font-bold text-gray-900 mb-1">
-                        15
-                      </p>
-                      <p className="text-sm text-gray-600 mb-3">
-                        Saved auctions
-                      </p>
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-gray-600">Ending soon</span>
-                          <span className="font-medium text-orange-600">3</span>
-                        </div>
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-gray-600">New today</span>
-                          <span className="font-medium text-blue-600">5</span>
-                        </div>
-                        <button className="w-full text-center text-orange-500 hover:text-orange-600 text-sm font-medium">
-                          View Watchlist
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-gray-700">
-                          Quick Actions
-                        </span>
-                        <FiZap className="text-gray-400" size={16} />
-                      </div>
-                      <div className="space-y-2">
-                        <button className="w-full px-3 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm font-medium">
-                          Place Auto-Bid
-                        </button>
-                        <button className="w-full px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm">
-                          Withdraw Bid
-                        </button>
-                        <button className="w-full px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm">
-                          Contact Seller
-                        </button>
-                      </div>
+                      {liveAuction ? (
+                        <>
+                          <p className="text-lg font-bold text-red-600 mb-1">{liveAuction.title}</p>
+                          <Link to="/auctions/live" className="text-sm text-orange-500 hover:text-orange-600 font-medium">Join Now →</Link>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-lg font-bold text-gray-400 mb-1">No Live Auction</p>
+                          <Link to="/auctions/schedule" className="text-sm text-orange-500 hover:text-orange-600 font-medium">View Schedule →</Link>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
 
-                {/* Enhanced Upcoming Auctions */}
+                {/* Upcoming Auctions */}
                 <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-6">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
@@ -1106,93 +964,76 @@ const ProfileHero = () => {
                     </Link>
                   </div>
                   <div className="space-y-4">
-                    <div className="p-4 border-2 border-blue-200 rounded-xl bg-blue-50 hover:shadow-md transition-shadow">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="font-bold text-blue-900 text-lg">
-                          Auction #102
-                        </span>
-                        <div className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                          <FiActivity size={14} />
-                          18 Cars
+                    {upcomingAuctions.length === 0 ? (
+                      <p className="text-sm text-gray-500 text-center py-6">No upcoming auctions scheduled</p>
+                    ) : upcomingAuctions.slice(0, 4).map((a) => (
+                      <div key={a._id} className="p-4 border-2 border-blue-200 rounded-xl bg-blue-50 hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="font-bold text-blue-900 text-lg">{a.title}</span>
+                          <div className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+                            <FiActivity size={14} />{a.totalCars || 0} Cars
+                          </div>
+                        </div>
+                        <div className="text-sm text-blue-700">
+                          Starts: <span className="font-bold">{new Date(a.startTime).toLocaleDateString("en-PK", { weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
                         </div>
                       </div>
-                      <div className="text-sm text-blue-700">
-                        Starts in: <span className="font-bold">2d 12h 45m</span>
-                      </div>
-                    </div>
-
-                    <div className="p-4 border-2 border-blue-200 rounded-xl bg-blue-50 hover:shadow-md transition-shadow">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="font-bold text-blue-900 text-lg">
-                          Auction #103
-                        </span>
-                        <div className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                          <FiActivity size={14} />
-                          22 Cars
-                        </div>
-                      </div>
-                      <div className="text-sm text-blue-700">
-                        Starts in: <span className="font-bold">4d 8h 30m</span>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
 
-                {/* Enhanced Auction Notifications */}
+                {/* Auction Status */}
                 <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-6">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                       <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
                         <FiBell className="text-orange-600" size={20} />
                       </div>
-                      Auction Notifications
+                      Your Auction Status
                     </h3>
-                    <div className="inline-flex items-center gap-1 px-3 py-1 bg-red-500 text-white rounded-full text-sm font-medium">
-                      2 New
-                    </div>
                   </div>
                   <div className="space-y-4">
-                    <div className="flex items-start gap-4 p-4 border-2 border-orange-200 rounded-xl bg-orange-50 hover:shadow-md transition-shadow">
-                      <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <FiBell className="text-amber-600" size={20} />
+                    <div className="flex items-start gap-4 p-4 border-2 border-gray-200 rounded-xl bg-gray-50">
+                      <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <FiCreditCard className="text-purple-600" size={20} />
                       </div>
                       <div className="flex-1">
-                        <p className="font-bold text-gray-900 mb-1">
-                          Outbid Alert
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          You have been outbid on Toyota Corolla 2022
+                        <p className="font-bold text-gray-900 mb-1">Token Payment</p>
+                        <p className="text-sm text-gray-600">{auctionStats.hasVerifiedToken ? "Your token is verified. You can place bids." : "Pay the PKR 10,000 refundable token to start bidding."}</p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Auction access status: {canBidAuctions ? "Approved" : bidderStatus.replace("_", " ")}
                         </p>
                       </div>
+                      {!auctionStats.hasVerifiedToken && (
+                        <Link to="/auctions/token-payment" className="text-sm text-orange-500 hover:text-orange-600 font-medium whitespace-nowrap">Pay Now →</Link>
+                      )}
                     </div>
 
-                    <div className="flex items-start gap-4 p-4 border-2 border-blue-200 rounded-xl bg-blue-50 hover:shadow-md transition-shadow">
-                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <FiCalendar className="text-blue-600" size={20} />
+                    {liveAuction && (
+                      <div className="flex items-start gap-4 p-4 border-2 border-red-200 rounded-xl bg-red-50">
+                        <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <FiZap className="text-red-600" size={20} />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-bold text-gray-900 mb-1">Live Auction Active</p>
+                          <p className="text-sm text-gray-600">{liveAuction.title} — {liveAuction.totalCars || 0} cars available</p>
+                        </div>
+                        <Link to="/auctions/live" className="text-sm text-red-500 hover:text-red-600 font-medium whitespace-nowrap">Join →</Link>
                       </div>
-                      <div className="flex-1">
-                        <p className="font-bold text-gray-900 mb-1">
-                          Auction Starting
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Auction #102 starts in 1 hour
-                        </p>
-                      </div>
-                    </div>
+                    )}
 
-                    <div className="flex items-start gap-4 p-4 border-2 border-emerald-200 rounded-xl bg-emerald-50 hover:shadow-md transition-shadow">
-                      <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <FiCheckCircle className="text-emerald-600" size={20} />
+                    {wonAuctions.length > 0 && (
+                      <div className="flex items-start gap-4 p-4 border-2 border-emerald-200 rounded-xl bg-emerald-50">
+                        <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <FiCheckCircle className="text-emerald-600" size={20} />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-bold text-gray-900 mb-1">Auctions Won</p>
+                          <p className="text-sm text-gray-600">You have won {wonAuctions.length} auction(s). Check your transactions.</p>
+                        </div>
+                        <Link to="/auctions/transactions" className="text-sm text-emerald-500 hover:text-emerald-600 font-medium whitespace-nowrap">View →</Link>
                       </div>
-                      <div className="flex-1">
-                        <p className="font-bold text-gray-900 mb-1">
-                          Verification Complete
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Your CNIC has been verified successfully
-                        </p>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
 
@@ -1257,7 +1098,7 @@ const ProfileHero = () => {
                     >
                       <div className="flex flex-col items-center text-center">
                         <div className="w-16 h-16 bg-emerald-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                          <FiDollarSign className="text-white" size={32} />
+                          <FiCreditCard className="text-white" size={32} />
                         </div>
                         <h4 className="font-bold text-emerald-800 text-lg mb-2">
                           Add Tokens

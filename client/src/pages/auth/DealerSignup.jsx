@@ -59,6 +59,7 @@ const DealerSignup = ({ onBack }) => {
   const [languageInput, setLanguageInput] = useState("");
   const [paymentMethodInput, setPaymentMethodInput] = useState("");
   const [serviceInput, setServiceInput] = useState("");
+  const [requestAuctionBidder, setRequestAuctionBidder] = useState(false);
 
   const [registerUser] = useRegisterUserMutation();
   const navigate = useNavigate();
@@ -306,6 +307,9 @@ const DealerSignup = ({ onBack }) => {
     registrationData.append("password", formData.password);
     registrationData.append("role", "dealer");
     registrationData.append("avatar", avatarFile);
+    const requestTypes = ["dealer", "auctionDealer"];
+    if (requestAuctionBidder) requestTypes.push("auctionBidder");
+    registrationData.append("auctionRequestTypes", JSON.stringify(requestTypes));
 
     // Basic dealer information
     registrationData.append("dealerName", formData.dealerName);
@@ -740,6 +744,22 @@ const DealerSignup = ({ onBack }) => {
                         {errors.cnicFile}
                       </p>
                     )}
+                  </div>
+
+                  <div className="p-3 rounded-lg border border-gray-200">
+                    <p className="text-sm font-medium text-gray-700 mb-2">
+                      Auction permissions request
+                    </p>
+                    <div className="space-y-2 text-sm">
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={requestAuctionBidder}
+                          onChange={(e) => setRequestAuctionBidder(e.target.checked)}
+                        />
+                        <span>Also request Auction Bidder approval</span>
+                      </label>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

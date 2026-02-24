@@ -6,6 +6,7 @@ const BottomHeader = () => {
 
   if (location.pathname === "/listings") return null;
   if (location.pathname === "/about") return null;
+  if (location.pathname.startsWith("/auctions")) return null;
 
   return (
     <div

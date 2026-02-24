@@ -6,6 +6,7 @@ import CustomerRequest from "../models/customerRequestModel.js";
 import AuditLog from "../models/auditLogModel.js";
 import { Logger, sendEmail, createAuditLog } from "../utils/helpers.js";
 import { getCarApprovedTemplate, getCarRejectedTemplate } from "../utils/emailTemplates.js";
+import { normalizeAuctionCapabilities } from "../utils/auctionAccess.js";
 
 /* -------------------------------------------------------------------------- */
 /*                                ADMIN SERVICE                               */
@@ -389,9 +390,138 @@ export const verifyUser = async (req, res) => {
 
 export const verifyDealer = async (req, res) => {
     try {
-        const user = await User.findByIdAndUpdate(req.params.userId, { "dealerInfo.verified": true, "dealerInfo.verifiedAt": new Date() }, { new: true });
+        const user = await User.findByIdAndUpdate(
+          req.params.userId,
+          {
+            "dealerInfo.verified": true,
+            "dealerInfo.verifiedAt": new Date(),
+            "auctionCapabilities.auctionDealer.status": "approved",
+            "auctionCapabilities.auctionDealer.reviewedAt": new Date(),
+            "auctionCapabilities.auctionDealer.reviewedBy": req.user._id,
+            role: "dealer",
+          },
+          { new: true }
+        );
         return res.status(200).json({ success: true, data: user });
     } catch (error) { return res.status(500).json({ success: false }); }
+};
+
+export const getAuctionAccessRequests = async (req, res) => {
+  try {
+    const { status = "pending", type = "all", search = "" } = req.query;
+    const query = {
+      $or: [
+        { "auctionCapabilities.auctionBidder.status": status === "all" ? { $exists: true } : status },
+        { "auctionCapabilities.auctionDealer.status": status === "all" ? { $exists: true } : status },
+      ],
+    };
+
+    if (type === "auctionBidder") {
+      query["auctionCapabilities.auctionBidder.status"] = status === "all" ? { $exists: true } : status;
+      delete query.$or;
+    } else if (type === "auctionDealer" || type === "dealer") {
+      query["auctionCapabilities.auctionDealer.status"] = status === "all" ? { $exists: true } : status;
+      delete query.$or;
+    }
+
+    if (search) {
+      query.$and = [
+        {
+          $or: [
+            { name: new RegExp(search, "i") },
+            { email: new RegExp(search, "i") },
+            { "dealerInfo.businessName": new RegExp(search, "i") },
+          ],
+        },
+      ];
+    }
+
+    const users = await User.find(query)
+      .select("name email role dealerInfo auctionCapabilities createdAt")
+      .populate("auctionCapabilities.auctionBidder.reviewedBy", "name email")
+      .populate("auctionCapabilities.auctionDealer.reviewedBy", "name email")
+      .sort({ updatedAt: -1 })
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      data: users.map((u) => ({
+        _id: u._id,
+        name: u.name,
+        email: u.email,
+        role: u.role,
+        dealerInfo: u.dealerInfo,
+        auctionCapabilities: normalizeAuctionCapabilities(u),
+        createdAt: u.createdAt,
+      })),
+    });
+  } catch (error) {
+    Logger.error("getAuctionAccessRequests error", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch requests" });
+  }
+};
+
+export const reviewAuctionAccessRequest = async (req, res) => {
+  try {
+    const { type, action, rejectionReason = "" } = req.body;
+    const allowedTypes = ["auctionBidder", "auctionDealer", "dealer", "both"];
+    const allowedActions = ["approve", "reject", "revoke"];
+    if (!allowedTypes.includes(type) || !allowedActions.includes(action)) {
+      return res.status(400).json({ success: false, message: "Invalid review payload" });
+    }
+
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    const reviewedAt = new Date();
+    const updateCapability = (key) => {
+      user.auctionCapabilities[key].status =
+        action === "approve" ? "approved" : action === "reject" ? "rejected" : "revoked";
+      user.auctionCapabilities[key].reviewedAt = reviewedAt;
+      user.auctionCapabilities[key].reviewedBy = req.user._id;
+      user.auctionCapabilities[key].rejectionReason = action === "approve" ? "" : rejectionReason;
+    };
+
+    if (type === "auctionBidder" || type === "both") updateCapability("auctionBidder");
+    if (type === "auctionDealer" || type === "dealer" || type === "both") updateCapability("auctionDealer");
+
+    if (type === "dealer" || type === "auctionDealer" || type === "both") {
+      if (action === "approve") {
+        user.role = "dealer";
+        user.dealerInfo.verified = true;
+        user.dealerInfo.verifiedAt = reviewedAt;
+      } else if (action === "reject" || action === "revoke") {
+        user.dealerInfo.verified = false;
+      }
+    }
+
+    await user.save();
+
+    await createAuditLog(
+      req.user,
+      "auction_access_review",
+      {
+        type,
+        action,
+        rejectionReason,
+      },
+      user._id,
+      req
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: `Request ${action}d successfully`,
+      data: {
+        userId: user._id,
+        auctionCapabilities: normalizeAuctionCapabilities(user),
+        dealerVerified: !!user?.dealerInfo?.verified,
+      },
+    });
+  } catch (error) {
+    Logger.error("reviewAuctionAccessRequest error", error);
+    return res.status(500).json({ success: false, message: "Failed to review request" });
+  }
 };
 
 export const getListingHistory = async (req, res) => {

@@ -8,6 +8,7 @@ import crypto from "crypto";
 import { uploadCloudinary, Logger, sendEmail, generateOtp, isValidEmail, sendVerificationCode } from "../utils/helpers.js";
 import { getPasswordResetTemplate, getWelcomeTemplate } from "../utils/emailTemplates.js";
 import client from "../config/googleClient.js";
+import { AUCTION_REQUEST_TYPES } from "../utils/auctionAccess.js";
 
 /* -------------------------------------------------------------------------- */
 /*                                AUTH SERVICE                                */
@@ -38,7 +39,7 @@ const AuthService = {
     validatePassword: (password) => password && password.length >= 6,
 
     register: async (req) => {
-        const { name, email, password, role, dealerName, mobileNumber } = req.body;
+        const { name, email, password, role, dealerName, mobileNumber, auctionRequestTypes } = req.body;
         
         if (!name || !email || !password) throw new Error("Missing name, email or password");
         if (!isValidEmail(email)) throw new Error("Invalid email format");
@@ -70,6 +71,39 @@ const AuthService = {
                 verified: false
             };
             userData.phone = mobileNumber;
+        }
+
+        const parseRequestTypes = (value) => {
+            if (!value) return [];
+            if (Array.isArray(value)) return value;
+            try {
+                const parsed = JSON.parse(value);
+                return Array.isArray(parsed) ? parsed : [parsed];
+            } catch {
+                return String(value).split(",").map((v) => v.trim()).filter(Boolean);
+            }
+        };
+
+        const requestTypes = parseRequestTypes(auctionRequestTypes).filter((type) =>
+            AUCTION_REQUEST_TYPES.includes(type)
+        );
+
+        if (requestTypes.length > 0) {
+            const now = new Date();
+            if (requestTypes.includes("auctionBidder")) {
+                userData.auctionCapabilities = userData.auctionCapabilities || {};
+                userData.auctionCapabilities.auctionBidder = {
+                    status: "pending",
+                    requestedAt: now,
+                };
+            }
+            if (requestTypes.includes("auctionDealer") || requestTypes.includes("dealer")) {
+                userData.auctionCapabilities = userData.auctionCapabilities || {};
+                userData.auctionCapabilities.auctionDealer = {
+                    status: "pending",
+                    requestedAt: now,
+                };
+            }
         }
 
         const user = await User.create(userData);

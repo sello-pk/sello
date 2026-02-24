@@ -7,6 +7,8 @@ import {
   useVerifyDealerMutation,
   useGetUserByIdQuery,
   useDeleteUserMutation,
+  useGetAuctionAccessRequestsQuery,
+  useReviewAuctionAccessRequestMutation,
 } from "../../redux/services/adminApi";
 import ConfirmModal from "../../components/features/admin/ConfirmModal";
 import {
@@ -42,11 +44,21 @@ const Dealers = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [dealerToDelete, setDealerToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [requestStatusFilter, setRequestStatusFilter] = useState("pending");
+  const [requestTypeFilter, setRequestTypeFilter] = useState("all");
   const { data: dealerDetails, isLoading: detailsLoading } =
     useGetUserByIdQuery(selectedDealer, { skip: !selectedDealer });
 
   const dealers = data?.dealers || [];
   const pagination = data?.pagination || {};
+  const { data: auctionAccessRequests = [], refetch: refetchRequests } =
+    useGetAuctionAccessRequestsQuery({
+      status: requestStatusFilter,
+      type: requestTypeFilter,
+      search,
+    });
+  const [reviewAuctionAccessRequest, { isLoading: reviewingRequest }] =
+    useReviewAuctionAccessRequestMutation();
 
   // Reset to page 1 when search changes
   useEffect(() => {
@@ -89,6 +101,22 @@ const Dealers = () => {
   const handleViewDetails = (dealerId) => {
     setSelectedDealer(dealerId);
     setShowDetailsModal(true);
+  };
+
+  const handleReviewRequest = async (userId, type, action) => {
+    try {
+      await reviewAuctionAccessRequest({
+        userId,
+        type,
+        action,
+        rejectionReason: action === "reject" ? "Not eligible based on submitted documents" : "",
+      }).unwrap();
+      toast.success(`Request ${action}d successfully`);
+      refetchRequests();
+      refetch();
+    } catch (error) {
+      toast.error(error?.data?.message || "Failed to review request");
+    }
   };
 
   const handleEdit = (dealerId) => {
@@ -167,6 +195,88 @@ const Dealers = () => {
         </div>
 
         {/* Table */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
+          <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-wrap gap-3 items-center justify-between">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+              Auction Access Review Queue
+            </h3>
+            <div className="flex gap-2">
+              <select
+                value={requestTypeFilter}
+                onChange={(e) => setRequestTypeFilter(e.target.value)}
+                className="px-3 py-1.5 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm"
+              >
+                <option value="all">All types</option>
+                <option value="auctionBidder">Auction Bidder</option>
+                <option value="auctionDealer">Auction Dealer</option>
+                <option value="dealer">Dealer</option>
+              </select>
+              <select
+                value={requestStatusFilter}
+                onChange={(e) => setRequestStatusFilter(e.target.value)}
+                className="px-3 py-1.5 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm"
+              >
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+                <option value="all">All</option>
+              </select>
+            </div>
+          </div>
+          <div className="p-4">
+            {auctionAccessRequests.length === 0 ? (
+              <p className="text-sm text-gray-500">No requests in this queue.</p>
+            ) : (
+              <div className="space-y-3">
+                {auctionAccessRequests.slice(0, 12).map((req) => (
+                  <div
+                    key={req._id}
+                    className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3"
+                  >
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {req.name} ({req.email})
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Bidder: {req.auctionCapabilities?.auctionBidder?.status} | Dealer:{" "}
+                        {req.auctionCapabilities?.auctionDealer?.status}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() =>
+                          handleReviewRequest(
+                            req._id,
+                            requestTypeFilter === "all" ? "both" : requestTypeFilter,
+                            "approve"
+                          )
+                        }
+                        disabled={reviewingRequest}
+                        className="px-3 py-1.5 text-xs rounded bg-green-600 text-white"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleReviewRequest(
+                            req._id,
+                            requestTypeFilter === "all" ? "both" : requestTypeFilter,
+                            "reject"
+                          )
+                        }
+                        disabled={reviewingRequest}
+                        className="px-3 py-1.5 text-xs rounded bg-red-600 text-white"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
         {isLoading ? (
           <div className="flex justify-center items-center h-64 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
             <Spinner fullScreen={false} />

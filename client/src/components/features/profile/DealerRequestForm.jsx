@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect } from "react";
 import {
-  useRequestDealerMutation,
+  useRequestAuctionAccessMutation,
   useGetMeQuery,
+  useGetMyAuctionAccessStatusQuery,
 } from "../../../redux/services/api";
 import toast from "react-hot-toast";
 import {
@@ -62,9 +63,13 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
   const [languageInput, setLanguageInput] = useState("");
   const [paymentMethodInput, setPaymentMethodInput] = useState("");
   const [serviceInput, setServiceInput] = useState("");
+  const [requestAuctionBidder, setRequestAuctionBidder] = useState(false);
 
-  const [requestDealer, { isLoading }] = useRequestDealerMutation();
+  const [requestAuctionAccess, { isLoading }] = useRequestAuctionAccessMutation();
   const { data: user, refetch } = useGetMeQuery();
+  const { data: auctionAccessStatus } = useGetMyAuctionAccessStatusQuery(undefined, {
+    skip: !isOpen,
+  });
 
   // Fetch categories from admin
   const {
@@ -353,13 +358,12 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
       }
 
       // Use the API mutation - it should handle FormData
-      const result = await requestDealer(formDataToSend).unwrap();
+      const requestTypes = ["dealer", "auctionDealer"];
+      if (requestAuctionBidder) requestTypes.push("auctionBidder");
+      formDataToSend.append("requestTypes", JSON.stringify(requestTypes));
 
-      const message = result?.dealerInfo?.verified
-        ? "Dealer account created and verified successfully!"
-        : "Dealer request submitted successfully! Pending admin verification.";
-
-      toast.success(message);
+      await requestAuctionAccess(formDataToSend).unwrap();
+      toast.success("Request submitted successfully! Pending admin verification.");
       setFormData({
         businessName: "",
         businessLicense: "",
@@ -422,9 +426,10 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
   // Check if user is already a dealer
   const isDealer = user?.role === "dealer";
   const isVerifiedDealer = user?.dealerInfo?.verified === true;
+  const bidderStatus = auctionAccessStatus?.auctionCapabilities?.auctionBidder?.status;
 
   // Show status if already a dealer
-  if (isDealer) {
+  if (isDealer && isVerifiedDealer && bidderStatus === "approved") {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4">
         <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
@@ -873,6 +878,22 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                       {errors.vehicleTypes}
                     </p>
                   )}
+                </div>
+              </div>
+
+              <div className="p-3 rounded-lg border border-gray-200">
+                <p className="text-sm font-semibold text-gray-700 mb-2">
+                  Access request options
+                </p>
+                <div className="space-y-2 text-sm">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={requestAuctionBidder}
+                      onChange={(e) => setRequestAuctionBidder(e.target.checked)}
+                    />
+                    <span>Also request Auction Bidder access</span>
+                  </label>
                 </div>
               </div>
             </div>

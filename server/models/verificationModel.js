@@ -12,6 +12,11 @@ const verificationSchema = new mongoose.Schema({
         enum: ['national_id', 'passport', 'driving_license', 'business_license'],
         required: true
     },
+    verificationFor: {
+        type: String,
+        enum: ['identity', 'dealer', 'auction_bidder', 'auction_dealer', 'dealer_and_bidder'],
+        default: 'identity'
+    },
     frontDocument: {
         type: String, // Cloudinary URL
         required: true
@@ -41,7 +46,14 @@ const verificationSchema = new mongoose.Schema({
     submittedAt: {
         type: Date,
         default: Date.now
-    }
+    },
+    documents: [
+        {
+            name: { type: String, default: "" },
+            url: { type: String, default: "" },
+            kind: { type: String, default: "supporting" }
+        }
+    ]
 }, {
     timestamps: true
 });

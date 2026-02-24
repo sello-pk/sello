@@ -9,6 +9,7 @@ import Report from "../models/reportModel.js";
 import Car from "../models/carModel.js";
 import { uploadCloudinary, Logger, sendEmail, parseArray, buildCarQuery } from "../utils/helpers.js";
 import mongoose from "mongoose";
+import { AUCTION_REQUEST_TYPES, normalizeAuctionCapabilities } from "../utils/auctionAccess.js";
 
 /* -------------------------------------------------------------------------- */
 /*                               PROFILE SECTION                              */
@@ -124,6 +125,128 @@ export const getVerificationStatus = async (req, res) => {
     return res.status(200).json({ success: true, data: verification || { status: "not_submitted" } });
   } catch (error) {
     return res.status(500).json({ success: false });
+  }
+};
+
+const parseRequestTypesInput = (value) => {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [parsed];
+  } catch {
+    return String(value)
+      .split(",")
+      .map((v) => v.trim())
+      .filter(Boolean);
+  }
+};
+
+const makeCapabilityDocs = async (files = []) => {
+  const uploaded = [];
+  for (const file of files) {
+    const url = await uploadCloudinary(file.buffer, { folder: "sello_auction_access" });
+    uploaded.push({
+      name: file.originalname || "document",
+      url,
+      kind: "supporting",
+    });
+  }
+  return uploaded;
+};
+
+export const submitAuctionAccessRequest = async (req, res) => {
+  try {
+    const requestTypes = parseRequestTypesInput(req.body.requestTypes).filter((type) =>
+      AUCTION_REQUEST_TYPES.includes(type)
+    );
+
+    if (requestTypes.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Select at least one request type: dealer, auctionBidder or auctionDealer.",
+      });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    const docs = await makeCapabilityDocs(req.files?.documents || []);
+    const now = new Date();
+
+    if (requestTypes.includes("dealer")) {
+      const dealerPatch = {
+        ...user.dealerInfo,
+        ...req.body,
+        verified: false,
+        verifiedAt: null,
+      };
+      if (docs[0]?.url && !dealerPatch.businessLicense) {
+        dealerPatch.businessLicense = docs[0].url;
+      }
+      user.dealerInfo = dealerPatch;
+      user.auctionCapabilities.auctionDealer.status = "pending";
+      user.auctionCapabilities.auctionDealer.requestedAt = now;
+      user.auctionCapabilities.auctionDealer.rejectionReason = "";
+      if (docs.length > 0) {
+        user.auctionCapabilities.auctionDealer.documents = docs;
+      }
+    }
+
+    if (requestTypes.includes("auctionBidder")) {
+      user.auctionCapabilities.auctionBidder.status = "pending";
+      user.auctionCapabilities.auctionBidder.requestedAt = now;
+      user.auctionCapabilities.auctionBidder.rejectionReason = "";
+      if (docs.length > 0) {
+        user.auctionCapabilities.auctionBidder.documents = docs;
+      }
+    }
+
+    if (requestTypes.includes("auctionDealer")) {
+      user.auctionCapabilities.auctionDealer.status = "pending";
+      user.auctionCapabilities.auctionDealer.requestedAt = now;
+      user.auctionCapabilities.auctionDealer.rejectionReason = "";
+      if (docs.length > 0) {
+        user.auctionCapabilities.auctionDealer.documents = docs;
+      }
+    }
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Auction/dealer access request submitted for manual review.",
+      data: {
+        requestTypes,
+        auctionCapabilities: normalizeAuctionCapabilities(user),
+      },
+    });
+  } catch (error) {
+    Logger.error("submitAuctionAccessRequest error", error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export const getMyAuctionAccessStatus = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id)
+      .select("role dealerInfo auctionCapabilities")
+      .populate("auctionCapabilities.auctionBidder.reviewedBy", "name email")
+      .populate("auctionCapabilities.auctionDealer.reviewedBy", "name email");
+
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        role: user.role,
+        dealerVerified: !!user?.dealerInfo?.verified,
+        auctionCapabilities: normalizeAuctionCapabilities(user),
+      },
+    });
+  } catch (error) {
+    Logger.error("getMyAuctionAccessStatus error", error);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 };
 

@@ -7,7 +7,7 @@ import {
   Scale,
   AlertTriangle,
   Clock,
-  DollarSign,
+  Wallet,
   HelpCircle,
   Phone,
   Mail,
@@ -154,7 +154,7 @@ We do not guarantee the condition, history, or authenticity of any vehicle beyon
 - Required documents: Original CNIC, Payment Receipt, Win Confirmation`,
     },
     {
-      icon: DollarSign,
+      icon: Wallet,
       title: "Refund & Cancellation Policy",
       content: `TOKEN DEPOSIT REFUNDS
 - Full refund if you don't win any auction

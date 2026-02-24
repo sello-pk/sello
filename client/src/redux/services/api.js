@@ -142,6 +142,7 @@ export const api = createApi({
     "Testimonial",
     "Cars",
     "Boost",
+    "Auction",
   ],
   endpoints: (builder) => ({
     registerUser: builder.mutation({
@@ -337,6 +338,23 @@ export const api = createApi({
         body: dealerData,
       }),
       invalidatesTags: ["User"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    requestAuctionAccess: builder.mutation({
+      query: (payload) => ({
+        url: "/users/auction-access/request",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["User", "Auction"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    getMyAuctionAccessStatus: builder.query({
+      query: () => ({
+        url: "/users/auction-access/status",
+        method: "GET",
+      }),
+      providesTags: ["User", "Auction"],
       transformResponse: (response) => response?.data || response,
     }),
     // Save/Unsave Car (Wishlist)
@@ -1063,6 +1081,163 @@ export const api = createApi({
       query: () => "/account-deletion/deletion-request-status",
       transformResponse: (response) => response?.data || response,
     }),
+
+    // ═══════════════════════════ Auction Endpoints ═══════════════════════════
+
+    getAuctions: builder.query({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        if (params.status) searchParams.append("status", params.status);
+        if (params.page) searchParams.append("page", params.page);
+        if (params.limit) searchParams.append("limit", params.limit);
+        return `/auctions?${searchParams.toString()}`;
+      },
+      providesTags: ["Auction"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    getLiveAuction: builder.query({
+      query: () => "/auctions/live",
+      providesTags: ["Auction"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    getAuctionById: builder.query({
+      query: (id) => `/auctions/${id}`,
+      providesTags: ["Auction"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    getAuctionCars: builder.query({
+      query: ({ auctionId, ...params }) => {
+        const searchParams = new URLSearchParams(params);
+        return `/auctions/${auctionId}/cars?${searchParams.toString()}`;
+      },
+      providesTags: ["Auction"],
+      transformResponse: (response) => response,
+    }),
+    getAuctionCarDetail: builder.query({
+      query: (id) => `/auctions/car/${id}`,
+      providesTags: ["Auction"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    getAuctionCarBids: builder.query({
+      query: (auctionCarId) => `/auctions/car/${auctionCarId}/bids`,
+      providesTags: ["Auction"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    placeBid: builder.mutation({
+      query: (data) => ({
+        url: "/auctions/bid",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Auction"],
+    }),
+    setProxyBid: builder.mutation({
+      query: (data) => ({
+        url: "/auctions/proxy-bid",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Auction"],
+    }),
+    submitTokenPayment: builder.mutation({
+      query: (data) => ({
+        url: "/auctions/token-payment",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Auction"],
+    }),
+    getMyTokenPayments: builder.query({
+      query: () => "/auctions/my/token-payments",
+      providesTags: ["Auction"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    addToAuctionWatchlist: builder.mutation({
+      query: (data) => ({
+        url: "/auctions/watchlist",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Auction"],
+    }),
+    removeFromAuctionWatchlist: builder.mutation({
+      query: (auctionCarId) => ({
+        url: `/auctions/watchlist/${auctionCarId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Auction"],
+    }),
+    getMyAuctionWatchlist: builder.query({
+      query: () => "/auctions/my/watchlist",
+      providesTags: ["Auction"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    getMyBids: builder.query({
+      query: () => "/auctions/my/bids",
+      providesTags: ["Auction"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    getMyWonAuctions: builder.query({
+      query: () => "/auctions/my/won",
+      providesTags: ["Auction"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    getMyEscrows: builder.query({
+      query: () => "/auctions/my/escrows",
+      providesTags: ["Auction"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    getMyWalletTransactions: builder.query({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        if (params.page) searchParams.append("page", params.page);
+        if (params.limit) searchParams.append("limit", params.limit);
+        return `/auctions/my/transactions?${searchParams.toString()}`;
+      },
+      providesTags: ["Auction"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    submitCarToAuction: builder.mutation({
+      query: (data) => ({
+        url: "/auctions/submit-car",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Auction"],
+    }),
+
+    // ═══════════════════════════ Payment / Wallet Endpoints ════════════════════
+    getMyWallet: builder.query({
+      query: () => "/payments/wallet",
+      providesTags: ["Auction"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    createDeposit: builder.mutation({
+      query: (data) => ({
+        url: "/payments/deposit",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Auction"],
+    }),
+    getMyDeposits: builder.query({
+      query: () => "/payments/deposits",
+      providesTags: ["Auction"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    createRefundRequest: builder.mutation({
+      query: (data) => ({
+        url: "/payments/refund-request",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Auction"],
+    }),
+    getMyRefundRequests: builder.query({
+      query: () => "/payments/refund-requests",
+      providesTags: ["Auction"],
+      transformResponse: (response) => response?.data || response,
+    }),
   }),
 });
 
@@ -1080,6 +1255,8 @@ export const {
   useUpdateDealerProfileMutation,
   useRequestSellerMutation,
   useRequestDealerMutation,
+  useRequestAuctionAccessMutation,
+  useGetMyAuctionAccessStatusQuery,
   useSaveCarMutation,
   useUnsaveCarMutation,
   useGetSavedCarsQuery,
@@ -1146,4 +1323,27 @@ export const {
   useCreateValuationMutation,
   useGetValuationHistoryQuery,
   useGetValuationByIdQuery,
+  useGetAuctionsQuery,
+  useGetLiveAuctionQuery,
+  useGetAuctionByIdQuery,
+  useGetAuctionCarsQuery,
+  useGetAuctionCarDetailQuery,
+  useGetAuctionCarBidsQuery,
+  usePlaceBidMutation,
+  useSetProxyBidMutation,
+  useSubmitTokenPaymentMutation,
+  useGetMyTokenPaymentsQuery,
+  useAddToAuctionWatchlistMutation,
+  useRemoveFromAuctionWatchlistMutation,
+  useGetMyAuctionWatchlistQuery,
+  useGetMyBidsQuery,
+  useGetMyWonAuctionsQuery,
+  useGetMyEscrowsQuery,
+  useGetMyWalletTransactionsQuery,
+  useSubmitCarToAuctionMutation,
+  useGetMyWalletQuery,
+  useCreateDepositMutation,
+  useGetMyDepositsQuery,
+  useCreateRefundRequestMutation,
+  useGetMyRefundRequestsQuery,
 } = api;

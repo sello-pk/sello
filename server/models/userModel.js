@@ -1,5 +1,30 @@
 import mongoose from "mongoose";
 
+const capabilityDocSchema = new mongoose.Schema(
+  {
+    name: { type: String, default: "" },
+    url: { type: String, default: "" },
+    kind: { type: String, default: "supporting" },
+  },
+  { _id: false }
+);
+
+const capabilityStateSchema = new mongoose.Schema(
+  {
+    status: {
+      type: String,
+      enum: ["not_requested", "pending", "approved", "rejected", "revoked"],
+      default: "not_requested",
+    },
+    requestedAt: { type: Date, default: null },
+    reviewedAt: { type: Date, default: null },
+    reviewedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+    rejectionReason: { type: String, default: "" },
+    documents: { type: [capabilityDocSchema], default: [] },
+  },
+  { _id: false }
+);
+
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -257,6 +282,11 @@ const userSchema = new mongoose.Schema(
         default: "free",
       },
     },
+    auctionCapabilities: {
+      auctionBidder: { type: capabilityStateSchema, default: () => ({}) },
+      auctionDealer: { type: capabilityStateSchema, default: () => ({}) },
+      graceUntil: { type: Date, default: null },
+    },
     // 🚗 Cars posted by user (as seller)
     carsPosted: [
       {
@@ -299,6 +329,8 @@ userSchema.index({ roleId: 1 }); // Index for role-based user count queries
 userSchema.index({ role: 1, status: 1 }); // Compound index for common admin queries
 userSchema.index({ "subscription.isActive": 1, "subscription.plan": 1 });
 userSchema.index({ "subscription.isActive": 1, "subscription.endDate": 1 }); // For subscription expiration queries
+userSchema.index({ "auctionCapabilities.auctionBidder.status": 1 });
+userSchema.index({ "auctionCapabilities.auctionDealer.status": 1 });
 
 const User = mongoose.model("User", userSchema);
 

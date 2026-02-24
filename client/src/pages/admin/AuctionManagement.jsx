@@ -1,798 +1,636 @@
 import React, { useState } from "react";
 import AdminLayout from "../../components/features/admin/AdminLayout";
+import { motion, AnimatePresence } from "framer-motion";
+import toast from "react-hot-toast";
 import {
-  FiUsers,
-  FiActivity,
-  FiCalendar,
-  FiShield,
-  FiAlertTriangle,
-  FiCheckCircle,
-  FiXCircle,
-  FiClock,
-  FiTrendingUp,
-  FiDollarSign,
-  FiSearch,
-  FiPlus,
-  FiEye,
-  FiEdit,
-  FiSettings,
-  FiBell,
-  FiRefreshCw,
-  FiX,
-  FiUserCheck,
-  FiFileText,
-  FiClipboard,
-  FiStar,
-  FiMessageSquare,
-  FiChevronRight,
-  FiZap,
-} from "react-icons/fi";
+  IoAddOutline as Plus,
+  IoPlayOutline as Play,
+  IoStopOutline as Square,
+  IoCloseOutline as X,
+  IoCheckmarkOutline as Check,
+  IoCarSportOutline as Car,
+  IoFlashOutline as Zap,
+  IoPeopleOutline as Users,
+  IoTrendingUpOutline as TrendingUp,
+  IoWalletOutline as Wallet,
+  IoTimeOutline as Clock,
+  IoTrashOutline as Ban,
+  IoReturnDownBackOutline as Undo,
+  IoShieldCheckmarkOutline as ShieldCheck,
+  IoWarningOutline as AlertTriangle,
+  IoStatsChartOutline as BarChart3,
+} from "react-icons/io5";
+import { GiGavel as Gavel } from "react-icons/gi";
+import {
+  useGetAuctionDashboardQuery,
+  useAdminCreateAuctionMutation,
+  useAdminUpdateAuctionMutation,
+  useAdminGoLiveMutation,
+  useAdminEndAuctionMutation,
+  useAdminCancelAuctionMutation,
+  useAdminApproveAuctionCarMutation,
+  useAdminRejectAuctionCarMutation,
+  useAdminPlaceOfflineBidMutation,
+  useAdminGetAllTokenPaymentsQuery,
+  useAdminVerifyTokenPaymentMutation,
+  useAdminGetAllAuctionCarsQuery,
+  useAdminAddCarToAuctionMutation,
+  useAdminGetAllEscrowsQuery,
+  useAdminUpdateEscrowStatusMutation,
+  useAdminRefundTokenMutation,
+  useAdminBulkRefundTokensMutation,
+  useGetPaymentStatsQuery,
+} from "@redux/services/adminApi";
+import { useGetAuctionsQuery, useGetCarsQuery } from "@redux/services/api";
 
-const AuctionManagement = () => {
-  const [selectedTab, setSelectedTab] = useState("overview");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [showOfflineBidDialog, setShowOfflineBidDialog] = useState(false);
-  const [showAuctionDialog, setShowAuctionDialog] = useState(false);
-  const [vehicleStatusFilter, setVehicleStatusFilter] = useState("all");
-  const [offlineBid, setOfflineBid] = useState({
-    car_id: "",
-    amount: "",
-    bidder_name: "",
-  });
-  const [newAuction, setNewAuction] = useState({
-    title: "",
-    start_time: "",
-    end_time: "",
-  });
+const Badge = ({ children, className = "" }) => (
+  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${className}`}>{children}</span>
+);
 
-  // Mock data - in real app, this would come from API
-  const [users] = useState([
-    {
-      id: 1,
-      full_name: "Ahmed Khan",
-      email: "ahmed@test.com",
-      role: "user",
-      is_approved: true,
-      is_banned: false,
-    },
-    {
-      id: 2,
-      full_name: "Hassan Ali",
-      email: "hassan@test.com",
-      role: "user",
-      is_approved: false,
-      is_banned: false,
-    },
-    {
-      id: 3,
-      full_name: "Usman",
-      email: "usman@test.com",
-      role: "admin",
-      is_approved: true,
-      is_banned: false,
-    },
-  ]);
+const Button = ({ children, variant = "default", className = "", ...props }) => {
+  const v = {
+    default: "bg-gradient-to-r from-[#FFA602] to-amber-500 text-white hover:from-amber-500 hover:to-[#FFA602]",
+    outline: "border border-slate-300 text-slate-700 hover:bg-slate-100",
+    danger: "bg-red-500 text-white hover:bg-red-600",
+    success: "bg-emerald-500 text-white hover:bg-emerald-600",
+  };
+  return <button className={`inline-flex items-center justify-center font-medium px-4 py-2 text-sm rounded-lg transition-all disabled:opacity-50 ${v[variant]} ${className}`} {...props}>{children}</button>;
+};
 
-  const [cars] = useState([
-    {
-      id: 1,
-      make: "Toyota",
-      model: "Corolla",
-      year: 2022,
-      status: "in_auction",
-      current_bid: 3850000,
-      inspection_report: { engine: "pass", body: "minor_issues" },
-    },
-    {
-      id: 2,
-      make: "Honda",
-      model: "Civic",
-      year: 2021,
-      status: "pending_approval",
-      starting_bid: 2800000,
-      inspection_report: { engine: "pass", body: "pass" },
-    },
-    {
-      id: 3,
-      make: "Suzuki",
-      model: "Alto",
-      year: 2023,
-      status: "approved",
-      starting_bid: 1400000,
-    },
-  ]);
+const statusColors = {
+  live: "bg-red-500 text-white",
+  scheduled: "bg-blue-100 text-blue-600",
+  completed: "bg-emerald-100 text-emerald-600",
+  draft: "bg-amber-100 text-amber-600",
+  cancelled: "bg-slate-100 text-slate-500",
+  pending: "bg-amber-100 text-amber-600",
+  approved: "bg-emerald-100 text-emerald-600",
+  rejected: "bg-red-100 text-red-600",
+  verified: "bg-emerald-100 text-emerald-700",
+};
 
-  const [auctions] = useState([
-    {
-      id: 1,
-      title: "Auction #101",
-      status: "live",
-      total_cars: 18,
-      total_bids: 127,
-      start_time: new Date().toISOString(),
-      end_time: new Date(Date.now() + 3600000 * 6).toISOString(),
-    },
-    {
-      id: 2,
-      title: "Auction #102",
-      status: "upcoming",
-      total_cars: 22,
-      start_time: new Date(Date.now() + 86400000 * 2).toISOString(),
-    },
-  ]);
+const tabs = [
+  { id: "dashboard", label: "Dashboard", icon: TrendingUp },
+  { id: "auctions", label: "Auctions", icon: Gavel },
+  { id: "cars", label: "Cars", icon: Car },
+  { id: "payments", label: "Token Payments", icon: Wallet },
+  { id: "escrows", label: "Escrow", icon: ShieldCheck },
+];
 
-  const [bids] = useState([
-    {
-      id: 1,
-      amount: 3850000,
-      bidder_name: "Ahmed K.",
-      bid_type: "online",
-      car_id: 1,
-      created_date: new Date().toISOString(),
-    },
-    {
-      id: 2,
-      amount: 3900000,
-      bidder_name: "Floor Bid",
-      bid_type: "offline",
-      car_id: 1,
-      created_date: new Date().toISOString(),
-    },
-  ]);
+export default function AuctionManagement() {
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showOfflineBidModal, setShowOfflineBidModal] = useState(false);
+  const [showAddCarModal, setShowAddCarModal] = useState(false);
+  const [selectedAuctionCar, setSelectedAuctionCar] = useState(null);
+  const [offlineBidAmount, setOfflineBidAmount] = useState("");
+  const [offlineBidderName, setOfflineBidderName] = useState("Floor Bid");
+  const [addCarData, setAddCarData] = useState({ auctionId: "", carId: "", startingBid: "" });
+  const [carSearch, setCarSearch] = useState("");
 
-  const [bookings] = useState([
-    {
-      id: 1,
-      car_details: "2022 Toyota Corolla",
-      buyer_name: "Ahmed",
-      booking_date: "2024-02-10",
-      booking_time: "10:00 AM",
-      status: "pending",
-    },
-    {
-      id: 2,
-      car_details: "2021 Honda Civic",
-      buyer_name: "Hassan",
-      booking_date: "2024-02-11",
-      booking_time: "2:00 PM",
-      status: "confirmed",
-    },
-  ]);
+  const [newAuction, setNewAuction] = useState({ title: "", description: "", startTime: "", endTime: "", location: "Okara Auction Yard, Punjab" });
 
-  const [disputes] = useState([]);
+  const { data: dashboard, isLoading: dashLoading, refetch: refetchDash } = useGetAuctionDashboardQuery();
+  const { data: auctions = [], refetch: refetchAuctions } = useGetAuctionsQuery({ limit: 100 });
+  const { data: auctionCars = [], refetch: refetchCars } = useAdminGetAllAuctionCarsQuery({});
+  const { data: tokenPayments = [], refetch: refetchPayments } = useAdminGetAllTokenPaymentsQuery({});
 
-  const stats = [
-    {
-      icon: FiUsers,
-      value: users.length,
-      label: "Total Users",
-      color: "blue",
-      trend: 12,
-    },
-    {
-      icon: FiActivity,
-      value: cars.length,
-      label: "Total Vehicles",
-      color: "orange",
-      trend: 8,
-    },
-    {
-      icon: FiActivity,
-      value: bids.length || 127,
-      label: "Total Bids",
-      color: "purple",
-      trend: 25,
-    },
-    {
-      icon: FiDollarSign,
-      value: "₨8.5M",
-      label: "Total Sales",
-      color: "emerald",
-      trend: 15,
-    },
-  ];
+  const [createAuction, { isLoading: creating }] = useAdminCreateAuctionMutation();
+  const [goLive] = useAdminGoLiveMutation();
+  const [endAuction] = useAdminEndAuctionMutation();
+  const [cancelAuction] = useAdminCancelAuctionMutation();
+  const [approveCar] = useAdminApproveAuctionCarMutation();
+  const [rejectCar] = useAdminRejectAuctionCarMutation();
+  const [verifyPayment] = useAdminVerifyTokenPaymentMutation();
+  const [placeOfflineBid] = useAdminPlaceOfflineBidMutation();
+  const [addCarToAuction, { isLoading: addingCar }] = useAdminAddCarToAuctionMutation();
+  const { data: carsData } = useGetCarsQuery({ limit: 200, search: carSearch });
 
-  const liveAuction = auctions.find((a) => a.status === "live");
-  const carsInAuction = cars.filter((c) => c.status === "in_auction");
-  const pendingCars = cars.filter((c) => c.status === "pending_approval");
-  const openDisputes = disputes.filter(
-    (d) => d.status === "open" || d.status === "under_review",
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState("all");
+  const [escrowStatusFilter, setEscrowStatusFilter] = useState("all");
+  const { data: allEscrows = [], refetch: refetchEscrows } = useAdminGetAllEscrowsQuery(
+    escrowStatusFilter === "overdue" ? { overdue: "true" } : escrowStatusFilter !== "all" ? { status: escrowStatusFilter } : {}
   );
+  const [updateEscrowStatus] = useAdminUpdateEscrowStatusMutation();
+  const [refundToken] = useAdminRefundTokenMutation();
+  const [bulkRefundTokens, { isLoading: bulkRefunding }] = useAdminBulkRefundTokensMutation();
+  const { data: paymentStats } = useGetPaymentStatsQuery();
 
-  const handleApproveCar = (carId, status) => {
-    console.log(`Approving car ${carId} with status ${status}`);
-    // In real app, this would call an API
+  const handleCreate = async () => {
+    try {
+      if (!newAuction.title || !newAuction.startTime || !newAuction.endTime) return toast.error("Fill all required fields");
+      await createAuction(newAuction).unwrap();
+      toast.success("Auction created!");
+      setShowCreateModal(false);
+      setNewAuction({ title: "", description: "", startTime: "", endTime: "", location: "Okara Auction Yard, Punjab" });
+      refetchAuctions();
+      refetchDash();
+    } catch (err) { toast.error(err?.data?.message || "Failed"); }
   };
 
-  const handleUpdateUser = (userId, data) => {
-    console.log(`Updating user ${userId} with data:`, data);
-    // In real app, this would call an API
+  const handleGoLive = async (id) => {
+    if (!confirm("Go live with this auction?")) return;
+    try { await goLive(id).unwrap(); toast.success("Auction is now LIVE!"); refetchAuctions(); refetchDash(); }
+    catch (err) { toast.error(err?.data?.message || "Failed"); }
   };
 
-  const handleCreateAuction = (data) => {
-    console.log("Creating auction:", data);
-    // In real app, this would call an API
+  const handleEnd = async (id) => {
+    if (!confirm("End this auction? Winners will be determined.")) return;
+    try { await endAuction(id).unwrap(); toast.success("Auction ended"); refetchAuctions(); refetchDash(); }
+    catch (err) { toast.error(err?.data?.message || "Failed"); }
   };
 
-  const handleAddOfflineBid = (bidData) => {
-    console.log("Adding offline bid:", bidData);
-    // In real app, this would call an API
+  const handleCancel = async (id) => {
+    if (!confirm("Cancel this auction? This cannot be undone.")) return;
+    try { await cancelAuction(id).unwrap(); toast.success("Auction cancelled"); refetchAuctions(); refetchDash(); }
+    catch (err) { toast.error(err?.data?.message || "Failed"); }
   };
 
-  const handleUpdateBooking = (bookingId, status) => {
-    console.log(`Updating booking ${bookingId} to status ${status}`);
-    // In real app, this would call an API
+  const handleApproveCar = async (id) => {
+    try { await approveCar(id).unwrap(); toast.success("Car approved"); refetchCars(); }
+    catch (err) { toast.error(err?.data?.message || "Failed"); }
   };
 
-  const handleResolveDispute = (disputeId, status, notes) => {
-    console.log(
-      `Resolving dispute ${disputeId} with status ${status} and notes: ${notes}`,
-    );
-    // In real app, this would call an API
+  const handleRejectCar = async (id) => {
+    try { await rejectCar(id).unwrap(); toast.success("Car rejected"); refetchCars(); }
+    catch (err) { toast.error(err?.data?.message || "Failed"); }
   };
+
+  const handleVerifyPayment = async (id, action) => {
+    try { await verifyPayment({ id, action }).unwrap(); toast.success(`Payment ${action}d`); refetchPayments(); }
+    catch (err) { toast.error(err?.data?.message || "Failed"); }
+  };
+
+  const handleAddCar = async () => {
+    if (!addCarData.auctionId || !addCarData.carId) return toast.error("Select auction and car");
+    try {
+      await addCarToAuction({ ...addCarData, startingBid: Number(addCarData.startingBid) || 500000 }).unwrap();
+      toast.success("Car added to auction!");
+      setShowAddCarModal(false);
+      setAddCarData({ auctionId: "", carId: "", startingBid: "" });
+      refetchCars();
+      refetchDash();
+    } catch (err) { toast.error(err?.data?.message || "Failed to add car"); }
+  };
+
+  const handleEscrowAction = async (id, status) => {
+    const labels = { in_escrow: "Mark as Paid", released: "Release Funds", refunded: "Refund", disputed: "Dispute" };
+    if (!confirm(`${labels[status] || status} this escrow?`)) return;
+    try {
+      await updateEscrowStatus({ id, status }).unwrap();
+      toast.success(`Escrow updated to ${status}`);
+      refetchEscrows();
+      refetchDash();
+    } catch (err) { toast.error(err?.data?.message || "Failed to update escrow"); }
+  };
+
+  const handleRefundToken = async (id) => {
+    if (!confirm("Refund this token deposit?")) return;
+    try {
+      await refundToken(id).unwrap();
+      toast.success("Token refunded");
+      refetchPayments();
+      refetchDash();
+    } catch (err) { toast.error(err?.data?.message || "Failed to refund"); }
+  };
+
+  const handleBulkRefund = async (auctionId) => {
+    if (!confirm("Refund all non-winner token deposits for this auction?")) return;
+    try {
+      const res = await bulkRefundTokens({ auctionId }).unwrap();
+      toast.success(res?.message || "Bulk refund processed");
+      refetchPayments();
+      refetchDash();
+    } catch (err) { toast.error(err?.data?.message || "Failed to process bulk refund"); }
+  };
+
+  const handleOfflineBid = async () => {
+    if (!selectedAuctionCar || !offlineBidAmount) return;
+    try {
+      await placeOfflineBid({ auctionCarId: selectedAuctionCar, amount: Number(offlineBidAmount), bidderName: offlineBidderName || "Floor Bid" }).unwrap();
+      toast.success("Offline bid placed!");
+      setShowOfflineBidModal(false);
+      setOfflineBidAmount("");
+      setOfflineBidderName("Floor Bid");
+      refetchCars();
+    } catch (err) { toast.error(err?.data?.message || "Failed"); }
+  };
+
+  const stats = dashboard?.stats || {};
 
   return (
     <AdminLayout>
-      <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
-        {/* Header */}
-        <div className="bg-gradient-to-br from-slate-900 to-slate-800 py-6 -mx-6 px-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-                  <FiShield className="w-7 h-7 text-orange-400" />
-                  Admin Auction Control Panel
-                </h1>
-                <p className="text-slate-400">Okara Auto Auction Management</p>
-              </div>
-              <div className="flex items-center gap-4">
-                {liveAuction && (
-                  <span className="bg-red-500 text-white border-0 animate-pulse px-3 py-1 rounded-full text-sm flex items-center gap-1">
-                    <FiActivity className="w-4 h-4" />
-                    Live Auction Active
-                  </span>
-                )}
-                {openDisputes.length > 0 && (
-                  <span className="bg-amber-500 text-white border-0 px-3 py-1 rounded-full text-sm flex items-center gap-1">
-                    <FiAlertTriangle className="w-4 h-4" />
-                    {openDisputes.length} Open Disputes
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Auction Management</h1>
+          <p className="text-slate-500">Manage live auctions, cars, bids, and payments</p>
         </div>
+        <Button onClick={() => setShowCreateModal(true)}><Plus className="w-4 h-4 mr-2" />Create Auction</Button>
+      </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            {stats.map((stat, index) => (
-              <div key={index} className="transition-shadow hover:shadow-md">
-                <div className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow rounded-lg p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">
-                        {stat.label}
-                      </p>
-                      <p className="text-2xl font-bold text-gray-900">
-                        {stat.value}
-                      </p>
-                    </div>
-                    <div
-                      className={`w-12 h-12 rounded-lg bg-${stat.color}-100 flex items-center justify-center`}
-                    >
-                      <stat.icon className={`w-6 h-6 text-${stat.color}-600`} />
-                    </div>
-                  </div>
-                  <div className="mt-2 flex items-center text-sm text-green-600">
-                    <FiTrendingUp className="w-4 h-4 mr-1" />
-                    {stat.trend}% increase
-                  </div>
-                </div>
+      {/* Tabs */}
+      <div className="flex gap-2 mb-6 overflow-x-auto border-b border-slate-200 pb-4">
+        {tabs.map((tab) => (
+          <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${activeTab === tab.id ? "bg-[#FFA602] text-white" : "text-slate-600 hover:bg-slate-100"}`}>
+            <tab.icon className="w-4 h-4" />{tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Dashboard */}
+      {activeTab === "dashboard" && (
+        <div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+            {[
+              { label: "Total Auctions", value: stats.totalAuctions, icon: Gavel, color: "text-[#FFA602]" },
+              { label: "Live Now", value: stats.liveAuctions, icon: Zap, color: "text-red-500" },
+              { label: "Total Cars", value: stats.totalCars, icon: Car, color: "text-blue-500" },
+              { label: "Total Bids", value: stats.totalBids, icon: TrendingUp, color: "text-emerald-500" },
+              { label: "Verified Users", value: stats.totalUsers, icon: Users, color: "text-purple-500" },
+              { label: "Pending Payments", value: stats.pendingPayments, icon: Clock, color: "text-amber-500" },
+            ].map((s, i) => (
+              <div key={i} className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+                <s.icon className={`w-6 h-6 ${s.color} mb-2`} />
+                <p className="text-2xl font-bold text-slate-900">{s.value || 0}</p>
+                <p className="text-xs text-slate-500">{s.label}</p>
               </div>
             ))}
           </div>
 
-          {/* Main Tabs */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="border-b border-gray-200">
-              <nav className="flex space-x-8 px-6" aria-label="Tabs">
-                {[
-                  "overview",
-                  "users",
-                  "vehicles",
-                  "auctions",
-                  "bookings",
-                  "inspections",
-                  "disputes",
-                  "bids",
-                ].map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setSelectedTab(tab)}
-                    className={`${
-                      selectedTab === tab
-                        ? "border-orange-500 text-orange-600"
-                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                    } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm capitalize`}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </nav>
+          {/* Revenue Stats */}
+          {paymentStats && (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+              <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl p-5 text-white">
+                <BarChart3 className="w-6 h-6 mb-2 opacity-80" />
+                <p className="text-2xl font-bold">PKR {(paymentStats.totalCollected || 0).toLocaleString()}</p>
+                <p className="text-sm opacity-80">Total Revenue</p>
+              </div>
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-5 text-white">
+                <ShieldCheck className="w-6 h-6 mb-2 opacity-80" />
+                <p className="text-2xl font-bold">{paymentStats.escrows?.pending?.count || 0}</p>
+                <p className="text-sm opacity-80">Pending Escrows</p>
+              </div>
+              <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-5 text-white">
+                <AlertTriangle className="w-6 h-6 mb-2 opacity-80" />
+                <p className="text-2xl font-bold">{paymentStats.overdueEscrows || 0}</p>
+                <p className="text-sm opacity-80">Overdue Payments</p>
+              </div>
+              <div className="bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl p-5 text-white">
+                <Undo className="w-6 h-6 mb-2 opacity-80" />
+                <p className="text-2xl font-bold">{paymentStats.refunds?.count || 0}</p>
+                <p className="text-sm opacity-80">Refunds Processed</p>
+              </div>
             </div>
+          )}
 
-            <div className="p-6">
-              {/* Overview Tab */}
-              {selectedTab === "overview" && (
-                <div className="grid md:grid-cols-2 gap-6">
-                  {/* Live Auction Monitor */}
-                  <div className="border-red-200 bg-red-50/50 rounded-lg border p-6">
-                    <h3 className="flex items-center gap-2 text-red-700 font-semibold mb-4">
-                      <FiActivity className="w-5 h-5" />
-                      Live Auction Monitor
-                    </h3>
-                    {liveAuction ? (
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <span className="font-semibold">
-                            {liveAuction.title}
-                          </span>
-                          <span className="bg-red-500 text-white animate-pulse px-2 py-1 rounded text-xs">
-                            LIVE
-                          </span>
-                        </div>
-                        <div className="grid grid-cols-3 gap-4 text-center">
-                          <div className="bg-white rounded-lg p-3">
-                            <p className="text-2xl font-bold">
-                              {liveAuction.total_cars}
-                            </p>
-                            <p className="text-xs text-slate-500">Cars</p>
-                          </div>
-                          <div className="bg-white rounded-lg p-3">
-                            <p className="text-2xl font-bold">
-                              {liveAuction.total_bids}
-                            </p>
-                            <p className="text-xs text-slate-500">Bids</p>
-                          </div>
-                          <div className="bg-white rounded-lg p-3">
-                            <p className="text-2xl font-bold">127</p>
-                            <p className="text-xs text-slate-500">Bidders</p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => setShowOfflineBidDialog(true)}
-                          className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium flex items-center justify-center gap-2"
-                        >
-                          <FiPlus className="w-4 h-4" />
-                          Enter Offline Bid
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="text-center py-8 text-slate-500">
-                        <FiClock className="w-12 h-12 mx-auto mb-3 text-slate-300" />
-                        <p>No live auction currently</p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Pending Approvals */}
-                  <div className="bg-white rounded-lg border border-gray-200 p-6">
-                    <h3 className="flex items-center gap-2 font-semibold mb-4">
-                      <FiClock className="w-5 h-5 text-amber-500" />
-                      Pending Approvals ({pendingCars.length})
-                    </h3>
-                    <div className="space-y-3 max-h-64 overflow-y-auto">
-                      {pendingCars.slice(0, 5).map((car) => (
-                        <div
-                          key={car.id}
-                          className="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-200"
-                        >
-                          <div>
-                            <p className="font-medium">
-                              {car.year} {car.make} {car.model}
-                            </p>
-                            <p className="text-sm text-slate-500">
-                              Starting: PKR {car.starting_bid?.toLocaleString()}
-                            </p>
-                          </div>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() =>
-                                handleApproveCar(car.id, "withdrawn")
-                              }
-                              className="border-red-300 text-red-600 px-2 py-1 rounded text-sm hover:bg-red-50"
-                            >
-                              <FiXCircle className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() =>
-                                handleApproveCar(car.id, "approved")
-                              }
-                              className="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-sm"
-                            >
-                              <FiCheckCircle className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Users Tab */}
-              {selectedTab === "users" && (
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="font-semibold">User Management</h2>
-                    <div className="relative w-64">
-                      <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                      <input
-                        placeholder="Search users..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-9 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-3">
-                    {users
-                      .filter(
-                        (u) =>
-                          u.full_name
-                            ?.toLowerCase()
-                            .includes(searchQuery.toLowerCase()) ||
-                          u.email
-                            ?.toLowerCase()
-                            .includes(searchQuery.toLowerCase()),
-                      )
-                      .map((user) => (
-                        <div
-                          key={user.id}
-                          className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200"
-                        >
-                          <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-semibold">
-                              {user.full_name?.[0] || "U"}
-                            </div>
-                            <div>
-                              <p className="font-semibold">{user.full_name}</p>
-                              <p className="text-sm text-slate-500">
-                                {user.email}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <span className="border border-gray-300 px-2 py-1 rounded text-xs capitalize">
-                              {user.role}
-                            </span>
-                            {user.is_banned ? (
-                              <span className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">
-                                Banned
-                              </span>
-                            ) : user.is_approved ? (
-                              <span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs">
-                                Active
-                              </span>
-                            ) : (
-                              <span className="bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs">
-                                Pending
-                              </span>
-                            )}
-                            <select
-                              defaultValue={user.role}
-                              onChange={(e) =>
-                                handleUpdateUser(user.id, {
-                                  role: e.target.value,
-                                })
-                              }
-                              className="w-28 px-2 py-1 border border-gray-300 rounded text-sm"
-                            >
-                              <option value="user">User</option>
-                              <option value="admin">Admin</option>
-                            </select>
-                            {!user.is_banned ? (
-                              <button
-                                onClick={() =>
-                                  handleUpdateUser(user.id, { is_banned: true })
-                                }
-                                className="border-red-300 text-red-600 px-2 py-1 rounded text-sm hover:bg-red-50"
-                              >
-                                <FiX className="w-4 h-4" />
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() =>
-                                  handleUpdateUser(user.id, {
-                                    is_banned: false,
-                                  })
-                                }
-                                className="border-emerald-300 text-emerald-600 px-2 py-1 rounded text-sm hover:bg-emerald-50"
-                              >
-                                <FiUserCheck className="w-4 h-4" />
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Vehicles Tab */}
-              {selectedTab === "vehicles" && (
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="font-semibold">Vehicle Management</h2>
-                    <select
-                      value={vehicleStatusFilter}
-                      onChange={(e) => setVehicleStatusFilter(e.target.value)}
-                      className="w-40 px-3 py-2 border border-gray-300 rounded-md"
-                    >
-                      <option value="all">All Status</option>
-                      <option value="pending_approval">Pending</option>
-                      <option value="approved">Approved</option>
-                      <option value="in_auction">In Auction</option>
-                      <option value="sold">Sold</option>
-                    </select>
-                  </div>
-                  <div className="space-y-3">
-                    {cars
-                      .filter(
-                        (c) =>
-                          vehicleStatusFilter === "all" ||
-                          c.status === vehicleStatusFilter,
-                      )
-                      .map((car) => (
-                        <div
-                          key={car.id}
-                          className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200"
-                        >
-                          <div className="flex items-center gap-4">
-                            <div className="w-16 h-12 bg-slate-200 rounded-lg overflow-hidden">
-                              <img
-                                src="https://images.unsplash.com/photo-1590362891991-f776e747a588?w=200"
-                                alt=""
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                            <div>
-                              <p className="font-semibold">
-                                {car.year} {car.make} {car.model}
-                              </p>
-                              <p className="text-sm text-slate-500">
-                                {car.current_bid
-                                  ? `Current: PKR ${car.current_bid.toLocaleString()}`
-                                  : `Starting: PKR ${car.starting_bid?.toLocaleString()}`}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <span
-                              className={`px-2 py-1 rounded text-xs ${
-                                car.status === "pending_approval"
-                                  ? "bg-amber-100 text-amber-700"
-                                  : car.status === "in_auction"
-                                    ? "bg-emerald-100 text-emerald-700"
-                                    : car.status === "approved"
-                                      ? "bg-blue-100 text-blue-700"
-                                      : "bg-purple-100 text-purple-700"
-                              }`}
-                            >
-                              {car.status?.replace("_", " ")}
-                            </span>
-                            {car.status === "pending_approval" && (
-                              <>
-                                <button
-                                  onClick={() =>
-                                    handleApproveCar(car.id, "withdrawn")
-                                  }
-                                  className="border-red-300 text-red-600 px-3 py-1 rounded text-sm hover:bg-red-50"
-                                >
-                                  Reject
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    handleApproveCar(car.id, "approved")
-                                  }
-                                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded text-sm"
-                                >
-                                  Approve
-                                </button>
-                              </>
-                            )}
-                            <button className="p-2 hover:bg-gray-100 rounded">
-                              <FiEye className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Auctions Tab */}
-              {selectedTab === "auctions" && (
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="font-semibold">Auction Management</h2>
-                    <button
-                      onClick={() => setShowAuctionDialog(true)}
-                      className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md font-medium flex items-center gap-2"
-                    >
-                      <FiPlus className="w-4 h-4" />
-                      Create Auction
-                    </button>
-                  </div>
-                  <div className="space-y-3">
-                    {auctions.map((auction) => (
-                      <div
-                        key={auction.id}
-                        className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div
-                            className={`w-3 h-3 rounded-full ${
-                              auction.status === "live"
-                                ? "bg-red-500 animate-pulse"
-                                : auction.status === "upcoming"
-                                  ? "bg-blue-500"
-                                  : "bg-emerald-500"
-                            }`}
-                          />
-                          <div>
-                            <p className="font-semibold">{auction.title}</p>
-                            <p className="text-sm text-slate-500">
-                              {auction.start_time
-                                ? new Date(auction.start_time).toLocaleString()
-                                : auction.status}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <span className="text-sm text-slate-500">
-                            {auction.total_cars} cars
-                          </span>
-                          <span
-                            className={`px-2 py-1 rounded text-xs ${
-                              auction.status === "live"
-                                ? "bg-red-100 text-red-700"
-                                : auction.status === "upcoming"
-                                  ? "bg-blue-100 text-blue-700"
-                                  : "bg-emerald-100 text-emerald-700"
-                            }`}
-                          >
-                            {auction.status}
-                          </span>
-                          <select
-                            defaultValue={auction.status}
-                            onChange={(e) =>
-                              console.log(
-                                `Update auction ${auction.id} to ${e.target.value}`,
-                              )
-                            }
-                            className="w-32 px-2 py-1 border border-gray-300 rounded text-sm"
-                          >
-                            <option value="upcoming">Upcoming</option>
-                            <option value="live">Go Live</option>
-                            <option value="completed">End</option>
-                            <option value="cancelled">Cancel</option>
-                          </select>
-                        </div>
-                      </div>
+          {dashboard?.recentBids?.length > 0 && (
+            <div className="bg-white rounded-xl border border-slate-200 p-6">
+              <h3 className="font-semibold text-lg mb-4">Recent Bids</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead><tr className="text-left text-slate-500 border-b"><th className="pb-3">Bidder</th><th className="pb-3">Amount</th><th className="pb-3">Type</th><th className="pb-3">Time</th></tr></thead>
+                  <tbody>
+                    {dashboard.recentBids.map((bid) => (
+                      <tr key={bid._id} className="border-b border-slate-100">
+                        <td className="py-3 font-medium">{bid.bidder?.name || bid.bidderName}</td>
+                        <td className="py-3 font-semibold text-[#FFA602]">PKR {bid.amount?.toLocaleString()}</td>
+                        <td className="py-3"><Badge className={bid.bidType === "offline" ? "bg-slate-100 text-slate-600" : "bg-blue-100 text-blue-600"}>{bid.bidType}</Badge></td>
+                        <td className="py-3 text-slate-500">{new Date(bid.createdAt).toLocaleString()}</td>
+                      </tr>
                     ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Auctions List */}
+      {activeTab === "auctions" && (
+        <div className="space-y-4">
+          {auctions.length === 0 ? (
+            <div className="text-center py-20 text-slate-500">No auctions created yet</div>
+          ) : auctions.map((auction) => (
+            <div key={auction._id} className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+              <div className="flex flex-col md:flex-row justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="font-semibold text-lg text-slate-900">{auction.title}</h3>
+                    <Badge className={statusColors[auction.status]}>{auction.status?.toUpperCase()}</Badge>
+                  </div>
+                  <p className="text-sm text-slate-500">{auction.location}</p>
+                  <div className="flex gap-4 mt-2 text-sm text-slate-500">
+                    <span>Start: {new Date(auction.startTime).toLocaleString()}</span>
+                    <span>End: {new Date(auction.endTime).toLocaleString()}</span>
+                  </div>
+                  <div className="flex gap-4 mt-2 text-sm">
+                    <span>{auction.totalCars || 0} cars</span>
+                    <span>{auction.totalBids || 0} bids</span>
+                    <span>{auction.totalSold || 0} sold</span>
                   </div>
                 </div>
-              )}
-
-              {/* Other tabs would follow similar pattern... */}
-              {selectedTab !== "overview" &&
-                selectedTab !== "users" &&
-                selectedTab !== "vehicles" &&
-                selectedTab !== "auctions" && (
-                  <div className="text-center py-12 text-slate-500">
-                    <FiSettings className="w-12 h-12 mx-auto mb-3 text-slate-300" />
-                    <p className="font-semibold">
-                      {selectedTab.charAt(0).toUpperCase() +
-                        selectedTab.slice(1)}{" "}
-                      Management
-                    </p>
-                    <p className="text-sm mt-2">
-                      This section is under development
-                    </p>
-                  </div>
-                )}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {["draft", "scheduled"].includes(auction.status) && (
+                    <Button variant="success" onClick={() => handleGoLive(auction._id)}><Play className="w-4 h-4 mr-1" />Go Live</Button>
+                  )}
+                  {auction.status === "live" && (
+                    <Button variant="danger" onClick={() => handleEnd(auction._id)}><Square className="w-4 h-4 mr-1" />End</Button>
+                  )}
+                  {!["completed", "cancelled"].includes(auction.status) && (
+                    <Button variant="outline" onClick={() => handleCancel(auction._id)}><Ban className="w-4 h-4 mr-1" />Cancel</Button>
+                  )}
+                </div>
+              </div>
             </div>
+          ))}
+        </div>
+      )}
+
+      {/* Auction Cars */}
+      {activeTab === "cars" && (
+        <div>
+          <div className="flex justify-end mb-4">
+            <Button onClick={() => setShowAddCarModal(true)}><Plus className="w-4 h-4 mr-2" />Add Car to Auction</Button>
+          </div>
+          <div className="overflow-x-auto bg-white rounded-xl border border-slate-200 shadow-sm">
+            <table className="w-full text-sm">
+              <thead><tr className="text-left text-slate-500 border-b bg-slate-50">
+                <th className="p-4">Car</th><th className="p-4">Auction</th><th className="p-4">Starting Bid</th><th className="p-4">Current Bid</th><th className="p-4">Bids</th><th className="p-4">Status</th><th className="p-4">Actions</th>
+              </tr></thead>
+              <tbody>
+                {auctionCars.length === 0 ? (
+                  <tr><td colSpan="7" className="text-center py-10 text-slate-500">No cars submitted to auctions</td></tr>
+                ) : auctionCars.map((ac) => (
+                  <tr key={ac._id} className="border-b border-slate-100 hover:bg-slate-50">
+                    <td className="p-4 font-medium">{ac.car?.year} {ac.car?.make} {ac.car?.model}</td>
+                    <td className="p-4 text-slate-500">{ac.auction?.title}</td>
+                    <td className="p-4">PKR {ac.startingBid?.toLocaleString()}</td>
+                    <td className="p-4 font-semibold text-[#FFA602]">PKR {(ac.currentBid || 0).toLocaleString()}</td>
+                    <td className="p-4">{ac.bidCount || 0}</td>
+                    <td className="p-4"><Badge className={statusColors[ac.status] || ""}>{ac.status}</Badge></td>
+                    <td className="p-4">
+                      <div className="flex gap-1">
+                        {ac.status === "pending" && (
+                          <>
+                            <Button variant="success" className="px-2 py-1 text-xs" onClick={() => handleApproveCar(ac._id)}><Check className="w-3 h-3" /></Button>
+                            <Button variant="danger" className="px-2 py-1 text-xs" onClick={() => handleRejectCar(ac._id)}><X className="w-3 h-3" /></Button>
+                          </>
+                        )}
+                        {["approved", "live"].includes(ac.status) && ac.auction?.status === "live" && (
+                          <Button variant="outline" className="px-2 py-1 text-xs" onClick={() => { setSelectedAuctionCar(ac._id); setShowOfflineBidModal(true); }}>
+                            <Gavel className="w-3 h-3 mr-1" />Floor Bid
+                          </Button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
+      )}
 
-        {/* Dialogs would go here - simplified for now */}
-        {showOfflineBidDialog && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <h3 className="font-semibold mb-4">Enter Offline Bid</h3>
+      {/* Token Payments */}
+      {activeTab === "payments" && (
+        <div>
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div className="flex gap-2 items-center">
+              <span className="text-sm text-slate-500">Filter:</span>
+              {["all", "pending", "verified", "rejected", "refunded"].map((s) => (
+                <button key={s} onClick={() => setPaymentStatusFilter(s)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${paymentStatusFilter === s ? "bg-[#FFA602] text-white" : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"}`}
+                >{s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}</button>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <select className="px-3 py-1.5 text-xs border border-slate-200 rounded-lg" onChange={(e) => e.target.value && handleBulkRefund(e.target.value)} disabled={bulkRefunding}>
+                <option value="">Bulk Refund (select auction)</option>
+                {auctions.filter((a) => a.status === "completed").map((a) => (
+                  <option key={a._id} value={a._id}>{a.title}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="overflow-x-auto bg-white rounded-xl border border-slate-200 shadow-sm">
+            <table className="w-full text-sm">
+              <thead><tr className="text-left text-slate-500 border-b bg-slate-50">
+                <th className="p-4">User</th><th className="p-4">Amount</th><th className="p-4">Method</th><th className="p-4">Transaction ID</th><th className="p-4">Status</th><th className="p-4">Date</th><th className="p-4">Actions</th>
+              </tr></thead>
+              <tbody>
+                {(paymentStatusFilter === "all" ? tokenPayments : tokenPayments.filter((p) => p.status === paymentStatusFilter)).length === 0 ? (
+                  <tr><td colSpan="7" className="text-center py-10 text-slate-500">No token payments</td></tr>
+                ) : (paymentStatusFilter === "all" ? tokenPayments : tokenPayments.filter((p) => p.status === paymentStatusFilter)).map((p) => (
+                  <tr key={p._id} className="border-b border-slate-100 hover:bg-slate-50">
+                    <td className="p-4"><div><p className="font-medium">{p.user?.name}</p><p className="text-xs text-slate-500">{p.user?.email}</p></div></td>
+                    <td className="p-4 font-semibold">PKR {p.amount?.toLocaleString()}</td>
+                    <td className="p-4 capitalize">{p.paymentMethod}</td>
+                    <td className="p-4 font-mono text-xs">{p.transactionId}</td>
+                    <td className="p-4"><Badge className={statusColors[p.status] || ""}>{p.status}</Badge></td>
+                    <td className="p-4 text-slate-500">{new Date(p.createdAt).toLocaleDateString()}</td>
+                    <td className="p-4">
+                      <div className="flex gap-1">
+                        {p.status === "pending" && (
+                          <>
+                            <Button variant="success" className="px-2 py-1 text-xs" onClick={() => handleVerifyPayment(p._id, "verify")}><Check className="w-3 h-3 mr-1" />Verify</Button>
+                            <Button variant="danger" className="px-2 py-1 text-xs" onClick={() => handleVerifyPayment(p._id, "reject")}><X className="w-3 h-3 mr-1" />Reject</Button>
+                          </>
+                        )}
+                        {p.status === "verified" && (
+                          <Button variant="outline" className="px-2 py-1 text-xs" onClick={() => handleRefundToken(p._id)}>
+                            <Undo className="w-3 h-3 mr-1" />Refund
+                          </Button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Escrow Management */}
+      {activeTab === "escrows" && (
+        <div>
+          <div className="flex gap-2 items-center mb-4">
+            <span className="text-sm text-slate-500">Filter:</span>
+            {["all", "pending", "in_escrow", "released", "refunded", "disputed", "overdue"].map((s) => (
+              <button key={s} onClick={() => setEscrowStatusFilter(s)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${escrowStatusFilter === s ? "bg-[#FFA602] text-white" : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"}`}
+              >{s === "all" ? "All" : s === "in_escrow" ? "In Escrow" : s.charAt(0).toUpperCase() + s.slice(1)}</button>
+            ))}
+          </div>
+          <div className="overflow-x-auto bg-white rounded-xl border border-slate-200 shadow-sm">
+            <table className="w-full text-sm">
+              <thead><tr className="text-left text-slate-500 border-b bg-slate-50">
+                <th className="p-4">Car</th><th className="p-4">Buyer</th><th className="p-4">Amount</th><th className="p-4">Due</th><th className="p-4">Status</th><th className="p-4">Deadline</th><th className="p-4">Actions</th>
+              </tr></thead>
+              <tbody>
+                {allEscrows.length === 0 ? (
+                  <tr><td colSpan="7" className="text-center py-10 text-slate-500">No escrows found</td></tr>
+                ) : allEscrows.map((esc) => {
+                  const car = esc.auctionCar?.car || {};
+                  const isOverdue = esc.status === "pending" && new Date(esc.paymentDeadline) < new Date();
+                  const hoursLeft = Math.max(0, Math.round((new Date(esc.paymentDeadline) - new Date()) / 3600000));
+                  return (
+                    <tr key={esc._id} className={`border-b border-slate-100 hover:bg-slate-50 ${isOverdue ? "bg-red-50" : ""}`}>
+                      <td className="p-4 font-medium">{car.year} {car.make} {car.model}</td>
+                      <td className="p-4"><div><p className="font-medium">{esc.buyer?.name}</p><p className="text-xs text-slate-500">{esc.buyer?.email}</p></div></td>
+                      <td className="p-4 font-semibold">PKR {esc.amount?.toLocaleString()}</td>
+                      <td className="p-4 font-semibold text-[#FFA602]">PKR {esc.amountDue?.toLocaleString()}</td>
+                      <td className="p-4">
+                        <Badge className={statusColors[esc.status] || "bg-slate-100 text-slate-600"}>{esc.status?.replace("_", " ")}</Badge>
+                        {isOverdue && <Badge className="bg-red-500 text-white ml-1">Overdue</Badge>}
+                      </td>
+                      <td className="p-4">
+                        <p className="text-xs">{new Date(esc.paymentDeadline).toLocaleString()}</p>
+                        {esc.status === "pending" && !isOverdue && (
+                          <p className={`text-xs font-medium ${hoursLeft < 12 ? "text-red-500" : "text-slate-500"}`}>{hoursLeft}h left</p>
+                        )}
+                      </td>
+                      <td className="p-4">
+                        <div className="flex gap-1 flex-wrap">
+                          {esc.status === "pending" && (
+                            <>
+                              <Button variant="success" className="px-2 py-1 text-xs" onClick={() => handleEscrowAction(esc._id, "in_escrow")}><Check className="w-3 h-3 mr-1" />Paid</Button>
+                              <Button variant="danger" className="px-2 py-1 text-xs" onClick={() => handleEscrowAction(esc._id, "disputed")}><AlertTriangle className="w-3 h-3 mr-1" />Dispute</Button>
+                            </>
+                          )}
+                          {esc.status === "in_escrow" && (
+                            <>
+                              <Button variant="success" className="px-2 py-1 text-xs" onClick={() => handleEscrowAction(esc._id, "released")}><Check className="w-3 h-3 mr-1" />Release</Button>
+                              <Button variant="outline" className="px-2 py-1 text-xs" onClick={() => handleEscrowAction(esc._id, "refunded")}><Undo className="w-3 h-3 mr-1" />Refund</Button>
+                            </>
+                          )}
+                          {esc.status === "disputed" && (
+                            <>
+                              <Button variant="success" className="px-2 py-1 text-xs" onClick={() => handleEscrowAction(esc._id, "in_escrow")}><Check className="w-3 h-3 mr-1" />Resolve</Button>
+                              <Button variant="outline" className="px-2 py-1 text-xs" onClick={() => handleEscrowAction(esc._id, "refunded")}><Undo className="w-3 h-3 mr-1" />Refund</Button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Create Auction Modal */}
+      <AnimatePresence>
+        {showCreateModal && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white rounded-2xl max-w-lg w-full p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold">Create New Auction</h3>
+                <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-slate-100 rounded-lg"><X className="w-5 h-5" /></button>
+              </div>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Select Vehicle
-                  </label>
-                  <select
-                    value={offlineBid.car_id}
-                    onChange={(v) =>
-                      setOfflineBid({ ...offlineBid, car_id: v.target.value })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  >
-                    <option value="">Select vehicle</option>
-                    {carsInAuction.map((car) => (
-                      <option key={car.id} value={car.id}>
-                        {car.year} {car.make} {car.model} - PKR{" "}
-                        {car.current_bid?.toLocaleString()}
-                      </option>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Title *</label>
+                  <input className="w-full px-4 py-2 border border-slate-200 rounded-lg" value={newAuction.title} onChange={(e) => setNewAuction({ ...newAuction, title: e.target.value })} placeholder="e.g. Auction #102" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                  <textarea className="w-full px-4 py-2 border border-slate-200 rounded-lg" rows="3" value={newAuction.description} onChange={(e) => setNewAuction({ ...newAuction, description: e.target.value })} />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Start Time *</label>
+                    <input type="datetime-local" className="w-full px-4 py-2 border border-slate-200 rounded-lg" value={newAuction.startTime} onChange={(e) => setNewAuction({ ...newAuction, startTime: e.target.value })} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">End Time *</label>
+                    <input type="datetime-local" className="w-full px-4 py-2 border border-slate-200 rounded-lg" value={newAuction.endTime} onChange={(e) => setNewAuction({ ...newAuction, endTime: e.target.value })} />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Location</label>
+                  <input className="w-full px-4 py-2 border border-slate-200 rounded-lg" value={newAuction.location} onChange={(e) => setNewAuction({ ...newAuction, location: e.target.value })} />
+                </div>
+                <Button className="w-full" onClick={handleCreate} disabled={creating}>{creating ? "Creating..." : "Create Auction"}</Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Offline Bid Modal */}
+      <AnimatePresence>
+        {showOfflineBidModal && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white rounded-2xl max-w-md w-full p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold">Place Floor Bid</h3>
+                <button onClick={() => setShowOfflineBidModal(false)} className="p-2 hover:bg-slate-100 rounded-lg"><X className="w-5 h-5" /></button>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Bidder Name</label>
+                  <input className="w-full px-4 py-2 border border-slate-200 rounded-lg" value={offlineBidderName} onChange={(e) => setOfflineBidderName(e.target.value)} placeholder="Floor Bid" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Bid Amount (PKR)</label>
+                  <input type="number" className="w-full px-4 py-2 border border-slate-200 rounded-lg" value={offlineBidAmount} onChange={(e) => setOfflineBidAmount(e.target.value)} step="50000" />
+                </div>
+                <Button className="w-full" onClick={handleOfflineBid}><Gavel className="w-4 h-4 mr-2" />Place Floor Bid</Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Add Car to Auction Modal */}
+      <AnimatePresence>
+        {showAddCarModal && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white rounded-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold">Add Car to Auction</h3>
+                <button onClick={() => setShowAddCarModal(false)} className="p-2 hover:bg-slate-100 rounded-lg"><X className="w-5 h-5" /></button>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Select Auction *</label>
+                  <select className="w-full px-4 py-2 border border-slate-200 rounded-lg" value={addCarData.auctionId} onChange={(e) => setAddCarData({ ...addCarData, auctionId: e.target.value })}>
+                    <option value="">Choose an auction...</option>
+                    {auctions.filter((a) => ["draft", "scheduled", "live"].includes(a.status)).map((a) => (
+                      <option key={a._id} value={a._id}>{a.title} ({a.status})</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Bidder Name
-                  </label>
-                  <input
-                    value={offlineBid.bidder_name}
-                    onChange={(e) =>
-                      setOfflineBid({
-                        ...offlineBid,
-                        bidder_name: e.target.value,
-                      })
-                    }
-                    placeholder="Floor Bidder Name"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  />
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Search Car</label>
+                  <input className="w-full px-4 py-2 border border-slate-200 rounded-lg mb-2" placeholder="Search by make, model..." value={carSearch} onChange={(e) => setCarSearch(e.target.value)} />
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Select Car *</label>
+                  <select className="w-full px-4 py-2 border border-slate-200 rounded-lg" value={addCarData.carId} onChange={(e) => setAddCarData({ ...addCarData, carId: e.target.value })}>
+                    <option value="">Choose a car...</option>
+                    {(carsData?.data || carsData?.cars || []).map((c) => (
+                      <option key={c._id} value={c._id}>{c.year} {c.make} {c.model} — PKR {c.price?.toLocaleString()}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Bid Amount (PKR)
-                  </label>
-                  <input
-                    type="number"
-                    value={offlineBid.amount}
-                    onChange={(e) =>
-                      setOfflineBid({ ...offlineBid, amount: e.target.value })
-                    }
-                    placeholder="Enter amount"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  />
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Starting Bid (PKR)</label>
+                  <input type="number" className="w-full px-4 py-2 border border-slate-200 rounded-lg" value={addCarData.startingBid} onChange={(e) => setAddCarData({ ...addCarData, startingBid: e.target.value })} placeholder="500000" step="50000" />
                 </div>
+                <Button className="w-full" onClick={handleAddCar} disabled={addingCar}>
+                  <Car className="w-4 h-4 mr-2" />{addingCar ? "Adding..." : "Add Car to Auction"}
+                </Button>
               </div>
-              <div className="flex gap-3 mt-6">
-                <button
-                  onClick={() => setShowOfflineBidDialog(false)}
-                  className="flex-1 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => {
-                    handleAddOfflineBid({
-                      car_id: offlineBid.car_id,
-                      amount: parseInt(offlineBid.amount),
-                      bidder_name: offlineBid.bidder_name || "Floor Bid",
-                      auction_id: liveAuction.id,
-                    });
-                    setShowOfflineBidDialog(false);
-                  }}
-                  disabled={!offlineBid.car_id || !offlineBid.amount}
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md disabled:opacity-50"
-                >
-                  Submit Bid
-                </button>
-              </div>
-            </div>
+            </motion.div>
           </div>
         )}
-      </div>
+      </AnimatePresence>
+    </div>
     </AdminLayout>
   );
-};
-
-export default AuctionManagement;
+}

@@ -24,6 +24,9 @@ const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showDealerForm, setShowDealerForm] = useState(false);
+  const [auctionTracks, setAuctionTracks] = useState({
+    auctionBidder: false,
+  });
   const [data, setData] = useState({
     name: "",
     email: "",
@@ -78,6 +81,12 @@ const SignUp = () => {
     formData.append("password", data.password);
     formData.append("role", "individual");
     formData.append("avatar", avatarFile);
+    const selectedTracks = Object.entries(auctionTracks)
+      .filter(([, checked]) => checked)
+      .map(([key]) => key);
+    if (selectedTracks.length > 0) {
+      formData.append("auctionRequestTypes", JSON.stringify(selectedTracks));
+    }
 
     try {
       setLoading(true);
@@ -275,6 +284,30 @@ const SignUp = () => {
              </div>
 
               {/* Terms Checkbox */}
+              <div className="mb-4 p-3 border border-gray-200 rounded-lg">
+                <p className="text-sm font-medium text-gray-700 mb-2">
+                  Auction access request (optional)
+                </p>
+                <div className="grid sm:grid-cols-1 gap-2 text-sm">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={auctionTracks.auctionBidder}
+                      onChange={(e) =>
+                        setAuctionTracks((prev) => ({
+                          ...prev,
+                          auctionBidder: e.target.checked,
+                        }))
+                      }
+                    />
+                    <span>Apply as Auction Bidder</span>
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  Requests are manually reviewed by admin after signup.
+                </p>
+              </div>
+
               <div className="mb-4">
                 <div className="flex items-center gap-2">
                   <input

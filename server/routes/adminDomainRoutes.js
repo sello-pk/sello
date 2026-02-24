@@ -5,7 +5,7 @@ import { upload } from "../middlewares/multer.js";
 
 // Controllers
 import {
-  getDashboardStats, getAllUsers, getUserById, updateUser, deleteUser, approveCar, deleteCar, getAllCars, featureCar, getAllDealers, verifyUser, verifyDealer, getListingHistory, getAuditLogsController, getAnalyticsSummary, trackAnalyticsEvent
+  getDashboardStats, getAllUsers, getUserById, updateUser, deleteUser, approveCar, deleteCar, getAllCars, featureCar, getAllDealers, verifyUser, verifyDealer, getListingHistory, getAuditLogsController, getAnalyticsSummary, trackAnalyticsEvent, getAuctionAccessRequests, reviewAuctionAccessRequest
 } from "../controllers/adminController.js";
 import {
   getAllRoles, getRoleById, createRole, updateRole, deleteRole, inviteUser, getAllInvites, updateInvite, deleteInvite, resendInvite, cancelInvite, getPermissionMatrix, initializeRoles, getInviteByToken, acceptInvite
@@ -29,6 +29,8 @@ router.put("/admin/listings/:carId/approve", hasPermission("manageListings"), ap
 router.put("/admin/listings/:carId/feature", hasPermission("manageListings"), featureCar);
 router.delete("/admin/listings/:carId", hasPermission("manageListings"), deleteCar);
 router.get("/admin/dealers", hasPermission("viewDealers"), getAllDealers);
+router.get("/admin/auction-access/requests", hasPermission("viewDealers"), getAuctionAccessRequests);
+router.put("/admin/auction-access/review/:userId", hasPermission("viewDealers"), reviewAuctionAccessRequest);
 router.get("/admin/analytics/summary", getAnalyticsSummary);
 
 /* ---------------------------------- ROLES --------------------------------- */

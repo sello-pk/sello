@@ -177,6 +177,7 @@ export const adminApi = createApi({
     "Invites",
     "SubscriptionPlans",
     "Valuations",
+    "Auctions",
   ],
   endpoints: (builder) => ({
     // Dashboard
@@ -302,6 +303,22 @@ export const adminApi = createApi({
         body: { verified },
       }),
       invalidatesTags: ["Dealers", "Users"], // Also invalidate Users so dealer dashboard refreshes
+    }),
+    getAuctionAccessRequests: builder.query({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams(params).toString();
+        return `/admin/auction-access/requests?${searchParams}`;
+      },
+      providesTags: ["Dealers", "Users"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    reviewAuctionAccessRequest: builder.mutation({
+      query: ({ userId, ...data }) => ({
+        url: `/admin/auction-access/review/${userId}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Dealers", "Users"],
     }),
 
     // Categories - Cache for longer as it's relatively static data
@@ -1066,6 +1083,233 @@ export const adminApi = createApi({
       }),
       invalidatesTags: ["Valuations"],
     }),
+
+    // ═══════════════════════════ Admin Auction Endpoints ═══════════════════
+
+    getAuctionDashboard: builder.query({
+      query: () => "/auctions/admin/dashboard",
+      providesTags: ["Auctions"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    adminCreateAuction: builder.mutation({
+      query: (data) => ({
+        url: "/auctions/admin/create",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    adminUpdateAuction: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/auctions/admin/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    adminGoLive: builder.mutation({
+      query: (id) => ({
+        url: `/auctions/admin/${id}/go-live`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    adminEndAuction: builder.mutation({
+      query: (id) => ({
+        url: `/auctions/admin/${id}/end`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    adminCancelAuction: builder.mutation({
+      query: (id) => ({
+        url: `/auctions/admin/${id}/cancel`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    adminApproveAuctionCar: builder.mutation({
+      query: (id) => ({
+        url: `/auctions/admin/car/${id}/approve`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    adminRejectAuctionCar: builder.mutation({
+      query: (id) => ({
+        url: `/auctions/admin/car/${id}/reject`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    adminPlaceOfflineBid: builder.mutation({
+      query: (data) => ({
+        url: "/auctions/admin/offline-bid",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    adminGetAllTokenPayments: builder.query({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        if (params.status) searchParams.append("status", params.status);
+        return `/auctions/admin/token-payments?${searchParams.toString()}`;
+      },
+      providesTags: ["Auctions"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    adminVerifyTokenPayment: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/auctions/admin/token-payments/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    adminGetAllAuctionCars: builder.query({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        if (params.auctionId) searchParams.append("auctionId", params.auctionId);
+        if (params.status) searchParams.append("status", params.status);
+        return `/auctions/admin/cars?${searchParams.toString()}`;
+      },
+      providesTags: ["Auctions"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    adminUpdateInspection: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/auctions/admin/car/${id}/inspection`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    adminAddCarToAuction: builder.mutation({
+      query: (data) => ({
+        url: "/auctions/admin/add-car",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    adminGetAllEscrows: builder.query({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        if (params.status) searchParams.append("status", params.status);
+        if (params.overdue) searchParams.append("overdue", params.overdue);
+        return `/auctions/admin/escrows?${searchParams.toString()}`;
+      },
+      providesTags: ["Auctions"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    adminUpdateEscrowStatus: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/auctions/admin/escrow/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    adminRefundToken: builder.mutation({
+      query: (id) => ({
+        url: `/auctions/admin/token-refund/${id}`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    adminBulkRefundTokens: builder.mutation({
+      query: (data) => ({
+        url: "/auctions/admin/bulk-refund",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    getPaymentStats: builder.query({
+      query: () => "/auctions/admin/payment-stats",
+      providesTags: ["Auctions"],
+      transformResponse: (response) => response?.data || response,
+    }),
+
+    // ═══════════════════════════ Admin Payment/Wallet Endpoints ═══════════════
+    adminGetAllWallets: builder.query({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        if (params.page) searchParams.append("page", params.page);
+        if (params.limit) searchParams.append("limit", params.limit);
+        return `/payments/admin/wallets?${searchParams.toString()}`;
+      },
+      providesTags: ["Auctions"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    adminUpdateWalletBalance: builder.mutation({
+      query: ({ userId, ...data }) => ({
+        url: `/payments/admin/wallet/${userId}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    adminGetAllDeposits: builder.query({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        if (params.status) searchParams.append("status", params.status);
+        return `/payments/admin/deposits?${searchParams.toString()}`;
+      },
+      providesTags: ["Auctions"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    adminProcessDeposit: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/payments/admin/deposit/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    adminGetAllRefunds: builder.query({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        if (params.status) searchParams.append("status", params.status);
+        return `/payments/admin/refunds?${searchParams.toString()}`;
+      },
+      providesTags: ["Auctions"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    adminProcessRefund: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/payments/admin/refund/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    adminGetPlatformSettings: builder.query({
+      query: () => "/payments/admin/settings",
+      providesTags: ["Auctions"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    adminUpdatePlatformSettings: builder.mutation({
+      query: (data) => ({
+        url: "/payments/admin/settings",
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    adminGetAuditLog: builder.query({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        if (params.page) searchParams.append("page", params.page);
+        if (params.limit) searchParams.append("limit", params.limit);
+        if (params.type) searchParams.append("type", params.type);
+        if (params.userId) searchParams.append("userId", params.userId);
+        return `/payments/admin/audit-log?${searchParams.toString()}`;
+      },
+      providesTags: ["Auctions"],
+      transformResponse: (response) => response?.data || response,
+    }),
   }),
 });
 
@@ -1082,6 +1326,8 @@ export const {
   usePromoteCarMutation,
   useGetAllDealersQuery,
   useVerifyDealerMutation,
+  useGetAuctionAccessRequestsQuery,
+  useReviewAuctionAccessRequestMutation,
   useGetAuditLogsQuery,
   useGetAllCategoriesQuery,
   useCreateCategoryMutation,
@@ -1172,4 +1418,32 @@ export const {
   useReviewDeletionRequestMutation,
   useGetAllValuationsAdminQuery,
   useDeleteValuationAdminMutation,
+  useGetAuctionDashboardQuery,
+  useAdminCreateAuctionMutation,
+  useAdminUpdateAuctionMutation,
+  useAdminGoLiveMutation,
+  useAdminEndAuctionMutation,
+  useAdminCancelAuctionMutation,
+  useAdminApproveAuctionCarMutation,
+  useAdminRejectAuctionCarMutation,
+  useAdminPlaceOfflineBidMutation,
+  useAdminGetAllTokenPaymentsQuery,
+  useAdminVerifyTokenPaymentMutation,
+  useAdminGetAllAuctionCarsQuery,
+  useAdminUpdateInspectionMutation,
+  useAdminAddCarToAuctionMutation,
+  useAdminGetAllEscrowsQuery,
+  useAdminUpdateEscrowStatusMutation,
+  useAdminRefundTokenMutation,
+  useAdminBulkRefundTokensMutation,
+  useGetPaymentStatsQuery,
+  useAdminGetAllWalletsQuery,
+  useAdminUpdateWalletBalanceMutation,
+  useAdminGetAllDepositsQuery,
+  useAdminProcessDepositMutation,
+  useAdminGetAllRefundsQuery,
+  useAdminProcessRefundMutation,
+  useAdminGetPlatformSettingsQuery,
+  useAdminUpdatePlatformSettingsMutation,
+  useAdminGetAuditLogQuery,
 } = adminApi;

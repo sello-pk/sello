@@ -15,7 +15,8 @@
     "cron:auto-delete-sold": "node ./scripts/autoDeleteSoldCars.js",
     "validate-env": "node ./scripts/validateEnv.js",
     "seed:blogs": "node ./scripts/seedBlogs.js",
-    "clear:blogs": "node ./scripts/clearBlogs.js"
+    "clear:blogs": "node ./scripts/clearBlogs.js",
+    "backfill:auction-access": "node ./scripts/backfillAuctionCapabilities.js"
   },
   "keywords": [],
   "author": "",

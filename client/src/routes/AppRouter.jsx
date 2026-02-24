@@ -138,17 +138,13 @@ const AppRouter = () => {
         <Route path="/search-results" element={<FilteredResults />} />
         <Route path="/view-all-brands" element={<AllBrands />} />
 
-        {/* Features */}
+        {/* Features — Public Auction Pages */}
         <Route path="/car-estimator" element={<CarEstimator />} />
         <Route path="/auctions" element={<AuctionsActions />} />
         <Route path="/auctions/live" element={<LiveAuction />} />
         <Route path="/auctions/schedule" element={<AuctionSchedule />} />
         <Route path="/auctions/trust-legal" element={<TrustLegal />} />
-        <Route path="/auctions/result" element={<AuctionResult />} />
-        <Route path="/auctions/transactions" element={<BuyerTransactions />} />
         <Route path="/auctions/car-detail" element={<CarDetail />} />
-        <Route path="/auctions/token-payment" element={<TokenPayment />} />
-        <Route path="/auctions/watchlist" element={<Watchlist />} />
 
         {/* Auth Flow */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -167,6 +163,11 @@ const AppRouter = () => {
           <Route path="/seller/chats" element={<SellerChats />} />
           <Route path="/dealer/dashboard" element={<DealerDashboard />} />
           <Route path="/seller/dashboard" element={<SellerDashboard />} />
+          {/* Auction — Authenticated User Pages */}
+          <Route path="/auctions/token-payment" element={<TokenPayment />} />
+          <Route path="/auctions/watchlist" element={<Watchlist />} />
+          <Route path="/auctions/transactions" element={<BuyerTransactions />} />
+          <Route path="/auctions/result" element={<AuctionResult />} />
         </Route>
 
         {/* Admin Panel */}

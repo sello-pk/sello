@@ -961,6 +961,19 @@ export const initializeSocket = (server) => {
       }
     });
 
+    // ── Auction Events ────────────────────────────────────────────────────
+
+    socket.on("join-auction", (auctionId) => {
+      if (!auctionId) return;
+      socket.join(`auction:${auctionId}`);
+      Logger.info(`User ${socket.userId} joined auction room: ${auctionId}`);
+    });
+
+    socket.on("leave-auction", (auctionId) => {
+      if (!auctionId) return;
+      socket.leave(`auction:${auctionId}`);
+    });
+
     // Handle disconnect
     socket.on("disconnect", (reason) => {
       Logger.info(`User disconnected: ${socket.userId}, reason: ${reason}`);
