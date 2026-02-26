@@ -10,6 +10,35 @@ import { getPasswordResetTemplate, getWelcomeTemplate } from "../utils/emailTemp
 import client from "../config/googleClient.js";
 import { AUCTION_REQUEST_TYPES } from "../utils/auctionAccess.js";
 
+const ACCESS_COOKIE_MAX_AGE_MS = 30 * 60 * 1000;
+const isProduction = process.env.NODE_ENV === "production";
+
+const getAccessCookieOptions = () => ({
+    httpOnly: false, // kept for backward compatibility with existing cookie fallback auth
+    secure: isProduction,
+    sameSite: "lax",
+    path: "/",
+    maxAge: ACCESS_COOKIE_MAX_AGE_MS,
+});
+
+const getRefreshCookieOptions = (ttlDays = 7) => ({
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: "lax",
+    path: "/",
+    maxAge: Math.max(1, Number(ttlDays || 7)) * 24 * 60 * 60 * 1000,
+});
+
+const setAuthCookies = (res, accessToken, refreshToken, ttlDays = 7) => {
+    res.cookie("token", accessToken, getAccessCookieOptions());
+    res.cookie("refreshToken", refreshToken, getRefreshCookieOptions(ttlDays));
+};
+
+const clearAuthCookies = (res) => {
+    res.clearCookie("token", { ...getAccessCookieOptions(), maxAge: undefined });
+    res.clearCookie("refreshToken", { ...getRefreshCookieOptions(7), maxAge: undefined });
+};
+
 /* -------------------------------------------------------------------------- */
 /*                                AUTH SERVICE                                */
 /* -------------------------------------------------------------------------- */
@@ -17,7 +46,7 @@ import { AUCTION_REQUEST_TYPES } from "../utils/auctionAccess.js";
 const AuthService = {
     generateAccessToken: (userId, email) => {
         return jwt.sign({ id: userId, email, type: "access" }, process.env.JWT_SECRET, {
-            expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || (process.env.NODE_ENV === "production" ? "2h" : "1h")
+            expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "15m"
         });
     },
 
@@ -140,8 +169,7 @@ export const register = async (req, res) => {
         const user = await AuthService.register(req);
         const { accessToken, refreshToken, ttlDays } = await AuthService.generateTokens(user._id, user.email, req.headers["user-agent"], req.ip);
 
-        res.cookie("token", accessToken, { httpOnly: false, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 30 * 60 * 1000 });
-        res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: ttlDays * 24 * 3600 * 1000 });
+        setAuthCookies(res, accessToken, refreshToken, ttlDays);
 
         return res.status(201).json({
             success: true,
@@ -166,8 +194,7 @@ export const login = async (req, res) => {
         const user = await AuthService.login(email, password);
         const { accessToken, refreshToken, ttlDays } = await AuthService.generateTokens(user._id, user.email, req.headers["user-agent"], req.ip, rememberMe ? 30 : 7);
 
-        res.cookie("token", accessToken, { httpOnly: false, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 30 * 60 * 1000 });
-        res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: ttlDays * 24 * 3600 * 1000 });
+        setAuthCookies(res, accessToken, refreshToken, ttlDays);
 
         return res.status(200).json({
             success: true,
@@ -236,21 +263,70 @@ export const resetPassword = async (req, res) => {
 export const logout = async (req, res) => {
     const refreshToken = req.cookies.refreshToken;
     if (refreshToken) await RefreshToken.updateOne({ token: refreshToken }, { isRevoked: true, revokedAt: new Date() });
-    res.clearCookie("token");
-    res.clearCookie("refreshToken");
+    clearAuthCookies(res);
     return res.status(200).json({ success: true, message: "Logged out" });
 };
 
 export const refreshToken = async (req, res) => {
     try {
         const token = req.cookies.refreshToken;
-        if (!token) return res.status(401).json({ success: false, message: "Refresh token missing" });
+        if (!token) {
+            clearAuthCookies(res);
+            return res.status(401).json({ success: false, message: "Refresh token missing" });
+        }
+
+        const revokedDoc = await RefreshToken.findOne({ token, isRevoked: true }).select("userId");
+        if (revokedDoc?.userId) {
+            // Reuse of a revoked token indicates possible session theft; invalidate all sessions for this user.
+            await RefreshToken.deleteMany({ userId: revokedDoc.userId });
+            clearAuthCookies(res);
+            return res.status(401).json({ success: false, message: "Session expired. Please login again." });
+        }
 
         const doc = await RefreshToken.findOne({ token, isRevoked: false }).populate("userId");
-        if (!doc || doc.expiresAt < new Date()) return res.status(401).json({ success: false, message: "Invalid/Expired refresh token" });
+        if (!doc || doc.expiresAt < new Date()) {
+            if (doc) {
+                doc.isRevoked = true;
+                doc.revokedAt = new Date();
+                await doc.save();
+            }
+            clearAuthCookies(res);
+            return res.status(401).json({ success: false, message: "Invalid or expired refresh token" });
+        }
 
-        const accessToken = AuthService.generateAccessToken(doc.userId._id, doc.userId.email);
-        return res.status(200).json({ success: true, accessToken, token: accessToken });
+        if (!doc.userId || doc.userId.status === "suspended" || doc.userId.status === "inactive") {
+            await RefreshToken.deleteMany({ userId: doc.userId?._id || doc.userId });
+            clearAuthCookies(res);
+            return res.status(401).json({ success: false, message: "Session no longer valid. Please login again." });
+        }
+
+        // Rotate refresh token on every refresh request.
+        doc.isRevoked = true;
+        doc.revokedAt = new Date();
+        await doc.save();
+
+        const remainingTtlDays = Math.max(
+            1,
+            Math.ceil((new Date(doc.expiresAt).getTime() - Date.now()) / (24 * 60 * 60 * 1000))
+        );
+
+        const { accessToken, refreshToken: newRefreshToken, ttlDays } = await AuthService.generateTokens(
+            doc.userId._id,
+            doc.userId.email,
+            req.headers["user-agent"],
+            req.ip,
+            remainingTtlDays
+        );
+
+        setAuthCookies(res, accessToken, newRefreshToken, ttlDays);
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                accessToken,
+                token: accessToken,
+            },
+        });
     } catch (error) { return res.status(500).json({ success: false }); }
 };
 
@@ -266,8 +342,7 @@ export const googleLogin = async (req, res) => {
         }
         
         const { accessToken, refreshToken, ttlDays } = await AuthService.generateTokens(user._id, user.email, req.headers["user-agent"], req.ip);
-        res.cookie("token", accessToken, { httpOnly: false, secure: process.env.NODE_ENV === "production", maxAge: 30 * 60 * 1000 });
-        res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", maxAge: ttlDays * 24 * 3600 * 1000 });
+        setAuthCookies(res, accessToken, refreshToken, ttlDays);
         return res.status(200).json({ success: true, data: { user, token: accessToken, accessToken } });
     } catch (error) { Logger.error("Google Login Error", error); return res.status(500).json({ success: false }); }
 };
@@ -297,8 +372,7 @@ export const logoutAllDevices = async (req, res) => {
     try {
         const userId = req.user._id;
         await RefreshToken.deleteMany({ userId });
-        res.clearCookie("token");
-        res.clearCookie("refreshToken");
+        clearAuthCookies(res);
         return res.status(200).json({ success: true, message: "Logged out from all devices" });
     } catch (error) {
         Logger.error("Logout All Devices Error", error);

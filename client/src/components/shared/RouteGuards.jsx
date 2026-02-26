@@ -2,6 +2,7 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useGetMeQuery, useGetMyAuctionAccessStatusQuery } from "../../redux/services/api";
 import { canAccessMenu } from "../../utils/roleAccess";
 import { useMemo } from "react";
+import { clearTokens } from "../../utils/tokenRefresh";
 
 /**
  * Protected Route Component
@@ -34,7 +35,7 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (isError || !user) {
-    localStorage.removeItem("token");
+    clearTokens();
     localStorage.removeItem("user");
     return <Navigate to="/login" replace />;
   }
@@ -126,7 +127,7 @@ const AdminRoute = () => {
       error?.originalStatus === 403
     ) {
       // For auth errors (401, 403), clear token and redirect
-      localStorage.removeItem("token");
+      clearTokens();
       localStorage.removeItem("user");
       return <Navigate to="/login" replace />;
     } else {
@@ -134,7 +135,7 @@ const AdminRoute = () => {
       if (cachedUser && cachedUser.role === "admin") {
         // Continue with cached user
       } else {
-        localStorage.removeItem("token");
+        clearTokens();
         localStorage.removeItem("user");
         return <Navigate to="/login" replace />;
       }
@@ -143,7 +144,7 @@ const AdminRoute = () => {
 
   // Check if user data exists (either from API or cache)
   if (!currentUser) {
-    localStorage.removeItem("token");
+    clearTokens();
     localStorage.removeItem("user");
     return <Navigate to="/login" replace />;
   }
@@ -204,7 +205,7 @@ const AuctionCapabilityRoute = () => {
   }
 
   if (userError || !user) {
-    localStorage.removeItem("token");
+    clearTokens();
     localStorage.removeItem("user");
     return <Navigate to="/login" replace />;
   }

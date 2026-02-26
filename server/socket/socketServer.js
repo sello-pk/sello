@@ -133,10 +133,18 @@ export const initializeSocket = (server) => {
 
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if (decoded?.type && decoded.type !== "access") {
+          return next(new Error("Authentication error: Invalid token type."));
+        }
+
         const user = await User.findById(decoded.id).select("-password");
 
         if (!user) {
           return next(new Error("Authentication error: User not found"));
+        }
+
+        if (user.status === "suspended" || user.status === "inactive") {
+          return next(new Error("Authentication error: Account is not active."));
         }
 
         socket.userId = user._id.toString();

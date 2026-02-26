@@ -56,6 +56,13 @@ export const auth = async (req, res, next) => {
             });
         }
 
+        if (decoded?.type && decoded.type !== "access") {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid token type. Please login again."
+            });
+        }
+
         // Find user
         const user = await User.findById(decoded.id).select("-password -otp -otpExpiry");
         

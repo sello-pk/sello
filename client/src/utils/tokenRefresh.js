@@ -56,7 +56,11 @@ export const refreshAccessToken = async () => {
       throw new Error(data.message || "Failed to refresh token");
     }
 
-    const newAccessToken = data.data?.accessToken || data.data?.token;
+    const newAccessToken =
+      data?.data?.accessToken ||
+      data?.data?.token ||
+      data?.accessToken ||
+      data?.token;
 
     if (!newAccessToken) {
       throw new Error("No access token in refresh response");
