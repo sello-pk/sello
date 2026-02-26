@@ -15,6 +15,8 @@ const Valuations = () => {
   const [search, setSearch] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [valuationToDelete, setValuationToDelete] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedValuation, setSelectedValuation] = useState(null);
 
   const { data, isLoading, refetch } = useGetAllValuationsAdminQuery({
     page,
@@ -24,12 +26,20 @@ const Valuations = () => {
 
   const [deleteValuation] = useDeleteValuationAdminMutation();
 
-  const valuations = data?.data || [];
-  const totalValuations = data?.count || 0;
+  // Support both API response shapes:
+  // 1) { count, data: [...] }
+  // 2) [...] (when transformResponse already unwraps data)
+  const valuations = Array.isArray(data) ? data : data?.data || [];
+  const totalValuations = Array.isArray(data) ? data.length : data?.count || 0;
 
   const handleDelete = (id) => {
     setValuationToDelete(id);
     setShowDeleteModal(true);
+  };
+
+  const handleViewDetails = (valuation) => {
+    setSelectedValuation(valuation);
+    setShowDetailModal(true);
   };
 
   const handleDeleteConfirm = async () => {
@@ -211,8 +221,16 @@ const Valuations = () => {
                         <div className="flex items-center gap-3">
                           {/* We can add a view details modal later if needed */}
                           <button
+                            onClick={() => handleViewDetails(v)}
+                            className="text-blue-600 hover:text-blue-700 transition-colors"
+                            title="View details"
+                          >
+                            <FiEye size={18} />
+                          </button>
+                          <button
                             onClick={() => handleDelete(v._id)}
                             className="text-red-600 hover:text-red-700 transition-colors"
+                            title="Delete valuation"
                           >
                             <FiTrash2 size={18} />
                           </button>
@@ -244,6 +262,127 @@ const Valuations = () => {
           confirmText="Delete"
           variant="danger"
         />
+
+        {/* View Details Modal */}
+        {showDetailModal && selectedValuation && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between p-5 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Valuation Details
+                </h3>
+                <button
+                  onClick={() => {
+                    setShowDetailModal(false);
+                    setSelectedValuation(null);
+                  }}
+                  className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="p-5 space-y-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                    <p className="text-xs text-gray-500 mb-1">Vehicle</p>
+                    <p className="font-semibold text-gray-900 dark:text-white">
+                      {selectedValuation.vehicleData?.year}{" "}
+                      {selectedValuation.vehicleData?.make}{" "}
+                      {selectedValuation.vehicleData?.model}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                      Mileage:{" "}
+                      {selectedValuation.vehicleData?.mileage?.toLocaleString()} KM
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Engine/Fuel:{" "}
+                      {selectedValuation.vehicleData?.fuelType ||
+                        selectedValuation.vehicleData?.engineType ||
+                        "N/A"}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Transmission:{" "}
+                      {selectedValuation.vehicleData?.transmission || "N/A"}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Registration City:{" "}
+                      {selectedValuation.vehicleData?.registrationCity || "N/A"}
+                    </p>
+                  </div>
+
+                  <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                    <p className="text-xs text-gray-500 mb-1">Estimation</p>
+                    <p className="font-semibold text-primary-600 text-lg">
+                      PKR{" "}
+                      {selectedValuation.estimation?.averagePrice?.toLocaleString()}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                      Min: PKR{" "}
+                      {selectedValuation.estimation?.minPrice?.toLocaleString()}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Max: PKR{" "}
+                      {selectedValuation.estimation?.maxPrice?.toLocaleString()}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                      Confidence:{" "}
+                      {selectedValuation.estimation?.confidenceScore ?? 0}%
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      AI Powered:{" "}
+                      {selectedValuation.estimation?.isAIPowered ? "Yes" : "No"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                  <p className="text-xs text-gray-500 mb-1">Analysis Summary</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-200 leading-relaxed">
+                    {selectedValuation.estimation?.analysisSummary ||
+                      "No analysis summary available."}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                    <p className="text-xs text-gray-500 mb-1">User</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      {selectedValuation.userId?.name || "Anonymous User"}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      {selectedValuation.userId?.email || "N/A"}
+                    </p>
+                  </div>
+                  <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                    <p className="text-xs text-gray-500 mb-1">Metadata</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Created: {formatDate(selectedValuation.createdAt)}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Updated: {formatDate(selectedValuation.updatedAt)}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      ID: {selectedValuation._id}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-5 border-t border-gray-200 dark:border-gray-700 flex justify-end">
+                <button
+                  onClick={() => {
+                    setShowDetailModal(false);
+                    setSelectedValuation(null);
+                  }}
+                  className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </AdminLayout>
   );
