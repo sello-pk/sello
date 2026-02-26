@@ -94,6 +94,21 @@ const mileageOptions = [
   { value: "150,000+", label: "150,000+" },
 ];
 
+const parseMileageValue = (value) => {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (!value || typeof value !== "string") return NaN;
+
+  const normalized = value.replace(/,/g, "").trim();
+  const numbers = normalized.match(/\d+/g)?.map(Number) || [];
+  if (numbers.length === 0) return NaN;
+
+  if (normalized.includes("-") && numbers.length >= 2) {
+    return Math.round((numbers[0] + numbers[1]) / 2);
+  }
+
+  return numbers[0];
+};
+
 const FormSection = ({ title, subtitle, icon: Icon, color, children }) => (
   <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
     <div className="p-4 border-b border-gray-100">
@@ -268,8 +283,8 @@ export default function CarEstimatorForm({ onEstimate }) {
     }
 
     // Validate mileage
-    const mileageNum = parseInt(formData.mileage);
-    if (mileageNum < 0) {
+    const mileageNum = parseMileageValue(formData.mileage);
+    if (isNaN(mileageNum) || mileageNum < 0) {
       newErrors.mileage = "Mileage must be a positive number";
     }
 
@@ -297,6 +312,7 @@ export default function CarEstimatorForm({ onEstimate }) {
           make: selectedMakeObj?.name || formData.make,
           model: selectedModelObj?.name || formData.model,
           registrationCity: selectedCityObj?.name || formData.registrationCity,
+          mileage: parseMileageValue(formData.mileage),
         };
 
         const result = await createValuation(valuationData).unwrap();

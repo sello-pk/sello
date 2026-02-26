@@ -2,6 +2,22 @@ import Valuation from "../models/valuationModel.js";
 import Logger from "../utils/logger.js";
 import { calculateEstimation } from "../utils/valuationHelper.js";
 
+const parseMileageInput = (input) => {
+  if (typeof input === "number" && Number.isFinite(input)) return input;
+  if (typeof input !== "string") return NaN;
+
+  const normalized = input.replace(/,/g, "").trim();
+  const numbers = normalized.match(/\d+/g)?.map(Number) || [];
+  if (numbers.length === 0) return NaN;
+
+  // Handles formats like "10,000 - 20,000", "150,000+", "< 5,000", "120000"
+  if (normalized.includes("-") && numbers.length >= 2) {
+    return Math.round((numbers[0] + numbers[1]) / 2);
+  }
+
+  return numbers[0];
+};
+
 /**
  * Create a new valuation
  */
@@ -30,7 +46,7 @@ export const createValuation = async (req, res) => {
 
     // Validate data types
     const year = parseInt(vehicleData.year);
-    const mileage = parseInt(vehicleData.mileage);
+    const mileage = parseMileageInput(vehicleData.mileage);
 
     if (isNaN(year) || year < 1990 || year > new Date().getFullYear() + 1) {
       return res.status(400).json({
@@ -55,11 +71,17 @@ export const createValuation = async (req, res) => {
       year,
     });
 
-    const estimation = await calculateEstimation(vehicleData);
+    const normalizedVehicleData = {
+      ...vehicleData,
+      year,
+      mileage,
+    };
+
+    const estimation = await calculateEstimation(normalizedVehicleData);
 
     const valuation = new Valuation({
       userId: req.user?._id, // Optional user ID
-      vehicleData,
+      vehicleData: normalizedVehicleData,
       estimation,
     });
 
