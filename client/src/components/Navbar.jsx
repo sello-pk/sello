@@ -11,6 +11,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const backdropRef = useRef(null);
   const drawerRef = useRef(null);
   const linkRefs = useRef([]);
 
@@ -77,40 +78,49 @@ const Navbar = () => {
 
   const openDrawer = () => {
     setOpen(true);
-    setTimeout(() => {
+    requestAnimationFrame(() => {
+      gsap.fromTo(
+        backdropRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.35, ease: "power2.out" },
+      );
       gsap.fromTo(
         drawerRef.current,
         { xPercent: 100 },
-        { xPercent: 0, duration: 0.8, ease: "bounce.out" },
+        { xPercent: 0, duration: 0.55, ease: "power4.out" },
       );
       gsap.fromTo(
         linkRefs.current,
-        { x: 100, opacity: 0 },
+        { y: 16, opacity: 0 },
         {
-          x: 0,
+          y: 0,
           opacity: 1,
-          duration: 0.6,
-          ease: "back.out(1.7)",
-          stagger: 0.1,
-          delay: 0.2,
+          duration: 0.35,
+          ease: "power3.out",
+          stagger: 0.06,
+          delay: 0.16,
         },
       );
-    }, 10);
+    });
   };
 
   const closeDrawer = () => {
     gsap.to(linkRefs.current, {
-      x: 100,
+      y: 12,
       opacity: 0,
-      duration: 0.4,
-      ease: "back.in(1.3)",
-      stagger: { each: 0.1, from: "end" },
+      duration: 0.25,
+      ease: "power2.in",
+      stagger: { each: 0.04, from: "end" },
+    });
+    gsap.to(backdropRef.current, {
+      opacity: 0,
+      duration: 0.32,
+      ease: "power2.in",
     });
     gsap.to(drawerRef.current, {
       xPercent: 100,
-      duration: 0.8,
-      ease: "bounce.in",
-      delay: 0.4,
+      duration: 0.45,
+      ease: "power4.inOut",
       onComplete: () => setOpen(false),
     });
   };
@@ -255,9 +265,17 @@ const Navbar = () => {
       {/* Mobile Drawer */}
       {open && (
         <div
-          ref={drawerRef}
-          className="fixed top-0 right-0 w-[85%] sm:w-[75%] md:w-[60%] h-full z-50 text-black px-4 sm:px-6 py-4 sm:py-6 bg-primary-400 shadow-xl lg:hidden"
+          className="fixed inset-0 w-full h-full z-50 lg:hidden"
         >
+          <div
+            ref={backdropRef}
+            onClick={closeDrawer}
+            className="absolute inset-0 bg-black/45"
+          />
+          <div
+            ref={drawerRef}
+            className="absolute inset-0 text-black px-4 sm:px-6 py-4 sm:py-6 bg-white shadow-xl"
+          >
           {/* Close Button */}
           <div className="flex justify-end text-2xl sm:text-3xl mb-4 sm:mb-6">
             <button onClick={closeDrawer}>
@@ -331,6 +349,7 @@ const Navbar = () => {
                 </Link>
               )}
             {/* Individual users don't have a dashboard */}
+          </div>
           </div>
         </div>
       )}
