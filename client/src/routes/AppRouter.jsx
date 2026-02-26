@@ -4,6 +4,7 @@ import RouteLoader from "../components/common/RouteLoader";
 import {
   ProtectedRoute,
   AdminRoute,
+  AuctionCapabilityRoute,
 } from "../components/shared/RouteGuards.jsx";
 
 // Critical pages
@@ -165,9 +166,11 @@ const AppRouter = () => {
           <Route path="/seller/dashboard" element={<SellerDashboard />} />
           {/* Auction — Authenticated User Pages */}
           <Route path="/auctions/token-payment" element={<TokenPayment />} />
-          <Route path="/auctions/watchlist" element={<Watchlist />} />
           <Route path="/auctions/transactions" element={<BuyerTransactions />} />
           <Route path="/auctions/result" element={<AuctionResult />} />
+        </Route>
+        <Route element={<AuctionCapabilityRoute />}>
+          <Route path="/auctions/watchlist" element={<Watchlist />} />
         </Route>
 
         {/* Admin Panel */}

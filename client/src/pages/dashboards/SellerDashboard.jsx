@@ -352,7 +352,10 @@ const SellerDashboard = () => {
               </p>
             </div>
             <button
-              onClick={() => setShowAddCar(true)}
+              onClick={() => {
+                toast.error("Only approved auction dealers can register cars for auction.");
+                navigate("/profile");
+              }}
               className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-amber-500 hover:to-orange-500 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-all hover:shadow-lg"
             >
               <FiPlus size={20} />
@@ -1208,25 +1211,10 @@ const SellerDashboard = () => {
                 ) : (
                   <button
                     onClick={() => {
-                      toast.success("Vehicle submitted for approval!");
+                      toast.error(
+                        "Only approved auction dealers can register cars for auction.",
+                      );
                       setShowAddCar(false);
-                      setCurrentStep(1);
-                      setNewCar({
-                        make: "",
-                        model: "",
-                        year: "",
-                        mileage: "",
-                        condition: "",
-                        engine_type: "",
-                        transmission: "",
-                        color: "",
-                        registration_city: "",
-                        starting_bid: "",
-                        reserve_price: "",
-                        buy_now_price: "",
-                        images: [],
-                        inspection_report: {},
-                      });
                     }}
                     disabled={!newCar.starting_bid}
                     className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:from-amber-500 hover:to-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"

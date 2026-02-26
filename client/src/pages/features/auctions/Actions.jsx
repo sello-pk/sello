@@ -92,16 +92,16 @@ export default function AuctionsActions() {
   const bidderStatus = auctionAccess?.auctionCapabilities?.auctionBidder?.status || "not_requested";
   const dealerStatus = auctionAccess?.auctionCapabilities?.auctionDealer?.status || "not_requested";
   const hasAuctionAccess = bidderStatus === "approved" || dealerStatus === "approved";
-  const registerLink = isLoggedIn ? (hasAuctionAccess ? "/auctions/token-payment" : "/profile") : "/sign-up";
+  const registerLink = isLoggedIn ? "/auctions/token-payment" : "/sign-up";
   const registerLabel = isLoggedIn
     ? hasAuctionAccess
       ? "Start Bidding"
-      : "Request Auction Access"
+      : "Pay Token / Request Access"
     : "Register to Bid";
   const ctaLabel = isLoggedIn
     ? hasAuctionAccess
       ? "Pay Token & Bid"
-      : "Request Access"
+      : "Pay Token / Request Access"
     : "Register Now";
 
   const stats = [
@@ -112,7 +112,7 @@ export default function AuctionsActions() {
   ];
 
   const howItWorks = [
-    { step: "01", title: "Register", desc: "Complete verification & pay refundable token", icon: Users },
+    { step: "01", title: "Register", desc: "Request bidder/dealer approval and set up token or wallet", icon: Users },
     { step: "02", title: "Browse", desc: "Explore cars in current or upcoming auctions", icon: Car },
     { step: "03", title: "Bid", desc: "Place bids online or visit Okara yard", icon: Gavel },
     { step: "04", title: "Win & Collect", desc: "Pay within 48hrs & pickup from Okara", icon: CheckCircle },

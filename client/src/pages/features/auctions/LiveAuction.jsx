@@ -250,6 +250,12 @@ export default function LiveAuction() {
         </div>
       </div>
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm text-amber-700">
+          Bidding is visible to everyone. To place bids, users need approved auction access plus a verified token or sufficient wallet balance.
+        </div>
+      </div>
+
       {/* Filters */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="bg-white rounded-xl border border-slate-200 p-4">

@@ -17,6 +17,34 @@ import { evaluateAuctionBidAccess } from "../utils/auctionAccess.js";
 
 const MIN_BID_INCREMENT = 50000; // PKR 50,000
 
+const sanitizeBidsForPublic = (bids = []) => {
+  const map = new Map();
+  return bids.map((bid) => {
+    if (bid?.bidType === "offline") {
+      return { ...bid, bidder: null, bidderName: bid.bidderName || "Floor Bid" };
+    }
+    const bidderKey =
+      bid?.bidder?._id?.toString() ||
+      bid?.bidder?.toString() ||
+      bid?.bidderName ||
+      "anonymous";
+    if (!map.has(bidderKey)) map.set(bidderKey, map.size + 1);
+    return {
+      ...bid,
+      bidder: null,
+      bidderName: `Bidder #${map.get(bidderKey)}`,
+    };
+  });
+};
+
+const hasAuctionDealerSubmissionAccess = (user) => {
+  if (!user) return false;
+  if (user.role === "admin") return true;
+  if (user.role === "dealer" && user?.dealerInfo?.verified) return true;
+  const dealerCapability = user?.auctionCapabilities?.auctionDealer?.status;
+  return dealerCapability === "approved";
+};
+
 // ═══════════════════════════════════════════════════════════════════════════
 // PUBLIC  –  Auctions
 // ═══════════════════════════════════════════════════════════════════════════
@@ -87,7 +115,6 @@ export const getAuctionCars = async (req, res) => {
         path: "car",
         select: "title make model year condition mileage fuelType transmission images colorExterior registrationCity vehicleType price",
       })
-      .populate("currentBidder", "name")
       .skip((page - 1) * limit)
       .limit(Number(limit))
       .lean();
@@ -121,7 +148,11 @@ export const getAuctionCars = async (req, res) => {
     if (sortFns[sortBy]) result.sort(sortFns[sortBy]);
 
     const total = result.length;
-    res.json({ success: true, data: result, total });
+    const safeResult = result.map((item) => ({
+      ...item,
+      currentBidder: null,
+    }));
+    res.json({ success: true, data: safeResult, total });
   } catch (error) {
     Logger.error("getAuctionCars error", error);
     res.status(500).json({ success: false, message: "Failed to fetch auction cars" });
@@ -135,8 +166,7 @@ export const getAuctionCarDetail = async (req, res) => {
         path: "car",
         select: "title make model variant year condition mileage fuelType transmission images colorExterior colorInterior registrationCity engineCapacity features description vehicleType price",
       })
-      .populate("currentBidder", "name")
-      .populate("winner", "name email")
+      .populate("winner", "name")
       .populate("auction", "title startTime endTime status location")
       .lean();
 
@@ -148,7 +178,14 @@ export const getAuctionCarDetail = async (req, res) => {
       .populate("bidder", "name")
       .lean();
 
-    res.json({ success: true, data: { ...ac, bids } });
+    res.json({
+      success: true,
+      data: {
+        ...ac,
+        currentBidder: null,
+        bids: sanitizeBidsForPublic(bids),
+      },
+    });
   } catch (error) {
     Logger.error("getAuctionCarDetail error", error);
     res.status(500).json({ success: false, message: "Failed to fetch car details" });
@@ -470,7 +507,7 @@ export const getBidsForCar = async (req, res) => {
       .populate("bidder", "name")
       .lean();
 
-    res.json({ success: true, data: bids });
+    res.json({ success: true, data: sanitizeBidsForPublic(bids) });
   } catch (error) {
     Logger.error("getBidsForCar error", error);
     res.status(500).json({ success: false, message: "Failed to fetch bids" });
@@ -613,12 +650,77 @@ export const getMyEscrows = async (req, res) => {
   }
 };
 
+export const getMyAuctionResult = async (req, res) => {
+  try {
+    const { auctionCarId } = req.params;
+    const auctionCar = await AuctionCar.findById(auctionCarId)
+      .populate({
+        path: "car",
+        select:
+          "title make model variant year condition mileage fuelType transmission images colorExterior registrationCity vehicleType",
+      })
+      .populate("auction", "title startTime endTime status location")
+      .populate("winner", "name")
+      .lean();
+
+    if (!auctionCar) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Auction result not found" });
+    }
+
+    if (auctionCar.status !== "sold") {
+      return res
+        .status(400)
+        .json({ success: false, message: "Auction is not finalized for this car" });
+    }
+
+    const isOwner =
+      auctionCar.winner &&
+      auctionCar.winner._id?.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === "admin";
+
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only view your own auction results",
+      });
+    }
+
+    const escrowQuery = { auctionCar: auctionCar._id };
+    if (!isAdmin) {
+      escrowQuery.buyer = req.user._id;
+    }
+    const escrow = await Escrow.findOne(escrowQuery).lean();
+
+    return res.json({
+      success: true,
+      data: {
+        ...auctionCar,
+        escrow: escrow || null,
+      },
+    });
+  } catch (error) {
+    Logger.error("getMyAuctionResult error", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch auction result" });
+  }
+};
+
 // ═══════════════════════════════════════════════════════════════════════════
 // AUTH  –  Submit Car to Auction
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const submitCarToAuction = async (req, res) => {
   try {
+    if (!hasAuctionDealerSubmissionAccess(req.user)) {
+      return res.status(403).json({
+        success: false,
+        message: "Only approved auction dealers can submit cars to auction",
+      });
+    }
+
     const { auctionId, carId, startingBid, reservePrice, buyNowPrice } = req.body;
 
     const auction = await Auction.findById(auctionId);
@@ -737,19 +839,44 @@ export const endAuction = async (req, res) => {
         ac.soldAt = new Date();
         totalSold++;
 
-        // Create escrow
-        await Escrow.create({
+        // Winner's held bid converts to escrow – no balance change (already deducted)
+        const winnerWallet = await Wallet.findOne({ user: topBid.bidder });
+        const walletDeduction = winnerWallet ? topBid.amount : 10000;
+        const escrow = await Escrow.create({
           auctionCar: ac._id,
           buyer: topBid.bidder,
           amount: topBid.amount,
-          amountDue: topBid.amount - 10000,
+          tokenDeduction: walletDeduction,
+          amountDue: Math.max(0, topBid.amount - walletDeduction),
           paymentDeadline: new Date(Date.now() + 48 * 60 * 60 * 1000),
         });
+
+        if (winnerWallet) {
+          winnerWallet.totalBidHeld = Math.max(0, winnerWallet.totalBidHeld - topBid.amount);
+          await winnerWallet.save();
+          await logWalletTxn({
+            user: topBid.bidder,
+            type: "escrow_payment",
+            amount: -topBid.amount,
+            reference: escrow._id,
+            referenceModel: "Escrow",
+            description: "Winning bid moved to escrow",
+          });
+        } else {
+          await logWalletTxn({
+            user: topBid.bidder,
+            type: "token_deposit",
+            amount: -10000,
+            reference: escrow._id,
+            referenceModel: "Escrow",
+            description: "Token deposit applied to winning bid",
+          });
+        }
 
         // Notify winner
         await Notification.create({
           title: "Auction Won!",
-          message: `Congratulations! You won the auction. Please complete payment within 48 hours.`,
+          message: `Congratulations! You won an auction. ${escrow.amountDue > 0 ? `Remaining payment: PKR ${escrow.amountDue.toLocaleString()} due within 48 hours.` : "Your wallet balance covered the full amount."}`,
           type: "success",
           recipient: topBid.bidder,
           actionUrl: `/auctions/result?car_id=${ac._id}`,
@@ -765,6 +892,24 @@ export const endAuction = async (req, res) => {
         }
       } else {
         ac.status = "unsold";
+        // Refund last winning bidder's held amount if car goes unsold
+        if (topBid && topBid.bidder) {
+          const refundWallet = await Wallet.findOne({ user: topBid.bidder });
+          if (refundWallet) {
+            refundWallet.balance += topBid.amount;
+            refundWallet.totalBidHeld = Math.max(0, refundWallet.totalBidHeld - topBid.amount);
+            refundWallet.lastTransactionAt = new Date();
+            await refundWallet.save();
+            await logWalletTxn({
+              user: topBid.bidder,
+              type: "bid_refund",
+              amount: topBid.amount,
+              reference: topBid._id,
+              referenceModel: "Bid",
+              description: "Bid refund – car unsold (reserve not met)",
+            });
+          }
+        }
       }
       await ac.save();
     }

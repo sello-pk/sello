@@ -75,17 +75,7 @@ export default function TokenPayment() {
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Bid Token Payment</h1>
           <p className="text-slate-500 mb-8">Pay a refundable PKR 10,000 deposit to start bidding</p>
 
-          {!hasAuctionAccess ? (
-            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-8 text-center">
-              <Info className="w-16 h-16 text-amber-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-amber-700 mb-2">Auction access required</h2>
-              <p className="text-amber-700 mb-2">
-                Your bidder/dealer request must be approved before token payments are accepted.
-              </p>
-              <p className="text-sm text-amber-600 mb-6">Current bidder status: {bidderStatus.replaceAll("_", " ")}</p>
-              <Button onClick={() => navigate("/profile")}>Go to Profile</Button>
-            </div>
-          ) : hasVerified ? (
+          {hasVerified ? (
             <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-8 text-center">
               <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-emerald-700 mb-2">Token Verified!</h2>
@@ -105,6 +95,16 @@ export default function TokenPayment() {
                     <li>3. We'll verify within 1-2 hours</li>
                     <li>4. Token is fully refundable if you don't win</li>
                   </ul>
+                  {!hasAuctionAccess && (
+                    <p className="text-xs mt-2 text-amber-700">
+                      Tip: You can submit token payment now. Bid placement still needs bidder/dealer approval ({bidderStatus.replaceAll("_", " ")}).
+                    </p>
+                  )}
+                  {!hasAuctionAccess && (
+                    <Button variant="outline" className="mt-3" onClick={() => navigate("/profile")}>
+                      Request Auction Access
+                    </Button>
+                  )}
                 </div>
               </div>
 

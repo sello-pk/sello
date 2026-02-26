@@ -63,6 +63,7 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
   const [languageInput, setLanguageInput] = useState("");
   const [paymentMethodInput, setPaymentMethodInput] = useState("");
   const [serviceInput, setServiceInput] = useState("");
+  const [requestDealerAccess, setRequestDealerAccess] = useState(true);
   const [requestAuctionBidder, setRequestAuctionBidder] = useState(false);
 
   const [requestAuctionAccess, { isLoading }] = useRequestAuctionAccessMutation();
@@ -358,8 +359,13 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
       }
 
       // Use the API mutation - it should handle FormData
-      const requestTypes = ["dealer", "auctionDealer"];
+      const requestTypes = [];
+      if (requestDealerAccess) requestTypes.push("dealer", "auctionDealer");
       if (requestAuctionBidder) requestTypes.push("auctionBidder");
+      if (requestTypes.length === 0) {
+        toast.error("Select at least one access type before submitting.");
+        return;
+      }
       formDataToSend.append("requestTypes", JSON.stringify(requestTypes));
 
       await requestAuctionAccess(formDataToSend).unwrap();
@@ -886,6 +892,14 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                   Access request options
                 </p>
                 <div className="space-y-2 text-sm">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={requestDealerAccess}
+                      onChange={(e) => setRequestDealerAccess(e.target.checked)}
+                    />
+                    <span>Request Dealer + Auction Dealer access</span>
+                  </label>
                   <label className="flex items-center gap-2">
                     <input
                       type="checkbox"

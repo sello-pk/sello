@@ -32,6 +32,7 @@ import {
   useGetMeQuery,
   useGetMyTokenPaymentsQuery,
   useGetMyAuctionAccessStatusQuery,
+  useGetMyWalletQuery,
 } from "@redux/services/api";
 import { useSocket } from "@contexts/SocketContext";
 
@@ -98,6 +99,7 @@ export default function CarDetail() {
   const isLoggedIn = !!user;
   const { data: tokenData } = useGetMyTokenPaymentsQuery(undefined, { skip: !isLoggedIn });
   const { data: auctionAccess } = useGetMyAuctionAccessStatusQuery(undefined, { skip: !isLoggedIn });
+  const { data: walletData } = useGetMyWalletQuery(undefined, { skip: !isLoggedIn });
   const hasVerifiedToken = tokenData?.hasVerifiedToken || false;
   const bidderStatus = auctionAccess?.auctionCapabilities?.auctionBidder?.status || "not_requested";
   const dealerStatus = auctionAccess?.auctionCapabilities?.auctionDealer?.status || "not_requested";
@@ -112,6 +114,10 @@ export default function CarDetail() {
   const auction = detail?.auction || {};
   const bids = detail?.bids || [];
   const currentHigh = detail?.currentBid || detail?.startingBid || 0;
+  const minimumBid = currentHigh + 50000;
+  const walletBalance = walletData?.wallet?.balance || 0;
+  const hasWalletFundsForBid = walletBalance >= minimumBid;
+  const canPlaceBid = hasVerifiedToken || hasWalletFundsForBid;
 
   useEffect(() => { setBidAmount(currentHigh + 50000); }, [currentHigh]);
   useEffect(() => { setProxyMax(currentHigh + 200000); }, [currentHigh]);
@@ -358,13 +364,13 @@ export default function CarDetail() {
                             Request Auction Access
                           </Button>
                         </div>
-                      ) : !hasVerifiedToken ? (
+                      ) : !canPlaceBid ? (
                         <div className="space-y-2">
                           <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-700 text-center">
-                            Pay the refundable PKR 10,000 token to start bidding
+                            Add funds to your wallet or pay the refundable PKR 10,000 token to start bidding
                           </div>
                           <Button className="w-full" onClick={() => navigate("/auctions/token-payment")}>
-                            Pay Token Deposit
+                            Add Funds / Pay Token
                           </Button>
                         </div>
                       ) : (
@@ -376,9 +382,9 @@ export default function CarDetail() {
                               onChange={(e) => setBidAmount(Number(e.target.value))}
                               className="flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FFA602]"
                               step="50000"
-                              min={currentHigh + 50000}
+                              min={minimumBid}
                             />
-                            <Button onClick={handlePlaceBid} disabled={bidding || bidAmount < currentHigh + 50000} className="px-6">
+                            <Button onClick={handlePlaceBid} disabled={bidding || bidAmount < minimumBid} className="px-6">
                               {bidding ? "..." : "Place Bid"}
                             </Button>
                           </div>
@@ -391,7 +397,7 @@ export default function CarDetail() {
               </div>
 
               {/* Proxy Bid */}
-              {isLoggedIn && hasVerifiedToken && auction.status === "live" && (
+              {isLoggedIn && hasAuctionAccess && canPlaceBid && auction.status === "live" && (
                 <div className="mt-4">
                   <Button variant="outline" className="w-full border-[#FFA602] text-[#FFA602] hover:bg-[#FFA602]/10" onClick={() => setShowProxyBidForm(true)}>
                     Set Proxy Bid (Auto-Bid)

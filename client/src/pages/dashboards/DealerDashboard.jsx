@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { buildCarUrl } from "../../utils/urlBuilders";
 import {
@@ -34,6 +34,7 @@ import {
   useGetMyAuctionWatchlistQuery,
   useGetAuctionsQuery,
   useGetLiveAuctionQuery,
+  useSubmitCarToAuctionMutation,
 } from "../../redux/services/api";
 import { useGetSellerBuyerChatsQuery } from "../../redux/services/api";
 import { Spinner } from "../../components/ui/Loading";
@@ -61,9 +62,12 @@ const DealerDashboard = () => {
     starting_bid: "",
     reserve_price: "",
     buy_now_price: "",
+    auctionId: "",
+    carId: "",
     images: [],
     inspection_report: {},
   });
+  const [submitCarToAuction, { isLoading: isSubmittingAuctionCar }] = useSubmitCarToAuctionMutation();
   const { data: tokenData } = useGetMyTokenPaymentsQuery();
   const { data: wonAuctions = [] } = useGetMyWonAuctionsQuery();
   const { data: watchlistItems = [] } = useGetMyAuctionWatchlistQuery();
@@ -112,6 +116,14 @@ const DealerDashboard = () => {
 
   const cars = carsData?.cars || [];
   const chats = chatsData || [];
+  const auctionOptions = useMemo(() => {
+    const raw = [...(liveAuction ? [liveAuction] : []), ...(upcomingAuctions || [])].filter(Boolean);
+    const byId = new Map();
+    raw.forEach((a) => {
+      if (a?._id && !byId.has(a._id)) byId.set(a._id, a);
+    });
+    return Array.from(byId.values());
+  }, [liveAuction, upcomingAuctions]);
 
   // Calculate statistics - handle undefined/null safely
   const activeListingsCount = Array.isArray(cars)
@@ -168,6 +180,47 @@ const DealerDashboard = () => {
       localStorage.removeItem("user");
       toast.error("Logout failed");
       navigate("/login");
+    }
+  };
+
+  const handleSubmitAuctionCar = async () => {
+    if (!newCar.auctionId || !newCar.carId || !newCar.starting_bid) {
+      toast.error("Select auction, car and starting bid");
+      return;
+    }
+
+    try {
+      await submitCarToAuction({
+        auctionId: newCar.auctionId,
+        carId: newCar.carId,
+        startingBid: Number(newCar.starting_bid),
+        reservePrice: newCar.reserve_price ? Number(newCar.reserve_price) : undefined,
+        buyNowPrice: newCar.buy_now_price ? Number(newCar.buy_now_price) : undefined,
+      }).unwrap();
+
+      toast.success("Vehicle submitted for auction approval");
+      setShowAddCar(false);
+      setCurrentStep(1);
+      setNewCar({
+        make: "",
+        model: "",
+        year: "",
+        mileage: "",
+        condition: "",
+        engine_type: "",
+        transmission: "",
+        color: "",
+        registration_city: "",
+        starting_bid: "",
+        reserve_price: "",
+        buy_now_price: "",
+        auctionId: "",
+        carId: "",
+        images: [],
+        inspection_report: {},
+      });
+    } catch (error) {
+      toast.error(error?.data?.message || "Failed to submit vehicle for auction");
     }
   };
 
@@ -425,7 +478,10 @@ const DealerDashboard = () => {
               </p>
             </div>
             <button
-              onClick={() => setShowAddCar(true)}
+              onClick={() => {
+                setCurrentStep(4);
+                setShowAddCar(true);
+              }}
               className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-amber-500 hover:to-orange-500 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-all hover:shadow-lg"
             >
               <FiPlus size={20} />
@@ -1193,7 +1249,7 @@ const DealerDashboard = () => {
                 <button
                   onClick={() => {
                     setShowAddCar(false);
-                    setCurrentStep(1);
+                    setCurrentStep(4);
                   }}
                   className="text-gray-400 hover:text-gray-600"
                 >
@@ -1453,6 +1509,64 @@ const DealerDashboard = () => {
                   <div className="space-y-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Select Auction *
+                      </label>
+                      <select
+                        value={newCar.auctionId}
+                        onChange={(e) =>
+                          setNewCar({ ...newCar, auctionId: e.target.value })
+                        }
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                      >
+                        <option value="">Select an auction</option>
+                        {auctionOptions.map((a) => (
+                          <option key={a._id} value={a._id}>
+                            {a.title} ({a.status})
+                          </option>
+                        ))}
+                      </select>
+                      {auctionOptions.length === 0 && (
+                        <p className="text-xs text-amber-600 mt-1">
+                          No active/scheduled auctions found. Ask admin to create or schedule an auction first.
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Select Existing Listing *
+                      </label>
+                      <select
+                        value={newCar.carId}
+                        onChange={(e) =>
+                          setNewCar((prev) => {
+                            const selectedCar = cars.find((car) => car._id === e.target.value);
+                            return {
+                              ...prev,
+                              carId: e.target.value,
+                              starting_bid: prev.starting_bid
+                                ? String(prev.starting_bid)
+                                : selectedCar?.price
+                                  ? String(selectedCar.price)
+                                  : "",
+                            };
+                          })
+                        }
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                      >
+                        <option value="">Select your car listing</option>
+                        {cars
+                          .filter((car) => !car?.isSold)
+                          .map((car) => (
+                            <option key={car._id} value={car._id}>
+                              {car.year} {car.make} {car.model}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
                         Starting Bid (PKR) *
                       </label>
                       <input
@@ -1558,13 +1672,15 @@ const DealerDashboard = () => {
               <div className="px-6 py-4 border-t border-gray-200 flex justify-between">
                 <button
                   onClick={() =>
-                    currentStep > 1
-                      ? setCurrentStep(currentStep - 1)
-                      : setShowAddCar(false)
+                    currentStep === 4
+                      ? setShowAddCar(false)
+                      : currentStep > 1
+                        ? setCurrentStep(currentStep - 1)
+                        : setShowAddCar(false)
                   }
                   className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
-                  {currentStep > 1 ? "Back" : "Cancel"}
+                  {currentStep === 4 ? "Cancel" : currentStep > 1 ? "Back" : "Cancel"}
                 </button>
 
                 {currentStep < 4 ? (
@@ -1585,31 +1701,17 @@ const DealerDashboard = () => {
                   </button>
                 ) : (
                   <button
-                    onClick={() => {
-                      toast.success("Vehicle submitted for approval!");
-                      setShowAddCar(false);
-                      setCurrentStep(1);
-                      setNewCar({
-                        make: "",
-                        model: "",
-                        year: "",
-                        mileage: "",
-                        condition: "",
-                        engine_type: "",
-                        transmission: "",
-                        color: "",
-                        registration_city: "",
-                        starting_bid: "",
-                        reserve_price: "",
-                        buy_now_price: "",
-                        images: [],
-                        inspection_report: {},
-                      });
-                    }}
-                    disabled={!newCar.starting_bid}
+                    onClick={handleSubmitAuctionCar}
+                    disabled={
+                      isSubmittingAuctionCar ||
+                      auctionOptions.length === 0 ||
+                      !newCar.starting_bid ||
+                      !newCar.auctionId ||
+                      !newCar.carId
+                    }
                     className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:from-amber-500 hover:to-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Submit for Approval
+                    {isSubmittingAuctionCar ? "Submitting..." : "Submit for Approval"}
                   </button>
                 )}
               </div>

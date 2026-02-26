@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useGetMeQuery } from "../../redux/services/api";
+import { useGetMeQuery, useGetMyAuctionAccessStatusQuery } from "../../redux/services/api";
 import { canAccessMenu } from "../../utils/roleAccess";
 import { useMemo } from "react";
 
@@ -170,6 +170,73 @@ const AdminRoute = () => {
   return <Outlet key={outletKey} />;
 };
 
+/**
+ * Auction Capability Route
+ * Restricts routes to users with approved auction access.
+ */
+const AuctionCapabilityRoute = () => {
+  const token = localStorage.getItem("token");
+  const { data: user, isLoading: userLoading, isError: userError } = useGetMeQuery(
+    undefined,
+    { skip: !token },
+  );
+  const {
+    data: auctionAccess,
+    isLoading: accessLoading,
+    isError: accessError,
+  } = useGetMyAuctionAccessStatusQuery(undefined, {
+    skip: !token || !user,
+  });
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (userLoading || accessLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (userError || !user) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    return <Navigate to="/login" replace />;
+  }
+
+  // Do not forcibly log out on auction-access lookup errors.
+  if (accessError) {
+    if (user.role === "admin" || (user.role === "dealer" && user?.dealerInfo?.verified)) {
+      return <Outlet />;
+    }
+    return <Navigate to="/profile" replace />;
+  }
+
+  if (user.role === "admin") {
+    return <Outlet />;
+  }
+
+  const bidderStatus =
+    auctionAccess?.auctionCapabilities?.auctionBidder?.status || "not_requested";
+  const dealerStatus =
+    auctionAccess?.auctionCapabilities?.auctionDealer?.status || "not_requested";
+  const hasAccess =
+    bidderStatus === "approved" ||
+    dealerStatus === "approved" ||
+    (user.role === "dealer" && user?.dealerInfo?.verified);
+
+  if (!hasAccess) {
+    return <Navigate to="/profile" replace />;
+  }
+
+  return <Outlet />;
+};
+
 // Re-export both names unchanged for backward compatibility
-export { ProtectedRoute, AdminRoute };
+export { ProtectedRoute, AdminRoute, AuctionCapabilityRoute };
 export default ProtectedRoute;

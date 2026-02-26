@@ -205,7 +205,8 @@ export default function BuyerTransactions() {
         {/* Wallet Summary Cards */}
         {!hasAuctionAccess && (
           <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-700">
-            Auction bidding access is not approved yet (status: {bidderStatus.replaceAll("_", " ")}). You can still manage deposits and refunds.
+            Auction bidding access is not approved yet (status: {bidderStatus.replaceAll("_", " ")}). You can still manage deposits and refunds.{" "}
+            <Link to="/profile" className="underline font-medium">Request/track access in Profile</Link>.
           </div>
         )}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

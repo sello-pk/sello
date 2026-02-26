@@ -10,7 +10,9 @@ import {
   IoCheckmarkCircleOutline as CheckCircle,
   IoArrowForward as ArrowRight,
 } from "react-icons/io5";
-import { useGetAuctionCarDetailQuery } from "@redux/services/api";
+import {
+  useGetMyAuctionResultQuery,
+} from "@redux/services/api";
 
 const formatPrice = (p) => `PKR ${p?.toLocaleString() || 0}`;
 
@@ -30,11 +32,34 @@ export default function AuctionResult() {
   const location = useLocation();
   const carId = new URLSearchParams(location.search).get("car_id");
 
-  const { data: detail, isLoading } = useGetAuctionCarDetailQuery(carId, { skip: !carId });
+  const { data: result, isLoading, isError } = useGetMyAuctionResultQuery(carId, {
+    skip: !carId,
+  });
 
-  if (isLoading) return <div className="min-h-screen bg-slate-50 flex items-center justify-center"><p>Loading...</p></div>;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
-  if (!detail || detail.status !== "sold") {
+  if (isError || !result) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <Car className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-slate-700 mb-2">Access Restricted</h2>
+          <p className="text-slate-500 mb-6">You can only view results for auctions you have won.</p>
+          <Link to="/auctions/transactions">
+            <Button>Go to My Transactions</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (result.status !== "sold") {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
@@ -47,9 +72,14 @@ export default function AuctionResult() {
     );
   }
 
-  const car = detail.car || {};
-  const tokenDeduction = 10000;
-  const amountDue = (detail.finalPrice || 0) - tokenDeduction;
+  const car = result.car || {};
+  const escrowRecord = result.escrow || null;
+  const tokenDeduction =
+    escrowRecord?.tokenDeduction ??
+    Math.min(10000, result.finalPrice || 0);
+  const amountDue =
+    escrowRecord?.amountDue ??
+    Math.max(0, (result.finalPrice || 0) - tokenDeduction);
   const img = Array.isArray(car.images) ? car.images[0] : car.images;
 
   return (
@@ -87,7 +117,7 @@ export default function AuctionResult() {
             <div className="space-y-3">
               <div className="flex justify-between py-3 border-b border-slate-100">
                 <span className="text-slate-600">Final Bid Price</span>
-                <span className="font-semibold text-slate-900">{formatPrice(detail.finalPrice)}</span>
+                <span className="font-semibold text-slate-900">{formatPrice(result.finalPrice)}</span>
               </div>
               <div className="flex justify-between py-3 border-b border-slate-100">
                 <span className="text-slate-600">Token Deposit (Deducted)</span>
@@ -107,7 +137,11 @@ export default function AuctionResult() {
               <p className="font-medium text-slate-900">Okara Auction Yard, Punjab</p>
               <div className="flex items-center gap-2 text-amber-600">
                 <Clock className="w-4 h-4" />
-                <span>Payment due within 48 hours of winning</span>
+                <span>
+                  {escrowRecord?.paymentDeadline
+                    ? `Payment due by ${new Date(escrowRecord.paymentDeadline).toLocaleString()}`
+                    : "Payment due within 48 hours of winning"}
+                </span>
               </div>
               <p className="text-slate-500">Bring original CNIC, payment receipt, and auction confirmation email.</p>
             </div>

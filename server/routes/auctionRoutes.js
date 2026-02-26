@@ -17,6 +17,7 @@ import {
   getMyWatchlist,
   getMyWonAuctions,
   getMyEscrows,
+  getMyAuctionResult,
   submitCarToAuction,
   createAuction,
   updateAuction,
@@ -74,6 +75,7 @@ router.get("/my/watchlist", auth, getMyWatchlist);
 router.get("/my/bids", auth, getMyBids);
 router.get("/my/won", auth, getMyWonAuctions);
 router.get("/my/escrows", auth, getMyEscrows);
+router.get("/my/result/:auctionCarId", auth, getMyAuctionResult);
 router.get("/my/transactions", auth, getMyWalletTransactions);
 router.post("/submit-car", auth, submitCarToAuction);
 

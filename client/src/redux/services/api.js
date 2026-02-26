@@ -1187,6 +1187,11 @@ export const api = createApi({
       providesTags: ["Auction"],
       transformResponse: (response) => response?.data || response,
     }),
+    getMyAuctionResult: builder.query({
+      query: (auctionCarId) => `/auctions/my/result/${auctionCarId}`,
+      providesTags: ["Auction"],
+      transformResponse: (response) => response?.data || response,
+    }),
     getMyWalletTransactions: builder.query({
       query: (params = {}) => {
         const searchParams = new URLSearchParams();
@@ -1339,6 +1344,7 @@ export const {
   useGetMyBidsQuery,
   useGetMyWonAuctionsQuery,
   useGetMyEscrowsQuery,
+  useGetMyAuctionResultQuery,
   useGetMyWalletTransactionsQuery,
   useSubmitCarToAuctionMutation,
   useGetMyWalletQuery,
