@@ -22,12 +22,12 @@ import electric from "../specs/electric.svg";
 import auto from "../specs/auto.svg";
 import menual from "../specs/manual.svg";
 
-import door from "../specs/door.svg";
+import carDoorsIcon from "../specs/carDoorsIcon.svg";
 
-import hp from "../specs/hp.svg";
+import horsepowerIcon from "../specs/horsepowerIcon.svg";
 
 import cc from "../specs/cc.svg";
-import wheel from "../specs/wheel.svg";
+import featuresIcon from "../specs/featuresIcon.svg";
 
 import g1 from "../../../images/g1.png";
 import g2 from "../../../images/g2.png";
@@ -115,10 +115,15 @@ export const getBodyTypesByVehicleType = (vehicleType) => {
 };
 
 export const regionalSpecs = [
-  { titleValue: "GCC", isChecked: false },
+  { titleValue: "Local (Pakistani)", isChecked: false },
+  { titleValue: "Japanese", isChecked: false },
   { titleValue: "American", isChecked: false },
-  { titleValue: "Canadian", isChecked: false },
   { titleValue: "European", isChecked: false },
+  { titleValue: "Korean", isChecked: false },
+  { titleValue: "Chinese", isChecked: false },
+  { titleValue: "Thai", isChecked: false },
+  { titleValue: "GCC", isChecked: false },
+  { titleValue: "Canadian", isChecked: false },
 ];
 
 export const numberOfSeats = [
@@ -215,10 +220,10 @@ export const interiorColor = [
 ];
 
 export const doors = [
-  { titleValue: 2, image: door, isChecked: false },
-  { titleValue: 3, image: door, isChecked: false },
-  { titleValue: 4, image: door, isChecked: false },
-  { titleValue: 5, image: door, isChecked: false },
+  { titleValue: 2, image: carDoorsIcon, isChecked: false },
+  { titleValue: 3, image: carDoorsIcon, isChecked: false },
+  { titleValue: 4, image: carDoorsIcon, isChecked: false },
+  { titleValue: 5, image: carDoorsIcon, isChecked: false },
 ];
 
 export const ownerType = [
@@ -234,16 +239,16 @@ export const warrantyType = [
 ];
 
 export const horsePower = [
-  { titleValue: "0-99 HP", image: hp, isChecked: false, category: "horsepower" },
-  { titleValue: "100-199 HP", image: hp, isChecked: false, category: "horsepower" },
-  { titleValue: "200-299 HP", image: hp, isChecked: false, category: "horsepower" },
-  { titleValue: "300-399 HP", image: hp, isChecked: false, category: "horsepower" },
-  { titleValue: "400-499 HP", image: hp, isChecked: false, category: "horsepower" },
-  { titleValue: "500-599 HP", image: hp, isChecked: false, category: "horsepower" },
-  { titleValue: "600-699 HP", image: hp, isChecked: false, category: "horsepower" },
-  { titleValue: "700-799 HP", image: hp, isChecked: false, category: "horsepower" },
-  { titleValue: "800 HP", image: hp, isChecked: false, category: "horsepower" },
-  { titleValue: "900+ HP", image: hp, isChecked: false, category: "horsepower" },
+  { titleValue: "0-99 HP", image: horsepowerIcon, isChecked: false, category: "horsepower" },
+  { titleValue: "100-199 HP", image: horsepowerIcon, isChecked: false, category: "horsepower" },
+  { titleValue: "200-299 HP", image: horsepowerIcon, isChecked: false, category: "horsepower" },
+  { titleValue: "300-399 HP", image: horsepowerIcon, isChecked: false, category: "horsepower" },
+  { titleValue: "400-499 HP", image: horsepowerIcon, isChecked: false, category: "horsepower" },
+  { titleValue: "500-599 HP", image: horsepowerIcon, isChecked: false, category: "horsepower" },
+  { titleValue: "600-699 HP", image: horsepowerIcon, isChecked: false, category: "horsepower" },
+  { titleValue: "700-799 HP", image: horsepowerIcon, isChecked: false, category: "horsepower" },
+  { titleValue: "800 HP", image: horsepowerIcon, isChecked: false, category: "horsepower" },
+  { titleValue: "900+ HP", image: horsepowerIcon, isChecked: false, category: "horsepower" },
 ];
 
 export const engineCapacityCC = [
@@ -255,16 +260,16 @@ export const engineCapacityCC = [
 ];
 
 export const technicalFeatures = [
-  { titleValue: "4 Wheel Drive", image: wheel, isChecked: false, category: "features" },
-  { titleValue: "All Wheel Drive", image: wheel, isChecked: false, category: "features" },
-  { titleValue: "All Wheel Steering", image: wheel, isChecked: false, category: "features" },
-  { titleValue: "Anti-lock Brakes ABS", image: wheel, isChecked: false, category: "features" },
-  { titleValue: "Cruise Control", image: wheel, isChecked: false, category: "features" },
-  { titleValue: "Dual Exhaust", image: wheel, isChecked: false, category: "features" },
-  { titleValue: "Front Airbags", image: wheel, isChecked: false, category: "features" },
-  { titleValue: "Front Wheel Drive", image: wheel, isChecked: false, category: "features" },
-  { titleValue: "NOS System", image: wheel, isChecked: false, category: "features" },
-  { titleValue: "Rear Wheel Drive", image: wheel, isChecked: false, category: "features" },
+  { titleValue: "4 Wheel Drive", image: featuresIcon, isChecked: false, category: "features" },
+  { titleValue: "All Wheel Drive", image: featuresIcon, isChecked: false, category: "features" },
+  { titleValue: "All Wheel Steering", image: featuresIcon, isChecked: false, category: "features" },
+  { titleValue: "Anti-lock Brakes ABS", image: featuresIcon, isChecked: false, category: "features" },
+  { titleValue: "Cruise Control", image: featuresIcon, isChecked: false, category: "features" },
+  { titleValue: "Dual Exhaust", image: featuresIcon, isChecked: false, category: "features" },
+  { titleValue: "Front Airbags", image: featuresIcon, isChecked: false, category: "features" },
+  { titleValue: "Front Wheel Drive", image: featuresIcon, isChecked: false, category: "features" },
+  { titleValue: "NOS System", image: featuresIcon, isChecked: false, category: "features" },
+  { titleValue: "Rear Wheel Drive", image: featuresIcon, isChecked: false, category: "features" },
 ];
 
 export const carCondition = [

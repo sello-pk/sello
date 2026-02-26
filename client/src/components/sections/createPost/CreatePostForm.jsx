@@ -870,44 +870,80 @@ const CreatePostForm = () => {
           </div>
         </div>
 
-        {/* Price - Full Width */}
-        <div className="mb-2 pl-2">
-          <label className="block mb-1">Price (PKR)</label>
-          <Input
-            inputType="number"
-            value={formData.price}
-            onChange={(e) => handleChange("price", e.target.value)}
-            placeholder="Enter price"
-            required
-          />
-        </div>
+        {["Bus", "Car"].includes(formData.vehicleType) ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2 pl-2">
+            <div>
+              <label className="block mb-1">Price (PKR)</label>
+              <Input
+                inputType="number"
+                value={formData.price}
+                onChange={(e) => handleChange("price", e.target.value)}
+                placeholder="Enter price"
+                required
+              />
+            </div>
+            <div>
+              <label className="block mb-1">Contact Number</label>
+              <Input
+                inputType="tel"
+                value={formData.contactNumber}
+                onChange={(e) => handleChange("contactNumber", e.target.value)}
+                placeholder="e.g., +971532345332"
+                required
+              />
+            </div>
+            <div>
+              <label className="block mb-1">Mileage (km)</label>
+              <Input
+                inputType="number"
+                value={formData.mileage}
+                onChange={(e) => handleChange("mileage", e.target.value)}
+                placeholder="e.g., 50000"
+              />
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Price - Full Width */}
+            <div className="mb-2 pl-2">
+              <label className="block mb-1">Price (PKR)</label>
+              <Input
+                inputType="number"
+                value={formData.price}
+                onChange={(e) => handleChange("price", e.target.value)}
+                placeholder="Enter price"
+                required
+              />
+            </div>
 
-        {/* Contact Number, Mileage in same row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2 pl-2">
-          <div
-            className={formData.vehicleType === "Car" ? "" : "md:col-span-3"}
-          >
-            <label className="block mb-1">Contact Number</label>
-            <Input
-              inputType="tel"
-              value={formData.contactNumber}
-              onChange={(e) => handleChange("contactNumber", e.target.value)}
-              placeholder="e.g., +971532345332"
-              required
-            />
-          </div>
-          <div
-            className={formData.vehicleType === "Car" ? "" : "md:col-span-3"}
-          >
-            <label className="block mb-1">Mileage (km)</label>
-            <Input
-              inputType="number"
-              value={formData.mileage}
-              onChange={(e) => handleChange("mileage", e.target.value)}
-              placeholder="e.g., 50000"
-            />
-          </div>
-        </div>
+            {/* Contact Number, Mileage in same row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2 pl-2">
+              <div
+                className={formData.vehicleType === "Car" ? "" : "md:col-span-3"}
+              >
+                <label className="block mb-1">Contact Number</label>
+                <Input
+                  inputType="tel"
+                  value={formData.contactNumber}
+                  onChange={(e) => handleChange("contactNumber", e.target.value)}
+                  placeholder="e.g., +971532345332"
+                  required
+                />
+              </div>
+              <div
+                className={formData.vehicleType === "Car" ? "" : "md:col-span-3"}
+              >
+                <label className="block mb-1">Mileage (km)</label>
+                <Input
+                  inputType="number"
+                  value={formData.mileage}
+                  onChange={(e) => handleChange("mileage", e.target.value)}
+                  placeholder="e.g., 50000"
+                />
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Country, City, Address in same row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2 pl-2">

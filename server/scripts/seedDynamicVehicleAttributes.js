@@ -126,10 +126,15 @@ const seed = async () => {
         required: true,
         order: 14,
         options: [
-          { label: "GCC", value: "GCC" },
+          { label: "Local (Pakistani)", value: "Local (Pakistani)" },
+          { label: "Japanese", value: "Japanese" },
           { label: "American", value: "American" },
-          { label: "Canadian", value: "Canadian" },
           { label: "European", value: "European" },
+          { label: "Korean", value: "Korean" },
+          { label: "Chinese", value: "Chinese" },
+          { label: "Thai", value: "Thai" },
+          { label: "GCC", value: "GCC" },
+          { label: "Canadian", value: "Canadian" },
         ],
       },
       {

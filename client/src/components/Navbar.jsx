@@ -124,13 +124,14 @@ const Navbar = () => {
     )}`;
   };
 
+  // Use the listings header style site-wide for visual consistency.
+  const isListingsTheme = true;
+
   return (
     <>
       <nav
         className={`w-full px-3 sm:px-4 md:px-6 lg:px-8 py-2 flex items-center justify-between sticky top-0 z-50 ${
-          location.pathname === "/listings" ||
-          location.pathname === "/users" ||
-          location.pathname === "/blog"
+          isListingsTheme
             ? "md:bg-[#f5f5f5] md:text-gray-600"
             : "bg-primary-500 text-white"
         }`}
@@ -140,11 +141,7 @@ const Navbar = () => {
           <img
             className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto"
             src={
-              location.pathname === "/listings" ||
-              location.pathname === "/users" ||
-              location.pathname === "/blog"
-                ? images.blackLogo
-                : images.logo
+              isListingsTheme ? images.blackLogo : images.logo
             }
             alt="logo"
           />
@@ -158,11 +155,7 @@ const Navbar = () => {
         {/* Desktop Links */}
         <div
           className={`hidden lg:flex items-center gap-4 xl:gap-6 text-sm lg:text-base ${
-            location.pathname === "/listings" ||
-            location.pathname === "/users" ||
-            location.pathname === "/blog"
-              ? "text-gray-600"
-              : "text-white"
+            isListingsTheme ? "text-gray-600" : "text-white"
           }`}
         >
           {menuLinks.map((link, index) => (
@@ -184,11 +177,7 @@ const Navbar = () => {
           <button
             onClick={() => navigate("/create-post")}
             className={`hidden sm:flex gap-1 sm:gap-2 items-center text-xs sm:text-sm lg:text-base hover:opacity-80 transition-opacity ${
-              location.pathname === "/listings" ||
-              location.pathname === "/users" ||
-              location.pathname === "/blog"
-                ? "text-gray-600"
-                : "text-white"
+              isListingsTheme ? "text-gray-600" : "text-white"
             }`}
             title="Create Post"
           >
@@ -254,11 +243,7 @@ const Navbar = () => {
             onClick={openDrawer}
             title="Menu"
             className={`lg:hidden ${
-              location.pathname === "/listings" ||
-              location.pathname === "/users" ||
-              location.pathname === "/blog"
-                ? "text-gray-600"
-                : "text-white"
+              isListingsTheme ? "text-gray-600" : "text-white"
             }`}
           >
             <FaBars size={20} className="sm:hidden" />

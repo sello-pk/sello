@@ -62,7 +62,17 @@ const carSchema = new mongoose.Schema(
     regionalSpec: {
       type: String,
       required: true,
-      enum: ["GCC", "American", "Canadian", "European"],
+      enum: [
+        "Local (Pakistani)",
+        "Japanese",
+        "American",
+        "European",
+        "Korean",
+        "Chinese",
+        "Thai",
+        "GCC",
+        "Canadian",
+      ],
     },
     // Vehicle Type Category (Car, Bus, Truck, Van, Bike, E-bike, Farm)
     vehicleType: {

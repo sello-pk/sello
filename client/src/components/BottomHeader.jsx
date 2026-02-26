@@ -11,11 +11,7 @@ const BottomHeader = () => {
   return (
     <div
       style={{ zIndex: 1000 }}
-      className={`${
-        location.pathname === "/users" || location.pathname === "/blog"
-          ? "bg-primary"
-          : ""
-      } bg-[#F5F5F5] w-full flex flex-wrap items-center justify-end md:justify-end gap-4 md:gap-12 px-4 md:px-16 py-2 md:py-3 text-sm md:text-base`}
+      className="bg-[#EEF1F4] border-y border-gray-200/80 w-full flex flex-wrap items-center justify-end md:justify-end gap-4 md:gap-12 px-4 md:px-16 py-2 md:py-3 text-sm md:text-base text-gray-700"
     >
       <Link to={"/saved-cars"} className="hover:underline">
         Save
