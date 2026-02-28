@@ -32,6 +32,7 @@ const Navbar = () => {
       }
     } catch (e) {
       // Error parsing cached user - silent fail
+      console.error(e);
     }
     return null;
   };
@@ -128,10 +129,7 @@ const Navbar = () => {
   const primaryDesktopLinks = menuLinks.filter(
     (link) => !["About Us", "Contact Us", "Blog"].includes(link.name),
   );
-  const mobileMenuLinks = [
-    ...menuLinks,
-    { path: "/help/faqs", name: "FAQs" },
-  ];
+  const mobileMenuLinks = [...menuLinks, { path: "/help/faqs", name: "FAQs" }];
   const isCompanyActive = companyLinks.some((link) => isPathMatch(link.path));
 
   const openDrawer = () => {
@@ -239,193 +237,191 @@ const Navbar = () => {
         }`}
       >
         <div className="max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8 py-2.5 flex items-center justify-between">
-        <div className="flex items-center min-w-0 gap-4 xl:gap-6">
-          {/* Logo */}
-          <Link to="/" className="cursor-pointer flex-shrink-0">
-            <img
-              className="h-9 sm:h-10 md:h-11 lg:h-12 w-auto"
-              src={isListingsTheme ? images.blackLogo : images.logo}
-              alt="logo"
-            />
-          </Link>
-        </div>
+          <div className="flex items-center min-w-0 gap-4 xl:gap-6">
+            {/* Logo */}
+            <Link to="/" className="cursor-pointer flex-shrink-0">
+              <img
+                className="h-9 sm:h-10 md:h-11 lg:h-12 w-auto"
+                src={isListingsTheme ? images.blackLogo : images.logo}
+                alt="logo"
+              />
+            </Link>
+          </div>
 
-        {/* Desktop Links (Centered) */}
-        <div className="hidden lg:flex flex-1 items-center justify-center px-4">
-          <div
-            className={`flex items-center gap-3 xl:gap-4 text-sm lg:text-base ${
-              isListingsTheme ? "text-gray-600" : "text-white"
-            }`}
-          >
-            {primaryDesktopLinks.map((link, index) => (
-              <Link
-                key={index}
-                to={link.path}
-                className={`px-2 py-1 rounded-md transition-all whitespace-nowrap ${
-                  isPathMatch(link.path)
-                    ? "text-primary-500 font-semibold bg-primary-50"
-                    : "hover:text-primary-500"
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
-
+          {/* Desktop Links (Centered) */}
+          <div className="hidden lg:flex flex-1 items-center justify-center px-4">
             <div
-              ref={companyDropdownRef}
-              className="relative"
-              onMouseEnter={() => setOpenCompanyDropdown(true)}
-              onMouseLeave={() => setOpenCompanyDropdown(false)}
+              className={`flex items-center gap-3 xl:gap-4 text-sm lg:text-base ${
+                isListingsTheme ? "text-gray-600" : "text-white"
+              }`}
             >
-              <button
-                type="button"
-                onClick={() => setOpenCompanyDropdown((prev) => !prev)}
-                className={`px-2 py-1 rounded-md transition-all whitespace-nowrap inline-flex items-center gap-2 ${
-                  isCompanyActive
-                    ? "text-primary-500 font-semibold bg-primary-50"
-                    : "hover:text-primary-500"
-                }`}
-              >
-                Company
-                <FaChevronDown
-                  size={12}
-                  className={`transition-transform duration-200 ${
-                    openCompanyDropdown ? "rotate-180" : ""
+              {primaryDesktopLinks.map((link, index) => (
+                <Link
+                  key={index}
+                  to={link.path}
+                  className={`px-2 py-1 rounded-md transition-all whitespace-nowrap ${
+                    isPathMatch(link.path)
+                      ? "text-primary-500 font-semibold bg-primary-50"
+                      : "hover:text-primary-500"
                   }`}
-                />
-              </button>
+                >
+                  {link.name}
+                </Link>
+              ))}
 
-              {openCompanyDropdown && (
-                <div className="absolute top-full left-0 pt-2 z-50">
-                  <div className="w-56 rounded-xl border border-gray-200 bg-white shadow-lg text-gray-700 py-2">
-                    {companyLinks.slice(0, 3).map((link) => (
+              <div
+                ref={companyDropdownRef}
+                className="relative"
+                onMouseEnter={() => setOpenCompanyDropdown(true)}
+                onMouseLeave={() => setOpenCompanyDropdown(false)}
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpenCompanyDropdown((prev) => !prev)}
+                  className={`px-2 py-1 rounded-md transition-all whitespace-nowrap inline-flex items-center gap-2 ${
+                    isCompanyActive
+                      ? "text-primary-500 font-semibold bg-primary-50"
+                      : "hover:text-primary-500"
+                  }`}
+                >
+                  Company
+                  <FaChevronDown
+                    size={12}
+                    className={`transition-transform duration-200 ${
+                      openCompanyDropdown ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {openCompanyDropdown && (
+                  <div className="absolute top-full left-0 pt-2 z-50">
+                    <div className="w-56 rounded-xl border border-gray-200 bg-white shadow-lg text-gray-700 py-2">
+                      {companyLinks.slice(0, 3).map((link) => (
+                        <Link
+                          key={link.path}
+                          to={link.path}
+                          onClick={() => setOpenCompanyDropdown(false)}
+                          className={`block px-5 py-2.5 text-base transition-colors ${
+                            isPathMatch(link.path)
+                              ? "text-primary-500 font-semibold bg-primary-50"
+                              : "hover:bg-gray-50"
+                          }`}
+                        >
+                          {link.name}
+                        </Link>
+                      ))}
+                      <div className="my-2 border-t border-gray-200" />
                       <Link
-                        key={link.path}
-                        to={link.path}
+                        to={companyLinks[3].path}
                         onClick={() => setOpenCompanyDropdown(false)}
                         className={`block px-5 py-2.5 text-base transition-colors ${
-                          isPathMatch(link.path)
+                          isPathMatch(companyLinks[3].path)
                             ? "text-primary-500 font-semibold bg-primary-50"
                             : "hover:bg-gray-50"
                         }`}
                       >
-                        {link.name}
+                        {companyLinks[3].name}
                       </Link>
-                    ))}
-                    <div className="my-2 border-t border-gray-200" />
-                    <Link
-                      to={companyLinks[3].path}
-                      onClick={() => setOpenCompanyDropdown(false)}
-                      className={`block px-5 py-2.5 text-base transition-colors ${
-                        isPathMatch(companyLinks[3].path)
-                          ? "text-primary-500 font-semibold bg-primary-50"
-                          : "hover:bg-gray-50"
-                      }`}
-                    >
-                      {companyLinks[3].name}
-                    </Link>
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* User Avatar / Login + Actions */}
-        <div className="flex items-center gap-3 sm:gap-4 lg:gap-5 flex-shrink-0">
-          {renderHeaderSearchToggle()}
-
-          {/* Create Post Button (Desktop) */}
-          <button
-            onClick={() => navigate("/create-post")}
-            className={`hidden sm:flex gap-1.5 sm:gap-2 items-center text-xs sm:text-sm px-3 py-2 rounded-lg border transition-all ${
-              isListingsTheme
-                ? "text-primary-500 border-primary-500 hover:bg-primary-50"
-                : "text-white border-white/70 hover:bg-white/20"
-            }`}
-            title="Create Post"
-          >
-            <FaCirclePlus className="text-sm sm:text-base" />
-            <span className="hidden md:inline">Sell Your Car</span>
-          </button>
-
-          {!isLoading && currentUser ? (
-            <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
-              {/* Dashboard Links */}
-              {currentUser.role === "admin" && (
-                <Link
-                  to="/admin/dashboard"
-                  className="hidden md:block text-xs px-2.5 py-1 bg-primary-500 rounded-md hover:opacity-90 text-white transition-colors"
-                >
-                  Admin
-                </Link>
-              )}
-              {user?.role === "dealer" && user?.dealerInfo?.verified && (
-                <Link
-                  to="/dealer/dashboard"
-                  className="hidden md:block text-xs px-2.5 py-1 bg-primary-500 rounded-md hover:opacity-90 text-white transition-colors"
-                >
-                  Dealer
-                </Link>
-              )}
-              {user?.role === "dealer" && !user?.dealerInfo?.verified && (
-                <Link
-                  to="/seller/dashboard"
-                  className="hidden md:block text-xs px-2.5 py-1 bg-primary-500 rounded-md hover:opacity-90 text-white transition-colors"
-                >
-                  Dashboard
-                </Link>
-              )}
-
-              {/* Notification Bell */}
-              <NotificationBell />
-
-              {/* Avatar */}
-              <div
-                onClick={() => navigate("/profile")}
-                className="cursor-pointer w-8 h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-full overflow-hidden border-2 border-white/80 shadow-sm flex-shrink-0"
-                title="Profile"
-              >
-                <img
-                  src={avatarFallback()}
-                  alt="Avatar"
-                  className="w-full h-full object-cover"
-                />
+                )}
               </div>
             </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => navigate("/login")}
-                className="px-3 py-1.5 sm:px-3.5 sm:py-2 md:px-4 md:py-2 bg-primary-500 rounded-lg text-xs sm:text-sm lg:text-base text-white hover:opacity-90 transition-colors shadow-sm"
-              >
-                Login
-              </button>
-            </div>
-          )}
+          </div>
 
-          {/* Mobile Menu */}
-          <button
-            onClick={openDrawer}
-            title="Menu"
-            className={`lg:hidden w-9 h-9 rounded-full border flex items-center justify-center ${
-              isListingsTheme
-                ? "text-gray-600 border-gray-300 bg-white"
-                : "text-white border-white/70"
-            }`}
-          >
-            <FaBars size={20} className="sm:hidden" />
-            <FaBars size={24} className="hidden sm:block" />
-          </button>
-        </div>
+          {/* User Avatar / Login + Actions */}
+          <div className="flex items-center gap-3 sm:gap-4 lg:gap-5 flex-shrink-0">
+            {renderHeaderSearchToggle()}
+
+            {/* Create Post Button (Desktop) */}
+            <button
+              onClick={() => navigate("/create-post")}
+              className={`hidden sm:flex gap-1.5 sm:gap-2 items-center text-xs sm:text-sm px-3 py-2 rounded-lg border transition-all ${
+                isListingsTheme
+                  ? "text-primary-500 border-primary-500 hover:bg-primary-50"
+                  : "text-white border-white/70 hover:bg-white/20"
+              }`}
+              title="Create Post"
+            >
+              <FaCirclePlus className="text-sm sm:text-base" />
+              <span className="hidden md:inline">Sell Your Car</span>
+            </button>
+
+            {!isLoading && currentUser ? (
+              <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
+                {/* Dashboard Links */}
+                {currentUser.role === "admin" && (
+                  <Link
+                    to="/admin/dashboard"
+                    className="hidden md:block text-xs px-2.5 py-1 bg-primary-500 rounded-md hover:opacity-90 text-white transition-colors"
+                  >
+                    Admin
+                  </Link>
+                )}
+                {user?.role === "dealer" && user?.dealerInfo?.verified && (
+                  <Link
+                    to="/dealer/dashboard"
+                    className="hidden md:block text-xs px-2.5 py-1 bg-primary-500 rounded-md hover:opacity-90 text-white transition-colors"
+                  >
+                    Dealer
+                  </Link>
+                )}
+                {user?.role === "dealer" && !user?.dealerInfo?.verified && (
+                  <Link
+                    to="/seller/dashboard"
+                    className="hidden md:block text-xs px-2.5 py-1 bg-primary-500 rounded-md hover:opacity-90 text-white transition-colors"
+                  >
+                    Dashboard
+                  </Link>
+                )}
+
+                {/* Notification Bell */}
+                <NotificationBell />
+
+                {/* Avatar */}
+                <div
+                  onClick={() => navigate("/profile")}
+                  className="cursor-pointer w-8 h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-full overflow-hidden border-2 border-white/80 shadow-sm flex-shrink-0"
+                  title="Profile"
+                >
+                  <img
+                    src={avatarFallback()}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => navigate("/login")}
+                  className="px-3 py-1.5 sm:px-3.5 sm:py-2 md:px-4 md:py-2 bg-primary-500 rounded-lg text-xs sm:text-sm lg:text-base text-white hover:opacity-90 transition-colors shadow-sm"
+                >
+                  Login
+                </button>
+              </div>
+            )}
+
+            {/* Mobile Menu */}
+            <button
+              onClick={openDrawer}
+              title="Menu"
+              className={`lg:hidden w-9 h-9 rounded-full border flex items-center justify-center ${
+                isListingsTheme
+                  ? "text-gray-600 border-gray-300 bg-white"
+                  : "text-white border-white/70"
+              }`}
+            >
+              <FaBars size={20} className="sm:hidden" />
+              <FaBars size={24} className="hidden sm:block" />
+            </button>
+          </div>
         </div>
       </nav>
 
       {/* Mobile Drawer */}
       {open && (
-        <div
-          className="fixed inset-0 w-full h-full z-50 lg:hidden"
-        >
+        <div className="fixed inset-0 w-full h-full z-50 lg:hidden">
           <div
             ref={backdropRef}
             onClick={closeDrawer}
@@ -435,80 +431,80 @@ const Navbar = () => {
             ref={drawerRef}
             className="absolute inset-0 text-black px-4 sm:px-6 py-4 sm:py-6 bg-white shadow-xl"
           >
-          {/* Close Button */}
-          <div className="flex justify-end text-2xl sm:text-3xl mb-4 sm:mb-6">
-            <button onClick={closeDrawer}>
-              <FaXmark />
-            </button>
-          </div>
+            {/* Close Button */}
+            <div className="flex justify-end text-2xl sm:text-3xl mb-4 sm:mb-6">
+              <button onClick={closeDrawer}>
+                <FaXmark />
+              </button>
+            </div>
 
-          {/* Search Bar */}
-          <div className="mb-4 sm:mb-6">
-            <SearchBar />
-          </div>
+            {/* Search Bar */}
+            <div className="mb-4 sm:mb-6">
+              <SearchBar />
+            </div>
 
-          {/* Drawer Menu Links */}
-          <div className="flex flex-col gap-3 sm:gap-4 text-base sm:text-lg">
-            {mobileMenuLinks.map((link, index) => (
-              <Link
-                key={index}
-                to={link.path}
-                ref={(el) => (linkRefs.current[index] = el)}
-                onClick={closeDrawer}
-                className={` pb-2 ${
-                  isActive(link.path) ? "font-bold text-black" : ""
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
-
-            {/* Create Post (Mobile) */}
-            <button
-              onClick={() => {
-                closeDrawer();
-                navigate("/create-post");
-              }}
-              className="mt-4 flex items-center gap-2 text-black text-base sm:text-lg"
-            >
-              <FaCirclePlus />
-              Create Post
-            </button>
-
-            {/* Dashboard Links (Mobile) */}
-            {!isLoading && user?.role === "admin" && (
-              <Link
-                to="/admin/dashboard"
-                onClick={closeDrawer}
-                className="mt-4 flex items-center gap-2 text-primary-500 border-t border-primary-300 pt-4 text-base sm:text-lg"
-              >
-                <span>Admin Panel</span>
-              </Link>
-            )}
-            {!isLoading &&
-              user?.role === "dealer" &&
-              user?.dealerInfo?.verified && (
+            {/* Drawer Menu Links */}
+            <div className="flex flex-col gap-3 sm:gap-4 text-base sm:text-lg">
+              {mobileMenuLinks.map((link, index) => (
                 <Link
-                  to="/dealer/dashboard"
+                  key={index}
+                  to={link.path}
+                  ref={(el) => (linkRefs.current[index] = el)}
+                  onClick={closeDrawer}
+                  className={` pb-2 ${
+                    isActive(link.path) ? "font-bold text-black" : ""
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              ))}
+
+              {/* Create Post (Mobile) */}
+              <button
+                onClick={() => {
+                  closeDrawer();
+                  navigate("/create-post");
+                }}
+                className="mt-4 flex items-center gap-2 text-black text-base sm:text-lg"
+              >
+                <FaCirclePlus />
+                Create Post
+              </button>
+
+              {/* Dashboard Links (Mobile) */}
+              {!isLoading && user?.role === "admin" && (
+                <Link
+                  to="/admin/dashboard"
                   onClick={closeDrawer}
                   className="mt-4 flex items-center gap-2 text-primary-500 border-t border-primary-300 pt-4 text-base sm:text-lg"
                 >
-                  <span>Dealer Dashboard</span>
+                  <span>Admin Panel</span>
                 </Link>
               )}
-            {!isLoading &&
-              user?.role === "dealer" &&
-              !user?.dealerInfo?.verified && (
-                <Link
-                  to="/seller/dashboard"
-                  onClick={closeDrawer}
-                  className="mt-4 flex items-center gap-2 text-primary-500 border-t border-primary-300 pt-4 text-base sm:text-lg"
-                >
-                  <span>My Dashboard</span>
-                </Link>
-              )}
-            {/* Individual users don't have a dashboard */}
-          </div>
+              {!isLoading &&
+                user?.role === "dealer" &&
+                user?.dealerInfo?.verified && (
+                  <Link
+                    to="/dealer/dashboard"
+                    onClick={closeDrawer}
+                    className="mt-4 flex items-center gap-2 text-primary-500 border-t border-primary-300 pt-4 text-base sm:text-lg"
+                  >
+                    <span>Dealer Dashboard</span>
+                  </Link>
+                )}
+              {!isLoading &&
+                user?.role === "dealer" &&
+                !user?.dealerInfo?.verified && (
+                  <Link
+                    to="/seller/dashboard"
+                    onClick={closeDrawer}
+                    className="mt-4 flex items-center gap-2 text-primary-500 border-t border-primary-300 pt-4 text-base sm:text-lg"
+                  >
+                    <span>My Dashboard</span>
+                  </Link>
+                )}
+              {/* Individual users don't have a dashboard */}
+            </div>
           </div>
         </div>
       )}

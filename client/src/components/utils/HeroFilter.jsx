@@ -11,7 +11,8 @@ const HeroFilter = () => {
   const navigate = useNavigate();
   const [vehicleType] = useState("Car"); // Defaulting for search context
 
-  const { makes, models, cities } = useCarCategories(vehicleType);
+  const { makes, models, cities, getModelsByMake } =
+    useCarCategories(vehicleType);
 
   const [filters, setFilters] = useState({
     make: "",
@@ -23,9 +24,12 @@ const HeroFilter = () => {
 
   const [queryParams, setQueryParams] = useState(null);
 
-  const { data: filteredCars } = useGetFilteredCarsQuery(queryParams, {
-    skip: !queryParams,
-  });
+  const { data: filteredCars, error: searchError } = useGetFilteredCarsQuery(
+    queryParams,
+    {
+      skip: !queryParams,
+    },
+  );
 
   const cityOptions = useMemo(() => {
     if (!Array.isArray(cities)) return [];
@@ -39,8 +43,22 @@ const HeroFilter = () => {
     );
   }, [cities]);
 
+  const modelOptions = useMemo(() => {
+    if (!Array.isArray(models)) return [];
+    if (!filters.make || !Array.isArray(makes) || !getModelsByMake) return models;
+
+    const selectedMake = makes.find((make) => make.name === filters.make);
+    if (!selectedMake) return models;
+
+    return getModelsByMake[selectedMake._id] || [];
+  }, [models, makes, filters.make, getModelsByMake]);
+
   const handleChange = (field, value) => {
-    setFilters((prev) => ({ ...prev, [field]: value }));
+    setFilters((prev) => ({
+      ...prev,
+      [field]: value,
+      ...(field === "make" ? { model: "" } : {}),
+    }));
   };
 
   const handleSearch = (e) => {
@@ -53,6 +71,15 @@ const HeroFilter = () => {
       !filters.maxPrice
     ) {
       toast.error("Please select a filter");
+      return;
+    }
+
+    if (
+      filters.minPrice &&
+      filters.maxPrice &&
+      Number(filters.minPrice) > Number(filters.maxPrice)
+    ) {
+      toast.error("Min Price cannot be greater than Max Price");
       return;
     }
 
@@ -81,6 +108,11 @@ const HeroFilter = () => {
       navigate(`/search-results?${params.toString()}`);
     }
   }, [filteredCars, queryParams, navigate]);
+
+  useEffect(() => {
+    if (!searchError) return;
+    toast.error(searchError?.data?.message || "Failed to search cars.");
+  }, [searchError]);
 
   return (
     <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
@@ -111,9 +143,10 @@ const HeroFilter = () => {
                 className="h-12 w-full bg-gray-50 border-none rounded-xl px-4 pr-10 text-gray-500 appearance-none focus:ring-2 focus:ring-emerald-900"
                 value={filters.model}
                 onChange={(e) => handleChange("model", e.target.value)}
+                disabled={filters.make && modelOptions.length === 0}
               >
                 <option value="">Model</option>
-                {models?.map((m) => (
+                {modelOptions?.map((m) => (
                   <option key={m._id} value={m.name}>
                     {capitalize(m.name)}
                   </option>
@@ -130,7 +163,7 @@ const HeroFilter = () => {
               >
                 <option value="">City</option>
                 {cityOptions.map((city) => (
-                  <option key={city._id} value={city.name}>
+                  <option key={city._id || city.name} value={city.name}>
                     {capitalize(city.name)}
                   </option>
                 ))}

@@ -206,7 +206,7 @@ export const menuLinks = [
   },
   {
     path: "/car-estimator",
-    name: "Ai Car Value",
+    name: "Ai Car Estimator",
   },
   {
     path: "/blog",
