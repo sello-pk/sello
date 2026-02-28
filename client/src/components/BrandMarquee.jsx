@@ -95,8 +95,8 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
   }, [items.length, brands.length]);
 
   return (
-    <div className="w-full py-6 backdrop-blur-sm">
-      <div className="relative rounded-xl px-1 sm:px-10 py-4 overflow-hidden">
+    <div className="w-full py-3 sm:py-4 backdrop-blur-sm">
+      <div className="relative rounded-xl px-1 sm:px-7 py-2 sm:py-3 overflow-hidden">
         {/* Slider buttons */}
         {brands.length > 1 && (
           <>
@@ -124,10 +124,14 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
 
         {/* Slider track */}
         <div
-          className="overflow-x-auto scrollbar-hide w-full"
+          className="relative overflow-x-auto scrollbar-hide w-full"
           style={{ scrollBehavior: "smooth" }}
         >
-          <div ref={sliderRef} className="flex gap-8 md:gap-14">
+          {/* Soft fade/blur at track edges for premium marquee look */}
+          <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-6 sm:w-10 md:w-14 bg-gradient-to-r from-[#f5f5f5] via-[#f5f5f5]/70 to-transparent backdrop-blur-[1px]" />
+          <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-6 sm:w-10 md:w-14 bg-gradient-to-l from-[#f5f5f5] via-[#f5f5f5]/70 to-transparent backdrop-blur-[1px]" />
+
+          <div ref={sliderRef} className="relative z-0 flex gap-4 sm:gap-6 md:gap-8">
             {isLoading ? (
               <div className="flex items-center justify-center w-full py-8 text-gray-400">
                 Loading...
@@ -146,13 +150,13 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
                   <div
                     key={`${brand._id || brandName}-${index}`}
                     onClick={() => handleBrandClick(brandName)}
-                    className="bg-white rounded-xl p-4 flex flex-col items-center justify-center w-24 h-28 md:w-32 md:h-36 shadow-sm flex-shrink-0 cursor-pointer hover:shadow-md transition-shadow group border border-transparent hover:border-gray-100"
+                    className="bg-white/95 rounded-2xl p-2.5 sm:p-3 flex flex-col items-center justify-center w-20 h-24 sm:w-24 sm:h-28 md:w-28 md:h-32 shadow-sm flex-shrink-0 cursor-pointer border border-gray-100/80 hover:border-primary-200 hover:shadow-lg transition-all duration-300 group hover:-translate-y-0.5"
                   >
-                    <div className="flex-1 flex items-center justify-center mb-2">
+                    <div className="flex-1 w-full rounded-xl bg-gradient-to-b from-gray-50 to-white flex items-center justify-center mb-1 p-1.5 sm:p-2">
                       <img
                         src={fixedImage}
                         alt={brandName}
-                        className="object-contain w-full h-full max-h-16 md:max-h-20"
+                        className="object-contain w-full h-full max-h-12 sm:max-h-14 md:max-h-16"
                         loading="lazy"
                         onLoad={() => {
                           console.log(
@@ -173,7 +177,7 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
                         }}
                       />
                     </div>
-                    <p className="text-xs md:text-sm font-medium text-gray-700 group-hover:text-primary-500 transition-colors line-clamp-1">
+                    <p className="text-[11px] sm:text-xs md:text-sm font-semibold text-gray-700 group-hover:text-primary-500 transition-colors line-clamp-1">
                       {brandName}
                     </p>
                   </div>
