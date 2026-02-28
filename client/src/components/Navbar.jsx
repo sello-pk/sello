@@ -3,6 +3,7 @@ import { images, menuLinks } from "../assets/assets";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import SearchBar from "./utils/SearchBar";
 import { FaCirclePlus, FaBars, FaXmark } from "react-icons/fa6";
+import { FiSearch } from "react-icons/fi";
 import gsap from "gsap";
 import { useGetMeQuery } from "../redux/services/api";
 import NotificationBell from "./common/NotificationBell";
@@ -11,9 +12,11 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [showHeaderSearch, setShowHeaderSearch] = useState(false);
   const backdropRef = useRef(null);
   const drawerRef = useRef(null);
   const linkRefs = useRef([]);
+  const searchPanelRef = useRef(null);
 
   // Track token in state so skip option re-evaluates when token changes
   const [token, setToken] = useState(() => localStorage.getItem("token"));
@@ -73,6 +76,23 @@ const Navbar = () => {
       clearInterval(interval);
     };
   }, [token]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        showHeaderSearch &&
+        searchPanelRef.current &&
+        !searchPanelRef.current.contains(event.target)
+      ) {
+        setShowHeaderSearch(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showHeaderSearch]);
 
   const isActive = (path) => location.pathname === path;
 
@@ -136,63 +156,98 @@ const Navbar = () => {
 
   // Use the listings header style site-wide for visual consistency.
   const isListingsTheme = true;
+  const renderHeaderSearchToggle = () => (
+    <div
+      ref={searchPanelRef}
+      className={`hidden lg:block relative h-10 overflow-hidden transition-all duration-300 ease-out ${
+        showHeaderSearch ? "w-[260px]" : "w-8"
+      }`}
+    >
+      <div
+        className={`absolute inset-0 transition-all duration-300 ease-out ${
+          showHeaderSearch
+            ? "opacity-100 translate-x-0 pointer-events-auto"
+            : "opacity-0 translate-x-2 pointer-events-none"
+        }`}
+      >
+        <SearchBar compact placeholder="Search products" />
+      </div>
+      <button
+        type="button"
+        onClick={() => setShowHeaderSearch(true)}
+        className={`absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border transition-all duration-300 flex items-center justify-center ${
+          showHeaderSearch
+            ? "opacity-0 scale-95 pointer-events-none"
+            : "opacity-100 scale-100 pointer-events-auto"
+        } ${
+          isListingsTheme
+            ? "border-gray-300 text-gray-700 hover:bg-gray-100 bg-white"
+            : "border-white/70 text-white hover:bg-white/20"
+        }`}
+        title="Search"
+      >
+        <FiSearch size={14} />
+      </button>
+    </div>
+  );
 
   return (
     <>
       <nav
-        className={`w-full px-3 sm:px-4 md:px-6 lg:px-8 py-2 flex items-center justify-between sticky top-0 z-50 ${
+        className={`w-full px-3 sm:px-4 md:px-6 lg:px-8 py-2.5 flex items-center justify-between sticky top-0 z-50 border-b backdrop-blur-md ${
           isListingsTheme
-            ? "md:bg-[#f5f5f5] md:text-gray-600"
-            : "bg-primary-500 text-white"
+            ? "bg-white/95 text-gray-700 border-gray-200"
+            : "bg-primary-500 text-white border-primary-400"
         }`}
       >
-        {/* Logo */}
-        <Link to="/" className="cursor-pointer flex-shrink-0">
-          <img
-            className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto"
-            src={
-              isListingsTheme ? images.blackLogo : images.logo
-            }
-            alt="logo"
-          />
-        </Link>
-
-        {/* Desktop Search Bar */}
-        <div className="hidden lg:block w-full max-w-xs flex-shrink-0">
-          <SearchBar />
+        <div className="flex items-center min-w-0 gap-4 xl:gap-6">
+          {/* Logo */}
+          <Link to="/" className="cursor-pointer flex-shrink-0">
+            <img
+              className="h-9 sm:h-10 md:h-11 lg:h-12 w-auto"
+              src={isListingsTheme ? images.blackLogo : images.logo}
+              alt="logo"
+            />
+          </Link>
         </div>
 
-        {/* Desktop Links */}
-        <div
-          className={`hidden lg:flex items-center gap-4 xl:gap-6 text-sm lg:text-base ${
-            isListingsTheme ? "text-gray-600" : "text-white"
-          }`}
-        >
-          {menuLinks.map((link, index) => (
-            <Link
-              key={index}
-              to={link.path}
-              className={`hover:opacity-80 transition-opacity ${
-                isActive(link.path) ? "font-bold" : ""
-              }`}
-            >
-              {link.name}
-            </Link>
-          ))}
+        {/* Desktop Links (Centered) */}
+        <div className="hidden lg:flex flex-1 items-center justify-center px-4">
+          <div
+            className={`flex items-center gap-3 xl:gap-4 text-sm lg:text-base ${
+              isListingsTheme ? "text-gray-600" : "text-white"
+            }`}
+          >
+            {menuLinks.map((link, index) => (
+              <Link
+                key={index}
+                to={link.path}
+                className={`px-2 py-1 rounded-md transition-all whitespace-nowrap ${
+                  isActive(link.path)
+                    ? "text-primary-500 font-semibold bg-primary-50"
+                    : "hover:text-primary-500"
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
         </div>
 
         {/* User Avatar / Login + Actions */}
-        <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 text-white flex-shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 flex-shrink-0">
           {/* Create Post Button (Desktop) */}
           <button
             onClick={() => navigate("/create-post")}
-            className={`hidden sm:flex gap-1 sm:gap-2 items-center text-xs sm:text-sm lg:text-base hover:opacity-80 transition-opacity ${
-              isListingsTheme ? "text-gray-600" : "text-white"
+            className={`hidden sm:flex gap-1.5 sm:gap-2 items-center text-xs sm:text-sm px-3 py-2 rounded-lg border transition-all ${
+              isListingsTheme
+                ? "text-primary-500 border-primary-500 hover:bg-primary-50"
+                : "text-white border-white/70 hover:bg-white/20"
             }`}
             title="Create Post"
           >
             <FaCirclePlus className="text-sm sm:text-base" />
-            <span className="hidden md:inline">Sale Your Car</span>
+            <span className="hidden md:inline">Sell Your Car</span>
           </button>
 
           {!isLoading && currentUser ? (
@@ -201,7 +256,7 @@ const Navbar = () => {
               {currentUser.role === "admin" && (
                 <Link
                   to="/admin/dashboard"
-                  className="hidden md:block text-xs px-2 py-1 bg-primary-500 rounded hover:opacity-90 text-white transition-colors"
+                  className="hidden md:block text-xs px-2.5 py-1 bg-primary-500 rounded-md hover:opacity-90 text-white transition-colors"
                 >
                   Admin
                 </Link>
@@ -209,7 +264,7 @@ const Navbar = () => {
               {user?.role === "dealer" && user?.dealerInfo?.verified && (
                 <Link
                   to="/dealer/dashboard"
-                  className="hidden md:block text-xs px-2 py-1 bg-primary-500 rounded hover:opacity-90 text-white transition-colors"
+                  className="hidden md:block text-xs px-2.5 py-1 bg-primary-500 rounded-md hover:opacity-90 text-white transition-colors"
                 >
                   Dealer
                 </Link>
@@ -217,11 +272,13 @@ const Navbar = () => {
               {user?.role === "dealer" && !user?.dealerInfo?.verified && (
                 <Link
                   to="/seller/dashboard"
-                  className="hidden md:block text-xs px-2 py-1 bg-primary-500 rounded hover:opacity-90 text-white transition-colors"
+                  className="hidden md:block text-xs px-2.5 py-1 bg-primary-500 rounded-md hover:opacity-90 text-white transition-colors"
                 >
                   Dashboard
                 </Link>
               )}
+
+              {renderHeaderSearchToggle()}
 
               {/* Notification Bell */}
               <NotificationBell />
@@ -229,7 +286,7 @@ const Navbar = () => {
               {/* Avatar */}
               <div
                 onClick={() => navigate("/profile")}
-                className="cursor-pointer w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full overflow-hidden border-2 border-white flex-shrink-0"
+                className="cursor-pointer w-8 h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-full overflow-hidden border-2 border-white/80 shadow-sm flex-shrink-0"
                 title="Profile"
               >
                 <img
@@ -240,20 +297,25 @@ const Navbar = () => {
               </div>
             </div>
           ) : (
-            <button
-              onClick={() => navigate("/login")}
-              className="px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 bg-primary-500 rounded text-xs sm:text-sm lg:text-base text-white hover:opacity-90 transition-colors"
-            >
-              Login
-            </button>
+            <div className="flex items-center gap-2">
+              {renderHeaderSearchToggle()}
+              <button
+                onClick={() => navigate("/login")}
+                className="px-3 py-1.5 sm:px-3.5 sm:py-2 md:px-4 md:py-2 bg-primary-500 rounded-lg text-xs sm:text-sm lg:text-base text-white hover:opacity-90 transition-colors shadow-sm"
+              >
+                Login
+              </button>
+            </div>
           )}
 
           {/* Mobile Menu */}
           <button
             onClick={openDrawer}
             title="Menu"
-            className={`lg:hidden ${
-              isListingsTheme ? "text-gray-600" : "text-white"
+            className={`lg:hidden w-9 h-9 rounded-full border flex items-center justify-center ${
+              isListingsTheme
+                ? "text-gray-600 border-gray-300 bg-white"
+                : "text-white border-white/70"
             }`}
           >
             <FaBars size={20} className="sm:hidden" />

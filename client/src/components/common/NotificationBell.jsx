@@ -227,20 +227,14 @@ const NotificationBell = () => {
       {/* Notification Bell Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-current hover:opacity-80 transition-all rounded-full hover:bg-black/10 dark:hover:bg-white/10"
+        className="relative p-2 text-primary-500 hover:opacity-80 transition-all rounded-full hover:bg-black/10 dark:hover:bg-white/10"
         aria-label="Notifications"
       >
         <div className="relative">
           {unreadCount > 0 ? (
-            <MdNotificationsActive className="text-2xl text-current" />
+            <MdNotificationsActive className="text-2xl text-primary-500" />
           ) : (
-            <MdNotifications
-              className={`text-2xl ${
-                location.pathname === "/cars"
-                  ? "text-primary-500"
-                  : "text-current"
-              }`}
-            />
+            <MdNotifications className="text-2xl text-primary-500" />
           )}
           {unreadCount > 0 && (
             <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-lg border-2 border-white transform translate-x-1/2 -translate-y-1/2 z-10">
