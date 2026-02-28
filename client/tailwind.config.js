@@ -4,6 +4,9 @@ export default {
   content: ['./src/**/*.{html,js,ts,jsx,tsx}'], // Adjust based on your project structure
   theme: {
     extend: {
+      maxWidth: {
+        '8xl': '90rem',
+      },
       animation: {
         spin: "spin 1.2s ease-in-out infinite",
         marquee: "marquee 30s linear infinite",

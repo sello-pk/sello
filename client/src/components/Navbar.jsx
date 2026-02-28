@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { images, menuLinks } from "../assets/assets";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import SearchBar from "./utils/SearchBar";
-import { FaCirclePlus, FaBars, FaXmark } from "react-icons/fa6";
+import { FaCirclePlus, FaBars, FaXmark, FaChevronDown } from "react-icons/fa6";
 import { FiSearch } from "react-icons/fi";
 import gsap from "gsap";
 import { useGetMeQuery } from "../redux/services/api";
@@ -13,10 +13,12 @@ const Navbar = () => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const [showHeaderSearch, setShowHeaderSearch] = useState(false);
+  const [openCompanyDropdown, setOpenCompanyDropdown] = useState(false);
   const backdropRef = useRef(null);
   const drawerRef = useRef(null);
   const linkRefs = useRef([]);
   const searchPanelRef = useRef(null);
+  const companyDropdownRef = useRef(null);
 
   // Track token in state so skip option re-evaluates when token changes
   const [token, setToken] = useState(() => localStorage.getItem("token"));
@@ -94,7 +96,43 @@ const Navbar = () => {
     };
   }, [showHeaderSearch]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        openCompanyDropdown &&
+        companyDropdownRef.current &&
+        !companyDropdownRef.current.contains(event.target)
+      ) {
+        setOpenCompanyDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openCompanyDropdown]);
+
+  const isPathMatch = (path) =>
+    path === "/"
+      ? location.pathname === "/"
+      : location.pathname === path || location.pathname.startsWith(`${path}/`);
+
   const isActive = (path) => location.pathname === path;
+  const companyLinks = [
+    { path: "/about", name: "About Us" },
+    { path: "/contact", name: "Contact Us" },
+    { path: "/blog", name: "Blog" },
+    { path: "/help/faqs", name: "FAQs" },
+  ];
+  const primaryDesktopLinks = menuLinks.filter(
+    (link) => !["About Us", "Contact Us", "Blog"].includes(link.name),
+  );
+  const mobileMenuLinks = [
+    ...menuLinks,
+    { path: "/help/faqs", name: "FAQs" },
+  ];
+  const isCompanyActive = companyLinks.some((link) => isPathMatch(link.path));
 
   const openDrawer = () => {
     setOpen(true);
@@ -194,12 +232,13 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className={`w-full px-3 sm:px-4 md:px-6 lg:px-8 py-2.5 flex items-center justify-between sticky top-0 z-50 border-b backdrop-blur-md ${
+        className={`w-full sticky top-0 z-50 border-b backdrop-blur-md ${
           isListingsTheme
             ? "bg-white/95 text-gray-700 border-gray-200"
             : "bg-primary-500 text-white border-primary-400"
         }`}
       >
+        <div className="max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8 py-2.5 flex items-center justify-between">
         <div className="flex items-center min-w-0 gap-4 xl:gap-6">
           {/* Logo */}
           <Link to="/" className="cursor-pointer flex-shrink-0">
@@ -218,12 +257,12 @@ const Navbar = () => {
               isListingsTheme ? "text-gray-600" : "text-white"
             }`}
           >
-            {menuLinks.map((link, index) => (
+            {primaryDesktopLinks.map((link, index) => (
               <Link
                 key={index}
                 to={link.path}
                 className={`px-2 py-1 rounded-md transition-all whitespace-nowrap ${
-                  isActive(link.path)
+                  isPathMatch(link.path)
                     ? "text-primary-500 font-semibold bg-primary-50"
                     : "hover:text-primary-500"
                 }`}
@@ -231,11 +270,71 @@ const Navbar = () => {
                 {link.name}
               </Link>
             ))}
+
+            <div
+              ref={companyDropdownRef}
+              className="relative"
+              onMouseEnter={() => setOpenCompanyDropdown(true)}
+              onMouseLeave={() => setOpenCompanyDropdown(false)}
+            >
+              <button
+                type="button"
+                onClick={() => setOpenCompanyDropdown((prev) => !prev)}
+                className={`px-2 py-1 rounded-md transition-all whitespace-nowrap inline-flex items-center gap-2 ${
+                  isCompanyActive
+                    ? "text-primary-500 font-semibold bg-primary-50"
+                    : "hover:text-primary-500"
+                }`}
+              >
+                Company
+                <FaChevronDown
+                  size={12}
+                  className={`transition-transform duration-200 ${
+                    openCompanyDropdown ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {openCompanyDropdown && (
+                <div className="absolute top-full left-0 pt-2 z-50">
+                  <div className="w-56 rounded-xl border border-gray-200 bg-white shadow-lg text-gray-700 py-2">
+                    {companyLinks.slice(0, 3).map((link) => (
+                      <Link
+                        key={link.path}
+                        to={link.path}
+                        onClick={() => setOpenCompanyDropdown(false)}
+                        className={`block px-5 py-2.5 text-base transition-colors ${
+                          isPathMatch(link.path)
+                            ? "text-primary-500 font-semibold bg-primary-50"
+                            : "hover:bg-gray-50"
+                        }`}
+                      >
+                        {link.name}
+                      </Link>
+                    ))}
+                    <div className="my-2 border-t border-gray-200" />
+                    <Link
+                      to={companyLinks[3].path}
+                      onClick={() => setOpenCompanyDropdown(false)}
+                      className={`block px-5 py-2.5 text-base transition-colors ${
+                        isPathMatch(companyLinks[3].path)
+                          ? "text-primary-500 font-semibold bg-primary-50"
+                          : "hover:bg-gray-50"
+                      }`}
+                    >
+                      {companyLinks[3].name}
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         {/* User Avatar / Login + Actions */}
-        <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 flex-shrink-0">
+        <div className="flex items-center gap-3 sm:gap-4 lg:gap-5 flex-shrink-0">
+          {renderHeaderSearchToggle()}
+
           {/* Create Post Button (Desktop) */}
           <button
             onClick={() => navigate("/create-post")}
@@ -278,8 +377,6 @@ const Navbar = () => {
                 </Link>
               )}
 
-              {renderHeaderSearchToggle()}
-
               {/* Notification Bell */}
               <NotificationBell />
 
@@ -297,8 +394,7 @@ const Navbar = () => {
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
-              {renderHeaderSearchToggle()}
+            <div className="flex items-center gap-3">
               <button
                 onClick={() => navigate("/login")}
                 className="px-3 py-1.5 sm:px-3.5 sm:py-2 md:px-4 md:py-2 bg-primary-500 rounded-lg text-xs sm:text-sm lg:text-base text-white hover:opacity-90 transition-colors shadow-sm"
@@ -321,6 +417,7 @@ const Navbar = () => {
             <FaBars size={20} className="sm:hidden" />
             <FaBars size={24} className="hidden sm:block" />
           </button>
+        </div>
         </div>
       </nav>
 
@@ -352,7 +449,7 @@ const Navbar = () => {
 
           {/* Drawer Menu Links */}
           <div className="flex flex-col gap-3 sm:gap-4 text-base sm:text-lg">
-            {menuLinks.map((link, index) => (
+            {mobileMenuLinks.map((link, index) => (
               <Link
                 key={index}
                 to={link.path}
