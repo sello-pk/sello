@@ -134,7 +134,7 @@ const CustomerReview = () => {
   };
 
   return (
-    <section className="relative px-3 sm:px-4 md:px-6 lg:px-8 py-16 bg-gradient-to-br from-slate-50 to-slate-100 overflow-hidden">
+    <section className="relative px-3 max-w-8xl mx-auto sm:px-4 md:px-6 lg:px-8 py-16 overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 bg-grid-black/[0.02] bg-[size:50px_50px]"></div>
       <div className="absolute top-0 left-1/4 w-72 h-72 bg-primary-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>

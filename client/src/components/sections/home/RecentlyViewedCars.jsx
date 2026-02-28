@@ -41,7 +41,7 @@ const RecentlyViewedCars = () => {
   }
 
   return (
-    <section className="py-16 bg-gray-50 w-full">
+    <section className="py-16  w-full">
       <div className="px-3 sm:px-4 md:px-0 lg:px-0 max-w-full mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12">
@@ -146,7 +146,7 @@ const RecentlyViewedCars = () => {
                 <div
                   key={carId}
                   onClick={() => navigate(`/cars/${carId}`)}
-                  className="group bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl hover:border-primary-300 hover:-translate-y-1"
+                  className="group  rounded-2xl shadow-sm border border-gray-200 overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl hover:border-primary-300 hover:-translate-y-1"
                 >
                   {/* Car Image */}
                   <div className="relative h-48 overflow-hidden">

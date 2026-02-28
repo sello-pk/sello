@@ -18,15 +18,16 @@ const BlogSection = () => {
     },
     {
       skip: !!(data?.blogs && data.blogs.length > 0), // Only fetch all blogs if no featured blogs found
-    }
+    },
   );
 
   // Robust blog data access
   const featuredBlogs = data?.blogs || data?.data?.blogs || [];
   const allBlogs = allBlogsData?.blogs || allBlogsData?.data?.blogs || [];
-  
+
   const blogs = featuredBlogs.length > 0 ? featuredBlogs : allBlogs;
-  const isLoading = featuredLoading || (featuredBlogs.length === 0 && allLoading);
+  const isLoading =
+    featuredLoading || (featuredBlogs.length === 0 && allLoading);
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
@@ -39,7 +40,7 @@ const BlogSection = () => {
   };
 
   return (
-    <div className="py-12 bg-[#F5F5F5] w-full">
+    <div className="py-12  max-w-8xl mx-auto">
       <div className="px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Top Section - Blog Header */}
         <div className="mb-10 flex justify-between items-center">

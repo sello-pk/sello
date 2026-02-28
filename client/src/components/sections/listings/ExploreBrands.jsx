@@ -7,7 +7,7 @@ const ExploreBrands = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-[#F5F5F5]">
+    <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 mx-auto max-w-8xl">
       <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-8">
         {/* Text Content */}
         <div className="w-full md:w-1/2">

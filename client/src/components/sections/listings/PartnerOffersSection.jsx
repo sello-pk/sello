@@ -5,13 +5,25 @@ import { FaArrowRight } from "react-icons/fa6";
 
 const PartnerOffersSection = () => {
   const partners = [
-    { link: "https://amingarage.com", logo: images.amingarageLogo, alt: "Amin Garage" },
-    { link: "https://wbdigitech.ae", logo: images.wbDigitalLogo, alt: "WB Digitech" },
-    { link: "https://mianmotors.com", logo: images.mianMotors, alt: "Mian Motors" },
+    {
+      link: "https://amingarage.com",
+      logo: images.amingarageLogo,
+      alt: "Amin Garage",
+    },
+    {
+      link: "https://wbdigitech.ae",
+      logo: images.wbDigitalLogo,
+      alt: "WB Digitech",
+    },
+    {
+      link: "https://mianmotors.com",
+      logo: images.mianMotors,
+      alt: "Mian Motors",
+    },
   ];
 
   return (
-    <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-white">
+    <div className="px-3 sm:px-4 md:px-6 mx-auto max-w-8xl lg:px-8 py-12 bg-white">
       {/* Exclusive Partner Offers */}
       <div className="mb-12">
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
@@ -19,35 +31,35 @@ const PartnerOffersSection = () => {
         </h2>
         <div className="flex items-center justify-center gap-8 flex-wrap">
           {partners.map((partner) => {
-              return (
-                <div
-                  className="relative group border-2 border-gray-100 rounded-2xl overflow-hidden bg-gradient-to-br from-white to-gray-50 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-110 hover:border-primary hover:rotate-1 cursor-pointer"
-                  key={partner.link}
+            return (
+              <div
+                className="relative group border-2 border-gray-100 rounded-2xl overflow-hidden bg-gradient-to-br from-white to-gray-50 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-110 hover:border-primary hover:rotate-1 cursor-pointer"
+                key={partner.link}
+              >
+                <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <Link
+                  to={partner.link}
+                  className="inline-block w-[230px] h-[130px] relative overflow-hidden"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  <Link
-                    to={partner.link}
-                    className="inline-block w-[140px] h-[90px] relative overflow-hidden"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <img
-                        src={partner.logo}
-                        alt={partner.alt}
-                        className="w-full h-full object-contain p-4 transition-all duration-500 group-hover:scale-125 group-hover:brightness-110 filter drop-shadow-sm"
-                      />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <img
+                      src={partner.logo}
+                      alt={partner.alt}
+                      className="w-full h-full object-contain p-4 transition-all duration-500 group-hover:scale-125 group-hover:brightness-110 filter drop-shadow-sm"
+                    />
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
+                    <div className="bg-primary text-white text-sm px-4 py-2 rounded-full font-bold shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                      Visit Partner
                     </div>
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
-                      <div className="bg-primary text-white text-sm px-4 py-2 rounded-full font-bold shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                        Visit Partner
-                      </div>
-                    </div>
-                    <div className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
-                  </Link>
-                </div>
-              );
-            })}
+                  </div>
+                  <div className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
+                </Link>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -134,10 +146,17 @@ const PartnerOffersSection = () => {
       {/* Sell Your Car Section */}
       <div>
         <div className="btn w-full items-center justify-center">
-          <button className="px-6 py-2 flex items-center text-lg font-semibold hover:opacity-90 gap-2 bg-primary rounded mx-auto">
-            <img src={images.electricSvg3} alt="electricSvg" className="h-14" />
-            Sell your car <FaArrowRight />
-          </button>
+          <Link to="/create-post">
+            {" "}
+            <button className="px-6 py-2 flex items-center text-lg font-semibold hover:opacity-90 gap-2 bg-primary rounded mx-auto">
+              <img
+                src={images.electricSvg3}
+                alt="electricSvg"
+                className="h-14"
+              />
+              Sell your car <FaArrowRight />
+            </button>
+          </Link>
         </div>
       </div>
     </div>

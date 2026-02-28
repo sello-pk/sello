@@ -4,7 +4,7 @@ import { images } from "../../../assets/assets";
 
 const Video = () => {
   return (
-    <div className="bg-gray-100 w-full py-8 md:py-16">
+    <div className="max-w-8xl mx-auto py-8 md:py-16">
       <div className="px-3 sm:px-4 md:px-6 lg:px-8 mx-auto flex items-center flex-col sm:flex-col md:flex-col lg:flex-row gap-10 h-full">
         <div className="video h-full lg:w-1/2 md:w-full border-2 border-primary/70 rounded overflow-hidden">
           <img
@@ -14,7 +14,7 @@ const Video = () => {
           />
         </div>
         <div className="content">
-          <h2 className="md:text-5xl text-3xl font-semibold max-w-4xl pb-5">
+          <h2 className="md:text-4xl text-3xl font-semibold max-w-4xl pb-5">
             A Smarter Way to Sell Your Car in Pakistan
           </h2>
           <p className="py-4 text-gray-600">

@@ -278,13 +278,15 @@ const GetAllCarsSection = () => {
   if (isLoading) {
     return (
       <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-[#F5F5F5]">
-        <h2 className="md:text-4xl text-2xl font-medium mb-8">
-          Explore All Vehicles
-        </h2>
-        <div className="grid md:grid-cols-3 grid-cols-1 md:gap-10 gap-6">
-          {[...Array(6)].map((_, index) => (
-            <CarCardSkeleton key={index} />
-          ))}
+        <div className="max-w-8xl mx-auto w-full">
+          <h2 className="md:text-4xl text-2xl font-medium mb-8">
+            Explore All Vehicles
+          </h2>
+          <div className="grid md:grid-cols-3 grid-cols-1 md:gap-10 gap-6">
+            {[...Array(6)].map((_, index) => (
+              <CarCardSkeleton key={index} />
+            ))}
+          </div>
         </div>
       </section>
     );
@@ -300,23 +302,25 @@ const GetAllCarsSection = () => {
 
     return (
       <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-[#F5F5F5]">
-        <div className="text-center">
-          <h2 className="text-xl text-red-500 mb-4">Error loading cars</h2>
-          <p className="text-gray-600 mb-4">{errorMessage}</p>
-          <button
-            onClick={() => navigate(0)}
-            className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90 transition-colors"
-          >
-            Retry
-          </button>
+        <div className="max-w-8xl mx-auto w-full">
+          <div className="text-center">
+            <h2 className="text-xl text-red-500 mb-4">Error loading cars</h2>
+            <p className="text-gray-600 mb-4">{errorMessage}</p>
+            <button
+              onClick={() => navigate(0)}
+              className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90 transition-colors"
+            >
+              Retry
+            </button>
+          </div>
         </div>
       </section>
     );
   }
 
   return (
-    <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-[#F5F5F5]">
-      <div>
+    <section className="px-3 max-w-8xl mx-auto  sm:px-4 md:px-6 lg:px-8 py-12">
+      <div className="">
         <h2 className="md:text-4xl text-2xl font-medium">
           Explore All Vehicles
         </h2>

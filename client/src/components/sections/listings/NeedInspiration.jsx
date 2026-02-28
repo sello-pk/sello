@@ -12,7 +12,7 @@ const NeedInspiration = () => {
   };
 
   return (
-    <div className="bg-[#F5F5F5] px-3 sm:px-4 md:px-6 lg:px-8 py-12">
+    <div className=" max-w-8xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-12">
       <h2 className="md:text-4xl text-2xl font-medium">Or Browse By Types</h2>
       <div className="mt-4 flex gap-4 flex-wrap">
         {[
