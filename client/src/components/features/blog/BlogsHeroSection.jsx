@@ -1,45 +1,62 @@
 import React from "react";
 import { images } from "../../../assets/assets";
 import { LuArrowUpRight } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
 
 const BlogsHeroSection = () => {
+  const navigate = useNavigate();
+
   return (
-    <div className="md:h-[80vh] bg-[#272525] flex flex-col md:flex-row items-center justify-between">
-      {/* Left Side */}
-      <div className="w-full md:w-[60%]  px-3 sm:px-4 md:px-6 lg:px-8 py-10 md:py-0 ">
-        <div className="">
-          <h1 className="md:text-5xl mb-16 text-3xl font-bold text-white">
-            Your Journey Your Car Your Way
-          </h1>
-          <p className="text-lg text-gray-100">
-            We are a platform that connects you with the right car for you.
-            Whether you are looking for a new car or a used car, we have the
-            perfect car for you. We are a platform that connects you with the
-            right car for you. Whether you are looking for a new car or a used
-            car, we have the perfect car for you. We are a platform that
-            connects you with the right car for you. Whether you are looking for
-            a new car or a used car, we have the perfect car for you.
-          </p>
-        </div>
-        <div className="flex items-center flex-start my-7 gap-5">
-          <button className="px-6 py-3 rounded-lg border-[1px] flex items-center gap-3 bg-black text-white border-transparent hover:bg-white hover:text-black transition-all ease-in ">
-            Add Post
-            <LuArrowUpRight size={20} />
-          </button>
-          <button className="px-6 py-3 rounded-lg border-[1px] flex items-center gap-3 border-black text-black hover:bg-black hover:text-white transition-all ease-in bg-white">
-            Contact <LuArrowUpRight size={20} />
-          </button>
+    <section className="relative bg-[#272525] md:h-[80vh] overflow-hidden">
+      <div className="max-w-8xl mx-auto w-full h-full pl-3 pr-3 sm:pl-4 sm:pr-4 md:pl-6 md:pr-6 lg:pl-8 lg:pr-8">
+        <div className="h-full flex flex-col md:flex-row items-center">
+          {/* Left Side */}
+          <div className="w-full md:w-[60%] py-10 md:py-0 md:pr-6 lg:pr-10">
+            <div>
+              <h1 className="md:text-5xl mb-16 text-3xl font-bold text-white">
+                Insights, Reviews & Automotive Updates
+              </h1>
+              <p className="text-lg text-gray-300 my-4">
+                Explore practical car buying guides, ownership tips, industry
+                trends, and expert comparisons crafted for drivers across
+                Pakistan.
+              </p>
+              <p className="text-lg text-gray-300 my-4">
+                From understanding total ownership costs to choosing the right
+                model for your needs, our blog helps you make informed decisions
+                with confidence.
+              </p>
+            </div>
+            <div className="flex items-center flex-wrap my-7 gap-5">
+              <button
+                onClick={() => navigate("/blog/all")}
+                className="px-6 w-48 py-3 rounded-lg border-[1px] flex items-center justify-center gap-3 bg-black text-white border-transparent hover:bg-white hover:text-black transition-all ease-in"
+              >
+                Browse Blogs
+                <LuArrowUpRight size={20} />
+              </button>
+              <button
+                onClick={() => navigate("/contact")}
+                className="px-6 w-48 py-3 rounded-lg border-[1px] flex items-center justify-center gap-3 border-black text-black hover:bg-black hover:text-white transition-all ease-in bg-white"
+              >
+                Contact
+                <LuArrowUpRight size={20} />
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
-      {/* Right Side */}
-      <div className="w-full md:w-[40%] h-64 md:h-full">
+
+      {/* Right Side - hard pinned to right edge */}
+      <div className="w-full h-64 md:absolute md:top-0 md:right-0 md:h-full md:w-[40%]">
         <img
           src={images.userHeroSectionImg}
-          alt="userHero section image"
+          alt="Blog hero section image"
           className="h-full rounded-bl-[155px] w-full object-cover"
         />
       </div>
-    </div>
+    </section>
   );
 };
 

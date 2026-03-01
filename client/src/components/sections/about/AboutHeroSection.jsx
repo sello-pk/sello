@@ -4,11 +4,11 @@ import { images } from "../../../assets/assets";
 const AboutHeroSection = () => {
   const navigate = useNavigate();
   return (
-    <section className="bg-[#272525] md:h-[80vh]">
-      <div className="max-w-8xl mx-auto w-full h-full px-3 sm:px-4 md:px-6 lg:px-8">
-        <div className="h-full flex flex-col md:flex-row items-center justify-between">
+    <section className="relative bg-[#272525] md:h-[80vh] overflow-hidden">
+      <div className="max-w-8xl mx-auto w-full h-full pl-3 pr-3 sm:pl-4 sm:pr-4 md:pl-6 md:pr-6 lg:pl-8 lg:pr-8">
+        <div className="h-full flex flex-col md:flex-row items-center">
           {/* Left Side */}
-          <div className="w-full md:w-[60%] py-10 md:py-0">
+          <div className="w-full md:w-[60%] py-10 md:py-0 md:pr-6 lg:pr-10">
             <div>
               <h1 className="md:text-5xl mb-16 text-3xl font-bold text-white">
                 About Us
@@ -44,15 +44,16 @@ const AboutHeroSection = () => {
             </div>
           </div>
 
-          {/* Right Side */}
-          <div className="w-full md:w-[40%] h-64 md:h-full md:self-stretch">
-            <img
-              src={images.userHeroSectionImg}
-              alt="userHero section image"
-              className="h-full rounded-bl-[155px] w-full object-cover"
-            />
-          </div>
         </div>
+      </div>
+
+      {/* Right Side - hard pinned to right edge */}
+      <div className="w-full h-64 md:absolute md:top-0 md:right-0 md:h-full md:w-[40%]">
+        <img
+          src={images.userHeroSectionImg}
+          alt="userHero section image"
+          className="h-full rounded-bl-[155px] w-full object-cover"
+        />
       </div>
     </section>
   );

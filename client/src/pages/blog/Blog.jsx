@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import LatestBlogsSection from "../../components/features/blog/LatestBlogsSection";
 import NewTechnology from "../../components/features/blog/NewTechnology";
 import ReviewSliderBanner from "../../components/features/blog/ReviewSliderBanner";
-import BottomReviews from "../../components/features/blog/BottomReviews";
 import NewsLatter from "../../components/utils/NewsLatter";
 import SEO from "../../components/common/SEO";
 
@@ -19,19 +18,21 @@ const Blog = () => {
       />
       <BlogsHeroSection />
       <div className="py-8 px-3 sm:px-4 md:px-6 lg:px-8">
-        <div className=" flex items-center justify-between w-full">
+        <div className="max-w-[86rem] mx-auto w-full flex items-center justify-between gap-4">
           <h2 className="md:text-3xl text-xl font-semibold">
             Explore Our Premium Brands
           </h2>
           <Link
             to={"/view-all-brands"}
-            className="flex items-center gap-2 text-lg"
+            className="flex items-center gap-2 text-base md:text-lg"
           >
             Show All Brands <GoArrowUpRight />{" "}
           </Link>
         </div>
-        {/* BrandMarquee will fetch brands from admin categories automatically */}
-        <BrandMarquee />
+        <div className="max-w-8xl mx-auto w-full">
+          {/* BrandMarquee will fetch brands from admin categories automatically */}
+          <BrandMarquee />
+        </div>
       </div>
       <LatestBlogsSection />
       {/* Blog Categories section (uses NewTechnology layout but shows dynamic categories) */}
