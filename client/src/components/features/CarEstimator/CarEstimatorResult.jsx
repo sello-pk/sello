@@ -14,7 +14,7 @@ import {
   Gauge,
 } from "lucide-react";
 
-const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
+const CarEstimatorResult = ({ result, onSave }) => {
   const [showAllBreakdown, setShowAllBreakdown] = useState(false);
   const [activeTab, setActiveTab] = useState("analysis");
 
@@ -31,10 +31,6 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
       default:
         return "bg-gray-100 text-gray-800 border border-gray-200";
     }
-  };
-
-  const getDemandText = (demand) => {
-    return demand || "Medium";
   };
 
   const formatPrice = (price) => {
@@ -66,9 +62,9 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
               ? 75
               : 65,
       paint:
-        formData.paintStatus === "Original"
+        formData.paintStatus === "original"
           ? 90
-          : formData.paintStatus === "Repainted"
+          : formData.paintStatus === "repainted"
             ? 75
             : 80,
       tires:
@@ -131,7 +127,7 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
 
     if (formData.make === "toyota" || formData.make === "honda")
       demand = "High";
-    if (formData.fuelType === "hybrid" || formData.fuelType === "electric")
+    if (formData.engineType === "hybrid" || formData.engineType === "electric")
       demand = "High";
     if (formData.transmission === "automatic") demand = "High";
     if (formData.mileage > 150000) demand = "Low";
@@ -146,9 +142,9 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-md border border-gray-200/80 overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-primary-500 to-primary-600 text-white p-4 sm:p-6">
+      <div className="bg-gradient-to-r from-primary-500 to-amber-500 text-white p-4 sm:p-5">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold mb-2">
@@ -160,7 +156,7 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
           </div>
           <button
             onClick={onSave}
-            className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 w-full sm:w-auto justify-center"
+            className="bg-white/15 hover:bg-white/25 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 w-full sm:w-auto justify-center border border-white/30"
           >
             <CheckCircle className="w-4 h-4" />
             Save Valuation
@@ -169,9 +165,9 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
       </div>
 
       {/* Main Content */}
-      <div className="p-4 sm:p-6">
+      <div className="p-4 sm:p-6 bg-gradient-to-b from-white to-gray-50/70">
         {/* Car Summary */}
-        <div className="bg-gray-50 rounded-xl p-4 sm:p-6 mb-6">
+        <div className="bg-white rounded-2xl p-4 sm:p-5 mb-5 border border-gray-200 shadow-sm">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6">
             <div>
               <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-1">
@@ -203,7 +199,7 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
               Current Market Value
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-              <div className="bg-red-50 p-3 sm:p-4 rounded-lg border border-red-200 text-center">
+              <div className="bg-red-50/40 p-3 sm:p-4 rounded-xl border border-red-100 text-center">
                 <p className="text-xs sm:text-sm text-red-700 font-medium">
                   Low
                 </p>
@@ -212,7 +208,7 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
                 </p>
                 <p className="text-xs text-red-600">Conservative</p>
               </div>
-              <div className="bg-yellow-50 p-3 sm:p-4 rounded-lg border border-yellow-200 text-center">
+              <div className="bg-amber-50/50 p-3 sm:p-4 rounded-xl border border-yellow-100 text-center">
                 <p className="text-xs sm:text-sm text-yellow-700 font-medium">
                   Average
                 </p>
@@ -221,7 +217,7 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
                 </p>
                 <p className="text-xs text-yellow-600">Most Likely</p>
               </div>
-              <div className="bg-green-50 p-3 sm:p-4 rounded-lg border border-green-200 text-center">
+              <div className="bg-green-50/50 p-3 sm:p-4 rounded-xl border border-green-100 text-center">
                 <p className="text-xs sm:text-sm text-green-700 font-medium">
                   High
                 </p>
@@ -234,10 +230,9 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
           </div>
 
           {/* Confidence Score */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 pt-4 border-t border-gray-200">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-primary-500 rounded-full"></div>
-              <span className="text-sm text-gray-600">Confidence:</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 border-t border-gray-200">
+            <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 flex items-center justify-between">
+              <span className="text-sm text-gray-600">Confidence Level</span>
               <span
                 className={`font-bold text-sm ${
                   getConfidenceLevel() === "High"
@@ -250,9 +245,8 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
                 {getConfidenceLevel()}
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-primary-500 rounded-full"></div>
-              <span className="text-sm text-gray-600">Score:</span>
+            <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 flex items-center justify-between">
+              <span className="text-sm text-gray-600">Confidence Score</span>
               <span className="font-bold text-primary-600 text-sm">
                 {confidence}/100
               </span>
@@ -260,15 +254,8 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
           </div>
         </div>
 
-        {/* New Valuation Button */}
-        <div className="text-center mb-6">
-          <button className="bg-primary-100 text-primary-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-200 transition-colors w-full sm:w-auto">
-            New Valuation
-          </button>
-        </div>
-
         {/* Tabs */}
-        <div className="bg-gray-50 rounded-xl p-1 mb-6 border border-gray-200">
+        <div className="bg-white rounded-xl p-1 mb-6 border border-gray-200 shadow-sm">
           <div className="flex flex-col sm:flex-row space-x-0 sm:space-x-1 space-y-1 sm:space-y-0">
             {["analysis", "breakdown", "compare", "tips"].map((tab) => (
               <button
@@ -276,7 +263,7 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
                 onClick={() => setActiveTab(tab)}
                 className={`flex-1 py-3 px-2 sm:px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
                   activeTab === tab
-                    ? "bg-white text-primary-600 shadow-sm border border-primary-200"
+                    ? "bg-primary-50 text-primary-700 shadow-sm border border-primary-200"
                     : "text-gray-600 hover:text-gray-800 hover:bg-white/50"
                 }`}
               >
@@ -316,10 +303,10 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
         </div>
 
         {/* Tab Content */}
-        <div className="min-h-[300px]">
+        <div className="min-h-[240px]">
           {activeTab === "analysis" && (
             <div className="space-y-4">
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 shadow-sm">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 sm:p-5 shadow-sm">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-bold text-blue-900 flex items-center gap-3">
                     <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
@@ -330,13 +317,13 @@ const CarEstimatorResult = ({ result, onSave, fullWidth = false }) => {
                   {result.isAIPowered && (
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                      <span className="text-xs bg-blue-600 text-white px-3 py-1 rounded-full uppercase tracking-wider font-bold">
+                    <span className="text-xs bg-blue-600 text-white px-2.5 py-1 rounded-full uppercase tracking-wider font-bold">
                         GPT-4o Professional
                       </span>
                     </div>
                   )}
                 </div>
-                <div className="bg-white rounded-lg p-4 border border-blue-100">
+                <div className="bg-white rounded-lg p-3 sm:p-4 border border-blue-100">
                   <p className="text-blue-800 text-sm leading-relaxed whitespace-pre-line">
                     {result.summary}
                   </p>

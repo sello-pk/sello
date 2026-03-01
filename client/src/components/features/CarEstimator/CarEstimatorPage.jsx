@@ -5,7 +5,6 @@ import {
   RotateCcw,
   Sparkles,
   Bookmark,
-  History,
   TrendingUp,
   Shield,
   Zap,
@@ -16,11 +15,13 @@ import {
 import CarEstimatorForm from "./CarEstimatorForm";
 import CarEstimatorResult from "./CarEstimatorResult";
 import SEO from "../../common/SEO";
+import estimatorHero from "../../../assets/images/estimatorHero.png";
 
 const CarEstimatorPage = () => {
   const [result, setResult] = useState(null);
   const [activeTab, setActiveTab] = useState("estimate");
   const [savedValuations, setSavedValuations] = useState([]);
+  const MotionDiv = motion.div;
 
   useEffect(() => {
     document.title = "AI Car Price Estimator - Sello";
@@ -81,25 +82,31 @@ const CarEstimatorPage = () => {
         description="Get accurate car price estimates with our AI-powered tool. Analyze market data, compare prices, and make informed decisions when buying or selling cars in Pakistan."
         canonical="https://sello.pk/car-estimator"
       />
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-yellow-50">
-        {/* Header */}
-        <div className="bg-white shadow-sm border-b border-orange-100">
-          <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+      <div className="min-h-screen bg-gray-50">
+        {/* Hero Header */}
+        <section className="relative w-full overflow-hidden md:min-h-[48vh]">
+          <img
+            src={estimatorHero}
+            alt="car estimator hero image"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-slate-900/70" />
+          <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:min-h-[48vh] md:py-14">
             <div className="text-center">
-              <motion.div
+              <MotionDiv
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="inline-flex items-center gap-2 bg-primary-100 text-primary-800 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium mb-4"
+                className="inline-flex items-center gap-2 bg-white text-primary-500 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium mb-4"
               >
                 <Zap className="w-4 h-4" />
                 AI-Powered • Real-Time Market Data
-              </motion.div>
+              </MotionDiv>
 
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4"
+                className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4"
               >
                 Get Your Car's True Value
               </motion.h1>
@@ -108,7 +115,7 @@ const CarEstimatorPage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto mb-8 px-4"
+                className="text-base sm:text-lg text-gray-100 max-w-3xl mx-auto mb-8 px-4"
               >
                 Our AI analyzes real-time data from Sello & local dealerships to
                 give you the most accurate valuation for your car.
@@ -119,7 +126,7 @@ const CarEstimatorPage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="flex flex-wrap justify-center gap-4 sm:gap-8 text-xs sm:text-sm text-gray-600"
+                className="flex flex-wrap justify-center gap-4 sm:gap-8 text-xs sm:text-sm text-gray-200"
               >
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4 sm:w-5 sm:h-5 text-primary-500" />
@@ -139,10 +146,10 @@ const CarEstimatorPage = () => {
               </motion.div>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Tabs */}
-        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8">
+        <div className="max-w-8xl mx-auto w-full px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8">
           <div className="border-b border-gray-200 overflow-x-auto">
             <nav className="-mb-px flex space-x-2 sm:space-x-8 min-w-max">
               {[
@@ -190,7 +197,7 @@ const CarEstimatorPage = () => {
         </div>
 
         {/* Content */}
-        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="max-w-8xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <AnimatePresence mode="wait">
             {activeTab === "estimate" && (
               <motion.div
@@ -309,7 +316,7 @@ const CarEstimatorPage = () => {
         </div>
 
         {/* Blog Sections */}
-        <div className="mt-12 sm:mt-16 space-y-8 sm:space-y-12">
+        <div className="max-w-8xl mx-auto w-full px-4 sm:px-6 lg:px-8 mt-12 sm:mt-16 space-y-8 sm:space-y-12 pb-10">
           {/* Section 1: How AI Works */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
