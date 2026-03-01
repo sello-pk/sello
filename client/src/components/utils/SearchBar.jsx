@@ -64,7 +64,7 @@ const SearchBar = ({
       onSubmit={handleSearch}
       className={`flex items-center gap-2 bg-white text-black ${
         compact
-          ? "border border-gray-400 rounded-full px-4 py-1.5 shadow-[inset_0_-1px_0_rgba(0,0,0,0.08)]"
+          ? "border border-gray-500 rounded-lg px-4 py-1.5 shadow-[inset_0_-1px_0_rgba(0,0,0,0.08)]"
           : "border border-gray-200 rounded-lg px-3 py-2"
       }`}
     >

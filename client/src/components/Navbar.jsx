@@ -14,11 +14,14 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [showHeaderSearch, setShowHeaderSearch] = useState(false);
   const [openCompanyDropdown, setOpenCompanyDropdown] = useState(false);
+  const [openAuctionsDropdown, setOpenAuctionsDropdown] = useState(false);
+  const [openMobileAuctions, setOpenMobileAuctions] = useState(false);
   const backdropRef = useRef(null);
   const drawerRef = useRef(null);
   const linkRefs = useRef([]);
   const searchPanelRef = useRef(null);
   const companyDropdownRef = useRef(null);
+  const auctionsDropdownRef = useRef(null);
 
   // Track token in state so skip option re-evaluates when token changes
   const [token, setToken] = useState(() => localStorage.getItem("token"));
@@ -41,7 +44,6 @@ const Navbar = () => {
   const {
     data: currentUser,
     isLoading,
-    refetch,
   } = useGetMeQuery(undefined, {
     skip: !token,
   });
@@ -114,6 +116,23 @@ const Navbar = () => {
     };
   }, [openCompanyDropdown]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        openAuctionsDropdown &&
+        auctionsDropdownRef.current &&
+        !auctionsDropdownRef.current.contains(event.target)
+      ) {
+        setOpenAuctionsDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openAuctionsDropdown]);
+
   const isPathMatch = (path) =>
     path === "/"
       ? location.pathname === "/"
@@ -126,11 +145,26 @@ const Navbar = () => {
     { path: "/blog", name: "Blog" },
     { path: "/help/faqs", name: "FAQs" },
   ];
+  const publicAuctionLinks = [
+    { path: "/auctions", name: "All Auctions" },
+    { path: "/auctions/live", name: "Live Now" },
+    { path: "/auctions/schedule", name: "Auction Schedule" },
+    { path: "/auctions/trust-legal", name: "Trust & Legal" },
+  ];
+  const userAuctionLinks = [
+    { path: "/auctions/watchlist", name: "My Watchlist" },
+    { path: "/auctions/transactions", name: "My Transactions" },
+  ];
   const primaryDesktopLinks = menuLinks.filter(
-    (link) => !["About Us", "Contact Us", "Blog"].includes(link.name),
+    (link) =>
+      !["About Us", "Contact Us", "Blog", "Live Auctions"].includes(link.name),
   );
   const mobileMenuLinks = [...menuLinks, { path: "/help/faqs", name: "FAQs" }];
+  const mobilePrimaryLinks = mobileMenuLinks.filter(
+    (link) => link.path !== "/auctions",
+  );
   const isCompanyActive = companyLinks.some((link) => isPathMatch(link.path));
+  const isAuctionsActive = location.pathname.startsWith("/auctions");
 
   const openDrawer = () => {
     setOpen(true);
@@ -177,7 +211,10 @@ const Navbar = () => {
       xPercent: 100,
       duration: 0.45,
       ease: "power4.inOut",
-      onComplete: () => setOpen(false),
+      onComplete: () => {
+        setOpen(false);
+        setOpenMobileAuctions(false);
+      },
     });
   };
 
@@ -211,13 +248,13 @@ const Navbar = () => {
       <button
         type="button"
         onClick={() => setShowHeaderSearch(true)}
-        className={`absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border transition-all duration-300 flex items-center justify-center ${
+        className={`absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg border transition-all duration-300 flex items-center justify-center ${
           showHeaderSearch
             ? "opacity-0 scale-95 pointer-events-none"
             : "opacity-100 scale-100 pointer-events-auto"
         } ${
           isListingsTheme
-            ? "border-gray-300 text-gray-700 hover:bg-gray-100 bg-white"
+            ? "border-gray-500 text-gray-700 hover:bg-gray-100 bg-white"
             : "border-white/70 text-white hover:bg-white/20"
         }`}
         title="Search"
@@ -268,6 +305,71 @@ const Navbar = () => {
                   {link.name}
                 </Link>
               ))}
+
+              <div
+                ref={auctionsDropdownRef}
+                className="relative"
+                onMouseEnter={() => setOpenAuctionsDropdown(true)}
+                onMouseLeave={() => setOpenAuctionsDropdown(false)}
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpenAuctionsDropdown((prev) => !prev)}
+                  className={`px-2 py-1 rounded-md transition-all whitespace-nowrap inline-flex items-center gap-2 ${
+                    isAuctionsActive
+                      ? "text-primary-500 font-semibold bg-primary-50"
+                      : "hover:text-primary-500"
+                  }`}
+                >
+                  Live Auctions
+                  <FaChevronDown
+                    size={12}
+                    className={`transition-transform duration-200 ${
+                      openAuctionsDropdown ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {openAuctionsDropdown && (
+                  <div className="absolute top-full left-0 pt-2 z-50">
+                    <div className="w-64 rounded-xl border border-gray-200 bg-white shadow-lg text-gray-700 py-2">
+                      {publicAuctionLinks.map((link) => (
+                        <Link
+                          key={link.path}
+                          to={link.path}
+                          onClick={() => setOpenAuctionsDropdown(false)}
+                          className={`block px-5 py-2.5 text-base transition-colors ${
+                            isPathMatch(link.path)
+                              ? "text-primary-500 font-semibold bg-primary-50"
+                              : "hover:bg-gray-50"
+                          }`}
+                        >
+                          {link.name}
+                        </Link>
+                      ))}
+                      {token && (
+                        <>
+                          <div className="my-2 border-t border-gray-200" />
+                          {userAuctionLinks.map((link) => (
+                            <Link
+                              key={link.path}
+                              to={link.path}
+                              onClick={() => setOpenAuctionsDropdown(false)}
+                              className={`block px-5 py-2.5 text-base transition-colors ${
+                                isPathMatch(link.path)
+                                  ? "text-primary-500 font-semibold bg-primary-50"
+                                  : "hover:bg-gray-50"
+                              }`}
+                            >
+                              {link.name}
+                            </Link>
+                          ))}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
 
               <div
                 ref={companyDropdownRef}
@@ -445,7 +547,7 @@ const Navbar = () => {
 
             {/* Drawer Menu Links */}
             <div className="flex flex-col gap-3 sm:gap-4 text-base sm:text-lg">
-              {mobileMenuLinks.map((link, index) => (
+              {mobilePrimaryLinks.map((link, index) => (
                 <Link
                   key={index}
                   to={link.path}
@@ -458,6 +560,49 @@ const Navbar = () => {
                   {link.name}
                 </Link>
               ))}
+
+              <div
+                className={`pb-2 ${isAuctionsActive ? "font-bold text-black" : ""}`}
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpenMobileAuctions((prev) => !prev)}
+                  className="w-full flex items-center justify-between"
+                >
+                  <span>Live Auctions</span>
+                  <FaChevronDown
+                    size={14}
+                    className={`transition-transform duration-200 ${
+                      openMobileAuctions ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                {openMobileAuctions && (
+                  <div className="mt-3 ml-2 flex flex-col gap-3 text-[15px] text-gray-700 border-l border-gray-200 pl-3">
+                    {publicAuctionLinks.map((link) => (
+                      <Link
+                        key={link.path}
+                        to={link.path}
+                        onClick={closeDrawer}
+                        className={`${isPathMatch(link.path) ? "text-primary-500 font-semibold" : ""}`}
+                      >
+                        {link.name}
+                      </Link>
+                    ))}
+                    {token &&
+                      userAuctionLinks.map((link) => (
+                        <Link
+                          key={link.path}
+                          to={link.path}
+                          onClick={closeDrawer}
+                          className={`${isPathMatch(link.path) ? "text-primary-500 font-semibold" : ""}`}
+                        >
+                          {link.name}
+                        </Link>
+                      ))}
+                  </div>
+                )}
+              </div>
 
               {/* Create Post (Mobile) */}
               <button
