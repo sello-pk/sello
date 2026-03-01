@@ -54,6 +54,8 @@ const roleSchema = new mongoose.Schema(
       deleteBlogs: { type: Boolean, default: false },
       moderateComments: { type: Boolean, default: false },
       managePromotions: { type: Boolean, default: false },
+      viewTestimonials: { type: Boolean, default: false },
+      manageTestimonials: { type: Boolean, default: false },
       createPushNotifications: { type: Boolean, default: false },
       sendPushNotifications: { type: Boolean, default: false },
 
@@ -75,6 +77,9 @@ const roleSchema = new mongoose.Schema(
       // Analytics & Reports
       viewAnalytics: { type: Boolean, default: false },
       viewFinancialReports: { type: Boolean, default: false },
+      managePayments: { type: Boolean, default: false },
+      viewAuctions: { type: Boolean, default: false },
+      manageAuctions: { type: Boolean, default: false },
       createReports: { type: Boolean, default: false },
       exportReports: { type: Boolean, default: false },
 

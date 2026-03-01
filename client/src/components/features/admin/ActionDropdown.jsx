@@ -137,7 +137,7 @@ const ActionDropdown = ({
       label: "View Details",
       icon: FiEye,
       onClick: () => handleAction("view", onView),
-      className: "text-gray-700 hover:bg-gray-100"
+      className: "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
     });
   }
   
@@ -146,7 +146,7 @@ const ActionDropdown = ({
       label: "Edit",
       icon: FiEdit,
       onClick: () => handleAction("edit", onEdit),
-      className: "text-gray-700 hover:bg-gray-100"
+      className: "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
     });
   }
   
@@ -155,7 +155,7 @@ const ActionDropdown = ({
       label: "Copy",
       icon: FiCopy,
       onClick: () => handleAction("copy", onCopy),
-      className: "text-gray-700 hover:bg-gray-100"
+      className: "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
     });
   }
   
@@ -174,6 +174,7 @@ const ActionDropdown = ({
         setPosition({ top: 0, left: 0 });
       },
       className: "text-red-600 hover:bg-red-50"
+      
     });
   }
   
@@ -195,7 +196,7 @@ const ActionDropdown = ({
         <button
           ref={buttonRef}
           onClick={handleToggle}
-          className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded hover:bg-gray-100"
+          className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
           aria-label="Actions menu"
         >
           <FiMoreVertical size={20} />
@@ -206,7 +207,7 @@ const ActionDropdown = ({
       {isOpen && createPortal(
         <div
           ref={dropdownRef}
-          className="fixed w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-[9999] py-1"
+          className="fixed w-48 bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-[9999] py-1"
           style={{
             top: `${position.top}px`,
             left: `${position.left}px`,
@@ -222,14 +223,14 @@ const ActionDropdown = ({
             return (
               <React.Fragment key={index}>
                 {isDelete && actionList.length > 1 && (
-                  <hr className="my-1 border-gray-200" />
+                  <hr className="my-1 border-gray-200 dark:border-gray-700" />
                 )}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     action.onClick();
                   }}
-                  className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors ${action.className || "text-gray-700 hover:bg-gray-100"}`}
+                  className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors ${action.className || "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                 >
                   {Icon && <Icon size={14} />}
                   {action.label}

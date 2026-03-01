@@ -74,9 +74,9 @@ const RolesList = ({ onCreateRole }) => {
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-          <h3 className="text-lg font-semibold text-gray-900">
+      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             Roles & Permissions
           </h3>
           <button
@@ -88,31 +88,31 @@ const RolesList = ({ onCreateRole }) => {
         </div>
 
         {roles.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">
-            <FiShield size={48} className="mx-auto mb-4 text-gray-400" />
+          <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <FiShield size={48} className="mx-auto mb-4 text-gray-400 dark:text-gray-500" />
             <p>No roles found. Create your first role to get started.</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-gray-200 dark:divide-gray-700">
             {roles.map((role) => (
               <div
                 key={role._id}
-                className="p-6 hover:bg-gray-50 transition-colors"
+                className="p-6 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h4 className="text-lg font-semibold text-gray-900">
+                      <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                         {role.displayName}
                       </h4>
                       {getAccessLevelBadge(role.accessLevel)}
                       {role.isPreset && (
-                        <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-full">
+                        <span className="px-2 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full">
                           Preset
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-600 mb-3">{role.purpose}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">{role.purpose}</p>
 
                     {/* Restrictions */}
                     {role.restrictions && role.restrictions.length > 0 && (
@@ -138,7 +138,7 @@ const RolesList = ({ onCreateRole }) => {
 
                     {/* Permission Summary */}
                     <div className="mt-3">
-                      <p className="text-xs text-gray-500 mb-1">Permissions:</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Permissions:</p>
                       <div className="flex flex-wrap gap-2">
                         {Object.entries(role.permissions || {})
                           .filter(([_, value]) => value === true)
@@ -154,7 +154,7 @@ const RolesList = ({ onCreateRole }) => {
                         {Object.values(role.permissions || {}).filter(
                           (v) => v === true
                         ).length > 5 && (
-                          <span className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
+                          <span className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded">
                             +
                             {Object.values(role.permissions || {}).filter(
                               (v) => v === true
@@ -169,7 +169,7 @@ const RolesList = ({ onCreateRole }) => {
                   <div className="flex items-center gap-2 ml-4">
                     <button
                       onClick={() => handleViewDetails(role)}
-                      className="p-2 text-gray-600 hover:text-primary-500 hover:bg-primary-50 rounded-lg transition-colors"
+                      className="p-2 text-gray-600 dark:text-gray-300 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
                       title="View Details"
                     >
                       <FiEye size={18} />
@@ -178,7 +178,7 @@ const RolesList = ({ onCreateRole }) => {
                       <>
                         <button
                           onClick={() => onCreateRole(role)}
-                          className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="p-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
                           title="Edit Role"
                         >
                           <FiEdit size={18} />
@@ -187,7 +187,7 @@ const RolesList = ({ onCreateRole }) => {
                           onClick={() =>
                             handleDelete(role._id, role.displayName)
                           }
-                          className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-2 text-gray-600 dark:text-gray-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                           title="Delete Role"
                         >
                           <FiTrash2 size={18} />

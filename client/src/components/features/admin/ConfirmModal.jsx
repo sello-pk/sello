@@ -67,7 +67,7 @@ const ConfirmModal = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-[1px]"
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-modal-title"
@@ -89,14 +89,14 @@ const ConfirmModal = ({
             </h3>
             <button
               onClick={onClose}
-              className="ml-auto text-gray-400 hover:text-gray-600 transition-colors"
+              className="ml-auto text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
               disabled={isLoading}
               aria-label="Close modal"
             >
               <FiX size={20} aria-hidden="true" />
             </button>
           </div>
-          <p id="confirm-modal-message" className="text-gray-600 mb-6">
+          <p id="confirm-modal-message" className="text-gray-600 dark:text-gray-300 mb-6">
             {message}
           </p>
           <div className="flex gap-3 justify-end">

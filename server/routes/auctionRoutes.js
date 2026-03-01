@@ -1,5 +1,6 @@
 import express from "express";
 import { auth, authorize, requireAuctionBidAccess } from "../middlewares/authMiddleware.js";
+import { hasAnyPermission } from "../middlewares/permissionMiddleware.js";
 import {
   getAuctions,
   getAuctionById,
@@ -44,25 +45,139 @@ import {
 const router = express.Router();
 
 // ── Admin (must come before /:id to avoid param collision) ──────────────────
-router.post("/admin/create", auth, authorize("admin"), createAuction);
-router.get("/admin/dashboard", auth, authorize("admin"), getAuctionDashboard);
-router.get("/admin/cars", auth, authorize("admin"), getAllAuctionCars);
-router.get("/admin/token-payments", auth, authorize("admin"), getAllTokenPayments);
-router.put("/admin/token-payments/:id", auth, authorize("admin"), verifyTokenPayment);
-router.put("/admin/car/:id/approve", auth, authorize("admin"), approveAuctionCar);
-router.put("/admin/car/:id/reject", auth, authorize("admin"), rejectAuctionCar);
-router.put("/admin/car/:id/inspection", auth, authorize("admin"), updateInspection);
-router.post("/admin/offline-bid", auth, authorize("admin"), placeOfflineBid);
-router.post("/admin/add-car", auth, authorize("admin"), adminAddCarToAuction);
-router.get("/admin/escrows", auth, authorize("admin"), adminGetAllEscrows);
-router.put("/admin/escrow/:id", auth, authorize("admin"), adminUpdateEscrowStatus);
-router.put("/admin/token-refund/:id", auth, authorize("admin"), adminRefundToken);
-router.post("/admin/bulk-refund", auth, authorize("admin"), adminBulkRefundTokens);
-router.get("/admin/payment-stats", auth, authorize("admin"), getPaymentStats);
-router.put("/admin/:id/go-live", auth, authorize("admin"), goLive);
-router.put("/admin/:id/end", auth, authorize("admin"), endAuction);
-router.put("/admin/:id/cancel", auth, authorize("admin"), cancelAuction);
-router.put("/admin/:id", auth, authorize("admin"), updateAuction);
+router.post(
+  "/admin/create",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("manageAuctions", "manageListings"),
+  createAuction,
+);
+router.get(
+  "/admin/dashboard",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("viewAuctions", "viewAnalytics"),
+  getAuctionDashboard,
+);
+router.get(
+  "/admin/cars",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("viewAuctions", "viewListings"),
+  getAllAuctionCars,
+);
+router.get(
+  "/admin/token-payments",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("viewFinancialReports", "managePayments"),
+  getAllTokenPayments,
+);
+router.put(
+  "/admin/token-payments/:id",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("managePayments", "manageCommission"),
+  verifyTokenPayment,
+);
+router.put(
+  "/admin/car/:id/approve",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("manageAuctions", "approveListings"),
+  approveAuctionCar,
+);
+router.put(
+  "/admin/car/:id/reject",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("manageAuctions", "approveListings"),
+  rejectAuctionCar,
+);
+router.put(
+  "/admin/car/:id/inspection",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("manageAuctions", "editListings"),
+  updateInspection,
+);
+router.post(
+  "/admin/offline-bid",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("manageAuctions", "managePayments"),
+  placeOfflineBid,
+);
+router.post(
+  "/admin/add-car",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("manageAuctions", "manageListings"),
+  adminAddCarToAuction,
+);
+router.get(
+  "/admin/escrows",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("viewFinancialReports", "managePayments"),
+  adminGetAllEscrows,
+);
+router.put(
+  "/admin/escrow/:id",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("managePayments", "manageCommission"),
+  adminUpdateEscrowStatus,
+);
+router.put(
+  "/admin/token-refund/:id",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("managePayments", "manageCommission"),
+  adminRefundToken,
+);
+router.post(
+  "/admin/bulk-refund",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("managePayments", "manageCommission"),
+  adminBulkRefundTokens,
+);
+router.get(
+  "/admin/payment-stats",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("viewFinancialReports", "viewAnalytics"),
+  getPaymentStats,
+);
+router.put(
+  "/admin/:id/go-live",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("manageAuctions", "manageListings"),
+  goLive,
+);
+router.put(
+  "/admin/:id/end",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("manageAuctions", "manageListings"),
+  endAuction,
+);
+router.put(
+  "/admin/:id/cancel",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("manageAuctions", "manageListings"),
+  cancelAuction,
+);
+router.put(
+  "/admin/:id",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("manageAuctions", "manageListings"),
+  updateAuction,
+);
 
 // ── Authenticated User ─────────────────────────────────────────────────────
 router.post("/bid", auth, requireAuctionBidAccess, placeBid);

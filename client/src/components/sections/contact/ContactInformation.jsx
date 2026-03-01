@@ -69,7 +69,7 @@ const ContactInformation = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-2xl shadow-xl p-8 md:p-10 border border-gray-100">
+      <div className="bg-linear-to-r  from-bg-primary-400 to-bg-primary-500 rounded-2xl shadow-xl p-8 md:p-10 border border-gray-100">
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
           Contact Information
         </h2>

@@ -303,10 +303,10 @@ const RoleForm = ({ role, onSuccess, onCancel }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden h-full flex flex-col">
+    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden h-full flex flex-col">
       {/* Header */}
-      <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-white">
-        <h3 className="text-2xl font-bold text-gray-900">
+      <div className="px-8 py-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-white dark:bg-gray-900">
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
           {role ? "Edit Role" : "New Role"}
         </h3>
         <div className="flex items-center gap-3">
@@ -314,7 +314,7 @@ const RoleForm = ({ role, onSuccess, onCancel }) => {
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors disabled:opacity-50"
+            className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 font-medium transition-colors disabled:opacity-50"
           >
             <FaTimes size={16} className="inline mr-2" /> Cancel
           </button>
@@ -340,7 +340,7 @@ const RoleForm = ({ role, onSuccess, onCancel }) => {
         {/* Basic Info */}
         <div className="space-y-6 mb-8">
           <div>
-            <label className="block text-base font-bold text-gray-900 mb-2">
+            <label className="block text-base font-bold text-gray-900 dark:text-gray-100 mb-2">
               Role Name
             </label>
             <input
@@ -348,13 +348,13 @@ const RoleForm = ({ role, onSuccess, onCancel }) => {
               name="displayName"
               value={formData.displayName}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-gray-700 bg-white"
+              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-800"
               disabled={role?.isPreset}
             />
           </div>
 
           <div>
-            <label className="block text-base font-bold text-gray-900 mb-2">
+            <label className="block text-base font-bold text-gray-900 dark:text-gray-100 mb-2">
               Description
             </label>
             <textarea
@@ -362,17 +362,17 @@ const RoleForm = ({ role, onSuccess, onCancel }) => {
               value={formData.description}
               onChange={handleChange}
               rows="4"
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none resize-none text-gray-700 bg-white"
+              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none resize-none text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-800"
             />
           </div>
 
           {/* Team User Checkbox */}
-          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 flex items-center justify-between">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 flex items-center justify-between">
             <div>
-              <h4 className="font-bold text-gray-900">
+              <h4 className="font-bold text-gray-900 dark:text-gray-100">
                 This role is for Team users
               </h4>
-              <p className="text-xs text-gray-600 mt-0.5">
+              <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
                 If you mark this option, all users who are added with this role
                 will be a team user.
               </p>
@@ -394,8 +394,8 @@ const RoleForm = ({ role, onSuccess, onCancel }) => {
         </div>
 
         {/* Permissions Matrix */}
-        <div className="bg-gray-100 rounded-xl p-6">
-          <h4 className="text-lg font-bold text-gray-900 mb-4">Contacts</h4>
+        <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-6">
+          <h4 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Contacts</h4>
 
           <div className="space-y-3">
             {PERMISSION_MODULES.map((module) => {
@@ -409,10 +409,10 @@ const RoleForm = ({ role, onSuccess, onCancel }) => {
               return (
                 <div
                   key={module.id}
-                  className="bg-white rounded-lg p-3 flex items-center shadow-sm"
+                  className="bg-white dark:bg-gray-900 rounded-lg p-3 flex items-center shadow-sm border border-transparent dark:border-gray-700"
                 >
                   {/* Module Name */}
-                  <div className="w-48 font-bold text-gray-800 text-sm">
+                  <div className="w-48 font-bold text-gray-800 dark:text-gray-100 text-sm">
                     {module.label}
                   </div>
 
@@ -420,7 +420,7 @@ const RoleForm = ({ role, onSuccess, onCancel }) => {
                   <div className="flex-1 flex items-center justify-between px-4">
                     {/* Full */}
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <span className="text-sm font-bold text-gray-900">
+                      <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
                         Full
                       </span>
                       <input
@@ -435,7 +435,7 @@ const RoleForm = ({ role, onSuccess, onCancel }) => {
 
                     {/* View */}
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <span className="text-sm font-bold text-gray-900">
+                      <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
                         View
                       </span>
                       <input
@@ -448,7 +448,7 @@ const RoleForm = ({ role, onSuccess, onCancel }) => {
 
                     {/* Create */}
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <span className="text-sm font-bold text-gray-900">
+                      <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
                         Create
                       </span>
                       <input
@@ -461,7 +461,7 @@ const RoleForm = ({ role, onSuccess, onCancel }) => {
 
                     {/* Edit */}
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <span className="text-sm font-bold text-gray-900">
+                      <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
                         Edit
                       </span>
                       <input
@@ -474,7 +474,7 @@ const RoleForm = ({ role, onSuccess, onCancel }) => {
 
                     {/* Delete */}
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <span className="text-sm font-bold text-gray-900">
+                      <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
                         Delete
                       </span>
                       <input

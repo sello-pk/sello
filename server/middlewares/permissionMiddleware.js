@@ -2,6 +2,47 @@ import User from "../models/userModel.js";
 import Role from "../models/roleModel.js";
 import Logger from "../utils/logger.js";
 
+const PERMISSION_ALIASES = {
+  // Backward compatibility for legacy checks
+  manageListings: [
+    "approveListings",
+    "editListings",
+    "deleteListings",
+    "featureListings",
+  ],
+  manageTestimonials: ["viewTestimonials", "manageTestimonials"],
+  manageCategories: [
+    "manageCategories",
+    "createCategories",
+    "editCategories",
+    "deleteCategories",
+  ],
+  managePromotions: [
+    "managePromotions",
+    "createPromotions",
+    "editPromotions",
+    "deletePromotions",
+  ],
+};
+
+const hasResolvedPermission = (userPermissions, permission) => {
+  if (!permission) return false;
+  const aliases = PERMISSION_ALIASES[permission] || [permission];
+  return aliases.some((perm) => Boolean(userPermissions?.[perm]));
+};
+
+const getUserPermissions = async (user) => {
+  if (!user) return {};
+  const directPermissions = user.permissions || {};
+  if (user.roleId) {
+    const role = await Role.findById(user.roleId).lean();
+    if (role && role.isActive) {
+      return { ...(role.permissions || {}), ...directPermissions };
+    }
+  }
+  return directPermissions;
+};
+
 /**
  * Check if user has specific permission
  */
@@ -25,19 +66,10 @@ export const hasPermission = (permission) => {
       }
 
       // Get user's role and permissions
-      let userPermissions = {};
-
-      if (req.user.roleId) {
-        const role = await Role.findById(req.user.roleId);
-        if (role && role.isActive) {
-          userPermissions = role.permissions || {};
-        }
-      } else if (req.user.permissions) {
-        userPermissions = req.user.permissions;
-      }
+      const userPermissions = await getUserPermissions(req.user);
 
       // Check if user has the required permission
-      if (!userPermissions[permission]) {
+      if (!hasResolvedPermission(userPermissions, permission)) {
         return res.status(403).json({
           success: false,
           message: `Access denied. You don't have permission to ${permission}.`,
@@ -83,23 +115,14 @@ export const hasAnyPermission = (...permissions) => {
       }
 
       // Get user's role and permissions
-      let userPermissions = {};
-
-      if (req.user.roleId) {
-        const role = await Role.findById(req.user.roleId);
-        if (role && role.isActive) {
-          userPermissions = role.permissions || {};
-        }
-      } else if (req.user.permissions) {
-        userPermissions = req.user.permissions;
-      }
+      const userPermissions = await getUserPermissions(req.user);
 
       // Check if user has any of the required permissions
-      const hasPermission = permissions.some(
-        (permission) => userPermissions[permission]
+      const hasAny = permissions.some((permission) =>
+        hasResolvedPermission(userPermissions, permission)
       );
 
-      if (!hasPermission) {
+      if (!hasAny) {
         return res.status(403).json({
           success: false,
           message: "Access denied. Insufficient permissions.",
@@ -109,7 +132,7 @@ export const hasAnyPermission = (...permissions) => {
       next();
     } catch (error) {
       Logger.error("Permission Check Error", error, {
-        permission,
+        permissions,
         userId: req.user?._id,
       });
       return res.status(500).json({
@@ -145,20 +168,11 @@ export const hasAllPermissions = (...permissions) => {
       }
 
       // Get user's role and permissions
-      let userPermissions = {};
-
-      if (req.user.roleId) {
-        const role = await Role.findById(req.user.roleId);
-        if (role && role.isActive) {
-          userPermissions = role.permissions || {};
-        }
-      } else if (req.user.permissions) {
-        userPermissions = req.user.permissions;
-      }
+      const userPermissions = await getUserPermissions(req.user);
 
       // Check if user has all of the required permissions
       const hasAll = permissions.every(
-        (permission) => userPermissions[permission]
+        (permission) => hasResolvedPermission(userPermissions, permission)
       );
 
       if (!hasAll) {
@@ -171,7 +185,7 @@ export const hasAllPermissions = (...permissions) => {
       next();
     } catch (error) {
       Logger.error("Permission Check Error", error, {
-        permission,
+        permissions,
         userId: req.user?._id,
       });
       return res.status(500).json({

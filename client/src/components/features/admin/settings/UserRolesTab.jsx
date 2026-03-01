@@ -378,13 +378,11 @@ const UserRolesTab = () => {
         return;
       }
 
-      // Update user's role via admin API
+      // Assign role through dedicated RBAC endpoint
       const response = await axios.put(
-        `${API_BASE_URL}/admin/users/${userToAssignRole._id}`,
+        `${API_BASE_URL}/roles/assign/${userToAssignRole._id}`,
         {
-          adminRole: selectedRole.displayName || selectedRole.name,
           roleId: selectedRoleId,
-          permissions: selectedRole.permissions || {},
         },
         {
           withCredentials: true,
@@ -573,13 +571,13 @@ const UserRolesTab = () => {
     <div className="space-y-8">
       {/* Header Actions */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex space-x-4 bg-gray-100 p-1 rounded-lg">
+        <div className="flex space-x-4 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
           <button
             onClick={() => setActiveSection("users")}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
               activeSection === "users"
-                ? "bg-white text-primary-500 shadow-sm"
-                : "text-gray-600 hover:text-gray-800"
+                ? "bg-white dark:bg-gray-900 text-primary-500 shadow-sm"
+                : "text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
             }`}
             aria-label="Switch to User Management section"
             aria-pressed={activeSection === "users"}
@@ -590,8 +588,8 @@ const UserRolesTab = () => {
             onClick={() => setActiveSection("roles")}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
               activeSection === "roles"
-                ? "bg-white text-primary-500 shadow-sm"
-                : "text-gray-600 hover:text-gray-800"
+                ? "bg-white dark:bg-gray-900 text-primary-500 shadow-sm"
+                : "text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
             }`}
             aria-label="Switch to Roles & Permissions section"
             aria-pressed={activeSection === "roles"}
@@ -629,17 +627,17 @@ const UserRolesTab = () => {
           {activeSection === "users" && (
             <div className="space-y-8">
               {/* Search Bar */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+              <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                 <div className="relative">
                   <input
                     type="text"
                     placeholder="Search users by name or email..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                   />
                   <svg
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -655,14 +653,14 @@ const UserRolesTab = () => {
               </div>
 
               {/* Active Users Table */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-visible">
-                <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
-                  <h3 className="font-bold text-gray-800">Team Members</h3>
+              <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-visible">
+                <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                  <h3 className="font-bold text-gray-800 dark:text-gray-100">Team Members</h3>
                 </div>
                 <div className="overflow-x-auto overflow-y-visible">
                   <table className="w-full text-left">
                     <thead>
-                      <tr className="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
+                      <tr className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs uppercase tracking-wider">
                         <th className="px-6 py-3 font-semibold">User</th>
                         <th className="px-6 py-3 font-semibold">Email</th>
                         <th className="px-6 py-3 font-semibold">Role</th>
@@ -673,7 +671,7 @@ const UserRolesTab = () => {
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                       {(() => {
                         const filteredUsers = users.filter((user) => {
                           if (!searchQuery) return true;
@@ -688,19 +686,19 @@ const UserRolesTab = () => {
                           filteredUsers.map((user) => (
                             <tr
                               key={user._id}
-                              className="hover:bg-gray-50 transition-colors"
+                              className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                             >
                               <td className="px-6 py-4">
                                 <div className="flex items-center gap-3">
-                                  <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-500 font-bold text-sm">
+                                  <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-500 font-bold text-sm">
                                     {user.name?.charAt(0)?.toUpperCase() || "U"}
                                   </div>
-                                  <span className="font-medium text-gray-800">
+                                  <span className="font-medium text-gray-800 dark:text-gray-100">
                                     {user.name || "N/A"}
                                   </span>
                                 </div>
                               </td>
-                              <td className="px-6 py-4 text-gray-600 text-sm">
+                              <td className="px-6 py-4 text-gray-600 dark:text-gray-300 text-sm">
                                 {user.email || "N/A"}
                               </td>
                               <td className="px-6 py-4">
@@ -708,7 +706,7 @@ const UserRolesTab = () => {
                                   {user.adminRole || user.role || "Admin"}
                                 </span>
                               </td>
-                              <td className="px-6 py-4 text-gray-500 text-sm">
+                              <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-sm">
                                 {user.createdAt
                                   ? new Date(user.createdAt).toLocaleDateString(
                                       "en-US",
@@ -720,7 +718,7 @@ const UserRolesTab = () => {
                                     )
                                   : "N/A"}
                               </td>
-                              <td className="px-6 py-4 text-gray-500 text-sm">
+                              <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-sm">
                                 {user.phone || "N/A"}
                               </td>
                               <td className="px-6 py-4 text-right">
@@ -732,7 +730,7 @@ const UserRolesTab = () => {
                                     onClick={(e) =>
                                       handleDropdownToggle(user._id, e)
                                     }
-                                    className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded hover:bg-gray-100"
+                                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
                                     aria-label="User actions menu"
                                   >
                                     <svg
@@ -751,7 +749,7 @@ const UserRolesTab = () => {
                           <tr>
                             <td
                               colSpan="6"
-                              className="px-6 py-8 text-center text-gray-500"
+                              className="px-6 py-8 text-center text-gray-500 dark:text-gray-400"
                             >
                               {searchQuery
                                 ? "No users found matching your search."
@@ -972,17 +970,17 @@ const UserRolesTab = () => {
           {activeSection === "roles" && (
             <div className="space-y-6">
               {/* Search Bar */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+              <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                 <div className="relative">
                   <input
                     type="text"
                     placeholder="Search roles..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                   />
                   <svg
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -998,11 +996,11 @@ const UserRolesTab = () => {
               </div>
 
               {/* Roles Table */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left">
                     <thead>
-                      <tr className="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
+                      <tr className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs uppercase tracking-wider">
                         <th className="px-6 py-3 font-semibold">Role Name</th>
                         <th className="px-6 py-3 font-semibold">Description</th>
                         <th className="px-6 py-3 font-semibold text-right">
@@ -1010,7 +1008,7 @@ const UserRolesTab = () => {
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                       {roles
                         .filter((role) => {
                           if (!searchQuery) return true;
@@ -1024,21 +1022,21 @@ const UserRolesTab = () => {
                         .map((role) => (
                           <tr
                             key={role._id}
-                            className="hover:bg-gray-50 transition-colors"
+                            className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                           >
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-2">
-                                <span className="font-medium text-gray-800">
+                                <span className="font-medium text-gray-800 dark:text-gray-100">
                                   {role.displayName || role.name}
                                 </span>
                                 {role.isPreset && (
-                                  <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded border border-gray-200">
+                                  <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-300 px-2 py-0.5 rounded border border-gray-200 dark:border-gray-700">
                                     System
                                   </span>
                                 )}
                               </div>
                             </td>
-                            <td className="px-6 py-4 text-gray-600 text-sm">
+                            <td className="px-6 py-4 text-gray-600 dark:text-gray-300 text-sm">
                               {role.purpose ||
                                 role.description ||
                                 "No description"}
@@ -1047,14 +1045,14 @@ const UserRolesTab = () => {
                               <div className="flex items-center justify-end gap-2">
                                 <button
                                   onClick={() => handleEditRole(role)}
-                                  className="px-3 py-1 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                                  className="px-3 py-1 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
                                   title="Edit"
                                 >
                                   <FaEdit size={14} />
                                 </button>
                                 <button
                                   onClick={() => handleCloneRole(role)}
-                                  className="px-3 py-1 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                                  className="px-3 py-1 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
                                   title="Clone"
                                 >
                                   <svg
@@ -1096,7 +1094,7 @@ const UserRolesTab = () => {
                         <tr>
                           <td
                             colSpan="3"
-                            className="px-6 py-8 text-center text-gray-500"
+                            className="px-6 py-8 text-center text-gray-500 dark:text-gray-400"
                           >
                             {searchQuery
                               ? "No roles found matching your search."
@@ -1167,10 +1165,10 @@ const UserRolesTab = () => {
       {/* Assign Role Modal */}
       {showAssignRoleModal && userToAssignRole && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-200 dark:border-gray-700">
             {/* Header */}
-            <div className="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-              <h3 className="text-xl font-bold text-gray-800">
+            <div className="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">
                 Assign Role to {userToAssignRole.name}
               </h3>
               <button
@@ -1179,7 +1177,7 @@ const UserRolesTab = () => {
                   setUserToAssignRole(null);
                   setSelectedRoleId("");
                 }}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
                 disabled={assigningRole}
               >
                 <FaTimes size={20} />
@@ -1188,20 +1186,20 @@ const UserRolesTab = () => {
 
             {/* Body */}
             <div className="p-6 space-y-4">
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-600 dark:text-gray-300 text-sm">
                 This user doesn't have a role assigned. Please select a role
                 from the list below.
               </p>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                   Select Role <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <select
                     value={selectedRoleId}
                     onChange={(e) => setSelectedRoleId(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all appearance-none bg-white"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all appearance-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     disabled={assigningRole}
                   >
                     <option value="">Choose a role...</option>
@@ -1214,7 +1212,7 @@ const UserRolesTab = () => {
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                     <svg
-                      className="w-4 h-4 text-gray-400"
+                      className="w-4 h-4 text-gray-400 dark:text-gray-500"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -1231,8 +1229,8 @@ const UserRolesTab = () => {
               </div>
 
               {selectedRoleId && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                  <p className="text-xs text-blue-800">
+                <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                  <p className="text-xs text-blue-800 dark:text-blue-200">
                     <strong>Note:</strong> The user will inherit all permissions
                     associated with the selected role.
                   </p>
@@ -1241,7 +1239,7 @@ const UserRolesTab = () => {
             </div>
 
             {/* Footer */}
-            <div className="bg-gray-50 px-6 py-4 border-t border-gray-100 flex justify-end gap-3">
+            <div className="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-3">
               <button
                 type="button"
                 onClick={() => {
@@ -1250,7 +1248,7 @@ const UserRolesTab = () => {
                   setSelectedRoleId("");
                 }}
                 disabled={assigningRole}
-                className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors disabled:opacity-50"
+                className="px-4 py-2 text-gray-600 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg font-medium transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -1286,7 +1284,7 @@ const UserRolesTab = () => {
               ref={(el) => {
                 if (el) dropdownRefs.current[dropdownPosition.userId] = el;
               }}
-              className="fixed w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-[9999] py-1"
+              className="fixed w-48 bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-[9999] py-1"
               style={{
                 top: `${dropdownPosition.top}px`,
                 left: `${dropdownPosition.left}px`,
@@ -1299,7 +1297,7 @@ const UserRolesTab = () => {
                   e.stopPropagation();
                   handleViewUser(user);
                 }}
-                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 transition-colors"
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2 transition-colors"
               >
                 <FaEye size={14} />
                 View Details
@@ -1309,7 +1307,7 @@ const UserRolesTab = () => {
                   e.stopPropagation();
                   handleEditUserRole(user);
                 }}
-                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 transition-colors"
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2 transition-colors"
               >
                 <FaEdit size={14} />
                 Edit Role
@@ -1319,12 +1317,12 @@ const UserRolesTab = () => {
                   e.stopPropagation();
                   handleResetPassword(user);
                 }}
-                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 transition-colors"
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2 transition-colors"
               >
                 <FaKey size={14} />
                 Reset Password
               </button>
-              <hr className="my-1 border-gray-200" />
+              <hr className="my-1 border-gray-200 dark:border-gray-700" />
               <button
                 onClick={(e) => {
                   e.stopPropagation();

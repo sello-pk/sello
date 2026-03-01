@@ -188,7 +188,15 @@ const blogBase = createBaseController(Blog, {
   uploadField: "featuredImage",
 });
 
-export const { delete: deleteBlog, update: updateBlog } = blogBase;
+export const { delete: deleteBlog } = blogBase;
+
+const normalizeBlogSlug = (value = "") =>
+  String(value)
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
 export const createBlog = async (req, res) => {
   try {
@@ -213,6 +221,22 @@ export const createBlog = async (req, res) => {
       imageUrl = await uploadCloudinary(req.file.buffer);
     }
 
+    const desiredSlug = normalizeBlogSlug(req.body?.slug || title);
+    if (!desiredSlug) {
+      return res.status(400).json({
+        success: false,
+        message: "A valid slug could not be generated from title/slug.",
+      });
+    }
+
+    const existingSlug = await Blog.findOne({ slug: desiredSlug }).select("_id");
+    if (existingSlug) {
+      return res.status(409).json({
+        success: false,
+        message: "Slug already exists. Please choose a different slug.",
+      });
+    }
+
     const blog = await Blog.create({
       title,
       content,
@@ -225,20 +249,61 @@ export const createBlog = async (req, res) => {
       isFeatured: isFeatured === "true",
       readTime: parseInt(readTime) || 5,
       author: req.user._id,
-      slug:
-        title
-          .toLowerCase()
-          .trim()
-          .replace(/[^\w\s-]/g, "")
-          .replace(/[\s_-]+/g, "-")
-          .replace(/^-+|-+$/g, "") +
-        "-" +
-        Date.now().toString().slice(-4),
+      slug: desiredSlug,
     });
 
     return res.status(201).json({ success: true, data: blog });
   } catch (err) {
     Logger.error("Create Blog Error", err);
+    return res.status(500).json({ success: false, message: "Server error." });
+  }
+};
+
+export const updateBlog = async (req, res) => {
+  try {
+    const { blogId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(blogId)) {
+      return res.status(400).json({ success: false, message: "Invalid blog ID." });
+    }
+
+    const data = { ...req.body };
+
+    if (req.file) {
+      data.featuredImage = await uploadCloudinary(req.file.buffer);
+    }
+
+    if (data.slug || data.title) {
+      const nextSlug = normalizeBlogSlug(data.slug || data.title);
+      if (!nextSlug) {
+        return res.status(400).json({
+          success: false,
+          message: "A valid slug could not be generated from title/slug.",
+        });
+      }
+
+      const conflict = await Blog.findOne({
+        slug: nextSlug,
+        _id: { $ne: blogId },
+      }).select("_id");
+
+      if (conflict) {
+        return res.status(409).json({
+          success: false,
+          message: "Slug already exists. Please choose a different slug.",
+        });
+      }
+
+      data.slug = nextSlug;
+    }
+
+    const blog = await Blog.findByIdAndUpdate(blogId, data, { new: true });
+    if (!blog) {
+      return res.status(404).json({ success: false, message: "Blog not found." });
+    }
+
+    return res.status(200).json({ success: true, data: blog });
+  } catch (err) {
+    Logger.error("Update Blog Error", err);
     return res.status(500).json({ success: false, message: "Server error." });
   }
 };

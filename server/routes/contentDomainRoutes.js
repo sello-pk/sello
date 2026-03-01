@@ -1,5 +1,6 @@
 import express from "express";
 import { auth, authorize } from "../middlewares/authMiddleware.js";
+import { hasAnyPermission, hasPermission } from "../middlewares/permissionMiddleware.js";
 import { upload } from "../middlewares/multer.js";
 import {
   getAllBanners,
@@ -27,6 +28,8 @@ import {
 import {
   createComment,
   getBlogComments,
+  getAllComments,
+  updateCommentStatus,
   deleteComment,
 } from "../controllers/commentController.js";
 
@@ -39,6 +42,7 @@ router.post(
   "/banners",
   auth,
   authorize("admin"),
+  hasPermission("manageBanners"),
   upload.single("image"),
   createBanner,
 );
@@ -46,10 +50,17 @@ router.put(
   "/banners/:bannerId",
   auth,
   authorize("admin"),
+  hasPermission("manageBanners"),
   upload.single("image"),
   updateBanner,
 );
-router.delete("/banners/:bannerId", auth, authorize("admin"), deleteBanner);
+router.delete(
+  "/banners/:bannerId",
+  auth,
+  authorize("admin"),
+  hasPermission("manageBanners"),
+  deleteBanner,
+);
 
 /* ------------------------------ TESTIMONIALS ------------------------------ */
 router.get("/testimonials", getAllTestimonials);
@@ -59,6 +70,7 @@ router.post(
   "/testimonials/admin",
   auth,
   authorize("admin"),
+  hasAnyPermission("manageTestimonials", "viewTestimonials"),
   upload.single("image"),
   createTestimonial,
 ); // Admin submission
@@ -66,6 +78,7 @@ router.put(
   "/testimonials/:testimonialId",
   auth,
   authorize("admin"),
+  hasAnyPermission("manageTestimonials", "viewTestimonials"),
   upload.single("image"),
   updateTestimonial,
 );
@@ -73,13 +86,20 @@ router.delete(
   "/testimonials/:testimonialId",
   auth,
   authorize("admin"),
+  hasAnyPermission("manageTestimonials", "viewTestimonials"),
   deleteTestimonial,
 );
 
 /* ------------------------------- NEWSLETTER ------------------------------- */
 router.post("/newsletter/subscribe", subscribeNewsletter);
 router.post("/newsletter/unsubscribe", unsubscribeNewsletter);
-router.get("/newsletter/subscribers", auth, getAllSubscribers); // Auth only, as per original
+router.get(
+  "/newsletter/subscribers",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("viewInquiries", "manageUsers"),
+  getAllSubscribers,
+);
 
 /* --------------------------------- BLOGS ---------------------------------- */
 // Public blog endpoints (no auth required)
@@ -94,6 +114,7 @@ router.post(
   "/blogs",
   auth,
   authorize("admin"),
+  hasAnyPermission("createBlogs", "manageBlogs"),
   upload.single("featuredImage"),
   createBlog,
 );
@@ -101,16 +122,44 @@ router.put(
   "/blogs/:blogId",
   auth,
   authorize("admin"),
+  hasAnyPermission("editBlogs", "manageBlogs"),
   upload.single("featuredImage"),
   updateBlog,
 );
-router.delete("/blogs/:blogId", auth, authorize("admin"), deleteBlog);
+router.delete(
+  "/blogs/:blogId",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("deleteBlogs", "manageBlogs"),
+  deleteBlog,
+);
 
 /* ------------------------------ BLOG COMMENTS ----------------------------- */
 // Public comment endpoints (require authentication)
 router.get("/blogs/:blogId/comments", auth, getBlogComments);
 router.post("/blogs/:blogId/comments", auth, createComment);
 router.delete("/blogs/comments/:commentId", auth, deleteComment);
+router.get(
+  "/blogs/comments/all",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("moderateComments", "manageBlogs"),
+  getAllComments,
+);
+router.put(
+  "/blogs/comments/:commentId/status",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("moderateComments", "manageBlogs"),
+  updateCommentStatus,
+);
+router.delete(
+  "/blogs/comments/:commentId/admin",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("moderateComments", "manageBlogs"),
+  deleteComment,
+);
 
 /* ------------------------------- CATEGORIES ------------------------------- */
 import {
@@ -124,6 +173,7 @@ router.post(
   "/categories",
   auth,
   authorize("admin"),
+  hasAnyPermission("manageCategories", "createCategories"),
   upload.single("image"),
   createCategory,
 );
@@ -131,6 +181,7 @@ router.put(
   "/categories/:categoryId",
   auth,
   authorize("admin"),
+  hasAnyPermission("manageCategories", "editCategories"),
   upload.single("image"),
   updateCategory,
 );
@@ -138,6 +189,7 @@ router.delete(
   "/categories/:categoryId",
   auth,
   authorize("admin"),
+  hasAnyPermission("manageCategories", "deleteCategories"),
   deleteCategory,
 );
 

@@ -150,7 +150,7 @@ const GeneralSettingsTab = () => {
         setUploading(false);
         return;
       }
-      const response = await axios.post(`${API_BASE_URL}/upload`, formData, {
+      const response = await axios.post(`${API_BASE_URL}/utility/upload`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -375,17 +375,30 @@ const GeneralSettingsTab = () => {
         },
       ];
 
-      const promises = settingsToSave.map((setting) =>
-        axios.post(`${API_BASE_URL}/settings`, setting, {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }),
+      const results = await Promise.allSettled(
+        settingsToSave.map((setting) =>
+          axios.post(`${API_BASE_URL}/settings`, setting, {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }),
+        ),
       );
 
-      await Promise.all(promises);
-      toast.success("Settings saved successfully!");
+      const failed = results
+        .map((r, index) => ({ result: r, key: settingsToSave[index].key }))
+        .filter(({ result }) => result.status === "rejected");
+
+      if (failed.length === 0) {
+        toast.success("Settings saved successfully!");
+      } else {
+        const failedKeys = failed.map((f) => f.key).join(", ");
+        toast.error(`Some settings failed to save: ${failedKeys}`);
+      }
+
+      // Always refetch after save attempt so UI matches server state.
+      await fetchSettings();
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to save settings");
     } finally {

@@ -43,13 +43,19 @@ const ROLE_MENU_ACCESS = {
     "/admin/dealers",
     "/admin/categories",
     "/admin/blogs",
+    "/admin/blogs/categories",
+    "/admin/blogs/create",
+    "/admin/blog-comments",
+    "/admin/blogs/media",
     "/admin/testimonials",
     "/admin/analytics",
-    "/admin/chat",
-    "/admin/chatbot",
+    "/admin/activity-log",
+    "/admin/chat-monitoring",
     "/admin/support-chat",
-    "/admin/support-chatbot",
     "/admin/customer-requests",
+    "/admin/valuations",
+    "/admin/auctions",
+    "/admin/account-deletion-requests",
     "/admin/promotions",
     "/admin/payments",
     "/admin/notifications",
@@ -64,15 +70,15 @@ const ROLE_MENU_ACCESS = {
   ],
   "Support Agent": [
     "/admin/dashboard",
-    "/admin/chat", // Chat monitoring
-    "/admin/chatbot", // Support chatbot
+    "/admin/chat-monitoring", // Chat monitoring
     "/admin/support-chat", // Support chat interface
-    "/admin/support-chatbot", // Support chatbot interface
     "/admin/customer-requests", // Customer requests and contact forms
   ],
   "Content Manager": [
     "/admin/dashboard",
     "/admin/blogs", // Write/edit/publish blogs
+    "/admin/blogs/categories",
+    "/admin/blog-comments",
     "/admin/testimonials", // Manage reviews and testimonials
     "/admin/promotions", // Manage promotions
     "/admin/notifications", // Create push notifications
@@ -85,6 +91,8 @@ const ROLE_MENU_ACCESS = {
   "Blogs/Content Agent": [
     "/admin/dashboard",
     "/admin/blogs", // Write/edit/publish blogs
+    "/admin/blogs/categories",
+    "/admin/blog-comments",
     "/admin/testimonials", // Manage reviews and testimonials
     "/admin/promotions", // Manage promotions
     "/admin/notifications", // Create push notifications
@@ -92,6 +100,8 @@ const ROLE_MENU_ACCESS = {
   "Marketing Team": [
     "/admin/dashboard",
     "/admin/blogs", // Write/edit/publish blogs
+    "/admin/blogs/categories",
+    "/admin/blog-comments",
     "/admin/testimonials", // Manage reviews and testimonials
     "/admin/promotions", // Manage promotions
     "/admin/notifications", // Create push notifications
@@ -169,12 +179,17 @@ export const canAccessMenu = (user, path) => {
       userPermissions.moderateComments,
     "/admin/blog-categories":
       userPermissions.viewCategories || userPermissions.manageCategories,
+    "/admin/blogs/categories":
+      userPermissions.viewCategories || userPermissions.manageCategories,
     "/admin/blogs/create":
       userPermissions.createBlogs || userPermissions.manageBlogs,
     "/admin/blogs/:id/edit":
       userPermissions.editBlogs || userPermissions.manageBlogs,
     "/admin/blog-comments": userPermissions.moderateComments,
+    "/admin/blogs/comments": userPermissions.moderateComments,
     "/admin/blog-media":
+      userPermissions.manageBlogs || userPermissions.createBlogs,
+    "/admin/blogs/media":
       userPermissions.manageBlogs || userPermissions.createBlogs,
     "/admin/testimonials":
       userPermissions.viewTestimonials || userPermissions.manageTestimonials,
@@ -185,6 +200,12 @@ export const canAccessMenu = (user, path) => {
       userPermissions.exportReports ||
       userPermissions.deleteReports,
     "/admin/chat":
+      userPermissions.accessChatbot ||
+      userPermissions.viewChatbotLogs ||
+      userPermissions.createChatLogs ||
+      userPermissions.editChatLogs ||
+      userPermissions.deleteChatLogs,
+    "/admin/chat-monitoring":
       userPermissions.accessChatbot ||
       userPermissions.viewChatbotLogs ||
       userPermissions.createChatLogs ||
@@ -211,6 +232,11 @@ export const canAccessMenu = (user, path) => {
       userPermissions.createInquiries ||
       userPermissions.respondToInquiries ||
       userPermissions.deleteInquiries,
+    "/admin/contact-form":
+      userPermissions.viewInquiries ||
+      userPermissions.createInquiries ||
+      userPermissions.respondToInquiries ||
+      userPermissions.deleteInquiries,
     "/admin/promotions":
       userPermissions.viewPromotions ||
       userPermissions.createPromotions ||
@@ -218,7 +244,9 @@ export const canAccessMenu = (user, path) => {
       userPermissions.deletePromotions ||
       userPermissions.managePromotions,
     "/admin/payments":
-      userPermissions.viewFinancialReports || userPermissions.manageCommission,
+      userPermissions.viewFinancialReports ||
+      userPermissions.manageCommission ||
+      userPermissions.managePayments,
     "/admin/notifications":
       userPermissions.viewNotifications ||
       userPermissions.createNotifications ||
@@ -236,11 +264,30 @@ export const canAccessMenu = (user, path) => {
       userPermissions.manageLanguage ||
       userPermissions.manageCurrency ||
       userPermissions.manageCommission,
+    "/admin/activity-log": userPermissions.viewAuditLogs,
+    "/admin/account-deletion-requests":
+      userPermissions.viewUserProfiles || userPermissions.viewFullUserProfiles,
+    "/admin/valuations":
+      userPermissions.viewAnalytics ||
+      userPermissions.viewFinancialReports ||
+      userPermissions.viewListings,
+    "/admin/auctions":
+      userPermissions.viewAuctions ||
+      userPermissions.manageAuctions ||
+      userPermissions.viewListings,
   };
 
-  // Check if user has permission for this path
-  if (PERMISSION_MENU_ACCESS[path]) {
-    return PERMISSION_MENU_ACCESS[path];
+  // Check exact path permissions first
+  if (Object.prototype.hasOwnProperty.call(PERMISSION_MENU_ACCESS, path)) {
+    return Boolean(PERMISSION_MENU_ACCESS[path]);
+  }
+
+  // Then check nested paths (e.g. /admin/blogs/:id/edit should inherit /admin/blogs)
+  for (const [basePath, allowed] of Object.entries(PERMISSION_MENU_ACCESS)) {
+    if (!basePath || basePath.includes(":")) continue;
+    if (path.startsWith(`${basePath}/`)) {
+      return Boolean(allowed);
+    }
   }
 
   // Fallback to role-based access for backward compatibility

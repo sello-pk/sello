@@ -13,6 +13,7 @@ import {
 } from '../controllers/recommendationsController.js';
 import { upload } from "../middlewares/multer.js";
 import { auth, authorize } from "../middlewares/authMiddleware.js";
+import { hasAnyPermission } from "../middlewares/permissionMiddleware.js";
 import { validateObjectId } from "../middlewares/validationMiddleware.js";
 import { cache, cacheKeys, invalidateCache } from "../middlewares/cacheMiddleware.js";
 
@@ -64,8 +65,21 @@ router.post("/valuations", (req, res, next) => {
 router.get("/valuations/my-history", auth, getUserValuationHistory);
 router.get("/valuations/:id", validateObjectId('id'), getValuationById);
 // Admin
-router.get("/valuations/admin/all", auth, authorize("admin"), getAllValuationsAdmin);
-router.delete("/valuations/admin/:id", auth, authorize("admin"), validateObjectId('id'), deleteValuation);
+router.get(
+  "/valuations/admin/all",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("viewAnalytics", "viewListings", "viewFinancialReports"),
+  getAllValuationsAdmin,
+);
+router.delete(
+  "/valuations/admin/:id",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("manageUsers", "editReports", "deleteReports"),
+  validateObjectId('id'),
+  deleteValuation,
+);
 
 /* --------------------------- VEHICLE ATTRIBUTES --------------------------- */
 router.get("/vehicle-attributes/types", getVehicleTypes);

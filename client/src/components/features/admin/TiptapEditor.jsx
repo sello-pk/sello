@@ -1,5 +1,5 @@
 import { Editor } from "@tinymce/tinymce-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../../../redux/config";
 import { getAccessToken } from "../../../utils/tokenRefresh";
@@ -13,6 +13,23 @@ import { getAccessToken } from "../../../utils/tokenRefresh";
 const TiptapEditor = ({ value, onChange, placeholder }) => {
   const editorRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof document === "undefined") return false;
+    return document.documentElement.classList.contains("dark");
+  });
+
+  useEffect(() => {
+    if (typeof document === "undefined") return undefined;
+
+    const root = document.documentElement;
+    const updateTheme = () => setIsDarkMode(root.classList.contains("dark"));
+
+    updateTheme();
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+
+    return () => observer.disconnect();
+  }, []);
 
   const handleImageUpload = (blobInfo, progress) =>
     new Promise((resolve, reject) => {
@@ -22,7 +39,7 @@ const TiptapEditor = ({ value, onChange, placeholder }) => {
       const token = getAccessToken();
 
       axios
-        .post(`${API_BASE_URL}/upload`, formData, {
+        .post(`${API_BASE_URL}/utility/upload`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: token ? `Bearer ${token}` : "",
@@ -70,11 +87,12 @@ const TiptapEditor = ({ value, onChange, placeholder }) => {
   return (
     <div className="rounded-lg overflow-hidden border border-primary-500 focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-transparent transition-shadow">
       {isLoading && (
-        <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center">
+        <div className="absolute inset-0 bg-white/50 dark:bg-gray-900/50 z-10 flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
         </div>
       )}
       <Editor
+        key={isDarkMode ? "tinymce-dark" : "tinymce-light"}
         onInit={(evt, editor) => {
           editorRef.current = editor;
           setIsLoading(false);
@@ -85,6 +103,8 @@ const TiptapEditor = ({ value, onChange, placeholder }) => {
         init={{
           height: 500,
           menubar: true,
+          skin: isDarkMode ? "oxide-dark" : "oxide",
+          content_css: isDarkMode ? "dark" : "default",
           plugins: [
             "advlist",
             "autolink",
@@ -111,9 +131,20 @@ const TiptapEditor = ({ value, onChange, placeholder }) => {
             "alignright alignjustify | bullist numlist outdent indent | " +
             "removeformat | image media link table | help",
           content_style: `
-                        body { font-family: 'Inter', sans-serif; font-size: 16px; color: #374151; line-height: 1.6; }
+                        body {
+                          font-family: 'Inter', sans-serif;
+                          font-size: 16px;
+                          color: ${isDarkMode ? "#e5e7eb" : "#374151"};
+                          line-height: 1.6;
+                          background: ${isDarkMode ? "#111827" : "#ffffff"};
+                        }
                         img { max-width: 100%; height: auto; border-radius: 0.5rem; }
-                        blockquote { border-left: 3px solid #e5e7eb; padding-left: 1rem; font-style: italic; color: #6b7280; }
+                        blockquote {
+                          border-left: 3px solid ${isDarkMode ? "#374151" : "#e5e7eb"};
+                          padding-left: 1rem;
+                          font-style: italic;
+                          color: ${isDarkMode ? "#9ca3af" : "#6b7280"};
+                        }
                     `,
           images_upload_handler: handleImageUpload,
           placeholder: placeholder,

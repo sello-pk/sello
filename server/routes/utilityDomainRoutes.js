@@ -1,5 +1,6 @@
 import express from "express";
 import { auth, authorize } from "../middlewares/authMiddleware.js";
+import { hasAnyPermission } from "../middlewares/permissionMiddleware.js";
 import { uploadFile } from "../controllers/settingsController.js";
 import { upload } from "../middlewares/multer.js";
 import { getAnalyticsSummary, trackAnalyticsEvent } from "../controllers/adminController.js";
@@ -9,7 +10,13 @@ import Logger from '../utils/logger.js';
 const router = express.Router();
 
 /* -------------------------------- ANALYTICS ------------------------------- */
-router.get("/utility/analytics/summary", auth, authorize("admin"), getAnalyticsSummary);
+router.get(
+  "/utility/analytics/summary",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("viewAnalytics", "createReports", "exportReports"),
+  getAnalyticsSummary,
+);
 router.post("/utility/analytics/track", auth, trackAnalyticsEvent);
 
 /* --------------------------------- UPLOAD --------------------------------- */

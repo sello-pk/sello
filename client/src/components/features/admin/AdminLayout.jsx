@@ -36,11 +36,9 @@ const AdminLayout = ({ children }) => {
   const [isRouteChanging, setIsRouteChanging] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { theme, toggleTheme, isDark } = useTheme();
+  const { toggleTheme, isDark } = useTheme();
   const {
     data: user,
-    isLoading: userLoading,
-    error: userError,
   } = useGetMeQuery();
   const [logout] = useLogoutMutation();
   const sidebarNavRef = useRef(null);
@@ -137,12 +135,9 @@ const AdminLayout = ({ children }) => {
   ];
 
   // Filter menu items based on user's role
-  // Super Admin sees all, team members see only their allowed tabs
-  // If user data is loading or there's an error, show all menu items as fallback
-  const menuItems =
-    userLoading || userError
-      ? allMenuItems
-      : allMenuItems.filter((item) => canAccessMenu(user, item.path));
+  // Super Admin sees all, team members see only their allowed tabs.
+  // Never fall back to showing all menu items on loading/error.
+  const menuItems = allMenuItems.filter((item) => canAccessMenu(user, item.path));
 
   const handleLogout = async () => {
     try {
@@ -151,7 +146,7 @@ const AdminLayout = ({ children }) => {
       localStorage.removeItem("user");
       navigate("/login");
     } catch (error) {
-      if (process.env.NODE_ENV === "development") {
+      if (import.meta.env.DEV) {
         console.error("Logout error:", error);
       }
       // Clear tokens even if logout request fails
@@ -163,7 +158,7 @@ const AdminLayout = ({ children }) => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100 dark:bg-gray-900 relative">
+    <div className="admin-theme flex h-screen bg-gray-100 dark:bg-gray-900 relative">
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div
@@ -216,7 +211,9 @@ const AdminLayout = ({ children }) => {
               (item.path === "/admin/blogs" &&
                 location.pathname.startsWith("/admin/blog")) ||
               (item.path === "/admin/categories" &&
-                location.pathname.startsWith("/admin/categor"));
+                location.pathname.startsWith("/admin/categor")) ||
+              (item.path === "/admin/chat-monitoring" &&
+                location.pathname.startsWith("/admin/chat"));
 
             return (
               <Link

@@ -360,7 +360,7 @@ export const api = createApi({
     // Save/Unsave Car (Wishlist)
     saveCar: builder.mutation({
       query: (carId) => ({
-        url: `/users/save-car/${carId}`,
+        url: `/users/wishlist/${carId}`,
         method: "POST",
       }),
       invalidatesTags: ["User", "Cars"],
@@ -368,7 +368,7 @@ export const api = createApi({
     }),
     unsaveCar: builder.mutation({
       query: (carId) => ({
-        url: `/users/unsave-car/${carId}`,
+        url: `/users/wishlist/${carId}`,
         method: "DELETE",
       }),
       invalidatesTags: ["User", "Cars"],
@@ -376,7 +376,7 @@ export const api = createApi({
     }),
     getSavedCars: builder.query({
       query: () => ({
-        url: "/users/saved-cars",
+        url: "/users/wishlist",
         method: "GET",
       }),
       providesTags: ["User"],
@@ -911,7 +911,7 @@ export const api = createApi({
       query: (params = {}) => {
         const searchParams = new URLSearchParams(params).toString();
         return {
-          url: `/recommendations?${searchParams}`,
+          url: `/recommendations/recommended${searchParams ? `?${searchParams}` : ""}`,
           method: "GET",
         };
       },
@@ -1071,14 +1071,14 @@ export const api = createApi({
     // Account Deletion endpoints
     createDeletionRequest: builder.mutation({
       query: (data) => ({
-        url: "/account-deletion/request-deletion",
+        url: "/account-deletion/request",
         method: "POST",
         body: data,
       }),
       transformResponse: (response) => response?.data || response,
     }),
     getDeletionRequestStatus: builder.query({
-      query: () => "/account-deletion/deletion-request-status",
+      query: () => "/account-deletion/status",
       transformResponse: (response) => response?.data || response,
     }),
 

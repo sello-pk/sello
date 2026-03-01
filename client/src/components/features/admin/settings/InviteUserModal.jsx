@@ -176,13 +176,13 @@ const InviteUserModal = ({ isOpen, onClose, onInviteSuccess, roles }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all border border-gray-200 dark:border-gray-700">
         {/* Header */}
-        <div className="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-          <h3 className="text-xl font-bold text-gray-800">Invite New User</h3>
+        <div className="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+          <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Invite New User</h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
           >
             <FaTimes size={20} />
           </button>
@@ -191,7 +191,7 @@ const InviteUserModal = ({ isOpen, onClose, onInviteSuccess, roles }) => {
         {/* Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1">
               Full Name
             </label>
             <input
@@ -200,12 +200,12 @@ const InviteUserModal = ({ isOpen, onClose, onInviteSuccess, roles }) => {
               value={formData.fullName}
               onChange={handleChange}
               placeholder="e.g. John Doe"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1">
               Email Address
             </label>
             <input
@@ -214,14 +214,14 @@ const InviteUserModal = ({ isOpen, onClose, onInviteSuccess, roles }) => {
               value={formData.email}
               onChange={handleChange}
               placeholder="e.g. john@example.com"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1">
               Phone Number{" "}
-              <span className="text-gray-400 text-xs">(Optional)</span>
+              <span className="text-gray-400 dark:text-gray-500 text-xs">(Optional)</span>
             </label>
             <input
               type="tel"
@@ -229,12 +229,12 @@ const InviteUserModal = ({ isOpen, onClose, onInviteSuccess, roles }) => {
               value={formData.phone}
               onChange={handleChange}
               placeholder="e.g. +1234567890"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1">
               User Role
             </label>
             <div className="relative">
@@ -242,7 +242,7 @@ const InviteUserModal = ({ isOpen, onClose, onInviteSuccess, roles }) => {
                 name="role"
                 value={formData.roleId || ""}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all appearance-none bg-white"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all appearance-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               >
                 <option value="">Select a role</option>
                 {roles.map((role) => (
@@ -253,7 +253,7 @@ const InviteUserModal = ({ isOpen, onClose, onInviteSuccess, roles }) => {
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                 <svg
-                  className="w-4 h-4 text-gray-400"
+                  className="w-4 h-4 text-gray-400 dark:text-gray-500"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -267,7 +267,7 @@ const InviteUserModal = ({ isOpen, onClose, onInviteSuccess, roles }) => {
                 </svg>
               </div>
             </div>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               The user will inherit all permissions associated with this role.
             </p>
           </div>
@@ -277,7 +277,7 @@ const InviteUserModal = ({ isOpen, onClose, onInviteSuccess, roles }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+              className="px-4 py-2 text-gray-600 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors"
             >
               Cancel
             </button>

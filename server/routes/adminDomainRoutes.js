@@ -8,7 +8,7 @@ import {
   getDashboardStats, getAllUsers, getUserById, updateUser, deleteUser, approveCar, deleteCar, getAllCars, featureCar, getAllDealers, verifyUser, verifyDealer, getListingHistory, getAuditLogsController, getAnalyticsSummary, trackAnalyticsEvent, getAuctionAccessRequests, reviewAuctionAccessRequest
 } from "../controllers/adminController.js";
 import {
-  getAllRoles, getRoleById, createRole, updateRole, deleteRole, inviteUser, getAllInvites, updateInvite, deleteInvite, resendInvite, cancelInvite, getPermissionMatrix, initializeRoles, getInviteByToken, acceptInvite
+  getAllRoles, getRoleById, createRole, updateRole, deleteRole, inviteUser, getAllInvites, updateInvite, deleteInvite, resendInvite, cancelInvite, getPermissionMatrix, initializeRoles, getInviteByToken, acceptInvite, assignUserRole
 } from "../controllers/roleController.js";
 import {
   getAllSettings, getSetting, upsertSetting, deleteSetting, uploadFile
@@ -25,13 +25,28 @@ router.put("/admin/users/:userId", hasPermission("manageUsers"), updateUser);
 router.delete("/admin/users/:userId", hasPermission("manageUsers"), deleteUser);
 router.put("/admin/users/:userId/verify", hasPermission("manageUsers"), verifyUser);
 router.get("/admin/listings", hasPermission("viewListings"), getAllCars);
-router.put("/admin/listings/:carId/approve", hasPermission("manageListings"), approveCar);
-router.put("/admin/listings/:carId/feature", hasPermission("manageListings"), featureCar);
-router.delete("/admin/listings/:carId", hasPermission("manageListings"), deleteCar);
+router.get(
+  "/admin/listings/history",
+  hasAnyPermission("viewListings", "viewAnalytics"),
+  getListingHistory,
+);
+router.put("/admin/listings/:carId/approve", hasAnyPermission("approveListings", "editListings"), approveCar);
+router.put("/admin/listings/:carId/feature", hasAnyPermission("featureListings", "editListings"), featureCar);
+router.delete("/admin/listings/:carId", hasAnyPermission("deleteListings", "editListings"), deleteCar);
 router.get("/admin/dealers", hasPermission("viewDealers"), getAllDealers);
+router.put(
+  "/admin/dealers/:userId/verify",
+  hasAnyPermission("approveDealers", "editDealers"),
+  verifyDealer,
+);
 router.get("/admin/auction-access/requests", hasPermission("viewDealers"), getAuctionAccessRequests);
 router.put("/admin/auction-access/review/:userId", hasPermission("viewDealers"), reviewAuctionAccessRequest);
-router.get("/admin/analytics/summary", getAnalyticsSummary);
+router.get("/admin/analytics/summary", hasAnyPermission("viewAnalytics", "createReports", "exportReports"), getAnalyticsSummary);
+router.get(
+  "/admin/audit-logs",
+  hasAnyPermission("viewAuditLogs", "manageUsers"),
+  getAuditLogsController,
+);
 
 /* ---------------------------------- ROLES --------------------------------- */
 // Public invites
@@ -55,6 +70,11 @@ router.put("/roles/invites/:inviteId", hasPermission("inviteUsers"), updateInvit
 router.delete("/roles/invites/:inviteId", hasPermission("inviteUsers"), deleteInvite);
 router.post("/roles/invites/:inviteId/resend", hasPermission("inviteUsers"), resendInvite);
 router.post("/roles/invites/:inviteId/cancel", hasPermission("inviteUsers"), cancelInvite);
+router.put(
+  "/roles/assign/:userId",
+  hasAnyPermission("manageUsers", "inviteUsers"),
+  assignUserRole,
+);
 
 /* -------------------------------- SETTINGS -------------------------------- */
 router.use("/settings", auth, authorize("admin"));

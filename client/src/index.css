@@ -242,3 +242,61 @@
 .location-picker-modal {
   z-index: 9999 !important;
 }
+
+/* Admin dark-mode compatibility layer (scoped to admin layout only) */
+.dark .admin-theme .bg-white {
+  background-color: #111827 !important;
+}
+
+.dark .admin-theme .bg-gray-50 {
+  background-color: #1f2937 !important;
+}
+
+.dark .admin-theme .bg-gray-100 {
+  background-color: #111827 !important;
+}
+
+.dark .admin-theme .text-gray-900,
+.dark .admin-theme .text-gray-800 {
+  color: #f9fafb !important;
+}
+
+.dark .admin-theme .text-gray-700,
+.dark .admin-theme .text-gray-600,
+.dark .admin-theme .text-gray-500,
+.dark .admin-theme .text-gray-400 {
+  color: #d1d5db !important;
+}
+
+.dark .admin-theme .border-gray-100,
+.dark .admin-theme .border-gray-200,
+.dark .admin-theme .border-gray-300 {
+  border-color: #374151 !important;
+}
+
+.dark .admin-theme .divide-gray-100 > :not([hidden]) ~ :not([hidden]),
+.dark .admin-theme .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #374151 !important;
+}
+
+.dark .admin-theme .hover\:bg-gray-50:hover,
+.dark .admin-theme .hover\:bg-gray-100:hover,
+.dark .admin-theme .hover\:bg-gray-200:hover {
+  background-color: #1f2937 !important;
+}
+
+.dark .admin-theme input,
+.dark .admin-theme textarea,
+.dark .admin-theme select {
+  background-color: #111827 !important;
+  color: #f9fafb !important;
+  border-color: #374151 !important;
+}
+
+.dark .admin-theme .custom-scrollbar::-webkit-scrollbar-track {
+  background: #111827;
+}
+
+.dark .admin-theme .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}

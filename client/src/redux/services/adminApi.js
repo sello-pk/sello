@@ -71,7 +71,7 @@ export const adminApi = createApi({
                 credentials: "include",
                 prepareHeaders: (headers) => {
                   headers.set("Authorization", `Bearer ${newToken}`);
-                  const body = args?.body || extra?.body;
+                  const body = args?.body;
                   if (!(body instanceof FormData)) {
                     headers.set("Content-Type", "application/json");
                   }
@@ -79,7 +79,7 @@ export const adminApi = createApi({
                 },
               })(args, api, extraOptions);
             }
-          } catch (refreshError) {
+          } catch {
             // Refresh failed, clear tokens and let it fall through to 401 handling
             clearTokens();
             localStorage.removeItem("user");
@@ -518,7 +518,7 @@ export const adminApi = createApi({
     getAnalytics: builder.query({
       query: (params = {}) => {
         const searchParams = new URLSearchParams(params).toString();
-        return `/analytics/summary${searchParams ? `?${searchParams}` : ""}`;
+        return `/admin/analytics/summary${searchParams ? `?${searchParams}` : ""}`;
       },
       providesTags: ["Analytics"],
       transformResponse: (response) => response?.data || response,
@@ -528,19 +528,19 @@ export const adminApi = createApi({
     getAllPromotions: builder.query({
       query: (params = {}) => {
         const searchParams = new URLSearchParams(params).toString();
-        return `/promotions?${searchParams}`;
+        return `/billing/promotions?${searchParams}`;
       },
       providesTags: ["Promotions"],
       transformResponse: (response) => response?.data || response,
     }),
     getPromotionById: builder.query({
-      query: (promotionId) => `/promotions/${promotionId}`,
+      query: (promotionId) => `/billing/promotions/${promotionId}`,
       providesTags: ["Promotions"],
       transformResponse: (response) => response?.data || response,
     }),
     createPromotion: builder.mutation({
       query: (data) => ({
-        url: "/promotions",
+        url: "/billing/promotions",
         method: "POST",
         body: data,
       }),
@@ -548,7 +548,7 @@ export const adminApi = createApi({
     }),
     updatePromotion: builder.mutation({
       query: ({ promotionId, ...data }) => ({
-        url: `/promotions/${promotionId}`,
+        url: `/billing/promotions/${promotionId}`,
         method: "PUT",
         body: data,
       }),
@@ -556,13 +556,13 @@ export const adminApi = createApi({
     }),
     deletePromotion: builder.mutation({
       query: (promotionId) => ({
-        url: `/promotions/${promotionId}`,
+        url: `/billing/promotions/${promotionId}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Promotions"],
     }),
     getPromotionStats: builder.query({
-      query: () => "/promotions/statistics",
+      query: () => "/billing/promotions/statistics",
       providesTags: ["Promotions"],
       transformResponse: (response) => response?.data || response,
     }),
@@ -632,7 +632,7 @@ export const adminApi = createApi({
     getAllSupportChats: builder.query({
       query: (params = {}) => {
         const cleanParams = Object.fromEntries(
-          Object.entries(params).filter(([_, v]) => v !== undefined)
+          Object.entries(params).filter(([, v]) => v !== undefined)
         );
         const searchParams = new URLSearchParams(cleanParams).toString();
         return `/support-chat/admin?${searchParams}`;
@@ -856,7 +856,7 @@ export const adminApi = createApi({
     }),
     createTestimonial: builder.mutation({
       query: (formData) => ({
-        url: "/testimonials",
+        url: "/testimonials/admin",
         method: "POST",
         body: formData,
       }),
@@ -966,7 +966,7 @@ export const adminApi = createApi({
     getAllPayments: builder.query({
       query: (params = {}) => {
         const searchParams = new URLSearchParams(params).toString();
-        return `/admin/payments?${searchParams}`;
+        return `/billing/admin/payments?${searchParams}`;
       },
       providesTags: ["Payments"],
       transformResponse: (response) => response?.data || response,
@@ -974,14 +974,14 @@ export const adminApi = createApi({
     getAllSubscriptions: builder.query({
       query: (params = {}) => {
         const searchParams = new URLSearchParams(params).toString();
-        return `/admin/subscriptions?${searchParams}`;
+        return `/billing/admin/subscriptions?${searchParams}`;
       },
       providesTags: ["Subscriptions"],
       transformResponse: (response) => response?.data || response,
     }),
     adminUpdateSubscription: builder.mutation({
       query: ({ userId, ...data }) => ({
-        url: `/admin/subscriptions/${userId}`,
+        url: `/billing/admin/subscriptions/${userId}`,
         method: "PUT",
         body: data,
       }),
@@ -990,8 +990,9 @@ export const adminApi = createApi({
     }),
     adminCancelSubscription: builder.mutation({
       query: (userId) => ({
-        url: `/admin/subscriptions/${userId}`,
-        method: "DELETE",
+        url: `/billing/admin/subscriptions/${userId}`,
+        method: "PUT",
+        body: { isActive: false },
       }),
       invalidatesTags: ["Subscriptions", "Users"],
       transformResponse: (response) => response?.data || response,
@@ -1001,20 +1002,20 @@ export const adminApi = createApi({
     getAllSubscriptionPlans: builder.query({
       query: (params = {}) => {
         const searchParams = new URLSearchParams(params).toString();
-        return `/subscription-plans?${searchParams}`;
+        return `/billing/subscription-plans?${searchParams}`;
       },
       providesTags: ["SubscriptionPlans"],
       transformResponse: (response) => response?.data || response,
       keepUnusedDataFor: 300, // Cache subscription plans for 5 minutes (relatively static)
     }),
     getSubscriptionPlanById: builder.query({
-      query: (planId) => `/subscription-plans/${planId}`,
+      query: (planId) => `/billing/subscription-plans/${planId}`,
       providesTags: ["SubscriptionPlans"],
       transformResponse: (response) => response?.data || response,
     }),
     createSubscriptionPlan: builder.mutation({
       query: (data) => ({
-        url: "/subscription-plans",
+        url: "/billing/subscription-plans",
         method: "POST",
         body: data,
       }),
@@ -1022,7 +1023,7 @@ export const adminApi = createApi({
     }),
     updateSubscriptionPlan: builder.mutation({
       query: ({ planId, ...data }) => ({
-        url: `/subscription-plans/${planId}`,
+        url: `/billing/subscription-plans/${planId}`,
         method: "PUT",
         body: data,
       }),
@@ -1030,14 +1031,14 @@ export const adminApi = createApi({
     }),
     deleteSubscriptionPlan: builder.mutation({
       query: (planId) => ({
-        url: `/subscription-plans/${planId}`,
+        url: `/billing/subscription-plans/${planId}`,
         method: "DELETE",
       }),
       invalidatesTags: ["SubscriptionPlans"],
     }),
     toggleSubscriptionPlanStatus: builder.mutation({
       query: (planId) => ({
-        url: `/subscription-plans/${planId}/toggle`,
+        url: `/billing/subscription-plans/${planId}/toggle`,
         method: "PATCH",
       }),
       invalidatesTags: ["SubscriptionPlans"],
@@ -1047,19 +1048,19 @@ export const adminApi = createApi({
     getAllDeletionRequests: builder.query({
       query: (params = {}) => {
         const searchParams = new URLSearchParams(params).toString();
-        return `/account-deletion/admin/deletion-requests?${searchParams}`;
+        return `/account-deletion/admin/all?${searchParams}`;
       },
       providesTags: ["DeletionRequests"],
       transformResponse: (response) => response?.data || response,
     }),
     getDeletionRequestStats: builder.query({
-      query: () => "/account-deletion/admin/deletion-request-stats",
+      query: () => "/account-deletion/admin/stats",
       providesTags: ["DeletionRequests"],
       transformResponse: (response) => response?.data || response,
     }),
     reviewDeletionRequest: builder.mutation({
       query: ({ requestId, ...data }) => ({
-        url: `/account-deletion/admin/deletion-requests/${requestId}/review`,
+        url: `/account-deletion/admin/review/${requestId}`,
         method: "PUT",
         body: data,
       }),

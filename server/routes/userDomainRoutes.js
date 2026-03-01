@@ -1,6 +1,7 @@
 import express from "express";
 import { upload } from "../middlewares/multer.js";
 import { auth, authorize } from "../middlewares/authMiddleware.js";
+import { hasAnyPermission } from "../middlewares/permissionMiddleware.js";
 
 // Controllers
 import {
@@ -43,24 +44,72 @@ router.get("/notifications/me", auth, getUserNotifications); // Alias for fronte
 router.put("/notifications/:notificationId/read", auth, markAsRead);
 router.put("/notifications/read-all", auth, markAllAsRead);
 // Admin
-router.get("/notifications/admin", auth, authorize("admin"), getAllNotifications);
-router.post("/notifications", auth, authorize("admin"), createNotification);
-router.delete("/notifications/:notificationId", auth, authorize("admin"), deleteNotification);
+router.get(
+  "/notifications/admin",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("viewNotifications", "manageUsers"),
+  getAllNotifications,
+);
+router.post(
+  "/notifications",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("createNotifications", "sendPushNotifications"),
+  createNotification,
+);
+router.delete(
+  "/notifications/:notificationId",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("deleteNotifications", "manageUsers"),
+  deleteNotification,
+);
 
 /* --------------------------- VERIFICATION --------------------------- */
 router.post("/verification/submit", auth, upload.fields([{ name: "frontDocument", maxCount: 1 }, { name: "backDocument", maxCount: 1 }]), submitVerification);
 router.get("/verification/status", auth, getVerificationStatus);
 // Admin
-router.get("/verification/admin/all", auth, authorize("admin"), getAllVerifications);
-router.put("/verification/admin/review/:verificationId", auth, authorize("admin"), reviewVerification);
+router.get(
+  "/verification/admin/all",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("viewDealers", "manageUsers"),
+  getAllVerifications,
+);
+router.put(
+  "/verification/admin/review/:verificationId",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("approveDealers", "manageUsers"),
+  reviewVerification,
+);
 
 /* --------------------------- ACCOUNT DELETION --------------------------- */
 router.post("/account-deletion/request", auth, createDeletionRequest);
 router.get("/account-deletion/status", auth, getDeletionRequestStatus);
 // Admin
-router.get("/account-deletion/admin/all", auth, authorize("admin"), getAllDeletionRequests);
-router.get("/account-deletion/admin/stats", auth, authorize("admin"), getDeletionRequestStats);
-router.put("/account-deletion/admin/review/:requestId", auth, authorize("admin"), reviewDeletionRequest);
+router.get(
+  "/account-deletion/admin/all",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("viewUserProfiles", "viewFullUserProfiles"),
+  getAllDeletionRequests,
+);
+router.get(
+  "/account-deletion/admin/stats",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("viewUserProfiles", "viewFullUserProfiles"),
+  getDeletionRequestStats,
+);
+router.put(
+  "/account-deletion/admin/review/:requestId",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("manageUsers", "accessSensitiveAreas"),
+  reviewDeletionRequest,
+);
 
 /* --------------------------- SAVED SEARCHES --------------------------- */
 router.get("/saved-searches", auth, getSavedSearches);
@@ -74,14 +123,38 @@ router.get("/saved-searches/:searchId/execute", auth, executeSavedSearch);
 router.post("/reviews", auth, addReview);
 router.get("/reviews/user/:userId", auth, getUserReviews);
 // Admin
-router.get("/reviews/admin/all", auth, authorize("admin"), getAllReviews);
-router.put("/reviews/admin/moderate/:reviewId", auth, authorize("admin"), moderateReview);
+router.get(
+  "/reviews/admin/all",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("viewTestimonials", "manageTestimonials", "moderateComments"),
+  getAllReviews,
+);
+router.put(
+  "/reviews/admin/moderate/:reviewId",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("manageTestimonials", "moderateComments"),
+  moderateReview,
+);
 router.post("/reviews/:reviewId/report", auth, reportReview);
 
 /* ------------------------------- REPORTS ------------------------------- */
 router.post("/reports", auth, createReport);
 // Admin
-router.get("/reports/admin/all", auth, authorize("admin"), getReports);
-router.put("/reports/admin/:reportId/status", auth, authorize("admin"), updateReportStatus);
+router.get(
+  "/reports/admin/all",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("viewAnalytics", "createReports", "viewInquiries"),
+  getReports,
+);
+router.put(
+  "/reports/admin/:reportId/status",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("manageUsers", "editReports", "deleteReports"),
+  updateReportStatus,
+);
 
 export default router;

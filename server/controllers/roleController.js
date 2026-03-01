@@ -746,7 +746,9 @@ export const inviteUser = async (req, res) => {
       // Check if the user already has the requested role
       const hasRole =
         existingUser.role === role ||
-        (existingUser.roleId && existingUser.roleId.toString() === roleId);
+        (existingUser.roleId &&
+          requestedRoleId &&
+          existingUser.roleId.toString() === requestedRoleId.toString());
 
       if (hasRole) {
         return res.status(409).json({
@@ -868,22 +870,7 @@ export const inviteUser = async (req, res) => {
       }
     }
 
-    // Validate role against invite model enum
-    const validRoles = [
-      "Super Admin",
-      "Marketing Team",
-      "Support Agent",
-      "Blogs/Content Agent",
-      "Custom",
-    ];
-    if (!validRoles.includes(finalRole)) {
-      // If role doesn't match enum, use "Custom" and store the actual role name in permissions
-      Logger.warn(`Role not in invite enum, using "Custom"`, {
-        role: finalRole,
-      });
-      rolePermissions.originalRoleName = finalRole;
-      finalRole = "Custom";
-    }
+    // Keep requested role display name as-is for custom/team roles.
 
     // Generate token
     const token = Invite.generateToken();
@@ -1237,6 +1224,86 @@ export const updateInvite = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
+  }
+};
+
+/**
+ * Assign role to existing admin/team user
+ */
+export const assignUserRole = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { roleId, permissions } = req.body;
+
+    if (!roleId || !mongoose.Types.ObjectId.isValid(roleId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid roleId is required.",
+      });
+    }
+
+    const [user, role] = await Promise.all([
+      User.findById(userId),
+      Role.findById(roleId),
+    ]);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    if (!role || !role.isActive) {
+      return res.status(404).json({
+        success: false,
+        message: "Role not found or inactive.",
+      });
+    }
+
+    const mergedPermissions = {
+      ...(role.permissions || {}),
+      ...(permissions || {}),
+    };
+
+    user.role = "admin";
+    user.adminRole = role.displayName || role.name;
+    user.roleId = role._id;
+    user.permissions = mergedPermissions;
+    await user.save();
+
+    await createAuditLog(
+      req.user,
+      "user_role_assigned",
+      {
+        userId: user._id,
+        roleId: role._id,
+        roleName: role.displayName || role.name,
+      },
+      null,
+      req,
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Role assigned successfully.",
+      data: {
+        userId: user._id,
+        roleId: role._id,
+        adminRole: user.adminRole,
+      },
+    });
+  } catch (error) {
+    Logger.error("Assign User Role Error", error, {
+      userId: req.params?.userId,
+      roleId: req.body?.roleId,
+      actor: req.user?._id,
+    });
+    return res.status(500).json({
+      success: false,
+      message: "Failed to assign role.",
       error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }

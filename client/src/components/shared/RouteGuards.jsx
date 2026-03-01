@@ -51,7 +51,7 @@ const AdminRoute = () => {
   const token = localStorage.getItem("token");
   const location = useLocation();
   const {
-    data: user,
+    data: currentUser,
     isLoading,
     isError,
     error,
@@ -64,28 +64,12 @@ const AdminRoute = () => {
     return `${location.pathname}${location.search}${location.hash}`;
   }, [location.pathname, location.search, location.hash]);
 
-  // Get cached user from localStorage as fallback
-  const getCachedUser = () => {
-    try {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        return JSON.parse(storedUser);
-      }
-    } catch (e) {
-      console.error("Error parsing cached user", e);
-    }
-    return null;
-  };
-
-  const cachedUser = getCachedUser();
-  const currentUser = user || cachedUser;
-
   if (!token) {
     return <Navigate to="/login" replace />;
   }
 
   // Show loading state - don't redirect while loading
-  if (isLoading && !cachedUser) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center">
@@ -97,29 +81,25 @@ const AdminRoute = () => {
   }
 
   // Handle errors - check if it's a network error or auth error
-  if (isError && !cachedUser) {
+  if (isError) {
     console.error("AdminRoute - Error fetching user", error);
 
-    // If it's a network error, try to use cached user
+    // Network error: don't trust stale local user data for admin route access.
     if (
       error?.status === "FETCH_ERROR" ||
       error?.data?.message?.includes("Failed to fetch") ||
       error?.data?.error?.includes("Failed to fetch")
     ) {
-      if (cachedUser && cachedUser.role === "admin") {
-        // Continue with cached user
-      } else {
-        return (
-          <div className="min-h-screen flex items-center justify-center bg-white">
-            <div className="text-center">
-              <p className="text-red-500 mb-2">Unable to connect to server</p>
-              <p className="text-gray-600 text-sm">
-                Please check your connection and try again
-              </p>
-            </div>
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-white">
+          <div className="text-center">
+            <p className="text-red-500 mb-2">Unable to connect to server</p>
+            <p className="text-gray-600 text-sm">
+              Please check your connection and try again
+            </p>
           </div>
-        );
-      }
+        </div>
+      );
     } else if (
       error?.status === 401 ||
       error?.status === 403 ||
@@ -131,18 +111,13 @@ const AdminRoute = () => {
       localStorage.removeItem("user");
       return <Navigate to="/login" replace />;
     } else {
-      // Other errors - try cached user if available
-      if (cachedUser && cachedUser.role === "admin") {
-        // Continue with cached user
-      } else {
-        clearTokens();
-        localStorage.removeItem("user");
-        return <Navigate to="/login" replace />;
-      }
+      clearTokens();
+      localStorage.removeItem("user");
+      return <Navigate to="/login" replace />;
     }
   }
 
-  // Check if user data exists (either from API or cache)
+  // Check if user data exists
   if (!currentUser) {
     clearTokens();
     localStorage.removeItem("user");
