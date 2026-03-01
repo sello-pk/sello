@@ -28,7 +28,8 @@ const reviews = [
 const CustomerReviews = () => {
   return (
     <div className="bg-gray-50 relative overflow-hidden">
-      <div className="relative bg-white px-3 sm:px-4 md:px-6 lg:px-8 py-16 md:py-20 w-full rounded-tr-[60px] md:rounded-tr-[80px] shadow-lg">
+      <div className="relative bg-white py-16 md:py-20 w-full rounded-tr-[60px] md:rounded-tr-[80px] shadow-lg">
+        <div className="max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12 md:mb-16">
           <div className="inline-block mb-4">
@@ -118,6 +119,7 @@ const CustomerReviews = () => {
               </div>
             </div>
           ))}
+        </div>
         </div>
       </div>
     </div>

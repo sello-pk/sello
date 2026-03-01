@@ -26,8 +26,8 @@ const stats = [
 const ReviewsAnalysis = () => {
   return (
     <div className="bg-gray-50 relative overflow-hidden">
-      <div className="relative bg-white px-3 sm:px-4 md:px-6 lg:px-8 py-16 md:py-20 w-full rounded-tl-[60px] md:rounded-tl-[80px] shadow-lg">
-        <div className="max-w-full mx-auto">
+      <div className="relative bg-white py-16 md:py-20 w-full rounded-tl-[60px] md:rounded-tl-[80px] shadow-lg">
+        <div className="max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8">
           <div className="text-center mb-12 md:mb-16">
             <div className="inline-block mb-4">
               <span className="text-primary-500 font-bold text-xs md:text-sm uppercase tracking-widest px-4 py-2 bg-primary-100 rounded-full">

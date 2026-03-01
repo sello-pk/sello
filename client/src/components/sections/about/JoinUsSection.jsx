@@ -46,7 +46,8 @@ const JoinUsSection = () => {
   return (
     <div className="w-full bg-gray-50 rounded-tr-[50px] md:rounded-tr-[70px] overflow-hidden relative">
       {/* Content Section */}
-      <div className="bg-white rounded-tl-[50px] flex flex-col justify-between gap-8 px-3 sm:px-4 md:px-6 lg:px-8 py-16 md:py-20">
+      <div className="bg-white rounded-tl-[50px] py-16 md:py-20">
+        <div className="max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8 flex flex-col justify-between gap-8">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-block mb-4">
@@ -106,6 +107,7 @@ const JoinUsSection = () => {
               <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-primary-400/20 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
           ))}
+        </div>
         </div>
       </div>
     </div>

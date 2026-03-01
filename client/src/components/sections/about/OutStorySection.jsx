@@ -50,16 +50,17 @@ const OutStorySection = () => {
   ];
 
   return (
-    <div className="py-20 md:py-28 px-3 sm:px-4 md:px-6 lg:px-8 w-full bg-white">
-      {/* Our Story */}
-      <div
-        ref={storyRef}
-        className={`flex flex-col md:flex-row gap-12 md:gap-16 lg:gap-20 justify-between items-center md:items-start transition-all duration-1000 mb-24 md:mb-32 ${
-          isVisible.story
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-10"
-        }`}
-      >
+    <div className="py-20 md:py-28 w-full bg-white">
+      <div className="max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8">
+        {/* Our Story */}
+        <div
+          ref={storyRef}
+          className={`flex flex-col md:flex-row gap-12 md:gap-16 lg:gap-20 justify-between items-center md:items-start transition-all duration-1000 mb-24 md:mb-32 ${
+            isVisible.story
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-10"
+          }`}
+        >
         {/* Text */}
         <div className="w-full md:w-1/2 space-y-6">
           <div className="inline-block mb-3">
@@ -108,17 +109,17 @@ const OutStorySection = () => {
             alt="Our Story"
           />
         </div>
-      </div>
+        </div>
 
-      {/* Sello Group */}
-      <div
-        ref={groupRef}
-        className={`flex flex-col md:flex-row-reverse gap-12 md:gap-16 lg:gap-20 justify-between items-center md:items-start transition-all duration-1000 ${
-          isVisible.group
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-10"
-        }`}
-      >
+        {/* Sello Group */}
+        <div
+          ref={groupRef}
+          className={`flex flex-col md:flex-row-reverse gap-12 md:gap-16 lg:gap-20 justify-between items-center md:items-start transition-all duration-1000 ${
+            isVisible.group
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-10"
+          }`}
+        >
         {/* Text */}
         <div className="w-full md:w-1/2 space-y-6">
           <div className="inline-block mb-3">
@@ -166,6 +167,7 @@ const OutStorySection = () => {
             className="h-full w-full object-cover"
             alt="Our Story"
           />
+        </div>
         </div>
       </div>
     </div>

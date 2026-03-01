@@ -70,8 +70,8 @@ const OurTeam = () => {
   ];
 
   return (
-    <div className="py-16 lg:py-28 px-3 sm:px-4 md:px-6 lg:px-8">
-      <div className="max-w-full mx-auto">
+    <div className="py-16 lg:py-28">
+      <div className="max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
           <div className="inline-block mb-6">
