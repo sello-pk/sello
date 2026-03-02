@@ -2,6 +2,7 @@ import Role from "../models/roleModel.js";
 import Logger from "../utils/logger.js";
 import {
   SYSTEM_FULL_ACCESS_ROLE_NAMES,
+  SYSTEM_ROLE_NAMES,
   resolveCanonicalRoleName,
 } from "../config/rbacPolicy.js";
 
@@ -49,12 +50,12 @@ const getUserPermissions = async (user) => {
 const hasFullAccessRole = async (user) => {
   if (!user || user.role !== "admin") return false;
 
-  const isOriginalAdmin = !user.adminRole && !user.roleId;
-  if (isOriginalAdmin) return true;
-
-  const normalizedAdminRole = resolveCanonicalRoleName(user.adminRole || "");
-  if (SYSTEM_FULL_ACCESS_ROLE_NAMES.includes(normalizedAdminRole)) {
-    return true;
+  // Legacy/main admins without roleId should keep full access in production.
+  if (!user.roleId) {
+    if (!user.adminRole) return true;
+    const normalizedAdminRole = resolveCanonicalRoleName(user.adminRole || "");
+    if (SYSTEM_FULL_ACCESS_ROLE_NAMES.includes(normalizedAdminRole)) return true;
+    if (!SYSTEM_ROLE_NAMES.includes(normalizedAdminRole)) return true;
   }
 
   if (user.roleId) {

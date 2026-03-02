@@ -2,6 +2,7 @@ import {
   FULL_ACCESS_ROLE_NAMES,
   LEGACY_PATH_ALIASES,
   PERMISSION_ROUTE_ACCESS,
+  SYSTEM_ROLE_NAMES,
 } from "../constants/rbacPolicy";
 
 const LEGACY_ROLE_NAME_MAP = {
@@ -23,7 +24,14 @@ const hasAnyPermission = (userPermissions = {}, keys = []) =>
 export const isSuperAdmin = (user) => {
   if (!user || user.role !== "admin") return false;
   if (!user.adminRole) return true;
-  return FULL_ACCESS_ROLE_NAMES.includes(normalizeRoleName(user.adminRole));
+
+  const normalizedRole = normalizeRoleName(user.adminRole);
+  if (FULL_ACCESS_ROLE_NAMES.includes(normalizedRole)) return true;
+
+  // Keep legacy/main admins (no roleId + non-system role label) fully accessible.
+  if (!user.roleId && !SYSTEM_ROLE_NAMES.includes(normalizedRole)) return true;
+
+  return false;
 };
 
 export const getAllowedMenuPaths = (user) => {

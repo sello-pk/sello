@@ -1,4 +1,15 @@
 export const FULL_ACCESS_ROLE_NAMES = ["Owner", "Super Admin"];
+export const SYSTEM_ROLE_NAMES = [
+  "Owner",
+  "Admin Manager",
+  "Finance Manager",
+  "Content Manager",
+  "Content Writer",
+  "Listings Moderator",
+  "Support Agent",
+  "Marketing Manager",
+  "Analytics Viewer",
+];
 
 export const PERMISSION_ROUTE_ACCESS = {
   "/admin/dashboard": [
