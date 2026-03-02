@@ -19,9 +19,10 @@ jobs:
           port: 22
           timeout: 300s
           command_timeout: 30m
+          debug: true
           script: |
             set -e
-            trap 'echo "SSH disconnected but deploy completed"' EXIT
+            trap 'status=$?; if [ $status -eq 0 ]; then echo "✅ SSH session closed after successful deploy"; else echo "❌ Deploy failed (exit $status)"; fi' EXIT
 
             echo "📦 Loading NVM..."
             export NVM_DIR="$HOME/.nvm"
