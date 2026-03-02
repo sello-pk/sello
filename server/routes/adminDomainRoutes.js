@@ -8,7 +8,7 @@ import {
   getDashboardStats, getAllUsers, getUserById, updateUser, deleteUser, approveCar, deleteCar, getAllCars, featureCar, getAllDealers, verifyUser, verifyDealer, getListingHistory, getAuditLogsController, getAnalyticsSummary, trackAnalyticsEvent, getAuctionAccessRequests, reviewAuctionAccessRequest
 } from "../controllers/adminController.js";
 import {
-  getAllRoles, getRoleById, createRole, updateRole, deleteRole, inviteUser, getAllInvites, updateInvite, deleteInvite, resendInvite, cancelInvite, getPermissionMatrix, initializeRoles, getInviteByToken, acceptInvite, assignUserRole
+  getAllRoles, getRoleById, createRole, updateRole, deleteRole, inviteUser, getAllInvites, updateInvite, deleteInvite, resendInvite, cancelInvite, getPermissionMatrix, getInviteByToken, acceptInvite, assignUserRole, fixCustomRoles
 } from "../controllers/roleController.js";
 import {
   getAllSettings, getSetting, upsertSetting, deleteSetting, uploadFile
@@ -18,9 +18,26 @@ const router = express.Router();
 
 /* ---------------------------------- ADMIN --------------------------------- */
 router.use("/admin", auth, authorize("admin"));
-router.get("/admin/dashboard", getDashboardStats);
-router.get("/admin/users", hasPermission("manageUsers"), getAllUsers);
-router.get("/admin/users/:userId", hasPermission("manageUsers"), getUserById);
+router.get(
+  "/admin/dashboard",
+  hasAnyPermission(
+    "viewAnalytics",
+    "viewListings",
+    "viewDealers",
+    "viewBlogs",
+    "viewPromotions",
+    "viewNotifications",
+    "viewAuctions",
+    "manageUsers",
+    "manageSupportTickets",
+    "viewInquiries",
+    "viewFinancialReports",
+    "viewAuditLogs",
+  ),
+  getDashboardStats,
+);
+router.get("/admin/users", hasAnyPermission("manageUsers", "viewUserProfiles"), getAllUsers);
+router.get("/admin/users/:userId", hasAnyPermission("manageUsers", "viewUserProfiles"), getUserById);
 router.put("/admin/users/:userId", hasPermission("manageUsers"), updateUser);
 router.delete("/admin/users/:userId", hasPermission("manageUsers"), deleteUser);
 router.put("/admin/users/:userId/verify", hasPermission("manageUsers"), verifyUser);
@@ -39,8 +56,12 @@ router.put(
   hasAnyPermission("approveDealers", "editDealers"),
   verifyDealer,
 );
-router.get("/admin/auction-access/requests", hasPermission("viewDealers"), getAuctionAccessRequests);
-router.put("/admin/auction-access/review/:userId", hasPermission("viewDealers"), reviewAuctionAccessRequest);
+router.get("/admin/auction-access/requests", hasAnyPermission("viewDealers", "approveDealers"), getAuctionAccessRequests);
+router.put(
+  "/admin/auction-access/review/:userId",
+  hasAnyPermission("approveDealers", "editDealers"),
+  reviewAuctionAccessRequest,
+);
 router.get("/admin/analytics/summary", hasAnyPermission("viewAnalytics", "createReports", "exportReports"), getAnalyticsSummary);
 router.get(
   "/admin/audit-logs",
@@ -63,6 +84,7 @@ router.post("/roles", hasPermission("createRoles"), createRole);
 router.get("/roles/:roleId", hasAnyPermission("manageUsers", "createRoles"), getRoleById);
 router.put("/roles/:roleId", hasPermission("editRoles"), updateRole);
 router.delete("/roles/:roleId", hasPermission("deleteRoles"), deleteRole);
+router.post("/roles/normalize", hasAnyPermission("editRoles", "manageUsers"), fixCustomRoles);
 
 // Invites management
 router.post("/roles/invite", hasPermission("inviteUsers"), inviteUser);

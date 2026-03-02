@@ -1,6 +1,6 @@
 import express from "express";
 import { auth, authorize } from "../middlewares/authMiddleware.js";
-import { hasAnyPermission } from "../middlewares/permissionMiddleware.js";
+import { hasAnyPermission, hasPermission } from "../middlewares/permissionMiddleware.js";
 import {
   getMyWallet,
   createDeposit,
@@ -67,14 +67,14 @@ router.get(
   "/admin/settings",
   auth,
   authorize("admin"),
-  hasAnyPermission("managePlatformSettings", "manageCommission"),
+  hasPermission("accessSensitiveAreas"),
   adminGetPlatformSettings,
 );
 router.put(
   "/admin/settings",
   auth,
   authorize("admin"),
-  hasAnyPermission("managePlatformSettings", "manageCommission"),
+  hasPermission("accessSensitiveAreas"),
   adminUpdatePlatformSettings,
 );
 router.get(

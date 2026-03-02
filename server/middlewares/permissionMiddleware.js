@@ -1,6 +1,9 @@
-import User from "../models/userModel.js";
 import Role from "../models/roleModel.js";
 import Logger from "../utils/logger.js";
+import {
+  SYSTEM_FULL_ACCESS_ROLE_NAMES,
+  resolveCanonicalRoleName,
+} from "../config/rbacPolicy.js";
 
 const PERMISSION_ALIASES = {
   // Backward compatibility for legacy checks
@@ -43,26 +46,37 @@ const getUserPermissions = async (user) => {
   return directPermissions;
 };
 
+const hasFullAccessRole = async (user) => {
+  if (!user || user.role !== "admin") return false;
+
+  const isOriginalAdmin = !user.adminRole && !user.roleId;
+  if (isOriginalAdmin) return true;
+
+  const normalizedAdminRole = resolveCanonicalRoleName(user.adminRole || "");
+  if (SYSTEM_FULL_ACCESS_ROLE_NAMES.includes(normalizedAdminRole)) {
+    return true;
+  }
+
+  if (user.roleId) {
+    const role = await Role.findById(user.roleId).lean();
+    if (!role || !role.isActive) return false;
+    const normalizedRoleName = resolveCanonicalRoleName(
+      role.displayName || role.name || "",
+    );
+    return SYSTEM_FULL_ACCESS_ROLE_NAMES.includes(normalizedRoleName);
+  }
+
+  return false;
+};
+
 /**
  * Check if user has specific permission
  */
 export const hasPermission = (permission) => {
   return async (req, res, next) => {
     try {
-      // Only give full access to original admins (no adminRole set and no roleId set)
-      const isOriginalAdmin =
-        req.user.role === "admin" && !req.user.adminRole && !req.user.roleId;
-
-      if (isOriginalAdmin) {
+      if (await hasFullAccessRole(req.user)) {
         return next();
-      }
-
-      // Check if user has Super Admin role via roleId
-      if (req.user.roleId) {
-        const role = await Role.findById(req.user.roleId);
-        if (role && role.isActive && role.name === "Super Admin") {
-          return next(); // Super Admin gets full access
-        }
       }
 
       // Get user's role and permissions
@@ -98,20 +112,8 @@ export const hasPermission = (permission) => {
 export const hasAnyPermission = (...permissions) => {
   return async (req, res, next) => {
     try {
-      // Only give full access to original admins (no adminRole set and no roleId set)
-      const isOriginalAdmin =
-        req.user.role === "admin" && !req.user.adminRole && !req.user.roleId;
-
-      if (isOriginalAdmin) {
+      if (await hasFullAccessRole(req.user)) {
         return next();
-      }
-
-      // Check if user has Super Admin role via roleId
-      if (req.user.roleId) {
-        const role = await Role.findById(req.user.roleId);
-        if (role && role.isActive && role.name === "Super Admin") {
-          return next(); // Super Admin gets full access
-        }
       }
 
       // Get user's role and permissions
@@ -151,20 +153,8 @@ export const hasAnyPermission = (...permissions) => {
 export const hasAllPermissions = (...permissions) => {
   return async (req, res, next) => {
     try {
-      // Only give full access to original admins (no adminRole set and no roleId set)
-      const isOriginalAdmin =
-        req.user.role === "admin" && !req.user.adminRole && !req.user.roleId;
-
-      if (isOriginalAdmin) {
+      if (await hasFullAccessRole(req.user)) {
         return next();
-      }
-
-      // Check if user has Super Admin role via roleId
-      if (req.user.roleId) {
-        const role = await Role.findById(req.user.roleId);
-        if (role && role.isActive && role.name === "Super Admin") {
-          return next(); // Super Admin gets full access
-        }
       }
 
       // Get user's role and permissions

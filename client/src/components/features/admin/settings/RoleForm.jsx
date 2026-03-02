@@ -4,147 +4,10 @@ import axios from "axios";
 import { FaSave, FaTimes, FaSpinner, FaInfoCircle } from "react-icons/fa";
 import { API_BASE_URL } from "../../../../redux/config";
 import { getAccessToken } from "../../../../utils/tokenRefresh";
-
-// Mapping of Modules to Backend Permission Keys
-const PERMISSION_MODULES = [
-  {
-    id: "users",
-    label: "User Management",
-    description: "Manage admins, roles, and invites",
-    keys: {
-      view: "manageUsers",
-      create: "inviteUsers",
-      edit: ["editRoles", "resetPasswords"],
-      delete: "deleteRoles",
-    },
-  },
-  {
-    id: "listings",
-    label: "Listings",
-    description: "Manage car listings",
-    keys: {
-      view: "viewListings",
-      create: "createListings",
-      edit: ["editListings", "approveListings", "featureListings"],
-      delete: "deleteListings",
-    },
-  },
-  {
-    id: "dealers",
-    label: "Dealer",
-    description: "Manage dealer accounts",
-    keys: {
-      view: "viewDealers",
-      create: "createDealers",
-      edit: ["editDealers", "approveDealers", "manageDealerSubscriptions"],
-      delete: "deleteDealers",
-    },
-  },
-  {
-    id: "categories",
-    label: "Categories",
-    description: "Manage vehicle categories",
-    keys: {
-      view: "viewCategories",
-      create: "manageCategories",
-      edit: "manageCategories",
-      delete: "manageCategories",
-    },
-  },
-  {
-    id: "reports",
-    label: "Reports & Analytics",
-    description: "View financial and performance reports",
-    keys: {
-      view: ["viewAnalytics", "viewFinancialReports"],
-      create: "createReports",
-      edit: "exportReports",
-      delete: "deleteReports",
-    },
-  },
-  {
-    id: "chat",
-    label: "Chat Monitoring",
-    description: "Monitor user chats",
-    keys: {
-      view: "viewChatbotLogs",
-      create: "createChatLogs",
-      edit: "editChatLogs",
-      delete: "deleteChatLogs",
-    },
-  },
-  {
-    id: "support",
-    label: "Support Chatbot",
-    description: "Manage chatbot settings",
-    keys: {
-      view: "accessChatbot",
-      create: "createSupportTickets",
-      edit: "manageSupportTickets",
-      delete: "deleteSupportTickets",
-    },
-  },
-  {
-    id: "requests",
-    label: "Customer Requests",
-    description: "Handle customer inquiries",
-    keys: {
-      view: "viewInquiries",
-      create: "createInquiries",
-      edit: "respondToInquiries",
-      delete: "deleteInquiries",
-    },
-  },
-  {
-    id: "blogs",
-    label: "Blog Management",
-    description: "Manage blog posts",
-    keys: {
-      view: "viewBlogs",
-      create: "createBlogs",
-      edit: "editBlogs",
-      delete: "deleteBlogs",
-    },
-  },
-  {
-    id: "promotions",
-    label: "Promotions",
-    description: "Manage promotions",
-    keys: {
-      view: "viewPromotions",
-      create: "createPromotions",
-      edit: "editPromotions",
-      delete: "deletePromotions",
-    },
-  },
-  {
-    id: "notifications",
-    label: "Notifications",
-    description: "Push notifications",
-    keys: {
-      view: "viewNotifications",
-      create: "createNotifications",
-      edit: "sendPushNotifications",
-      delete: "deleteNotifications",
-    },
-  },
-  {
-    id: "settings",
-    label: "Settings",
-    description: "Platform configuration",
-    keys: {
-      view: "viewSettings",
-      create: "createSettings",
-      edit: [
-        "manageLogo",
-        "manageLanguage",
-        "manageCurrency",
-        "manageCommission",
-      ],
-      delete: "deleteSettings",
-    },
-  },
-];
+import {
+  PERMISSION_KEYS,
+  ROLE_FORM_MODULES,
+} from "../../../../constants/rbacPolicy";
 
 const RoleForm = ({ role, onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -209,7 +72,7 @@ const RoleForm = ({ role, onSuccess, onCancel }) => {
   };
 
   const handleMatrixChange = (moduleId, action, isFullRow = false) => {
-    const module = PERMISSION_MODULES.find((m) => m.id === moduleId);
+    const module = ROLE_FORM_MODULES.find((m) => m.id === moduleId);
     if (!module) return;
 
     setFormData((prev) => {
@@ -217,7 +80,7 @@ const RoleForm = ({ role, onSuccess, onCancel }) => {
 
       if (isFullRow) {
         // Toggle all actions for this module
-        const actions = ["view", "create", "edit", "delete"];
+        const actions = ["view", "create", "edit", "delete", "approve"];
         // Check if all are currently true to decide whether to toggle on or off
         const allTrue = actions.every((act) => {
           if (!module.keys[act]) return true; // Skip nulls
@@ -395,11 +258,13 @@ const RoleForm = ({ role, onSuccess, onCancel }) => {
 
         {/* Permissions Matrix */}
         <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-6">
-          <h4 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Contacts</h4>
+          <h4 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">
+            Page Access Matrix
+          </h4>
 
           <div className="space-y-3">
-            {PERMISSION_MODULES.map((module) => {
-              const isFull = ["view", "create", "edit", "delete"].every(
+            {ROLE_FORM_MODULES.map((module) => {
+              const isFull = ["view", "create", "edit", "delete", "approve"].every(
                 (act) => {
                   if (!module.keys[act]) return true;
                   return isChecked(module.keys, act);
@@ -411,8 +276,7 @@ const RoleForm = ({ role, onSuccess, onCancel }) => {
                   key={module.id}
                   className="bg-white dark:bg-gray-900 rounded-lg p-3 flex items-center shadow-sm border border-transparent dark:border-gray-700"
                 >
-                  {/* Module Name */}
-                  <div className="w-48 font-bold text-gray-800 dark:text-gray-100 text-sm">
+                  <div className="w-44 font-bold text-gray-800 dark:text-gray-100 text-sm">
                     {module.label}
                   </div>
 
@@ -484,10 +348,58 @@ const RoleForm = ({ role, onSuccess, onCancel }) => {
                         className="w-5 h-5 border-2 border-gray-300 rounded text-primary-500 focus:ring-primary-500 transition-colors"
                       />
                     </label>
+
+                    {/* Approve */}
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                        Approve
+                      </span>
+                      <input
+                        type="checkbox"
+                        checked={isChecked(module.keys, "approve")}
+                        onChange={() => handleMatrixChange(module.id, "approve")}
+                        className="w-5 h-5 border-2 border-gray-300 rounded text-primary-500 focus:ring-primary-500 transition-colors"
+                      />
+                    </label>
                   </div>
                 </div>
               );
             })}
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-900 rounded-xl p-6 mt-6 border border-gray-200 dark:border-gray-700">
+          <h4 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">
+            Independent Permission Overrides
+          </h4>
+          <p className="text-xs text-gray-600 dark:text-gray-300 mb-4">
+            Use these toggles when you need exact per-permission control beyond the matrix.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {PERMISSION_KEYS.map((permissionKey) => (
+              <label
+                key={permissionKey}
+                className="flex items-center justify-between gap-3 rounded-md border border-gray-200 dark:border-gray-700 px-3 py-2"
+              >
+                <span className="text-xs font-medium text-gray-700 dark:text-gray-200">
+                  {permissionKey}
+                </span>
+                <input
+                  type="checkbox"
+                  checked={Boolean(formData.permissions?.[permissionKey])}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      permissions: {
+                        ...prev.permissions,
+                        [permissionKey]: e.target.checked,
+                      },
+                    }))
+                  }
+                  className="w-4 h-4 border-2 border-gray-300 rounded text-primary-500 focus:ring-primary-500 transition-colors"
+                />
+              </label>
+            ))}
           </div>
         </div>
       </div>

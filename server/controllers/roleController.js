@@ -9,255 +9,42 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import mongoose from "mongoose";
 import Logger from "../utils/logger.js";
+import {
+  CANONICAL_ROLE_PRESETS,
+  LEGACY_ROLE_NAME_MAP,
+  PERMISSION_KEYS,
+  SYSTEM_ROLE_NAMES,
+  resolveCanonicalRoleName,
+  sanitizePermissionMap,
+  isSystemRoleName,
+} from "../config/rbacPolicy.js";
 
-// Role presets based on requirements
-const ROLE_PRESETS = {
-  "Super Admin": {
-    name: "Super Admin",
-    displayName: "Super Admin",
-    accessLevel: "FULL",
-    purpose:
-      "Full access - Unrestricted system control; manage platform, teams, operations and security",
-    permissions: {
-      // User & Role Management
-      manageUsers: true,
-      createRoles: true,
-      editRoles: true,
-      deleteRoles: true,
-      inviteUsers: true,
-      resetPasswords: true,
+const ROLE_PRESETS = CANONICAL_ROLE_PRESETS;
+const hasAdminActor = (user) => Boolean(user && user.role === "admin");
 
-      // Listings Management
-      viewListings: true,
-      approveListings: true,
-      editListings: true,
-      deleteListings: true,
-      featureListings: true,
+const normalizeRoleLabel = (value = "") =>
+  resolveCanonicalRoleName(String(value || "").trim());
 
-      // Dealers Management
-      viewDealers: true,
-      approveDealers: true,
-      editDealers: true,
-      deleteDealers: true,
-      manageDealerSubscriptions: true,
-      viewDealerPerformance: true,
-
-      // Content Management
-      viewBlogs: true,
-      createBlogs: true,
-      editBlogs: true,
-      manageBlogs: true,
-      publishBlogs: true,
-      deleteBlogs: true,
-      moderateComments: true,
-
-      // Categories
-      viewCategories: true,
-      createCategories: true,
-      editCategories: true,
-      deleteCategories: true,
-      manageCategories: true,
-      manageCarTypes: true,
-
-      // Promotions & Notifications
-      viewPromotions: true,
-      createPromotions: true,
-      editPromotions: true,
-      deletePromotions: true,
-      managePromotions: true,
-      viewNotifications: true,
-      createNotifications: true,
-      editNotifications: true,
-      deleteNotifications: true,
-      createPushNotifications: true,
-      sendPushNotifications: true,
-
-      // Support & Communication
-      accessChatbot: true,
-      viewChatbotLogs: true,
-      createChatLogs: true,
-      editChatLogs: true,
-      deleteChatLogs: true,
-      manageSupportTickets: true,
-      createSupportTickets: true,
-      deleteSupportTickets: true,
-      respondToInquiries: true,
-      escalateIssues: true,
-
-      // Platform Settings
-      managePlatformSettings: true,
-      viewSettings: true,
-      createSettings: true,
-      editSettings: true,
-      deleteSettings: true,
-      manageLogo: true,
-      manageLanguage: true,
-      manageCurrency: true,
-      manageCommission: true,
-      manageIntegrations: true,
-      manageBanners: true,
-
-      // Analytics & Reports
-      viewAnalytics: true,
-      viewFinancialReports: true,
-      exportReports: true,
-
-      // Testimonials
-      viewTestimonials: true,
-      manageTestimonials: true,
-
-      // Inquiries
-      viewInquiries: true,
-      createInquiries: true,
-      editInquiries: true,
-      deleteInquiries: true,
-
-      // Audit & Security
-      viewAuditLogs: true,
-      viewUserProfiles: true,
-      viewFullUserProfiles: true,
-      accessSensitiveAreas: true,
-    },
-    restrictions: [],
-    isPreset: true,
-  },
-  "Marketing Team": {
-    name: "Marketing Team",
-    displayName: "Marketing Team",
-    accessLevel: "MEDIUM_HIGH",
-    purpose: "Content marketing, blogs, promotions, and customer engagement",
-    permissions: {
-      // Content Management
-      viewBlogs: true,
-      createBlogs: true,
-      editBlogs: true,
-      manageBlogs: true,
-      publishBlogs: true,
-      moderateComments: true,
-
-      // Promotions & Marketing
-      viewPromotions: true,
-      createPromotions: true,
-      editPromotions: true,
-      managePromotions: true,
-
-      // Notifications
-      viewNotifications: true,
-      createNotifications: true,
-      sendPushNotifications: true,
-
-      // Customer Engagement
-      viewTestimonials: true,
-      manageTestimonials: true,
-
-      // Categories
-      viewCategories: true,
-      manageCategories: true,
-
-      // Limited Analytics
-      viewAnalytics: true,
-
-      // Customer Support
-      viewInquiries: true,
-      respondToInquiries: true,
-    },
-    restrictions: [
-      "Cannot access financial reports or sensitive platform settings",
-      "Cannot create or delete roles",
-      "Cannot manage users or dealers",
-      "Cannot change system integrations",
-    ],
-    isPreset: true,
-  },
-  "Support Agent": {
-    name: "Support Agent",
-    displayName: "Support Agent",
-    accessLevel: "MEDIUM",
-    purpose: "Customer support, chat management, and issue resolution",
-    permissions: {
-      // Customer Support
-      manageSupportTickets: true,
-      createSupportTickets: true,
-      respondToInquiries: true,
-      escalateIssues: true,
-
-      // Communication
-      accessChatbot: true,
-      viewChatbotLogs: true,
-
-      // Information Access (Read-only)
-      viewDealers: true,
-      viewListings: true,
-      viewInquiries: true,
-      createInquiries: true,
-      editInquiries: true,
-
-      // Basic Content Management
-      moderateComments: true,
-    },
-    restrictions: [
-      "Cannot approve dealers or listings",
-      "Cannot manage users or financial data",
-      "Cannot change role permissions or system settings",
-      "Cannot delete or edit critical business data",
-    ],
-    isPreset: true,
-  },
-  "Blogs/Content Agent": {
-    name: "Blogs/Content Agent",
-    displayName: "Blogs/Content Agent",
-    accessLevel: "MEDIUM",
-    purpose:
-      "Access blogs management, posts, upload banners, send notifications",
-    permissions: {
-      // Blog Management
-      viewBlogs: true,
-      createBlogs: true,
-      editBlogs: true,
-      manageBlogs: true,
-      publishBlogs: true,
-      moderateComments: true,
-
-      // Content Management
-      viewPromotions: true,
-      createPromotions: true,
-      editPromotions: true,
-      managePromotions: true,
-
-      // Notifications
-      viewNotifications: true,
-      createNotifications: true,
-      sendPushNotifications: true,
-
-      // Categories
-      viewCategories: true,
-      manageCategories: true,
-
-      // Banners
-      manageBanners: true,
-
-      // Testimonials
-      viewTestimonials: true,
-      manageTestimonials: true,
-    },
-    restrictions: [
-      "Cannot manage users, dealers or listings",
-      "Cannot access financial data or sensitive platform settings",
-      "Cannot change role permissions",
-    ],
-    isPreset: true,
-  },
-};
+const sanitizePermissionsInput = (permissions = {}) =>
+  sanitizePermissionMap(permissions || {});
 
 /**
  * Initialize default roles
  */
 export const initializeRoles = async () => {
   try {
-    for (const [key, preset] of Object.entries(ROLE_PRESETS)) {
+    for (const preset of Object.values(ROLE_PRESETS)) {
       const existingRole = await Role.findOne({ name: preset.name });
       if (!existingRole) {
         await Role.create(preset);
+      } else if (existingRole.isPreset) {
+        existingRole.displayName = preset.displayName;
+        existingRole.accessLevel = preset.accessLevel;
+        existingRole.purpose = preset.purpose;
+        existingRole.permissions = sanitizePermissionsInput(preset.permissions);
+        existingRole.restrictions = preset.restrictions || [];
+        existingRole.isActive = true;
+        await existingRole.save();
       }
     }
   } catch (error) {
@@ -271,7 +58,7 @@ export const initializeRoles = async () => {
 export const getAllRoles = async (req, res) => {
   try {
     // Only admin can view roles
-    if (req.user.role !== "admin") {
+    if (!hasAdminActor(req.user)) {
       return res.status(403).json({
         success: false,
         message: "Only admin can view roles.",
@@ -313,7 +100,7 @@ export const getAllRoles = async (req, res) => {
  */
 export const getRoleById = async (req, res) => {
   try {
-    if (req.user.role !== "admin") {
+    if (!hasAdminActor(req.user)) {
       return res.status(403).json({
         success: false,
         message: "Only admin can view role details.",
@@ -354,7 +141,7 @@ export const getRoleById = async (req, res) => {
 export const createRole = async (req, res) => {
   try {
     // Enhanced admin check - only admin can create roles
-    if (!req.user || req.user.role !== "admin") {
+    if (!hasAdminActor(req.user)) {
       return res.status(403).json({
         success: false,
         message: "Access denied. Only admin can create roles.",
@@ -393,7 +180,7 @@ export const createRole = async (req, res) => {
       displayName,
       accessLevel,
       purpose,
-      permissions: permissions || {},
+      permissions: sanitizePermissionsInput(permissions || {}),
       restrictions: restrictions || [],
       isTeamRole: isTeamRole || false,
       isPreset: false, // Explicitly set to false for custom roles
@@ -438,7 +225,7 @@ export const createRole = async (req, res) => {
 export const updateRole = async (req, res) => {
   try {
     // Enhanced admin check - only admin can update roles
-    if (!req.user || req.user.role !== "admin") {
+    if (!hasAdminActor(req.user)) {
       return res.status(403).json({
         success: false,
         message: "Access denied. Only admin can update roles.",
@@ -464,21 +251,17 @@ export const updateRole = async (req, res) => {
       });
     }
 
-    // Prevent updating preset roles (only allow isTeamRole and basic fields)
-    if (role.isPreset) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Cannot update preset roles. Only custom roles can be modified.",
-      });
-    }
-
     // Update role with independent permissions
     if (name) role.name = name;
     if (displayName) role.displayName = displayName;
     if (accessLevel) role.accessLevel = accessLevel;
     if (purpose) role.purpose = purpose;
-    if (permissions) role.permissions = { ...role.permissions, ...permissions };
+    if (permissions) {
+      role.permissions = {
+        ...sanitizePermissionsInput(role.permissions || {}),
+        ...sanitizePermissionsInput(permissions),
+      };
+    }
     if (restrictions) role.restrictions = restrictions;
     if (typeof isTeamRole === "boolean") role.isTeamRole = isTeamRole;
     role.updatedBy = req.user._id;
@@ -520,7 +303,7 @@ export const updateRole = async (req, res) => {
 export const deleteRole = async (req, res) => {
   try {
     // Enhanced admin check - only admin can delete roles
-    if (!req.user || req.user.role !== "admin") {
+    if (!hasAdminActor(req.user)) {
       Logger.error("Delete role - Access denied", {
         userId: req.user?._id,
         userRole: req.user?.role,
@@ -688,7 +471,7 @@ export const deleteRole = async (req, res) => {
  */
 export const inviteUser = async (req, res) => {
   try {
-    if (req.user.role !== "admin") {
+    if (!hasAdminActor(req.user)) {
       return res.status(403).json({
         success: false,
         message: "Only admin can invite users.",
@@ -773,7 +556,7 @@ export const inviteUser = async (req, res) => {
             email: existingUser.email,
             fullName: existingUser.fullName,
             currentRole: existingUser.role,
-            requestedRole: role,
+            requestedRole: normalizeRoleLabel(role),
             status: existingUser.status,
             suggestion:
               "You can update this user's role from the user management page.",
@@ -821,8 +604,8 @@ export const inviteUser = async (req, res) => {
 
     // Get role data and permissions
     let roleData = null;
-    let rolePermissions = permissions || {};
-    let finalRole = role;
+    let rolePermissions = sanitizePermissionsInput(permissions || {});
+    let finalRole = normalizeRoleLabel(role);
     let roleId = requestedRoleId;
 
     // If roleId is provided, fetch the role from database
@@ -830,9 +613,11 @@ export const inviteUser = async (req, res) => {
       try {
         roleData = await Role.findById(roleId);
         if (roleData) {
-          rolePermissions = roleData.permissions || {};
+          rolePermissions = sanitizePermissionsInput(roleData.permissions || {});
           // Use the role's displayName or name for the invite
-          finalRole = roleData.displayName || roleData.name || role;
+          finalRole = normalizeRoleLabel(
+            roleData.displayName || roleData.name || finalRole,
+          );
         }
       } catch (roleError) {
         Logger.error("Error fetching role", roleError, { roleId });
@@ -841,31 +626,33 @@ export const inviteUser = async (req, res) => {
     }
 
     // If no roleId but role name provided, try to find role by name
-    if (!roleData && role && role !== "Custom") {
+    if (!roleData && finalRole && finalRole !== "Custom") {
       try {
         roleData = await Role.findOne({
-          $or: [{ name: role }, { displayName: role }],
+          $or: [{ name: finalRole }, { displayName: finalRole }],
         });
         if (roleData) {
-          rolePermissions = roleData.permissions || {};
-          finalRole = roleData.displayName || roleData.name || role;
+          rolePermissions = sanitizePermissionsInput(roleData.permissions || {});
+          finalRole = normalizeRoleLabel(
+            roleData.displayName || roleData.name || finalRole,
+          );
           // Update roleId if found
           if (!roleId) {
             roleId = roleData._id;
           }
         } else {
           // Use preset permissions if role not found in DB
-          const preset = ROLE_PRESETS[role];
+          const preset = ROLE_PRESETS[finalRole];
           if (preset) {
-            rolePermissions = preset.permissions;
+            rolePermissions = sanitizePermissionsInput(preset.permissions);
           }
         }
       } catch (roleError) {
-        Logger.error("Error finding role", roleError, { role });
+        Logger.error("Error finding role", roleError, { role: finalRole });
         // Use preset permissions as fallback
-        const preset = ROLE_PRESETS[role];
+        const preset = ROLE_PRESETS[finalRole];
         if (preset) {
-          rolePermissions = preset.permissions;
+          rolePermissions = sanitizePermissionsInput(preset.permissions);
         }
       }
     }
@@ -942,7 +729,7 @@ export const inviteUser = async (req, res) => {
                       req.user.name
                     }</strong> (${
                       req.user.email
-                    }) to join the <strong>${siteName}</strong> Admin Panel as <strong>${role}</strong>.</p>
+                    }) to join the <strong>${siteName}</strong> Admin Panel as <strong>${finalRole}</strong>.</p>
                     <div style="text-align: center; margin: 30px 0;">
                         <a href="${inviteUrl}" style="background-color: #FFA602; color: #111827; padding: 14px 28px; text-decoration: none; border-radius: 999px; display: inline-block; font-weight: 700; font-size: 16px; box-shadow: 0 10px 25px rgba(255, 166, 2, 0.35); letter-spacing: 0.3px;">Accept Invitation</a>
                     </div>
@@ -1044,7 +831,7 @@ export const inviteUser = async (req, res) => {
     try {
       const notifMessage =
         emailSent && actualEmailSent
-          ? `Invitation sent to ${email} as ${role}`
+          ? `Invitation sent to ${email} as ${finalRole}`
           : `Invitation created for ${email}. Email failed to send.`;
 
       const notifType = emailSent && actualEmailSent ? "success" : "warning";
@@ -1074,14 +861,14 @@ export const inviteUser = async (req, res) => {
       success: true,
       message:
         emailSent && actualEmailSent
-          ? `Invitation sent successfully to ${email} as ${role}.`
+          ? `Invitation sent successfully to ${email} as ${finalRole}.`
           : `Invitation created for ${email}. Email was not sent - please share the invite URL manually.`,
       data: {
         invite: invite,
         inviteUrl: inviteUrl,
         email: email,
         fullName: fullName,
-        role: role,
+        role: finalRole,
         expiresAt: expiresAt,
         invitedBy: req.user.name || req.user.email,
       },
@@ -1156,7 +943,7 @@ export const inviteUser = async (req, res) => {
 export const updateInvite = async (req, res) => {
   try {
     // Enhanced admin check - only admin can update invites
-    if (!req.user || req.user.role !== "admin") {
+    if (!hasAdminActor(req.user)) {
       return res.status(403).json({
         success: false,
         message: "Access denied. Only admin can update invites.",
@@ -1189,9 +976,9 @@ export const updateInvite = async (req, res) => {
     // Update invite fields
     if (fullName) invite.fullName = fullName;
     if (phone !== undefined) invite.phone = phone;
-    if (role) invite.role = role;
+    if (role) invite.role = normalizeRoleLabel(role);
     if (roleId) invite.roleId = roleId;
-    if (permissions) invite.permissions = permissions;
+    if (permissions) invite.permissions = sanitizePermissionsInput(permissions);
     if (expirationDays) {
       const newExpiry = new Date();
       newExpiry.setDate(newExpiry.getDate() + parseInt(expirationDays));
@@ -1263,15 +1050,12 @@ export const assignUserRole = async (req, res) => {
       });
     }
 
-    const mergedPermissions = {
-      ...(role.permissions || {}),
-      ...(permissions || {}),
-    };
+    const explicitOverrides = sanitizePermissionsInput(permissions || {});
 
     user.role = "admin";
-    user.adminRole = role.displayName || role.name;
+    user.adminRole = normalizeRoleLabel(role.displayName || role.name);
     user.roleId = role._id;
-    user.permissions = mergedPermissions;
+    user.permissions = explicitOverrides;
     await user.save();
 
     await createAuditLog(
@@ -1315,7 +1099,7 @@ export const assignUserRole = async (req, res) => {
 export const deleteInvite = async (req, res) => {
   try {
     // Enhanced admin check - only admin can delete invites
-    if (!req.user || req.user.role !== "admin") {
+    if (!hasAdminActor(req.user)) {
       Logger.error("Delete invite - Access denied", {
         userId: req.user?._id,
         userRole: req.user?.role,
@@ -1391,7 +1175,7 @@ export const deleteInvite = async (req, res) => {
 export const resendInvite = async (req, res) => {
   try {
     // Enhanced admin check - only admin can resend invites
-    if (!req.user || req.user.role !== "admin") {
+    if (!hasAdminActor(req.user)) {
       return res.status(403).json({
         success: false,
         message: "Access denied. Only admin can resend invites.",
@@ -1435,7 +1219,7 @@ export const resendInvite = async (req, res) => {
         : process.env.CLIENT_URL?.split(",")[0]?.trim() ||
           "http://localhost:5173";
 
-    const inviteUrl = `${clientUrl}/accept-invite?token=${invite.token}`;
+    const inviteUrl = `${clientUrl}/accept-invite/${invite.token}`;
 
     const emailSubject = `Invitation to join ${
       process.env.SITE_NAME || "Sello"
@@ -1505,7 +1289,7 @@ export const resendInvite = async (req, res) => {
 export const cancelInvite = async (req, res) => {
   try {
     // Enhanced admin check - only admin can cancel invites
-    if (!req.user || req.user.role !== "admin") {
+    if (!hasAdminActor(req.user)) {
       return res.status(403).json({
         success: false,
         message: "Only admin can cancel invites.",
@@ -1601,7 +1385,7 @@ export const cancelInvite = async (req, res) => {
 
 export const getAllInvites = async (req, res) => {
   try {
-    if (req.user.role !== "admin") {
+    if (!hasAdminActor(req.user)) {
       return res.status(403).json({
         success: false,
         message: "Only admin can view invites.",
@@ -1641,36 +1425,124 @@ export const getAllInvites = async (req, res) => {
  */
 export const fixCustomRoles = async (req, res) => {
   try {
-    if (!req.user || req.user.role !== "admin") {
+    if (!hasAdminActor(req.user)) {
       return res.status(403).json({
         success: false,
         message: "Access denied. Only admin can fix roles.",
       });
     }
 
-    // Update roles that are not in the preset list but have isPreset: true
-    const presetRoleNames = Object.keys(ROLE_PRESETS);
+    const presetRoleNames = SYSTEM_ROLE_NAMES;
+    let rolePresetFixes = 0;
+    let roleNameFixes = 0;
+    let rolePermissionFixes = 0;
+    let userRoleFixes = 0;
+    let userPermissionFixes = 0;
+    let inviteRoleFixes = 0;
+    let invitePermissionFixes = 0;
 
-    const result = await Role.updateMany(
-      {
-        isPreset: true,
-        name: { $nin: presetRoleNames },
-      },
-      {
-        $set: { isPreset: false },
-      },
+    const presetFixResult = await Role.updateMany(
+      { isPreset: true, name: { $nin: presetRoleNames } },
+      { $set: { isPreset: false } },
     );
+    rolePresetFixes = presetFixResult.modifiedCount || 0;
 
-    Logger.info("Fixed custom roles", {
-      modifiedCount: result.modifiedCount,
-      presetRoleNames,
+    const roles = await Role.find({});
+    for (const role of roles) {
+      let changed = false;
+      const normalizedName = resolveCanonicalRoleName(role.name);
+      const normalizedDisplayName = resolveCanonicalRoleName(
+        role.displayName || role.name,
+      );
+
+      if (normalizedName !== role.name || normalizedDisplayName !== role.displayName) {
+        role.name = normalizedName;
+        role.displayName = normalizedDisplayName;
+        changed = true;
+        roleNameFixes += 1;
+      }
+
+      const sanitizedRolePerms = sanitizePermissionsInput(role.permissions || {});
+      if (
+        JSON.stringify(sanitizedRolePerms) !==
+        JSON.stringify(role.permissions || {})
+      ) {
+        role.permissions = sanitizedRolePerms;
+        changed = true;
+        rolePermissionFixes += 1;
+      }
+
+      if (changed) {
+        await role.save();
+      }
+    }
+
+    const adminUsers = await User.find({ role: "admin" });
+    for (const user of adminUsers) {
+      let changed = false;
+      const normalizedAdminRole = resolveCanonicalRoleName(user.adminRole || "");
+      if (normalizedAdminRole && normalizedAdminRole !== user.adminRole) {
+        user.adminRole = normalizedAdminRole;
+        changed = true;
+        userRoleFixes += 1;
+      }
+
+      const sanitizedUserPerms = sanitizePermissionsInput(user.permissions || {});
+      if (JSON.stringify(sanitizedUserPerms) !== JSON.stringify(user.permissions || {})) {
+        user.permissions = sanitizedUserPerms;
+        changed = true;
+        userPermissionFixes += 1;
+      }
+
+      if (changed) {
+        await user.save();
+      }
+    }
+
+    const invites = await Invite.find({ status: { $in: ["pending", "expired"] } });
+    for (const invite of invites) {
+      let changed = false;
+      const normalizedInviteRole = resolveCanonicalRoleName(invite.role || "");
+      if (normalizedInviteRole && normalizedInviteRole !== invite.role) {
+        invite.role = normalizedInviteRole;
+        changed = true;
+        inviteRoleFixes += 1;
+      }
+
+      const sanitizedInvitePerms = sanitizePermissionsInput(invite.permissions || {});
+      if (JSON.stringify(sanitizedInvitePerms) !== JSON.stringify(invite.permissions || {})) {
+        invite.permissions = sanitizedInvitePerms;
+        changed = true;
+        invitePermissionFixes += 1;
+      }
+
+      if (changed) {
+        await invite.save();
+      }
+    }
+
+    Logger.info("Normalized RBAC data", {
+      rolePresetFixes,
+      roleNameFixes,
+      rolePermissionFixes,
+      userRoleFixes,
+      userPermissionFixes,
+      inviteRoleFixes,
+      invitePermissionFixes,
+      legacyMap: LEGACY_ROLE_NAME_MAP,
     });
 
     return res.status(200).json({
       success: true,
-      message: `Fixed ${result.modifiedCount} custom roles`,
+      message: "RBAC data normalized successfully.",
       data: {
-        modifiedCount: result.modifiedCount,
+        rolePresetFixes,
+        roleNameFixes,
+        rolePermissionFixes,
+        userRoleFixes,
+        userPermissionFixes,
+        inviteRoleFixes,
+        invitePermissionFixes,
       },
     });
   } catch (error) {
@@ -1684,7 +1556,7 @@ export const fixCustomRoles = async (req, res) => {
 };
 export const getPermissionMatrix = async (req, res) => {
   try {
-    if (req.user.role !== "admin") {
+    if (!hasAdminActor(req.user)) {
       return res.status(403).json({
         success: false,
         message: "Only admin can export permission matrix.",
@@ -1694,50 +1566,7 @@ export const getPermissionMatrix = async (req, res) => {
     const roles = await Role.find({ isActive: true }).sort({ name: 1 });
 
     // Get all permission keys
-    const permissionKeys = [
-      "manageUsers",
-      "createRoles",
-      "editRoles",
-      "deleteRoles",
-      "inviteUsers",
-      "resetPasswords",
-      "viewListings",
-      "approveListings",
-      "editListings",
-      "deleteListings",
-      "featureListings",
-      "viewDealers",
-      "approveDealers",
-      "editDealers",
-      "manageDealerSubscriptions",
-      "viewDealerPerformance",
-      "manageBlogs",
-      "publishBlogs",
-      "moderateComments",
-      "managePromotions",
-      "createPushNotifications",
-      "sendPushNotifications",
-      "accessChatbot",
-      "viewChatbotLogs",
-      "manageSupportTickets",
-      "respondToInquiries",
-      "escalateIssues",
-      "managePlatformSettings",
-      "manageLogo",
-      "manageLanguage",
-      "manageCurrency",
-      "manageCommission",
-      "manageIntegrations",
-      "viewAnalytics",
-      "viewFinancialReports",
-      "exportReports",
-      "manageCategories",
-      "manageCarTypes",
-      "viewAuditLogs",
-      "viewUserProfiles",
-      "viewFullUserProfiles",
-      "accessSensitiveAreas",
-    ];
+    const permissionKeys = PERMISSION_KEYS;
 
     const matrix = roles.map((role) => {
       const row = {
@@ -1936,9 +1765,9 @@ export const acceptInvite = async (req, res) => {
       phone: invite.phone,
       password: hashedPassword,
       role: "admin", // All invited users are admins
-      adminRole: invite.role, // Store the specific admin role
+      adminRole: normalizeRoleLabel(invite.role), // Store normalized admin role
       roleId: invite.roleId || null,
-      permissions: invite.permissions || {},
+      permissions: sanitizePermissionsInput(invite.permissions || {}),
       status: "active",
       verified: true,
       isEmailVerified: true,

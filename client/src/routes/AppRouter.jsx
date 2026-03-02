@@ -152,6 +152,7 @@ const AppRouter = () => {
         <Route path="/verify-otp" element={<VerifyOTP />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/reset-success" element={<ResetSuccess />} />
+        <Route path="/accept-invite/:token" element={<AcceptInvite />} />
 
         {/* User Dashboard & Actions */}
         <Route element={<ProtectedRoute />}>
