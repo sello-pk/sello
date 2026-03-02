@@ -158,18 +158,7 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
                         alt={brandName}
                         className="object-contain w-full h-full max-h-12 sm:max-h-14 md:max-h-16"
                         loading="lazy"
-                        onLoad={() => {
-                          console.log(
-                            "BrandMarquee - Image loaded successfully:",
-                            fixedImage,
-                          );
-                        }}
                         onError={(e) => {
-                          console.log(
-                            "BrandMarquee - Image failed to load:",
-                            fixedImage,
-                          );
-                          console.log("BrandMarquee - Error event:", e);
                           e.target.style.display = "none";
                           if (e.target.parentElement)
                             e.target.parentElement.innerHTML =

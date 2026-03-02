@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { useLocation, useSearchParams, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
 // Components
@@ -7,9 +7,31 @@ import Navbar from "./components/Navbar.jsx";
 import BottomHeader from "./components/BottomHeader.jsx";
 import Footer from "./components/Footer.jsx";
 import WhatsAppChatWidget from "./components/features/help/WhatsAppChatWidget.jsx";
-import { useSupportChat } from "./contexts/SupportChatContext.jsx";
 import { ThemeProvider } from "./contexts/ThemeContext.jsx";
 import AppRouter from "./routes/AppRouter.jsx";
+
+const getPageTitle = (pathname) => {
+  if (pathname.startsWith("/admin")) return "Sello Admin";
+  if (pathname.startsWith("/blog/")) return "Blog Details | Sello";
+
+  const exactTitles = {
+    "/": "Sello - Buy and Sell Cars in Pakistan",
+    "/home": "Sello - Buy and Sell Cars in Pakistan",
+    "/listings": "Car Listings | Sello",
+    "/cars": "Car Listings | Sello",
+    "/car-estimator": "AI Car Estimator | Sello",
+    "/blog": "Blog | Sello",
+    "/blog/all": "All Blogs | Sello",
+    "/about": "About Us | Sello",
+    "/contact": "Contact Us | Sello",
+    "/help-center": "Help Center | Sello",
+    "/help/faqs": "FAQs | Sello",
+    "/login": "Login | Sello",
+    "/sign-up": "Sign Up | Sello",
+  };
+
+  return exactTitles[pathname] || "Sello";
+};
 
 // ScrollToTop component to scroll to top on route change
 const ScrollToTop = () => {
@@ -41,6 +63,10 @@ const ScrollToTop = () => {
 const App = () => {
   const location = useLocation();
 
+  useEffect(() => {
+    document.title = getPageTitle(location.pathname);
+  }, [location.pathname]);
+
   const hideNavbarFooter = [
     "/login",
     "/sign-up",
@@ -68,8 +94,9 @@ const App = () => {
         </>
       )}
 
-      {/* Centralized Routing Logic */}
-      <AppRouter />
+      <main id="main-content">
+        <AppRouter />
+      </main>
 
       {/* Show Footer except for auth pages & admin */}
       {shouldShowNavbarFooter && <Footer />}

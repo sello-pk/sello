@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import FilterResultsSection from "../../components/sections/filter/FilterResultsSection";
@@ -15,13 +15,6 @@ const FilteredResults = () => {
 
   // Get search term from URL params (navbar search)
   const searchTerm = searchParams.get("search") || "";
-
-  // No redirecting to home - let users browse even with no params
-  // or show empty state graciously below.
-  useEffect(() => {
-    // We can use this to perhaps sync state or log
-    console.log("Search results mounted with params:", searchParams.toString());
-  }, [searchParams]);
 
   // Build query parameters based on URL params only
   const queryParams = useMemo(() => {

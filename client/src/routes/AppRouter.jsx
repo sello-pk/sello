@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from "react";
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import RouteLoader from "../components/common/RouteLoader";
 import {
   ProtectedRoute,
@@ -7,29 +7,43 @@ import {
   AuctionCapabilityRoute,
 } from "../components/shared/RouteGuards.jsx";
 
-// Critical pages
-import Home from "../pages/Home.jsx";
-import Login from "../pages/auth/Login.jsx";
-import Signup from "../pages/auth/SignUp.jsx";
-import CarListings from "../pages/listings/CarListings.jsx";
-import CategoryListings from "../pages/listings/CategoryListings.jsx";
-import CarDetails from "../pages/listings/CarDetails.jsx";
-import GenericVehicleCategoryPage from "../pages/listings/GenericVehicleCategoryPage.jsx";
-import Blog from "../pages/blog/Blog.jsx";
-import AllBlog from "../pages/blog/AllBlog.jsx";
-import BlogDetails from "../pages/blog/BlogDetails.jsx";
-import CarEstimator from "../pages/features/CarEstimator.jsx";
-import AuctionsActions from "../pages/features/auctions/Actions.jsx";
-import LiveAuction from "../pages/features/auctions/LiveAuction.jsx";
-import AuctionSchedule from "../pages/features/auctions/AuctionSchedule.jsx";
-import TrustLegal from "../pages/features/auctions/TrustLegal.jsx";
-import AuctionResult from "../pages/features/auctions/AuctionResult.jsx";
-import BuyerTransactions from "../pages/features/auctions/BuyerTransactions.jsx";
-import CarDetail from "../pages/features/auctions/CarDetail.jsx";
-import TokenPayment from "../pages/features/auctions/TokenPayment.jsx";
-import Watchlist from "../pages/features/auctions/Watchlist.jsx";
-import FilteredResults from "../pages/listings/FilteredResults.jsx";
-import NotFound from "../pages/NotFound.jsx";
+// Public core routes (Lazy)
+const Home = lazy(() => import("../pages/Home.jsx"));
+const Login = lazy(() => import("../pages/auth/Login.jsx"));
+const Signup = lazy(() => import("../pages/auth/SignUp.jsx"));
+const CarListings = lazy(() => import("../pages/listings/CarListings.jsx"));
+const CategoryListings = lazy(
+  () => import("../pages/listings/CategoryListings.jsx"),
+);
+const CarDetails = lazy(() => import("../pages/listings/CarDetails.jsx"));
+const GenericVehicleCategoryPage = lazy(
+  () => import("../pages/listings/GenericVehicleCategoryPage.jsx"),
+);
+const Blog = lazy(() => import("../pages/blog/Blog.jsx"));
+const AllBlog = lazy(() => import("../pages/blog/AllBlog.jsx"));
+const BlogDetails = lazy(() => import("../pages/blog/BlogDetails.jsx"));
+const CarEstimator = lazy(() => import("../pages/features/CarEstimator.jsx"));
+const AuctionsActions = lazy(() => import("../pages/features/auctions/Actions.jsx"));
+const LiveAuction = lazy(() => import("../pages/features/auctions/LiveAuction.jsx"));
+const AuctionSchedule = lazy(
+  () => import("../pages/features/auctions/AuctionSchedule.jsx"),
+);
+const TrustLegal = lazy(() => import("../pages/features/auctions/TrustLegal.jsx"));
+const AuctionResult = lazy(
+  () => import("../pages/features/auctions/AuctionResult.jsx"),
+);
+const BuyerTransactions = lazy(
+  () => import("../pages/features/auctions/BuyerTransactions.jsx"),
+);
+const CarDetail = lazy(() => import("../pages/features/auctions/CarDetail.jsx"));
+const TokenPayment = lazy(
+  () => import("../pages/features/auctions/TokenPayment.jsx"),
+);
+const Watchlist = lazy(() => import("../pages/features/auctions/Watchlist.jsx"));
+const FilteredResults = lazy(
+  () => import("../pages/listings/FilteredResults.jsx"),
+);
+const NotFound = lazy(() => import("../pages/NotFound.jsx"));
 
 // Auth (Lazy)
 const ForgotPassword = lazy(() => import("../pages/auth/ForgotPassword.jsx"));
@@ -111,7 +125,7 @@ const BlogMediaLibrary = lazy(
   () => import("../pages/admin/BlogMediaLibrary.jsx"),
 );
 
-// Help (Lazy) - Simplified for brevity in example, but keep all in real implementation
+// Help (Lazy)
 const HelpCenter = lazy(() => import("../pages/help/HelpCenter.jsx"));
 const FAQs = lazy(() => import("../pages/help/FAQs.jsx"));
 

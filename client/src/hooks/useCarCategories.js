@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from "react";
+import { useMemo } from "react";
 import { useGetAllCategoriesQuery } from "../redux/services/adminApi";
 
 /**
@@ -15,55 +15,19 @@ export const useCarCategories = (vehicleType = null) => {
     queryParams.vehicleType = vehicleType;
   }
 
-  // Debug logging for vehicle type filtering
-  console.log("useCarCategories - Query Params:", queryParams);
-  console.log("useCarCategories - Vehicle Type:", vehicleType);
-
-  // TEMPORARY: Try without authentication to test API
-  console.log("useCarCategories - Testing API without auth");
-
   // Use skip to prevent duplicate queries - RTK Query will cache based on query params
   const {
     data: allCarCategories,
     isLoading: carLoading,
-    error: carError,
   } = useGetAllCategoriesQuery(queryParams, {
     // Refetch on mount to ensure fresh data
     refetchOnMountOrArgChange: true,
   });
 
-  // Debug logging for API response
-  useEffect(() => {
-    console.log("useCarCategories - API Response:", allCarCategories);
-    console.log("useCarCategories - API Loading:", carLoading);
-    console.log("useCarCategories - API Error:", carError);
-
-    if (allCarCategories) {
-      console.log(
-        "useCarCategories - Response length:",
-        allCarCategories.length,
-      );
-      console.log("useCarCategories - Sample category:", allCarCategories[0]);
-
-      // Check if categories have expected structure
-      const hasMakes = allCarCategories.some((cat) => cat.subType === "make");
-      const hasModels = allCarCategories.some((cat) => cat.subType === "model");
-      console.log("useCarCategories - Has makes:", hasMakes);
-      console.log("useCarCategories - Has models:", hasModels);
-      console.log("useCarCategories - Categories structure:", {
-        total: allCarCategories.length,
-        makes: allCarCategories.filter((cat) => cat.subType === "make").length,
-        models: allCarCategories.filter((cat) => cat.subType === "model")
-          .length,
-      });
-    }
-  }, [allCarCategories, carLoading, carError]);
-
   // Separate query for years - years are common for all vehicle types, so never filter by vehicleType
   const {
     data: yearCategories,
     isLoading: yearLoading,
-    error: yearError,
   } = useGetAllCategoriesQuery(
     {
       type: "car",
@@ -78,7 +42,6 @@ export const useCarCategories = (vehicleType = null) => {
   const {
     data: allLocationCategories,
     isLoading: locationLoading,
-    error: locationError,
   } = useGetAllCategoriesQuery(
     {
       type: "location",
@@ -116,16 +79,6 @@ export const useCarCategories = (vehicleType = null) => {
         if (orderA !== orderB) return orderA - orderB;
         return (a.name || "").localeCompare(b.name || "");
       });
-
-    // Debug logging
-    console.log(
-      "useCarCategories - All Makes:",
-      makesList.map((m) => ({
-        name: m.name,
-        _id: m._id,
-        vehicleType: m.vehicleType,
-      })),
-    );
 
     return makesList;
   }, [carCategories]);
@@ -194,13 +147,6 @@ export const useCarCategories = (vehicleType = null) => {
         map[makeId].push(model);
       }
     });
-
-    // Debug logging
-    console.log(
-      "useCarCategories - All Models:",
-      models.map((m) => ({ name: m.name, parentCategory: m.parentCategory })),
-    );
-    console.log("useCarCategories - getModelsByMake mapping:", map);
 
     return map;
   }, [models]);
