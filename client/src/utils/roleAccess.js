@@ -22,16 +22,8 @@ const hasAnyPermission = (userPermissions = {}, keys = []) =>
   keys.some((key) => Boolean(userPermissions?.[key]));
 
 export const isSuperAdmin = (user) => {
-  if (!user || user.role !== "admin") return false;
-  if (!user.adminRole) return true;
-
-  const normalizedRole = normalizeRoleName(user.adminRole);
-  if (FULL_ACCESS_ROLE_NAMES.includes(normalizedRole)) return true;
-
-  // Keep legacy/main admins (no roleId + non-system role label) fully accessible.
-  if (!user.roleId && !SYSTEM_ROLE_NAMES.includes(normalizedRole)) return true;
-
-  return false;
+  // Application rule: all admin accounts have full access.
+  return Boolean(user && user.role === "admin");
 };
 
 export const getAllowedMenuPaths = (user) => {

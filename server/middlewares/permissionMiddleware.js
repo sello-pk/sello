@@ -48,26 +48,8 @@ const getUserPermissions = async (user) => {
 };
 
 const hasFullAccessRole = async (user) => {
-  if (!user || user.role !== "admin") return false;
-
-  // Legacy/main admins without roleId should keep full access in production.
-  if (!user.roleId) {
-    if (!user.adminRole) return true;
-    const normalizedAdminRole = resolveCanonicalRoleName(user.adminRole || "");
-    if (SYSTEM_FULL_ACCESS_ROLE_NAMES.includes(normalizedAdminRole)) return true;
-    if (!SYSTEM_ROLE_NAMES.includes(normalizedAdminRole)) return true;
-  }
-
-  if (user.roleId) {
-    const role = await Role.findById(user.roleId).lean();
-    if (!role || !role.isActive) return false;
-    const normalizedRoleName = resolveCanonicalRoleName(
-      role.displayName || role.name || "",
-    );
-    return SYSTEM_FULL_ACCESS_ROLE_NAMES.includes(normalizedRoleName);
-  }
-
-  return false;
+  // Application rule: all admin accounts have full access.
+  return Boolean(user && user.role === "admin");
 };
 
 /**
