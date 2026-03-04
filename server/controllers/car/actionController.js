@@ -10,6 +10,67 @@ const normalizeString = (str) => {
   return str.trim().split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
 };
 
+const parseNumericField = (value) => {
+  if (value === null || value === undefined || value === "") return undefined;
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+
+  const normalized = String(value).replace(/,/g, "").trim();
+  // Parse only positive numeric tokens. Hyphen in ranges like 1500-1999 is a separator, not a negative sign.
+  const matches = normalized.match(/\d+(\.\d+)?/g);
+  if (!matches || matches.length === 0) return undefined;
+
+  const numbers = matches.map(Number).filter((n) => Number.isFinite(n));
+  if (numbers.length === 0) return undefined;
+  if (numbers.length >= 2 && normalized.includes("-")) {
+    // For ranges, use midpoint (e.g., 1500-1999 => 1750)
+    return Math.round((numbers[0] + numbers[1]) / 2);
+  }
+  return numbers[0];
+};
+
+const parseGeoLocation = (rawGeoLocation) => {
+  const defaultCoordinates = [74.3587, 31.5204]; // Lahore fallback
+  if (!rawGeoLocation) {
+    return { type: "Point", coordinates: defaultCoordinates };
+  }
+
+  let parsed = rawGeoLocation;
+  if (typeof rawGeoLocation === "string") {
+    try {
+      parsed = JSON.parse(rawGeoLocation);
+    } catch {
+      const parts = rawGeoLocation
+        .split(",")
+        .map((part) => Number(part.trim()))
+        .filter((num) => Number.isFinite(num));
+      parsed = parts.length === 2 ? parts : null;
+    }
+  }
+
+  let coordinates = null;
+  if (Array.isArray(parsed) && parsed.length === 2) {
+    coordinates = parsed.map(Number);
+  } else if (
+    parsed &&
+    typeof parsed === "object" &&
+    Array.isArray(parsed.coordinates) &&
+    parsed.coordinates.length === 2
+  ) {
+    coordinates = parsed.coordinates.map(Number);
+  }
+
+  if (!coordinates || coordinates.some((num) => !Number.isFinite(num))) {
+    return { type: "Point", coordinates: defaultCoordinates };
+  }
+
+  const [lng, lat] = coordinates;
+  if (lng < -180 || lng > 180 || lat < -90 || lat > 90) {
+    return { type: "Point", coordinates: defaultCoordinates };
+  }
+
+  return { type: "Point", coordinates: [lng, lat] };
+};
+
 export const createCar = async (req, res) => {
   try {
     if (!req.user) return res.status(401).json({ success: false, message: "Unauthorized" });
@@ -25,10 +86,27 @@ export const createCar = async (req, res) => {
       images = await Promise.all(uploadPromises);
     }
 
+    const normalizedEngineCapacity = parseNumericField(req.body.engineCapacity);
+    const normalizedHorsepower = parseNumericField(req.body.horsepower);
+    const normalizedGeoLocation = parseGeoLocation(req.body.geoLocation);
+
+    if (
+      (req.body.vehicleType || "Car") === "Car" &&
+      normalizedEngineCapacity === undefined
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid engineCapacity. Please select a valid numeric range.",
+      });
+    }
+
     const carData = {
       ...req.body,
       make: normalizeString(req.body.make),
       model: normalizeString(req.body.model),
+      engineCapacity: normalizedEngineCapacity ?? 0,
+      horsepower: normalizedHorsepower ?? 0,
+      geoLocation: normalizedGeoLocation,
       images,
       postedBy: req.user._id,
       isApproved: true,

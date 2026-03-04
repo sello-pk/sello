@@ -44,6 +44,22 @@ const getVehicleLabel = (vehicleType, fieldType) => {
   return `${vehicleName} ${fieldType}`;
 };
 
+const parseRangeLikeNumber = (value) => {
+  if (value === null || value === undefined || value === "") return "";
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+
+  const normalized = String(value).replace(/,/g, "").trim();
+  const matches = normalized.match(/\d+(\.\d+)?/g);
+  if (!matches || matches.length === 0) return "";
+
+  const numbers = matches.map(Number).filter((n) => Number.isFinite(n));
+  if (numbers.length === 0) return "";
+  if (numbers.length >= 2 && normalized.includes("-")) {
+    return Math.round((numbers[0] + numbers[1]) / 2);
+  }
+  return numbers[0];
+};
+
 const EditCarForm = () => {
   const { id: routeParam } = useParams();
   const extractedCarId = extractCarIdFromSlug(routeParam);
@@ -321,10 +337,15 @@ const EditCarForm = () => {
     }
 
     const data = new FormData();
+    const normalizedEngineCapacity = parseRangeLikeNumber(formData.engineCapacity);
+    const normalizedHorsepower = parseRangeLikeNumber(formData.horsepower);
     const defaults = {
       colorExterior: formData.colorExterior || "N/A",
       colorInterior: formData.colorInterior || "N/A",
-      horsepower: formData.horsepower || "N/A",
+      horsepower:
+        normalizedHorsepower === "" ? "0" : String(normalizedHorsepower),
+      engineCapacity:
+        normalizedEngineCapacity === "" ? "" : String(normalizedEngineCapacity),
       mileage: formData.mileage || "0",
       carDoors: formData.carDoors || "4",
       numberOfCylinders: formData.numberOfCylinders || "4",
