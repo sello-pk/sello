@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useGetFilteredCarsQuery, api } from "../../redux/services/api";
 import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
-import { images } from "../../assets/assets";
+import { FiSearch } from "react-icons/fi";
 
 const SearchBar = ({
   compact = false,
@@ -64,7 +64,7 @@ const SearchBar = ({
       onSubmit={handleSearch}
       className={`flex items-center gap-2 bg-white text-black ${
         compact
-          ? "border border-gray-500 rounded-lg px-4 py-1.5 shadow-[inset_0_-1px_0_rgba(0,0,0,0.08)]"
+          ? "border border-primary-500 rounded-lg px-4 py-1.5 shadow-[inset_0_-1px_0_rgba(0,0,0,0.08)]"
           : "border border-gray-200 rounded-lg px-3 py-2"
       }`}
     >
@@ -79,15 +79,11 @@ const SearchBar = ({
         type="submit"
         className={`focus:outline-none flex items-center justify-center ${
           compact
-            ? "w-6 h-6 text-gray-500 hover:text-gray-700"
+            ? "w-6 h-6 text-primary-500 hover:text-primary-600"
             : "bg-primary-500 hover:opacity-90 w-8 h-8 rounded-md"
         }`}
       >
-        <img
-          className={`w-4 ${compact ? "opacity-70" : "brightness-0 invert"}`}
-          src={images.searchIcon}
-          alt="search"
-        />
+        <FiSearch className={compact ? "text-base" : "text-white text-base"} />
       </button>
     </form>
   );

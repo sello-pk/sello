@@ -254,7 +254,7 @@ const Navbar = () => {
             : "opacity-100 scale-100 pointer-events-auto"
         } ${
           isListingsTheme
-            ? "border-gray-500 text-gray-700 hover:bg-gray-100 bg-white"
+            ? "border-primary-500 text-primary-500 hover:bg-primary-50 bg-white"
             : "border-white/70 text-white hover:bg-white/20"
         }`}
         title="Search"
