@@ -7,11 +7,15 @@ const HeaderLogo = () => {
   return (
     <button
       type="button"
-      className="inline cursor-pointer"
+      className="fixed top-3 left-3 z-30 inline-flex cursor-pointer rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
       onClick={() => navigate("/")}
       aria-label="Go to homepage"
     >
-      <img className="h-24 pl-4 pt-4" src={images.blackLogo} alt="Sello logo" />
+      <img
+        className="h-12 w-auto md:h-16"
+        src={images.blackLogo}
+        alt="Sello logo"
+      />
     </button>
   );
 };

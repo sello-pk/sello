@@ -151,6 +151,7 @@ const AcceptInvite = () => {
   if (isLoadingInvite) {
     return (
       <div className="flex justify-center items-center h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <HeaderLogo />
         <div className="text-center">
           <Spinner fullScreen={false} />
           <p className="mt-4 text-gray-600">Loading invitation details...</p>
@@ -162,6 +163,7 @@ const AcceptInvite = () => {
   if (inviteError || !inviteData) {
     return (
       <div className="flex h-screen flex-wrap flex-col md:flex-row bg-gradient-to-br from-gray-50 to-gray-100">
+        <HeaderLogo />
         <div className="md:w-1/2 w-full flex items-center justify-center p-6">
           <div className="text-center p-8 bg-white rounded-2xl shadow-xl max-w-md w-full">
             <div className="mx-auto w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6">
@@ -219,6 +221,7 @@ const AcceptInvite = () => {
           </div>
         </div>
       )}
+      <HeaderLogo />
       <div className="flex  flex-col md:flex-row bg-gradient-to-br from-gray-50 via-white to-gray-50 overflow-hidden">
         {/* Left Side - Invitation + Password */}
         <div className=" w-full flex overflow-y-auto">
