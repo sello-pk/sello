@@ -198,8 +198,9 @@ export const getDashboardStats = async (req, res) => {
 export const getAllUsers = async (req, res) => {
     try {
         const { page = 1, limit = 20, role, search } = req.query;
-        const query = {};
-        if (role) query.role = role;
+        const allowedRoles = ["individual", "dealer"];
+        const query = { role: { $ne: "admin" } };
+        if (role && allowedRoles.includes(role)) query.role = role;
         if (search) query.$or = [{ name: new RegExp(search, "i") }, { email: new RegExp(search, "i") }];
         
         const users = await User.find(query).skip((page - 1) * limit).limit(limit).sort({ createdAt: -1 });
@@ -210,9 +211,42 @@ export const getAllUsers = async (req, res) => {
 
 export const updateUser = async (req, res) => {
     try {
-        const user = await AdminService.updateUser(req.params.userId, req.body);
+        const targetUser = await User.findById(req.params.userId);
+        if (!targetUser) {
+          return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        // User Management is intentionally scoped to non-admin accounts.
+        if (targetUser.role === "admin") {
+          return res.status(403).json({
+            success: false,
+            message: "Admin accounts cannot be edited from this section.",
+          });
+        }
+
+        const allowedFields = ["name", "status", "boostCredits", "role"];
+        const updateData = {};
+        allowedFields.forEach((field) => {
+          if (Object.prototype.hasOwnProperty.call(req.body, field)) {
+            updateData[field] = req.body[field];
+          }
+        });
+
+        if (Object.prototype.hasOwnProperty.call(updateData, "role")) {
+          const allowedRoles = ["individual", "dealer"];
+          if (!allowedRoles.includes(updateData.role)) {
+            return res.status(400).json({
+              success: false,
+              message: "Invalid role. Allowed values: individual, dealer.",
+            });
+          }
+        }
+
+        const user = await AdminService.updateUser(req.params.userId, updateData);
         return res.status(200).json({ success: true, data: user });
-    } catch (error) { return res.status(500).json({ success: false }); }
+    } catch (error) {
+      return res.status(500).json({ success: false });
+    }
 };
 
 export const deleteUser = async (req, res) => {
@@ -352,7 +386,10 @@ export const getAuditLogs = async (req, res) => {
 
 export const getUserById = async (req, res) => {
     try {
-        const user = await User.findById(req.params.userId).select("-password -otp -otpExpiry");
+        const user = await User.findOne({
+          _id: req.params.userId,
+          role: { $ne: "admin" },
+        }).select("-password -otp -otpExpiry");
         if (!user) return res.status(404).json({ success: false, message: "User not found" });
         return res.status(200).json({ success: true, data: user });
     } catch (error) { return res.status(500).json({ success: false }); }

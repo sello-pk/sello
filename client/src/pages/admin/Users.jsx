@@ -445,6 +445,23 @@ const Users = () => {
                     message={`Are you sure you want to ${newStatus === 'suspended' ? 'suspend' : 'activate'} this user? ${newStatus === 'suspended' ? 'They will not be able to access their account.' : 'They will regain access to their account.'}`}
                     confirmText={newStatus === 'suspended' ? 'Suspend' : 'Activate'}
                     variant={newStatus === 'suspended' ? 'danger' : 'default'}
+                    isLoading={isUpdatingStatus}
+                />
+
+                {/* Delete User Confirmation Modal */}
+                <ConfirmModal
+                    isOpen={showDeleteModal}
+                    onClose={() => {
+                        if (isDeleting) return;
+                        setShowDeleteModal(false);
+                        setUserToDelete(null);
+                    }}
+                    onConfirm={handleDeleteConfirm}
+                    title="Delete User"
+                    message="Are you sure you want to delete this user? This action cannot be undone."
+                    confirmText="Delete"
+                    variant="danger"
+                    isLoading={isDeleting}
                 />
 
                 {/* Edit User Modal */}

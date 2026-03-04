@@ -192,6 +192,7 @@ const AppRouter = () => {
         <Route element={<AdminRoute />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/users/:userId" element={<AdminUsers />} />
           <Route path="/admin/listings" element={<AdminListings />} />
           <Route path="/admin/valuations" element={<AdminValuations />} />
           <Route path="/admin/dealers" element={<AdminDealers />} />
