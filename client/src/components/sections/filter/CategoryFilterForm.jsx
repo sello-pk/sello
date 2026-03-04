@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import RangeFilter from "../../utils/filter/RangeFilter";
 import Input from "../../utils/filter/Input";
+import SearchableSelect from "../../common/SearchableSelect";
 import BodyTypes from "../../utils/filter/BodyTypes";
 import RegionalSpecs from "../../utils/filter/RegionalSpecs";
 import FuelSpecs from "../../utils/filter/FuelSpecs";
@@ -79,7 +80,6 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
   const {
     makes,
     models,
-    getModelsByMake,
     countries,
     states,
     cities,
@@ -90,6 +90,29 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
   } = useCarCategories(vehicleType || null);
 
   const [searchParams] = useSearchParams();
+
+  const resolveModelsBySelectedMake = (selectedMakeName) => {
+    if (!Array.isArray(models) || models.length === 0) return [];
+    if (!selectedMakeName) return models;
+
+    const normalizedMake = String(selectedMakeName).trim().toLowerCase();
+    const matchedMakeIds = (makes || [])
+      .filter(
+        (make) =>
+          String(make?.name || "").trim().toLowerCase() === normalizedMake,
+      )
+      .map((make) => String(make?._id || ""));
+
+    if (matchedMakeIds.length === 0) return [];
+
+    return models.filter((model) => {
+      const parent =
+        typeof model?.parentCategory === "object" && model?.parentCategory !== null
+          ? model.parentCategory._id
+          : model?.parentCategory;
+      return matchedMakeIds.includes(String(parent || ""));
+    });
+  };
 
   // Read URL parameters on mount and apply filters
   useEffect(() => {
@@ -151,25 +174,13 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
 
     // When make changes, update available models
     if (field === "make") {
-      if (value) {
-        const selectedMakeObj = makes.find((m) => m.name === value);
-        if (selectedMakeObj) {
-          const makeModels = getModelsByMake[selectedMakeObj._id] || [];
-          setAvailableModels(makeModels);
-          // Reset model if it's not available for the new make
-          if (
-            filters.model &&
-            makeModels.length > 0 &&
-            !makeModels.find((m) => m.name === filters.model)
-          ) {
-            setFilters((prev) => ({ ...prev, model: "" }));
-          }
-        } else {
-          setAvailableModels([]);
-        }
-      } else {
-        // Show all models when make is cleared
-        setAvailableModels(models);
+      const makeModels = resolveModelsBySelectedMake(value);
+      setAvailableModels(makeModels);
+      if (
+        filters.model &&
+        makeModels.length > 0 &&
+        !makeModels.find((m) => m.name === filters.model)
+      ) {
         setFilters((prev) => ({ ...prev, model: "" }));
       }
     }
@@ -202,19 +213,8 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
 
   // Initialize available models - show all if no make selected, filtered if make selected
   useEffect(() => {
-    if (filters.make && makes.length > 0) {
-      const selectedMakeObj = makes.find((m) => m.name === filters.make);
-      if (selectedMakeObj) {
-        const makeModels = getModelsByMake[selectedMakeObj._id] || [];
-        setAvailableModels(makeModels);
-      } else {
-        setAvailableModels([]);
-      }
-    } else {
-      // Show all models when no make is selected
-      setAvailableModels(models);
-    }
-  }, [filters.make, makes, models, getModelsByMake]);
+    setAvailableModels(resolveModelsBySelectedMake(filters.make));
+  }, [filters.make, makes, models]);
 
   // Initialize available states - show all if no country selected, filtered if country selected
   useEffect(() => {
@@ -588,19 +588,17 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
           <label className="block mb-2 text-sm font-medium text-gray-700">
             {getVehicleLabel(vehicleType, "make")}
           </label>
-          <select
+          <SearchableSelect
             value={filters.make}
-            onChange={(e) => handleChange("make", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+            onChange={(value) => handleChange("make", value)}
+            options={makes.map((make) => ({
+              value: make.name,
+              label: make.name,
+            }))}
+            placeholder={categoriesLoading ? "Loading..." : "All Makes"}
             disabled={categoriesLoading}
-          >
-            <option value="">All Makes</option>
-            {makes.map((make) => (
-              <option key={make._id} value={make.name}>
-                {make.name}
-              </option>
-            ))}
-          </select>
+            isLoading={categoriesLoading}
+          />
         </div>
 
         {/* Vehicle Model */}
@@ -608,25 +606,25 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
           <label className="block mb-2 text-sm font-medium text-gray-700">
             {getVehicleLabel(vehicleType, "model")}
           </label>
-          <select
+          <SearchableSelect
             value={filters.model}
-            onChange={(e) => handleChange("model", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-            disabled={categoriesLoading}
-          >
-            <option value="">
-              {categoriesLoading
+            onChange={(value) => handleChange("model", value)}
+            options={availableModels.map((model) => ({
+              value: model.name,
+              label: model.name,
+            }))}
+            placeholder={
+              categoriesLoading
                 ? "Loading..."
                 : availableModels.length === 0
                   ? "No models available"
-                  : "All Models"}
-            </option>
-            {availableModels.map((model) => (
-              <option key={model._id} value={model.name}>
-                {model.name}
-              </option>
-            ))}
-          </select>
+                  : !filters.make
+                    ? "All Models"
+                    : "Select Model"
+            }
+            disabled={categoriesLoading}
+            isLoading={categoriesLoading}
+          />
         </div>
 
         {/* Year */}

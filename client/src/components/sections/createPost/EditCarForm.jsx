@@ -95,7 +95,6 @@ const EditCarForm = () => {
   const {
     makes,
     models,
-    getModelsByMake,
     years,
     isLoading: categoriesLoading,
   } = useCarCategories(formData.vehicleType);
@@ -104,6 +103,29 @@ const EditCarForm = () => {
   const [availableYears, setAvailableYears] = useState([]);
 
   const [editCar, { isLoading }] = useEditCarMutation();
+
+  const resolveModelsBySelectedMake = (selectedMakeName) => {
+    if (!Array.isArray(models) || models.length === 0) return [];
+    if (!selectedMakeName) return models;
+
+    const normalizedMake = String(selectedMakeName).trim().toLowerCase();
+    const matchedMakeIds = (makes || [])
+      .filter(
+        (make) =>
+          String(make?.name || "").trim().toLowerCase() === normalizedMake,
+      )
+      .map((make) => String(make?._id || ""));
+
+    if (matchedMakeIds.length === 0) return [];
+
+    return models.filter((model) => {
+      const parent =
+        typeof model?.parentCategory === "object" && model?.parentCategory !== null
+          ? model.parentCategory._id
+          : model?.parentCategory;
+      return matchedMakeIds.includes(String(parent || ""));
+    });
+  };
 
   // Populate form when car data loads
   useEffect(() => {
@@ -160,11 +182,9 @@ const EditCarForm = () => {
 
       // Set available models and years based on loaded car
       if (car.make && makes && makes.length > 0) {
-        const selectedMakeObj = makes.find((m) => m && m.name === car.make);
-        if (selectedMakeObj && selectedMakeObj._id) {
+        const makeModels = resolveModelsBySelectedMake(car.make);
+        if (makeModels.length > 0) {
           setSelectedMake(car.make);
-          const makeModels =
-            (getModelsByMake && getModelsByMake[selectedMakeObj._id]) || [];
           setAvailableModels(makeModels);
 
           if (car.model && makeModels.length > 0) {
@@ -232,23 +252,13 @@ const EditCarForm = () => {
       // When make changes, update available models
       if (field === "make") {
         setSelectedMake(value);
-        const selectedMakeObj =
-          makes && makes.length > 0
-            ? makes.find((m) => m && m.name === value)
-            : null;
-        if (selectedMakeObj && selectedMakeObj._id) {
-          const makeModels =
-            (getModelsByMake && getModelsByMake[selectedMakeObj._id]) || [];
-          setAvailableModels(makeModels);
-          // Reset model if it's not available for new make
-          if (
-            formData.model &&
-            !makeModels.find((m) => m && m.name === formData.model)
-          ) {
-            setFormData((prev) => ({ ...prev, model: "" }));
-          }
-        } else {
-          setAvailableModels([]);
+        const makeModels = resolveModelsBySelectedMake(value);
+        setAvailableModels(makeModels);
+        if (
+          formData.model &&
+          !makeModels.find((m) => m && m.name === formData.model)
+        ) {
+          setFormData((prev) => ({ ...prev, model: "" }));
         }
       }
 
@@ -512,17 +522,15 @@ const EditCarForm = () => {
               placeholder={
                 !formData.vehicleType
                   ? "Select vehicle type first"
-                  : !formData.make
-                    ? "Select make first"
-                    : categoriesLoading
-                      ? "Loading..."
-                      : availableModels.length === 0
-                        ? "No models available"
+                  : categoriesLoading
+                    ? "Loading..."
+                    : availableModels.length === 0
+                      ? "No models available"
+                      : !formData.make
+                        ? "All Models"
                         : "Select Model"
               }
-              disabled={
-                !formData.vehicleType || !formData.make || categoriesLoading
-              }
+              disabled={!formData.vehicleType || categoriesLoading}
               isLoading={categoriesLoading}
               required
             />

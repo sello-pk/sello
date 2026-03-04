@@ -45,14 +45,28 @@ const HeroFilter = () => {
   }, [cities]);
 
   const modelOptions = useMemo(() => {
-    if (!Array.isArray(models)) return [];
-    if (!filters.make || !Array.isArray(makes) || !getModelsByMake) return models;
+    if (!Array.isArray(models) || models.length === 0) return [];
 
-    const selectedMake = makes.find((make) => make.name === filters.make);
-    if (!selectedMake) return models;
+    // If no make selected, show all models.
+    if (!filters.make) return models;
 
-    return getModelsByMake[selectedMake._id] || [];
-  }, [models, makes, filters.make, getModelsByMake]);
+    const selectedMakeName = String(filters.make).trim().toLowerCase();
+    const matchedMakeIds = (makes || [])
+      .filter(
+        (make) => String(make?.name || "").trim().toLowerCase() === selectedMakeName,
+      )
+      .map((make) => String(make?._id || ""));
+
+    if (matchedMakeIds.length === 0) return [];
+
+    return models.filter((model) => {
+      const parent =
+        typeof model?.parentCategory === "object" && model?.parentCategory !== null
+          ? model.parentCategory._id
+          : model?.parentCategory;
+      return matchedMakeIds.includes(String(parent || ""));
+    });
+  }, [models, makes, filters.make]);
 
   const makeSelectOptions = useMemo(
     () =>

@@ -89,35 +89,39 @@ const CreatePostForm = () => {
     years,
     countries,
     cities,
-    getModelsByMake,
     getCitiesByCountry,
     isLoading: categoriesLoading,
   } = useCarCategories(null); // Always pass null to get all years
 
   const [createCar, { isLoading }] = useCreateCarMutation();
 
+  const resolveModelsBySelectedMake = (selectedMakeName) => {
+    if (!Array.isArray(models) || models.length === 0) return [];
+    if (!selectedMakeName) return models;
+
+    const normalizedMake = String(selectedMakeName).trim().toLowerCase();
+    const matchedMakeIds = (makes || [])
+      .filter(
+        (make) =>
+          String(make?.name || "").trim().toLowerCase() === normalizedMake,
+      )
+      .map((make) => String(make?._id || ""));
+
+    if (matchedMakeIds.length === 0) return [];
+
+    return models.filter((model) => {
+      const parent =
+        typeof model?.parentCategory === "object" && model?.parentCategory !== null
+          ? model.parentCategory._id
+          : model?.parentCategory;
+      return matchedMakeIds.includes(String(parent || ""));
+    });
+  };
+
   // Initialize available models - optimized with useMemo-like logic
   useEffect(() => {
-    if (!formData.make || makes.length === 0) {
-      setAvailableModels(models);
-      return;
-    }
-
-    const selectedMakeObj = makes.find((m) => m.name === formData.make);
-    if (selectedMakeObj && getModelsByMake[selectedMakeObj._id]) {
-      const makeModels = getModelsByMake[selectedMakeObj._id];
-      setAvailableModels(makeModels);
-      // Debug logging
-      console.log("CreatePostForm - Selected Make:", formData.make);
-      console.log(
-        "CreatePostForm - Available Models for Make:",
-        makeModels.length,
-        makeModels.map((m) => m.name),
-      );
-    } else {
-      setAvailableModels([]);
-    }
-  }, [formData.make, makes, models, getModelsByMake]);
+    setAvailableModels(resolveModelsBySelectedMake(formData.make));
+  }, [formData.make, makes, models]);
 
   // Initialize available years - years are now independent
   useEffect(() => {
@@ -172,26 +176,13 @@ const CreatePostForm = () => {
 
       // When make changes, update available models
       if (field === "make") {
-        if (value) {
-          const selectedMakeObj = makes.find((m) => m.name === value);
-          if (selectedMakeObj) {
-            const makeModels = getModelsByMake[selectedMakeObj._id] || [];
-            setAvailableModels(makeModels);
-            // Reset model if it's not available for the new make
-            if (
-              formData.model &&
-              makeModels.length > 0 &&
-              !makeModels.find((m) => m.name === formData.model)
-            ) {
-              setFormData((prev) => ({ ...prev, model: "" }));
-            }
-          } else {
-            setAvailableModels([]);
-          }
-        } else {
-          // Show all models when make is cleared
-          setAvailableModels(models);
-          // Reset model when make is cleared
+        const makeModels = resolveModelsBySelectedMake(value);
+        setAvailableModels(makeModels);
+        if (
+          formData.model &&
+          makeModels.length > 0 &&
+          !makeModels.find((m) => m.name === formData.model)
+        ) {
           setFormData((prev) => ({ ...prev, model: "" }));
         }
       }
@@ -832,17 +823,15 @@ const CreatePostForm = () => {
               placeholder={
                 !formData.vehicleType
                   ? "Select vehicle type first"
-                  : !formData.make
-                    ? "Select make first"
-                    : categoriesLoading
-                      ? "Loading..."
-                      : availableModels.length === 0
-                        ? "No models available"
+                  : categoriesLoading
+                    ? "Loading..."
+                    : availableModels.length === 0
+                      ? "No models available"
+                      : !formData.make
+                        ? "All Models"
                         : "Select Model"
               }
-              disabled={
-                !formData.vehicleType || !formData.make || categoriesLoading
-              }
+              disabled={!formData.vehicleType || categoriesLoading}
               isLoading={categoriesLoading}
               required
             />

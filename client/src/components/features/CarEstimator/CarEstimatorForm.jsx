@@ -127,7 +127,7 @@ const parseMileageValue = (value) => {
 export default function CarEstimatorForm({ onEstimate }) {
   const [step, setStep] = useState(1);
   const vehicleType = "Car";
-  const { makes, years, cities, getModelsByMake } =
+  const { makes, models, years, cities, getModelsByMake } =
     useCarCategories(vehicleType);
   const [createValuation, { isLoading: isAnalyzing }] =
     useCreateValuationMutation();
@@ -163,9 +163,9 @@ export default function CarEstimatorForm({ onEstimate }) {
   const [errors, setErrors] = useState({});
 
   const availableModels = useMemo(() => {
-    if (!formData.make) return [];
+    if (!formData.make) return Array.isArray(models) ? models : [];
     return getModelsByMake?.[formData.make] || [];
-  }, [formData.make, getModelsByMake]);
+  }, [formData.make, getModelsByMake, models]);
 
   const setField = (field, value) => {
     setFormData((prev) => ({
@@ -384,9 +384,8 @@ export default function CarEstimatorForm({ onEstimate }) {
                         label: capitalize(model.name),
                       }))}
                       placeholder={
-                        formData.make ? "Select model" : "Select make first"
+                        formData.make ? "Select model" : "All models"
                       }
-                      isDisabled={!formData.make}
                       isClearable
                       isSearchable
                       theme={customTheme}

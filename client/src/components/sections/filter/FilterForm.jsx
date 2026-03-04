@@ -92,7 +92,6 @@ const FilterForm = ({ onFilter }) => {
   const {
     makes,
     models,
-    getModelsByMake,
     years,
     countries,
     states,
@@ -107,6 +106,29 @@ const FilterForm = ({ onFilter }) => {
   // const [queryParams, setQueryParams] = useState(null);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  const resolveModelsBySelectedMake = (selectedMakeName) => {
+    if (!Array.isArray(models) || models.length === 0) return [];
+    if (!selectedMakeName) return models;
+
+    const normalizedMake = String(selectedMakeName).trim().toLowerCase();
+    const matchedMakeIds = (makes || [])
+      .filter(
+        (make) =>
+          String(make?.name || "").trim().toLowerCase() === normalizedMake,
+      )
+      .map((make) => String(make?._id || ""));
+
+    if (matchedMakeIds.length === 0) return [];
+
+    return models.filter((model) => {
+      const parent =
+        typeof model?.parentCategory === "object" && model?.parentCategory !== null
+          ? model.parentCategory._id
+          : model?.parentCategory;
+      return matchedMakeIds.includes(String(parent || ""));
+    });
+  };
 
   // Read URL parameters on mount and apply filters
   useEffect(() => {
@@ -211,26 +233,13 @@ const FilterForm = ({ onFilter }) => {
 
     // When make changes, update available models
     if (field === "make") {
-      if (value) {
-        const selectedMakeObj = makes.find((m) => m.name === value);
-        if (selectedMakeObj) {
-          const makeModels = getModelsByMake[selectedMakeObj._id] || [];
-          setAvailableModels(makeModels);
-          // Reset model if it's not available for the new make
-          if (
-            filters.model &&
-            makeModels.length > 0 &&
-            !makeModels.find((m) => m.name === filters.model)
-          ) {
-            setFilters((prev) => ({ ...prev, model: "" }));
-          }
-        } else {
-          setAvailableModels([]);
-        }
-      } else {
-        // Show all models when make is cleared
-        setAvailableModels(models);
-        // Reset model when make is cleared
+      const makeModels = resolveModelsBySelectedMake(value);
+      setAvailableModels(makeModels);
+      if (
+        filters.model &&
+        makeModels.length > 0 &&
+        !makeModels.find((m) => m.name === filters.model)
+      ) {
         setFilters((prev) => ({ ...prev, model: "" }));
       }
     }
@@ -263,26 +272,8 @@ const FilterForm = ({ onFilter }) => {
 
   // Initialize available models - show all if no make selected, filtered if make selected
   useEffect(() => {
-    if (filters.make && makes.length > 0) {
-      const selectedMakeObj = makes.find((m) => m.name === filters.make);
-      if (selectedMakeObj) {
-        const makeModels = getModelsByMake[selectedMakeObj._id] || [];
-        setAvailableModels(makeModels);
-        // Debug logging
-        console.log("FilterForm - Selected Make:", filters.make);
-        console.log(
-          "FilterForm - Available Models for Make:",
-          makeModels.length,
-          makeModels.map((m) => m.name),
-        );
-      } else {
-        setAvailableModels([]);
-      }
-    } else {
-      // Show all models when no make is selected
-      setAvailableModels(models);
-    }
-  }, [filters.make, makes, models, getModelsByMake]);
+    setAvailableModels(resolveModelsBySelectedMake(filters.make));
+  }, [filters.make, makes, models]);
 
   // Initialize available states - show all if no country selected, filtered if country selected
   useEffect(() => {
@@ -740,17 +731,15 @@ const FilterForm = ({ onFilter }) => {
             placeholder={
               !filters.vehicleType
                 ? "Select vehicle type first"
-                : !filters.make
-                  ? "Select make first"
-                  : categoriesLoading
-                    ? "Loading..."
-                    : availableModels.length === 0
-                      ? "No models available"
-                      : "All Models"
+                : categoriesLoading
+                  ? "Loading..."
+                  : availableModels.length === 0
+                    ? "No models available"
+                    : !filters.make
+                      ? "All Models"
+                      : "Select Model"
             }
-            disabled={
-              !filters.vehicleType || !filters.make || categoriesLoading
-            }
+            disabled={!filters.vehicleType || categoriesLoading}
             isLoading={categoriesLoading}
           />
         </div>
