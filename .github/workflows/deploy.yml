@@ -8,6 +8,13 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      VITE_API_URL: ${{ secrets.VITE_API_URL }}
+      VITE_FRONTEND_URL: ${{ secrets.VITE_FRONTEND_URL }}
+      VITE_SITE_URL: ${{ secrets.VITE_SITE_URL }}
+      VITE_SUPPORT_EMAIL: ${{ secrets.VITE_SUPPORT_EMAIL }}
+      VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+      VITE_TINY_API_KEY: ${{ secrets.VITE_TINY_API_KEY }}
 
     steps:
       - name: Deploy to VPS
@@ -20,6 +27,7 @@ jobs:
           timeout: 300s
           command_timeout: 30m
           debug: true
+          envs: VITE_API_URL,VITE_FRONTEND_URL,VITE_SITE_URL,VITE_SUPPORT_EMAIL,VITE_GOOGLE_CLIENT_ID,VITE_TINY_API_KEY
           script: |
             set -e
             trap 'status=$?; if [ $status -eq 0 ]; then echo "✅ SSH session closed after successful deploy"; else echo "❌ Deploy failed (exit $status)"; fi' EXIT
@@ -51,6 +59,18 @@ jobs:
 
             echo "🛠️ Building Client Application..."
             cd ../client
+            if [ -z "$VITE_API_URL" ]; then
+              echo "❌ Missing VITE_API_URL secret. Aborting deploy."
+              exit 1
+            fi
+            {
+              echo "VITE_API_URL=$VITE_API_URL"
+              echo "VITE_FRONTEND_URL=$VITE_FRONTEND_URL"
+              echo "VITE_SITE_URL=$VITE_SITE_URL"
+              echo "VITE_SUPPORT_EMAIL=$VITE_SUPPORT_EMAIL"
+              echo "VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID"
+              echo "VITE_TINY_API_KEY=$VITE_TINY_API_KEY"
+            } > .env.production
             npm ci
             npm run build
 
