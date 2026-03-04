@@ -85,7 +85,7 @@ const BlogDetails = () => {
     return (
       <div>
         <BlogsHeroSection />
-        <div className="max-w-4xl mx-auto px-4 md:px-6 py-8 md:py-12">
+        <div className="max-w-8xl mx-auto w-full px-4 md:px-6 lg:px-8 py-8 md:py-12">
           <Spinner fullScreen={false} />
         </div>
       </div>
@@ -96,7 +96,7 @@ const BlogDetails = () => {
     return (
       <div>
         <BlogsHeroSection />
-        <div className="max-w-4xl mx-auto px-4 md:px-6 py-8 md:py-12">
+        <div className="max-w-8xl mx-auto w-full px-4 md:px-6 lg:px-8 py-8 md:py-12">
           <div className="text-center py-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Blog Post Not Found
@@ -135,14 +135,15 @@ const BlogDetails = () => {
         }
       />
       <BlogsHeroSection />
-      <div className="w-full px-4 md:px-6 py-8 md:py-12">
+      <div className="max-w-8xl mx-auto w-full px-4 md:px-6 lg:px-8 py-8 md:py-12">
         {/* Featured Image */}
         {currentBlog.featuredImage && (
-          <div className="mb-8 rounded-lg overflow-hidden">
+          <div className="mb-8 rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
             <img
               src={currentBlog.featuredImage}
               alt={currentBlog.title}
-              className="w-full h-auto object-cover"
+              className="w-full aspect-[16/7] sm:aspect-[16/6] lg:aspect-[16/5] object-cover"
+              loading="eager"
             />
           </div>
         )}
