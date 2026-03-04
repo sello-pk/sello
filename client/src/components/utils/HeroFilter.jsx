@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import Select, { components } from "react-select";
 import { useCarCategories } from "../../hooks/useCarCategories";
 import { useGetFilteredCarsQuery } from "../../redux/services/api";
 import toast from "react-hot-toast";
@@ -52,6 +53,90 @@ const HeroFilter = () => {
 
     return getModelsByMake[selectedMake._id] || [];
   }, [models, makes, filters.make, getModelsByMake]);
+
+  const makeSelectOptions = useMemo(
+    () =>
+      (makes || []).map((make) => ({
+        value: make.name,
+        label: capitalize(make.name),
+      })),
+    [makes],
+  );
+
+  const modelSelectOptions = useMemo(
+    () =>
+      (modelOptions || []).map((model) => ({
+        value: model.name,
+        label: capitalize(model.name),
+      })),
+    [modelOptions],
+  );
+
+  const citySelectOptions = useMemo(
+    () =>
+      cityOptions.map((city) => ({
+        value: city.name,
+        label: capitalize(city.name),
+      })),
+    [cityOptions],
+  );
+
+  const DropdownIndicator = (props) => (
+    <components.DropdownIndicator {...props}>
+      <VscChevronDown className="text-gray-400 text-base" />
+    </components.DropdownIndicator>
+  );
+
+  const searchableSelectStyles = {
+    control: (base, state) => ({
+      ...base,
+      minHeight: "48px",
+      height: "48px",
+      borderRadius: "12px",
+      border: "none",
+      boxShadow: state.isFocused ? "0 0 0 2px rgba(6, 78, 59, 0.2)" : "none",
+      backgroundColor: "#f9fafb",
+      cursor: "text",
+    }),
+    valueContainer: (base) => ({
+      ...base,
+      padding: "0 14px",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "#6b7280",
+    }),
+    singleValue: (base) => ({
+      ...base,
+      color: "#374151",
+    }),
+    indicatorSeparator: () => ({ display: "none" }),
+    menu: (base) => ({
+      ...base,
+      marginTop: 6,
+      borderRadius: "12px",
+      overflow: "hidden",
+      width: "100%",
+      minWidth: "100%",
+      zIndex: 60,
+    }),
+    menuList: (base) => ({
+      ...base,
+      maxHeight: "260px",
+      paddingTop: 0,
+      paddingBottom: 0,
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isFocused ? "#f3f4f6" : "#fff",
+      color: "#374151",
+      cursor: "pointer",
+    }),
+    menuPortal: (base) => ({
+      ...base,
+      zIndex: 9999,
+    }),
+  };
 
   const handleChange = (field, value) => {
     setFilters((prev) => ({
@@ -123,52 +208,61 @@ const HeroFilter = () => {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-3 items-center">
             <div className="relative min-w-0">
-              <select
-                className="h-12 w-full bg-gray-50 border-none rounded-xl px-4 pr-10 text-gray-500 appearance-none focus:ring-2 focus:ring-emerald-900"
-                value={filters.make}
-                onChange={(e) => handleChange("make", e.target.value)}
-              >
-                <option value="">Make</option>
-                {makes?.map((m) => (
-                  <option key={m._id} value={m.name}>
-                    {capitalize(m.name)}
-                  </option>
-                ))}
-              </select>
-              <VscChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-base" />
+              <Select
+                value={
+                  makeSelectOptions.find(
+                    (option) => option.value === filters.make,
+                  ) || null
+                }
+                onChange={(option) => handleChange("make", option?.value || "")}
+                options={makeSelectOptions}
+                placeholder="Make"
+                isClearable
+                isSearchable
+                styles={searchableSelectStyles}
+                components={{ DropdownIndicator }}
+                menuPortalTarget={document.body}
+                menuPosition="fixed"
+              />
             </div>
 
             <div className="relative min-w-0">
-              <select
-                className="h-12 w-full bg-gray-50 border-none rounded-xl px-4 pr-10 text-gray-500 appearance-none focus:ring-2 focus:ring-emerald-900"
-                value={filters.model}
-                onChange={(e) => handleChange("model", e.target.value)}
-                disabled={filters.make && modelOptions.length === 0}
-              >
-                <option value="">Model</option>
-                {modelOptions?.map((m) => (
-                  <option key={m._id} value={m.name}>
-                    {capitalize(m.name)}
-                  </option>
-                ))}
-              </select>
-              <VscChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-base" />
+              <Select
+                value={
+                  modelSelectOptions.find(
+                    (option) => option.value === filters.model,
+                  ) || null
+                }
+                onChange={(option) => handleChange("model", option?.value || "")}
+                options={modelSelectOptions}
+                placeholder="Model"
+                isClearable
+                isSearchable
+                isDisabled={filters.make && modelSelectOptions.length === 0}
+                styles={searchableSelectStyles}
+                components={{ DropdownIndicator }}
+                menuPortalTarget={document.body}
+                menuPosition="fixed"
+              />
             </div>
 
             <div className="relative min-w-0">
-              <select
-                className="h-12 w-full bg-gray-50 border-none rounded-xl px-4 pr-10 text-gray-500 appearance-none focus:ring-2 focus:ring-emerald-900"
-                value={filters.city}
-                onChange={(e) => handleChange("city", e.target.value)}
-              >
-                <option value="">City</option>
-                {cityOptions.map((city) => (
-                  <option key={city._id || city.name} value={city.name}>
-                    {capitalize(city.name)}
-                  </option>
-                ))}
-              </select>
-              <VscChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-base" />
+              <Select
+                value={
+                  citySelectOptions.find(
+                    (option) => option.value === filters.city,
+                  ) || null
+                }
+                onChange={(option) => handleChange("city", option?.value || "")}
+                options={citySelectOptions}
+                placeholder="City"
+                isClearable
+                isSearchable
+                styles={searchableSelectStyles}
+                components={{ DropdownIndicator }}
+                menuPortalTarget={document.body}
+                menuPosition="fixed"
+              />
             </div>
 
             <div className="min-w-0">
