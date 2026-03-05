@@ -11,16 +11,16 @@ const ContactInformation = () => {
       items: [
         {
           label: "General Inquiries",
-          value: import.meta.env.VITE_SUPPORT_EMAIL || "info@example.com",
+          value: import.meta.env.VITE_SUPPORT_EMAIL || "info@sello.pk",
           link: `mailto:${
-            import.meta.env.VITE_SUPPORT_EMAIL || "info@example.com"
+            import.meta.env.VITE_SUPPORT_EMAIL || "info@sello.pk"
           }`,
         },
         {
           label: "Support",
-          value: import.meta.env.VITE_SUPPORT_EMAIL || "support@example.com",
+          value: import.meta.env.VITE_SUPPORT_EMAIL || "info@sello.pk",
           link: `mailto:${
-            import.meta.env.VITE_SUPPORT_EMAIL || "support@example.com"
+            import.meta.env.VITE_SUPPORT_EMAIL || "info@sello.pk"
           }`,
         },
       ],
@@ -49,7 +49,7 @@ const ContactInformation = () => {
       items: [
         {
           label: "Head Office",
-          value: "Sello Head Office, Gulberg, Lahore, Pakistan",
+          value: "RFJW+4XR Okara, Pakistan",
           link: null,
         },
       ],

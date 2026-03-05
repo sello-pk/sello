@@ -309,7 +309,10 @@ const DealerSignup = ({ onBack }) => {
     registrationData.append("avatar", avatarFile);
     const requestTypes = ["dealer", "auctionDealer"];
     if (requestAuctionBidder) requestTypes.push("auctionBidder");
-    registrationData.append("auctionRequestTypes", JSON.stringify(requestTypes));
+    registrationData.append(
+      "auctionRequestTypes",
+      JSON.stringify(requestTypes),
+    );
 
     // Basic dealer information
     registrationData.append("dealerName", formData.dealerName);
@@ -503,7 +506,7 @@ const DealerSignup = ({ onBack }) => {
                             : "border-gray-300"
                         }`}
                         type="tel"
-                        placeholder="+971 XX XXX XXXX"
+                        placeholder="+923 XX XXX XXXX"
                       />
                       {errors.mobileNumber && (
                         <p className="text-red-500 text-xs mt-1">
@@ -526,7 +529,7 @@ const DealerSignup = ({ onBack }) => {
                             : "border-gray-300"
                         }`}
                         type="tel"
-                        placeholder="+971 XX XXX XXXX"
+                        placeholder="+923 XX XXX XXXX"
                       />
                       {errors.whatsappNumber && (
                         <p className="text-red-500 text-xs mt-1">
@@ -755,7 +758,9 @@ const DealerSignup = ({ onBack }) => {
                         <input
                           type="checkbox"
                           checked={requestAuctionBidder}
-                          onChange={(e) => setRequestAuctionBidder(e.target.checked)}
+                          onChange={(e) =>
+                            setRequestAuctionBidder(e.target.checked)
+                          }
                         />
                         <span>Also request Auction Bidder approval</span>
                       </label>

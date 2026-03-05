@@ -46,7 +46,7 @@ const FAQs = () => {
     {
       question: "What should I do if I find a suspicious listing?",
       answer:
-        "Report it immediately using the 'Report' button on the listing page, or contact our support team at info@sello.ae.",
+        "Report it immediately using the 'Report' button on the listing page, or contact our support team at info@sello.pk.",
     },
     {
       question: "How do I cancel my subscription?",
@@ -61,7 +61,7 @@ const FAQs = () => {
     {
       question: "How do I delete my account?",
       answer:
-        "Contact our support team at info@sello.ae with your account details, and we'll assist you with account deletion.",
+        "Contact our support team at info@sello.pk with your account details, and we'll assist you with account deletion.",
     },
   ];
 
@@ -118,18 +118,18 @@ const FAQs = () => {
                 Contact Support
               </button>
               <a
-                href="tel:+97145061300"
+                href="tel:+923134211023"
                 className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <FiPhone className="text-xl" />
-                +971 45 061 300
+                +923 134 211 023
               </a>
               <a
-                href="mailto:info@sello.ae"
+                href="mailto:info@sello.pk"
                 className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <FiMail className="text-xl" />
-                info@sello.ae
+                info@sello.pk
               </a>
             </div>
           </div>

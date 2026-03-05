@@ -24,8 +24,8 @@ const ExploreBrands = () => {
           <p className="text-base text-gray-700 leading-relaxed">
             From compact cars that are great for the whole family to large SUVs
             and luxury models, we have what you are looking for in terms of cars
-            for sale in Karachi, Islamabad, Lahore and all over Pakistan and we
-            only feature trusted sellers.
+            for sale in Karachi, Islamabad, Lahore, Okara and all over Pakistan
+            and we only feature trusted sellers.
           </p>
           <button
             onClick={() => navigate("/view-all-brands")}

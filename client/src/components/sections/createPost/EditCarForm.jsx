@@ -128,7 +128,9 @@ const EditCarForm = () => {
     const matchedMakeIds = (makes || [])
       .filter(
         (make) =>
-          String(make?.name || "").trim().toLowerCase() === normalizedMake,
+          String(make?.name || "")
+            .trim()
+            .toLowerCase() === normalizedMake,
       )
       .map((make) => String(make?._id || ""));
 
@@ -136,7 +138,8 @@ const EditCarForm = () => {
 
     return models.filter((model) => {
       const parent =
-        typeof model?.parentCategory === "object" && model?.parentCategory !== null
+        typeof model?.parentCategory === "object" &&
+        model?.parentCategory !== null
           ? model.parentCategory._id
           : model?.parentCategory;
       return matchedMakeIds.includes(String(parent || ""));
@@ -337,7 +340,9 @@ const EditCarForm = () => {
     }
 
     const data = new FormData();
-    const normalizedEngineCapacity = parseRangeLikeNumber(formData.engineCapacity);
+    const normalizedEngineCapacity = parseRangeLikeNumber(
+      formData.engineCapacity,
+    );
     const normalizedHorsepower = parseRangeLikeNumber(formData.horsepower);
     const defaults = {
       colorExterior: formData.colorExterior || "N/A",
@@ -500,7 +505,7 @@ const EditCarForm = () => {
             inputType="tel"
             value={formData.contactNumber}
             onChange={(e) => handleChange("contactNumber", e.target.value)}
-            placeholder="e.g., +971532345332"
+            placeholder="e.g., +923134211023"
             required
           />
         </div>

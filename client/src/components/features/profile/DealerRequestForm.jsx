@@ -66,11 +66,15 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
   const [requestDealerAccess, setRequestDealerAccess] = useState(true);
   const [requestAuctionBidder, setRequestAuctionBidder] = useState(false);
 
-  const [requestAuctionAccess, { isLoading }] = useRequestAuctionAccessMutation();
+  const [requestAuctionAccess, { isLoading }] =
+    useRequestAuctionAccessMutation();
   const { data: user, refetch } = useGetMeQuery();
-  const { data: auctionAccessStatus } = useGetMyAuctionAccessStatusQuery(undefined, {
-    skip: !isOpen,
-  });
+  const { data: auctionAccessStatus } = useGetMyAuctionAccessStatusQuery(
+    undefined,
+    {
+      skip: !isOpen,
+    },
+  );
 
   // Fetch categories from admin
   const {
@@ -369,7 +373,9 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
       formDataToSend.append("requestTypes", JSON.stringify(requestTypes));
 
       await requestAuctionAccess(formDataToSend).unwrap();
-      toast.success("Request submitted successfully! Pending admin verification.");
+      toast.success(
+        "Request submitted successfully! Pending admin verification.",
+      );
       setFormData({
         businessName: "",
         businessLicense: "",
@@ -432,7 +438,8 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
   // Check if user is already a dealer
   const isDealer = user?.role === "dealer";
   const isVerifiedDealer = user?.dealerInfo?.verified === true;
-  const bidderStatus = auctionAccessStatus?.auctionCapabilities?.auctionBidder?.status;
+  const bidderStatus =
+    auctionAccessStatus?.auctionCapabilities?.auctionBidder?.status;
 
   // Show status if already a dealer
   if (isDealer && isVerifiedDealer && bidderStatus === "approved") {
@@ -706,7 +713,7 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                     name="businessPhone"
                     value={formData.businessPhone}
                     onChange={handleChange}
-                    placeholder="+971 XX XXX XXXX"
+                    placeholder="+923 XX XXX XXXX"
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all ${
                       errors.businessPhone
                         ? "border-red-500"
@@ -729,7 +736,7 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                     name="whatsappNumber"
                     value={formData.whatsappNumber}
                     onChange={handleChange}
-                    placeholder="+971 XX XXX XXXX"
+                    placeholder="+923 XX XXX XXXX"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
                   />
                 </div>
@@ -904,7 +911,9 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                     <input
                       type="checkbox"
                       checked={requestAuctionBidder}
-                      onChange={(e) => setRequestAuctionBidder(e.target.checked)}
+                      onChange={(e) =>
+                        setRequestAuctionBidder(e.target.checked)
+                      }
                     />
                     <span>Also request Auction Bidder access</span>
                   </label>

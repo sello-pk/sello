@@ -11,7 +11,7 @@ const PartnerOffersSection = () => {
       alt: "Amin Garage",
     },
     {
-      link: "https://wbdigitech.ae",
+      link: "https://wbdigitech.pk",
       logo: images.wbDigitalLogo,
       alt: "WB Digitech",
     },
@@ -91,7 +91,7 @@ const PartnerOffersSection = () => {
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
                     Enjoy our partner's exclusive deals and benefits. At
-                    Sello.ae and Amin Garage, we present you with special offers
+                    Sello.pk and Amin Garage, we present you with special offers
                     which add value to your car buying and ownership experience.
                   </p>
                 </div>

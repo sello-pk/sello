@@ -52,23 +52,23 @@ const ContactMap = () => {
   const contact = {
     title: "Visit Our Office",
     subtitle: "Sello Head Office",
-    phone: "+92421234567",
-    email: "info@sello.ae",
-    address: "Sello Head Office, Gulberg, Lahore, Pakistan",
+    phone: "+923134211023",
+    email: "info@sello.pk",
+    address: "RFJW+4XR Okara, Pakistan",
     hours: [
       { day: "Sunday - Thursday", hours: "9:00 AM - 6:00 PM" },
       { day: "Friday", hours: "9:00 AM - 1:00 PM" },
       { day: "Saturday", hours: "Closed" },
     ],
     mapUrl:
-      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d27222.35469644249!2d74.3380!3d31.5204!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391904f88cbd0f2f%3A0xede2ef749acd972b!2sGulberg%2C%20Lahore%2C%20Pakistan!5e0!3m2!1sen!2sPK!4v1700000000000",
+      "https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3426.010708762713!2d73.49483107558429!3d30.830366074537356!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMzDCsDQ5JzQ5LjMiTiA3M8KwMjknNTAuNyJF!5e0!3m2!1sen!2s!4v1772727762737!5m2!1sen!2s",
   };
 
   return (
     <section className="relative w-full h-[70vh] md:h-[80vh] rounded-2xl overflow-hidden shadow-2xl">
       {/* Map */}
       <iframe
-        title="Sello.ae Office Location"
+        title="Sello.pk Office Location"
         src={contact.mapUrl}
         className="absolute inset-0 w-full h-full border-0"
         loading="lazy"

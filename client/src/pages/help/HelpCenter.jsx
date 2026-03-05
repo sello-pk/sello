@@ -297,7 +297,9 @@ const HelpCenter = () => {
                       <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-primary-500 transition-colors">
                         {category.title}
                       </h3>
-                      <p className="text-sm text-gray-600">{category.description}</p>
+                      <p className="text-sm text-gray-600">
+                        {category.description}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -324,18 +326,20 @@ const HelpCenter = () => {
                 Contact Support
               </button>
               <a
-                href="tel:+971501234567"
+                href="tel:+923134211023"
                 className="flex items-center gap-2 text-white hover:text-primary-100 transition-colors"
               >
                 <FiPhone className="text-xl" />
-                <span className="text-lg font-medium">+971 50 123 4567</span>
+                <span className="text-lg font-medium">+923 134 211 023</span>
               </a>
               <a
                 href={`mailto:${import.meta.env.VITE_SUPPORT_EMAIL || "support@example.com"}`}
                 className="flex items-center gap-2 text-white hover:text-primary-100 transition-colors"
               >
                 <FiMail className="text-xl" />
-                <span className="text-lg font-medium">{import.meta.env.VITE_SUPPORT_EMAIL || "support@example.com"}</span>
+                <span className="text-lg font-medium">
+                  {import.meta.env.VITE_SUPPORT_EMAIL || "support@example.com"}
+                </span>
               </a>
             </div>
             <div className="pt-6 border-t border-primary-400">
@@ -354,4 +358,3 @@ const HelpCenter = () => {
 };
 
 export default HelpCenter;
-

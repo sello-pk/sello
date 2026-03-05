@@ -66,7 +66,7 @@ export const FRONTEND_CONFIG = {
  * Support & Contact
  */
 export const SUPPORT_CONFIG = {
-  EMAIL: import.meta.env.VITE_SUPPORT_EMAIL || "support@sello.com",
+  EMAIL: import.meta.env.VITE_SUPPORT_EMAIL || "info@sello.pk",
 };
 
 /**

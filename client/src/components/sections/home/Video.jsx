@@ -26,7 +26,7 @@ const Video = () => {
           </p>
           <ul>
             {[
-              "Post your car for sale in Karachi, Islamabad, Lahore and outlying areas.",
+              "Post your car for sale in Karachi, Islamabad, Lahore, Okara and outlying areas.",
               "Reach out to a large audience of car buyers which includes both new and used cars for sale in Pakistan.",
               "Get quick inspections at great prices and also have transparent and reliable valuations.",
             ].map((list, index) => (

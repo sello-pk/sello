@@ -119,7 +119,9 @@ const CreatePostForm = () => {
     const matchedMakeIds = (makes || [])
       .filter(
         (make) =>
-          String(make?.name || "").trim().toLowerCase() === normalizedMake,
+          String(make?.name || "")
+            .trim()
+            .toLowerCase() === normalizedMake,
       )
       .map((make) => String(make?._id || ""));
 
@@ -127,7 +129,8 @@ const CreatePostForm = () => {
 
     return models.filter((model) => {
       const parent =
-        typeof model?.parentCategory === "object" && model?.parentCategory !== null
+        typeof model?.parentCategory === "object" &&
+        model?.parentCategory !== null
           ? model.parentCategory._id
           : model?.parentCategory;
       return matchedMakeIds.includes(String(parent || ""));
@@ -270,12 +273,14 @@ const CreatePostForm = () => {
     }
 
     if (!parsedGeoLocation) {
-      parsedGeoLocation = [74.3587, 31.5204]; // [longitude, latitude] for Lahore, Pakistan
+      parsedGeoLocation = [73.4948311, 30.8303661]; // [longitude, latitude] for Okara, Pakistan
     }
 
     const data = new FormData();
 
-    const normalizedEngineCapacity = parseRangeLikeNumber(formData.engineCapacity);
+    const normalizedEngineCapacity = parseRangeLikeNumber(
+      formData.engineCapacity,
+    );
     const normalizedHorsepower = parseRangeLikeNumber(formData.horsepower);
 
     // Only set defaults for fields that are visible for this vehicle type
@@ -901,7 +906,7 @@ const CreatePostForm = () => {
                 inputType="tel"
                 value={formData.contactNumber}
                 onChange={(e) => handleChange("contactNumber", e.target.value)}
-                placeholder="e.g., +971532345332"
+                placeholder="e.g., +923134211023"
                 required
               />
             </div>
@@ -932,19 +937,25 @@ const CreatePostForm = () => {
             {/* Contact Number, Mileage in same row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2 pl-2">
               <div
-                className={formData.vehicleType === "Car" ? "" : "md:col-span-3"}
+                className={
+                  formData.vehicleType === "Car" ? "" : "md:col-span-3"
+                }
               >
                 <label className="block mb-1">Contact Number</label>
                 <Input
                   inputType="tel"
                   value={formData.contactNumber}
-                  onChange={(e) => handleChange("contactNumber", e.target.value)}
-                  placeholder="e.g., +971532345332"
+                  onChange={(e) =>
+                    handleChange("contactNumber", e.target.value)
+                  }
+                  placeholder="e.g., +923134211023"
                   required
                 />
               </div>
               <div
-                className={formData.vehicleType === "Car" ? "" : "md:col-span-3"}
+                className={
+                  formData.vehicleType === "Car" ? "" : "md:col-span-3"
+                }
               >
                 <label className="block mb-1">Mileage (km)</label>
                 <Input

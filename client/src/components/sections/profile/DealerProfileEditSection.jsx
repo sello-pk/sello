@@ -21,15 +21,50 @@ const DealerProfileEditSection = ({
   const [serviceInput, setServiceInput] = useState("");
 
   const cities = [
-    "Lahore", "Karachi", "Islamabad", "Rawalpindi", "Faisalabad",
-    "Multan", "Peshawar", "Quetta", "Sialkot"
+    "Lahore",
+    "Karachi",
+    "Islamabad",
+    "Rawalpindi",
+    "Faisalabad",
+    "Multan",
+    "Peshawar",
+    "Quetta",
+    "Sialkot",
   ];
 
   const employeeCountOptions = ["1-10", "11-50", "51-100", "100+"];
-  const commonSpecialties = ["Luxury Cars", "Budget Cars", "Electric Vehicles", "SUVs", "Sports Cars", "Classic Cars", "Commercial Vehicles"];
-  const commonLanguages = ["English", "Arabic", "Urdu", "Hindi", "French", "Spanish"];
-  const commonPaymentMethods = ["Cash", "Credit Card", "Bank Transfer", "Cheque", "Financing Available"];
-  const commonServices = ["Financing", "Trade-in", "Warranty", "Insurance", "Delivery", "Test Drive"];
+  const commonSpecialties = [
+    "Luxury Cars",
+    "Budget Cars",
+    "Electric Vehicles",
+    "SUVs",
+    "Sports Cars",
+    "Classic Cars",
+    "Commercial Vehicles",
+  ];
+  const commonLanguages = [
+    "English",
+    "Arabic",
+    "Urdu",
+    "Hindi",
+    "French",
+    "Spanish",
+  ];
+  const commonPaymentMethods = [
+    "Cash",
+    "Credit Card",
+    "Bank Transfer",
+    "Cheque",
+    "Financing Available",
+  ];
+  const commonServices = [
+    "Financing",
+    "Trade-in",
+    "Warranty",
+    "Insurance",
+    "Delivery",
+    "Test Drive",
+  ];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -46,7 +81,10 @@ const DealerProfileEditSection = ({
       } else if (type === "showroomImages") {
         setDealerFiles((prev) => ({
           ...prev,
-          showroomImages: [...(prev.showroomImages || []), ...Array.from(files)],
+          showroomImages: [
+            ...(prev.showroomImages || []),
+            ...Array.from(files),
+          ],
         }));
       }
     }
@@ -82,9 +120,18 @@ const DealerProfileEditSection = ({
 
       // Add all form fields
       Object.keys(dealerFormData).forEach((key) => {
-        if (key === "specialties" || key === "languages" || key === "paymentMethods" || key === "services") {
+        if (
+          key === "specialties" ||
+          key === "languages" ||
+          key === "paymentMethods" ||
+          key === "services"
+        ) {
           formDataToSend.append(key, JSON.stringify(dealerFormData[key]));
-        } else if (dealerFormData[key] !== null && dealerFormData[key] !== undefined && dealerFormData[key] !== "") {
+        } else if (
+          dealerFormData[key] !== null &&
+          dealerFormData[key] !== undefined &&
+          dealerFormData[key] !== ""
+        ) {
           formDataToSend.append(key, dealerFormData[key]);
         }
       });
@@ -112,7 +159,9 @@ const DealerProfileEditSection = ({
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-xl font-semibold text-gray-900">Dealer Business Profile</h3>
+          <h3 className="text-xl font-semibold text-gray-900">
+            Dealer Business Profile
+          </h3>
           <p className="text-sm text-gray-500 mt-1">
             Manage your business information, documents, and settings
           </p>
@@ -146,7 +195,8 @@ const DealerProfileEditSection = ({
                     instagram: user.dealerInfo.socialMedia?.instagram || "",
                     twitter: user.dealerInfo.socialMedia?.twitter || "",
                     linkedin: user.dealerInfo.socialMedia?.linkedin || "",
-                    establishedYear: user.dealerInfo.establishedYear?.toString() || "",
+                    establishedYear:
+                      user.dealerInfo.establishedYear?.toString() || "",
                     employeeCount: user.dealerInfo.employeeCount || "",
                     specialties: user.dealerInfo.specialties || [],
                     languages: user.dealerInfo.languages || [],
@@ -154,7 +204,11 @@ const DealerProfileEditSection = ({
                     services: user.dealerInfo.services || [],
                   });
                 }
-                setDealerFiles({ avatar: null, businessLicense: null, showroomImages: [] });
+                setDealerFiles({
+                  avatar: null,
+                  businessLicense: null,
+                  showroomImages: [],
+                });
               }}
               className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
@@ -177,14 +231,17 @@ const DealerProfileEditSection = ({
         {/* Profile Image Upload */}
         {isEditingDealer && (
           <div className="border-b border-gray-200 pb-6">
-            <h4 className="text-lg font-semibold text-gray-900 mb-4">Profile Image</h4>
+            <h4 className="text-lg font-semibold text-gray-900 mb-4">
+              Profile Image
+            </h4>
             <div className="flex items-center gap-6">
               <div className="relative">
                 <img
                   src={
                     dealerFiles.avatar
                       ? URL.createObjectURL(dealerFiles.avatar)
-                      : user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "User")}`
+                      : user?.avatar ||
+                        `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "User")}`
                   }
                   alt="Profile"
                   className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
@@ -222,8 +279,8 @@ const DealerProfileEditSection = ({
                       {dealerFiles.avatar
                         ? dealerFiles.avatar.name
                         : user?.avatar
-                        ? "Click to change profile image"
-                        : "Click to upload profile image"}
+                          ? "Click to change profile image"
+                          : "Click to upload profile image"}
                     </span>
                     <span className="text-xs text-gray-500 mt-1">
                       JPG, PNG (Max 5MB)
@@ -237,7 +294,9 @@ const DealerProfileEditSection = ({
 
         {/* Basic Information */}
         <div className="border-b border-gray-200 pb-6">
-          <h4 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h4>
+          <h4 className="text-lg font-semibold text-gray-900 mb-4">
+            Basic Information
+          </h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -274,7 +333,7 @@ const DealerProfileEditSection = ({
                 onChange={handleInputChange}
                 disabled={!isEditingDealer}
                 className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50"
-                placeholder="+971 XX XXX XXXX"
+                placeholder="+923 XX XXX XXXX"
               />
             </div>
             <div>
@@ -288,7 +347,7 @@ const DealerProfileEditSection = ({
                 onChange={handleInputChange}
                 disabled={!isEditingDealer}
                 className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50"
-                placeholder="+971 XX XXX XXXX"
+                placeholder="+923 XX XXX XXXX"
               />
             </div>
             <div>
@@ -341,7 +400,9 @@ const DealerProfileEditSection = ({
 
         {/* Business Details */}
         <div className="border-b border-gray-200 pb-6">
-          <h4 className="text-lg font-semibold text-gray-900 mb-4">Business Details</h4>
+          <h4 className="text-lg font-semibold text-gray-900 mb-4">
+            Business Details
+          </h4>
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -427,7 +488,9 @@ const DealerProfileEditSection = ({
         {/* Documents */}
         {isEditingDealer && (
           <div className="border-b border-gray-200 pb-6">
-            <h4 className="text-lg font-semibold text-gray-900 mb-4">Documents</h4>
+            <h4 className="text-lg font-semibold text-gray-900 mb-4">
+              Documents
+            </h4>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -450,24 +513,27 @@ const DealerProfileEditSection = ({
                       {dealerFiles.businessLicense
                         ? dealerFiles.businessLicense.name
                         : user?.dealerInfo?.businessLicense
-                        ? "Current: " + (user.dealerInfo.businessLicense.split("/").pop() || "Uploaded")
-                        : "Click to upload or drag and drop"}
+                          ? "Current: " +
+                            (user.dealerInfo.businessLicense.split("/").pop() ||
+                              "Uploaded")
+                          : "Click to upload or drag and drop"}
                     </span>
                     <span className="text-xs text-gray-500 mt-1">
                       PDF, JPG, PNG (Max 5MB)
                     </span>
                   </label>
                 </div>
-                {user?.dealerInfo?.businessLicense && !dealerFiles.businessLicense && (
-                  <a
-                    href={user.dealerInfo.businessLicense}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-primary-500 hover:underline mt-2 inline-block"
-                  >
-                    View Current License
-                  </a>
-                )}
+                {user?.dealerInfo?.businessLicense &&
+                  !dealerFiles.businessLicense && (
+                    <a
+                      href={user.dealerInfo.businessLicense}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-primary-500 hover:underline mt-2 inline-block"
+                    >
+                      View Current License
+                    </a>
+                  )}
               </div>
 
               <div>
@@ -496,7 +562,8 @@ const DealerProfileEditSection = ({
                     </span>
                   </label>
                 </div>
-                {(dealerFiles.showroomImages.length > 0 || user?.dealerInfo?.showroomImages?.length > 0) && (
+                {(dealerFiles.showroomImages.length > 0 ||
+                  user?.dealerInfo?.showroomImages?.length > 0) && (
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
                     {user?.dealerInfo?.showroomImages?.map((img, idx) => (
                       <div key={idx} className="relative">
@@ -509,7 +576,9 @@ const DealerProfileEditSection = ({
                           <button
                             onClick={() => {
                               // Remove from existing images (would need backend support)
-                              toast.info("Remove existing images from profile edit");
+                              toast.info(
+                                "Remove existing images from profile edit",
+                              );
                             }}
                             className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
                           >
@@ -543,7 +612,9 @@ const DealerProfileEditSection = ({
         {/* Specialties & Services */}
         {isEditingDealer && (
           <div className="border-b border-gray-200 pb-6">
-            <h4 className="text-lg font-semibold text-gray-900 mb-4">Specialties & Services</h4>
+            <h4 className="text-lg font-semibold text-gray-900 mb-4">
+              Specialties & Services
+            </h4>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -558,7 +629,9 @@ const DealerProfileEditSection = ({
                       {specialty}
                       <button
                         type="button"
-                        onClick={() => removeFromArray("specialties", specialty)}
+                        onClick={() =>
+                          removeFromArray("specialties", specialty)
+                        }
                         className="hover:text-primary-500"
                       >
                         <FaTimes size={12} />
@@ -574,7 +647,11 @@ const DealerProfileEditSection = ({
                     onKeyPress={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
-                        addToArray("specialties", specialtyInput, setSpecialtyInput);
+                        addToArray(
+                          "specialties",
+                          specialtyInput,
+                          setSpecialtyInput,
+                        );
                       }
                     }}
                     className="flex-1 py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -582,7 +659,13 @@ const DealerProfileEditSection = ({
                   />
                   <button
                     type="button"
-                    onClick={() => addToArray("specialties", specialtyInput, setSpecialtyInput)}
+                    onClick={() =>
+                      addToArray(
+                        "specialties",
+                        specialtyInput,
+                        setSpecialtyInput,
+                      )
+                    }
                     className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90"
                   >
                     <FaPlus />
@@ -706,7 +789,9 @@ const DealerProfileEditSection = ({
                       {method}
                       <button
                         type="button"
-                        onClick={() => removeFromArray("paymentMethods", method)}
+                        onClick={() =>
+                          removeFromArray("paymentMethods", method)
+                        }
                         className="hover:text-purple-600"
                       >
                         <FaTimes size={12} />
@@ -741,7 +826,9 @@ const DealerProfileEditSection = ({
         {/* Social Media */}
         {isEditingDealer && (
           <div className="border-b border-gray-200 pb-6">
-            <h4 className="text-lg font-semibold text-gray-900 mb-4">Social Media</h4>
+            <h4 className="text-lg font-semibold text-gray-900 mb-4">
+              Social Media
+            </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -804,22 +891,31 @@ const DealerProfileEditSection = ({
           <div className="space-y-4">
             {/* Profile Image Display */}
             <div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-4">Profile Image</h4>
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">
+                Profile Image
+              </h4>
               <div className="flex items-center gap-4">
                 <img
-                  src={user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "User")}`}
+                  src={
+                    user?.avatar ||
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "User")}`
+                  }
                   alt="Profile"
                   className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
                 />
                 <div>
                   <p className="text-sm text-gray-600">Current profile image</p>
-                  <p className="text-xs text-gray-500">Click "Edit Profile" to change</p>
+                  <p className="text-xs text-gray-500">
+                    Click "Edit Profile" to change
+                  </p>
                 </div>
               </div>
             </div>
 
             <div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-4">Current Information</h4>
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">
+                Current Information
+              </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-600">Business Name</p>
@@ -830,7 +926,8 @@ const DealerProfileEditSection = ({
                 <div>
                   <p className="text-sm text-gray-600">Location</p>
                   <p className="font-semibold text-gray-900">
-                    {user?.dealerInfo?.area || "N/A"}, {user?.dealerInfo?.city || "N/A"}
+                    {user?.dealerInfo?.area || "N/A"},{" "}
+                    {user?.dealerInfo?.city || "N/A"}
                   </p>
                 </div>
                 <div>
@@ -888,11 +985,15 @@ const DealerProfileEditSection = ({
 
             {/* Documents Display */}
             <div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-4">Documents</h4>
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">
+                Documents
+              </h4>
               <div className="space-y-4">
                 {user?.dealerInfo?.businessLicense && (
                   <div>
-                    <p className="text-sm text-gray-600 mb-2">Business License / CNIC</p>
+                    <p className="text-sm text-gray-600 mb-2">
+                      Business License / CNIC
+                    </p>
                     <a
                       href={user.dealerInfo.businessLicense}
                       target="_blank"
@@ -900,15 +1001,27 @@ const DealerProfileEditSection = ({
                       className="inline-flex items-center gap-2 text-primary-500 hover:text-primary-500 font-medium"
                     >
                       <span>View License Document</span>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                        />
                       </svg>
                     </a>
                   </div>
                 )}
                 {user?.dealerInfo?.showroomImages?.length > 0 && (
                   <div>
-                    <p className="text-sm text-gray-600 mb-2">Showroom Images ({user.dealerInfo.showroomImages.length})</p>
+                    <p className="text-sm text-gray-600 mb-2">
+                      Showroom Images ({user.dealerInfo.showroomImages.length})
+                    </p>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {user.dealerInfo.showroomImages.map((img, idx) => (
                         <a
@@ -933,9 +1046,14 @@ const DealerProfileEditSection = ({
                     </div>
                   </div>
                 )}
-                {(!user?.dealerInfo?.businessLicense && (!user?.dealerInfo?.showroomImages || user.dealerInfo.showroomImages.length === 0)) && (
-                  <p className="text-sm text-gray-500">No documents uploaded. Click "Edit Profile" to upload documents.</p>
-                )}
+                {!user?.dealerInfo?.businessLicense &&
+                  (!user?.dealerInfo?.showroomImages ||
+                    user.dealerInfo.showroomImages.length === 0) && (
+                    <p className="text-sm text-gray-500">
+                      No documents uploaded. Click "Edit Profile" to upload
+                      documents.
+                    </p>
+                  )}
               </div>
             </div>
           </div>

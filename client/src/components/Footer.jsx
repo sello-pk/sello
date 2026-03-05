@@ -1,12 +1,7 @@
 import React from "react";
 import { footerData } from "../assets/assets";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  apple,
-  android,
-  facebook,
-  instagram,
-} from "../assets/assets";
+import { apple, android, facebook, instagram } from "../assets/assets";
 import { FaYoutube } from "react-icons/fa";
 import { FaTiktok } from "react-icons/fa6";
 
@@ -74,13 +69,13 @@ const Footer = () => {
               </h4>
               <div className="space-y-3 text-sm text-gray-300">
                 <p>
-                  <span className="font-medium text-white">Address:</span> Sello
-                  Head Office, Gulberg, Lahore, Pakistan
+                  <span className="font-medium text-white">Address:</span>{" "}
+                  RFJW+4XR Okara, Pakistan
                 </p>
                 <p>
                   <span className="font-medium text-white">Phone:</span>{" "}
                   <a
-                    href="tel:+97145061300"
+                    href="tel:+923134211023"
                     className="hover:text-white transition-colors duration-200"
                   >
                     +923134211023
@@ -89,11 +84,10 @@ const Footer = () => {
                 <p>
                   <span className="font-medium text-white">Email:</span>{" "}
                   <a
-                    href="mailto:info@sello.ae"
+                    href="mailto:info@sello.pk"
                     className="hover:text-white transition-colors duration-200"
                   >
-                    {import.meta.env.VITE_SUPPORT_EMAIL ||
-                      "support@example.com"}
+                    {import.meta.env.VITE_SUPPORT_EMAIL || "info@sello.pk"}
                   </a>
                 </p>
               </div>

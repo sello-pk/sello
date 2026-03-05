@@ -266,7 +266,7 @@ By participating in our auctions, you acknowledge and accept these limitations.`
               <div className="flex flex-col sm:flex-row gap-4 text-sm">
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
-                  GT Road, Near Industrial Area, Okara, Punjab
+                  RFJW+4XR Okara, Pakistan
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4" />
@@ -349,18 +349,18 @@ By participating in our auctions, you acknowledge and accept these limitations.`
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="tel:03001234567"
+              href="tel:+923134211023"
               className="flex items-center justify-center gap-2 px-6 py-3 bg-white/10 rounded-xl text-white hover:bg-white/20 transition-colors"
             >
               <Phone className="w-5 h-5" />
-              0300-1234567
+              +923134211023
             </a>
             <a
-              href="mailto:support@okaraauction.pk"
+              href="mailto:info@sello.pk"
               className="flex items-center justify-center gap-2 px-6 py-3 bg-white/10 rounded-xl text-white hover:bg-white/20 transition-colors"
             >
               <Mail className="w-5 h-5" />
-              support@okaraauction.pk
+              info@sello.pk
             </a>
           </div>
         </motion.div>
