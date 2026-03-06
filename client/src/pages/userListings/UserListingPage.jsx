@@ -11,10 +11,12 @@ import NewsLatter from "../../components/utils/NewsLatter";
 
 const UserListingPage = () => {
   return (
-    <div>
+    <div className="bg-[#F5F5F5]">
       <UserListingHero />
-      <div className="py-5 px-3 sm:px-4 md:px-6 lg:px-8">
-        <div className=" flex items-center justify-between w-full">
+
+      {/* Constrained Width Sections - Like Header */}
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="flex items-center justify-between w-full">
           <h1 className="md:text-3xl text-xl font-semibold">
             Explore Our Premium Brands
           </h1>
@@ -22,18 +24,30 @@ const UserListingPage = () => {
             to={"/view-all-brands"}
             className="flex items-center gap-2 text-lg"
           >
-            Show All Brands <GoArrowUpRight />{" "}
+            Show All Brands <GoArrowUpRight />
           </Link>
         </div>
         {/* BrandMarquee will fetch brands from admin categories automatically */}
-        <BrandMarquee />
+        <div className="mt-8">
+          <BrandMarquee />
+        </div>
       </div>
-      <UserListings />
-      <BannerInUesrListings />
+
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+        <UserListings />
+      </div>
+
+      {/* Full Width Sections */}
+      <div className="w-full">
+        <BannerInUesrListings />
+      </div>
+
       <ReviewSectionInUser />
-      <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-[#F5F5F5]">
+
+      <div className="w-full">
         <ContactMap />
       </div>
+
       <NewsLatter />
     </div>
   );

@@ -1,94 +1,57 @@
 import React from "react";
-import { GoArrowUpRight } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
-import { usersBrowseByCarType } from "../../../assets/images/carDetails/types/bodyTypes";
 import { images } from "../../../assets/assets";
-import toast from "react-hot-toast";
 
 const UserListingHero = () => {
   const navigate = useNavigate();
 
-  const handleBrowseClick = (searchTerm) => {
-    // Navigate to listings page with search term
-    navigate(`/listings?search=${encodeURIComponent(searchTerm)}`);
-    toast.success(`Searching for ${searchTerm}...`);
-  };
-
   return (
-    <div className="md:h-[80vh] bg-primary flex flex-col md:flex-row items-center justify-between">
-      {/* Left Section */}
-      <div className="w-full md:w-[60%] flex items-center px-3 sm:px-4 md:px-6 lg:px-8 py-10 md:py-0">
-        <div>
-          <h1 className="text-2xl md:text-5xl font-bold mb-8 md:mb-14">
-            Your Listings
-          </h1>
-
-          {/* Buttons */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 my-5 md:my-7">
-            <button
-              onClick={() => navigate("/create-post")}
-              className="flex items-center justify-center space-x-3 bg-primary-500 text-white px-5 py-2.5 rounded text-base md:text-lg hover:opacity-90 font-medium w-full sm:w-auto transition-colors"
-            >
-              <span>ADD Posts</span>
-              <GoArrowUpRight />
-            </button>
-            <button
-              onClick={() => navigate("/contact")}
-              className="flex items-center justify-center space-x-3 bg-white text-primary-500 px-5 py-2.5 rounded text-base md:text-lg hover:bg-primary-500 hover:text-white font-medium border-[1px] border-primary-500 w-full sm:w-auto transition-colors"
-            >
-              <span>Contact Us</span>
-              <GoArrowUpRight />
-            </button>
-          </div>
-
-          {/* Text Links */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-7 text-sm md:text-base">
-            <p>Or Browse Featured Model</p>
-            <p>Sell Your Car</p>
-          </div>
-
-          {/* Car Types */}
-          <div className="flex flex-wrap gap-4 md:gap-8 mt-6 md:mt-10">
-            {[
-              { name: "SUV", action: () => handleBrowseClick("suv") },
-              { name: "Sedan", action: () => handleBrowseClick("sedan") },
-              {
-                name: "Hatchback",
-                action: () => handleBrowseClick("hatchback"),
-              },
-              { name: "Coupe", action: () => handleBrowseClick("coupe") },
-              { name: "Hybrid", action: () => handleBrowseClick("hybrid") },
-            ].map((item) => (
-              <div
-                key={item.name}
-                className="flex rounded-md px-3 cursor-pointer items-center gap-2 bg-white hover:bg-primary-500 hover:text-white transition-all"
-                onClick={item.action}
+    <section className="relative bg-[#272525] md:h-[80vh] overflow-hidden">
+      <div className="max-w-8xl mx-auto w-full h-full pl-3 pr-3 sm:pl-4 sm:pr-4 md:pl-6 md:pr-6 lg:pl-8 lg:pr-8">
+        <div className="h-full flex flex-col md:flex-row items-center">
+          {/* Left Side */}
+          <div className="w-full md:w-[60%] py-10 md:py-0 md:pr-6 lg:pr-10">
+            <div>
+              <h1 className="md:text-5xl mb-16 text-3xl font-bold text-white">
+                My Listings
+              </h1>
+              <p className="text-lg text-gray-300 my-4">
+                Manage all your vehicle listings in one place. Track views, edit
+                details, and monitor the performance of your posted cars.
+              </p>
+              <p className="text-lg text-gray-300 my-4">
+                Whether you're selling multiple vehicles or just one, our
+                dashboard gives you complete control over your listings with
+                real-time updates and insights.
+              </p>
+            </div>
+            <div className="flex items-center flex-wrap my-7 gap-5">
+              <button
+                onClick={() => navigate("/create-post")}
+                className="px-6 w-48 py-3 rounded-lg border-[1px] flex items-center justify-center gap-3 bg-black text-white border-transparent hover:bg-white hover:text-black transition-all ease-in"
               >
-                <h4 className="title text-sm md:text-base">{item.name}</h4>
-                <img
-                  src={
-                    usersBrowseByCarType.find(
-                      (type) => type.titleValue === item.name,
-                    )?.image
-                  }
-                  alt="body type"
-                  className="h-10 md:h-12"
-                />
-              </div>
-            ))}
+                Add New Listing
+              </button>
+              <button
+                onClick={() => navigate("/cars")}
+                className="px-6 w-48 py-3 rounded-lg border-[1px] flex items-center justify-center gap-3 border-black text-black hover:bg-black hover:text-white transition-all ease-in bg-white"
+              >
+                Browse Cars
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Right Section (Image) */}
-      <div className="w-full md:w-[40%] h-64 md:h-full">
+      {/* Right Side - hard pinned to right edge */}
+      <div className="w-full h-64 md:absolute md:top-0 md:right-0 md:h-full md:w-[40%]">
         <img
           src={images.userHeroSectionImg}
           alt="userHero section image"
           className="h-full rounded-bl-[155px] w-full object-cover"
         />
       </div>
-    </div>
+    </section>
   );
 };
 

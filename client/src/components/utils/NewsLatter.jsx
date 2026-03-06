@@ -18,7 +18,7 @@ const NewsLatter = () => {
       const result = await subscribeNewsletter(email).unwrap();
       toast.success(
         result?.message ||
-          "Successfully subscribed to our newsletter! Check your email for confirmation."
+          "Successfully subscribed to our newsletter! Check your email for confirmation.",
       );
       setEmail(""); // Clear input on success
     } catch (error) {
@@ -27,7 +27,7 @@ const NewsLatter = () => {
         toast.success(error.data.message); // Show as success if already subscribed
       } else {
         toast.error(
-          error?.data?.message || "Failed to subscribe. Please try again."
+          error?.data?.message || "Failed to subscribe. Please try again.",
         );
       }
     }
