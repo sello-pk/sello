@@ -10,25 +10,27 @@ import FindOutMore from "../../components/sections/createPost/FindOutMore";
 
 const CreatePost = () => {
   return (
-    <div className="px-3 sm:px-4 md:px-6 lg:px-8">
+    <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
       <CreatePostForm />
       <WhyChooseUsUtility />
       <InpirationSectoin />
       <BannerInFilter />
       <div className="py-12 bg-[#F5F5F5]">
-        <div className="flex items-center justify-between">
-          <h1 className="md:text-4xl text-2xl font-semibold">
-            Explore Our Premium Brands
-          </h1>
-          <Link
-            to="/view-all-brands"
-            className="flex items-center gap-2 text-primary-500"
-          >
-            Show All Brands <MdArrowOutward />
-          </Link>
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between">
+            <h1 className="md:text-4xl text-2xl font-semibold">
+              Explore Our Premium Brands
+            </h1>
+            <Link
+              to="/view-all-brands"
+              className="flex items-center gap-2 text-primary-500"
+            >
+              Show All Brands <MdArrowOutward />
+            </Link>
+          </div>
+          {/* BrandMarquee will fetch brands from admin categories automatically */}
+          <BrandMarquee />
         </div>
-        {/* BrandMarquee will fetch brands from admin categories automatically */}
-        <BrandMarquee />
       </div>
       <FindOutMore />
     </div>
