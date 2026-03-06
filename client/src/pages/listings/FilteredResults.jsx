@@ -38,7 +38,7 @@ const FilteredResults = () => {
   // Fetch data using the correct query parameters
   const { data: apiResults, isLoading: apiLoading } = useGetFilteredCarsQuery(
     queryParams,
-    { skip: !queryParams }
+    { skip: !queryParams },
   );
 
   // Use API results only (ignore state to fix navigation issues)
@@ -66,12 +66,12 @@ const FilteredResults = () => {
         return cars.sort((a, b) => (b.mileage || 0) - (a.mileage || 0));
       case "oldest":
         return cars.sort(
-          (a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0)
+          (a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0),
         );
       case "newest":
       default:
         return cars.sort(
-          (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+          (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0),
         );
     }
   }, [carsData?.cars, sortBy]);
@@ -120,9 +120,11 @@ const FilteredResults = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Breadcrumb items={breadcrumbItems} />
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Breadcrumb items={breadcrumbItems} />
+      </div>
 
-      <div className="container mx-auto px-4 md:px-6 py-6">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Header */}
         <div className="mb-6">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
