@@ -74,7 +74,7 @@ const FilterPage = () => {
   };
 
   return (
-    <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-12">
+    <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <h2 className="md:text-3xl text-xl font-semibold text-center text-primary-500 mb-8">
         Filter
       </h2>
