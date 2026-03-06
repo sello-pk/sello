@@ -3,7 +3,7 @@ import React from "react";
 const TermsCondition = () => {
   return (
     <div className="bg-gradient-to-b from-gray-50 to-white min-h-screen py-12">
-      <div className="container mx-auto px-4 max-w-4xl text-gray-800">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 text-gray-800">
         <h1 className="text-4xl font-extrabold mb-8 text-center text-gray-900">
           Terms & Conditions – Sello.pk
         </h1>

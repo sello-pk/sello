@@ -17,14 +17,14 @@ const Blog = () => {
         description="Read our latest blog posts about cars, automotive news, buying guides, maintenance tips, and more."
       />
       <BlogsHeroSection />
-      <div className="py-8 px-3 sm:px-4 md:px-6 lg:px-8">
-        <div className="max-w-[86rem] mx-auto w-full flex items-center justify-between gap-4">
+      <div className="py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-8xl mx-auto w-full flex items-center justify-between gap-4">
           <h2 className="md:text-3xl text-xl font-semibold">
             Explore Our Premium Brands
           </h2>
           <Link
-            to={"/view-all-brands"}
-            className="flex items-center gap-2 text-base md:text-lg"
+            to="/view-all-brands"
+            className="flex items-center gap-2 text-primary-500"
           >
             Show All Brands <GoArrowUpRight />{" "}
           </Link>

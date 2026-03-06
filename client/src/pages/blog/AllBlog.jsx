@@ -57,8 +57,11 @@ const AllBlog = () => {
       <BlogsHeroSection />
 
       {/* Filters Section */}
-      <div className="bg-gray-50 py-6 px-4 md:px-16">
-        <form onSubmit={handleSearch} className="max-w-6xl mx-auto">
+      <div className="bg-gray-50 py-6">
+        <form
+          onSubmit={handleSearch}
+          className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8"
+        >
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search Input */}
             <div className="flex-1 relative">

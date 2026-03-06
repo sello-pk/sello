@@ -133,7 +133,7 @@ const CategoryPage = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-primary-500/90 via-primary-600/70 to-primary-700/50"></div>
         </div>
 
-        <div className="relative z-10 container mx-auto px-4">
+        <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             to="/listings"
             className="inline-flex items-center gap-2 mb-8 text-white/80 hover:text-white transition transform hover:scale-105"
@@ -182,7 +182,7 @@ const CategoryPage = () => {
       </div>
 
       {/* Content Section */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {isShowingAllCategories ? (
           // Show all categories grid
           <>
