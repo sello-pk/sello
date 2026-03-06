@@ -197,7 +197,9 @@ const CarDetails = () => {
           />
         </>
       )}
-      <Breadcrumb items={breadcrumbItems} />
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Breadcrumb items={breadcrumbItems} />
+      </div>
 
       {/* Hero Section */}
       <CarDetailsHeroSection key={`hero-${routeParam}`} />
@@ -213,7 +215,7 @@ const CarDetails = () => {
 
       {/* Seller Reviews */}
       {car?.postedBy && (
-        <div className="max-w-7xl mx-auto px-4 md:px-20 py-8 bg-white">
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <UserReviewSection
             userId={car.postedBy?._id || car.postedBy}
             carId={routeParam}
@@ -234,7 +236,7 @@ const CarDetails = () => {
       <RecentlyViewed />
 
       {/* Brands Section */}
-      <div className="max-w-7xl mx-auto px-4 md:px-20 py-12 bg-white">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-white">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900">

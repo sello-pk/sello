@@ -128,10 +128,13 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
           style={{ scrollBehavior: "smooth" }}
         >
           {/* Soft fade/blur at track edges for premium marquee look */}
-          <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-6 sm:w-10 md:w-14 bg-gradient-to-r from-[#f5f5f5] via-[#f5f5f5]/70 to-transparent backdrop-blur-[1px]" />
-          <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-6 sm:w-10 md:w-14 bg-gradient-to-l from-[#f5f5f5] via-[#f5f5f5]/70 to-transparent backdrop-blur-[1px]" />
+          <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-6 sm:w-10 md:w-14 bg-gradient-to-r from-white via-white/70 to-transparent backdrop-blur-[1px]" />
+          <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-6 sm:w-10 md:w-14 bg-gradient-to-l from-white via-white/70 to-transparent backdrop-blur-[1px]" />
 
-          <div ref={sliderRef} className="relative z-0 flex gap-4 sm:gap-6 md:gap-8">
+          <div
+            ref={sliderRef}
+            className="relative z-0 flex gap-4 sm:gap-6 md:gap-8"
+          >
             {isLoading ? (
               <div className="flex items-center justify-center w-full py-8 text-gray-400">
                 Loading...

@@ -394,13 +394,13 @@ const CarDetailsGallerySection = () => {
           <div className="flex-1 relative rounded-xl overflow-hidden bg-gray-100 shadow-lg">
             <div
               ref={mainImageRef}
-              className="relative w-full h-[450px] cursor-zoom-in group"
+              className="relative w-full h-[550px] cursor-zoom-in group"
               onClick={() => openImageModal(current)}
             >
               <LazyImage
                 src={images[current]}
                 alt={`Car Image ${current + 1}`}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                className="w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = placeholderImages.carPlaceholder;
@@ -481,13 +481,13 @@ const CarDetailsGallerySection = () => {
           {/* Main Image */}
           <div className="relative rounded-xl overflow-hidden bg-gray-100 shadow-lg mb-4">
             <div
-              className="relative w-full h-[300px] cursor-pointer"
+              className="relative w-full h-[400px] cursor-pointer"
               onClick={() => openImageModal(current)}
             >
               <LazyImage
                 src={images[current]}
                 alt={`Car Image ${current + 1}`}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-center"
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = placeholderImages.carPlaceholder;

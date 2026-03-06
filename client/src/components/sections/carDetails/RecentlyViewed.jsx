@@ -67,7 +67,7 @@ const RecentlyViewed = () => {
   // Skeleton while loading first page
   if (isLoading && recentlyViewed.length === 0) {
     return (
-      <div className="max-w-7xl mx-auto px-4 md:px-20 py-12 bg-gray-50">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-gray-50">
         <div className="mb-8">
           <div className="h-8 bg-gray-200 rounded w-48 mb-2 animate-pulse" />
           <div className="h-4 bg-gray-200 rounded w-40 animate-pulse" />
@@ -91,7 +91,7 @@ const RecentlyViewed = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-20 py-12 bg-gray-50">
+    <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-gray-50">
       <div className="mb-8 flex items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
