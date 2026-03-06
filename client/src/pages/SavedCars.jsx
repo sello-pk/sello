@@ -30,8 +30,8 @@ const SavedCars = () => {
   const cars = savedCars || [];
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5] px-4 md:px-16 py-12">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-[#F5F5F5] px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-8xl mx-auto">
         <h1 className="text-3xl md:text-4xl font-semibold mb-8">Saved Cars</h1>
 
         {isLoading ? (
