@@ -14,54 +14,56 @@ const FAQs = () => {
 
   const faqs = [
     {
-      question: "How do I create an account?",
+      question: "How to create a login for Sello?",
       answer:
-        "Click on 'Sign Up' in the top right corner, enter your email and password, verify your email, and complete your profile setup.",
+        "To get started sign up by clicking the Register button at the top right of the home page, put in your email or mobile number, and we'll walk you through the verification process. Upon verification you will have access to all of the Sello features which include auctions, listings, and AI tools.",
     },
     {
-      question: "How do I post a car for sale?",
+      question: "Do I have to pay to list my car on Sello?",
       answer:
-        "Log in to your account, click 'Post Ad' or 'Create Post', fill in all vehicle details, upload photos, and publish your listing.",
+        "Sure! Put up your free car on Sello by going into the proper listing section, upload the car info and photos, and hit submit for your car to be looked at. Once your listing is approved your car will go live for buyers in Pakistan.",
     },
     {
-      question: "What payment methods are accepted?",
+      question: "How do I get involved in an auction?",
       answer:
-        "We accept credit/debit cards (Visa, Mastercard) and bank transfers for subscriptions and premium features.",
+        "To enter an auction you must go through identity verification using your CNIC and also pay the refundable token deposit. Once in the system you may place bids in live auctions which may be online or offline. The highest bid at auction end stands if it meets the reserve price.",
     },
     {
-      question: "How do I contact a seller?",
+      question: "May I edit my live listing?",
       answer:
-        "Click on any listing to view details, then use the 'Call', 'Chat', or 'Message' buttons to contact the seller directly.",
+        "Yes that you may change some listing info before we publish it. But once your vehicle is live in the auction and out to go we may put restrictions on those changes. For listing update requests go to support.",
     },
     {
-      question: "Can I edit my listing after posting?",
+      question: "How soon can I expect to be paid after selling my car?",
       answer:
-        "Yes, you can edit your listing anytime from the 'My Listings' section in your profile. Click on the listing and select 'Edit'.",
+        "Once a car sale is confirmed and all paperwork is completed payment processing usually takes 3-7 business days which may vary by payout method and verification status.",
     },
     {
-      question: "How do I boost my listing?",
+      question:
+        "If I don't win the auction, will my token deposit be returned?",
       answer:
-        "Go to your listing, click 'Boost' or 'Promote', choose a boost package, and complete the payment. Boosted listings appear at the top of search results.",
+        "Yes. If you do not win a vehicle in an auction your token deposit will be returned to you. We'll get back to you within 5-7 business days which also will be through the original means of payment.",
     },
     {
-      question: "What should I do if I find a suspicious listing?",
+      question: "What does the Sello AI Car Price Estimator do?",
       answer:
-        "Report it immediately using the 'Report' button on the listing page, or contact our support team at info@sello.pk.",
+        "AI Car Price Estimate we put together which is based on what you input like make, model, year, mileage, and condition. The price we present is a foray which may change with inspection, documentation, and market demand.",
     },
     {
-      question: "How do I cancel my subscription?",
+      question: "May I check out the vehicle before I place my bid?",
       answer:
-        "Go to your Profile → Subscription section, click 'Cancel Auto-Renewal'. Your subscription will remain active until the end of the billing period.",
+        "Yes. All auction cars are present at the auction yard. We recommend that you go see them in person, take a look, read the reports and also do your due diligence before you bid.",
     },
     {
-      question: "Can I save listings to view later?",
+      question:
+        "What is the set of documents needed for collection of a vehicle post auction?",
       answer:
-        "Yes, click the heart icon on any listing to save it. View all saved listings in the 'Saved Cars' section of your profile.",
+        "To retrieve your vehicle, you must present:\nOriginal CNIC\nPayment receipt\nAuction win confirmation\nVehicle pick up is to be completed within the specified time of full payment.",
     },
     {
-      question: "How do I delete my account?",
+      question: "What has happened in the case of a buyer and seller dispute?",
       answer:
-        "Contact our support team at info@sello.pk with your account details, and we'll assist you with account deletion.",
+        "All issues to be brought to our attention within 48 hours of the auction or transaction. We may ask for supporting documentation. We will look into the case and report back to you in accordance with our policies.",
     },
   ];
 
@@ -97,7 +99,9 @@ const FAQs = () => {
                 </button>
                 {openIndex === index && (
                   <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                    <p className="text-gray-700">{faq.answer}</p>
+                    <p className="text-gray-700 whitespace-pre-line">
+                      {faq.answer}
+                    </p>
                   </div>
                 )}
               </div>
