@@ -11,7 +11,9 @@ const Contact = () => {
         description="Need help buying or selling a car in Pakistan? Contact Sello.pk for fast, reliable support. We're here to guide you every step of the way."
         canonical="https://sello.pk/contact"
       />
-      <ContactForm />
+      <div className="max-w-8xl mx-auto">
+        <ContactForm />
+      </div>
       <ContactMap />
     </div>
   );

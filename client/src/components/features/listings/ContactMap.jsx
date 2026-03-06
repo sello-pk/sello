@@ -65,7 +65,7 @@ const ContactMap = () => {
   };
 
   return (
-    <section className="relative w-full h-[70vh] md:h-[80vh] rounded-2xl overflow-hidden shadow-2xl">
+    <section className="relative w-full h-[70vh] md:h-[80vh] overflow-hidden shadow-2xl">
       {/* Map */}
       <iframe
         title="Sello.pk Office Location"

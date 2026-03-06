@@ -118,8 +118,8 @@ const ContactForm = () => {
   };
 
   return (
-    <section className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 py-12 md:py-20">
-      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="bg-gradient-to-br from-gray-50 via-white to-gray-50 py-12 md:py-20">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         {/* Hero Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
