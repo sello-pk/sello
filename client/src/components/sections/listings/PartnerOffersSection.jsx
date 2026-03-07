@@ -11,11 +11,6 @@ const PartnerOffersSection = () => {
       alt: "Amin Garage",
     },
     {
-      link: "https://wbdigitech.pk",
-      logo: images.wbDigitalLogo,
-      alt: "WB Digitech",
-    },
-    {
       link: "https://mianmotors.com",
       logo: images.mianMotors,
       alt: "Mian Motors",
