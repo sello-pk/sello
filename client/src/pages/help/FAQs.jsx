@@ -50,20 +50,32 @@ const FAQs = () => {
         "AI Car Price Estimate we put together which is based on what you input like make, model, year, mileage, and condition. The price we present is a foray which may change with inspection, documentation, and market demand.",
     },
     {
-      question: "May I check out the vehicle before I place my bid?",
+      question:
+        "What is the best way to check if a car at auction is authentic?",
       answer:
-        "Yes. All auction cars are present at the auction yard. We recommend that you go see them in person, take a look, read the reports and also do your due diligence before you bid.",
+        "At all times of which it is reported at the Okara Auction Yard all vehicles go through a standard inspection. We ask that you do your research which may include mechanical checks or get in touch with an expert before you bid. Also we recommend you to do your due diligence.",
     },
     {
       question:
-        "What is the set of documents needed for collection of a vehicle post auction?",
+        "What happens when I am successful in an auction but then can't process the payment in time?",
       answer:
-        "To retrieve your vehicle, you must present:\nOriginal CNIC\nPayment receipt\nAuction win confirmation\nVehicle pick up is to be completed within the specified time of full payment.",
+        "If within 24 to 48 hours we don't see full payment your token may be subject to forfeiture and at that time your account may be put on temporary or permanent hold. Also at that time the vehicle may be put back up for sale in the next auction.",
     },
     {
-      question: "What has happened in the case of a buyer and seller dispute?",
+      question:
+        "Can I get a refund for a vehicle which has issues that were not disclosed?",
       answer:
-        "All issues to be brought to our attention within 48 hours of the auction or transaction. We may ask for supporting documentation. We will look into the case and report back to you in accordance with our policies.",
+        "Once we have received your payment and you have picked up the vehicle, we do not issue refunds for any unknown issues. Also at the time of placing your bid we advise you to do a personal inspection and to go over the inspection report we have prepared.",
+    },
+    {
+      question: "How do offline and online bids play out in an auction?",
+      answer:
+        "Offline and in the digital domain we combine your bids in real time. Our auctioneers enter all offline bids in the system and what you will see is that both offline and online bids' activity is out there in the open at the same time which gives you the true picture of competition.",
+    },
+    {
+      question: "Is your deposit safe and refundable?",
+      answer:
+        "Yes. Your funds are secure and we will return them in full if you do not win any auctions. For those that do win, the deposit will go towards your total due. We process refunds within 5-7 business days back to the same payment method you used.",
     },
   ];
 

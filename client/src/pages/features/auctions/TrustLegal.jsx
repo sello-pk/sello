@@ -199,29 +199,32 @@ By participating in our auctions, you acknowledge and accept these limitations.`
 
   const faqs = [
     {
-      question: "How do I verify if a car is genuine?",
+      question:
+        "What is the best way to check if a car at auction is authentic?",
       answer:
-        "All vehicles undergo our standard inspection at the Okara yard. You can also request the inspection report and view the vehicle in person before bidding. We recommend conducting your own due diligence for high-value purchases.",
+        "At all times of which it is reported at the Okara Auction Yard all vehicles go through a standard inspection. We ask that you do your research which may include mechanical checks or get in touch with an expert before you bid. Also we recommend you to do your due diligence.",
     },
     {
-      question: "What happens if I win but cannot pay within 48 hours?",
+      question:
+        "What happens when I am successful in an auction but then can't process the payment in time?",
       answer:
-        "Failure to complete payment within 48 hours may result in forfeiture of your token deposit, temporary or permanent ban from future auctions, and the vehicle being re-listed for the next auction.",
+        "If within 24 to 48 hours we don't see full payment your token may be subject to forfeiture and at that time your account may be put on temporary or permanent hold. Also at that time the vehicle may be put back up for sale in the next auction.",
     },
     {
-      question: "Can I get a refund if a vehicle has undisclosed issues?",
+      question:
+        "Can I get a refund for a vehicle which has issues that were not disclosed?",
       answer:
-        "Once payment is completed and the vehicle is collected, we cannot process refunds for previously undisclosed issues. We strongly recommend inspecting the vehicle before bidding and reviewing the inspection report.",
+        "Once we have received your payment and you have picked up the vehicle, we do not issue refunds for any unknown issues. Also at the time of placing your bid we advise you to do a personal inspection and to go over the inspection report we have prepared.",
     },
     {
-      question: "How are offline and online bids combined?",
+      question: "How do offline and online bids play out in an auction?",
       answer:
-        "Our auctioneer enters offline bids in real-time into the system. All bids, whether online or from the floor, are displayed in the same bid history and compete equally.",
+        "Offline and in the digital domain we combine your bids in real time. Our auctioneers enter all offline bids in the system and what you will see is that both offline and online bids' activity is out there in the open at the same time which gives you the true picture of competition.",
     },
     {
-      question: "Is my token deposit safe?",
+      question: "Is your deposit safe and refundable?",
       answer:
-        "Yes, your token deposit is held securely and is fully refundable if you do not win any auction. It is applied to your winning bid amount if you win.",
+        "Yes. Your funds are secure and we will return them in full if you do not win any auctions. For those that do win, the deposit will go towards your total due. We process refunds within 5-7 business days back to the same payment method you used.",
     },
   ];
 

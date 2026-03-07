@@ -68,6 +68,7 @@ const CreatePostForm = () => {
     description: "",
     vehicleType: "Car", // Default to Car
     vehicleTypeCategory: "", // Category ID reference
+    listingType: "Regular Listing", // Default to Regular Listing
     make: "",
     model: "",
     variant: "",
@@ -750,10 +751,47 @@ const CreatePostForm = () => {
       {/* Vehicle Type Selection - Top of Form */}
       <div className="mb-6">
         <label className="block mb-3 text-center font-medium">
-          Vehicle Type *
+          Listing Type *
         </label>
-        <div className="flex justify-center gap-3 flex-wrap">
-          {["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"].map(
+        <div className="flex justify-center gap-3 flex-wrap mb-4">
+          {["Regular Listing", "Auction"].map(
+            (type) => (
+              <button
+                key={type}
+                type="button"
+                onClick={() => {
+                    : "bg-white text-gray-700 border-2 border-gray-200 hover:border-primary-500 hover:shadow-md hover:bg-primary-50"
+                }`}
+              >
+                {formData.listingType === type && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-2 h-2 bg-primary-600 rounded-full animate-ping" />
+                  </div>
+                )}
+                {type === "Regular Listing" ? (
+                  <span className="flex items-center gap-2">
+                    <span className="text-lg">🚗</span>
+                    <span>Regular Listing</span>
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <span className="text-lg">🔨</span>
+                    <span>Auction Listing</span>
+                  </span>
+                )}
+              </button>
+            )
+          )}
+        </div>
+
+        {/* Show vehicle type selection only for regular listings */}
+        {formData.listingType === "Regular Listing" && (
+          <>
+            <label className="block mb-3 text-center font-medium">
+              Vehicle Type *
+            </label>
+            <div className="flex justify-center gap-3 flex-wrap">
+              {["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"].map(
             (type) => (
               <button
                 key={type}

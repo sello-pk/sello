@@ -1,6 +1,11 @@
 import express from "express";
-import { auth, authorize, requireAuctionBidAccess } from "../middlewares/authMiddleware.js";
+import {
+  auth,
+  authorize,
+  requireAuctionBidAccess,
+} from "../middlewares/authMiddleware.js";
 import { hasAnyPermission } from "../middlewares/permissionMiddleware.js";
+import { upload } from "../middlewares/multer.js";
 import {
   getAuctions,
   getAuctionById,

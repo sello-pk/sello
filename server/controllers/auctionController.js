@@ -13,6 +13,7 @@ import Car from "../models/carModel.js";
 import Notification from "../models/notificationModel.js";
 import Logger from "../utils/logger.js";
 import User from "../models/userModel.js";
+import { uploadCloudinary } from "../utils/helpers.js";
 import { evaluateAuctionBidAccess } from "../utils/auctionAccess.js";
 
 const MIN_BID_INCREMENT = 50000; // PKR 50,000
@@ -21,7 +22,11 @@ const sanitizeBidsForPublic = (bids = []) => {
   const map = new Map();
   return bids.map((bid) => {
     if (bid?.bidType === "offline") {
-      return { ...bid, bidder: null, bidderName: bid.bidderName || "Floor Bid" };
+      return {
+        ...bid,
+        bidder: null,
+        bidderName: bid.bidderName || "Floor Bid",
+      };
     }
     const bidderKey =
       bid?.bidder?._id?.toString() ||
@@ -70,28 +75,39 @@ export const getAuctions = async (req, res) => {
     });
   } catch (error) {
     Logger.error("getAuctions error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch auctions" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch auctions" });
   }
 };
 
 export const getAuctionById = async (req, res) => {
   try {
     const auction = await Auction.findById(req.params.id).lean();
-    if (!auction) return res.status(404).json({ success: false, message: "Auction not found" });
+    if (!auction)
+      return res
+        .status(404)
+        .json({ success: false, message: "Auction not found" });
     res.json({ success: true, data: auction });
   } catch (error) {
     Logger.error("getAuctionById error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch auction" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch auction" });
   }
 };
 
 export const getLiveAuction = async (req, res) => {
   try {
-    const auction = await Auction.findOne({ status: "live" }).sort({ startTime: -1 }).lean();
+    const auction = await Auction.findOne({ status: "live" })
+      .sort({ startTime: -1 })
+      .lean();
     res.json({ success: true, data: auction || null });
   } catch (error) {
     Logger.error("getLiveAuction error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch live auction" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch live auction" });
   }
 };
 
@@ -103,17 +119,30 @@ export const getAuctionCars = async (req, res) => {
   try {
     const { auctionId } = req.params;
     const {
-      search, make, condition, transmission, fuelType,
-      yearMin, yearMax, priceMin, priceMax, sortBy = "ending_soon",
-      page = 1, limit = 30,
+      search,
+      make,
+      condition,
+      transmission,
+      fuelType,
+      yearMin,
+      yearMax,
+      priceMin,
+      priceMax,
+      sortBy = "ending_soon",
+      page = 1,
+      limit = 30,
     } = req.query;
 
-    const filter = { auction: auctionId, status: { $in: ["approved", "live"] } };
+    const filter = {
+      auction: auctionId,
+      status: { $in: ["approved", "live"] },
+    };
 
     const cars = await AuctionCar.find(filter)
       .populate({
         path: "car",
-        select: "title make model year condition mileage fuelType transmission images colorExterior registrationCity vehicleType price",
+        select:
+          "title make model year condition mileage fuelType transmission images colorExterior registrationCity vehicleType price",
       })
       .skip((page - 1) * limit)
       .limit(Number(limit))
@@ -129,18 +158,37 @@ export const getAuctionCars = async (req, res) => {
         return `${c.make} ${c.model} ${c.year}`.toLowerCase().includes(q);
       });
     }
-    if (make && make !== "all") result = result.filter((ac) => ac.car.make === make);
-    if (condition && condition !== "all") result = result.filter((ac) => ac.car.condition?.toLowerCase() === condition.toLowerCase());
-    if (transmission && transmission !== "all") result = result.filter((ac) => ac.car.transmission?.toLowerCase() === transmission.toLowerCase());
-    if (fuelType && fuelType !== "all") result = result.filter((ac) => ac.car.fuelType?.toLowerCase() === fuelType.toLowerCase());
+    if (make && make !== "all")
+      result = result.filter((ac) => ac.car.make === make);
+    if (condition && condition !== "all")
+      result = result.filter(
+        (ac) => ac.car.condition?.toLowerCase() === condition.toLowerCase(),
+      );
+    if (transmission && transmission !== "all")
+      result = result.filter(
+        (ac) =>
+          ac.car.transmission?.toLowerCase() === transmission.toLowerCase(),
+      );
+    if (fuelType && fuelType !== "all")
+      result = result.filter(
+        (ac) => ac.car.fuelType?.toLowerCase() === fuelType.toLowerCase(),
+      );
     if (yearMin) result = result.filter((ac) => ac.car.year >= Number(yearMin));
     if (yearMax) result = result.filter((ac) => ac.car.year <= Number(yearMax));
-    if (priceMin) result = result.filter((ac) => (ac.currentBid || ac.startingBid) >= Number(priceMin));
-    if (priceMax) result = result.filter((ac) => (ac.currentBid || ac.startingBid) <= Number(priceMax));
+    if (priceMin)
+      result = result.filter(
+        (ac) => (ac.currentBid || ac.startingBid) >= Number(priceMin),
+      );
+    if (priceMax)
+      result = result.filter(
+        (ac) => (ac.currentBid || ac.startingBid) <= Number(priceMax),
+      );
 
     const sortFns = {
-      price_low: (a, b) => (a.currentBid || a.startingBid) - (b.currentBid || b.startingBid),
-      price_high: (a, b) => (b.currentBid || b.startingBid) - (a.currentBid || a.startingBid),
+      price_low: (a, b) =>
+        (a.currentBid || a.startingBid) - (b.currentBid || b.startingBid),
+      price_high: (a, b) =>
+        (b.currentBid || b.startingBid) - (a.currentBid || a.startingBid),
       year_new: (a, b) => b.car.year - a.car.year,
       year_old: (a, b) => a.car.year - b.car.year,
       mileage_low: (a, b) => (a.car.mileage || 0) - (b.car.mileage || 0),
@@ -155,7 +203,9 @@ export const getAuctionCars = async (req, res) => {
     res.json({ success: true, data: safeResult, total });
   } catch (error) {
     Logger.error("getAuctionCars error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch auction cars" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch auction cars" });
   }
 };
 
@@ -164,13 +214,17 @@ export const getAuctionCarDetail = async (req, res) => {
     const ac = await AuctionCar.findById(req.params.id)
       .populate({
         path: "car",
-        select: "title make model variant year condition mileage fuelType transmission images colorExterior colorInterior registrationCity engineCapacity features description vehicleType price",
+        select:
+          "title make model variant year condition mileage fuelType transmission images colorExterior colorInterior registrationCity engineCapacity features description vehicleType price",
       })
       .populate("winner", "name")
       .populate("auction", "title startTime endTime status location")
       .lean();
 
-    if (!ac) return res.status(404).json({ success: false, message: "Auction car not found" });
+    if (!ac)
+      return res
+        .status(404)
+        .json({ success: false, message: "Auction car not found" });
 
     const bids = await Bid.find({ auctionCar: ac._id })
       .sort({ amount: -1 })
@@ -188,7 +242,9 @@ export const getAuctionCarDetail = async (req, res) => {
     });
   } catch (error) {
     Logger.error("getAuctionCarDetail error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch car details" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch car details" });
   }
 };
 
@@ -202,42 +258,72 @@ export const placeBid = async (req, res) => {
     const userId = req.user._id;
 
     const ac = await AuctionCar.findById(auctionCarId).populate("auction");
-    if (!ac) return res.status(404).json({ success: false, message: "Auction car not found" });
-    if (ac.auction.status !== "live") return res.status(400).json({ success: false, message: "Auction is not live" });
-    if (!["approved", "live"].includes(ac.status)) return res.status(400).json({ success: false, message: "This car is not accepting bids" });
+    if (!ac)
+      return res
+        .status(404)
+        .json({ success: false, message: "Auction car not found" });
+    if (ac.auction.status !== "live")
+      return res
+        .status(400)
+        .json({ success: false, message: "Auction is not live" });
+    if (!["approved", "live"].includes(ac.status))
+      return res
+        .status(400)
+        .json({ success: false, message: "This car is not accepting bids" });
 
     // Check wallet OR legacy token for authorization
     const wallet = await Wallet.findOne({ user: userId });
     const hasWallet = wallet && wallet.balance >= amount;
-    const verified = !hasWallet ? await TokenPayment.findOne({ user: userId, status: "verified" }) : null;
+    const verified = !hasWallet
+      ? await TokenPayment.findOne({ user: userId, status: "verified" })
+      : null;
     if (!hasWallet && !verified) {
-      return res.status(403).json({ success: false, message: wallet ? `Insufficient wallet balance. You need PKR ${amount.toLocaleString()} but have PKR ${wallet.balance.toLocaleString()}` : "You must deposit funds to your wallet before bidding" });
+      return res.status(403).json({
+        success: false,
+        message: wallet
+          ? `Insufficient wallet balance. You need PKR ${amount.toLocaleString()} but have PKR ${wallet.balance.toLocaleString()}`
+          : "You must deposit funds to your wallet before bidding",
+      });
     }
 
     // Check bid limit based on deposit tier (wallet users only)
     if (hasWallet) {
       const settings = await PlatformSettings.findOne();
       if (settings?.depositTiers?.length > 0) {
-        const sorted = [...settings.depositTiers].sort((a, b) => b.minDeposit - a.minDeposit);
+        const sorted = [...settings.depositTiers].sort(
+          (a, b) => b.minDeposit - a.minDeposit,
+        );
         const tier = sorted.find((t) => wallet.totalDeposited >= t.minDeposit);
         if (tier && amount > tier.maxBidLimit) {
-          return res.status(400).json({ success: false, message: `Your deposit tier (${tier.label}) allows bids up to PKR ${tier.maxBidLimit.toLocaleString()}. Deposit more to increase your limit.` });
+          return res.status(400).json({
+            success: false,
+            message: `Your deposit tier (${tier.label}) allows bids up to PKR ${tier.maxBidLimit.toLocaleString()}. Deposit more to increase your limit.`,
+          });
         }
       }
     }
 
     const currentHigh = ac.currentBid || ac.startingBid;
     if (amount < currentHigh + MIN_BID_INCREMENT) {
-      return res.status(400).json({ success: false, message: `Minimum bid is PKR ${(currentHigh + MIN_BID_INCREMENT).toLocaleString()}` });
+      return res.status(400).json({
+        success: false,
+        message: `Minimum bid is PKR ${(currentHigh + MIN_BID_INCREMENT).toLocaleString()}`,
+      });
     }
 
     // Refund previous winning bidder's wallet hold
-    const prevWinningBid = await Bid.findOne({ auctionCar: auctionCarId, isWinning: true });
+    const prevWinningBid = await Bid.findOne({
+      auctionCar: auctionCarId,
+      isWinning: true,
+    });
     if (prevWinningBid && prevWinningBid.bidder) {
       const prevWallet = await Wallet.findOne({ user: prevWinningBid.bidder });
       if (prevWallet) {
         prevWallet.balance += prevWinningBid.amount;
-        prevWallet.totalBidHeld = Math.max(0, prevWallet.totalBidHeld - prevWinningBid.amount);
+        prevWallet.totalBidHeld = Math.max(
+          0,
+          prevWallet.totalBidHeld - prevWinningBid.amount,
+        );
         prevWallet.lastTransactionAt = new Date();
         await prevWallet.save();
         await logWalletTxn({
@@ -252,7 +338,10 @@ export const placeBid = async (req, res) => {
     }
 
     // Clear previous winning flag
-    await Bid.updateMany({ auctionCar: auctionCarId, isWinning: true }, { isWinning: false });
+    await Bid.updateMany(
+      { auctionCar: auctionCarId, isWinning: true },
+      { isWinning: false },
+    );
 
     // Deduct from wallet
     if (hasWallet) {
@@ -294,7 +383,9 @@ export const placeBid = async (req, res) => {
     // Real-time broadcast
     const io = req.app.get("io");
     if (io) {
-      const populatedBid = await Bid.findById(bid._id).populate("bidder", "name").lean();
+      const populatedBid = await Bid.findById(bid._id)
+        .populate("bidder", "name")
+        .lean();
       io.to(`auction:${ac.auction._id}`).emit("new-bid", {
         auctionCarId,
         bid: populatedBid,
@@ -310,7 +401,13 @@ export const placeBid = async (req, res) => {
   }
 };
 
-async function processProxyBids(auctionCarId, currentAmount, excludeUserId, auctionId, req) {
+async function processProxyBids(
+  auctionCarId,
+  currentAmount,
+  excludeUserId,
+  auctionId,
+  req,
+) {
   try {
     const proxies = await ProxyBid.find({
       auctionCar: auctionCarId,
@@ -327,7 +424,7 @@ async function processProxyBids(auctionCarId, currentAmount, excludeUserId, auct
     // Keep proxy autobid behavior aligned with API-level access policy.
     for (const proxy of proxies) {
       const proxyUser = await User.findById(proxy.bidder).select(
-        "role dealerInfo auctionCapabilities"
+        "role dealerInfo auctionCapabilities",
       );
       const access = evaluateAuctionBidAccess(proxyUser);
       if (!access.allowed) {
@@ -336,7 +433,10 @@ async function processProxyBids(auctionCarId, currentAmount, excludeUserId, auct
         continue;
       }
 
-      const candidateAmount = Math.min(currentAmount + MIN_BID_INCREMENT, proxy.maxAmount);
+      const candidateAmount = Math.min(
+        currentAmount + MIN_BID_INCREMENT,
+        proxy.maxAmount,
+      );
       const proxyWallet = await Wallet.findOne({ user: proxy.bidder });
       if (proxyWallet && proxyWallet.balance < candidateAmount) {
         proxy.isActive = false;
@@ -360,7 +460,10 @@ async function processProxyBids(auctionCarId, currentAmount, excludeUserId, auct
     }
 
     // Refund previous winning bidder
-    const prevWin = await Bid.findOne({ auctionCar: auctionCarId, isWinning: true });
+    const prevWin = await Bid.findOne({
+      auctionCar: auctionCarId,
+      isWinning: true,
+    });
     if (prevWin && prevWin.bidder) {
       const prevW = await Wallet.findOne({ user: prevWin.bidder });
       if (prevW) {
@@ -369,13 +472,20 @@ async function processProxyBids(auctionCarId, currentAmount, excludeUserId, auct
         prevW.lastTransactionAt = new Date();
         await prevW.save();
         await logWalletTxn({
-          user: prevWin.bidder, type: "bid_refund", amount: prevWin.amount,
-          reference: prevWin._id, referenceModel: "Bid", description: "Outbid refund (proxy)",
+          user: prevWin.bidder,
+          type: "bid_refund",
+          amount: prevWin.amount,
+          reference: prevWin._id,
+          referenceModel: "Bid",
+          description: "Outbid refund (proxy)",
         });
       }
     }
 
-    await Bid.updateMany({ auctionCar: auctionCarId, isWinning: true }, { isWinning: false });
+    await Bid.updateMany(
+      { auctionCar: auctionCarId, isWinning: true },
+      { isWinning: false },
+    );
 
     // Deduct from proxy bidder's wallet
     if (proxyWallet) {
@@ -384,8 +494,12 @@ async function processProxyBids(auctionCarId, currentAmount, excludeUserId, auct
       proxyWallet.lastTransactionAt = new Date();
       await proxyWallet.save();
       await logWalletTxn({
-        user: top.bidder, type: "bid_hold", amount: -proxyAmount,
-        reference: null, referenceModel: "Bid", description: `Proxy bid – PKR ${proxyAmount.toLocaleString()}`,
+        user: top.bidder,
+        type: "bid_hold",
+        amount: -proxyAmount,
+        reference: null,
+        referenceModel: "Bid",
+        description: `Proxy bid – PKR ${proxyAmount.toLocaleString()}`,
       });
     }
 
@@ -414,7 +528,9 @@ async function processProxyBids(auctionCarId, currentAmount, excludeUserId, auct
 
     const io = req.app.get("io");
     if (io) {
-      const populatedBid = await Bid.findById(bid._id).populate("bidder", "name").lean();
+      const populatedBid = await Bid.findById(bid._id)
+        .populate("bidder", "name")
+        .lean();
       io.to(`auction:${auctionId}`).emit("new-bid", {
         auctionCarId,
         bid: populatedBid,
@@ -432,21 +548,30 @@ export const setProxyBid = async (req, res) => {
     const userId = req.user._id;
 
     const ac = await AuctionCar.findById(auctionCarId).populate("auction");
-    if (!ac || ac.auction.status !== "live") return res.status(400).json({ success: false, message: "Auction not live" });
+    if (!ac || ac.auction.status !== "live")
+      return res
+        .status(400)
+        .json({ success: false, message: "Auction not live" });
 
     const currentHigh = ac.currentBid || ac.startingBid;
-    if (maxAmount <= currentHigh) return res.status(400).json({ success: false, message: "Max amount must exceed current bid" });
+    if (maxAmount <= currentHigh)
+      return res.status(400).json({
+        success: false,
+        message: "Max amount must exceed current bid",
+      });
 
     const proxy = await ProxyBid.findOneAndUpdate(
       { auctionCar: auctionCarId, bidder: userId },
       { maxAmount, isActive: true },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
 
     res.json({ success: true, data: proxy, message: "Proxy bid set" });
   } catch (error) {
     Logger.error("setProxyBid error", error);
-    res.status(500).json({ success: false, message: "Failed to set proxy bid" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to set proxy bid" });
   }
 };
 
@@ -456,12 +581,21 @@ export const placeOfflineBid = async (req, res) => {
     const { auctionCarId, amount, bidderName = "Floor Bid" } = req.body;
 
     const ac = await AuctionCar.findById(auctionCarId).populate("auction");
-    if (!ac || ac.auction.status !== "live") return res.status(400).json({ success: false, message: "Auction not live" });
+    if (!ac || ac.auction.status !== "live")
+      return res
+        .status(400)
+        .json({ success: false, message: "Auction not live" });
 
     const currentHigh = ac.currentBid || ac.startingBid;
-    if (amount <= currentHigh) return res.status(400).json({ success: false, message: "Amount must exceed current bid" });
+    if (amount <= currentHigh)
+      return res
+        .status(400)
+        .json({ success: false, message: "Amount must exceed current bid" });
 
-    await Bid.updateMany({ auctionCar: auctionCarId, isWinning: true }, { isWinning: false });
+    await Bid.updateMany(
+      { auctionCar: auctionCarId, isWinning: true },
+      { isWinning: false },
+    );
 
     const bid = await Bid.create({
       auction: ac.auction._id,
@@ -495,7 +629,9 @@ export const placeOfflineBid = async (req, res) => {
     res.json({ success: true, data: bid, message: "Offline bid placed" });
   } catch (error) {
     Logger.error("placeOfflineBid error", error);
-    res.status(500).json({ success: false, message: "Failed to place offline bid" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to place offline bid" });
   }
 };
 
@@ -522,12 +658,24 @@ export const submitTokenPayment = async (req, res) => {
   try {
     const { paymentMethod, transactionId } = req.body;
     if (!paymentMethod || !transactionId) {
-      return res.status(400).json({ success: false, message: "Payment method and transaction ID required" });
+      return res.status(400).json({
+        success: false,
+        message: "Payment method and transaction ID required",
+      });
     }
 
-    const existing = await TokenPayment.findOne({ user: req.user._id, status: { $in: ["pending", "verified"] } });
+    const existing = await TokenPayment.findOne({
+      user: req.user._id,
+      status: { $in: ["pending", "verified"] },
+    });
     if (existing) {
-      return res.status(400).json({ success: false, message: existing.status === "verified" ? "You already have a verified token" : "Your previous payment is still pending verification" });
+      return res.status(400).json({
+        success: false,
+        message:
+          existing.status === "verified"
+            ? "You already have a verified token"
+            : "Your previous payment is still pending verification",
+      });
     }
 
     const payment = await TokenPayment.create({
@@ -536,21 +684,38 @@ export const submitTokenPayment = async (req, res) => {
       transactionId,
     });
 
-    res.status(201).json({ success: true, data: payment, message: "Payment submitted for verification" });
+    res.status(201).json({
+      success: true,
+      data: payment,
+      message: "Payment submitted for verification",
+    });
   } catch (error) {
     Logger.error("submitTokenPayment error", error);
-    res.status(500).json({ success: false, message: "Failed to submit payment" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to submit payment" });
   }
 };
 
 export const getMyTokenPayments = async (req, res) => {
   try {
-    const payments = await TokenPayment.find({ user: req.user._id }).sort({ createdAt: -1 }).lean();
+    const payments = await TokenPayment.find({ user: req.user._id })
+      .sort({ createdAt: -1 })
+      .lean();
     const verified = payments.find((p) => p.status === "verified");
-    res.json({ success: true, data: { payments, tokenBalance: verified ? verified.amount : 0, hasVerifiedToken: !!verified } });
+    res.json({
+      success: true,
+      data: {
+        payments,
+        tokenBalance: verified ? verified.amount : 0,
+        hasVerifiedToken: !!verified,
+      },
+    });
   } catch (error) {
     Logger.error("getMyTokenPayments error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch payments" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch payments" });
   }
 };
 
@@ -564,22 +729,29 @@ export const addToWatchlist = async (req, res) => {
     const item = await AuctionWatchlist.findOneAndUpdate(
       { user: req.user._id, auctionCar: auctionCarId },
       { user: req.user._id, auctionCar: auctionCarId },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
     res.json({ success: true, data: item });
   } catch (error) {
     Logger.error("addToWatchlist error", error);
-    res.status(500).json({ success: false, message: "Failed to add to watchlist" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to add to watchlist" });
   }
 };
 
 export const removeFromWatchlist = async (req, res) => {
   try {
-    await AuctionWatchlist.findOneAndDelete({ user: req.user._id, auctionCar: req.params.auctionCarId });
+    await AuctionWatchlist.findOneAndDelete({
+      user: req.user._id,
+      auctionCar: req.params.auctionCarId,
+    });
     res.json({ success: true, message: "Removed from watchlist" });
   } catch (error) {
     Logger.error("removeFromWatchlist error", error);
-    res.status(500).json({ success: false, message: "Failed to remove from watchlist" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to remove from watchlist" });
   }
 };
 
@@ -589,7 +761,11 @@ export const getMyWatchlist = async (req, res) => {
       .populate({
         path: "auctionCar",
         populate: [
-          { path: "car", select: "make model year mileage condition images fuelType transmission" },
+          {
+            path: "car",
+            select:
+              "make model year mileage condition images fuelType transmission",
+          },
           { path: "auction", select: "title endTime status" },
         ],
       })
@@ -599,7 +775,9 @@ export const getMyWatchlist = async (req, res) => {
     res.json({ success: true, data: items.filter((i) => i.auctionCar) });
   } catch (error) {
     Logger.error("getMyWatchlist error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch watchlist" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch watchlist" });
   }
 };
 
@@ -618,14 +796,22 @@ export const getMyWonAuctions = async (req, res) => {
     res.json({ success: true, data: won });
   } catch (error) {
     Logger.error("getMyWonAuctions error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch won auctions" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch won auctions" });
   }
 };
 
 export const getMyBids = async (req, res) => {
   try {
     const bids = await Bid.find({ bidder: req.user._id })
-      .populate({ path: "auctionCar", populate: [{ path: "car", select: "make model year images mileage" }, { path: "auction", select: "title status" }] })
+      .populate({
+        path: "auctionCar",
+        populate: [
+          { path: "car", select: "make model year images mileage" },
+          { path: "auction", select: "title status" },
+        ],
+      })
       .sort({ createdAt: -1 })
       .lean();
 
@@ -639,14 +825,19 @@ export const getMyBids = async (req, res) => {
 export const getMyEscrows = async (req, res) => {
   try {
     const escrows = await Escrow.find({ buyer: req.user._id })
-      .populate({ path: "auctionCar", populate: { path: "car", select: "make model year images" } })
+      .populate({
+        path: "auctionCar",
+        populate: { path: "car", select: "make model year images" },
+      })
       .sort({ createdAt: -1 })
       .lean();
 
     res.json({ success: true, data: escrows });
   } catch (error) {
     Logger.error("getMyEscrows error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch escrows" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch escrows" });
   }
 };
 
@@ -670,9 +861,10 @@ export const getMyAuctionResult = async (req, res) => {
     }
 
     if (auctionCar.status !== "sold") {
-      return res
-        .status(400)
-        .json({ success: false, message: "Auction is not finalized for this car" });
+      return res.status(400).json({
+        success: false,
+        message: "Auction is not finalized for this car",
+      });
     }
 
     const isOwner =
@@ -721,25 +913,145 @@ export const submitCarToAuction = async (req, res) => {
       });
     }
 
-    const { auctionId, carId, startingBid, reservePrice, buyNowPrice } = req.body;
+    const {
+      auctionId,
+      carId,
+      startingBid,
+      reservePrice,
+      buyNowPrice,
+      title,
+      description,
+      make,
+      model,
+      year,
+      condition,
+      price,
+      colorExterior,
+      colorInterior,
+      fuelType,
+      engineCapacity,
+      transmission,
+      mileage,
+      features,
+      regionalSpec,
+      bodyType,
+      country,
+      city,
+      location,
+      carDoors,
+      contactNumber,
+      geoLocation,
+      horsepower,
+      warranty,
+      numberOfCylinders,
+      ownerType,
+      batteryRange,
+      motorPower,
+      vehicleType,
+      vehicleTypeCategory,
+    } = req.body;
+
+    // Handle two scenarios:
+    // 1. Submit existing car to auction (carId provided)
+    // 2. Create new car and submit to auction (no carId, full car data provided)
+
+    let car;
+
+    if (carId) {
+      // Scenario 1: Submit existing car
+      car = await Car.findById(carId);
+      if (!car)
+        return res
+          .status(404)
+          .json({ success: false, message: "Car not found" });
+      if (
+        car.postedBy.toString() !== req.user._id.toString() &&
+        req.user.role !== "admin"
+      ) {
+        return res.status(403).json({
+          success: false,
+          message: "You can only submit your own cars",
+        });
+      }
+    } else {
+      // Scenario 2: Create new car for auction
+      // Handle image uploads
+      const images = req.files?.images || [];
+      const imageUrls = [];
+
+      for (const image of images) {
+        try {
+          const result = await uploadCloudinary(image.buffer, {
+            folder: "auction_cars",
+            quality: 80,
+            fetch_format: "auto",
+          });
+          imageUrls.push(result.secure_url);
+        } catch (error) {
+          Logger.error("Image upload failed for auction car", error);
+        }
+      }
+
+      // Create new car
+      car = await Car.create({
+        title,
+        description,
+        vehicleType: vehicleType || "Car",
+        vehicleTypeCategory,
+        make,
+        model,
+        year,
+        condition,
+        price: startingBid || price,
+        colorExterior,
+        colorInterior,
+        fuelType,
+        engineCapacity,
+        transmission,
+        mileage,
+        features: features ? JSON.parse(features) : [],
+        regionalSpec,
+        bodyType,
+        country,
+        city,
+        location,
+        carDoors,
+        contactNumber,
+        geoLocation,
+        horsepower,
+        warranty,
+        numberOfCylinders,
+        ownerType,
+        batteryRange,
+        motorPower,
+        images: imageUrls,
+        postedBy: req.user._id,
+        status: "pending", // Cars in auction are pending until approved
+        isAuctionCar: true, // Mark as auction car
+        isApproved: false, // Requires admin approval for auction
+      });
+    }
 
     const auction = await Auction.findById(auctionId);
     if (!auction || !["draft", "scheduled"].includes(auction.status)) {
-      return res.status(400).json({ success: false, message: "Auction not accepting submissions" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Auction not accepting submissions" });
     }
 
-    const car = await Car.findById(carId);
-    if (!car) return res.status(404).json({ success: false, message: "Car not found" });
-    if (car.postedBy.toString() !== req.user._id.toString() && req.user.role !== "admin") {
-      return res.status(403).json({ success: false, message: "You can only submit your own cars" });
-    }
-
-    const existing = await AuctionCar.findOne({ auction: auctionId, car: carId });
-    if (existing) return res.status(400).json({ success: false, message: "Car already submitted to this auction" });
+    const existing = await AuctionCar.findOne({
+      auction: auctionId,
+      car: car._id,
+    });
+    if (existing)
+      return res.status(400).json({
+        success: false,
+        message: "Car already submitted to this auction",
+      });
 
     const ac = await AuctionCar.create({
       auction: auctionId,
-      car: carId,
+      car: car._id,
       startingBid: startingBid || car.price,
       reservePrice: reservePrice || null,
       buyNowPrice: buyNowPrice || null,
@@ -749,7 +1061,13 @@ export const submitCarToAuction = async (req, res) => {
 
     await Auction.findByIdAndUpdate(auctionId, { $inc: { totalCars: 1 } });
 
-    res.status(201).json({ success: true, data: ac, message: "Car submitted to auction" });
+    res.status(201).json({
+      success: true,
+      data: ac,
+      message: carId
+        ? "Car submitted to auction"
+        : "Car created and submitted to auction",
+    });
   } catch (error) {
     Logger.error("submitCarToAuction error", error);
     res.status(500).json({ success: false, message: "Failed to submit car" });
@@ -763,7 +1081,11 @@ export const submitCarToAuction = async (req, res) => {
 export const createAuction = async (req, res) => {
   try {
     const { title, description, startTime, endTime, location } = req.body;
-    if (!title || !startTime || !endTime) return res.status(400).json({ success: false, message: "Title, start time and end time are required" });
+    if (!title || !startTime || !endTime)
+      return res.status(400).json({
+        success: false,
+        message: "Title, start time and end time are required",
+      });
 
     const auction = await Auction.create({
       title,
@@ -777,37 +1099,60 @@ export const createAuction = async (req, res) => {
     res.status(201).json({ success: true, data: auction });
   } catch (error) {
     Logger.error("createAuction error", error);
-    res.status(500).json({ success: false, message: "Failed to create auction" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to create auction" });
   }
 };
 
 export const updateAuction = async (req, res) => {
   try {
-    const auction = await Auction.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-    if (!auction) return res.status(404).json({ success: false, message: "Auction not found" });
+    const auction = await Auction.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!auction)
+      return res
+        .status(404)
+        .json({ success: false, message: "Auction not found" });
     res.json({ success: true, data: auction });
   } catch (error) {
     Logger.error("updateAuction error", error);
-    res.status(500).json({ success: false, message: "Failed to update auction" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to update auction" });
   }
 };
 
 export const goLive = async (req, res) => {
   try {
     const auction = await Auction.findById(req.params.id);
-    if (!auction) return res.status(404).json({ success: false, message: "Auction not found" });
+    if (!auction)
+      return res
+        .status(404)
+        .json({ success: false, message: "Auction not found" });
     if (!["draft", "scheduled"].includes(auction.status)) {
-      return res.status(400).json({ success: false, message: `Cannot go live from ${auction.status} status` });
+      return res.status(400).json({
+        success: false,
+        message: `Cannot go live from ${auction.status} status`,
+      });
     }
 
     auction.status = "live";
     auction.startTime = new Date();
     await auction.save();
 
-    await AuctionCar.updateMany({ auction: auction._id, status: "approved" }, { status: "live" });
+    await AuctionCar.updateMany(
+      { auction: auction._id, status: "approved" },
+      { status: "live" },
+    );
 
     const io = req.app.get("io");
-    if (io) io.emit("auction-status-change", { auctionId: auction._id, status: "live" });
+    if (io)
+      io.emit("auction-status-change", {
+        auctionId: auction._id,
+        status: "live",
+      });
 
     res.json({ success: true, data: auction, message: "Auction is now live" });
   } catch (error) {
@@ -819,20 +1164,33 @@ export const goLive = async (req, res) => {
 export const endAuction = async (req, res) => {
   try {
     const auction = await Auction.findById(req.params.id);
-    if (!auction || auction.status !== "live") return res.status(400).json({ success: false, message: "Auction is not live" });
+    if (!auction || auction.status !== "live")
+      return res
+        .status(400)
+        .json({ success: false, message: "Auction is not live" });
 
     auction.status = "completed";
     auction.endTime = new Date();
     await auction.save();
 
     // Determine winners for each car
-    const auctionCars = await AuctionCar.find({ auction: auction._id, status: "live" });
+    const auctionCars = await AuctionCar.find({
+      auction: auction._id,
+      status: "live",
+    });
     let totalSold = 0;
 
     for (const ac of auctionCars) {
-      const topBid = await Bid.findOne({ auctionCar: ac._id, isWinning: true }).sort({ amount: -1 });
+      const topBid = await Bid.findOne({
+        auctionCar: ac._id,
+        isWinning: true,
+      }).sort({ amount: -1 });
 
-      if (topBid && topBid.bidder && (!ac.reservePrice || topBid.amount >= ac.reservePrice)) {
+      if (
+        topBid &&
+        topBid.bidder &&
+        (!ac.reservePrice || topBid.amount >= ac.reservePrice)
+      ) {
         ac.status = "sold";
         ac.winner = topBid.bidder;
         ac.finalPrice = topBid.amount;
@@ -852,7 +1210,10 @@ export const endAuction = async (req, res) => {
         });
 
         if (winnerWallet) {
-          winnerWallet.totalBidHeld = Math.max(0, winnerWallet.totalBidHeld - topBid.amount);
+          winnerWallet.totalBidHeld = Math.max(
+            0,
+            winnerWallet.totalBidHeld - topBid.amount,
+          );
           await winnerWallet.save();
           await logWalletTxn({
             user: topBid.bidder,
@@ -897,7 +1258,10 @@ export const endAuction = async (req, res) => {
           const refundWallet = await Wallet.findOne({ user: topBid.bidder });
           if (refundWallet) {
             refundWallet.balance += topBid.amount;
-            refundWallet.totalBidHeld = Math.max(0, refundWallet.totalBidHeld - topBid.amount);
+            refundWallet.totalBidHeld = Math.max(
+              0,
+              refundWallet.totalBidHeld - topBid.amount,
+            );
             refundWallet.lastTransactionAt = new Date();
             await refundWallet.save();
             await logWalletTxn({
@@ -918,9 +1282,17 @@ export const endAuction = async (req, res) => {
     await auction.save();
 
     const io = req.app.get("io");
-    if (io) io.emit("auction-status-change", { auctionId: auction._id, status: "completed" });
+    if (io)
+      io.emit("auction-status-change", {
+        auctionId: auction._id,
+        status: "completed",
+      });
 
-    res.json({ success: true, data: auction, message: `Auction ended. ${totalSold} cars sold.` });
+    res.json({
+      success: true,
+      data: auction,
+      message: `Auction ended. ${totalSold} cars sold.`,
+    });
   } catch (error) {
     Logger.error("endAuction error", error);
     res.status(500).json({ success: false, message: "Failed to end auction" });
@@ -930,23 +1302,35 @@ export const endAuction = async (req, res) => {
 export const cancelAuction = async (req, res) => {
   try {
     const auction = await Auction.findById(req.params.id);
-    if (!auction) return res.status(404).json({ success: false, message: "Auction not found" });
+    if (!auction)
+      return res
+        .status(404)
+        .json({ success: false, message: "Auction not found" });
 
     auction.status = "cancelled";
     await auction.save();
 
     await AuctionCar.updateMany(
-      { auction: auction._id, status: { $in: ["pending", "approved", "live"] } },
-      { status: "withdrawn" }
+      {
+        auction: auction._id,
+        status: { $in: ["pending", "approved", "live"] },
+      },
+      { status: "withdrawn" },
     );
 
     const io = req.app.get("io");
-    if (io) io.emit("auction-status-change", { auctionId: auction._id, status: "cancelled" });
+    if (io)
+      io.emit("auction-status-change", {
+        auctionId: auction._id,
+        status: "cancelled",
+      });
 
     res.json({ success: true, data: auction, message: "Auction cancelled" });
   } catch (error) {
     Logger.error("cancelAuction error", error);
-    res.status(500).json({ success: false, message: "Failed to cancel auction" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to cancel auction" });
   }
 };
 
@@ -956,9 +1340,15 @@ export const cancelAuction = async (req, res) => {
 
 export const approveAuctionCar = async (req, res) => {
   try {
-    const ac = await AuctionCar.findByIdAndUpdate(req.params.id, { status: "approved" }, { new: true })
-      .populate("car", "make model year");
-    if (!ac) return res.status(404).json({ success: false, message: "Auction car not found" });
+    const ac = await AuctionCar.findByIdAndUpdate(
+      req.params.id,
+      { status: "approved" },
+      { new: true },
+    ).populate("car", "make model year");
+    if (!ac)
+      return res
+        .status(404)
+        .json({ success: false, message: "Auction car not found" });
     res.json({ success: true, data: ac, message: "Car approved" });
   } catch (error) {
     Logger.error("approveAuctionCar error", error);
@@ -968,8 +1358,15 @@ export const approveAuctionCar = async (req, res) => {
 
 export const rejectAuctionCar = async (req, res) => {
   try {
-    const ac = await AuctionCar.findByIdAndUpdate(req.params.id, { status: "rejected" }, { new: true });
-    if (!ac) return res.status(404).json({ success: false, message: "Auction car not found" });
+    const ac = await AuctionCar.findByIdAndUpdate(
+      req.params.id,
+      { status: "rejected" },
+      { new: true },
+    );
+    if (!ac)
+      return res
+        .status(404)
+        .json({ success: false, message: "Auction car not found" });
     res.json({ success: true, data: ac, message: "Car rejected" });
   } catch (error) {
     Logger.error("rejectAuctionCar error", error);
@@ -982,13 +1379,18 @@ export const updateInspection = async (req, res) => {
     const ac = await AuctionCar.findByIdAndUpdate(
       req.params.id,
       { inspectionReport: req.body },
-      { new: true }
+      { new: true },
     );
-    if (!ac) return res.status(404).json({ success: false, message: "Auction car not found" });
+    if (!ac)
+      return res
+        .status(404)
+        .json({ success: false, message: "Auction car not found" });
     res.json({ success: true, data: ac, message: "Inspection updated" });
   } catch (error) {
     Logger.error("updateInspection error", error);
-    res.status(500).json({ success: false, message: "Failed to update inspection" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to update inspection" });
   }
 };
 
@@ -1011,7 +1413,9 @@ export const getAllTokenPayments = async (req, res) => {
     res.json({ success: true, data: payments });
   } catch (error) {
     Logger.error("getAllTokenPayments error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch payments" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch payments" });
   }
 };
 
@@ -1019,7 +1423,10 @@ export const verifyTokenPayment = async (req, res) => {
   try {
     const { action, rejectionReason } = req.body;
     const payment = await TokenPayment.findById(req.params.id);
-    if (!payment) return res.status(404).json({ success: false, message: "Payment not found" });
+    if (!payment)
+      return res
+        .status(404)
+        .json({ success: false, message: "Payment not found" });
 
     if (action === "verify") {
       payment.status = "verified";
@@ -1034,17 +1441,29 @@ export const verifyTokenPayment = async (req, res) => {
     await payment.save();
 
     await Notification.create({
-      title: action === "verify" ? "Token Payment Verified" : "Token Payment Rejected",
-      message: action === "verify" ? "Your token deposit has been verified. You can now place bids!" : `Your token payment was rejected. ${rejectionReason || ""}`,
+      title:
+        action === "verify"
+          ? "Token Payment Verified"
+          : "Token Payment Rejected",
+      message:
+        action === "verify"
+          ? "Your token deposit has been verified. You can now place bids!"
+          : `Your token payment was rejected. ${rejectionReason || ""}`,
       type: action === "verify" ? "success" : "error",
       recipient: payment.user,
       actionUrl: "/auctions",
     });
 
-    res.json({ success: true, data: payment, message: `Payment ${action === "verify" ? "verified" : "rejected"}` });
+    res.json({
+      success: true,
+      data: payment,
+      message: `Payment ${action === "verify" ? "verified" : "rejected"}`,
+    });
   } catch (error) {
     Logger.error("verifyTokenPayment error", error);
-    res.status(500).json({ success: false, message: "Failed to process payment" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to process payment" });
   }
 };
 
@@ -1054,7 +1473,14 @@ export const verifyTokenPayment = async (req, res) => {
 
 export const getAuctionDashboard = async (req, res) => {
   try {
-    const [totalAuctions, liveAuctions, totalCars, totalBids, totalUsers, pendingPayments] = await Promise.all([
+    const [
+      totalAuctions,
+      liveAuctions,
+      totalCars,
+      totalBids,
+      totalUsers,
+      pendingPayments,
+    ] = await Promise.all([
       Auction.countDocuments(),
       Auction.countDocuments({ status: "live" }),
       AuctionCar.countDocuments(),
@@ -1063,20 +1489,36 @@ export const getAuctionDashboard = async (req, res) => {
       TokenPayment.countDocuments({ status: "pending" }),
     ]);
 
-    const recentAuctions = await Auction.find().sort({ createdAt: -1 }).limit(5).lean();
-    const recentBids = await Bid.find().sort({ createdAt: -1 }).limit(10).populate("bidder", "name").lean();
+    const recentAuctions = await Auction.find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .lean();
+    const recentBids = await Bid.find()
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .populate("bidder", "name")
+      .lean();
 
     res.json({
       success: true,
       data: {
-        stats: { totalAuctions, liveAuctions, totalCars, totalBids, totalUsers, pendingPayments },
+        stats: {
+          totalAuctions,
+          liveAuctions,
+          totalCars,
+          totalBids,
+          totalUsers,
+          pendingPayments,
+        },
         recentAuctions,
         recentBids,
       },
     });
   } catch (error) {
     Logger.error("getAuctionDashboard error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch dashboard" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch dashboard" });
   }
 };
 
@@ -1101,24 +1543,36 @@ export const getAllAuctionCars = async (req, res) => {
     res.json({ success: true, data: cars });
   } catch (error) {
     Logger.error("getAllAuctionCars error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch auction cars" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch auction cars" });
   }
 };
 
 export const adminAddCarToAuction = async (req, res) => {
   try {
-    const { auctionId, carId, startingBid, reservePrice, buyNowPrice } = req.body;
+    const { auctionId, carId, startingBid, reservePrice, buyNowPrice } =
+      req.body;
 
     const auction = await Auction.findById(auctionId);
     if (!auction || !["draft", "scheduled", "live"].includes(auction.status)) {
-      return res.status(400).json({ success: false, message: "Auction not accepting cars" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Auction not accepting cars" });
     }
 
     const car = await Car.findById(carId);
-    if (!car) return res.status(404).json({ success: false, message: "Car not found" });
+    if (!car)
+      return res.status(404).json({ success: false, message: "Car not found" });
 
-    const existing = await AuctionCar.findOne({ car: carId, auction: auctionId });
-    if (existing) return res.status(400).json({ success: false, message: "Car already in this auction" });
+    const existing = await AuctionCar.findOne({
+      car: carId,
+      auction: auctionId,
+    });
+    if (existing)
+      return res
+        .status(400)
+        .json({ success: false, message: "Car already in this auction" });
 
     const status = auction.status === "live" ? "live" : "approved";
 
@@ -1154,9 +1608,26 @@ async function getRunningBalance(userId) {
   return last?.balance || 0;
 }
 
-async function logWalletTxn({ user, type, amount, reference, referenceModel, description, status = "completed" }) {
+async function logWalletTxn({
+  user,
+  type,
+  amount,
+  reference,
+  referenceModel,
+  description,
+  status = "completed",
+}) {
   const balance = (await getRunningBalance(user)) + amount;
-  return WalletTransaction.create({ user, type, amount, balance, reference, referenceModel, description, status });
+  return WalletTransaction.create({
+    user,
+    type,
+    amount,
+    balance,
+    reference,
+    referenceModel,
+    description,
+    status,
+  });
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1172,12 +1643,21 @@ const ESCROW_TRANSITIONS = {
 export const adminUpdateEscrowStatus = async (req, res) => {
   try {
     const { status: newStatus, notes } = req.body;
-    const escrow = await Escrow.findById(req.params.id).populate("buyer", "name email");
-    if (!escrow) return res.status(404).json({ success: false, message: "Escrow not found" });
+    const escrow = await Escrow.findById(req.params.id).populate(
+      "buyer",
+      "name email",
+    );
+    if (!escrow)
+      return res
+        .status(404)
+        .json({ success: false, message: "Escrow not found" });
 
     const allowed = ESCROW_TRANSITIONS[escrow.status];
     if (!allowed || !allowed.includes(newStatus)) {
-      return res.status(400).json({ success: false, message: `Cannot transition from "${escrow.status}" to "${newStatus}"` });
+      return res.status(400).json({
+        success: false,
+        message: `Cannot transition from "${escrow.status}" to "${newStatus}"`,
+      });
     }
 
     const prev = escrow.status;
@@ -1219,15 +1699,26 @@ export const adminUpdateEscrowStatus = async (req, res) => {
     await Notification.create({
       title: "Escrow Status Updated",
       message: `Your escrow has been updated to "${newStatus}".${notes ? ` Note: ${notes}` : ""}`,
-      type: newStatus === "released" ? "success" : newStatus === "refunded" ? "info" : "warning",
+      type:
+        newStatus === "released"
+          ? "success"
+          : newStatus === "refunded"
+            ? "info"
+            : "warning",
       recipient: escrow.buyer._id || escrow.buyer,
       actionUrl: "/auctions/transactions",
     });
 
-    res.json({ success: true, data: escrow, message: `Escrow updated: ${prev} → ${newStatus}` });
+    res.json({
+      success: true,
+      data: escrow,
+      message: `Escrow updated: ${prev} → ${newStatus}`,
+    });
   } catch (error) {
     Logger.error("adminUpdateEscrowStatus error", error);
-    res.status(500).json({ success: false, message: "Failed to update escrow" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to update escrow" });
   }
 };
 
@@ -1256,7 +1747,9 @@ export const adminGetAllEscrows = async (req, res) => {
     res.json({ success: true, data: escrows });
   } catch (error) {
     Logger.error("adminGetAllEscrows error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch escrows" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch escrows" });
   }
 };
 
@@ -1266,11 +1759,23 @@ export const adminGetAllEscrows = async (req, res) => {
 
 export const adminRefundToken = async (req, res) => {
   try {
-    const payment = await TokenPayment.findById(req.params.id).populate("user", "name email");
-    if (!payment) return res.status(404).json({ success: false, message: "Payment not found" });
-    if (payment.status === "refunded") return res.status(400).json({ success: false, message: "Already refunded" });
+    const payment = await TokenPayment.findById(req.params.id).populate(
+      "user",
+      "name email",
+    );
+    if (!payment)
+      return res
+        .status(404)
+        .json({ success: false, message: "Payment not found" });
+    if (payment.status === "refunded")
+      return res
+        .status(400)
+        .json({ success: false, message: "Already refunded" });
     if (!["verified", "pending"].includes(payment.status)) {
-      return res.status(400).json({ success: false, message: `Cannot refund a ${payment.status} payment` });
+      return res.status(400).json({
+        success: false,
+        message: `Cannot refund a ${payment.status} payment`,
+      });
     }
 
     payment.status = "refunded";
@@ -1293,7 +1798,11 @@ export const adminRefundToken = async (req, res) => {
       actionUrl: "/auctions/transactions",
     });
 
-    res.json({ success: true, data: payment, message: "Token refunded successfully" });
+    res.json({
+      success: true,
+      data: payment,
+      message: "Token refunded successfully",
+    });
   } catch (error) {
     Logger.error("adminRefundToken error", error);
     res.status(500).json({ success: false, message: "Failed to refund token" });
@@ -1303,16 +1812,26 @@ export const adminRefundToken = async (req, res) => {
 export const adminBulkRefundTokens = async (req, res) => {
   try {
     const { auctionId } = req.body;
-    if (!auctionId) return res.status(400).json({ success: false, message: "Auction ID required" });
+    if (!auctionId)
+      return res
+        .status(400)
+        .json({ success: false, message: "Auction ID required" });
 
     const auction = await Auction.findById(auctionId);
     if (!auction || auction.status !== "completed") {
-      return res.status(400).json({ success: false, message: "Auction must be completed to bulk refund" });
+      return res.status(400).json({
+        success: false,
+        message: "Auction must be completed to bulk refund",
+      });
     }
 
     const winnerIds = (
-      await AuctionCar.find({ auction: auctionId, status: "sold" }).select("winner").lean()
-    ).map((ac) => ac.winner?.toString()).filter(Boolean);
+      await AuctionCar.find({ auction: auctionId, status: "sold" })
+        .select("winner")
+        .lean()
+    )
+      .map((ac) => ac.winner?.toString())
+      .filter(Boolean);
 
     const toRefund = await TokenPayment.find({
       status: "verified",
@@ -1344,7 +1863,9 @@ export const adminBulkRefundTokens = async (req, res) => {
     res.json({ success: true, message: `${refunded} token deposits refunded` });
   } catch (error) {
     Logger.error("adminBulkRefundTokens error", error);
-    res.status(500).json({ success: false, message: "Failed to process bulk refund" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to process bulk refund" });
   }
 };
 
@@ -1354,31 +1875,57 @@ export const adminBulkRefundTokens = async (req, res) => {
 
 export const getPaymentStats = async (req, res) => {
   try {
-    const [
-      tokenStats,
-      escrowStats,
-      totalRefunds,
-      recentTransactions,
-    ] = await Promise.all([
-      TokenPayment.aggregate([
-        { $group: { _id: "$status", count: { $sum: 1 }, total: { $sum: "$amount" } } },
-      ]),
-      Escrow.aggregate([
-        { $group: { _id: "$status", count: { $sum: 1 }, total: { $sum: "$amount" } } },
-      ]),
-      WalletTransaction.aggregate([
-        { $match: { type: { $in: ["token_refund", "escrow_refund"] }, status: "completed" } },
-        { $group: { _id: null, count: { $sum: 1 }, total: { $sum: "$amount" } } },
-      ]),
-      WalletTransaction.find().sort({ createdAt: -1 }).limit(20)
-        .populate("user", "name email").lean(),
-    ]);
+    const [tokenStats, escrowStats, totalRefunds, recentTransactions] =
+      await Promise.all([
+        TokenPayment.aggregate([
+          {
+            $group: {
+              _id: "$status",
+              count: { $sum: 1 },
+              total: { $sum: "$amount" },
+            },
+          },
+        ]),
+        Escrow.aggregate([
+          {
+            $group: {
+              _id: "$status",
+              count: { $sum: 1 },
+              total: { $sum: "$amount" },
+            },
+          },
+        ]),
+        WalletTransaction.aggregate([
+          {
+            $match: {
+              type: { $in: ["token_refund", "escrow_refund"] },
+              status: "completed",
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              count: { $sum: 1 },
+              total: { $sum: "$amount" },
+            },
+          },
+        ]),
+        WalletTransaction.find()
+          .sort({ createdAt: -1 })
+          .limit(20)
+          .populate("user", "name email")
+          .lean(),
+      ]);
 
     const tokenByStatus = {};
-    tokenStats.forEach((t) => { tokenByStatus[t._id] = { count: t.count, total: t.total }; });
+    tokenStats.forEach((t) => {
+      tokenByStatus[t._id] = { count: t.count, total: t.total };
+    });
 
     const escrowByStatus = {};
-    escrowStats.forEach((e) => { escrowByStatus[e._id] = { count: e.count, total: e.total }; });
+    escrowStats.forEach((e) => {
+      escrowByStatus[e._id] = { count: e.count, total: e.total };
+    });
 
     const overdueEscrows = await Escrow.countDocuments({
       status: "pending",
@@ -1403,7 +1950,9 @@ export const getPaymentStats = async (req, res) => {
     });
   } catch (error) {
     Logger.error("getPaymentStats error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch payment stats" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch payment stats" });
   }
 };
 
@@ -1442,7 +1991,9 @@ export const getMyWalletTransactions = async (req, res) => {
     });
 
     const summaryMap = {};
-    summary.forEach((s) => { summaryMap[s._id] = { total: s.total, count: s.count }; });
+    summary.forEach((s) => {
+      summaryMap[s._id] = { total: s.total, count: s.count };
+    });
 
     res.json({
       success: true,
@@ -1455,7 +2006,9 @@ export const getMyWalletTransactions = async (req, res) => {
     });
   } catch (error) {
     Logger.error("getMyWalletTransactions error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch transactions" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch transactions" });
   }
 };
 
@@ -1468,26 +2021,45 @@ export const runAuctionLifecycle = async () => {
     const now = new Date();
 
     // Scheduled → Live
-    const toGoLive = await Auction.find({ status: "scheduled", startTime: { $lte: now } });
+    const toGoLive = await Auction.find({
+      status: "scheduled",
+      startTime: { $lte: now },
+    });
     for (const auction of toGoLive) {
       auction.status = "live";
       await auction.save();
-      await AuctionCar.updateMany({ auction: auction._id, status: "approved" }, { status: "live" });
+      await AuctionCar.updateMany(
+        { auction: auction._id, status: "approved" },
+        { status: "live" },
+      );
       Logger.info(`Auction ${auction._id} auto-transitioned to live`);
     }
 
     // Live → Completed (past end time)
-    const toEnd = await Auction.find({ status: "live", endTime: { $lte: now } });
+    const toEnd = await Auction.find({
+      status: "live",
+      endTime: { $lte: now },
+    });
     for (const auction of toEnd) {
       auction.status = "completed";
       await auction.save();
 
-      const auctionCars = await AuctionCar.find({ auction: auction._id, status: "live" });
+      const auctionCars = await AuctionCar.find({
+        auction: auction._id,
+        status: "live",
+      });
       let totalSold = 0;
 
       for (const ac of auctionCars) {
-        const topBid = await Bid.findOne({ auctionCar: ac._id, isWinning: true }).sort({ amount: -1 });
-        if (topBid && topBid.bidder && (!ac.reservePrice || topBid.amount >= ac.reservePrice)) {
+        const topBid = await Bid.findOne({
+          auctionCar: ac._id,
+          isWinning: true,
+        }).sort({ amount: -1 });
+        if (
+          topBid &&
+          topBid.bidder &&
+          (!ac.reservePrice || topBid.amount >= ac.reservePrice)
+        ) {
           ac.status = "sold";
           ac.winner = topBid.bidder;
           ac.finalPrice = topBid.amount;
@@ -1507,17 +2079,26 @@ export const runAuctionLifecycle = async () => {
           });
 
           if (winnerWallet) {
-            winnerWallet.totalBidHeld = Math.max(0, winnerWallet.totalBidHeld - topBid.amount);
+            winnerWallet.totalBidHeld = Math.max(
+              0,
+              winnerWallet.totalBidHeld - topBid.amount,
+            );
             await winnerWallet.save();
             await logWalletTxn({
-              user: topBid.bidder, type: "escrow_payment", amount: -topBid.amount,
-              reference: escrow._id, referenceModel: "Escrow",
+              user: topBid.bidder,
+              type: "escrow_payment",
+              amount: -topBid.amount,
+              reference: escrow._id,
+              referenceModel: "Escrow",
               description: "Winning bid moved to escrow",
             });
           } else {
             await logWalletTxn({
-              user: topBid.bidder, type: "token_deposit", amount: -10000,
-              reference: escrow._id, referenceModel: "Escrow",
+              user: topBid.bidder,
+              type: "token_deposit",
+              amount: -10000,
+              reference: escrow._id,
+              referenceModel: "Escrow",
               description: "Token deposit applied to winning bid",
             });
           }
@@ -1536,12 +2117,18 @@ export const runAuctionLifecycle = async () => {
             const refundWallet = await Wallet.findOne({ user: topBid.bidder });
             if (refundWallet) {
               refundWallet.balance += topBid.amount;
-              refundWallet.totalBidHeld = Math.max(0, refundWallet.totalBidHeld - topBid.amount);
+              refundWallet.totalBidHeld = Math.max(
+                0,
+                refundWallet.totalBidHeld - topBid.amount,
+              );
               refundWallet.lastTransactionAt = new Date();
               await refundWallet.save();
               await logWalletTxn({
-                user: topBid.bidder, type: "bid_refund", amount: topBid.amount,
-                reference: topBid._id, referenceModel: "Bid",
+                user: topBid.bidder,
+                type: "bid_refund",
+                amount: topBid.amount,
+                reference: topBid._id,
+                referenceModel: "Bid",
                 description: "Bid refund – car unsold (reserve not met)",
               });
             }
@@ -1552,7 +2139,9 @@ export const runAuctionLifecycle = async () => {
 
       auction.totalSold = totalSold;
       await auction.save();
-      Logger.info(`Auction ${auction._id} auto-completed. ${totalSold} cars sold.`);
+      Logger.info(
+        `Auction ${auction._id} auto-completed. ${totalSold} cars sold.`,
+      );
     }
 
     // Overdue escrow detection – mark pending escrows past deadline as disputed
@@ -1577,7 +2166,8 @@ export const runAuctionLifecycle = async () => {
 
       await Notification.create({
         title: "Payment Overdue – Escrow Disputed",
-        message: "Your escrow payment deadline has passed. The escrow has been marked as disputed. Please contact support.",
+        message:
+          "Your escrow payment deadline has passed. The escrow has been marked as disputed. Please contact support.",
         type: "error",
         recipient: escrow.buyer._id || escrow.buyer,
         actionUrl: "/auctions/transactions",
