@@ -82,7 +82,7 @@ const FAQs = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 md:p-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
             Frequently Asked Questions
