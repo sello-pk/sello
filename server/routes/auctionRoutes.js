@@ -197,7 +197,7 @@ router.get("/my/won", auth, getMyWonAuctions);
 router.get("/my/escrows", auth, getMyEscrows);
 router.get("/my/result/:auctionCarId", auth, getMyAuctionResult);
 router.get("/my/transactions", auth, getMyWalletTransactions);
-router.post("/submit-car", auth, submitCarToAuction);
+router.post("/submit-car", auth, upload.fields([{ name: 'images', maxCount: 10 }]), submitCarToAuction);
 
 // ── Public (specific routes first, then parameterized) ─────────────────────
 router.get("/live", getLiveAuction);
