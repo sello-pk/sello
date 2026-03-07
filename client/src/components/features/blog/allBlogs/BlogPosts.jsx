@@ -2,32 +2,38 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useGetBlogsQuery } from "../../../../redux/services/api";
 
-const BlogPosts = ({ search = '', category = '', sortBy = 'newest' }) => {
+const BlogPosts = ({ search = "", category = "", sortBy = "newest" }) => {
   const [page, setPage] = useState(1);
-  
+
   // Reset to page 1 when filters change
   useEffect(() => {
     setPage(1);
   }, [search, category, sortBy]);
-  
-  const { data, isLoading, error } = useGetBlogsQuery({ 
-    page, 
-    limit: 12, 
-    status: 'published',
+
+  const { data, isLoading, error } = useGetBlogsQuery({
+    page,
+    limit: 12,
+    status: "published",
     ...(search && { search }),
-    ...(category && { category })
+    ...(category && { category }),
   });
 
   let blogs = data?.blogs || [];
   const pagination = data?.pagination || {};
-  
+
   // Client-side sorting (since backend doesn't support sort parameter yet)
   blogs = [...blogs].sort((a, b) => {
     switch (sortBy) {
       case "newest":
-        return new Date(b.publishedAt || b.createdAt) - new Date(a.publishedAt || a.createdAt);
+        return (
+          new Date(b.publishedAt || b.createdAt) -
+          new Date(a.publishedAt || a.createdAt)
+        );
       case "oldest":
-        return new Date(a.publishedAt || a.createdAt) - new Date(b.publishedAt || b.createdAt);
+        return (
+          new Date(a.publishedAt || a.createdAt) -
+          new Date(b.publishedAt || b.createdAt)
+        );
       case "mostViewed":
         return (b.views || 0) - (a.views || 0);
       case "titleAsc":
@@ -42,10 +48,10 @@ const BlogPosts = ({ search = '', category = '', sortBy = 'newest' }) => {
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
@@ -56,7 +62,10 @@ const BlogPosts = ({ search = '', category = '', sortBy = 'newest' }) => {
         <div className="h-8 bg-gray-200 rounded w-1/4 mb-6 animate-pulse"></div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse">
+            <div
+              key={i}
+              className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse"
+            >
               <div className="w-full h-48 bg-gray-200"></div>
               <div className="p-6">
                 <div className="h-6 bg-gray-200 rounded w-3/4 mb-3"></div>
@@ -74,7 +83,9 @@ const BlogPosts = ({ search = '', category = '', sortBy = 'newest' }) => {
   if (error) {
     return (
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8 md:py-12">
-        <p className="text-red-500 text-center">Error loading blogs. Please try again later.</p>
+        <p className="text-red-500 text-center">
+          Error loading blogs. Please try again later.
+        </p>
       </div>
     );
   }
@@ -82,8 +93,12 @@ const BlogPosts = ({ search = '', category = '', sortBy = 'newest' }) => {
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8 md:py-12">
       <div className="mb-8">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">All Posts</h2>
-        <p className="text-gray-600">Discover our latest articles and insights</p>
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+          All Posts
+        </h2>
+        <p className="text-gray-600">
+          Discover our latest articles and insights
+        </p>
       </div>
 
       {/* All Posts Grid */}
@@ -98,34 +113,42 @@ const BlogPosts = ({ search = '', category = '', sortBy = 'newest' }) => {
               <Link
                 key={blog._id}
                 to={`/blog/${blog.slug || blog._id}`}
-                className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col"
+                className="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col border border-gray-100"
               >
                 {/* Blog Image */}
-                <div className="w-full h-48 md:h-56 overflow-hidden bg-gray-200">
+                <div className="relative w-full h-48 md:h-56 overflow-hidden bg-gray-100 group">
                   <img
-                    src={blog.featuredImage || "https://via.placeholder.com/600x400?text=No+Image"}
+                    src={
+                      blog.featuredImage ||
+                      "https://via.placeholder.com/600x400?text=No+Image"
+                    }
                     alt={blog.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
+                    loading="lazy"
                   />
+                  {/* Image overlay gradient for better text visibility */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
 
                 {/* Blog Content */}
                 <div className="p-6 flex-1 flex flex-col">
                   {/* Category */}
                   {blog.category && (
-                    <span className="inline-block text-xs font-semibold text-primary-500 mb-3 uppercase tracking-wide">
+                    <span className="inline-block px-3 py-1 text-xs font-semibold text-primary-600 mb-4 uppercase tracking-wide bg-primary-50 rounded-full">
                       {blog.category.name}
                     </span>
                   )}
 
                   {/* Title */}
-                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-primary-500 transition-colors leading-tight">
+                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 line-clamp-2 group-hover:text-primary-600 transition-colors leading-tight">
                     {blog.title}
                   </h3>
 
                   {/* Description */}
-                  <p className="text-gray-600 text-sm md:text-base leading-relaxed mb-4 line-clamp-3 flex-1">
-                    {blog.excerpt || blog.content?.replace(/<[^>]*>/g, '').substring(0, 150) + "..."}
+                  <p className="text-gray-600 text-sm md:text-base leading-relaxed mb-6 line-clamp-4 flex-1">
+                    {blog.excerpt ||
+                      blog.content?.replace(/<[^>]*>/g, "").substring(0, 150) +
+                        "..."}
                   </p>
 
                   {/* Author and Date Info */}
@@ -143,11 +166,17 @@ const BlogPosts = ({ search = '', category = '', sortBy = 'newest' }) => {
                         </div>
                       )}
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{blog.author?.name || "Admin"}</p>
-                        <p className="text-xs text-gray-500">{formatDate(blog.publishedAt || blog.createdAt)}</p>
+                        <p className="text-sm font-medium text-gray-900">
+                          {blog.author?.name || "Admin"}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {formatDate(blog.publishedAt || blog.createdAt)}
+                        </p>
                       </div>
                     </div>
-                    <span className="text-xs text-gray-500">{blog.readTime || 5} min</span>
+                    <span className="text-xs text-gray-500">
+                      {blog.readTime || 5} min
+                    </span>
                   </div>
                 </div>
               </Link>
@@ -158,7 +187,7 @@ const BlogPosts = ({ search = '', category = '', sortBy = 'newest' }) => {
           {pagination.pages > 1 && (
             <div className="flex justify-center items-center gap-3 mt-12 pt-8 border-t border-gray-200">
               <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
                 className="px-6 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 hover:border-primary-500 transition-colors font-medium"
               >
@@ -179,15 +208,19 @@ const BlogPosts = ({ search = '', category = '', sortBy = 'newest' }) => {
                         onClick={() => setPage(pageNum)}
                         className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                           page === pageNum
-                            ? 'bg-primary-500 text-white'
-                            : 'border border-gray-300 hover:bg-gray-50 hover:border-primary-500'
+                            ? "bg-primary-500 text-white"
+                            : "border border-gray-300 hover:bg-gray-50 hover:border-primary-500"
                         }`}
                       >
                         {pageNum}
                       </button>
                     );
                   } else if (pageNum === page - 2 || pageNum === page + 2) {
-                    return <span key={pageNum} className="px-2 text-gray-400">...</span>;
+                    return (
+                      <span key={pageNum} className="px-2 text-gray-400">
+                        ...
+                      </span>
+                    );
                   }
                   return null;
                 })}
@@ -196,7 +229,9 @@ const BlogPosts = ({ search = '', category = '', sortBy = 'newest' }) => {
                 Page {page} of {pagination.pages}
               </span>
               <button
-                onClick={() => setPage(p => Math.min(pagination.pages, p + 1))}
+                onClick={() =>
+                  setPage((p) => Math.min(pagination.pages, p + 1))
+                }
                 disabled={page >= pagination.pages}
                 className="px-6 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 hover:border-primary-500 transition-colors font-medium"
               >
