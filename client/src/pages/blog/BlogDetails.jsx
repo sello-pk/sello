@@ -78,15 +78,22 @@ const BlogDetails = () => {
     const raw = currentBlog?.tags;
     if (!raw) return [];
     if (Array.isArray(raw))
-      return raw.map((t) => (typeof t === "string" ? t.trim() : String(t))).filter(Boolean);
+      return raw
+        .map((t) => (typeof t === "string" ? t.trim() : String(t)))
+        .filter(Boolean);
     if (typeof raw === "string") {
       try {
         const parsed = JSON.parse(raw);
         return Array.isArray(parsed)
-          ? parsed.map((t) => (typeof t === "string" ? t.trim() : String(t))).filter(Boolean)
+          ? parsed
+              .map((t) => (typeof t === "string" ? t.trim() : String(t)))
+              .filter(Boolean)
           : [raw.trim()].filter(Boolean);
       } catch {
-        return raw.split(",").map((t) => t.trim()).filter(Boolean);
+        return raw
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean);
       }
     }
     return [];
@@ -167,12 +174,14 @@ const BlogDetails = () => {
               <img
                 src={currentBlog.featuredImage}
                 alt={currentBlog.title}
-                className="max-h-full max-w-full w-auto h-auto object-contain object-center"
+                className="max-h-full max-w-full w-full h-full object-cover object-center"
                 loading="eager"
                 onError={(e) => {
                   e.target.onerror = null;
-                  e.target.src = "https://via.placeholder.com/1200x500?text=Blog+Image";
-                  e.target.className = "max-h-full max-w-full w-auto h-auto object-contain object-center";
+                  e.target.src =
+                    "https://via.placeholder.com/1200x500?text=Blog+Image";
+                  e.target.className =
+                    "max-h-full max-w-full w-full h-full object-cover object-center";
                 }}
               />
             </div>
@@ -183,74 +192,78 @@ const BlogDetails = () => {
 
           {/* Blog Header */}
           <div className="mb-8">
-          {/* Author and Date Info */}
-          <div className="flex items-center gap-3 text-sm text-gray-600 mb-4">
-            {currentBlog.author?.avatar ? (
-              <img
-                src={currentBlog.author.avatar}
-                alt={currentBlog.author?.name || "Author"}
-                className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+            {/* Author and Date Info */}
+            <div className="flex items-center gap-3 text-sm text-gray-600 mb-4">
+              {currentBlog.author?.avatar ? (
+                <img
+                  src={currentBlog.author.avatar}
+                  alt={currentBlog.author?.name || "Author"}
+                  className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
+                  {(currentBlog.author?.name || "A")[0].toUpperCase()}
+                </div>
+              )}
+              <div className="flex flex-wrap items-center gap-2">
+                <span>
+                  By{" "}
+                  <span className="font-semibold text-gray-900">
+                    {currentBlog.author?.name || "Admin"}
+                  </span>
+                </span>
+                <span>|</span>
+                <span>
+                  {formatDate(currentBlog.publishedAt || currentBlog.createdAt)}
+                </span>
+              </div>
+            </div>
+
+            {/* Category and Meta Info - inline, no clipping */}
+            <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500 mb-6 min-w-0 overflow-visible">
+              {currentBlog.category && (
+                <>
+                  <Link
+                    to={`/blog?category=${currentBlog.category._id}`}
+                    className="inline-flex items-center flex-shrink-0 px-3 py-1.5 rounded-full bg-primary-50 text-primary-600 hover:bg-primary-100 font-medium"
+                  >
+                    {currentBlog.category.name}
+                  </Link>
+                  <span className="flex-shrink-0">·</span>
+                </>
+              )}
+              <span className="flex-shrink-0">
+                {currentBlog.readTime || 5} min read
+              </span>
+              {currentBlog.views > 0 && (
+                <>
+                  <span className="flex-shrink-0">·</span>
+                  <span className="flex-shrink-0">
+                    {currentBlog.views} views
+                  </span>
+                </>
+              )}
+            </div>
+
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-8 leading-tight">
+              {currentBlog.title}
+            </h2>
+          </div>
+
+          {/* Blog Content */}
+          <div className="blog-content-wrapper mb-8">
+            {currentBlog.content ? (
+              <div
+                className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-headings:mt-8 prose-headings:mb-4 prose-h1:text-4xl prose-h1:font-bold prose-h1:mt-10 prose-h1:mb-6 prose-h2:text-3xl prose-h2:font-bold prose-h2:mt-8 prose-h2:mb-4 prose-h3:text-2xl prose-h3:font-bold prose-h3:mt-6 prose-h3:mb-3 prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6 prose-p:text-base prose-a:text-primary-500 prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 prose-strong:font-bold prose-img:rounded-lg prose-img:shadow-md prose-img:my-8 prose-img:w-full prose-ul:my-6 prose-ol:my-6 prose-li:my-2 prose-blockquote:border-l-4 prose-blockquote:border-primary-500 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:my-6"
+                dangerouslySetInnerHTML={{ __html: currentBlog.content }}
               />
             ) : (
-              <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
-                {(currentBlog.author?.name || "A")[0].toUpperCase()}
+              <div className="text-center py-8 text-gray-500">
+                <p>No content available for this blog post.</p>
               </div>
             )}
-            <div className="flex flex-wrap items-center gap-2">
-              <span>
-                By{" "}
-                <span className="font-semibold text-gray-900">
-                  {currentBlog.author?.name || "Admin"}
-                </span>
-              </span>
-              <span>|</span>
-              <span>
-                {formatDate(currentBlog.publishedAt || currentBlog.createdAt)}
-              </span>
-            </div>
           </div>
-
-          {/* Category and Meta Info - inline, no clipping */}
-          <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500 mb-6 min-w-0 overflow-visible">
-            {currentBlog.category && (
-              <>
-                <Link
-                  to={`/blog?category=${currentBlog.category._id}`}
-                  className="inline-flex items-center flex-shrink-0 px-3 py-1.5 rounded-full bg-primary-50 text-primary-600 hover:bg-primary-100 font-medium"
-                >
-                  {currentBlog.category.name}
-                </Link>
-                <span className="flex-shrink-0">·</span>
-              </>
-            )}
-            <span className="flex-shrink-0">{currentBlog.readTime || 5} min read</span>
-            {currentBlog.views > 0 && (
-              <>
-                <span className="flex-shrink-0">·</span>
-                <span className="flex-shrink-0">{currentBlog.views} views</span>
-              </>
-            )}
-          </div>
-
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-8 leading-tight">
-            {currentBlog.title}
-          </h2>
-        </div>
-
-        {/* Blog Content */}
-        <div className="blog-content-wrapper mb-8">
-          {currentBlog.content ? (
-            <div
-              className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-headings:mt-8 prose-headings:mb-4 prose-h1:text-4xl prose-h1:font-bold prose-h1:mt-10 prose-h1:mb-6 prose-h2:text-3xl prose-h2:font-bold prose-h2:mt-8 prose-h2:mb-4 prose-h3:text-2xl prose-h3:font-bold prose-h3:mt-6 prose-h3:mb-3 prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6 prose-p:text-base prose-a:text-primary-500 prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 prose-strong:font-bold prose-img:rounded-lg prose-img:shadow-md prose-img:my-8 prose-img:w-full prose-ul:my-6 prose-ol:my-6 prose-li:my-2 prose-blockquote:border-l-4 prose-blockquote:border-primary-500 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:my-6"
-              dangerouslySetInnerHTML={{ __html: currentBlog.content }}
-            />
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              <p>No content available for this blog post.</p>
-            </div>
-          )}
-        </div>
-        <style>{`
+          <style>{`
           .blog-content-wrapper {
             width: 100%;
             position: relative;
@@ -399,71 +412,72 @@ const BlogDetails = () => {
           }
         `}</style>
 
-        {/* Tags - use normalized list so we never show raw JSON */}
-        {normalizedTags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-8">
-            {normalizedTags.map((tag, index) => (
-              <span
-                key={index}
-                className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm font-medium"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {/* Related Blogs Section */}
-        {relatedBlogs.length > 0 && (
-          <div className="border-t border-gray-200 pt-8 mt-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">
-              Related Articles
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {relatedBlogs.map((relatedBlog) => (
-                <Link
-                  key={relatedBlog._id}
-                  to={`/blog/${relatedBlog.slug || relatedBlog._id}`}
-                  className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+          {/* Tags - use normalized list so we never show raw JSON */}
+          {normalizedTags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-8">
+              {normalizedTags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm font-medium"
                 >
-                  <div className="w-full h-48 overflow-hidden bg-gray-100 flex items-center justify-center">
-                    {relatedBlog.featuredImage ? (
-                      <img
-                        src={relatedBlog.featuredImage}
-                        alt={relatedBlog.title}
-                        className="max-h-full max-w-full w-auto h-auto object-contain object-center group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "https://via.placeholder.com/400x200?text=Blog";
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-                        No image
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary-500 transition-colors">
-                      {relatedBlog.title}
-                    </h4>
-                    <p className="text-sm text-gray-500 mb-2">
-                      {formatDate(
-                        relatedBlog.publishedAt || relatedBlog.createdAt,
-                      )}
-                    </p>
-                    <p className="text-sm text-gray-600 line-clamp-2">
-                      {relatedBlog.excerpt ||
-                        relatedBlog.content
-                          ?.replace(/<[^>]*>/g, "")
-                          .substring(0, 100) + "..."}
-                    </p>
-                  </div>
-                </Link>
+                  {tag}
+                </span>
               ))}
             </div>
-          </div>
-        )}
+          )}
+
+          {/* Related Blogs Section */}
+          {relatedBlogs.length > 0 && (
+            <div className="border-t border-gray-200 pt-8 mt-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">
+                Related Articles
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {relatedBlogs.map((relatedBlog) => (
+                  <Link
+                    key={relatedBlog._id}
+                    to={`/blog/${relatedBlog.slug || relatedBlog._id}`}
+                    className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <div className="w-full h-48 overflow-hidden bg-gray-100 flex items-center justify-center">
+                      {relatedBlog.featuredImage ? (
+                        <img
+                          src={relatedBlog.featuredImage}
+                          alt={relatedBlog.title}
+                          className="max-h-full max-w-full w-auto h-auto object-contain object-center group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src =
+                              "https://via.placeholder.com/400x200?text=Blog";
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                          No image
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary-500 transition-colors">
+                        {relatedBlog.title}
+                      </h4>
+                      <p className="text-sm text-gray-500 mb-2">
+                        {formatDate(
+                          relatedBlog.publishedAt || relatedBlog.createdAt,
+                        )}
+                      </p>
+                      <p className="text-sm text-gray-600 line-clamp-2">
+                        {relatedBlog.excerpt ||
+                          relatedBlog.content
+                            ?.replace(/<[^>]*>/g, "")
+                            .substring(0, 100) + "..."}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Navigation */}
           <div className="border-t border-gray-200 pt-8 mt-8">

@@ -82,8 +82,18 @@ const BlogSection = () => {
           <>
             <p className="text-sm text-gray-500 mb-3 flex items-center gap-2">
               <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1">
-                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+                <svg
+                  className="w-4 h-4 text-gray-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 9l4-4 4 4m0 6l-4 4-4-4"
+                  />
                 </svg>
                 Swipe or scroll for more
               </span>
@@ -99,17 +109,18 @@ const BlogSection = () => {
                   to={`/blog/${blog.slug || blog._id}`}
                   className="md:w-[390px] w-full min-w-[85vw] md:min-w-[390px] bg-white rounded-lg px-6 py-6 flex-shrink-0 overflow-hidden shadow-md hover:shadow-lg transition-shadow"
                 >
-                  <div className="w-full h-64 rounded-lg mb-5 overflow-hidden bg-gray-100 flex-shrink-0 flex items-center justify-center">
+                  <div className="w-full h-70  rounded-lg mb-5 overflow-hidden bg-red-100 flex-shrink-0 flex items-center justify-center">
                     <img
                       src={
                         blog.featuredImage ||
                         "https://via.placeholder.com/600x400?text=No+Image"
                       }
                       alt={blog.title}
-                      className="max-h-full max-w-full w-auto h-auto object-contain object-center"
+                      className="max-h-full max-w-full w-full h-full object-cover object-center"
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = "https://via.placeholder.com/600x400?text=Blog";
+                        e.target.src =
+                          "https://via.placeholder.com/600x400?text=Blog";
                       }}
                     />
                   </div>

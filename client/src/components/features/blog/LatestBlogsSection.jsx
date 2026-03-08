@@ -11,7 +11,8 @@ const LatestBlogsSection = () => {
   });
 
   // Robust blog data access
-  const blogs = data?.blogs || data?.data?.blogs || (Array.isArray(data) ? data : []);
+  const blogs =
+    data?.blogs || data?.data?.blogs || (Array.isArray(data) ? data : []);
 
   // Show skeleton while loading
   if (isLoading) {
@@ -102,17 +103,18 @@ const LatestBlogsSection = () => {
               className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 flex flex-col"
             >
               {/* Blog Image - fit inside box like categories (no crop) */}
-              <div className="w-full h-48 md:h-56 overflow-hidden rounded-t-lg bg-gray-100 flex-shrink-0 flex items-center justify-center">
+              <div className="w-full h-48 md:h-60 overflow-hidden rounded-t-lg bg-gray-100 flex-shrink-0 flex items-center justify-center">
                 <img
                   src={
                     blog.featuredImage ||
                     "https://via.placeholder.com/600x400?text=No+Image"
                   }
                   alt={blog.title}
-                  className="max-h-full max-w-full w-auto h-auto object-contain object-center group-hover:scale-105 transition-transform duration-300"
+                  className="max-h-full max-w-full w-auto h-auto object-cover object-center group-hover:scale-110 scale-105 transition-transform duration-300"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = "https://via.placeholder.com/600x400?text=Blog";
+                    e.target.src =
+                      "https://via.placeholder.com/600x400?text=Blog";
                   }}
                 />
               </div>
