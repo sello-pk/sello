@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import CreatePostForm from "../../components/sections/createPost/CreatePostForm";
 import WhyChooseUsUtility from "../../components/utils/WhyChooseUsUtility";
 import InpirationSectoin from "../../components/sections/createPost/InpirationSectoin";
@@ -9,9 +10,15 @@ import { MdArrowOutward } from "react-icons/md";
 import FindOutMore from "../../components/sections/createPost/FindOutMore";
 
 const CreatePost = () => {
+  const location = useLocation();
+  const prefill =
+    location.state?.fromEstimator && location.state?.prefill
+      ? location.state.prefill
+      : null;
+
   return (
     <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
-      <CreatePostForm />
+      <CreatePostForm initialPrefill={prefill} />
       <WhyChooseUsUtility />
       <InpirationSectoin />
       <BannerInFilter />

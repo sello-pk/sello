@@ -46,9 +46,8 @@ const HeroFilter = () => {
 
   const modelOptions = useMemo(() => {
     if (!Array.isArray(models) || models.length === 0) return [];
-
-    // If no make selected, show all models.
-    if (!filters.make) return models;
+    // Models only available after make is selected; show only models for selected make.
+    if (!filters.make) return [];
 
     const selectedMakeName = String(filters.make).trim().toLowerCase();
     const matchedMakeIds = (makes || [])
@@ -156,7 +155,8 @@ const HeroFilter = () => {
     setFilters((prev) => ({
       ...prev,
       [field]: value,
-      ...(field === "make" ? { model: "" } : {}),
+      ...(field === "make" ? { model: "", city: "" } : {}),
+      ...(field === "model" ? { city: "" } : {}),
     }));
   };
 
@@ -250,9 +250,9 @@ const HeroFilter = () => {
                 onChange={(option) => handleChange("model", option?.value || "")}
                 options={modelSelectOptions}
                 placeholder="Model"
-                isClearable
-                isSearchable
-                isDisabled={filters.make && modelSelectOptions.length === 0}
+                isClearable={!!filters.make}
+                isSearchable={!!filters.make}
+                isDisabled={!filters.make}
                 styles={searchableSelectStyles}
                 components={{ DropdownIndicator }}
                 menuPortalTarget={document.body}
@@ -270,8 +270,9 @@ const HeroFilter = () => {
                 onChange={(option) => handleChange("city", option?.value || "")}
                 options={citySelectOptions}
                 placeholder="City"
-                isClearable
-                isSearchable
+                isClearable={!!filters.model}
+                isSearchable={!!filters.model}
+                isDisabled={!filters.model}
                 styles={searchableSelectStyles}
                 components={{ DropdownIndicator }}
                 menuPortalTarget={document.body}

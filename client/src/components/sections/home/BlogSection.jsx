@@ -79,47 +79,81 @@ const BlogSection = () => {
             <p className="text-gray-500">No blog posts available yet.</p>
           </div>
         ) : (
-          <div
-            id="blog"
-            className="flex gap-6 md:gap-8 overflow-x-auto scrollbar-hide pb-8"
-          >
-            {blogs.map((blog) => (
-              <Link
-                key={blog._id}
-                to={`/blog/${blog.slug || blog._id}`}
-                className="md:w-[390px] w-full min-w-[85vw] md:min-w-[390px] bg-white rounded-lg px-6 py-6 flex-shrink-0 overflow-hidden shadow-md hover:shadow-lg transition-shadow"
-              >
-                <img
-                  src={
-                    blog.featuredImage ||
-                    "https://via.placeholder.com/600x400?text=No+Image"
-                  }
-                  alt={blog.title}
-                  className="w-full h-64 object-cover rounded-lg mb-5"
-                />
-                <div className="mb-3 flex items-center justify-between">
-                  <h5 className="text-sm text-gray-500 font-medium">
-                    By {blog.author?.name || "Admin"}
-                  </h5>
-                  <p className="text-xs text-gray-400">
-                    {formatDate(blog.publishedAt || blog.createdAt)}
+          <>
+            <p className="text-sm text-gray-500 mb-3 flex items-center gap-2">
+              <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1">
+                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+                </svg>
+                Swipe or scroll for more
+              </span>
+            </p>
+            <div
+              id="blog"
+              className="flex gap-6 md:gap-8 overflow-x-auto scrollbar-hide pb-8 scroll-smooth"
+              style={{ scrollbarWidth: "thin" }}
+            >
+              {blogs.map((blog) => (
+                <Link
+                  key={blog._id}
+                  to={`/blog/${blog.slug || blog._id}`}
+                  className="md:w-[390px] w-full min-w-[85vw] md:min-w-[390px] bg-white rounded-lg px-6 py-6 flex-shrink-0 overflow-hidden shadow-md hover:shadow-lg transition-shadow"
+                >
+                  <div className="w-full h-64 rounded-lg mb-5 overflow-hidden bg-gray-100 flex-shrink-0 flex items-center justify-center">
+                    <img
+                      src={
+                        blog.featuredImage ||
+                        "https://via.placeholder.com/600x400?text=No+Image"
+                      }
+                      alt={blog.title}
+                      className="max-h-full max-w-full w-auto h-auto object-contain object-center"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "https://via.placeholder.com/600x400?text=Blog";
+                      }}
+                    />
+                  </div>
+                  <div className="mb-3 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="relative w-8 h-8 flex-shrink-0 rounded-full overflow-hidden">
+                        <div className="absolute inset-0 flex items-center justify-center rounded-full bg-primary-500 text-white text-xs font-semibold">
+                          {(blog.author?.name || "A")[0].toUpperCase()}
+                        </div>
+                        {blog.author?.avatar && (
+                          <img
+                            src={blog.author.avatar}
+                            alt=""
+                            className="absolute inset-0 w-full h-full object-cover rounded-full"
+                            onError={(e) => {
+                              e.target.style.display = "none";
+                            }}
+                          />
+                        )}
+                      </div>
+                      <h5 className="text-sm text-gray-500 font-medium truncate">
+                        By {blog.author?.name || "Admin"}
+                      </h5>
+                    </div>
+                    <p className="text-xs text-gray-400 flex-shrink-0">
+                      {formatDate(blog.publishedAt || blog.createdAt)}
+                    </p>
+                  </div>
+                  <h4 className="text-lg font-bold text-gray-900 leading-snug line-clamp-2">
+                    {blog.title}
+                  </h4>
+                  <p className="mt-3 text-gray-600 line-clamp-2">
+                    {blog.excerpt ||
+                      blog.content?.replace(/<[^>]*>/g, "").substring(0, 150) +
+                        "..."}
                   </p>
-                </div>
-                <h4 className="text-lg font-bold text-gray-900 leading-snug line-clamp-2">
-                  {blog.title}
-                </h4>
-                <p className="mt-3 text-gray-600 line-clamp-2">
-                  {blog.excerpt ||
-                    blog.content?.replace(/<[^>]*>/g, "").substring(0, 150) +
-                      "..."}
-                </p>
-                <button className="mt-4 text-primary-500 font-medium flex items-center gap-1 hover:gap-2 transition-all">
-                  Read more
-                  <MdArrowRightAlt className="text-xl" />
-                </button>
-              </Link>
-            ))}
-          </div>
+                  <button className="mt-4 text-primary-500 font-medium flex items-center gap-1 hover:gap-2 transition-all">
+                    Read more
+                    <MdArrowRightAlt className="text-xl" />
+                  </button>
+                </Link>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>

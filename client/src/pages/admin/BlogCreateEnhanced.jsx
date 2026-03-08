@@ -29,6 +29,7 @@ const BlogCreateEnhanced = () => {
     isFeatured: false,
     metaTitle: "",
     metaDescription: "",
+    metaKeywords: "",
     publishDate: "",
     publishTime: "",
   });
@@ -105,6 +106,8 @@ const BlogCreateEnhanced = () => {
         formDataToSend.append("metaTitle", formData.metaTitle);
       if (formData.metaDescription)
         formDataToSend.append("metaDescription", formData.metaDescription);
+      if (formData.metaKeywords)
+        formDataToSend.append("metaKeywords", formData.metaKeywords);
 
       // Set status
       formDataToSend.append("status", status);
@@ -350,6 +353,23 @@ const BlogCreateEnhanced = () => {
                         Meta description should be 160 characters or less
                       </p>
                     )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Meta Keywords
+                    </label>
+                    <input
+                      type="text"
+                      name="metaKeywords"
+                      value={formData.metaKeywords}
+                      onChange={handleChange}
+                      placeholder="e.g. cars, used cars, Pakistan, buy car (comma-separated)"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Keywords for SEO; used in meta tags and search.
+                    </p>
                   </div>
                 </div>
               </div>

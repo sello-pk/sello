@@ -53,6 +53,7 @@ const AllBlog = () => {
         title="All Blog Posts | Sello"
         description="Browse all our blog posts about cars, automotive news, buying guides, and more."
         canonical="https://sello.pk/blog"
+        keywords="blog posts, car articles, automotive news Pakistan, buy sell cars, car guides, Sello"
       />
       <BlogsHeroSection />
 

@@ -12,9 +12,10 @@ import {
   Settings,
   Paintbrush,
   Gauge,
+  Tag,
 } from "lucide-react";
 
-const CarEstimatorResult = ({ result, onSave }) => {
+const CarEstimatorResult = ({ result, onSave, onSellCar }) => {
   const [showAllBreakdown, setShowAllBreakdown] = useState(false);
   const [activeTab, setActiveTab] = useState("analysis");
 
@@ -154,13 +155,24 @@ const CarEstimatorResult = ({ result, onSave }) => {
               Professional Market Valuation
             </p>
           </div>
-          <button
-            onClick={onSave}
-            className="bg-white/15 hover:bg-white/25 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 w-full sm:w-auto justify-center border border-white/30"
-          >
-            <CheckCircle className="w-4 h-4" />
-            Save Valuation
-          </button>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            {onSellCar && (
+              <button
+                onClick={onSellCar}
+                className="bg-white text-primary-600 hover:bg-primary-50 px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 justify-center border border-white/50 shadow-sm"
+              >
+                <Tag className="w-4 h-4" />
+                Sell your car
+              </button>
+            )}
+            <button
+              onClick={onSave}
+              className="bg-white/15 hover:bg-white/25 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 justify-center border border-white/30"
+            >
+              <CheckCircle className="w-4 h-4" />
+              Save
+            </button>
+          </div>
         </div>
       </div>
 

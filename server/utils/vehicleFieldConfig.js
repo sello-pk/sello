@@ -28,11 +28,7 @@ export const VEHICLE_FIELD_CONFIG = {
       "colorExterior",
       "colorInterior",
       "mileage",
-      "features",
       "location",
-      "carDoors",
-      "horsepower",
-      "numberOfCylinders",
       "geoLocation", // Made optional - will use default if not provided
     ],
   },

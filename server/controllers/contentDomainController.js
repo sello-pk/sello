@@ -209,6 +209,9 @@ export const createBlog = async (req, res) => {
       excerpt,
       readTime,
       isFeatured,
+      metaTitle,
+      metaDescription,
+      metaKeywords,
     } = req.body;
     if (!title || !content)
       return res
@@ -250,6 +253,9 @@ export const createBlog = async (req, res) => {
       readTime: parseInt(readTime) || 5,
       author: req.user._id,
       slug: desiredSlug,
+      ...(metaTitle && { metaTitle }),
+      ...(metaDescription && { metaDescription }),
+      ...(metaKeywords && { metaKeywords }),
     });
 
     return res.status(201).json({ success: true, data: blog });
@@ -270,6 +276,14 @@ export const updateBlog = async (req, res) => {
 
     if (req.file) {
       data.featuredImage = await uploadCloudinary(req.file.buffer);
+    }
+
+    if (data.tags && typeof data.tags === "string") {
+      try {
+        data.tags = JSON.parse(data.tags);
+      } catch {
+        data.tags = data.tags.split(",").map((t) => t.trim()).filter(Boolean);
+      }
     }
 
     if (data.slug || data.title) {
@@ -310,7 +324,7 @@ export const updateBlog = async (req, res) => {
 
 export const getAllBlogs = async (req, res) => {
   try {
-    const { status, category, search, page = 1, limit = 10 } = req.query;
+    const { status, category, search, page = 1, limit = 10, exclude } = req.query;
 
     // Build Filter Query
     const query = {};
@@ -349,6 +363,10 @@ export const getAllBlogs = async (req, res) => {
       query.isFeatured = req.query.isFeatured === "true";
     }
 
+    if (exclude && mongoose.Types.ObjectId.isValid(exclude)) {
+      query._id = { $ne: exclude };
+    }
+
     if (search) {
       const regex = new RegExp(search, "i");
       query.$or = [{ title: regex }, { excerpt: regex }, { content: regex }];
@@ -358,7 +376,7 @@ export const getAllBlogs = async (req, res) => {
 
     const [blogs, total, stats] = await Promise.all([
       Blog.find(query)
-        .populate("author", "name email")
+        .populate("author", "name email avatar")
         .populate("category", "name slug image")
         .sort({ createdAt: -1 })
         .skip(skip)
@@ -405,7 +423,7 @@ export const getAllBlogs = async (req, res) => {
 export const getBlogBySlug = async (req, res) => {
   try {
     const blog = await Blog.findOne({ slug: req.params.slug })
-      .populate("author", "name email")
+      .populate("author", "name email avatar")
       .populate("category", "name slug image");
 
     if (!blog) {
@@ -451,7 +469,7 @@ export const getBlogById = async (req, res) => {
     }
 
     const blog = await Blog.findById(blogId)
-      .populate("author", "name email")
+      .populate("author", "name email avatar")
       .populate("category", "name slug image");
 
     if (!blog) {

@@ -99,25 +99,29 @@ const LatestBlogsSection = () => {
             <Link
               key={blog._id}
               to={buildBlogUrl(blog)}
-              className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col"
+              className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 flex flex-col"
             >
-              {/* Blog Image */}
-              <div className="w-full h-48 md:h-56 overflow-hidden bg-gray-200">
+              {/* Blog Image - fit inside box like categories (no crop) */}
+              <div className="w-full h-48 md:h-56 overflow-hidden rounded-t-lg bg-gray-100 flex-shrink-0 flex items-center justify-center">
                 <img
                   src={
                     blog.featuredImage ||
                     "https://via.placeholder.com/600x400?text=No+Image"
                   }
                   alt={blog.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="max-h-full max-w-full w-auto h-auto object-contain object-center group-hover:scale-105 transition-transform duration-300"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "https://via.placeholder.com/600x400?text=Blog";
+                  }}
                 />
               </div>
 
               {/* Blog Content */}
-              <div className="p-6 flex-1 flex flex-col">
-                {/* Category */}
+              <div className="p-6 flex-1 flex flex-col min-w-0">
+                {/* Category - inline, won't clip */}
                 {blog.category && (
-                  <span className="inline-block text-xs font-semibold text-primary-500 mb-3 uppercase tracking-wide">
+                  <span className="inline-block w-fit px-2.5 py-1 text-xs font-semibold text-primary-600 mb-3 uppercase tracking-wide bg-primary-50 rounded-full flex-shrink-0">
                     {blog.category.name}
                   </span>
                 )}

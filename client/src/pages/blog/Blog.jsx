@@ -15,6 +15,7 @@ const Blog = () => {
       <SEO
         title="Blog | Sello"
         description="Read our latest blog posts about cars, automotive news, buying guides, maintenance tips, and more."
+        keywords="blog, car blog, automotive news, buy cars Pakistan, sell cars, car tips, car guides, Sello blog"
       />
       <BlogsHeroSection />
       <div className="py-8 px-4 sm:px-6 lg:px-8">

@@ -113,28 +113,30 @@ const BlogPosts = ({ search = "", category = "", sortBy = "newest" }) => {
               <Link
                 key={blog._id}
                 to={`/blog/${blog.slug || blog._id}`}
-                className="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col border border-gray-100"
+                className="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col border border-gray-100"
               >
-                {/* Blog Image */}
-                <div className="relative w-full h-48 md:h-56 overflow-hidden bg-gray-100 group">
+                {/* Blog Image - fit inside box like categories (no crop) */}
+                <div className="relative w-full h-48 md:h-56 overflow-hidden rounded-t-xl bg-gray-100 group flex items-center justify-center">
                   <img
                     src={
                       blog.featuredImage ||
                       "https://via.placeholder.com/600x400?text=No+Image"
                     }
                     alt={blog.title}
-                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
+                    className="max-h-full max-w-full w-auto h-auto object-contain object-center transition-transform duration-300 group-hover:scale-105"
                     loading="lazy"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "https://via.placeholder.com/600x400?text=Blog";
+                    }}
                   />
-                  {/* Image overlay gradient for better text visibility */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
 
                 {/* Blog Content */}
-                <div className="p-6 flex-1 flex flex-col">
-                  {/* Category */}
+                <div className="p-6 flex-1 flex flex-col min-w-0">
+                  {/* Category - inline, won't clip */}
                   {blog.category && (
-                    <span className="inline-block px-3 py-1 text-xs font-semibold text-primary-600 mb-4 uppercase tracking-wide bg-primary-50 rounded-full">
+                    <span className="inline-block w-fit px-3 py-1 text-xs font-semibold text-primary-600 mb-4 uppercase tracking-wide bg-primary-50 rounded-full flex-shrink-0">
                       {blog.category.name}
                     </span>
                   )}

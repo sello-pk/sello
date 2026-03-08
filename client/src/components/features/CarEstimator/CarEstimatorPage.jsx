@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import toast from "react-hot-toast";
 import {
   Car,
-  RotateCcw,
+  Trash2,
   Sparkles,
   Bookmark,
   TrendingUp,
-  Shield,
   Zap,
   CheckCircle,
   Clock,
@@ -16,8 +17,10 @@ import CarEstimatorForm from "./CarEstimatorForm";
 import CarEstimatorResult from "./CarEstimatorResult";
 import SEO from "../../common/SEO";
 import estimatorHero from "../../../assets/images/estimatorHero.png";
+import EstimatorBlogsSection from "./EstimatorBlogsSection";
 
 const CarEstimatorPage = () => {
+  const navigate = useNavigate();
   const [result, setResult] = useState(null);
   const [activeTab, setActiveTab] = useState("estimate");
   const [savedValuations, setSavedValuations] = useState([]);
@@ -58,6 +61,21 @@ const CarEstimatorPage = () => {
     const updatedValuations = [...savedValuations, valuation];
     setSavedValuations(updatedValuations);
     localStorage.setItem("carValuations", JSON.stringify(updatedValuations));
+    toast.success("Valuation saved. View it in the Saved tab.");
+  };
+
+  const handleSellCar = () => {
+    if (!result?.formData) return;
+    const prefill = {
+      make: result.formData.make || "",
+      model: result.formData.model || "",
+      variant: result.formData.variant || "",
+      year: result.formData.year || "",
+      fuelType: result.formData.engineType || result.formData.fuelType || "",
+      transmission: result.formData.transmission || "",
+      mileage: result.formData.mileage || "",
+    };
+    navigate("/create-post", { state: { fromEstimator: true, prefill } });
   };
 
   const handleDeleteValuation = (id) => {
@@ -149,7 +167,7 @@ const CarEstimatorPage = () => {
         </section>
 
         {/* Tabs */}
-        <div className="max-w-8xl mx-auto w-full px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8">
+        <div id="estimator-tabs" className="max-w-8xl mx-auto w-full px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8 scroll-mt-4">
           <div className="border-b border-gray-200 overflow-x-auto">
             <nav className="-mb-px flex space-x-2 sm:space-x-8 min-w-max">
               {[
@@ -227,6 +245,7 @@ const CarEstimatorPage = () => {
                 <CarEstimatorResult
                   result={result}
                   onSave={handleSaveValuation}
+                  onSellCar={handleSellCar}
                   fullWidth={true}
                 />
               </motion.div>
@@ -270,9 +289,11 @@ const CarEstimatorPage = () => {
                           </div>
                           <button
                             onClick={() => handleDeleteValuation(valuation.id)}
-                            className="text-red-500 hover:text-red-700 transition-colors"
+                            className="flex items-center gap-1.5 text-red-500 hover:text-red-700 transition-colors text-sm"
+                            title="Delete saved valuation"
                           >
-                            <RotateCcw className="w-4 h-4" />
+                            <Trash2 className="w-4 h-4" />
+                            <span className="hidden sm:inline">Delete</span>
                           </button>
                         </div>
 
@@ -316,185 +337,7 @@ const CarEstimatorPage = () => {
         </div>
 
         {/* Blog Sections */}
-        <div className="max-w-8xl mx-auto w-full px-4 sm:px-6 lg:px-8 mt-12 sm:mt-16 space-y-8 sm:space-y-12 pb-10">
-          {/* Section 1: How AI Works */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
-          >
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-              <div className="flex items-center justify-center bg-gray-50 p-6 lg:p-8 lg:order-2">
-                <img
-                  src="/src/assets/images/estimator2.PNG"
-                  alt="AI Car Estimation"
-                  className="rounded-lg shadow-md max-w-full h-auto"
-                />
-              </div>
-              <div className="p-6 lg:p-8 lg:order-1">
-                <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-4">
-                  How Our AI Car Price Estimator Actually Works
-                </h2>
-                <p className="text-gray-600 leading-relaxed text-sm lg:text-base">
-                  Here's the deal: our AI checks out your car's details stuff
-                  like mileage engine health body shape, and how well it's been
-                  cared for. Then it runs the numbers to figure out a fair
-                  market price. No complicated tech talk just a straightforward
-                  look at what really matters.
-                </p>
-                <div className="mt-6 flex flex-col sm:flex-row items-center sm:items-start gap-4">
-                  <div className="flex items-center gap-2 text-primary-600">
-                    <CheckCircle className="w-5 h-5" />
-                    <span className="font-medium">AI-Powered Analysis</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-primary-600">
-                    <CheckCircle className="w-5 h-5" />
-                    <span className="font-medium">Real-Time Data</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Section 2: Why Know Your Car's Value */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
-          >
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="flex items-center justify-center bg-gray-50 p-8">
-                <img
-                  src="/src/assets/images/estimator3.PNG"
-                  alt="Car Value Analysis"
-                  className="rounded-lg shadow-md max-w-full h-auto"
-                />
-              </div>
-              <div className="p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  Why You Should Know Your Car's Real Value Before Selling
-                </h2>
-                <p className="text-gray-600 leading-relaxed">
-                  Guessing your car's price usually backfires. Aim too high and
-                  the car sits around with no buyers. Go too low and you leave
-                  money on the table. Using an AI estimator takes the guesswork
-                  out of it. You get a realistic price and the whole selling
-                  process moves quicker and smoother.
-                </p>
-                <div className="mt-6 flex items-center gap-4">
-                  <div className="flex items-center gap-2 text-green-600">
-                    <TrendingUp className="w-5 h-5" />
-                    <span className="font-medium">Maximize Your Price</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-green-600">
-                    <Clock className="w-5 h-5" />
-                    <span className="font-medium">Sell Faster</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Section 3: What Affects Resale Price */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
-          >
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="flex items-center justify-center bg-gray-50 p-8 md:order-2">
-                <img
-                  src="/src/assets/images/estimator4.PNG"
-                  alt="Car Value Factors"
-                  className="rounded-lg shadow-md max-w-full h-auto"
-                />
-              </div>
-              <div className="p-8 md:order-1">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  What Really Affects Your Car's Resale Price?
-                </h2>
-                <p className="text-gray-600 leading-relaxed">
-                  Let's be honest: not everything about your car matters to
-                  buyers but some things really do. Mileage engine condition the
-                  paint job interior suspension tire quality and whether it's
-                  been in an accident these are the big ones. Buyers pay
-                  attention to this stuff because it tells them how the car's
-                  been treated and what kind of shape it's in.
-                </p>
-                <div className="mt-6 grid grid-cols-2 gap-4">
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <Car className="w-4 h-4 text-primary-500" />
-                    <span className="text-sm">Mileage</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <Zap className="w-4 h-4 text-primary-500" />
-                    <span className="text-sm">Engine Condition</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <Shield className="w-4 h-4 text-primary-500" />
-                    <span className="text-sm">Paint Quality</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <Users className="w-4 h-4 text-primary-500" />
-                    <span className="text-sm">Accident History</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Section 4: AI vs Guessing */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
-          >
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="flex items-center justify-center bg-gray-50 p-8">
-                <img
-                  src="/src/assets/images/estimatorBlog.PNG"
-                  alt="AI vs Manual Pricing"
-                  className="rounded-lg shadow-md max-w-full h-auto"
-                />
-              </div>
-              <div className="p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  AI Car Pricing vs Guessing a Price Yourself
-                </h2>
-                <p className="text-gray-600 leading-relaxed">
-                  Let's be real guessing your car's value is a shot in the dark.
-                  AI, on the other hand sticks to the facts and uses real data.
-                  That means you get a price that's consistent fair and not
-                  swayed by anyone's opinion. It's just more reliable.
-                </p>
-                <div className="mt-6 space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                      <CheckCircle className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-700">Data-driven pricing</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                      <CheckCircle className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-700">Eliminates human bias</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                      <CheckCircle className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-700">Consistent results</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
+        <EstimatorBlogsSection />
       </div>
     </>
   );

@@ -123,6 +123,82 @@ export const createCar = async (req, res) => {
   }
 };
 
+export const editCar = async (req, res) => {
+  try {
+    if (!req.user) return res.status(401).json({ success: false, message: "Unauthorized" });
+
+    const { id } = req.params;
+    const car = await Car.findById(id);
+    if (!car) return res.status(404).json({ success: false, message: "Not found" });
+
+    if (car.postedBy.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Not authorized" });
+    }
+
+    const validation = validateRequiredFields(req.body.vehicleType || car.vehicleType || "Car", req.body);
+    if (!validation.isValid) {
+      return res.status(400).json({ success: false, message: `Missing: ${validation.missing.join(", ")}` });
+    }
+
+    let existingImages = [];
+    if (req.body.existingImages) {
+      existingImages = Array.isArray(req.body.existingImages) ? req.body.existingImages : [req.body.existingImages];
+    } else if (req.body["existingImages[]"]) {
+      const raw = req.body["existingImages[]"];
+      existingImages = Array.isArray(raw) ? raw : [raw];
+    }
+    existingImages = existingImages.filter((url) => url && typeof url === "string" && url.trim());
+
+    let newImageUrls = [];
+    if (req.files && req.files.length > 0) {
+      const uploadPromises = req.files.map((file) => uploadCloudinary(file.buffer, { folder: "sello_cars" }));
+      newImageUrls = await Promise.all(uploadPromises);
+    }
+    const images = [...existingImages, ...newImageUrls];
+
+    const normalizedEngineCapacity = parseNumericField(req.body.engineCapacity);
+    const normalizedHorsepower = parseNumericField(req.body.horsepower);
+    const normalizedGeoLocation = parseGeoLocation(req.body.geoLocation);
+
+    if (
+      (req.body.vehicleType || car.vehicleType || "Car") === "Car" &&
+      normalizedEngineCapacity === undefined &&
+      (req.body.engineCapacity === undefined || req.body.engineCapacity === "")
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid engineCapacity. Please select a valid numeric range.",
+      });
+    }
+
+    const yearNum = req.body.year !== undefined && req.body.year !== "" ? parseInt(req.body.year, 10) : car.year;
+    const priceNum = req.body.price !== undefined && req.body.price !== "" ? parseFloat(req.body.price) : car.price;
+    const mileageNum = req.body.mileage !== undefined && req.body.mileage !== "" ? parseNumericField(req.body.mileage) : car.mileage;
+
+    const updateData = {
+      ...req.body,
+      make: normalizeString(req.body.make),
+      model: normalizeString(req.body.model),
+      year: Number.isFinite(yearNum) ? yearNum : car.year,
+      price: Number.isFinite(priceNum) ? priceNum : car.price,
+      mileage: Number.isFinite(mileageNum) ? mileageNum : car.mileage,
+      engineCapacity: normalizedEngineCapacity !== undefined ? normalizedEngineCapacity : car.engineCapacity,
+      horsepower: normalizedHorsepower !== undefined ? normalizedHorsepower : (car.horsepower ?? 0),
+      geoLocation: normalizedGeoLocation,
+      images,
+    };
+    delete updateData.postedBy;
+    delete updateData._id;
+    delete updateData.__v;
+
+    const updated = await Car.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
+    return res.status(200).json({ success: true, data: updated });
+  } catch (error) {
+    Logger.error("Edit Car Error", error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export const deleteCar = async (req, res) => {
   try {
     const { id } = req.params;

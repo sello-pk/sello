@@ -159,6 +159,7 @@ export const buildCarQuery = (query) => {
   const exactMatchFields = [
     "make",
     "model",
+    "variant",
     "condition",
     "transmission",
     "fuelType",
@@ -182,10 +183,7 @@ export const buildCarQuery = (query) => {
     { key: "price", min: "priceMin", max: "priceMax" },
     { key: "year", min: "yearMin", max: "yearMax" },
     { key: "mileage", min: "mileageMin", max: "mileageMax" },
-    { key: "horsepower", min: "hpMin", max: "hpMax" },
     { key: "engineCapacity", min: "engineMin", max: "engineMax" },
-    { key: "carDoors", min: "doorsMin", max: "doorsMax" },
-    { key: "numberOfCylinders", min: "cylMin", max: "cylMax" },
     { key: "batteryRange", min: "batteryRangeMin", max: "batteryRangeMax" },
     { key: "motorPower", min: "motorPowerMin", max: "motorPowerMax" },
   ];

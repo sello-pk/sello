@@ -9,6 +9,7 @@ import { useGetFilteredCarsQuery } from "../../redux/services/api";
 import { HiOutlineArrowLeft } from "react-icons/hi2";
 import CarCard from "../../components/common/CarCard";
 import CategoryFilterForm from "../../components/sections/filter/CategoryFilterForm";
+import ListingsCategoryBlogsSection from "../../components/sections/listings/ListingsCategoryBlogsSection";
 import { vehicleCategoryConfig } from "../../config/vehicleCategoryConfig";
 
 const GenericVehicleCategoryPage = () => {
@@ -218,6 +219,8 @@ const GenericVehicleCategoryPage = () => {
             )}
           </div>
         </div>
+
+        <ListingsCategoryBlogsSection categorySlug={categoryType?.toLowerCase()} />
       </div>
     </div>
   );

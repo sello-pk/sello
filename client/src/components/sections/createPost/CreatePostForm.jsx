@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useCreateCarMutation } from "../../../redux/services/api";
@@ -11,15 +11,11 @@ import BodyTypes from "../../utils/filter/BodyTypes";
 import RegionalSpecs from "../../utils/filter/RegionalSpecs";
 import FuelSpecs from "../../utils/filter/FuelSpecs";
 import TransmissionSpecs from "../../utils/filter/TransmissionSpecs";
-import CylindersSpecs from "../../utils/filter/CylindersSpecs";
 import ExteriorColor from "../../utils/filter/ExteriorColor";
 import InteriorColor from "../../utils/filter/InteriorColor";
-import DoorsSpecs from "../../utils/filter/DoorsSpecs";
 import OwnerTypeSpecs from "../../utils/filter/OwnerTypeSpecs";
 import WarrantyType from "../../utils/filter/WarrantyType";
-import HorsePowerSpecs from "../../utils/filter/HorsePowerSpecs";
 import EngineCapacitySpecs from "../../utils/filter/EngineCapacitySpecs";
-import TechnicalFeaturesSpecs from "../../utils/filter/TechnicalFeaturesSpecs";
 import CarCondition from "../../utils/filter/CarCondition";
 import { useCarCategories } from "../../../hooks/useCarCategories";
 import LocationButton from "../../utils/filter/LocationButton";
@@ -55,8 +51,9 @@ const parseRangeLikeNumber = (value) => {
   return numbers[0];
 };
 
-const CreatePostForm = () => {
+const CreatePostForm = ({ initialPrefill = null }) => {
   const navigate = useNavigate();
+  const prefillAppliedRef = useRef(false);
   const [availableModels, setAvailableModels] = useState([]);
   const [availableYears, setAvailableYears] = useState([]);
   const [availableCities, setAvailableCities] = useState([]);
@@ -81,18 +78,14 @@ const CreatePostForm = () => {
     engineCapacity: "",
     transmission: "",
     mileage: "",
-    features: [],
     regionalSpec: "",
     bodyType: "",
     country: "",
     city: "",
     location: "",
-    carDoors: "",
     contactNumber: "",
     geoLocation: "",
-    horsepower: "",
     warranty: "",
-    numberOfCylinders: "",
     ownerType: "",
     batteryRange: "",
     motorPower: "",
@@ -138,6 +131,30 @@ const CreatePostForm = () => {
     });
   };
 
+  // Apply prefill from estimator (Sell your car) when categories are ready
+  useEffect(() => {
+    if (
+      !initialPrefill ||
+      prefillAppliedRef.current ||
+      !Array.isArray(makes) ||
+      makes.length === 0
+    )
+      return;
+    prefillAppliedRef.current = true;
+    setFormData((prev) => ({
+      ...prev,
+      make: (initialPrefill.make && String(initialPrefill.make).trim()) || prev.make,
+      model: (initialPrefill.model && String(initialPrefill.model).trim()) || prev.model,
+      variant: (initialPrefill.variant && String(initialPrefill.variant).trim()) || prev.variant,
+      year: (initialPrefill.year && String(initialPrefill.year).trim()) || prev.year,
+      fuelType: (initialPrefill.fuelType && String(initialPrefill.fuelType).trim()) || prev.fuelType,
+      transmission: (initialPrefill.transmission && String(initialPrefill.transmission).trim()) || prev.transmission,
+      mileage: (initialPrefill.mileage != null && initialPrefill.mileage !== "")
+        ? String(initialPrefill.mileage).trim()
+        : prev.mileage,
+    }));
+  }, [initialPrefill, makes]);
+
   // Initialize available models - optimized with useMemo-like logic
   useEffect(() => {
     setAvailableModels(resolveModelsBySelectedMake(formData.make));
@@ -167,21 +184,7 @@ const CreatePostForm = () => {
   }, [formData.country, countries, cities, getCitiesByCountry]);
 
   const handleChange = (field, value) => {
-    // Handle features to ensure it's a flat array with no duplicates
-    if (field === "features") {
-      let flatValue = [];
-      if (Array.isArray(value)) {
-        flatValue = value
-          .flat()
-          .filter((item) => typeof item === "string" && item.trim());
-      } else if (typeof value === "string" && value.trim()) {
-        flatValue = value.split(",").map((item) => item.trim());
-      }
-      // Remove duplicates by converting to Set and back to array
-      const uniqueFeatures = [...new Set(flatValue)];
-      setFormData((prev) => ({ ...prev, [field]: uniqueFeatures }));
-    } else {
-      setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
 
       // When vehicle type changes, reset dependent fields
       if (field === "vehicleType") {
@@ -240,7 +243,6 @@ const CreatePostForm = () => {
           setAvailableCities(cities);
         }
       }
-    }
   };
 
   const prepareFormData = () => {
@@ -282,7 +284,6 @@ const CreatePostForm = () => {
     const normalizedEngineCapacity = parseRangeLikeNumber(
       formData.engineCapacity,
     );
-    const normalizedHorsepower = parseRangeLikeNumber(formData.horsepower);
 
     // Only set defaults for fields that are visible for this vehicle type
     const defaults = {
@@ -291,23 +292,12 @@ const CreatePostForm = () => {
       mileage: formData.mileage || "0",
       location: formData.location || "",
       description: formData.description || "",
-      features: formData.features.length ? formData.features : [],
     };
 
     // Add conditional defaults only if fields are visible
-    if (isFieldVisible(formData.vehicleType, "horsepower")) {
-      defaults.horsepower =
-        normalizedHorsepower === "" ? "0" : String(normalizedHorsepower);
-    }
     if (isFieldVisible(formData.vehicleType, "engineCapacity")) {
       defaults.engineCapacity =
         normalizedEngineCapacity === "" ? "" : String(normalizedEngineCapacity);
-    }
-    if (isFieldVisible(formData.vehicleType, "doors")) {
-      defaults.carDoors = formData.carDoors || "4";
-    }
-    if (isFieldVisible(formData.vehicleType, "cylinders")) {
-      defaults.numberOfCylinders = formData.numberOfCylinders || "4";
     }
 
     // Optimize FormData construction - build in single pass
@@ -320,18 +310,6 @@ const CreatePostForm = () => {
       });
     }
 
-    // Add features array as comma-separated string (more reliable with FormData)
-    if (defaults.features && defaults.features.length > 0) {
-      const validFeatures = defaults.features
-        .filter((f) => f && typeof f === "string" && f.trim())
-        .map((f) => f.trim());
-      // Remove duplicates before appending
-      const uniqueFeatures = [...new Set(validFeatures)];
-      if (uniqueFeatures.length > 0) {
-        data.append("features", uniqueFeatures.join(","));
-      }
-    }
-
     // Add all other fields efficiently
     const fieldsToAppend = [
       "title",
@@ -339,6 +317,7 @@ const CreatePostForm = () => {
       "vehicleType",
       "make",
       "model",
+      "variant",
       "year",
       "condition",
       "price",
@@ -353,12 +332,9 @@ const CreatePostForm = () => {
       "country",
       "city",
       "location",
-      "carDoors",
       "contactNumber",
       "geoLocation",
-      "horsepower",
       "warranty",
-      "numberOfCylinders",
       "ownerType",
       "batteryRange",
       "motorPower",
@@ -405,21 +381,6 @@ const CreatePostForm = () => {
         ) {
           shouldSend = false;
         } else if (
-          key === "horsepower" &&
-          !isFieldVisible(formData.vehicleType, "horsepower")
-        ) {
-          shouldSend = false;
-        } else if (
-          key === "carDoors" &&
-          !isFieldVisible(formData.vehicleType, "doors")
-        ) {
-          shouldSend = false;
-        } else if (
-          key === "numberOfCylinders" &&
-          !isFieldVisible(formData.vehicleType, "cylinders")
-        ) {
-          shouldSend = false;
-        } else if (
           key === "batteryRange" &&
           !isFieldVisible(formData.vehicleType, "batteryRange")
         ) {
@@ -436,9 +397,7 @@ const CreatePostForm = () => {
         ) {
           shouldSend = false;
         } else if (
-          (key === "colorExterior" ||
-            key === "colorInterior" ||
-            key === "features") &&
+          (key === "colorExterior" || key === "colorInterior") &&
           formData.vehicleType !== "Car"
         ) {
           shouldSend = false;
@@ -498,18 +457,14 @@ const CreatePostForm = () => {
         engineCapacity: "",
         transmission: "",
         mileage: "",
-        features: [],
         regionalSpec: "",
         bodyType: "",
         country: "",
         city: "",
         location: "",
-        carDoors: "",
         contactNumber: "",
         geoLocation: "",
-        horsepower: "",
         warranty: "",
-        numberOfCylinders: "",
         ownerType: "",
         batteryRange: "",
         motorPower: "",
@@ -580,23 +535,6 @@ const CreatePostForm = () => {
       return;
     }
 
-    // Validate car doors (required for cars)
-    if (formData.vehicleType === "Car") {
-      const doorsNum = parseInt(formData.carDoors);
-      if (isNaN(doorsNum) || doorsNum < 2 || doorsNum > 8) {
-        toast.error("Number of doors must be between 2 and 8.");
-        return;
-      }
-    }
-
-    // Validate horsepower (required for cars)
-    if (formData.vehicleType === "Car") {
-      const hpNum = parseInt(formData.horsepower);
-      if (isNaN(hpNum) || hpNum < 50 || hpNum > 2000) {
-        toast.error("Horsepower must be between 50 and 2000.");
-        return;
-      }
-    }
     const data = prepareFormData();
 
     try {
@@ -634,18 +572,14 @@ const CreatePostForm = () => {
         engineCapacity: "",
         transmission: "",
         mileage: "",
-        features: [],
         regionalSpec: "",
         bodyType: "",
         country: "",
         city: "",
         location: "",
-        carDoors: "",
         contactNumber: "",
         geoLocation: "",
-        horsepower: "",
         warranty: "",
-        numberOfCylinders: "",
         ownerType: "",
         batteryRange: "",
         motorPower: "",
@@ -754,34 +688,31 @@ const CreatePostForm = () => {
           Listing Type *
         </label>
         <div className="flex justify-center gap-3 flex-wrap mb-4">
-          {["Regular Listing", "Auction"].map(
-            (type) => (
+          {["Regular Listing", "Auction"].map((type) => {
+            const isSelected = formData.listingType === type;
+            const isRegular = type === "Regular Listing";
+            const btnClass = isSelected
+              ? "bg-primary-500 text-white border-2 border-primary-500 shadow-md"
+              : "bg-white text-gray-700 border-2 border-gray-200 hover:border-primary-500 hover:shadow-md hover:bg-primary-50";
+            return (
               <button
                 key={type}
                 type="button"
-                onClick={() => {
-                    : "bg-white text-gray-700 border-2 border-gray-200 hover:border-primary-500 hover:shadow-md hover:bg-primary-50"
-                }`}
+                onClick={() => handleChange("listingType", type)}
+                className={"relative px-6 py-3 rounded-xl font-medium transition-all " + btnClass}
               >
-                {formData.listingType === type && (
+                {isSelected && (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-2 h-2 bg-primary-600 rounded-full animate-ping" />
                   </div>
                 )}
-                {type === "Regular Listing" ? (
-                  <span className="flex items-center gap-2">
-                    <span className="text-lg">🚗</span>
-                    <span>Regular Listing</span>
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    <span className="text-lg">🔨</span>
-                    <span>Auction Listing</span>
-                  </span>
-                )}
+                <span className="flex items-center gap-2">
+                  <span className="text-lg">{isRegular ? "\u{1F697}" : "\u{1F528}"}</span>
+                  <span>{type}</span>
+                </span>
               </button>
-            )
-          )}
+            );
+          })}
         </div>
 
         {/* Show vehicle type selection only for regular listings */}
@@ -828,8 +759,10 @@ const CreatePostForm = () => {
               </button>
             ),
           )}
+            </div>
+          </>
+        )}
         </div>
-      </div>
 
       {/* Tab Content Container */}
       <div className="border-[1px] border-gray-700 rounded-md px-5 py-5 my-4">
@@ -851,8 +784,8 @@ const CreatePostForm = () => {
           />
         </div>
 
-        {/* Make, Model, Year in same row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2 pl-2">
+        {/* Make, Model, Year, Variant */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-2 pl-2">
           <div>
             <label className="block mb-1">
               {getVehicleLabel(formData.vehicleType, "make")} *
@@ -922,6 +855,15 @@ const CreatePostForm = () => {
               disabled={categoriesLoading}
               isLoading={categoriesLoading}
               required
+            />
+          </div>
+          <div>
+            <label className="block mb-1">Variant</label>
+            <Input
+              inputType="text"
+              value={formData.variant}
+              onChange={(e) => handleChange("variant", e.target.value)}
+              placeholder="e.g., VTi Oriel"
             />
           </div>
         </div>
@@ -1108,16 +1050,6 @@ const CreatePostForm = () => {
           </div>
         )}
 
-        {/* Number of Cylinders - Full Width */}
-        {isFieldVisible(formData.vehicleType, "cylinders") && (
-          <div className="mb-2 pl-2">
-            <label className="block mb-1">Number of Cylinders</label>
-            <CylindersSpecs
-              onChange={(val) => handleChange("numberOfCylinders", val)}
-            />
-          </div>
-        )}
-
         {/* Exterior Color - Full Width */}
         {formData.vehicleType === "Car" && (
           <div className="mb-2 pl-2">
@@ -1135,14 +1067,6 @@ const CreatePostForm = () => {
               value={formData.colorInterior}
               onChange={(val) => handleChange("colorInterior", val)}
             />
-          </div>
-        )}
-
-        {/* Car Doors - Full Width */}
-        {isFieldVisible(formData.vehicleType, "doors") && (
-          <div className="mb-2 pl-2">
-            <label className="block mb-1">Car Doors</label>
-            <DoorsSpecs onChange={(val) => handleChange("carDoors", val)} />
           </div>
         )}
 
@@ -1174,15 +1098,6 @@ const CreatePostForm = () => {
           </div>
         )}
 
-        {isFieldVisible(formData.vehicleType, "horsepower") && (
-          <div className="mb-2 pl-2">
-            <label className="block mb-1">Horsepower</label>
-            <HorsePowerSpecs
-              onChange={(val) => handleChange("horsepower", val)}
-            />
-          </div>
-        )}
-
         {isFieldVisible(formData.vehicleType, "batteryRange") && (
           <div className="pl-2">
             <label className="block mb-1">Battery Range (km)</label>
@@ -1203,15 +1118,6 @@ const CreatePostForm = () => {
               value={formData.motorPower}
               onChange={(e) => handleChange("motorPower", e.target.value)}
               placeholder="e.g., 250"
-            />
-          </div>
-        )}
-
-        {formData.vehicleType === "Car" && (
-          <div>
-            <label className="block mb-1 pl-2">Features</label>
-            <TechnicalFeaturesSpecs
-              onChange={(val) => handleChange("features", val)}
             />
           </div>
         )}

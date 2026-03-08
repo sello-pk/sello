@@ -15,7 +15,6 @@ import OwnerTypeSpecs from "../../utils/filter/OwnerTypeSpecs";
 import WarrantyType from "../../utils/filter/WarrantyType";
 import HorsePowerSpecs from "../../utils/filter/HorsePowerSpecs";
 import EngineCapacitySpecs from "../../utils/filter/EngineCapacitySpecs";
-import TechnicalFeaturesSpecs from "../../utils/filter/TechnicalFeaturesSpecs";
 import LocationButton from "../../utils/filter/LocationButton";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useCarCategories } from "../../../hooks/useCarCategories";
@@ -55,6 +54,7 @@ const FilterForm = ({ onFilter }) => {
     maxPrice: "",
     make: "",
     model: "",
+    variant: "",
     minYear: "",
     maxYear: "",
     minMileage: "",
@@ -64,23 +64,16 @@ const FilterForm = ({ onFilter }) => {
     regionalSpec: "",
     fuelType: "",
     transmission: "",
-    minCylinders: "",
-    maxCylinders: "",
     exteriorColor: "",
     interiorColor: "",
-    minDoors: "",
-    maxDoors: "",
     ownerType: "",
     warranty: "",
-    minHorsePower: "",
-    maxHorsePower: "",
     minEngineCapacity: "",
     maxEngineCapacity: "",
     minBatteryRange: "",
     maxBatteryRange: "",
     minMotorPower: "",
     maxMotorPower: "",
-    technicalFeatures: "",
     country: "",
     city: "",
     radius: "",
@@ -141,9 +134,9 @@ const FilterForm = ({ onFilter }) => {
     const model = searchParams.get("model");
     const yearMin = searchParams.get("yearMin");
     const yearMax = searchParams.get("yearMax");
+    const variant = searchParams.get("variant");
     const priceMin = searchParams.get("priceMin");
     const priceMax = searchParams.get("priceMax");
-    const carDoors = searchParams.get("carDoors");
 
     // Build filter object from URL params
     if (city) urlFilters.city = city;
@@ -154,12 +147,9 @@ const FilterForm = ({ onFilter }) => {
     if (model) urlFilters.model = model;
     if (yearMin) urlFilters.minYear = yearMin;
     if (yearMax) urlFilters.maxYear = yearMax;
+    if (variant) urlFilters.variant = variant;
     if (priceMin) urlFilters.minPrice = priceMin;
     if (priceMax) urlFilters.maxPrice = priceMax;
-    if (carDoors) {
-      urlFilters.minDoors = carDoors;
-      urlFilters.maxDoors = carDoors;
-    }
 
     // Update filters state
     if (Object.keys(urlFilters).length > 0) {
@@ -173,10 +163,9 @@ const FilterForm = ({ onFilter }) => {
       if (urlFilters.model) backendFilters.model = urlFilters.model;
       if (urlFilters.minYear) backendFilters.yearMin = urlFilters.minYear;
       if (urlFilters.maxYear) backendFilters.yearMax = urlFilters.maxYear;
+      if (urlFilters.variant) backendFilters.variant = urlFilters.variant;
       if (urlFilters.minPrice) backendFilters.priceMin = urlFilters.minPrice;
       if (urlFilters.maxPrice) backendFilters.priceMax = urlFilters.maxPrice;
-      if (urlFilters.minDoors) backendFilters.doorsMin = urlFilters.minDoors;
-      if (urlFilters.maxDoors) backendFilters.doorsMax = urlFilters.maxDoors;
 
       // Trigger filter
       if (onFilter && Object.keys(backendFilters).length > 0) {
@@ -195,20 +184,6 @@ const FilterForm = ({ onFilter }) => {
         make: "", // Reset make when vehicle type changes
         model: "", // Reset model when vehicle type changes
         bodyType: isFieldVisible(value, "bodyType") ? prev.bodyType : "",
-        minCylinders: isFieldVisible(value, "cylinders")
-          ? prev.minCylinders
-          : "",
-        maxCylinders: isFieldVisible(value, "cylinders")
-          ? prev.maxCylinders
-          : "",
-        minDoors: isFieldVisible(value, "doors") ? prev.minDoors : "",
-        maxDoors: isFieldVisible(value, "doors") ? prev.maxDoors : "",
-        minHorsePower: isFieldVisible(value, "horsepower")
-          ? prev.minHorsePower
-          : "",
-        maxHorsePower: isFieldVisible(value, "horsepower")
-          ? prev.maxHorsePower
-          : "",
         minEngineCapacity: isFieldVisible(value, "engineCapacity")
           ? prev.minEngineCapacity
           : "",
@@ -359,24 +334,6 @@ const FilterForm = ({ onFilter }) => {
         minMileage: values[0],
         maxMileage: values[1],
       }));
-    } else if (type === "cylinders") {
-      setFilters((prev) => ({
-        ...prev,
-        minCylinders: values[0],
-        maxCylinders: values[1],
-      }));
-    } else if (type === "doors") {
-      setFilters((prev) => ({
-        ...prev,
-        minDoors: values[0],
-        maxDoors: values[1],
-      }));
-    } else if (type === "horsePower") {
-      setFilters((prev) => ({
-        ...prev,
-        minHorsePower: values[0],
-        maxHorsePower: values[1],
-      }));
     } else if (type === "engineCapacity") {
       setFilters((prev) => ({
         ...prev,
@@ -443,32 +400,6 @@ const FilterForm = ({ onFilter }) => {
       return false;
     }
     if (
-      filters.minCylinders &&
-      filters.maxCylinders &&
-      Number(filters.minCylinders) > Number(filters.maxCylinders)
-    ) {
-      toast.error("Minimum cylinders cannot be greater than maximum cylinders");
-      return false;
-    }
-    if (
-      filters.minDoors &&
-      filters.maxDoors &&
-      Number(filters.minDoors) > Number(filters.maxDoors)
-    ) {
-      toast.error("Minimum doors cannot be greater than maximum doors");
-      return false;
-    }
-    if (
-      filters.minHorsePower &&
-      filters.maxHorsePower &&
-      Number(filters.minHorsePower) > Number(filters.maxHorsePower)
-    ) {
-      toast.error(
-        "Minimum horsepower cannot be greater than maximum horsepower",
-      );
-      return false;
-    }
-    if (
       filters.minEngineCapacity &&
       filters.maxEngineCapacity &&
       Number(filters.minEngineCapacity) > Number(filters.maxEngineCapacity)
@@ -494,6 +425,7 @@ const FilterForm = ({ onFilter }) => {
     if (filters.maxPrice) backendFilters.priceMax = filters.maxPrice;
     if (filters.minYear) backendFilters.yearMin = filters.minYear;
     if (filters.maxYear) backendFilters.yearMax = filters.maxYear;
+    if (filters.variant) backendFilters.variant = filters.variant;
     if (filters.minMileage) backendFilters.mileageMin = filters.minMileage;
     if (filters.maxMileage) backendFilters.mileageMax = filters.maxMileage;
     if (filters.make) backendFilters.make = filters.make;
@@ -504,18 +436,12 @@ const FilterForm = ({ onFilter }) => {
     if (filters.fuelType) backendFilters.fuelType = filters.fuelType;
     if (filters.transmission)
       backendFilters.transmission = filters.transmission;
-    if (filters.minCylinders) backendFilters.cylMin = filters.minCylinders;
-    if (filters.maxCylinders) backendFilters.cylMax = filters.maxCylinders;
     if (filters.exteriorColor)
       backendFilters.colorExterior = filters.exteriorColor;
     if (filters.interiorColor)
       backendFilters.colorInterior = filters.interiorColor;
-    if (filters.minDoors) backendFilters.doorsMin = filters.minDoors;
-    if (filters.maxDoors) backendFilters.doorsMax = filters.maxDoors;
     if (filters.ownerType) backendFilters.ownerType = filters.ownerType;
     if (filters.warranty) backendFilters.warranty = filters.warranty;
-    if (filters.minHorsePower) backendFilters.hpMin = filters.minHorsePower;
-    if (filters.maxHorsePower) backendFilters.hpMax = filters.maxHorsePower;
     if (filters.minEngineCapacity)
       backendFilters.engineMin = filters.minEngineCapacity;
     if (filters.maxEngineCapacity)
@@ -528,8 +454,6 @@ const FilterForm = ({ onFilter }) => {
       backendFilters.motorPowerMin = filters.minMotorPower;
     if (filters.maxMotorPower)
       backendFilters.motorPowerMax = filters.maxMotorPower;
-    if (filters.technicalFeatures)
-      backendFilters.features = filters.technicalFeatures;
     if (filters.condition) backendFilters.condition = filters.condition;
     if (filters.country) backendFilters.country = filters.country;
     if (filters.city) backendFilters.city = filters.city;
@@ -569,6 +493,7 @@ const FilterForm = ({ onFilter }) => {
       maxPrice: "",
       make: "",
       model: "",
+      variant: "",
       minYear: "",
       maxYear: "",
       minMileage: "",
@@ -578,23 +503,16 @@ const FilterForm = ({ onFilter }) => {
       regionalSpec: "",
       fuelType: "",
       transmission: "",
-      minCylinders: "",
-      maxCylinders: "",
       exteriorColor: "",
       interiorColor: "",
-      minDoors: "",
-      maxDoors: "",
       ownerType: "",
       warranty: "",
-      minHorsePower: "",
-      maxHorsePower: "",
       minEngineCapacity: "",
       maxEngineCapacity: "",
       minBatteryRange: "",
       maxBatteryRange: "",
       minMotorPower: "",
       maxMotorPower: "",
-      technicalFeatures: "",
       country: "",
       city: "",
       radius: "",
@@ -625,7 +543,7 @@ const FilterForm = ({ onFilter }) => {
           Clear All
         </button>
       </div>
-      <form className="space-y-4 h-auto" onSubmit={handleSubmit}>
+      <form className="space-y-4 h-auto min-w-0 overflow-x-hidden" onSubmit={handleSubmit}>
         {/* Vehicle Type Selection - Button Style like CreatePostForm */}
         <div className="mb-6">
           <label className="block mb-3 text-center font-medium text-gray-700">
@@ -663,10 +581,11 @@ const FilterForm = ({ onFilter }) => {
         </div>
 
         {/* Price */}
-        <div className="field space-y-2">
-          <div className="flex flex-col sm:flex-row w-full mx-auto gap-4 items-center">
-            <div className="w-full sm:w-1/2">
-              <label className="block mb-1">Price From (PKR)</label>
+        <div className="field space-y-2 min-w-0">
+          <label className="block mb-2 text-sm font-medium text-gray-700">Price (PKR)</label>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-1 text-xs text-gray-500">From</label>
               <Input
                 inputType="number"
                 value={filters.minPrice}
@@ -674,8 +593,8 @@ const FilterForm = ({ onFilter }) => {
                 placeholder="Min"
               />
             </div>
-            <div className="w-full sm:w-1/2">
-              <label className="block mb-1">To (PKR)</label>
+            <div>
+              <label className="block mb-1 text-xs text-gray-500">To</label>
               <Input
                 inputType="number"
                 value={filters.maxPrice}
@@ -684,105 +603,122 @@ const FilterForm = ({ onFilter }) => {
               />
             </div>
           </div>
-          <RangeFilter
-            type="price"
-            min={0}
-            max={10000000}
-            onChange={(values) => handleRangeChange("price", values)}
-          />
+          <div className="min-w-0 overflow-hidden">
+            <RangeFilter
+              type="price"
+              min={0}
+              max={10000000}
+              onChange={(values) => handleRangeChange("price", values)}
+            />
+          </div>
         </div>
 
-        {/* Vehicle Make */}
-        <div className="field space-y-2">
-          <label className="block mb-2 text-sm font-medium text-gray-700">
-            {getVehicleLabel(filters.vehicleType || "Vehicle", "make")}
-          </label>
-          <SearchableSelect
-            value={filters.make}
-            onChange={(value) => handleChange("make", value)}
-            options={makes.map((make) => ({
-              value: make.name,
-              label: make.name,
-            }))}
-            placeholder={
-              !filters.vehicleType
-                ? "Select vehicle type first"
-                : categoriesLoading
-                  ? "Loading..."
-                  : "All Makes"
-            }
-            disabled={!filters.vehicleType || categoriesLoading}
-            isLoading={categoriesLoading}
-          />
+        {/* Row 1: Make and Model */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="field space-y-2">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              {getVehicleLabel(filters.vehicleType || "Vehicle", "make")}
+            </label>
+            <SearchableSelect
+              value={filters.make}
+              onChange={(value) => handleChange("make", value)}
+              options={makes.map((make) => ({
+                value: make.name,
+                label: make.name,
+              }))}
+              placeholder={
+                !filters.vehicleType
+                  ? "Select vehicle type first"
+                  : categoriesLoading
+                    ? "Loading..."
+                    : "All Makes"
+              }
+              disabled={!filters.vehicleType || categoriesLoading}
+              isLoading={categoriesLoading}
+            />
+          </div>
+          <div className="field space-y-2">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              {getVehicleLabel(filters.vehicleType || "Vehicle", "model")}
+            </label>
+            <SearchableSelect
+              value={filters.model}
+              onChange={(value) => handleChange("model", value)}
+              options={availableModels.map((model) => ({
+                value: model.name,
+                label: model.name,
+              }))}
+              placeholder={
+                !filters.vehicleType
+                  ? "Select vehicle type first"
+                  : categoriesLoading
+                    ? "Loading..."
+                    : availableModels.length === 0
+                      ? "No models available"
+                      : !filters.make
+                        ? "All Models"
+                        : "Select Model"
+              }
+              disabled={!filters.vehicleType || categoriesLoading}
+              isLoading={categoriesLoading}
+            />
+          </div>
         </div>
 
-        {/* Vehicle Model */}
-        <div className="field space-y-2">
-          <label className="block mb-2 text-sm font-medium text-gray-700">
-            {getVehicleLabel(filters.vehicleType || "Vehicle", "model")}
-          </label>
-          <SearchableSelect
-            value={filters.model}
-            onChange={(value) => handleChange("model", value)}
-            options={availableModels.map((model) => ({
-              value: model.name,
-              label: model.name,
-            }))}
-            placeholder={
-              !filters.vehicleType
-                ? "Select vehicle type first"
-                : categoriesLoading
-                  ? "Loading..."
-                  : availableModels.length === 0
-                    ? "No models available"
-                    : !filters.make
-                      ? "All Models"
-                      : "Select Model"
-            }
-            disabled={!filters.vehicleType || categoriesLoading}
-            isLoading={categoriesLoading}
-          />
-        </div>
-
-        {/* Year */}
-        <div className="field space-y-2">
-          <div className="flex flex-col sm:flex-row w-full mx-auto gap-4 items-center">
-            <div className="w-full sm:w-1/2">
-              <label className="block mb-1">Year From</label>
-              <Input
-                inputType="number"
-                value={filters.minYear}
-                onChange={(e) => handleChange("minYear", e.target.value)}
-                placeholder="1950"
-                min="1950"
-                max={new Date().getFullYear()}
-              />
+        {/* Row 2: Variant and Year */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+          <div className="field min-w-0">
+            <label className="block mb-2 text-sm font-medium text-gray-700">Variant</label>
+            <Input
+              inputType="text"
+              value={filters.variant}
+              onChange={(e) => handleChange("variant", e.target.value)}
+              placeholder="e.g., VTi Oriel"
+            />
+          </div>
+          <div className="field space-y-2 min-w-0">
+            <label className="block mb-2 text-sm font-medium text-gray-700">Year</label>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block mb-1 text-xs text-gray-500">From</label>
+                <Input
+                  inputType="number"
+                  value={filters.minYear}
+                  onChange={(e) => handleChange("minYear", e.target.value)}
+                  placeholder="1950"
+                  min="1950"
+                  max={new Date().getFullYear()}
+                />
+              </div>
+              <div>
+                <label className="block mb-1 text-xs text-gray-500">To</label>
+                <Input
+                  inputType="number"
+                  value={filters.maxYear}
+                  onChange={(e) => handleChange("maxYear", e.target.value)}
+                  placeholder={new Date().getFullYear().toString()}
+                  min="1950"
+                  max={new Date().getFullYear()}
+                />
+              </div>
             </div>
-            <div className="w-full sm:w-1/2">
-              <label className="block mb-1">To</label>
-              <Input
-                inputType="number"
-                value={filters.maxYear}
-                onChange={(e) => handleChange("maxYear", e.target.value)}
-                placeholder={new Date().getFullYear().toString()}
-                min="1950"
+            <div className="min-w-0 overflow-hidden">
+              <RangeFilter
+                type="year"
+                min={1950}
                 max={new Date().getFullYear()}
+                onChange={(values) => handleRangeChange("year", values)}
               />
             </div>
           </div>
-          <RangeFilter
-            type="year"
-            min={1950}
-            max={new Date().getFullYear()}
-            onChange={(values) => handleRangeChange("year", values)}
-          />
         </div>
 
         {/* Mileage */}
-        <div className="field space-y-2">
-          <div className="flex flex-col sm:flex-row w-full mx-auto gap-4 items-center">
-            <div className="w-full sm:w-1/2">
-              <label className="block mb-1">Mileage From</label>
+        <div className="field space-y-2 min-w-0">
+          <label className="block mb-2 text-sm font-medium text-gray-700">Mileage</label>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-1 text-xs text-gray-500">From</label>
               <Input
                 inputType="number"
                 value={filters.minMileage}
@@ -790,8 +726,8 @@ const FilterForm = ({ onFilter }) => {
                 placeholder="Min"
               />
             </div>
-            <div className="w-full sm:w-1/2">
-              <label className="block mb-1">To</label>
+            <div>
+              <label className="block mb-1 text-xs text-gray-500">To</label>
               <Input
                 inputType="number"
                 value={filters.maxMileage}
@@ -800,156 +736,62 @@ const FilterForm = ({ onFilter }) => {
               />
             </div>
           </div>
-          <RangeFilter
-            type="mileage"
-            min={0}
-            max={300000}
-            onChange={(values) => handleRangeChange("mileage", values)}
-          />
+          <div className="min-w-0 overflow-hidden">
+            <RangeFilter
+              type="mileage"
+              min={0}
+              max={300000}
+              onChange={(values) => handleRangeChange("mileage", values)}
+            />
+          </div>
         </div>
-
-        {/* Cylinders */}
-        {isFieldVisible(filters.vehicleType || "Car", "cylinders") && (
-          <div className="field space-y-2">
-            <div className="flex flex-col sm:flex-row w-full mx-auto gap-4 items-center">
-              <div className="w-full sm:w-1/2">
-                <label className="block mb-1">Cylinders From</label>
-                <Input
-                  inputType="number"
-                  value={filters.minCylinders}
-                  onChange={(e) => handleChange("minCylinders", e.target.value)}
-                  placeholder="Min"
-                />
-              </div>
-              <div className="w-full sm:w-1/2">
-                <label className="block mb-1">To</label>
-                <Input
-                  inputType="number"
-                  value={filters.maxCylinders}
-                  onChange={(e) => handleChange("maxCylinders", e.target.value)}
-                  placeholder="Max"
-                />
-              </div>
-            </div>
-            <RangeFilter
-              type="cylinders"
-              min={1}
-              max={16}
-              onChange={(values) => handleRangeChange("cylinders", values)}
-            />
-          </div>
-        )}
-
-        {/* Doors */}
-        {isFieldVisible(filters.vehicleType || "Car", "doors") && (
-          <div className="field space-y-2">
-            <div className="flex flex-col sm:flex-row w-full mx-auto gap-4 items-center">
-              <div className="w-full sm:w-1/2">
-                <label className="block mb-1">Doors From</label>
-                <Input
-                  inputType="number"
-                  value={filters.minDoors}
-                  onChange={(e) => handleChange("minDoors", e.target.value)}
-                  placeholder="Min"
-                />
-              </div>
-              <div className="w-full sm:w-1/2">
-                <label className="block mb-1">To</label>
-                <Input
-                  inputType="number"
-                  value={filters.maxDoors}
-                  onChange={(e) => handleChange("maxDoors", e.target.value)}
-                  placeholder="Max"
-                />
-              </div>
-            </div>
-            <RangeFilter
-              type="doors"
-              min={1}
-              max={8}
-              onChange={(values) => handleRangeChange("doors", values)}
-            />
-          </div>
-        )}
-
-        {/* Horsepower */}
-        {isFieldVisible(filters.vehicleType || "Car", "horsepower") && (
-          <div className="field space-y-2">
-            <div className="flex flex-col sm:flex-row w-full mx-auto gap-4 items-center">
-              <div className="w-full sm:w-1/2">
-                <label className="block mb-1">Horsepower From</label>
-                <Input
-                  inputType="number"
-                  value={filters.minHorsePower}
-                  onChange={(e) =>
-                    handleChange("minHorsePower", e.target.value)
-                  }
-                  placeholder="Min"
-                />
-              </div>
-              <div className="w-full sm:w-1/2">
-                <label className="block mb-1">To</label>
-                <Input
-                  inputType="number"
-                  value={filters.maxHorsePower}
-                  onChange={(e) =>
-                    handleChange("maxHorsePower", e.target.value)
-                  }
-                  placeholder="Max"
-                />
-              </div>
-            </div>
-            <RangeFilter
-              type="horsePower"
-              min={50}
-              max={1000}
-              onChange={(values) => handleRangeChange("horsePower", values)}
-            />
-          </div>
-        )}
 
         {/* Engine Capacity */}
         {isFieldVisible(filters.vehicleType || "Car", "engineCapacity") && (
-          <div className="field space-y-2">
-            <div className="flex flex-col sm:flex-row w-full mx-auto gap-4 items-center">
-              <div className="w-full sm:w-1/2">
-                <label className="block mb-1">Engine Capacity From</label>
+          <div className="field space-y-2 min-w-0">
+            <label className="block mb-2 text-sm font-medium text-gray-700">Engine Capacity (cc)</label>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block mb-1 text-xs text-gray-500">From</label>
                 <Input
                   inputType="number"
                   value={filters.minEngineCapacity}
                   onChange={(e) =>
                     handleChange("minEngineCapacity", e.target.value)
                   }
-                  placeholder="Min (cc)"
+                  placeholder="Min"
                 />
               </div>
-              <div className="w-full sm:w-1/2">
-                <label className="block mb-1">To</label>
+              <div>
+                <label className="block mb-1 text-xs text-gray-500">To</label>
                 <Input
                   inputType="number"
                   value={filters.maxEngineCapacity}
                   onChange={(e) =>
                     handleChange("maxEngineCapacity", e.target.value)
                   }
-                  placeholder="Max (cc)"
+                  placeholder="Max"
                 />
               </div>
             </div>
-            <RangeFilter
-              type="engineCapacity"
-              min={0}
-              max={5000}
-              onChange={(values) => handleRangeChange("engineCapacity", values)}
-            />
+            <div className="min-w-0 overflow-hidden">
+              <RangeFilter
+                type="engineCapacity"
+                min={0}
+                max={5000}
+                onChange={(values) => handleRangeChange("engineCapacity", values)}
+              />
+            </div>
           </div>
         )}
 
         {/* Battery Range (E-bike) */}
         {isFieldVisible(filters.vehicleType || "Car", "batteryRange") && (
-          <div className="field space-y-2">
-            <div className="flex flex-col sm:flex-row w-full mx-auto gap-4 items-center">
-              <div className="w-full sm:w-1/2">
-                <label className="block mb-1">Battery Range From (km)</label>
+          <div className="field space-y-2 min-w-0">
+            <label className="block mb-2 text-sm font-medium text-gray-700">Battery Range (km)</label>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block mb-1 text-xs text-gray-500">From</label>
                 <Input
                   inputType="number"
                   value={filters.minBatteryRange}
@@ -959,8 +801,8 @@ const FilterForm = ({ onFilter }) => {
                   placeholder="Min"
                 />
               </div>
-              <div className="w-full sm:w-1/2">
-                <label className="block mb-1">To</label>
+              <div>
+                <label className="block mb-1 text-xs text-gray-500">To</label>
                 <Input
                   inputType="number"
                   value={filters.maxBatteryRange}
@@ -976,10 +818,11 @@ const FilterForm = ({ onFilter }) => {
 
         {/* Motor Power (E-bike) */}
         {isFieldVisible(filters.vehicleType || "Car", "motorPower") && (
-          <div className="field space-y-2">
-            <div className="flex flex-col sm:flex-row w-full mx-auto gap-4 items-center">
-              <div className="w-full sm:w-1/2">
-                <label className="block mb-1">Motor Power From (W)</label>
+          <div className="field space-y-2 min-w-0">
+            <label className="block mb-2 text-sm font-medium text-gray-700">Motor Power (W)</label>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block mb-1 text-xs text-gray-500">From</label>
                 <Input
                   inputType="number"
                   value={filters.minMotorPower}
@@ -989,8 +832,8 @@ const FilterForm = ({ onFilter }) => {
                   placeholder="Min"
                 />
               </div>
-              <div className="w-full sm:w-1/2">
-                <label className="block mb-1">To</label>
+              <div>
+                <label className="block mb-1 text-xs text-gray-500">To</label>
                 <Input
                   inputType="number"
                   value={filters.maxMotorPower}
@@ -1109,11 +952,6 @@ const FilterForm = ({ onFilter }) => {
           </label>
           <WarrantyType onChange={(value) => handleChange("warranty", value)} />
         </div>
-
-        {/* Technical features full width */}
-        <TechnicalFeaturesSpecs
-          onChange={(value) => handleChange("technicalFeatures", value)}
-        />
 
         {/* Country - Full Width */}
         <div className="field space-y-2">

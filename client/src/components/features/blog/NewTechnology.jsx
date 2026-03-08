@@ -47,26 +47,32 @@ const NewTechnology = () => {
                 to={`/blog/all?category=${cate._id}`}
                 className="bg-[#D9D9D9] rounded-xl flex items-center flex-col p-5 hover:bg-[#C0C0C0] transition-colors group"
               >
-                <div className="w-full h-40 overflow-hidden rounded-lg bg-gray-100 flex items-center justify-center">
-                  {cate.image ? (
+                <div className="relative w-full aspect-[16/10] min-h-[10rem] overflow-hidden rounded-lg bg-gray-100 flex items-center justify-center">
+                  {/* Placeholder: behind image, only visible when no image or image fails */}
+                  <div className="absolute inset-0 z-0 flex flex-col items-center justify-center bg-gray-100 text-gray-400">
+                    <span className="text-4xl font-light text-gray-300 mb-1">
+                      {cate.name?.charAt(0).toUpperCase()}
+                    </span>
+                    <span className="text-xs text-gray-400">Category</span>
+                  </div>
+                  {/* Category image: fit entire image inside box (no crop), centered */}
+                  {cate.image && (
                     <img
                       src={cate.image}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      className="relative z-10 max-h-full max-w-full w-auto h-auto object-contain object-center group-hover:scale-105 transition-transform duration-300"
                       alt={cate.name}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.style.display = "none";
+                      }}
                     />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                      <span className="text-3xl font-semibold text-gray-500">
-                        {cate.name?.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
                   )}
                 </div>
                 <h4 className="my-5 text-lg sm:text-xl font-medium text-center group-hover:text-primary-600">
                   {cate.name}
                 </h4>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-primary-600 font-semibold">
+                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-primary-50 text-primary-600 font-semibold text-sm border border-primary-100">
                     {cate.name?.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex flex-col">

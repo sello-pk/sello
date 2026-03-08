@@ -33,19 +33,16 @@ const accidentHistoryOptions = accidentHistories.map((option) => ({
   label: option,
 }));
 
+// Fuel / engine type only (no gear/transmission – those are in the Transmission field)
 const engineTypes = [
-  { value: "5_speed_manual", label: "5 Speed Manual" },
-  { value: "6_speed_manual", label: "6 Speed Manual" },
-  { value: "4_speed_auto", label: "4 Speed Auto" },
-  { value: "5_speed_auto", label: "5 Speed Auto" },
-  { value: "6_speed_auto", label: "6 Speed Auto" },
-  { value: "7_plus_speed_auto", label: "7+ Speed Auto" },
-  { value: "cvt", label: "CVT" },
-  { value: "dct", label: "DCT" },
-  { value: "electric", label: "Electric" },
-  { value: "hybrid", label: "Hybrid" },
+  { value: "petrol", label: "Petrol" },
   { value: "diesel", label: "Diesel" },
+  { value: "hybrid", label: "Hybrid" },
+  { value: "electric", label: "Electric" },
   { value: "cng", label: "CNG" },
+  { value: "lpg", label: "LPG" },
+  { value: "petrol_cng", label: "Petrol + CNG" },
+  { value: "petrol_lpg", label: "Petrol + LPG" },
 ];
 
 const mileageOptions = [
@@ -180,7 +177,7 @@ export default function CarEstimatorForm({ onEstimate }) {
 
   const canProceed = () => {
     if (step === 1) return formData.make && formData.model && formData.year;
-    if (step === 2) return formData.mileage && formData.transmission;
+    if (step === 2) return formData.mileage && formData.engineType && formData.transmission;
     return true;
   };
 
@@ -190,6 +187,7 @@ export default function CarEstimatorForm({ onEstimate }) {
     if (!formData.model) newErrors.model = "Car model is required";
     if (!formData.year) newErrors.year = "Year is required";
     if (!formData.mileage) newErrors.mileage = "Mileage is required";
+    if (!formData.engineType) newErrors.engineType = "Engine / Fuel type is required";
     if (!formData.transmission) {
       newErrors.transmission = "Transmission is required";
     }

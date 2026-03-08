@@ -47,8 +47,8 @@ const RangeFilter = ({ min = 0, max = 100, onChange }) => {
   };
 
   return (
-    <div className="w-full px-4 py-4">
-      <div className="relative w-full h-12 flex items-center justify-center">
+    <div className="w-full min-w-0 max-w-full overflow-hidden py-4">
+      <div className="relative w-full h-12 flex items-center justify-center min-w-0">
         <input
           type="range"
           min={min}
@@ -79,16 +79,21 @@ const RangeFilter = ({ min = 0, max = 100, onChange }) => {
         .slider {
           position: relative;
           width: 100%;
+          max-width: 100%;
+          box-sizing: border-box;
         }
         .slider__track,
         .slider__range {
           position: absolute;
           border-radius: 3px;
           height: 5px;
+          box-sizing: border-box;
         }
         .slider__track {
           background-color: #ced4da;
           width: 100%;
+          max-width: 100%;
+          left: 0;
           z-index: 1;
         }
         .slider__range {
@@ -103,10 +108,10 @@ const RangeFilter = ({ min = 0, max = 100, onChange }) => {
           position: absolute;
         }
         .slider__left-value {
-          left: 6px;
+          left: 0;
         }
         .slider__right-value {
-          right: -4px;
+          right: 0;
         }
         .thumb {
           -webkit-appearance: none;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { buildCarUrl } from "../../utils/urlBuilders";
 import {
@@ -23,6 +23,7 @@ import {
   FiZap,
   FiXCircle,
   FiEdit,
+  FiTrash2,
 } from "react-icons/fi";
 import {
   useGetMeQuery,
@@ -67,8 +68,37 @@ const DealerDashboard = () => {
     images: [],
     inspection_report: {},
   });
+  const photoInputRef = useRef(null);
   const [submitCarToAuction, { isLoading: isSubmittingAuctionCar }] = useSubmitCarToAuctionMutation();
   const { data: tokenData } = useGetMyTokenPaymentsQuery();
+
+  const closeAuctionModal = useCallback(() => {
+    setNewCar((prev) => {
+      (prev.images || []).forEach((item) => {
+        if (item?.preview) URL.revokeObjectURL(item.preview);
+      });
+      return {
+        make: "",
+        model: "",
+        year: "",
+        mileage: "",
+        condition: "",
+        engine_type: "",
+        transmission: "",
+        color: "",
+        registration_city: "",
+        starting_bid: "",
+        reserve_price: "",
+        buy_now_price: "",
+        auctionId: "",
+        carId: "",
+        images: [],
+        inspection_report: {},
+      };
+    });
+    setShowAddCar(false);
+    setCurrentStep(1);
+  }, []);
   const { data: wonAuctions = [] } = useGetMyWonAuctionsQuery();
   const { data: watchlistItems = [] } = useGetMyAuctionWatchlistQuery();
   const { data: upcomingAuctions = [] } = useGetAuctionsQuery({ status: "scheduled", limit: 5 });
@@ -183,6 +213,55 @@ const DealerDashboard = () => {
     }
   };
 
+  const MAX_PHOTOS = 10;
+  const MIN_PHOTOS = 3;
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+  const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png"];
+
+  const processPhotoFiles = (files) => {
+    const list = Array.from(files).filter((f) => ALLOWED_TYPES.includes(f.type));
+    const valid = [];
+    for (const file of list) {
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(`${file.name} is over 10MB. Max 10MB per image.`);
+        continue;
+      }
+      valid.push({ file, preview: URL.createObjectURL(file) });
+    }
+    const current = newCar.images || [];
+    if (current.length + valid.length > MAX_PHOTOS) {
+      toast.error(`Maximum ${MAX_PHOTOS} photos. Remove some first.`);
+      valid.splice(MAX_PHOTOS - current.length);
+    }
+    if (valid.length) setNewCar((prev) => ({ ...prev, images: [...(prev.images || []), ...valid] }));
+  };
+
+  const handlePhotoSelect = (e) => {
+    const files = e.target.files;
+    if (files?.length) processPhotoFiles(files);
+    e.target.value = "";
+  };
+
+  const handlePhotoRemove = (index) => {
+    setNewCar((prev) => {
+      const next = [...(prev.images || [])];
+      const item = next.splice(index, 1)[0];
+      if (item?.preview) URL.revokeObjectURL(item.preview);
+      return { ...prev, images: next };
+    });
+  };
+
+  const handlePhotoDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+  const handlePhotoDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const files = e.dataTransfer?.files;
+    if (files?.length) processPhotoFiles(files);
+  };
+
   const handleSubmitAuctionCar = async () => {
     if (!newCar.auctionId || !newCar.carId || !newCar.starting_bid) {
       toast.error("Select auction, car and starting bid");
@@ -199,26 +278,31 @@ const DealerDashboard = () => {
       }).unwrap();
 
       toast.success("Vehicle submitted for auction approval");
+      setNewCar((prev) => {
+        (prev.images || []).forEach((item) => {
+          if (item?.preview) URL.revokeObjectURL(item.preview);
+        });
+        return {
+          make: "",
+          model: "",
+          year: "",
+          mileage: "",
+          condition: "",
+          engine_type: "",
+          transmission: "",
+          color: "",
+          registration_city: "",
+          starting_bid: "",
+          reserve_price: "",
+          buy_now_price: "",
+          auctionId: "",
+          carId: "",
+          images: [],
+          inspection_report: {},
+        };
+      });
       setShowAddCar(false);
       setCurrentStep(1);
-      setNewCar({
-        make: "",
-        model: "",
-        year: "",
-        mileage: "",
-        condition: "",
-        engine_type: "",
-        transmission: "",
-        color: "",
-        registration_city: "",
-        starting_bid: "",
-        reserve_price: "",
-        buy_now_price: "",
-        auctionId: "",
-        carId: "",
-        images: [],
-        inspection_report: {},
-      });
     } catch (error) {
       toast.error(error?.data?.message || "Failed to submit vehicle for auction");
     }
@@ -1247,18 +1331,17 @@ const DealerDashboard = () => {
                   Submit Vehicle for Auction
                 </h3>
                 <button
-                  onClick={() => {
-                    setShowAddCar(false);
-                    setCurrentStep(4);
-                  }}
-                  className="text-gray-400 hover:text-gray-600"
+                  type="button"
+                  onClick={closeAuctionModal}
+                  className="p-1 text-gray-400 hover:text-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  aria-label="Close"
                 >
                   <FiXCircle size={24} />
                 </button>
               </div>
 
               {/* Steps Indicator */}
-              <div className="px-6 py-4 border-b border-gray-200">
+              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50/50">
                 <div className="flex items-center justify-between">
                   {[
                     { num: 1, title: "Basic Info" },
@@ -1268,13 +1351,13 @@ const DealerDashboard = () => {
                   ].map((step, index) => (
                     <React.Fragment key={step.num}>
                       <div
-                        className={`flex items-center gap-2 cursor-pointer ${currentStep >= step.num ? "text-orange-500" : "text-gray-400"}`}
+                        className={`flex items-center gap-2 cursor-pointer ${currentStep >= step.num ? "text-primary-600" : "text-gray-400"}`}
                         onClick={() => setCurrentStep(step.num)}
                       >
                         <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                          className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
                             currentStep >= step.num
-                              ? "bg-orange-500 text-white"
+                              ? "bg-primary-500 text-white"
                               : "bg-gray-200 text-gray-500"
                           }`}
                         >
@@ -1286,7 +1369,7 @@ const DealerDashboard = () => {
                       </div>
                       {index < 3 && (
                         <div
-                          className={`flex-1 h-0.5 mx-2 ${currentStep > step.num ? "bg-orange-500" : "bg-gray-200"}`}
+                          className={`flex-1 h-0.5 mx-2 transition-colors ${currentStep > step.num ? "bg-primary-500" : "bg-gray-200"}`}
                         />
                       )}
                     </React.Fragment>
@@ -1309,7 +1392,7 @@ const DealerDashboard = () => {
                           setNewCar({ ...newCar, make: e.target.value })
                         }
                         placeholder="e.g. Toyota"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                       />
                     </div>
                     <div>
@@ -1323,7 +1406,7 @@ const DealerDashboard = () => {
                           setNewCar({ ...newCar, model: e.target.value })
                         }
                         placeholder="e.g. Corolla"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                       />
                     </div>
                     <div>
@@ -1337,7 +1420,7 @@ const DealerDashboard = () => {
                           setNewCar({ ...newCar, year: e.target.value })
                         }
                         placeholder="e.g. 2022"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                       />
                     </div>
                     <div>
@@ -1351,7 +1434,7 @@ const DealerDashboard = () => {
                           setNewCar({ ...newCar, mileage: e.target.value })
                         }
                         placeholder="e.g. 35000"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                       />
                     </div>
                     <div>
@@ -1363,7 +1446,7 @@ const DealerDashboard = () => {
                         onChange={(e) =>
                           setNewCar({ ...newCar, condition: e.target.value })
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                       >
                         <option value="">Select condition</option>
                         <option value="excellent">Excellent</option>
@@ -1381,7 +1464,7 @@ const DealerDashboard = () => {
                         onChange={(e) =>
                           setNewCar({ ...newCar, engine_type: e.target.value })
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                       >
                         <option value="">Select engine</option>
                         <option value="petrol">Petrol</option>
@@ -1399,7 +1482,7 @@ const DealerDashboard = () => {
                         onChange={(e) =>
                           setNewCar({ ...newCar, transmission: e.target.value })
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                       >
                         <option value="">Select transmission</option>
                         <option value="automatic">Automatic</option>
@@ -1417,7 +1500,7 @@ const DealerDashboard = () => {
                           setNewCar({ ...newCar, color: e.target.value })
                         }
                         placeholder="e.g. White"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                       />
                     </div>
                     <div className="col-span-2">
@@ -1434,7 +1517,7 @@ const DealerDashboard = () => {
                           })
                         }
                         placeholder="e.g. Lahore"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                       />
                     </div>
                   </div>
@@ -1451,16 +1534,69 @@ const DealerDashboard = () => {
                         Upload at least 3 photos. Include exterior (front, back,
                         sides), interior, and engine bay.
                       </p>
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                      <input
+                        ref={photoInputRef}
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png"
+                        multiple
+                        className="hidden"
+                        onChange={handlePhotoSelect}
+                      />
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => photoInputRef.current?.click()}
+                        onKeyDown={(e) => e.key === "Enter" && photoInputRef.current?.click()}
+                        onDragOver={handlePhotoDragOver}
+                        onDrop={handlePhotoDrop}
+                        className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer transition-colors hover:border-primary-400 hover:bg-primary-50/30 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      >
                         <FiPlus
-                          className="mx-auto text-gray-400 mb-2"
+                          className="mx-auto text-primary-500 mb-2"
                           size={32}
                         />
-                        <p className="text-gray-500">Click to upload images</p>
-                        <p className="text-sm text-gray-400 mt-1">
+                        <p className="text-gray-700 font-medium">Click to upload images</p>
+                        <p className="text-sm text-gray-500 mt-1">
                           PNG, JPG up to 10MB each
                         </p>
+                        {(newCar.images?.length || 0) > 0 && (
+                          <p className="text-sm text-primary-600 mt-2 font-medium">
+                            {(newCar.images?.length || 0)} photo(s) added
+                          </p>
+                        )}
                       </div>
+                      {(newCar.images?.length || 0) > 0 && (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
+                          {(newCar.images || []).map((item, index) => (
+                            <div
+                              key={index}
+                              className="relative rounded-lg overflow-hidden border border-gray-200 bg-gray-50 aspect-square group"
+                            >
+                              <img
+                                src={item.preview}
+                                alt={`Preview ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handlePhotoRemove(index);
+                                }}
+                                className="absolute top-1 right-1 p-1.5 bg-red-500 text-white rounded-full opacity-90 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white"
+                                aria-label="Remove photo"
+                              >
+                                <FiTrash2 size={14} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {(newCar.images?.length || 0) > 0 && (newCar.images?.length || 0) < MIN_PHOTOS && (
+                        <p className="text-sm text-amber-600 mt-2">
+                          Add at least {MIN_PHOTOS} photos to continue.
+                        </p>
+                      )}
                     </div>
                   </div>
                 )}
@@ -1490,7 +1626,7 @@ const DealerDashboard = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               {component}
                             </label>
-                            <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                            <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none">
                               <option value="">Select rating</option>
                               <option value="excellent">Excellent</option>
                               <option value="good">Good</option>
@@ -1516,7 +1652,7 @@ const DealerDashboard = () => {
                         onChange={(e) =>
                           setNewCar({ ...newCar, auctionId: e.target.value })
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                       >
                         <option value="">Select an auction</option>
                         {auctionOptions.map((a) => (
@@ -1526,7 +1662,7 @@ const DealerDashboard = () => {
                         ))}
                       </select>
                       {auctionOptions.length === 0 && (
-                        <p className="text-xs text-amber-600 mt-1">
+                        <p className="text-xs text-primary-600 mt-1">
                           No active/scheduled auctions found. Ask admin to create or schedule an auction first.
                         </p>
                       )}
@@ -1552,7 +1688,7 @@ const DealerDashboard = () => {
                             };
                           })
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                       >
                         <option value="">Select your car listing</option>
                         {cars
@@ -1576,7 +1712,7 @@ const DealerDashboard = () => {
                           setNewCar({ ...newCar, starting_bid: e.target.value })
                         }
                         placeholder="e.g. 3000000"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-lg"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none text-lg"
                       />
                       <p className="text-xs text-gray-500 mt-1">
                         Minimum starting price for bidding
@@ -1597,7 +1733,7 @@ const DealerDashboard = () => {
                           })
                         }
                         placeholder="Minimum price you'll accept"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                       />
                       <p className="text-xs text-gray-500 mt-1">
                         Car won't sell below this price (optional)
@@ -1621,7 +1757,7 @@ const DealerDashboard = () => {
                           })
                         }
                         placeholder="Instant purchase price"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                       />
                       <p className="text-xs text-emerald-700 mt-2">
                         Allow buyers to skip bidding and purchase immediately at
@@ -1669,38 +1805,42 @@ const DealerDashboard = () => {
               </div>
 
               {/* Navigation Buttons */}
-              <div className="px-6 py-4 border-t border-gray-200 flex justify-between">
+              <div className="px-6 py-4 border-t border-gray-200 flex justify-between gap-3 bg-gray-50/50">
                 <button
+                  type="button"
                   onClick={() =>
                     currentStep === 4
-                      ? setShowAddCar(false)
+                      ? closeAuctionModal()
                       : currentStep > 1
                         ? setCurrentStep(currentStep - 1)
-                        : setShowAddCar(false)
+                        : closeAuctionModal()
                   }
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                 >
                   {currentStep === 4 ? "Cancel" : currentStep > 1 ? "Back" : "Cancel"}
                 </button>
 
                 {currentStep < 4 ? (
                   <button
+                    type="button"
                     onClick={() => setCurrentStep(currentStep + 1)}
                     disabled={
-                      currentStep === 1 &&
-                      (!newCar.make ||
-                        !newCar.model ||
-                        !newCar.year ||
-                        !newCar.mileage ||
-                        !newCar.condition)
+                      (currentStep === 1 &&
+                        (!newCar.make ||
+                          !newCar.model ||
+                          !newCar.year ||
+                          !newCar.mileage ||
+                          !newCar.condition)) ||
+                      (currentStep === 2 && (newCar.images?.length || 0) < MIN_PHOTOS)
                     }
-                    className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:from-amber-500 hover:to-orange-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-5 py-2.5 bg-primary-500 text-white rounded-lg hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium transition-colors"
                   >
                     Next
                     <FiChevronRight size={16} />
                   </button>
                 ) : (
                   <button
+                    type="button"
                     onClick={handleSubmitAuctionCar}
                     disabled={
                       isSubmittingAuctionCar ||
@@ -1709,7 +1849,7 @@ const DealerDashboard = () => {
                       !newCar.auctionId ||
                       !newCar.carId
                     }
-                    className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:from-amber-500 hover:to-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-5 py-2.5 bg-primary-500 text-white rounded-lg hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
                   >
                     {isSubmittingAuctionCar ? "Submitting..." : "Submit for Approval"}
                   </button>

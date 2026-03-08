@@ -31,20 +31,16 @@ const FilterPage = () => {
       bodyType: "bodyType",
       make: "make",
       model: "model",
+      variant: "variant",
       yearMin: "yearMin",
       yearMax: "yearMax",
       priceMin: "priceMin",
       priceMax: "priceMax",
-      carDoors: "doorsMin",
     };
 
     searchParams.forEach((value, key) => {
       if (value && paramMap[key]) {
         backendFilters[paramMap[key]] = value;
-        // Handle carDoors special case
-        if (key === "carDoors") {
-          backendFilters.doorsMax = value;
-        }
       }
     });
 

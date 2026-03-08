@@ -73,6 +73,25 @@ const BlogDetails = () => {
   // Use either the backend blog or hardcoded blog
   const currentBlog = blog || hardcodedBlog;
 
+  // Normalize tags so we never show raw JSON like #["How to Inspect a Used Car"]
+  const normalizedTags = React.useMemo(() => {
+    const raw = currentBlog?.tags;
+    if (!raw) return [];
+    if (Array.isArray(raw))
+      return raw.map((t) => (typeof t === "string" ? t.trim() : String(t))).filter(Boolean);
+    if (typeof raw === "string") {
+      try {
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed)
+          ? parsed.map((t) => (typeof t === "string" ? t.trim() : String(t))).filter(Boolean)
+          : [raw.trim()].filter(Boolean);
+      } catch {
+        return raw.split(",").map((t) => t.trim()).filter(Boolean);
+      }
+    }
+    return [];
+  }, [currentBlog?.tags]);
+
   // Redirect to 404 or show error
   useEffect(() => {
     if (isErrorById?.status === 404 || isErrorBySlug?.status === 404) {
@@ -133,55 +152,82 @@ const BlogDetails = () => {
             ? `https://sello.pk${buildBlogUrl(currentBlog)}`
             : undefined
         }
+        keywords={
+          currentBlog.metaKeywords ||
+          (normalizedTags.length > 0 ? normalizedTags.join(", ") : undefined)
+        }
       />
       <BlogsHeroSection />
       <div className="max-w-8xl mx-auto w-full px-4 md:px-6 lg:px-8 py-8 md:py-12">
-        {/* Featured Image */}
-        {currentBlog.featuredImage && (
-          <div className="mb-8 rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
-            <img
-              src={currentBlog.featuredImage}
-              alt={currentBlog.title}
-              className="w-full aspect-[16/7] sm:aspect-[16/6] lg:aspect-[16/5] object-cover"
-              loading="eager"
-            />
-          </div>
-        )}
+        {/* Content column: same width as image, centered (hr center + width respective of image) */}
+        <div className="max-w-3xl mx-auto w-full">
+          {/* Featured Image - fit inside box like categories (no crop/overflow) */}
+          {currentBlog.featuredImage && (
+            <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center min-h-[200px] max-h-[420px] aspect-video w-full">
+              <img
+                src={currentBlog.featuredImage}
+                alt={currentBlog.title}
+                className="max-h-full max-w-full w-auto h-auto object-contain object-center"
+                loading="eager"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "https://via.placeholder.com/1200x500?text=Blog+Image";
+                  e.target.className = "max-h-full max-w-full w-auto h-auto object-contain object-center";
+                }}
+              />
+            </div>
+          )}
 
-        {/* Blog Header */}
-        <div className="mb-8">
+          {/* Horizontal rule - centered, full width of content */}
+          <hr className="my-8 border-gray-200 w-full" />
+
+          {/* Blog Header */}
+          <div className="mb-8">
           {/* Author and Date Info */}
-          <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-            <span>
-              By{" "}
-              <span className="font-semibold text-gray-900">
-                {currentBlog.author?.name || "Admin"}
+          <div className="flex items-center gap-3 text-sm text-gray-600 mb-4">
+            {currentBlog.author?.avatar ? (
+              <img
+                src={currentBlog.author.avatar}
+                alt={currentBlog.author?.name || "Author"}
+                className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
+                {(currentBlog.author?.name || "A")[0].toUpperCase()}
+              </div>
+            )}
+            <div className="flex flex-wrap items-center gap-2">
+              <span>
+                By{" "}
+                <span className="font-semibold text-gray-900">
+                  {currentBlog.author?.name || "Admin"}
+                </span>
               </span>
-            </span>
-            <span>|</span>
-            <span>
-              {formatDate(currentBlog.publishedAt || currentBlog.createdAt)}
-            </span>
+              <span>|</span>
+              <span>
+                {formatDate(currentBlog.publishedAt || currentBlog.createdAt)}
+              </span>
+            </div>
           </div>
 
-          {/* Category and Meta Info */}
-          <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
+          {/* Category and Meta Info - inline, no clipping */}
+          <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500 mb-6 min-w-0 overflow-visible">
             {currentBlog.category && (
               <>
                 <Link
                   to={`/blog?category=${currentBlog.category._id}`}
-                  className="text-primary-500 hover:underline font-medium"
+                  className="inline-flex items-center flex-shrink-0 px-3 py-1.5 rounded-full bg-primary-50 text-primary-600 hover:bg-primary-100 font-medium"
                 >
                   {currentBlog.category.name}
                 </Link>
-                <span>·</span>
+                <span className="flex-shrink-0">·</span>
               </>
             )}
-            <span>{currentBlog.readTime || 5} min read</span>
+            <span className="flex-shrink-0">{currentBlog.readTime || 5} min read</span>
             {currentBlog.views > 0 && (
               <>
-                <span>·</span>
-                <span>{currentBlog.views} views</span>
+                <span className="flex-shrink-0">·</span>
+                <span className="flex-shrink-0">{currentBlog.views} views</span>
               </>
             )}
           </div>
@@ -353,15 +399,15 @@ const BlogDetails = () => {
           }
         `}</style>
 
-        {/* Tags */}
-        {currentBlog.tags && currentBlog.tags.length > 0 && (
+        {/* Tags - use normalized list so we never show raw JSON */}
+        {normalizedTags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-8">
-            {currentBlog.tags.map((tag, index) => (
+            {normalizedTags.map((tag, index) => (
               <span
                 key={index}
-                className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+                className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm font-medium"
               >
-                #{tag}
+                {tag}
               </span>
             ))}
           </div>
@@ -380,15 +426,23 @@ const BlogDetails = () => {
                   to={`/blog/${relatedBlog.slug || relatedBlog._id}`}
                   className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                 >
-                  {relatedBlog.featuredImage && (
-                    <div className="w-full h-48 overflow-hidden">
+                  <div className="w-full h-48 overflow-hidden bg-gray-100 flex items-center justify-center">
+                    {relatedBlog.featuredImage ? (
                       <img
                         src={relatedBlog.featuredImage}
                         alt={relatedBlog.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="max-h-full max-w-full w-auto h-auto object-contain object-center group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "https://via.placeholder.com/400x200?text=Blog";
+                        }}
                       />
-                    </div>
-                  )}
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                        No image
+                      </div>
+                    )}
+                  </div>
                   <div className="p-4">
                     <h4 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary-500 transition-colors">
                       {relatedBlog.title}
@@ -411,18 +465,23 @@ const BlogDetails = () => {
           </div>
         )}
 
-        {/* Navigation */}
-        <div className="border-t border-gray-200 pt-8 mt-8">
-          <Link
-            to="/blog"
-            className="text-primary-500 hover:underline inline-flex items-center gap-2"
-          >
-            ← Back to all blogs
-          </Link>
+          {/* Navigation */}
+          <div className="border-t border-gray-200 pt-8 mt-8">
+            <Link
+              to="/blog"
+              className="text-primary-500 hover:underline inline-flex items-center gap-2"
+            >
+              ← Back to all blogs
+            </Link>
+          </div>
         </div>
 
-        {/* Comments Section */}
-        {currentBlog && <BlogCommentsSection blogId={currentBlog._id} />}
+        {/* Comments Section - same width as blog content above */}
+        {currentBlog && (
+          <div className="max-w-3xl mx-auto w-full">
+            <BlogCommentsSection blogId={currentBlog._id} />
+          </div>
+        )}
       </div>
     </div>
   );

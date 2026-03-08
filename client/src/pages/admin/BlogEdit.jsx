@@ -27,6 +27,7 @@ const BlogEdit = () => {
         isFeatured: false,
         metaTitle: "",
         metaDescription: "",
+        metaKeywords: "",
         publishDate: "",
         publishTime: "",
         slug: ""
@@ -42,11 +43,22 @@ const BlogEdit = () => {
                 content: blog.content || "",
                 featuredImage: null,
                 category: blog.category?._id || "",
-                tags: Array.isArray(blog.tags) ? blog.tags.join(", ") : blog.tags || "",
+                tags: (() => {
+                    const t = blog.tags;
+                    if (Array.isArray(t)) return t.join(", ");
+                    if (typeof t === "string") {
+                        try {
+                            const p = JSON.parse(t);
+                            return Array.isArray(p) ? p.join(", ") : t;
+                        } catch { return t; }
+                    }
+                    return "";
+                })(),
                 status: blog.status || "draft",
                 isFeatured: blog.isFeatured || false,
                 metaTitle: blog.metaTitle || "",
                 metaDescription: blog.metaDescription || "",
+                metaKeywords: blog.metaKeywords || "",
                 slug: blog.slug || "",
                 publishDate: blog.publishedAt ? new Date(blog.publishedAt).toISOString().split('T')[0] : "",
                 publishTime: blog.publishedAt ? new Date(blog.publishedAt).toTimeString().slice(0, 5) : ""
@@ -81,7 +93,8 @@ const BlogEdit = () => {
             formDataToSend.append("isFeatured", formData.isFeatured ? "true" : "false");
             formDataToSend.append("metaTitle", formData.metaTitle || "");
             formDataToSend.append("metaDescription", formData.metaDescription || "");
-            
+            formDataToSend.append("metaKeywords", formData.metaKeywords || "");
+
             if (formData.tags) {
                 const tagsArray = formData.tags
                     .split(",")
@@ -290,6 +303,18 @@ const BlogEdit = () => {
                                     {formData.metaDescription.length > 160 && (
                                         <p className="text-xs text-red-500 mt-1">Meta description should be 160 characters or less</p>
                                     )}
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Meta Keywords</label>
+                                    <input
+                                        type="text"
+                                        name="metaKeywords"
+                                        value={formData.metaKeywords}
+                                        onChange={handleChange}
+                                        placeholder="e.g. cars, used cars, Pakistan (comma-separated)"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">Keywords for SEO; used in meta tags.</p>
                                 </div>
                             </div>
                         </div>

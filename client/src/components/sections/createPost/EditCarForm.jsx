@@ -16,15 +16,11 @@ import BodyTypes from "../../utils/filter/BodyTypes";
 import RegionalSpecs from "../../utils/filter/RegionalSpecs";
 import FuelSpecs from "../../utils/filter/FuelSpecs";
 import TransmissionSpecs from "../../utils/filter/TransmissionSpecs";
-import CylindersSpecs from "../../utils/filter/CylindersSpecs";
 import ExteriorColor from "../../utils/filter/ExteriorColor";
 import InteriorColor from "../../utils/filter/InteriorColor";
-import DoorsSpecs from "../../utils/filter/DoorsSpecs";
 import OwnerTypeSpecs from "../../utils/filter/OwnerTypeSpecs";
 import WarrantyType from "../../utils/filter/WarrantyType";
-import HorsePowerSpecs from "../../utils/filter/HorsePowerSpecs";
 import EngineCapacitySpecs from "../../utils/filter/EngineCapacitySpecs";
-import TechnicalFeaturesSpecs from "../../utils/filter/TechnicalFeaturesSpecs";
 import CarCondition from "../../utils/filter/CarCondition";
 import { images } from "../../../assets/assets";
 import { useCarCategories } from "../../../hooks/useCarCategories";
@@ -81,17 +77,13 @@ const EditCarForm = () => {
     engineCapacity: "",
     transmission: "",
     mileage: "",
-    features: [],
     regionalSpec: "",
     bodyType: "",
     city: "",
     location: "",
-    carDoors: "",
     contactNumber: "",
     geoLocation: "",
-    horsepower: "",
     warranty: "",
-    numberOfCylinders: "",
     ownerType: "",
     images: [],
     existingImages: [], // URLs of existing images
@@ -182,16 +174,12 @@ const EditCarForm = () => {
         engineCapacity: car.engineCapacity || "",
         transmission: car.transmission || "",
         mileage: car.mileage?.toString() || "",
-        features: Array.isArray(car.features) ? car.features : [],
         regionalSpec: car.regionalSpec || "",
         bodyType: car.bodyType || "",
         city: car.city || "",
         location: car.location || "",
-        carDoors: car.carDoors?.toString() || "",
         contactNumber: car.contactNumber || "",
         geoLocation: geoLoc,
-        horsepower: car.horsepower || "",
-        numberOfCylinders: car.numberOfCylinders?.toString() || "",
         ownerType: car.ownerType || "",
         images: [],
         existingImages: Array.isArray(car.images)
@@ -241,61 +229,38 @@ const EditCarForm = () => {
   }, [car, makes, years]);
 
   const handleChange = (field, value) => {
-    // Handle features to ensure it's a flat array with no duplicates
-    if (field === "features") {
-      let flatValue = [];
-      if (Array.isArray(value)) {
-        flatValue = value
-          .flat()
-          .filter((item) => typeof item === "string" && item.trim());
-      } else if (typeof value === "string" && value.trim()) {
-        flatValue = value.split(",").map((item) => item.trim());
-      }
-      // Remove duplicates by converting to Set and back to array
-      const uniqueFeatures = [...new Set(flatValue)];
-      setFormData((prev) => ({ ...prev, [field]: uniqueFeatures }));
-    } else {
-      setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
 
-      // When vehicle type changes, reset dependent fields
-      if (field === "vehicleType") {
-        setFormData((prev) => ({
-          ...prev,
-          make: "", // Reset make when vehicle type changes
-          model: "", // Reset model when vehicle type changes
-        }));
-        setSelectedMake(""); // Reset selected make
-        setAvailableModels([]); // Reset available models
-      }
+    // When vehicle type changes, reset dependent fields
+    if (field === "vehicleType") {
+      setFormData((prev) => ({
+        ...prev,
+        make: "",
+        model: "",
+      }));
+      setSelectedMake("");
+      setAvailableModels([]);
+    }
 
-      // When make changes, update available models
-      if (field === "make") {
-        setSelectedMake(value);
-        const makeModels = resolveModelsBySelectedMake(value);
-        setAvailableModels(makeModels);
-        if (
-          formData.model &&
-          !makeModels.find((m) => m && m.name === formData.model)
-        ) {
-          setFormData((prev) => ({ ...prev, model: "" }));
-        }
+    if (field === "make") {
+      setSelectedMake(value);
+      const makeModels = resolveModelsBySelectedMake(value);
+      setAvailableModels(makeModels);
+      if (
+        formData.model &&
+        !makeModels.find((m) => m && m.name === formData.model)
+      ) {
+        setFormData((prev) => ({ ...prev, model: "" }));
       }
+    }
 
-      // When model changes, update available years
-      if (field === "model") {
-        const selectedModelObj =
-          availableModels && availableModels.length > 0
-            ? availableModels.find((m) => m && m.name === value)
-            : null;
-        // Years are now independent - show all years when model changes
-        setAvailableYears(years);
-        // Reset year if it's not in the new years list
-        if (
-          formData.year &&
-          !years.find((y) => y && y.name === formData.year.toString())
-        ) {
-          setFormData((prev) => ({ ...prev, year: "" }));
-        }
+    if (field === "model") {
+      setAvailableYears(years);
+      if (
+        formData.year &&
+        !years.find((y) => y && y.name === formData.year.toString())
+      ) {
+        setFormData((prev) => ({ ...prev, year: "" }));
       }
     }
   };
@@ -343,20 +308,14 @@ const EditCarForm = () => {
     const normalizedEngineCapacity = parseRangeLikeNumber(
       formData.engineCapacity,
     );
-    const normalizedHorsepower = parseRangeLikeNumber(formData.horsepower);
     const defaults = {
       colorExterior: formData.colorExterior || "N/A",
       colorInterior: formData.colorInterior || "N/A",
-      horsepower:
-        normalizedHorsepower === "" ? "0" : String(normalizedHorsepower),
       engineCapacity:
         normalizedEngineCapacity === "" ? "" : String(normalizedEngineCapacity),
       mileage: formData.mileage || "0",
-      carDoors: formData.carDoors || "4",
-      numberOfCylinders: formData.numberOfCylinders || "4",
       location: formData.location || "",
       description: formData.description || "",
-      features: formData.features.length ? formData.features : [],
     };
 
     // Add existing images (URLs) to keep them
@@ -375,22 +334,14 @@ const EditCarForm = () => {
       });
     }
 
-    // Add other fields
+    // Add other fields (skip removed fields: features, carDoors, horsepower, numberOfCylinders)
+    const skipKeys = ["images", "existingImages", "features", "carDoors", "horsepower", "numberOfCylinders"];
     Object.keys(formData).forEach((key) => {
-      if (key === "images" || key === "existingImages") {
-        // Already handled above
-        return;
-      } else if (key === "features") {
-        // Append each feature individually to FormData
-        defaults.features.forEach((feature) =>
-          data.append("features[]", feature),
-        );
-      } else {
-        data.append(
-          key,
-          defaults[key] !== undefined ? defaults[key] : formData[key],
-        );
-      }
+      if (skipKeys.includes(key)) return;
+      data.append(
+        key,
+        defaults[key] !== undefined ? defaults[key] : formData[key],
+      );
     });
 
     try {
@@ -641,15 +592,6 @@ const EditCarForm = () => {
           </div>
         )}
 
-        {isFieldVisible(formData.vehicleType, "cylinders") && (
-          <div>
-            <label className="block mb-1">Number of Cylinders</label>
-            <CylindersSpecs
-              onChange={(val) => handleChange("numberOfCylinders", val)}
-            />
-          </div>
-        )}
-
         <div>
           <ExteriorColor
             value={formData.colorExterior}
@@ -664,13 +606,6 @@ const EditCarForm = () => {
           />
         </div>
 
-        {isFieldVisible(formData.vehicleType, "doors") && (
-          <div>
-            <label className="block mb-1">Car Doors</label>
-            <DoorsSpecs onChange={(val) => handleChange("carDoors", val)} />
-          </div>
-        )}
-
         <div>
           <label className="block mb-1">Owner Type</label>
           <OwnerTypeSpecs onChange={(val) => handleChange("ownerType", val)} />
@@ -681,15 +616,6 @@ const EditCarForm = () => {
           <WarrantyType onChange={(val) => handleChange("warranty", val)} />
         </div>
 
-        {isFieldVisible(formData.vehicleType, "horsepower") && (
-          <div>
-            <label className="block mb-1">Horsepower</label>
-            <HorsePowerSpecs
-              onChange={(val) => handleChange("horsepower", val)}
-            />
-          </div>
-        )}
-
         {isFieldVisible(formData.vehicleType, "engineCapacity") && (
           <div>
             <label className="block mb-1">Engine Capacity</label>
@@ -698,13 +624,6 @@ const EditCarForm = () => {
             />
           </div>
         )}
-
-        <div>
-          <label className="block mb-1">Features</label>
-          <TechnicalFeaturesSpecs
-            onChange={(val) => handleChange("features", val)}
-          />
-        </div>
 
         <div>
           <label className="block mb-1">Condition</label>
