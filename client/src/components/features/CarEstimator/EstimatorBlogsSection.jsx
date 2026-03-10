@@ -1,10 +1,10 @@
 import howOurAi1 from "../../../assets/blogs/estimator/howOurAi1.webp";
-import { useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronUp, Clock, User, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Clock, User, ArrowRight } from "lucide-react";
 
 /** Format markdown-like blog content to safe HTML (paragraphs, headings, bold, lists, tables). */
-function formatBlogContent(text) {
+export function formatBlogContent(text) {
   if (!text || typeof text !== "string") return "";
   const blocks = text.split(/\n\n+/);
   const out = [];
@@ -67,10 +67,7 @@ function formatBlogContent(text) {
   return out.join("");
 }
 
-export default function EstimatorBlogsSection() {
-  const [expandedPost, setExpandedPost] = useState(null);
-
-  const blogPosts = [
+export const estimatorBlogPosts = [
     {
       id: 1,
       title: "How Our AI Car Price Estimator Actually Works",
@@ -1090,18 +1087,7 @@ Whether you are a buyer or a seller you deserve clarity which is what we provide
     },
   ];
 
-  const togglePost = useCallback((postId) => {
-    setExpandedPost((prev) => (prev === postId ? null : postId));
-  }, []);
-
-  const handleExpand = (postId) => {
-    setExpandedPost(postId);
-    requestAnimationFrame(() => {
-      const el = document.getElementById(`blog-card-${postId}`);
-      el?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  };
-
+export default function EstimatorBlogsSection() {
   const handleCtaClick = () => {
     const target = document.getElementById("estimator-tabs");
     if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1162,7 +1148,7 @@ Whether you are a buyer or a seller you deserve clarity which is what we provide
 
         {/* Blog Posts Grid - even: image right, odd: image left; primary-500 max */}
         <div className="space-y-8 lg:space-y-12">
-          {blogPosts.map((post, index) => {
+          {estimatorBlogPosts.map((post, index) => {
             const isImageLeft = index % 2 === 1; // odd = image left
             return (
             <motion.article
@@ -1172,7 +1158,7 @@ Whether you are a buyer or a seller you deserve clarity which is what we provide
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: 0.4, delay: index * 0.06 }}
-              className={`group flex flex-col rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#FDFBF7] ${isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"}`}
+              className={`group flex flex-col rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#FDFBF7] lg:items-start ${isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"}`}
             >
               {/* Content area (light beige) */}
               <div className="relative flex-1 flex flex-col justify-between p-8 lg:p-10 min-h-[280px] lg:min-h-0 lg:min-w-0">
@@ -1190,73 +1176,28 @@ Whether you are a buyer or a seller you deserve clarity which is what we provide
                     {post.title}
                   </h3>
                   <div className="prose prose-lg max-w-none text-gray-700">
-                    <AnimatePresence mode="wait">
-                      {expandedPost === post.id ? (
-                        <motion.div
-                          key="expanded"
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="space-y-6"
-                        >
-                          <div
-                            className="estimator-blog-body text-base leading-relaxed text-gray-700"
-                            dangerouslySetInnerHTML={{
-                              __html: formatBlogContent(post.fullContent),
-                            }}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => togglePost(post.id)}
-                            aria-expanded="true"
-                            aria-controls={`blog-content-${post.id}`}
-                            className="inline-flex items-center gap-2 bg-gray-200 text-gray-800 px-5 py-2.5 rounded-lg font-semibold hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-                          >
-                            <ChevronUp className="w-4 h-4" aria-hidden />
-                            Read Less
-                          </button>
-                        </motion.div>
-                      ) : (
-                        <motion.div
-                          key="collapsed"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.25 }}
-                        >
-                          <p
-                            id={`blog-content-${post.id}`}
-                            className="text-base lg:text-lg leading-relaxed mb-6 text-gray-600"
-                          >
-                            {post.excerpt}
-                          </p>
-                          <button
-                            type="button"
-                            onClick={() => handleExpand(post.id)}
-                            aria-expanded="false"
-                            aria-controls={`blog-content-${post.id}`}
-                            className="inline-flex items-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-xl font-semibold hover:opacity-95 transition-opacity shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 group"
-                          >
-                            Read More
-                            <ArrowRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" aria-hidden />
-                          </button>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                    <p className="text-base lg:text-lg leading-relaxed mb-6 text-gray-600">
+                      {post.excerpt}
+                    </p>
+                    <Link
+                      to={`/car-estimator/guide/${post.id}`}
+                      className="inline-flex items-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-xl font-semibold hover:opacity-95 transition-opacity shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 group"
+                    >
+                      Read More
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" aria-hidden />
+                    </Link>
                   </div>
                 </div>
               </div>
 
-              {/* Image area (dark blue-black) - larger size; position by even/odd */}
-              <div className="relative w-full lg:w-[520px] lg:flex-shrink-0 h-72 lg:h-auto lg:min-h-[400px] bg-[#081C2B] overflow-hidden">
+              {/* Image area - stretches with card so no gap; image fills and covers */}
+              <div className="relative w-full lg:w-[520px] lg:flex-shrink-0 h-72 lg:h-[400px] lg:min-h-[400px] lg:self-stretch overflow-hidden">
                 <img
                   src={post.image}
                   alt={post.title}
-                  className="absolute inset-0 w-full h-full object-cover opacity-90"
+                  className="absolute inset-0 size-full block object-cover object-center opacity-90"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-[#081C2B]/40" />
                 <div className="absolute top-5 left-5">
                   <span className="inline-flex items-center gap-2 bg-white/95 text-gray-800 px-3 py-1.5 rounded-full text-sm font-semibold shadow">
                     <span className="w-1.5 h-1.5 bg-primary-500 rounded-full" />

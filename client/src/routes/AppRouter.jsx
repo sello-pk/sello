@@ -23,6 +23,12 @@ const Blog = lazy(() => import("../pages/blog/Blog.jsx"));
 const AllBlog = lazy(() => import("../pages/blog/AllBlog.jsx"));
 const BlogDetails = lazy(() => import("../pages/blog/BlogDetails.jsx"));
 const CarEstimator = lazy(() => import("../pages/features/CarEstimator.jsx"));
+const EstimatorGuideDetail = lazy(
+  () => import("../pages/features/EstimatorGuideDetail.jsx"),
+);
+const CategoryGuideDetail = lazy(
+  () => import("../pages/listings/CategoryGuideDetail.jsx"),
+);
 const AuctionsActions = lazy(() => import("../pages/features/auctions/Actions.jsx"));
 const LiveAuction = lazy(() => import("../pages/features/auctions/LiveAuction.jsx"));
 const AuctionSchedule = lazy(
@@ -143,6 +149,10 @@ const AppRouter = () => {
         <Route path="/listings" element={<CarListings />} />
         <Route path="/listings/categories" element={<CategoryListings />} />
         <Route
+          path="/listings/:categorySlug/guide/:blogId"
+          element={<CategoryGuideDetail />}
+        />
+        <Route
           path="/listings/:categoryType"
           element={<GenericVehicleCategoryPage />}
         />
@@ -155,6 +165,10 @@ const AppRouter = () => {
 
         {/* Features — Public Auction Pages */}
         <Route path="/car-estimator" element={<CarEstimator />} />
+        <Route
+          path="/car-estimator/guide/:blogId"
+          element={<EstimatorGuideDetail />}
+        />
         <Route path="/auctions" element={<AuctionsActions />} />
         <Route path="/auctions/live" element={<LiveAuction />} />
         <Route path="/auctions/schedule" element={<AuctionSchedule />} />
