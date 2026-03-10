@@ -13,16 +13,9 @@ import { getErrorMessage } from "../../../utils/errorHandler";
 import ImagesUpload from "../createPost/ImagesUpload";
 import Input from "../../utils/filter/Input";
 import SearchableSelect from "../../common/SearchableSelect";
-import BodyTypes from "../../utils/filter/BodyTypes";
-import RegionalSpecs from "../../utils/filter/RegionalSpecs";
-import FuelSpecs from "../../utils/filter/FuelSpecs";
-import TransmissionSpecs from "../../utils/filter/TransmissionSpecs";
+import FilterSpecs from "../../utils/filter/FilterSpecs";
 import ExteriorColor from "../../utils/filter/ExteriorColor";
 import InteriorColor from "../../utils/filter/InteriorColor";
-import OwnerTypeSpecs from "../../utils/filter/OwnerTypeSpecs";
-import WarrantyType from "../../utils/filter/WarrantyType";
-import EngineCapacitySpecs from "../../utils/filter/EngineCapacitySpecs";
-import CarCondition from "../../utils/filter/CarCondition";
 import { images } from "../../../assets/assets";
 import { useCarCategories } from "../../../hooks/useCarCategories";
 import {
@@ -75,10 +68,8 @@ const EditCarForm = () => {
     colorExterior: "",
     colorInterior: "",
     fuelType: "",
-    engineCapacity: "",
     transmission: "",
     mileage: "",
-    regionalSpec: "",
     bodyType: "",
     city: "",
     location: "",
@@ -172,10 +163,8 @@ const EditCarForm = () => {
         colorExterior: car.colorExterior || "",
         colorInterior: car.colorInterior || "",
         fuelType: car.fuelType || "",
-        engineCapacity: car.engineCapacity || "",
         transmission: car.transmission || "",
         mileage: car.mileage?.toString() || "",
-        regionalSpec: car.regionalSpec || "",
         bodyType: car.bodyType || "",
         city: car.city || "",
         location: car.location || "",
@@ -306,14 +295,9 @@ const EditCarForm = () => {
     }
 
     const data = new FormData();
-    const normalizedEngineCapacity = parseRangeLikeNumber(
-      formData.engineCapacity,
-    );
     const defaults = {
       colorExterior: formData.colorExterior || "N/A",
       colorInterior: formData.colorInterior || "N/A",
-      engineCapacity:
-        normalizedEngineCapacity === "" ? "" : String(normalizedEngineCapacity),
       mileage: formData.mileage || "0",
       location: formData.location || "",
       description: formData.description || "",
@@ -335,8 +319,8 @@ const EditCarForm = () => {
       });
     }
 
-    // Add other fields (skip removed fields: features, carDoors, horsepower, numberOfCylinders)
-    const skipKeys = ["images", "existingImages", "features", "carDoors", "horsepower", "numberOfCylinders"];
+    // Add other fields (skip removed fields: features, carDoors, horsepower, numberOfCylinders, engineCapacity, regionalSpec)
+    const skipKeys = ["images", "existingImages", "features", "carDoors", "horsepower", "numberOfCylinders", "engineCapacity", "regionalSpec"];
     Object.keys(formData).forEach((key) => {
       if (skipKeys.includes(key)) return;
       data.append(
@@ -557,38 +541,21 @@ const EditCarForm = () => {
         {isFieldVisible(formData.vehicleType, "bodyType") && (
           <div>
             <label className="block mb-1">Body Type</label>
-            <BodyTypes
-              vehicleType={formData.vehicleType}
-              onBodyTypeChange={(val) => handleChange("bodyType", val)}
-            />
-          </div>
-        )}
-
-        {isFieldVisible(formData.vehicleType, "regionalSpec") && (
-          <div>
-            <label className="block mb-1">Regional Spec</label>
-            <RegionalSpecs
-              onChange={(val) => handleChange("regionalSpec", val)}
-            />
+            <FilterSpecs specType="bodyTypes" vehicleType={formData.vehicleType} value={formData.bodyType} onChange={(val) => handleChange("bodyType", val)} />
           </div>
         )}
 
         {isFieldVisible(formData.vehicleType, "fuelType") && (
           <div>
             <label className="block mb-1">Fuel Type</label>
-            <FuelSpecs
-              vehicleType={formData.vehicleType}
-              onChange={(val) => handleChange("fuelType", val)}
-            />
+            <FilterSpecs specType="fuelType" vehicleType={formData.vehicleType} value={formData.fuelType} onChange={(val) => handleChange("fuelType", val)} />
           </div>
         )}
 
         {isFieldVisible(formData.vehicleType, "transmission") && (
           <div>
             <label className="block mb-1">Transmission</label>
-            <TransmissionSpecs
-              onChange={(val) => handleChange("transmission", val)}
-            />
+            <FilterSpecs specType="transmissionType" value={formData.transmission} onChange={(val) => handleChange("transmission", val)} />
           </div>
         )}
 
@@ -608,26 +575,17 @@ const EditCarForm = () => {
 
         <div>
           <label className="block mb-1">Owner Type</label>
-          <OwnerTypeSpecs onChange={(val) => handleChange("ownerType", val)} />
+          <FilterSpecs specType="ownerType" value={formData.ownerType} onChange={(val) => handleChange("ownerType", val)} />
         </div>
 
         <div>
           <label className="block mb-1">Warranty</label>
-          <WarrantyType onChange={(val) => handleChange("warranty", val)} />
+          <FilterSpecs specType="warrantyType" value={formData.warranty} onChange={(val) => handleChange("warranty", val)} />
         </div>
-
-        {isFieldVisible(formData.vehicleType, "engineCapacity") && (
-          <div>
-            <label className="block mb-1">Engine Capacity</label>
-            <EngineCapacitySpecs
-              onChange={(val) => handleChange("engineCapacity", val)}
-            />
-          </div>
-        )}
 
         <div>
           <label className="block mb-1">Condition</label>
-          <CarCondition onChange={(val) => handleChange("condition", val)} />
+          <FilterSpecs specType="condition" value={formData.condition} onChange={(val) => handleChange("condition", val)} />
         </div>
 
         <div className="mb-2">

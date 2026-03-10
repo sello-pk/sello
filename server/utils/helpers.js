@@ -166,7 +166,6 @@ export const buildCarQuery = (query) => {
     "city",
     "vehicleType",
     "bodyType",
-    "regionalSpec",
     "ownerType",
     "warranty",
   ];
@@ -183,7 +182,6 @@ export const buildCarQuery = (query) => {
     { key: "price", min: "priceMin", max: "priceMax" },
     { key: "year", min: "yearMin", max: "yearMax" },
     { key: "mileage", min: "mileageMin", max: "mileageMax" },
-    { key: "engineCapacity", min: "engineMin", max: "engineMax" },
     { key: "batteryRange", min: "batteryRangeMin", max: "batteryRangeMax" },
     { key: "motorPower", min: "motorPowerMin", max: "motorPowerMax" },
   ];

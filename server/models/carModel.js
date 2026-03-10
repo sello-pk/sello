@@ -61,7 +61,8 @@ const carSchema = new mongoose.Schema(
     },
     regionalSpec: {
       type: String,
-      required: true,
+      required: false,
+      default: null,
       enum: [
         "Local (Pakistani)",
         "Japanese",

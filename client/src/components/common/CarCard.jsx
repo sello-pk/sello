@@ -161,20 +161,6 @@ const CarCard = ({ car }) => {
           <h4 className="md:text-xl text-lg font-medium">
             {carMake} {carModel} - {carYear}
           </h4>
-          <p className="border-b border-gray-200 pb-1.5">
-            {(() => {
-              const features = car?.features;
-              if (Array.isArray(features)) {
-                return features.length > 0
-                  ? features.slice(0, 3).join(", ")
-                  : "No features listed";
-              } else if (typeof features === "string") {
-                return features.trim() ? features : "No features listed";
-              } else {
-                return "No features listed";
-              }
-            })()}
-          </p>
 
           <div className="flex items-center my-3 justify-around border-b border-gray-200 pb-3">
             <div className="flex items-center flex-col gap-2">
@@ -206,39 +192,6 @@ const CarCard = ({ car }) => {
                 className="w-6 h-6 object-contain"
               />
               {car?.fuelType || "N/A"}
-            </div>
-          </div>
-
-          <div className="flex items-center my-3 justify-around pb-3">
-            <div className="flex items-center flex-col gap-2">
-              <LazyImage
-                src={images.door}
-                alt="Doors Icon"
-                width={24}
-                height={24}
-                className="w-6 h-6 object-contain"
-              />
-              {car?.carDoors || "N/A"} Doors
-            </div>
-            <div className="flex items-center flex-col gap-2">
-              <LazyImage
-                src={images.hp}
-                alt="Horsepower Icon"
-                width={24}
-                height={24}
-                className="w-6 h-6 object-contain"
-              />
-              {car?.horsepower ? `${car.horsepower} HP` : "N/A"}
-            </div>
-            <div className="flex items-center flex-col gap-2">
-              <LazyImage
-                src={images.cc}
-                alt="Engine Icon"
-                width={24}
-                height={24}
-                className="w-6 h-6 object-contain"
-              />
-              {car?.engineCapacity ? `${car.engineCapacity} CC` : "N/A"}
             </div>
           </div>
 

@@ -18,8 +18,6 @@ import {
   FaGasPump,
   FaCog,
   FaCar,
-  FaDoorOpen,
-  FaCog as FaEngine,
   FaPalette,
   FaShieldAlt,
   FaUser,
@@ -85,8 +83,6 @@ const CarDetailsEtc = () => {
     { icon: FaGasPump, label: "Fuel Type", value: car.fuelType || "N/A" },
     { icon: FaCog, label: "Transmission", value: car.transmission || "N/A" },
     { icon: FaCar, label: "Body Type", value: car.bodyType || "N/A" },
-    { icon: FaDoorOpen, label: "Doors", value: car.carDoors || "N/A" },
-    { icon: FaEngine, label: "Engine", value: car.engineCapacity || "N/A" },
     { icon: FaCalendarAlt, label: "Year", value: car.year || "N/A" },
     { icon: FaShieldAlt, label: "Condition", value: car.condition || "N/A" },
   ];
@@ -102,15 +98,9 @@ const CarDetailsEtc = () => {
       value: car.colorExterior,
       color: car.colorExterior,
     },
-    { label: "Regional Specs", value: car.regionalSpec },
-    { label: "Cylinders", value: car.numberOfCylinders },
     { label: "Seats", value: car.seats || "4" },
     { label: "Seller Type", value: car.ownerType },
     { label: "Warranty", value: car.warranty },
-    {
-      label: "Horsepower",
-      value: car.horsepower ? `${car.horsepower} HP` : "N/A",
-    },
   ];
 
   return (
@@ -200,26 +190,6 @@ const CarDetailsEtc = () => {
                 {car.description || "No description available."}
               </p>
             </div>
-
-            {/* Features Card */}
-            {car.features && car.features.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  Features
-                </h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {car.features.map((feature, idx) => (
-                    <div key={idx} className="flex items-center gap-2">
-                      <FaCheckCircle
-                        className="text-green-500 flex-shrink-0"
-                        size={16}
-                      />
-                      <span className="text-sm text-gray-700">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* Location Map Card */}
             <div

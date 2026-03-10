@@ -121,22 +121,6 @@ const SavedCars = () => {
                       <h4 className="md:text-xl text-lg font-medium">
                         {carMake} {carModel} - {carYear}
                       </h4>
-                      <p className="border-b border-gray-200 pb-1.5">
-                        {(() => {
-                          const features = car?.features;
-                          if (Array.isArray(features)) {
-                            return features.length > 0
-                              ? features.slice(0, 3).join(", ")
-                              : "No features listed";
-                          } else if (typeof features === "string") {
-                            return features.trim()
-                              ? features
-                              : "No features listed";
-                          } else {
-                            return "No features listed";
-                          }
-                        })()}
-                      </p>
 
                       <div className="flex items-center my-3 justify-around border-b border-gray-200 pb-3">
                         <div className="flex items-center gap-2">
@@ -166,26 +150,6 @@ const SavedCars = () => {
                       </div>
 
                       <div className="flex items-center my-3 justify-around pb-3">
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={images?.door}
-                            alt="doors"
-                            className="w-5 h-5"
-                          />
-                          <span className="text-sm">
-                            {car?.carDoors || "N/A"} Doors
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={images?.hp}
-                            alt="horsepower"
-                            className="w-5 h-5"
-                          />
-                          <span className="text-sm">
-                            {car?.horsepower ? `${car.horsepower} HP` : "N/A"}
-                          </span>
-                        </div>
                         <div className="flex items-center gap-2">
                           <img
                             src={images?.cc}

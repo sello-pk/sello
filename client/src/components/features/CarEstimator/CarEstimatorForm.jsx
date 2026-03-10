@@ -10,7 +10,7 @@ import Select from "react-select";
 import toast from "react-hot-toast";
 import { useCarCategories } from "../../../hooks/useCarCategories";
 import { capitalize } from "../../../utils/formatters";
-import TransmissionSpecs from "../../../components/utils/filter/TransmissionSpecs";
+import FilterSpecs from "../../../components/utils/filter/FilterSpecs";
 import { useCreateValuationMutation } from "../../../redux/services/api";
 
 const accidentHistories = ["None", "Minor", "Major"];
@@ -59,21 +59,6 @@ const mileageOptions = [
   { value: "100,000 - 125,000", label: "100,000 - 125,000" },
   { value: "125,000 - 150,000", label: "125,000 - 150,000" },
   { value: "150,000+", label: "150,000+" },
-];
-
-const engineCapacities = [
-  { value: "660cc", label: "660cc" },
-  { value: "800cc", label: "800cc" },
-  { value: "1000cc", label: "1000cc" },
-  { value: "1300cc", label: "1300cc" },
-  { value: "1500cc", label: "1500cc" },
-  { value: "1600cc", label: "1600cc" },
-  { value: "1800cc", label: "1800cc" },
-  { value: "2000cc", label: "2000cc" },
-  { value: "2500cc", label: "2500cc" },
-  { value: "3000cc", label: "3000cc" },
-  { value: "3500cc", label: "3500cc" },
-  { value: "4000cc+", label: "4000cc+" },
 ];
 
 const stepMeta = [
@@ -139,7 +124,6 @@ export default function CarEstimatorForm({ onEstimate }) {
     exteriorColor: "",
     engineCondition: "",
     engineType: "",
-    engineCapacity: "",
     transmission: "",
     bodyCondition: "",
     paintStatus: "",
@@ -525,34 +509,12 @@ export default function CarEstimatorForm({ onEstimate }) {
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Engine Capacity
-                    </label>
-                    <Select
-                      value={
-                        engineCapacities.find(
-                          (c) => c.value === formData.engineCapacity,
-                        ) || null
-                      }
-                      onChange={(option) =>
-                        setField("engineCapacity", option?.value || "")
-                      }
-                      options={engineCapacities}
-                      placeholder="Select engine capacity"
-                      isClearable
-                      isSearchable
-                      theme={customTheme}
-                      styles={selectStyles}
-                      menuPortalTarget={document.body}
-                    />
-                  </div>
-
                   <div className="sm:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Transmission <span className="text-red-500">*</span>
                     </label>
-                    <TransmissionSpecs
+                    <FilterSpecs
+                      specType="transmissionType"
                       value={formData.transmission}
                       onChange={(value) => setField("transmission", value)}
                     />

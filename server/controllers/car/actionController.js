@@ -86,25 +86,13 @@ export const createCar = async (req, res) => {
       images = await Promise.all(uploadPromises);
     }
 
-    const normalizedEngineCapacity = parseNumericField(req.body.engineCapacity);
     const normalizedHorsepower = parseNumericField(req.body.horsepower);
     const normalizedGeoLocation = parseGeoLocation(req.body.geoLocation);
-
-    if (
-      (req.body.vehicleType || "Car") === "Car" &&
-      normalizedEngineCapacity === undefined
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid engineCapacity. Please select a valid numeric range.",
-      });
-    }
 
     const carData = {
       ...req.body,
       make: normalizeString(req.body.make),
       model: normalizeString(req.body.model),
-      engineCapacity: normalizedEngineCapacity ?? 0,
       horsepower: normalizedHorsepower ?? 0,
       geoLocation: normalizedGeoLocation,
       images,
@@ -112,6 +100,11 @@ export const createCar = async (req, res) => {
       isApproved: true,
       status: "active"
     };
+    if (req.body.engineCapacity !== undefined && req.body.engineCapacity !== "") {
+      const normalizedEngineCapacity = parseNumericField(req.body.engineCapacity);
+      if (normalizedEngineCapacity !== undefined) carData.engineCapacity = normalizedEngineCapacity;
+    }
+    if (req.body.regionalSpec !== undefined && req.body.regionalSpec !== "") carData.regionalSpec = req.body.regionalSpec;
 
     const car = await Car.create(carData);
     await User.findByIdAndUpdate(req.user._id, { $push: { carsPosted: car._id } });
@@ -156,20 +149,8 @@ export const editCar = async (req, res) => {
     }
     const images = [...existingImages, ...newImageUrls];
 
-    const normalizedEngineCapacity = parseNumericField(req.body.engineCapacity);
     const normalizedHorsepower = parseNumericField(req.body.horsepower);
     const normalizedGeoLocation = parseGeoLocation(req.body.geoLocation);
-
-    if (
-      (req.body.vehicleType || car.vehicleType || "Car") === "Car" &&
-      normalizedEngineCapacity === undefined &&
-      (req.body.engineCapacity === undefined || req.body.engineCapacity === "")
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid engineCapacity. Please select a valid numeric range.",
-      });
-    }
 
     const yearNum = req.body.year !== undefined && req.body.year !== "" ? parseInt(req.body.year, 10) : car.year;
     const priceNum = req.body.price !== undefined && req.body.price !== "" ? parseFloat(req.body.price) : car.price;
@@ -182,11 +163,17 @@ export const editCar = async (req, res) => {
       year: Number.isFinite(yearNum) ? yearNum : car.year,
       price: Number.isFinite(priceNum) ? priceNum : car.price,
       mileage: Number.isFinite(mileageNum) ? mileageNum : car.mileage,
-      engineCapacity: normalizedEngineCapacity !== undefined ? normalizedEngineCapacity : car.engineCapacity,
       horsepower: normalizedHorsepower !== undefined ? normalizedHorsepower : (car.horsepower ?? 0),
       geoLocation: normalizedGeoLocation,
       images,
     };
+    if (req.body.engineCapacity !== undefined && req.body.engineCapacity !== "") {
+      const normalizedEngineCapacity = parseNumericField(req.body.engineCapacity);
+      updateData.engineCapacity = normalizedEngineCapacity !== undefined ? normalizedEngineCapacity : car.engineCapacity;
+    } else if (req.body.engineCapacity === "") {
+      updateData.engineCapacity = undefined;
+    }
+    if (req.body.regionalSpec !== undefined) updateData.regionalSpec = req.body.regionalSpec || null;
     delete updateData.postedBy;
     delete updateData._id;
     delete updateData.__v;

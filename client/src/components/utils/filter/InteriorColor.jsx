@@ -225,8 +225,6 @@ const InteriorColor = ({ onChange, value }) => {
 
   return (
     <div>
-      <label className="block mb-1 pl-2">Interior Color</label>
-      {/* Color Cards Grid - Slightly smaller for colors */}
       {/* Color Cards - Horizontal Layout */}
       <div className="flex gap-3 py-3 pl-2 overflow-x-auto hideScrollbar">
         {allColors.map((color, index) => {

@@ -3,16 +3,6 @@ import toast from "react-hot-toast";
 import RangeFilter from "../../utils/filter/RangeFilter";
 import Input from "../../utils/filter/Input";
 import SearchableSelect from "../../common/SearchableSelect";
-import BodyTypes from "../../utils/filter/BodyTypes";
-import RegionalSpecs from "../../utils/filter/RegionalSpecs";
-import FuelSpecs from "../../utils/filter/FuelSpecs";
-import TransmissionSpecs from "../../utils/filter/TransmissionSpecs";
-import ExteriorColor from "../../utils/filter/ExteriorColor";
-import InteriorColor from "../../utils/filter/InteriorColor";
-import OwnerTypeSpecs from "../../utils/filter/OwnerTypeSpecs";
-import WarrantyType from "../../utils/filter/WarrantyType";
-import EngineCapacitySpecs from "../../utils/filter/EngineCapacitySpecs";
-import LocationButton from "../../utils/filter/LocationButton";
 import { useSearchParams } from "react-router-dom";
 import { useCarCategories } from "../../../hooks/useCarCategories";
 import { isFieldVisible } from "../../../utils/vehicleFieldConfig";
@@ -45,15 +35,12 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
     maxMileage: "",
     condition: "",
     bodyType: "",
-    regionalSpec: "",
     fuelType: "",
     transmission: "",
     exteriorColor: "",
     interiorColor: "",
     ownerType: "",
     warranty: "",
-    minEngineCapacity: "",
-    maxEngineCapacity: "",
     minBatteryRange: "",
     maxBatteryRange: "",
     minMotorPower: "",
@@ -282,12 +269,6 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
         minMileage: values[0],
         maxMileage: values[1],
       }));
-    } else if (type === "engineCapacity") {
-      setFilters((prev) => ({
-        ...prev,
-        minEngineCapacity: values[0],
-        maxEngineCapacity: values[1],
-      }));
     } else if (type === "batteryRange") {
       setFilters((prev) => ({
         ...prev,
@@ -328,16 +309,6 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
       toast.error("Minimum mileage cannot be greater than maximum mileage");
       return false;
     }
-    if (
-      filters.minEngineCapacity &&
-      filters.maxEngineCapacity &&
-      Number(filters.minEngineCapacity) > Number(filters.maxEngineCapacity)
-    ) {
-      toast.error(
-        "Minimum engine capacity cannot be greater than maximum engine capacity",
-      );
-      return false;
-    }
     return true;
   };
 
@@ -358,8 +329,6 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
     if (filters.make) backendFilters.make = filters.make;
     if (filters.model) backendFilters.model = filters.model;
     if (filters.bodyType) backendFilters.bodyType = filters.bodyType;
-    if (filters.regionalSpec)
-      backendFilters.regionalSpec = filters.regionalSpec;
     if (filters.fuelType) backendFilters.fuelType = filters.fuelType;
     if (filters.transmission)
       backendFilters.transmission = filters.transmission;
@@ -369,10 +338,6 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
       backendFilters.colorInterior = filters.interiorColor;
     if (filters.ownerType) backendFilters.ownerType = filters.ownerType;
     if (filters.warranty) backendFilters.warranty = filters.warranty;
-    if (filters.minEngineCapacity)
-      backendFilters.engineMin = filters.minEngineCapacity;
-    if (filters.maxEngineCapacity)
-      backendFilters.engineMax = filters.maxEngineCapacity;
     if (filters.minBatteryRange)
       backendFilters.batteryRangeMin = filters.minBatteryRange;
     if (filters.maxBatteryRange)
@@ -418,15 +383,12 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
       maxMileage: "",
       condition: "",
       bodyType: "",
-      regionalSpec: "",
       fuelType: "",
       transmission: "",
       exteriorColor: "",
       interiorColor: "",
       ownerType: "",
       warranty: "",
-      minEngineCapacity: "",
-      maxEngineCapacity: "",
       minBatteryRange: "",
       maxBatteryRange: "",
       minMotorPower: "",
@@ -613,42 +575,6 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
             onChange={(values) => handleRangeChange("mileage", values)}
           />
         </div>
-
-        {/* Engine Capacity - Only show for relevant vehicle types */}
-        {isFieldVisible(vehicleType, "engineCapacity") && (
-          <div className="field space-y-2">
-            <div className="flex flex-col sm:flex-row w-full mx-auto gap-4 items-center">
-              <div className="w-full sm:w-1/2">
-                <label className="block mb-1">Engine Capacity From (cc)</label>
-                <Input
-                  inputType="number"
-                  value={filters.minEngineCapacity}
-                  onChange={(e) =>
-                    handleChange("minEngineCapacity", e.target.value)
-                  }
-                  placeholder="Min"
-                />
-              </div>
-              <div className="w-full sm:w-1/2">
-                <label className="block mb-1">To (cc)</label>
-                <Input
-                  inputType="number"
-                  value={filters.maxEngineCapacity}
-                  onChange={(e) =>
-                    handleChange("maxEngineCapacity", e.target.value)
-                  }
-                  placeholder="Max"
-                />
-              </div>
-            </div>
-            <RangeFilter
-              type="engineCapacity"
-              min={50}
-              max={8000}
-              onChange={(values) => handleRangeChange("engineCapacity", values)}
-            />
-          </div>
-        )}
 
         {/* Battery Range - Only show for electric vehicles */}
         {isFieldVisible(vehicleType, "batteryRange") && (

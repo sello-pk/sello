@@ -8,16 +8,9 @@ import { getErrorMessage } from "../../../utils/errorHandler";
 import ImagesUpload from "../createPost/ImagesUpload";
 import Input from "../../utils/filter/Input";
 import SearchableSelect from "../../common/SearchableSelect";
-import BodyTypes from "../../utils/filter/BodyTypes";
-import RegionalSpecs from "../../utils/filter/RegionalSpecs";
-import FuelSpecs from "../../utils/filter/FuelSpecs";
-import TransmissionSpecs from "../../utils/filter/TransmissionSpecs";
+import FilterSpecs from "../../utils/filter/FilterSpecs";
 import ExteriorColor from "../../utils/filter/ExteriorColor";
 import InteriorColor from "../../utils/filter/InteriorColor";
-import OwnerTypeSpecs from "../../utils/filter/OwnerTypeSpecs";
-import WarrantyType from "../../utils/filter/WarrantyType";
-import EngineCapacitySpecs from "../../utils/filter/EngineCapacitySpecs";
-import CarCondition from "../../utils/filter/CarCondition";
 import { useCarCategories } from "../../../hooks/useCarCategories";
 import LocationButton from "../../utils/filter/LocationButton";
 import {
@@ -76,10 +69,8 @@ const CreatePostForm = ({ initialPrefill = null }) => {
     colorExterior: "",
     colorInterior: "",
     fuelType: "",
-    engineCapacity: "",
     transmission: "",
     mileage: "",
-    regionalSpec: "",
     bodyType: "",
     country: "",
     city: "",
@@ -282,10 +273,6 @@ const CreatePostForm = ({ initialPrefill = null }) => {
 
     const data = new FormData();
 
-    const normalizedEngineCapacity = parseRangeLikeNumber(
-      formData.engineCapacity,
-    );
-
     // Only set defaults for fields that are visible for this vehicle type
     const defaults = {
       colorExterior: formData.colorExterior || "N/A",
@@ -294,12 +281,6 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       location: formData.location || "",
       description: formData.description || "",
     };
-
-    // Add conditional defaults only if fields are visible
-    if (isFieldVisible(formData.vehicleType, "engineCapacity")) {
-      defaults.engineCapacity =
-        normalizedEngineCapacity === "" ? "" : String(normalizedEngineCapacity);
-    }
 
     // Optimize FormData construction - build in single pass
     // Add images first
@@ -325,10 +306,8 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       "colorExterior",
       "colorInterior",
       "fuelType",
-      "engineCapacity",
       "transmission",
       "mileage",
-      "regionalSpec",
       "bodyType",
       "country",
       "city",
@@ -367,18 +346,8 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         ) {
           shouldSend = false;
         } else if (
-          key === "regionalSpec" &&
-          !isFieldVisible(formData.vehicleType, "regionalSpec")
-        ) {
-          shouldSend = false;
-        } else if (
           key === "bodyType" &&
           !isFieldVisible(formData.vehicleType, "bodyType")
-        ) {
-          shouldSend = false;
-        } else if (
-          key === "engineCapacity" &&
-          !isFieldVisible(formData.vehicleType, "engineCapacity")
         ) {
           shouldSend = false;
         } else if (
@@ -455,10 +424,8 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         colorExterior: "",
         colorInterior: "",
         fuelType: "",
-        engineCapacity: "",
         transmission: "",
         mileage: "",
-        regionalSpec: "",
         bodyType: "",
         country: "",
         city: "",
@@ -521,15 +488,6 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       return;
     }
 
-    // Validate engine capacity (required for cars)
-    if (formData.vehicleType === "Car") {
-      const engineNum = parseInt(formData.engineCapacity);
-      if (isNaN(engineNum) || engineNum < 500 || engineNum > 10000) {
-        toast.error("Engine capacity must be between 500 and 10000 CC.");
-        return;
-      }
-    }
-
     // Validate contact number
     if (!/^\+?\d{9,15}$/.test(formData.contactNumber)) {
       toast.error("Invalid contact number. Must be 9-15 digits.");
@@ -570,10 +528,8 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         colorExterior: "",
         colorInterior: "",
         fuelType: "",
-        engineCapacity: "",
         transmission: "",
         mileage: "",
-        regionalSpec: "",
         bodyType: "",
         country: "",
         city: "",
@@ -685,44 +641,10 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       {/* Vehicle Type Selection - Top of Form */}
       <div className="mb-6">
         <label className="block mb-3 text-center font-medium">
-          Listing Type *
+          Vehicle Type *
         </label>
-        <div className="flex justify-center gap-3 flex-wrap mb-4">
-          {["Regular Listing", "Auction"].map((type) => {
-            const isSelected = formData.listingType === type;
-            const isRegular = type === "Regular Listing";
-            const btnClass = isSelected
-              ? "bg-primary-500 text-white border-2 border-primary-500 shadow-md"
-              : "bg-white text-gray-700 border-2 border-gray-200 hover:border-primary-500 hover:shadow-md hover:bg-primary-50";
-            return (
-              <button
-                key={type}
-                type="button"
-                onClick={() => handleChange("listingType", type)}
-                className={"relative px-6 py-3 rounded-xl font-medium transition-all " + btnClass}
-              >
-                {isSelected && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-2 h-2 bg-primary-600 rounded-full animate-ping" />
-                  </div>
-                )}
-                <span className="flex items-center gap-2">
-                  <span className="text-lg">{isRegular ? "\u{1F697}" : "\u{1F528}"}</span>
-                  <span>{type}</span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Show vehicle type selection only for regular listings */}
-        {formData.listingType === "Regular Listing" && (
-          <>
-            <label className="block mb-3 text-center font-medium">
-              Vehicle Type *
-            </label>
-            <div className="flex justify-center gap-3 flex-wrap">
-              {["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"].map(
+        <div className="flex justify-center gap-3 flex-wrap">
+          {["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"].map(
             (type) => (
               <button
                 key={type}
@@ -745,9 +667,6 @@ const CreatePostForm = ({ initialPrefill = null }) => {
                   if (!isFieldVisible(newVehicleType, "transmission")) {
                     handleChange("transmission", "");
                   }
-                  if (!isFieldVisible(newVehicleType, "regionalSpec")) {
-                    handleChange("regionalSpec", "");
-                  }
                 }}
                 className={`group relative px-5 py-1.5 rounded font-semibold text-sm transition-all duration-300 transform hover:scale-105 active:scale-95 ${
                   formData.vehicleType === type
@@ -759,10 +678,8 @@ const CreatePostForm = ({ initialPrefill = null }) => {
               </button>
             ),
           )}
-            </div>
-          </>
-        )}
         </div>
+      </div>
 
       {/* Tab Content Container */}
       <div className="border-[1px] border-gray-700 rounded-md px-5 py-5 my-4">
@@ -1003,28 +920,14 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         {/* Condition - Full Width */}
         <div className="mb-2 pl-2">
           <label className="block mb-1">Condition</label>
-          <CarCondition onChange={(val) => handleChange("condition", val)} />
+          <FilterSpecs specType="condition" value={formData.condition} onChange={(val) => handleChange("condition", val)} />
         </div>
 
         {/* Fuel Type - Full Width */}
         {isFieldVisible(formData.vehicleType, "fuelType") && (
           <div className="mb-2 pl-2">
             <label className="block mb-1">Fuel Type</label>
-            <FuelSpecs
-              vehicleType={formData.vehicleType}
-              value={formData.fuelType}
-              onChange={(val) => handleChange("fuelType", val)}
-            />
-          </div>
-        )}
-
-        {/* Regional Spec - Full Width */}
-        {isFieldVisible(formData.vehicleType, "regionalSpec") && (
-          <div className="mb-2 pl-2">
-            <label className="block mb-1">Regional Spec</label>
-            <RegionalSpecs
-              onChange={(val) => handleChange("regionalSpec", val)}
-            />
+            <FilterSpecs specType="fuelType" vehicleType={formData.vehicleType} value={formData.fuelType} onChange={(val) => handleChange("fuelType", val)} />
           </div>
         )}
 
@@ -1032,11 +935,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         {isFieldVisible(formData.vehicleType, "bodyType") && (
           <div className="mb-2 pl-2">
             <label className="block mb-1">Body Type</label>
-            <BodyTypes
-              vehicleType={formData.vehicleType}
-              value={formData.bodyType}
-              onChange={(val) => handleChange("bodyType", val)}
-            />
+            <FilterSpecs specType="bodyTypes" vehicleType={formData.vehicleType} value={formData.bodyType} onChange={(val) => handleChange("bodyType", val)} />
           </div>
         )}
 
@@ -1044,15 +943,14 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         {isFieldVisible(formData.vehicleType, "transmission") && (
           <div className="mb-2 pl-2">
             <label className="block mb-1">Transmission</label>
-            <TransmissionSpecs
-              onChange={(val) => handleChange("transmission", val)}
-            />
+            <FilterSpecs specType="transmissionType" value={formData.transmission} onChange={(val) => handleChange("transmission", val)} />
           </div>
         )}
 
         {/* Exterior Color - Full Width */}
         {formData.vehicleType === "Car" && (
           <div className="mb-2 pl-2">
+            <label className="block mb-1">Exterior Color</label>
             <ExteriorColor
               value={formData.colorExterior}
               onChange={(val) => handleChange("colorExterior", val)}
@@ -1063,19 +961,10 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         {/* Interior Color - Full Width */}
         {formData.vehicleType === "Car" && (
           <div className="mb-2 pl-2">
+            <label className="block mb-1">Interior Color</label>
             <InteriorColor
               value={formData.colorInterior}
               onChange={(val) => handleChange("colorInterior", val)}
-            />
-          </div>
-        )}
-
-        {/* Engine Capacity - Full Width */}
-        {isFieldVisible(formData.vehicleType, "engineCapacity") && (
-          <div className="mb-2 pl-2">
-            <label className="block mb-1">Engine Capacity</label>
-            <EngineCapacitySpecs
-              onChange={(val) => handleChange("engineCapacity", val)}
             />
           </div>
         )}
@@ -1084,9 +973,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         {formData.vehicleType === "Car" && (
           <div className="mb-2 pl-2">
             <label className="block mb-1">Owner Type</label>
-            <OwnerTypeSpecs
-              onChange={(val) => handleChange("ownerType", val)}
-            />
+            <FilterSpecs specType="ownerType" value={formData.ownerType} onChange={(val) => handleChange("ownerType", val)} />
           </div>
         )}
 
@@ -1094,7 +981,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         {formData.vehicleType === "Car" && (
           <div className="mb-2 pl-2">
             <label className="block mb-1">Warranty</label>
-            <WarrantyType onChange={(val) => handleChange("warranty", val)} />
+            <FilterSpecs specType="warrantyType" value={formData.warranty} onChange={(val) => handleChange("warranty", val)} />
           </div>
         )}
 
