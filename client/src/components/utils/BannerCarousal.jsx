@@ -51,6 +51,20 @@ const BannerCarousal = () => {
       title: "Trusted Sellers",
       linkUrl: "/cars",
     },
+    {
+      id: "slide7",
+      image: slides.banner7,
+      mobileImage: mdSlides.mbBanner7,
+      title: "Trusted Sellers",
+      linkUrl: "/cars",
+    },
+    {
+      id: "slide8",
+      image: slides.banner8,
+      mobileImage: mdSlides.mbBanner8,
+      title: "Trusted Sellers",
+      linkUrl: "/cars",
+    },
   ];
 
   // Auto-play functionality with pause on hover
@@ -79,7 +93,7 @@ const BannerCarousal = () => {
 
   const goToPrevious = () => {
     setCurrentSlide(
-      (prev) => (prev - 1 + activeSlides.length) % activeSlides.length
+      (prev) => (prev - 1 + activeSlides.length) % activeSlides.length,
     );
     setIsPaused(true);
     setTimeout(() => setIsPaused(false), 2000);
