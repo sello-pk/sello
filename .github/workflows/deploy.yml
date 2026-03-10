@@ -10,9 +10,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # If you see "dial tcp ***:22: connect: connection timed out", the runner
-      # cannot reach the VPS. Check: VPS firewall allows port 22 from GitHub IPs
-      # (https://api.github.com/meta → actions), VPS is up, VPS_HOST is public.
+      - name: Check deploy secrets
+        run: |
+          missing=""
+          [ -z "${{ secrets.VPS_HOST }}" ] && missing="VPS_HOST "
+          [ -z "${{ secrets.VPS_USERNAME }}" ] && missing="${missing}VPS_USERNAME "
+          [ -z "${{ secrets.VPS_SSH_KEY }}" ] && missing="${missing}VPS_SSH_KEY"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secrets: $missing. Add them in Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+          echo "Secrets present (VPS_HOST, VPS_USERNAME, VPS_SSH_KEY)."
+
+      - name: Check VPS reachable on port 22
+        run: |
+          if ! timeout 20 bash -c "echo >/dev/tcp/${{ secrets.VPS_HOST }}/22" 2>/dev/null; then
+            echo "::error::Cannot reach VPS on port 22. Allow inbound TCP 22 from GitHub IPs (https://api.github.com/meta, key: actions). Ensure VPS is up and VPS_HOST is the public IP/hostname."
+            exit 1
+          fi
+          echo "VPS port 22 reachable."
+
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -20,7 +37,7 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: 22
-          timeout: 300s
+          timeout: 120s
           command_timeout: 30m
           debug: true
           script: |
@@ -54,7 +71,7 @@ jobs:
 
             echo "🛠️ Building Client Application..."
             cd ../client
-            npm ci
+            npm install
             npm run build
 
             if [ -d "build" ]; then
