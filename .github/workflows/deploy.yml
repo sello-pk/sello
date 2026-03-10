@@ -10,6 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # If you see "dial tcp ***:22: connect: connection timed out", the runner
+      # cannot reach the VPS. Check: VPS firewall allows port 22 from GitHub IPs
+      # (https://api.github.com/meta → actions), VPS is up, VPS_HOST is public.
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
