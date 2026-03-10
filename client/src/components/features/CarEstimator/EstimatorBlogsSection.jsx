@@ -1,4 +1,10 @@
 import howOurAi1 from "../../../assets/blogs/estimator/howOurAi1.webp";
+import whyShould from "../../../assets/blogs/estimator/whyShould.jpeg";
+import whatReallyAffects from "../../../assets/blogs/estimator/whatReallyAffects.webp";
+import howWeKeep from "../../../assets/blogs/estimator/howWeKeep.webp";
+import howCarCondition from "../../../assets/blogs/estimator/howCarCondition.webp";
+import aiCarPricing from "../../../assets/blogs/estimator/aiCarPricing.webp";
+
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Clock, User, ArrowRight } from "lucide-react";
@@ -8,7 +14,11 @@ export function formatBlogContent(text) {
   if (!text || typeof text !== "string") return "";
   const blocks = text.split(/\n\n+/);
   const out = [];
-  const bold = (s) => s.replace(/\*\*(.*?)\*\*/g, "<strong class=\"font-semibold text-gray-900\">$1</strong>");
+  const bold = (s) =>
+    s.replace(
+      /\*\*(.*?)\*\*/g,
+      '<strong class="font-semibold text-gray-900">$1</strong>',
+    );
 
   for (const block of blocks) {
     const trimmed = block.trim();
@@ -18,19 +28,38 @@ export function formatBlogContent(text) {
     const firstLine = lines[0] || "";
 
     // Table: multiple lines with pipes
-    if (lines.length >= 2 && firstLine.includes("|") && lines.every((l) => l.includes("|"))) {
+    if (
+      lines.length >= 2 &&
+      firstLine.includes("|") &&
+      lines.every((l) => l.includes("|"))
+    ) {
       const rows = lines
-        .map((l) => l.split("|").map((c) => c.trim()).filter(Boolean))
+        .map((l) =>
+          l
+            .split("|")
+            .map((c) => c.trim())
+            .filter(Boolean),
+        )
         .filter((cells) => cells.length > 0);
       const isSeparator = (cells) => cells.every((c) => /^[-:]+$/.test(c));
       const headerRow = rows[0] || [];
       const dataRows = rows.filter((_, i) => i > 0 && !isSeparator(rows[i]));
-      out.push("<div class=\"overflow-x-auto my-6 rounded-xl border border-gray-200\"><table class=\"w-full text-left text-sm\"><thead><tr class=\"bg-gray-50 border-b border-gray-200\">");
-      headerRow.forEach((c) => { out.push(`<th class="px-4 py-3 font-semibold text-gray-900">${bold(c)}</th>`); });
+      out.push(
+        '<div class="overflow-x-auto my-6 rounded-xl border border-gray-200"><table class="w-full text-left text-sm"><thead><tr class="bg-gray-50 border-b border-gray-200">',
+      );
+      headerRow.forEach((c) => {
+        out.push(
+          `<th class="px-4 py-3 font-semibold text-gray-900">${bold(c)}</th>`,
+        );
+      });
       out.push("</tr></thead><tbody>");
       dataRows.forEach((row, i) => {
-        out.push(`<tr class=\"border-b border-gray-100 ${i % 2 === 0 ? "bg-white" : "bg-gray-50/50"}\">`);
-        row.forEach((c) => { out.push(`<td class="px-4 py-3 text-gray-700">${bold(c)}</td>`); });
+        out.push(
+          `<tr class=\"border-b border-gray-100 ${i % 2 === 0 ? "bg-white" : "bg-gray-50/50"}\">`,
+        );
+        row.forEach((c) => {
+          out.push(`<td class="px-4 py-3 text-gray-700">${bold(c)}</td>`);
+        });
         out.push("</tr>");
       });
       out.push("</tbody></table></div>");
@@ -39,21 +68,30 @@ export function formatBlogContent(text) {
 
     // ## Heading
     if (firstLine.startsWith("## ") && lines.length === 1) {
-      out.push(`<h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4 first:mt-0">${bold(firstLine.slice(3))}</h2>`);
+      out.push(
+        `<h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4 first:mt-0">${bold(firstLine.slice(3))}</h2>`,
+      );
       continue;
     }
     // ### Heading
     if (firstLine.startsWith("### ") && lines.length === 1) {
-      out.push(`<h3 class="text-xl font-bold text-gray-900 mt-8 mb-3">${bold(firstLine.slice(4))}</h3>`);
+      out.push(
+        `<h3 class="text-xl font-bold text-gray-900 mt-8 mb-3">${bold(firstLine.slice(4))}</h3>`,
+      );
       continue;
     }
 
     // Unordered list (lines starting with - )
-    if (lines.every((l) => l.trimStart().startsWith("- ") || l.trimStart() === "")) {
-      out.push("<ul class=\"list-none space-y-2 my-4\">");
+    if (
+      lines.every((l) => l.trimStart().startsWith("- ") || l.trimStart() === "")
+    ) {
+      out.push('<ul class="list-none space-y-2 my-4">');
       lines.forEach((l) => {
         const content = l.replace(/^\s*-\s*/, "").trim();
-        if (content) out.push(`<li class="flex items-start gap-3"><span class=\"w-2 h-2 rounded-full bg-primary-500 flex-shrink-0 mt-2.5\"></span><span class=\"text-gray-700\">${bold(content)}</span></li>`);
+        if (content)
+          out.push(
+            `<li class="flex items-start gap-3"><span class=\"w-2 h-2 rounded-full bg-primary-500 flex-shrink-0 mt-2.5\"></span><span class=\"text-gray-700\">${bold(content)}</span></li>`,
+          );
       });
       out.push("</ul>");
       continue;
@@ -68,12 +106,12 @@ export function formatBlogContent(text) {
 }
 
 export const estimatorBlogPosts = [
-    {
-      id: 1,
-      title: "How Our AI Car Price Estimator Actually Works",
-      excerpt:
-        "If you have ever used a car price estimator or an online car price calculator at some point, you are aware that car prices in Pakistan are very confusing. Two identical cars. Same model. Same year. But very different prices. That is the reason we at Sello.pk developed an AI car price estimator which does away with guesswork...",
-      fullContent: `If you have ever used a car price estimator or an online car price calculator at some point, you are aware that car prices in Pakistan are very confusing. Two identical cars. Same model. Same year. But very different prices.
+  {
+    id: 1,
+    title: "How Our AI Car Price Estimator Actually Works",
+    excerpt:
+      "If you have ever used a car price estimator or an online car price calculator at some point, you are aware that car prices in Pakistan are very confusing. Two identical cars. Same model. Same year. But very different prices. That is the reason we at Sello.pk developed an AI car price estimator which does away with guesswork...",
+    fullContent: `If you have ever used a car price estimator or an online car price calculator at some point, you are aware that car prices in Pakistan are very confusing. Two identical cars. Same model. Same year. But very different prices.
 
 That is the reason we at Sello.pk developed an AI car price estimator which does away with guesswork and we put forth to our buyers and sellers a fair data driven car valuation.
 
@@ -242,18 +280,18 @@ Our prices are updated regularly to reflect the market.
 Car prices in Pakistan are also not that complex. With the help of Sello.pk's AI car price estimator you get fair and unbiased car valuations which cover the buy, sell, or import process.
 
 Instead of putting faith in dealers' inflated quotes, let AI tell you the real value of your car.`,
-      image: howOurAi1,
-      author: "Sello AI Team",
-      readTime: "8 min read",
-      category: "AI Technology",
-      date: "March 7, 2026",
-    },
-    {
-      id: 2,
-      title: "Why You Should Know Your Car's Real Value Before Selling",
-      excerpt:
-        "If you are considering selling your car, the first thing to do is determine its true market value. In Pakistan many car owners sell their vehicles for less than they should, which isn't because the car is a poor quality but because they do not know the real resale price...",
-      fullContent: `If you are considering selling your car, the first thing to do is determine its true market value. In Pakistan many car owners sell their vehicles for less than they should, which isn't because the car is a poor quality but because they do not know the real resale price.
+    image: howOurAi1,
+    author: "Sello AI Team",
+    readTime: "8 min read",
+    category: "AI Technology",
+    date: "March 7, 2026",
+  },
+  {
+    id: 2,
+    title: "Why You Should Know Your Car's Real Value Before Selling",
+    excerpt:
+      "If you are considering selling your car, the first thing to do is determine its true market value. In Pakistan many car owners sell their vehicles for less than they should, which isn't because the car is a poor quality but because they do not know the real resale price...",
+    fullContent: `If you are considering selling your car, the first thing to do is determine its true market value. In Pakistan many car owners sell their vehicles for less than they should, which isn't because the car is a poor quality but because they do not know the real resale price.
 
 In Pakistan where used car prices fluctuate greatly it is a mistake to go by guess work or dealer opinion. That's why it is important to know your car's resale value before you put it up for sale, especially if you plan to sell my car online. It is essential.
 
@@ -416,18 +454,18 @@ When you understand:
 You don't just push products, you sell smart.
 
 Before you put your car up for sale make sure to determine its value. That information alone can pay off big.`,
-      image: howOurAi1,
-      author: "Sello Pricing Team",
-      readTime: "12 min read",
-      category: "Car Valuation",
-      date: "March 7, 2026",
-    },
-    {
-      id: 3,
-      title: "What Really Affects Your Car's Resale Price?",
-      excerpt:
-        "If you've gone to the internet to check out car resale prices and found them to be all over the place you're not alone. In Pakistan we see very different resale prices for what are essentially the same cars and often we don't know why...",
-      fullContent: `If you've gone to the internet to check out car resale prices and found them to be all over the place you're not alone. In Pakistan we see very different resale prices for what are essentially the same cars and often we don't know why.
+    image: whyShould,
+    author: "Sello Pricing Team",
+    readTime: "12 min read",
+    category: "Car Valuation",
+    date: "March 7, 2026",
+  },
+  {
+    id: 3,
+    title: "What Really Affects Your Car's Resale Price?",
+    excerpt:
+      "If you've gone to the internet to check out car resale prices and found them to be all over the place you're not alone. In Pakistan we see very different resale prices for what are essentially the same cars and often we don't know why...",
+    fullContent: `If you've gone to the internet to check out car resale prices and found them to be all over the place you're not alone. In Pakistan we see very different resale prices for what are essentially the same cars and often we don't know why.
 
 Understanding which factors into used car resale prices can help you:
 - **Avoid selling too low**
@@ -594,18 +632,18 @@ When you understand:
 Stop the guess work and start selling smart.
 
 Whether you are in the present or at a distance in the future, which used car factors into resales you know and which you don't is what puts you at an advantage in the market and in turn gets you what your car is really worth.`,
-      image: howOurAi1,
-      author: "Sello Market Analysis Team",
-      readTime: "10 min read",
-      category: "Market Analysis",
-      date: "March 7, 2026",
-    },
-    {
-      id: 4,
-      title: "How Car Condition Can Increase or Reduce Your Estimated Price",
-      excerpt:
-        "When it comes to selling a car what we see time and again is that people pay attention mostly to the model or year. In fact what we find is that the condition of the car plays a greater role in determining its value...",
-      fullContent: `When it comes to selling a car what we see time and again is that people pay attention mostly to the model or year. In fact what we find is that the condition of the car plays a greater role in determining its value.
+    image: whatReallyAffects,
+    author: "Sello Market Analysis Team",
+    readTime: "10 min read",
+    category: "Market Analysis",
+    date: "March 7, 2026",
+  },
+  {
+    id: 4,
+    title: "How Car Condition Can Increase or Reduce Your Estimated Price",
+    excerpt:
+      "When it comes to selling a car what we see time and again is that people pay attention mostly to the model or year. In fact what we find is that the condition of the car plays a greater role in determining its value...",
+    fullContent: `When it comes to selling a car what we see time and again is that people pay attention mostly to the model or year. In fact what we find is that the condition of the car plays a greater role in determining its value.
 
 In today's market whether you are a buyer doing research online or a seller that is going to put your car up for sale soon, the physical and mechanical condition of the car is what really matters. Also small things like bad cooling systems or a history of neglected maintenance can cause buyers to go with a lower offer.
 
@@ -770,18 +808,18 @@ It's heavily influenced by:
 A maintained in great condition car sells better.
 
 Before you put your car up for sale take a look at it as a buyer would. Improving on things a little can protect you thousands of dollars and will put you in a strong position going into negotiations.`,
-      image: howOurAi1,
-      author: "Sello Inspection Team",
-      readTime: "9 min read",
-      category: "Car Inspection",
-      date: "March 7, 2026",
-    },
-    {
-      id: 5,
-      title: "AI Car Pricing vs Guessing a Price Yourself",
-      excerpt:
-        "In Pakistan what we see is that most people guess at car prices. They check out a few ads, ask around to dealers and choose what sounds right. But with car prices always fluctuating in Pakistan that guess may end up costing you...",
-      fullContent: `In Pakistan what we see is that most people guess at car prices. They check out a few ads, ask around to dealers and choose what sounds right. But with car prices always fluctuating in Pakistan that guess may end up costing you.
+    image: howCarCondition,
+    author: "Sello Inspection Team",
+    readTime: "9 min read",
+    category: "Car Inspection",
+    date: "March 7, 2026",
+  },
+  {
+    id: 5,
+    title: "AI Car Pricing vs Guessing a Price Yourself",
+    excerpt:
+      "In Pakistan what we see is that most people guess at car prices. They check out a few ads, ask around to dealers and choose what sounds right. But with car prices always fluctuating in Pakistan that guess may end up costing you...",
+    fullContent: `In Pakistan what we see is that most people guess at car prices. They check out a few ads, ask around to dealers and choose what sounds right. But with car prices always fluctuating in Pakistan that guess may end up costing you.
 
 That's where AI transforms car pricing. We see that which is a play of the past assumptions AI has come in with real market data to bring you fair and accurate car prices whether you're a buyer or seller.
 
@@ -929,18 +967,18 @@ As car prices rise in Pakistan, going for data driven AI car pricing is the choi
 - **Avoid losses**
 
 In today's ever changing market smart pricing is based on info not instinct.`,
-      image: howOurAi1,
-      author: "Sello AI Research Team",
-      readTime: "7 min read",
-      category: "AI vs Traditional",
-      date: "March 7, 2026",
-    },
-    {
-      id: 6,
-      title: "How We Keep Car Price Estimates Fair and Trustworthy",
-      excerpt:
-        "When in Pakistan to look up car prices or to check out car price tags, you will find varying numbers for the same model of a car. This begets confusion and mistrust...",
-      fullContent: `When in Pakistan to look up car prices or to check out car price tags, you will find varying numbers for the same model of a car. This begets confusion and mistrust.
+    image: aiCarPricing,
+    author: "Sello AI Research Team",
+    readTime: "7 min read",
+    category: "AI vs Traditional",
+    date: "March 7, 2026",
+  },
+  {
+    id: 6,
+    title: "How We Keep Car Price Estimates Fair and Trustworthy",
+    excerpt:
+      "When in Pakistan to look up car prices or to check out car price tags, you will find varying numbers for the same model of a car. This begets confusion and mistrust...",
+    fullContent: `When in Pakistan to look up car prices or to check out car price tags, you will find varying numbers for the same model of a car. This begets confusion and mistrust.
 
 At Sello.pk, our goal is simple: Present a price which is fair, transparent and based on real market value not guesswork or dealer influence.
 
@@ -1079,13 +1117,13 @@ Fair pricing builds a healthy market.
 Through use of real data, AI powered analysis, and clear logic, at Sello.pk we guarantee that each car price we present is true in the Pakistani market and not some guesswork or hype.
 
 Whether you are a buyer or a seller you deserve clarity which is what we provide.`,
-      image: howOurAi1,
-      author: "Sello Trust & Transparency Team",
-      readTime: "6 min read",
-      category: "Trust & Transparency",
-      date: "March 7, 2026",
-    },
-  ];
+    image: howWeKeep,
+    author: "Sello Trust & Transparency Team",
+    readTime: "6 min read",
+    category: "Trust & Transparency",
+    date: "March 7, 2026",
+  },
+];
 
 export default function EstimatorBlogsSection() {
   const handleCtaClick = () => {
@@ -1109,10 +1147,7 @@ export default function EstimatorBlogsSection() {
             </div>
             <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
               AI Car Price
-              <span className="text-primary-500">
-                {" "}
-                Estimator
-              </span>
+              <span className="text-primary-500"> Estimator</span>
               <br />
               Insights
             </h2>
@@ -1151,65 +1186,70 @@ export default function EstimatorBlogsSection() {
           {estimatorBlogPosts.map((post, index) => {
             const isImageLeft = index % 2 === 1; // odd = image left
             return (
-            <motion.article
-              key={post.id}
-              id={`blog-card-${post.id}`}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.4, delay: index * 0.06 }}
-              className={`group flex flex-col rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#FDFBF7] lg:items-start ${isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"}`}
-            >
-              {/* Content area (light beige) */}
-              <div className="relative flex-1 flex flex-col justify-between p-8 lg:p-10 min-h-[280px] lg:min-h-0 lg:min-w-0">
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <div className="w-8 h-8 rounded-full bg-gray-200/80 flex items-center justify-center">
-                        <User className="w-4 h-4 text-gray-600" />
+              <motion.article
+                key={post.id}
+                id={`blog-card-${post.id}`}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.4, delay: index * 0.06 }}
+                className={`group flex flex-col rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#FDFBF7] lg:items-start ${isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"}`}
+              >
+                {/* Content area (light beige) */}
+                <div className="relative flex-1 flex flex-col justify-between p-8 lg:p-10 min-h-[280px] lg:min-h-0 lg:min-w-0">
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <div className="w-8 h-8 rounded-full bg-gray-200/80 flex items-center justify-center">
+                          <User className="w-4 h-4 text-gray-600" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-700">
+                          {post.author}
+                        </span>
                       </div>
-                      <span className="text-sm font-medium text-gray-700">{post.author}</span>
+                      <span className="text-sm text-gray-500">{post.date}</span>
                     </div>
-                    <span className="text-sm text-gray-500">{post.date}</span>
-                  </div>
-                  <h3 className="text-2xl lg:text-3xl font-bold text-primary-500 mb-4 leading-tight">
-                    {post.title}
-                  </h3>
-                  <div className="prose prose-lg max-w-none text-gray-700">
-                    <p className="text-base lg:text-lg leading-relaxed mb-6 text-gray-600">
-                      {post.excerpt}
-                    </p>
-                    <Link
-                      to={`/car-estimator/guide/${post.id}`}
-                      className="inline-flex items-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-xl font-semibold hover:opacity-95 transition-opacity shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 group"
-                    >
-                      Read More
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" aria-hidden />
-                    </Link>
+                    <h3 className="text-2xl lg:text-3xl font-bold text-primary-500 mb-4 leading-tight">
+                      {post.title}
+                    </h3>
+                    <div className="prose prose-lg max-w-none text-gray-700">
+                      <p className="text-base lg:text-lg leading-relaxed mb-6 text-gray-600">
+                        {post.excerpt}
+                      </p>
+                      <Link
+                        to={`/car-estimator/guide/${post.id}`}
+                        className="inline-flex items-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-xl font-semibold hover:opacity-95 transition-opacity shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 group"
+                      >
+                        Read More
+                        <ArrowRight
+                          className="w-5 h-5 group-hover:translate-x-0.5 transition-transform"
+                          aria-hidden
+                        />
+                      </Link>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Image area - stretches with card so no gap; image fills and covers */}
-              <div className="relative w-full lg:w-[520px] lg:flex-shrink-0 h-72 lg:h-[400px] lg:min-h-[400px] lg:self-stretch overflow-hidden">
-                <img
-                  src={post.image}
-                  alt={post.title}
-                  className="absolute inset-0 size-full block object-cover object-center opacity-90"
-                  loading="lazy"
-                />
-                <div className="absolute top-5 left-5">
-                  <span className="inline-flex items-center gap-2 bg-white/95 text-gray-800 px-3 py-1.5 rounded-full text-sm font-semibold shadow">
-                    <span className="w-1.5 h-1.5 bg-primary-500 rounded-full" />
-                    {post.category}
-                  </span>
+                {/* Image area - stretches with card so no gap; image fills and covers */}
+                <div className="relative w-full lg:w-[520px] lg:flex-shrink-0 h-72 lg:h-[400px] lg:min-h-[400px] lg:self-stretch overflow-hidden">
+                  <img
+                    src={post.image}
+                    alt={post.title}
+                    className="absolute inset-0 size-full block object-cover object-center opacity-90"
+                    loading="lazy"
+                  />
+                  <div className="absolute top-5 left-5">
+                    <span className="inline-flex items-center gap-2 bg-white/95 text-gray-800 px-3 py-1.5 rounded-full text-sm font-semibold shadow">
+                      <span className="w-1.5 h-1.5 bg-primary-500 rounded-full" />
+                      {post.category}
+                    </span>
+                  </div>
+                  <div className="absolute bottom-5 left-5 flex items-center gap-2 text-gray-300 text-sm">
+                    <Clock className="w-4 h-4" aria-hidden />
+                    <span>{post.readTime}</span>
+                  </div>
                 </div>
-                <div className="absolute bottom-5 left-5 flex items-center gap-2 text-gray-300 text-sm">
-                  <Clock className="w-4 h-4" aria-hidden />
-                  <span>{post.readTime}</span>
-                </div>
-              </div>
-            </motion.article>
+              </motion.article>
             );
           })}
         </div>
