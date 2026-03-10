@@ -46,7 +46,7 @@ jobs:
 
             echo "🛠️ Installing Server Dependencies..."
             cd server
-            npm ci --omit=dev
+            npm install --omit=dev
 
             echo "🌱 Running Database Sync Scripts..."
             node scripts/initializeVehicleCategories.js || echo "⚠️ Category init skipped"
