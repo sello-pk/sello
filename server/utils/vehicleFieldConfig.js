@@ -180,16 +180,10 @@ export const VEHICLE_FIELD_CONFIG = {
  * Get required fields for a vehicle type
  */
 export const getRequiredFields = (vehicleType) => {
-  const config =
+  return (
     VEHICLE_FIELD_CONFIG[vehicleType]?.required ||
-    VEHICLE_FIELD_CONFIG.Car.required;
-  console.log("DEBUG GET_FIELDS - Vehicle type:", vehicleType);
-  console.log(
-    "DEBUG GET_FIELDS - Config found:",
-    !!VEHICLE_FIELD_CONFIG[vehicleType]
+    VEHICLE_FIELD_CONFIG.Car.required
   );
-  console.log("DEBUG GET_FIELDS - Required fields:", config);
-  return config;
 };
 
 /**
@@ -208,24 +202,11 @@ export const getOptionalFields = (vehicleType) => {
 export const validateRequiredFields = (vehicleType, data) => {
   const requiredFields = getRequiredFields(vehicleType);
   const missing = [];
-
-  console.log("DEBUG VALIDATION - Vehicle type:", vehicleType);
-  console.log("DEBUG VALIDATION - Required fields:", requiredFields);
-  console.log("DEBUG VALIDATION - Data keys:", Object.keys(data));
-  console.log("DEBUG VALIDATION - Data:", data);
-
   requiredFields.forEach((key) => {
     const value = data[key];
     if (!value || (typeof value === "string" && value.trim() === "")) {
-      console.log("DEBUG VALIDATION - Missing field:", key, "Value:", value);
       missing.push(key);
     }
   });
-
-  console.log("DEBUG VALIDATION - Missing fields:", missing);
-
-  return {
-    isValid: missing.length === 0,
-    missing,
-  };
+  return { isValid: missing.length === 0, missing };
 };

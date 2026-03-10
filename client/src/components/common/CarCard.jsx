@@ -11,6 +11,7 @@ import {
   useGetMeQuery,
 } from "../../redux/services/api";
 import toast from "react-hot-toast";
+import { getErrorMessage } from "../../utils/errorHandler";
 
 const CarCard = ({ car }) => {
   const navigate = useNavigate();
@@ -54,7 +55,7 @@ const CarCard = ({ car }) => {
         toast.success("Car saved successfully");
       }
     } catch (error) {
-      toast.error(error?.data?.message || "Failed to update saved cars");
+      toast.error(getErrorMessage(error));
     }
   };
 

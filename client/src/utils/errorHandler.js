@@ -33,31 +33,31 @@ export const getErrorMessage = (error) => {
     error?.status === "FETCH_ERROR" ||
     error?.error === "TypeError: Failed to fetch"
   ) {
-    return "Unable to connect to server. Please check your connection and try again.";
+    return "We couldn't connect right now. Please check your internet connection and try again.";
   }
 
   // 401 Unauthorized
   if (error?.status === 401) {
-    return "Your session has expired. Please log in again.";
+    return "Your session has expired. Please sign in again.";
   }
 
   // 403 Forbidden
   if (error?.status === 403) {
-    return "You do not have permission to perform this action.";
+    return "You don't have permission to do this.";
   }
 
   // 404 Not Found
   if (error?.status === 404) {
-    return "The requested resource was not found.";
+    return "We couldn't find what you're looking for.";
   }
 
   // 500 Server Error
   if (error?.status === 500) {
-    return "A server error occurred. Please try again later.";
+    return "Something went wrong on our end. Please try again in a moment.";
   }
 
   // Default fallback
-  return "An unexpected error occurred. Please try again.";
+  return "Something went wrong. Please try again.";
 };
 
 /**

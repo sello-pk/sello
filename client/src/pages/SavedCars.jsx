@@ -10,6 +10,7 @@ import { Image as LazyImage } from "../components/ui/Image";
 import { images } from "../assets/assets";
 import toast from "react-hot-toast";
 import { buildCarUrl } from "../utils/urlBuilders";
+import { getErrorMessage } from "../utils/errorHandler";
 
 const SavedCars = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const SavedCars = () => {
       toast.success("Car removed from saved list");
       refetch();
     } catch (error) {
-      toast.error(error?.data?.message || "Failed to remove car");
+      toast.error(getErrorMessage(error));
     }
   };
 

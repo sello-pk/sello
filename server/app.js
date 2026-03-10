@@ -106,6 +106,10 @@ app.use(
 /* ---------------------- MAINTENANCE MODE ---------------------- */
 app.use(checkMaintenanceMode);
 
+/* ---------------------- RATE LIMITING ---------------------- */
+import { apiLimiter } from "./middlewares/securityMiddleware.js";
+app.use("/api", apiLimiter);
+
 /* ----------------------------- ROUTES ----------------------------- */
 /* ----------------------------- ROUTES ----------------------------- */
 import apiRoutes from "./routes/index.js";

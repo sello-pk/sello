@@ -120,7 +120,7 @@ export const adminApi = createApi({
         // Don't redirect automatically - let components handle it
       }
 
-      // Handle network errors (Failed to fetch)
+      // Handle network errors (Failed to fetch) – user-friendly message
       if (
         baseResult.error &&
         (baseResult.error.status === "FETCH_ERROR" ||
@@ -131,7 +131,7 @@ export const adminApi = createApi({
             status: "FETCH_ERROR",
             data: {
               message:
-                "Unable to connect to server. Please check if the server is running and try again.",
+                "We couldn't connect right now. Please check your internet connection and try again.",
               error: "Network error - Failed to fetch",
             },
             originalStatus: "FETCH_ERROR",
@@ -141,14 +141,13 @@ export const adminApi = createApi({
 
       return baseResult;
     } catch (error) {
-      // Catch any unexpected errors
+      // Catch any unexpected errors – user-friendly message
       return {
         error: {
           status: "FETCH_ERROR",
           data: {
             message:
-              error.message ||
-              "Network error. Please check your connection and try again.",
+              "We couldn't connect right now. Please check your internet connection and try again.",
             error: "Failed to fetch",
           },
           originalStatus: "FETCH_ERROR",

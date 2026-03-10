@@ -23,6 +23,16 @@ router.get("/billing/payment-history", auth, getPaymentHistory);
 router.post("/billing/checkout", auth, createSubscriptionCheckout);
 router.get("/billing/verify-payment/:sessionId", auth, verifyPaymentSession);
 
+/* ------------------------------ SUBSCRIPTIONS (alias for frontend) --------- */
+router.get("/subscriptions/plans", getSubscriptionPlans);
+router.get("/subscriptions/my-subscription", auth, getMySubscription);
+router.post("/subscriptions/purchase", auth, purchaseSubscription);
+router.post("/subscriptions/cancel", auth, cancelSubscription);
+router.get("/subscriptions/payment-history", auth, getPaymentHistory);
+router.post("/subscriptions/checkout", auth, createSubscriptionCheckout);
+router.get("/subscriptions/verify-payment/:sessionId", auth, verifyPaymentSession);
+router.post("/subscriptions/boost-checkout", auth, createSubscriptionCheckout);
+
 /* ------------------------------- PROMOTIONS ------------------------------- */
 router.post("/billing/promotions/validate", validatePromoCode);
 router.post("/billing/promotions/apply", applyPromoCode);

@@ -19,70 +19,35 @@ export class AppError extends Error {
   }
 }
 
-/**
- * Global error handler middleware
- * Must be added after all routes
- */
+const GENERIC_MESSAGE = "Something went wrong. Please try again later.";
+
+/** Global error handler – must never throw so the app never crashes */
 export const errorHandler = (err, req, res, next) => {
-  // Prevent double response sending
-  if (res.headersSent) {
-    Logger.error("Error Handler - Response already sent", err, {
-      method: req.method,
-      url: req.originalUrl || req.url,
-      ip: req.ip || req.connection.remoteAddress,
-      userId: req.user?._id?.toString(),
-    });
-    return;
-  }
-
-  // Set default error values
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || "error";
-
-  // Log error
-  if (err.statusCode >= 500) {
-    Logger.error("Server Error", err, {
-      method: req.method,
-      url: req.originalUrl || req.url,
-      ip: req.ip || req.connection.remoteAddress,
-      userId: req.user?._id?.toString(),
-    });
-  } else {
-    Logger.warn("Client Error", {
-      message: err.message,
-      statusCode: err.statusCode,
-      method: req.method,
-      url: req.originalUrl || req.url,
-      ip: req.ip || req.connection.remoteAddress,
-      userId: req.user?._id?.toString(),
-    });
-  }
-
-  // Send error response
-  if (process.env.NODE_ENV === "production") {
-    // In production, don't leak error details
-    if (err.isOperational) {
-      return res.status(err.statusCode).json({
-        success: false,
-        message: err.message || "Something went wrong",
-        ...(err.statusCode === 400 && err.errors ? { errors: err.errors } : {}),
-      });
-    } else {
-      // Programming or unknown errors
-      return res.status(500).json({
-        success: false,
-        message: "Something went wrong. Please try again later.",
-      });
+  try {
+    if (res.headersSent) {
+      Logger.error("Error Handler - Response already sent", err, { method: req?.method, url: req?.originalUrl || req?.url });
+      return;
     }
-  } else {
-    // In development, send full error details
-    return res.status(err.statusCode).json({
+    const statusCode = err?.statusCode || 500;
+    const isOperational = err?.isOperational !== false;
+    if (statusCode >= 500) {
+      Logger.error("Server Error", err, { method: req?.method, url: req?.originalUrl || req?.url, ip: req?.ip });
+    } else {
+      Logger.warn("Client Error", { message: err?.message, statusCode, method: req?.method, url: req?.originalUrl || req?.url });
+    }
+    const isProd = process.env.NODE_ENV === "production";
+    let message = err?.message || GENERIC_MESSAGE;
+    if (isProd && statusCode === 500 && !isOperational) message = GENERIC_MESSAGE;
+    if (isProd && statusCode === 404) message = "Not found.";
+    if (isProd && err?.name === "CastError") message = "Invalid request.";
+    res.status(statusCode).json({
       success: false,
-      message: err.message || "Something went wrong",
-      error: err.message,
-      stack: err.stack,
-      ...(err.errors ? { errors: err.errors } : {}),
+      message,
+      ...(statusCode === 400 && err?.errors ? { errors: err.errors } : {}),
     });
+  } catch (handlerError) {
+    Logger.error("Error handler threw", handlerError);
+    if (!res.headersSent) res.status(500).json({ success: false, message: GENERIC_MESSAGE });
   }
 };
 
@@ -105,14 +70,14 @@ export const asyncHandler = (fn) => {
 };
 
 /**
- * Handle validation errors
+ * Handle validation errors – user-friendly message
  */
 export const validationErrorHandler = (err, req, res, next) => {
   if (err.name === "ValidationError") {
     const errors = Object.values(err.errors).map((e) => e.message);
     return res.status(400).json({
       success: false,
-      message: "Validation error",
+      message: "Please check the form and try again.",
       errors,
     });
   }
@@ -124,24 +89,22 @@ export const validationErrorHandler = (err, req, res, next) => {
  */
 export const duplicateKeyErrorHandler = (err, req, res, next) => {
   if (err.code === 11000) {
-    const field = Object.keys(err.keyPattern)[0];
     return res.status(400).json({
       success: false,
-      message: `${field} already exists`,
-      field,
+      message: "This already exists. Please use a different value.",
     });
   }
   next(err);
 };
 
 /**
- * Handle MongoDB cast errors (invalid ObjectId)
+ * Handle MongoDB cast errors (invalid ObjectId) – user-friendly
  */
 export const castErrorHandler = (err, req, res, next) => {
   if (err.name === "CastError") {
     return res.status(400).json({
       success: false,
-      message: `Invalid ${err.path}: ${err.value}`,
+      message: "Invalid request. Please try again.",
     });
   }
   next(err);

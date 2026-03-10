@@ -14,6 +14,7 @@ import {
   useUnsaveCarMutation,
 } from "../../../redux/services/api";
 import toast from "react-hot-toast";
+import { getErrorMessage } from "../../../utils/errorHandler";
 
 // Skeleton loader (reused from GetAllCarsSection)
 const CarCardSkeleton = () => (
@@ -85,26 +86,16 @@ const FilteredCarsResults = ({
         toast.success("Car saved successfully");
       }
     } catch (error) {
-      // Check if it's an authentication error
       const errorStatus = error?.status || error?.data?.status;
-      const errorMessage = error?.data?.message || error?.message || "";
-
-      if (
-        errorStatus === 401 ||
-        errorStatus === 403 ||
-        errorMessage.toLowerCase().includes("auth") ||
-        errorMessage.toLowerCase().includes("login") ||
-        errorMessage.toLowerCase().includes("unauthorized")
-      ) {
+      if (errorStatus === 401 || errorStatus === 403) {
         toast.error("Your session has expired. Please login again.");
-        // Only clear token and redirect if it's actually an auth error
         setTimeout(() => {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
           navigate("/login");
         }, 1000);
       } else {
-        toast.error(errorMessage || "Failed to update saved cars");
+        toast.error(getErrorMessage(error));
       }
     }
   };

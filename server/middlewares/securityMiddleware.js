@@ -1,10 +1,27 @@
 /**
  * Security Middleware
- * Additional security checks and validations
+ * File upload validation, ObjectId checks, and rate limiting (no extra file).
  */
 
+import rateLimit from "express-rate-limit";
 import Logger from "../utils/logger.js";
 import { isValidObjectId } from "./sanitizeMiddleware.js";
+
+const isProduction = process.env.NODE_ENV === "production";
+
+/** General API rate limit – protects all /api routes from abuse */
+export const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: isProduction ? 300 : 1000,
+  message: { success: false, message: "Too many requests. Please try again in a few minutes." },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => req.path === "/health",
+  handler: (req, res, _next, options) => {
+    Logger.warn("Rate limit exceeded", { ip: req.ip || req.headers["x-forwarded-for"], path: req.originalUrl });
+    res.status(429).json(options.message);
+  },
+});
 
 /**
  * Validate file upload security

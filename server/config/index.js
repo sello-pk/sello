@@ -10,13 +10,11 @@ const __dirname = path.dirname(__filename);
 const envPath = path.join(__dirname, "..", ".env");
 dotenv.config({ path: envPath });
 
-// Debug: Check if .env was loaded
-console.log("🔧 Environment loaded from:", envPath);
-console.log(
-  "🔧 ENABLE_EMAIL_NOTIFICATIONS:",
-  process.env.ENABLE_EMAIL_NOTIFICATIONS
-);
-console.log("🔧 NODE_ENV:", process.env.NODE_ENV);
+// Debug: only in development (avoid noise and path leakage in production)
+if (process.env.NODE_ENV !== "production") {
+  console.log("🔧 Environment loaded from:", envPath);
+  console.log("🔧 NODE_ENV:", process.env.NODE_ENV);
+}
 
 /**
  * Database Configuration
@@ -41,16 +39,25 @@ export const SERVER_CONFIG = {
   CLIENT_URL: process.env.CLIENT_URL || "http://localhost:5173",
   PRODUCTION_URL: process.env.PRODUCTION_URL,
 
-  // Get allowed origins for CORS
+  // Get allowed origins for CORS (must include exact frontend origin for API calls to succeed)
   getAllowedOrigins: () => {
     const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
-    const origins = clientUrl.split(",").map((url) => url.trim());
+    const origins = clientUrl
+      .split(",")
+      .map((url) => url.trim())
+      .filter(Boolean);
 
-    // Add production URL if available
     if (process.env.PRODUCTION_URL) {
-      origins.push(process.env.PRODUCTION_URL);
+      const prod = process.env.PRODUCTION_URL.trim();
+      if (prod && !origins.includes(prod)) origins.push(prod);
     }
-
+    // Optional: extra origins for staging/testing (comma-separated)
+    if (process.env.CORS_EXTRA_ORIGINS) {
+      process.env.CORS_EXTRA_ORIGINS.split(",").forEach((o) => {
+        const t = o.trim();
+        if (t && !origins.includes(t)) origins.push(t);
+      });
+    }
     return origins;
   },
 };

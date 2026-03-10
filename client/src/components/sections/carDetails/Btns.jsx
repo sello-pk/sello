@@ -11,6 +11,7 @@ import {
 } from "../../../redux/services/api";
 import CarChatWidget from "../../carChat/CarChatWidget";
 import toast from "react-hot-toast";
+import { getErrorMessage } from "../../../utils/errorHandler";
 import {
   FaHeart,
   FaRegHeart,
@@ -118,7 +119,7 @@ const Btns = () => {
         toast.success("Listing saved successfully");
       }
     } catch (error) {
-      toast.error(error?.data?.message || "Failed to save listing");
+      toast.error(getErrorMessage(error));
     }
   };
 
@@ -298,10 +299,7 @@ const Btns = () => {
                     setReportReason("");
                     setReportDescription("");
                   } catch (error) {
-                    toast.error(
-                      error?.data?.message ||
-                        "Failed to submit report. Please try again."
-                    );
+                    toast.error(getErrorMessage(error));
                   }
                 }}
                 disabled={isReporting || !reportReason}

@@ -8,6 +8,7 @@ import {
 } from "../../../redux/services/api";
 import toast from "react-hot-toast";
 import { capitalize } from "../../../utils/formatters";
+import { getErrorMessage } from "../../../utils/errorHandler";
 
 import ImagesUpload from "../createPost/ImagesUpload";
 import Input from "../../utils/filter/Input";
@@ -349,8 +350,7 @@ const EditCarForm = () => {
       toast.success("Car updated successfully!");
       navigate(`/cars/${extractedCarId}`);
     } catch (err) {
-      console.error("Edit Car Error:", err);
-      toast.error(err?.data?.message || "Failed to update car");
+      toast.error(getErrorMessage(err));
     }
   };
 

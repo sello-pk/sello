@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useCreateCarMutation } from "../../../redux/services/api";
 import { capitalize } from "../../../utils/formatters";
+import { getErrorMessage } from "../../../utils/errorHandler";
 
 import ImagesUpload from "../createPost/ImagesUpload";
 import Input from "../../utils/filter/Input";
@@ -477,9 +478,8 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       setDuplicateInfo(null);
       navigate(`/my-listings`);
     } catch (err) {
-      toast.error(
-        err?.data?.message || err?.message || "Failed to create post",
-      );
+      const message = getErrorMessage(err);
+      toast.error(message);
     }
   };
 
@@ -501,7 +501,8 @@ const CreatePostForm = ({ initialPrefill = null }) => {
     });
 
     if (missing.length) {
-      toast.error(`Missing required fields: ${missing.join(", ")}`);
+      const labels = missing.map((key) => capitalize(key.replace(/([A-Z])/g, " $1").trim()));
+      toast.error(`Please fill in: ${labels.join(", ")}`);
       return;
     }
 
@@ -590,35 +591,34 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       setAvailableCities([]);
       navigate(`/my-listings`);
     } catch (err) {
-      // Better error handling with specific messages
-      const errorMessage =
-        err?.data?.message || err?.message || "Failed to create car post";
-
-      // Handle duplicate warning (409 Conflict)
+      // Handle duplicate warning (409 Conflict) – let modal handle it
       if (err.status === 409 && err.data?.duplicateWarning) {
         setDuplicateInfo(err.data);
         setShowDuplicateWarning(true);
-        // Don't show toast for warning, let modal handle it
         return;
       }
 
-      // Provide more specific error messages
-      if (errorMessage.includes("validation")) {
-        toast.error("Please check all required fields and try again");
-      } else if (
-        errorMessage.includes("image") ||
-        errorMessage.includes("file")
-      ) {
-        toast.error("Image upload failed. Please try again with valid images");
-      } else if (
-        errorMessage.includes("unauthorized") ||
-        errorMessage.includes("auth")
-      ) {
-        toast.error("Session expired. Please login again");
+      const errorMessage = getErrorMessage(err);
+
+      // Session expired – redirect to login
+      if (err?.status === 401) {
+        toast.error("Please sign in again to continue.");
         setTimeout(() => navigate("/login"), 2000);
-      } else {
-        toast.error(errorMessage);
+        return;
       }
+
+      // Show backend validation message when present and friendly
+      if (err?.data?.message && err.status === 400) {
+        const msg = err.data.message;
+        if (msg.startsWith("Missing:")) {
+          toast.error("Please fill in all required fields and try again.");
+        } else {
+          toast.error(msg);
+        }
+        return;
+      }
+
+      toast.error(errorMessage);
     }
   };
 
