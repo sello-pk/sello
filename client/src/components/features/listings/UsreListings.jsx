@@ -112,11 +112,12 @@ const UserListings = () => {
                 key={carId}
               >
                 <div className="w-full h-full border border-gray-100 rounded-bl-2xl rounded-br-2xl md:pb-8 pb-14">
-                  <div className="h-48 relative">
+                  {/* 4:3 box + cover matches normalized uploads; legacy photos fill uniformly */}
+                  <div className="relative w-full aspect-[4/3] bg-gray-100 overflow-hidden rounded-t-lg">
                     <LazyImage
                       src={carImage}
                       alt={`${carMake} ${carModel}`}
-                      className={`rounded-t-lg ${
+                      className={`absolute inset-0 w-full h-full object-cover object-center ${
                         car?.isSold ? "opacity-60" : ""
                       }`}
                       width="100%"

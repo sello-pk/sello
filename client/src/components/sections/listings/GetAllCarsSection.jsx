@@ -390,11 +390,11 @@ const GetAllCarsSection = () => {
                     key={carId}
                   >
                     <div className="w-full h-full border border-gray-100 rounded-bl-2xl rounded-br-2xl md:pb-8 pb-14">
-                      <div className="h-48 relative">
+                      <div className="relative w-full aspect-[4/3] bg-gray-100 overflow-hidden rounded-t-lg">
                         <LazyImage
                           src={carImage}
                           alt={`${carMake} ${carModel}`}
-                          className={`rounded-t object-cover`}
+                          className="absolute inset-0 w-full h-full object-cover object-center"
                           width="100%"
                           height="100%"
                           onError={() => {

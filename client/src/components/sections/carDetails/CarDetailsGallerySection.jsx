@@ -359,7 +359,8 @@ const CarDetailsGallerySection = () => {
     <section className="px-4 md:px-20 py-8 md:py-12 bg-white">
       <div className="max-w-7xl mx-auto">
         {/* Desktop Layout: Main Image + Thumbnails Side by Side */}
-        <div className="hidden md:flex gap-4">
+        {/* Desktop: thumbnails left; main preview capped width + centered so portrait photos aren’t tiny with huge side gutters */}
+        <div className="hidden md:flex gap-4 items-start">
           {/* Thumbnails Column (Left) */}
           {images.length > 1 && (
             <div className="flex flex-col gap-2 w-24 flex-shrink-0">
@@ -369,7 +370,7 @@ const CarDetailsGallerySection = () => {
                     key={idx}
                     ref={(el) => (thumbnailRefs.current[idx] = el)}
                     onClick={() => setCurrent(idx)}
-                    className={`w-full aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 mb-2 ${
+                    className={`w-full aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 mb-2 bg-gray-100 flex items-center justify-center ${
                       current === idx
                         ? "border-primary-500 ring-2 ring-primary-200 scale-105"
                         : "border-gray-200 hover:border-gray-300 opacity-70 hover:opacity-100"
@@ -378,7 +379,7 @@ const CarDetailsGallerySection = () => {
                     <LazyImage
                       src={img}
                       alt={`Thumbnail ${idx + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain object-center"
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = placeholderImages.carPlaceholder;
@@ -390,17 +391,20 @@ const CarDetailsGallerySection = () => {
             </div>
           )}
 
-          {/* Main Image Area */}
-          <div className="flex-1 relative rounded-xl overflow-hidden bg-gray-100 shadow-lg">
+          {/* Main preview: max-width so portrait shots use more of the frame; landscape still fits (may get small top/bottom bands) */}
+          <div className="flex-1 flex justify-center min-w-0">
+            <div className="w-full max-w-[680px] rounded-xl overflow-hidden bg-white shadow-lg border border-gray-100">
             <div
               ref={mainImageRef}
-              className="relative w-full h-[550px] cursor-zoom-in group"
+              className="relative w-full h-[min(72vh,560px)] min-h-[400px] cursor-zoom-in group bg-neutral-50"
               onClick={() => openImageModal(current)}
             >
-              <LazyImage
+              {/* Native img so object-fit always applies; LazyImage skeleton was forcing layout before load */}
+              <img
                 src={images[current]}
                 alt={`Car Image ${current + 1}`}
-                className="w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
+                className="w-full h-full object-contain object-center select-none transition-opacity duration-200 group-hover:opacity-95"
+                draggable={false}
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = placeholderImages.carPlaceholder;
@@ -473,21 +477,23 @@ const CarDetailsGallerySection = () => {
                 </div>
               )}
             </div>
+            </div>
           </div>
         </div>
 
         {/* Mobile Layout: Main Image + Thumbnails Below */}
         <div className="md:hidden">
-          {/* Main Image */}
-          <div className="relative rounded-xl overflow-hidden bg-gray-100 shadow-lg mb-4">
+          {/* Main image: centered + max-width so portrait isn’t swimming in empty space */}
+          <div className="relative rounded-xl overflow-hidden bg-white shadow-lg border border-gray-100 mb-4 max-w-lg mx-auto w-full">
             <div
-              className="relative w-full h-[400px] cursor-pointer"
+              className="relative w-full h-[50vh] min-h-[280px] max-h-[480px] cursor-pointer bg-neutral-50"
               onClick={() => openImageModal(current)}
             >
-              <LazyImage
+              <img
                 src={images[current]}
                 alt={`Car Image ${current + 1}`}
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-contain object-center select-none"
+                draggable={false}
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = placeholderImages.carPlaceholder;
@@ -545,7 +551,7 @@ const CarDetailsGallerySection = () => {
                 <button
                   key={idx}
                   onClick={() => setCurrent(idx)}
-                  className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                  className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all bg-gray-100 flex items-center justify-center ${
                     current === idx
                       ? "border-primary-500 ring-2 ring-primary-200"
                       : "border-gray-200"
@@ -554,7 +560,7 @@ const CarDetailsGallerySection = () => {
                   <LazyImage
                     src={img}
                     alt={`Thumbnail ${idx + 1}`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain object-center"
                     onError={(e) => {
                       e.target.onerror = null;
                       e.target.src = placeholderImages.carPlaceholder;
@@ -721,7 +727,7 @@ const CarDetailsGallerySection = () => {
                               setPanPosition({ x: 0, y: 0 });
                               setIsZoomed(false);
                             }}
-                            className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                            className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all bg-black/40 flex items-center justify-center ${
                               modalCurrentIndex === idx
                                 ? "border-primary-500 ring-2 ring-primary-200 opacity-100 scale-110"
                                 : "border-white/30 opacity-60 hover:opacity-100 hover:border-white/50"
@@ -730,7 +736,7 @@ const CarDetailsGallerySection = () => {
                             <img
                               src={img}
                               alt={`Thumbnail ${idx + 1}`}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-contain object-center"
                               onError={(e) => {
                                 e.target.onerror = null;
                                 e.target.src = placeholderImages.carPlaceholder;

@@ -449,11 +449,11 @@ const SellerDashboard = () => {
                         className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
                         onClick={() => navigate(buildCarUrl(car))}
                       >
-                        <div className="h-48 relative">
+                        <div className="relative w-full aspect-[4/3] bg-gray-100 overflow-hidden">
                           <LazyImage
                             src={car.images?.[0] || images.carPlaceholder}
                             alt={car.title}
-                            className="w-full h-full object-cover"
+                            className="absolute inset-0 w-full h-full object-cover object-center"
                           />
                           {car.isSold && (
                             <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold">
@@ -643,8 +643,8 @@ const SellerDashboard = () => {
                     return (
                       <Link key={item._id} to={`/auctions/result?car_id=${item._id}`} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-green-50 hover:bg-green-100 transition-colors">
                         <div className="flex items-center gap-3">
-                          <div className="w-16 h-12 bg-gray-200 rounded-lg overflow-hidden">
-                            {img && <img src={img} alt={`${car.make} ${car.model}`} className="w-full h-full object-cover" />}
+                          <div className="w-16 h-12 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                            {img && <img src={img} alt={`${car.make} ${car.model}`} className="w-full h-full object-contain object-center" />}
                           </div>
                           <div>
                             <h4 className="font-semibold text-gray-900">{car.year} {car.make} {car.model}</h4>
@@ -764,11 +764,11 @@ const SellerDashboard = () => {
                     key={car._id}
                     className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
                   >
-                    <div className="h-48 relative">
+                    <div className="relative w-full aspect-[4/3] bg-gray-100 overflow-hidden">
                       <LazyImage
                         src={car.images?.[0] || images.carPlaceholder}
                         alt={car.title}
-                        className="w-full h-full object-cover"
+                        className="absolute inset-0 w-full h-full object-cover object-center"
                       />
                       {car.isSold && (
                         <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold">

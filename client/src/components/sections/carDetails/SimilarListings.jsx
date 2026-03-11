@@ -57,11 +57,11 @@ const SimilarListings = ({ carId }) => {
             to={`/cars/${car._id}`}
             className="bg-white rounded-xl shadow-sm hover:shadow-xl border border-gray-200 transition-all duration-300 overflow-hidden group transform hover:-translate-y-1"
           >
-            <div className="relative h-48 overflow-hidden">
+            <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100">
               <LazyImage
                 src={car.images?.[0] || "/placeholder-car.jpg"}
                 alt={car.title}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
               />
               {car.isBoosted && (
                 <span className="absolute top-2 right-2 bg-primary-500 text-white text-xs px-2 py-1 rounded">

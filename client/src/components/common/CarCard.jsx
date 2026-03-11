@@ -79,11 +79,12 @@ const CarCard = ({ car }) => {
           border: "none",
         }}
       >
-        <div className="h-64 relative overflow-hidden">
+        {/* 4:3 + cover: consistent frame; new uploads are pre-cropped to 4:3 in imageCompress */}
+        <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100 rounded-t-lg">
           <LazyImage
             src={carImage}
             alt={`${carMake} ${carModel}`}
-            className={`rounded-t-lg w-full h-full object-cover ${car?.isSold ? "opacity-60" : ""}`}
+            className={`absolute inset-0 w-full h-full object-cover object-center ${car?.isSold ? "opacity-60" : ""}`}
             width="100%"
             height="100%"
           />

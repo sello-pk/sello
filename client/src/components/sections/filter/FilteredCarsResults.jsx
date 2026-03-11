@@ -156,16 +156,16 @@ const FilteredCarsResults = ({
                   >
                     {/* Car Image container */}
                     <div
-                      className={`relative flex items-center justify-center bg-gray-50 shrink-0 ${
+                      className={`relative flex items-center justify-center bg-gray-100 shrink-0 overflow-hidden ${
                         isGrid
-                          ? "h-52 w-full"
-                          : "md:w-64 h-44 rounded-lg overflow-hidden"
+                          ? "aspect-[4/3] w-full"
+                          : "md:w-64 aspect-[4/3] rounded-lg"
                       }`}
                     >
                       <LazyImage
                         src={carImage}
                         alt={`${carMake} ${carModel}`}
-                        className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105`}
+                        className={`absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105`}
                         width={isGrid ? 400 : 256}
                         height={isGrid ? 208 : 176}
                       />
