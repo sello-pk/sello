@@ -126,19 +126,23 @@ export const adminApi = createApi({
         // Don't redirect automatically - let components handle it
       }
 
-      // Handle network errors (Failed to fetch) – user-friendly message
+      // Handle network errors — same actionable copy as main api (uploads often time out)
       if (
         baseResult.error &&
         (baseResult.error.status === "FETCH_ERROR" ||
           baseResult.error.error === "TypeError: Failed to fetch")
       ) {
+        const isFormData = args?.body instanceof FormData;
+        const message = isFormData
+          ? "Upload didn't finish — try smaller files or fewer images, wait a minute, then retry."
+          : "Request couldn't complete. Check your connection and try again.";
         return {
           error: {
             status: "FETCH_ERROR",
             data: {
-              message:
-                "We couldn't connect right now. Please check your internet connection and try again.",
-              error: "Network error - Failed to fetch",
+              message,
+              code: isFormData ? "UPLOAD_TIMEOUT_OR_NETWORK" : "NETWORK",
+              error: baseResult.error.error || "Failed to fetch",
             },
             originalStatus: "FETCH_ERROR",
           },
@@ -147,14 +151,13 @@ export const adminApi = createApi({
 
       return baseResult;
     } catch (error) {
-      // Catch any unexpected errors – user-friendly message
       return {
         error: {
           status: "FETCH_ERROR",
           data: {
             message:
-              "We couldn't connect right now. Please check your internet connection and try again.",
-            error: "Failed to fetch",
+              "Request couldn't complete. If uploading, try smaller files and retry.",
+            error: error?.message || "Failed to fetch",
           },
           originalStatus: "FETCH_ERROR",
         },

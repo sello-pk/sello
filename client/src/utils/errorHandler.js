@@ -28,12 +28,13 @@ export const getErrorMessage = (error) => {
     return error;
   }
 
-  // Network error
+  // Network / failed fetch (often upload timeout or proxy reset — not always "no internet")
   if (
     error?.status === "FETCH_ERROR" ||
     error?.error === "TypeError: Failed to fetch"
   ) {
-    return "We couldn't connect right now. Please check your internet connection and try again.";
+    if (error?.data?.message) return error.data.message;
+    return "Request couldn't complete. If you were uploading photos, try fewer or smaller images and retry.";
   }
 
   // 401 Unauthorized
@@ -49,6 +50,13 @@ export const getErrorMessage = (error) => {
   // 404 Not Found
   if (error?.status === 404) {
     return "We couldn't find what you're looking for.";
+  }
+
+  // 502/503 Service unavailable (e.g. image upload backend busy)
+  if (error?.status === 502 || error?.status === 503) {
+    const msg = error?.data?.message;
+    if (msg && typeof msg === "string") return msg;
+    return "Service temporarily unavailable. Please try again in a moment or upload fewer images.";
   }
 
   // 500 Server Error

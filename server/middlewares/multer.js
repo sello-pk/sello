@@ -1,5 +1,9 @@
 import multer from "multer";
 import path from "path";
+import {
+  LISTING_MAX_IMAGES,
+  LISTING_MAX_FILE_BYTES,
+} from "../constants/listingUpload.js";
 
 const storage = multer.memoryStorage(); // ✅ Store file in memory
 
@@ -36,8 +40,8 @@ export const upload = multer({
   storage: multer.memoryStorage(),
   fileFilter: fileFilter,
   limits: {
-    fileSize: 20 * 1024 * 1024, // 20MB per file
-    files: 10, // Maximum number of files (10 images per post like OLX, Dubizzle, PakWheels)
+    fileSize: LISTING_MAX_FILE_BYTES, // 35MB per file (total per listing enforced in controller)
+    files: LISTING_MAX_IMAGES, // 15 images per listing
     fieldSize: 10 * 1024 * 1024, // 10MB for other fields
   },
 });

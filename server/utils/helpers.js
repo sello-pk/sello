@@ -87,15 +87,108 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+/** Max concurrent uploads to Cloudinary — parallel bursts cause 502/timeouts */
+const LISTING_UPLOAD_CONCURRENCY = Math.max(
+  1,
+  parseInt(process.env.CLOUDINARY_UPLOAD_CONCURRENCY, 10) || 3
+);
+const LISTING_UPLOAD_RETRIES = Math.max(
+  1,
+  parseInt(process.env.CLOUDINARY_UPLOAD_RETRIES, 10) || 3
+);
+
+function isTransientCloudinaryError(err) {
+  const code = err?.http_code ?? err?.error?.http_code ?? err?.statusCode;
+  const name = err?.name ?? err?.error?.name;
+  const msg = (err?.message || "").toLowerCase();
+  if (code === 502 || code === 503 || code === 499) return true;
+  if (name === "TimeoutError") return true;
+  if (msg.includes("502") || msg.includes("timeout") || msg.includes("unexpected status"))
+    return true;
+  return false;
+}
+
+/**
+ * Upload buffer to Cloudinary (single call, no retry).
+ * transformation: limit width/height so Cloudinary stores smaller derivatives.
+ */
 export const uploadCloudinary = (fileBuffer, options = {}) => {
   return new Promise((resolve, reject) => {
+    if (!fileBuffer || !Buffer.isBuffer(fileBuffer)) {
+      reject(new Error("Invalid file buffer for upload"));
+      return;
+    }
+    const uploadOptions = {
+      folder: options.folder || "sello_uploads",
+      resource_type: "image",
+      // Lighter processing = fewer 502s under load (no eager transform chain on upload)
+      quality: options.quality ?? "auto:eco",
+      fetch_format: "auto",
+      transformation: options.transformation || [
+        { width: 1600, height: 1600, crop: "limit" },
+      ],
+    };
     const stream = cloudinary.uploader.upload_stream(
-      { folder: options.folder || "sello_uploads", quality: options.quality || 80, fetch_format: "auto" },
-      (err, res) => err ? reject(err) : resolve(res.secure_url)
+      uploadOptions,
+      (err, res) => {
+        if (err) reject(err);
+        else if (!res?.secure_url) reject(new Error("Cloudinary returned no URL"));
+        else resolve(res.secure_url);
+      }
     );
+    stream.on("error", reject);
     stream.end(fileBuffer);
   });
 };
+
+/**
+ * Upload one buffer with retries (502/503/timeout).
+ */
+async function uploadCloudinaryWithRetry(fileBuffer, options = {}) {
+  let lastErr;
+  for (let attempt = 1; attempt <= LISTING_UPLOAD_RETRIES; attempt++) {
+    try {
+      return await uploadCloudinary(fileBuffer, options);
+    } catch (err) {
+      lastErr = err;
+      if (!isTransientCloudinaryError(err) || attempt === LISTING_UPLOAD_RETRIES) {
+        throw err;
+      }
+      const delayMs = 800 * attempt;
+      Logger.warn("Cloudinary upload retry", {
+        attempt,
+        delayMs,
+        http_code: err?.http_code,
+        name: err?.name,
+      });
+      await new Promise((r) => setTimeout(r, delayMs));
+    }
+  }
+  throw lastErr;
+}
+
+/**
+ * Upload many listing images with bounded concurrency + retries.
+ * Avoids 15 parallel streams → 502 / Request Timeout (499).
+ */
+export async function uploadListingImagesToCloudinary(files, options = {}) {
+  const folder = options.folder || "sello_cars";
+  if (!files?.length) return [];
+
+  const buffers = files.map((f) => f.buffer).filter(Boolean);
+  const urls = [];
+
+  for (let i = 0; i < buffers.length; i += LISTING_UPLOAD_CONCURRENCY) {
+    const chunk = buffers.slice(i, i + LISTING_UPLOAD_CONCURRENCY);
+    const chunkUrls = await Promise.all(
+      chunk.map((buffer) =>
+        uploadCloudinaryWithRetry(buffer, { folder })
+      )
+    );
+    urls.push(...chunkUrls);
+  }
+  return urls;
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                EMAIL UTILITY                               */

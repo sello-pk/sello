@@ -1,9 +1,45 @@
 import Car from "../../models/carModel.js";
 import User from "../../models/userModel.js";
-import { uploadCloudinary } from "../../utils/cloudinary.js";
+import { uploadListingImagesToCloudinary } from "../../utils/cloudinary.js";
 import Logger from "../../utils/logger.js";
 import mongoose from "mongoose";
 import { validateRequiredFields } from "../../utils/vehicleFieldConfig.js";
+import {
+  LISTING_MAX_TOTAL_BYTES,
+  MSG_IMAGE_TOTAL_EXCEEDED,
+} from "../../constants/listingUpload.js";
+
+/**
+ * Upload listing images with size check + bounded Cloudinary concurrency
+ * (15 parallel uploads cause 502 / timeout — see uploadListingImagesToCloudinary).
+ */
+async function uploadCarImagesToCloudinary(files) {
+  if (!files || files.length === 0) return [];
+  const totalBytes = files.reduce((sum, f) => sum + (f.buffer?.length || 0), 0);
+  if (totalBytes > LISTING_MAX_TOTAL_BYTES) {
+    const err = new Error(MSG_IMAGE_TOTAL_EXCEEDED);
+    err.statusCode = 400;
+    throw err;
+  }
+  try {
+    return await uploadListingImagesToCloudinary(files, {
+      folder: "sello_cars",
+    });
+  } catch (err) {
+    const code = err?.http_code ?? err?.error?.http_code;
+    const friendly =
+      code === 502 || code === 503
+        ? "Image service was busy. Please try again with fewer photos or wait a moment."
+        : err?.name === "TimeoutError" || code === 499
+          ? "Image upload timed out. Try uploading fewer images at once or smaller files."
+          : err?.message || "Image upload failed.";
+    const wrapped = new Error(friendly);
+    wrapped.statusCode = 503; // retryable / service busy
+    wrapped.cause = err;
+    Logger.error("Cloudinary listing upload failed", err);
+    throw wrapped;
+  }
+}
 
 const normalizeString = (str) => {
   if (!str || typeof str !== "string") return str;
@@ -82,8 +118,7 @@ export const createCar = async (req, res) => {
 
     let images = [];
     if (req.files && req.files.length > 0) {
-      const uploadPromises = req.files.map(file => uploadCloudinary(file.buffer, { folder: "sello_cars" }));
-      images = await Promise.all(uploadPromises);
+      images = await uploadCarImagesToCloudinary(req.files);
     }
 
     const normalizedHorsepower = parseNumericField(req.body.horsepower);
@@ -112,7 +147,13 @@ export const createCar = async (req, res) => {
     return res.status(201).json({ success: true, data: car });
   } catch (error) {
     Logger.error("Create Car Error", error);
-    return res.status(500).json({ success: false, message: error.message });
+    const status =
+      typeof error.statusCode === "number" &&
+      error.statusCode >= 400 &&
+      error.statusCode < 600
+        ? error.statusCode
+        : 500;
+    return res.status(status).json({ success: false, message: error.message });
   }
 };
 
@@ -144,8 +185,7 @@ export const editCar = async (req, res) => {
 
     let newImageUrls = [];
     if (req.files && req.files.length > 0) {
-      const uploadPromises = req.files.map((file) => uploadCloudinary(file.buffer, { folder: "sello_cars" }));
-      newImageUrls = await Promise.all(uploadPromises);
+      newImageUrls = await uploadCarImagesToCloudinary(req.files);
     }
     const images = [...existingImages, ...newImageUrls];
 
@@ -182,6 +222,121 @@ export const editCar = async (req, res) => {
     return res.status(200).json({ success: true, data: updated });
   } catch (error) {
     Logger.error("Edit Car Error", error);
+    const status =
+      typeof error.statusCode === "number" &&
+      error.statusCode >= 400 &&
+      error.statusCode < 600
+        ? error.statusCode
+        : 500;
+    return res.status(status).json({ success: false, message: error.message });
+  }
+};
+
+const SOLD_AUTO_DELETE_DAYS =
+  parseInt(process.env.SOLD_LISTING_AUTO_DELETE_DAYS, 10) || 30;
+
+/**
+ * PUT /cars/:carId/sold
+ * Body: { isSold: boolean, actualSalePrice?: number }
+ * Marks listing as sold (or back to available if isSold is false).
+ */
+export const markCarAsSold = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const { carId } = req.params;
+    const car = await Car.findById(carId);
+    if (!car) {
+      return res.status(404).json({ success: false, message: "Car not found" });
+    }
+
+    const ownerId = car.postedBy?.toString?.() ?? String(car.postedBy);
+    const userId = req.user._id?.toString?.() ?? String(req.user._id);
+    if (ownerId !== userId && req.user.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Not authorized" });
+    }
+
+    const { isSold, actualSalePrice } = req.body;
+    const markSold = isSold === true || isSold === "true";
+
+    if (markSold) {
+      const now = new Date();
+      car.isSold = true;
+      car.soldAt = now;
+      car.soldDate = now;
+      car.status = "sold";
+      car.autoDeleteDate = new Date(
+        now.getTime() + SOLD_AUTO_DELETE_DAYS * 24 * 60 * 60 * 1000,
+      );
+      car.isAutoDeleted = false;
+      if (actualSalePrice !== undefined && actualSalePrice !== null && actualSalePrice !== "") {
+        const n = Number(actualSalePrice);
+        if (Number.isFinite(n) && n >= 0) car.actualSalePrice = n;
+      }
+    } else {
+      car.isSold = false;
+      car.soldAt = null;
+      car.soldDate = null;
+      car.autoDeleteDate = null;
+      car.status = "active";
+      // Optional: clear actualSalePrice when marking available again
+      if (req.body.clearActualSalePrice === true) {
+        car.actualSalePrice = null;
+      }
+    }
+
+    await car.save();
+    return res.status(200).json({ success: true, data: car });
+  } catch (error) {
+    Logger.error("Mark Car As Sold Error", error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * POST /cars/:carId/relist
+ * Puts a sold (or expired) listing back as active.
+ */
+export const relistCar = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const { carId } = req.params;
+    const car = await Car.findById(carId);
+    if (!car) {
+      return res.status(404).json({ success: false, message: "Car not found" });
+    }
+
+    const ownerId = car.postedBy?.toString?.() ?? String(car.postedBy);
+    const userId = req.user._id?.toString?.() ?? String(req.user._id);
+    if (ownerId !== userId && req.user.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Not authorized" });
+    }
+
+    if (car.status === "deleted" || car.isAutoDeleted) {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot relist a deleted listing",
+      });
+    }
+
+    car.isSold = false;
+    car.soldAt = null;
+    car.soldDate = null;
+    car.autoDeleteDate = null;
+    car.status = "active";
+    car.actualSalePrice = null;
+    // Refresh expiry if your app sets expiryDate on activate — optional extension
+    // car.expiryDate = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
+
+    await car.save();
+    return res.status(200).json({ success: true, data: car });
+  } catch (error) {
+    Logger.error("Relist Car Error", error);
     return res.status(500).json({ success: false, message: error.message });
   }
 };

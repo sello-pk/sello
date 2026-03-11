@@ -17,6 +17,7 @@ import {
   validationErrorHandler,
   duplicateKeyErrorHandler,
   castErrorHandler,
+  multerErrorHandler,
 } from "./middlewares/errorHandler.js";
 
 dotenv.config();
@@ -155,6 +156,7 @@ app.use(notFoundHandler);
 app.use(validationErrorHandler);
 app.use(duplicateKeyErrorHandler);
 app.use(castErrorHandler);
+app.use(multerErrorHandler);
 app.use(errorHandler);
 
 export default app;

@@ -4,6 +4,11 @@
  */
 
 import Logger from "../utils/logger.js";
+import {
+  LISTING_MAX_IMAGES,
+  MSG_IMAGE_FILE_TOO_LARGE,
+  MSG_IMAGE_TOO_MANY,
+} from "../constants/listingUpload.js";
 
 /**
  * Custom Error class for application errors
@@ -94,6 +99,56 @@ export const duplicateKeyErrorHandler = (err, req, res, next) => {
       message: "This already exists. Please use a different value.",
     });
   }
+  next(err);
+};
+
+/**
+ * Multer upload errors – image count / file size / type (listing photos)
+ * Must run before generic errorHandler so users get actionable messages.
+ */
+export const multerErrorHandler = (err, req, res, next) => {
+  if (!err) return next();
+
+  const code = err.code;
+  const isMulter =
+    err.name === "MulterError" ||
+    code === "LIMIT_FILE_SIZE" ||
+    code === "LIMIT_FILE_COUNT" ||
+    code === "LIMIT_UNEXPECTED_FILE" ||
+    code === "LIMIT_PART_COUNT" ||
+    code === "LIMIT_FIELD_KEY" ||
+    code === "LIMIT_FIELD_VALUE" ||
+    code === "LIMIT_FIELD_COUNT";
+
+  if (isMulter) {
+    if (res.headersSent) return next(err);
+    let message;
+    let statusCode = 400;
+
+    if (code === "LIMIT_FILE_SIZE") {
+      message = MSG_IMAGE_FILE_TOO_LARGE;
+    } else if (
+      code === "LIMIT_FILE_COUNT" ||
+      code === "LIMIT_UNEXPECTED_FILE"
+    ) {
+      message = MSG_IMAGE_TOO_MANY;
+    } else if (code === "LIMIT_PART_COUNT") {
+      message =
+        "Upload request is too large. Reduce the number or size of images and try again.";
+    } else if (
+      err.message &&
+      (err.message.includes("Only images") ||
+        err.message.includes("Invalid file type"))
+    ) {
+      message = err.message;
+    } else {
+      message = `Image upload failed. Use JPG, PNG, or WebP only — up to ${LISTING_MAX_IMAGES} images and 35MB total per listing.`;
+    }
+
+    Logger.warn("Multer upload error", { code, message, url: req?.originalUrl });
+    return res.status(statusCode).json({ success: false, message });
+  }
+
   next(err);
 };
 

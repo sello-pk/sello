@@ -445,8 +445,19 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       setDuplicateInfo(null);
       navigate(`/my-listings`);
     } catch (err) {
-      const message = getErrorMessage(err);
-      toast.error(message);
+      if (err?.status === 401) {
+        toast.error("Please sign in again to continue.");
+        setTimeout(() => navigate("/login"), 2000);
+        return;
+      }
+      if (
+        err?.data?.message &&
+        (err?.status === 400 || err?.status === 503)
+      ) {
+        toast.error(err.data.message);
+        return;
+      }
+      toast.error(getErrorMessage(err));
     }
   };
 
@@ -455,7 +466,9 @@ const CreatePostForm = ({ initialPrefill = null }) => {
 
     // Early validation - check images first (most common issue)
     if (!formData.images || formData.images.length === 0) {
-      toast.error("Please upload at least one car image");
+      toast.error(
+        "Add at least one listing photo. You can upload up to 15 images (35MB total)."
+      );
       return;
     }
 
@@ -563,8 +576,11 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         return;
       }
 
-      // Show backend validation message when present and friendly
-      if (err?.data?.message && err.status === 400) {
+      // Show backend message for validation or image service busy (503)
+      if (
+        err?.data?.message &&
+        (err.status === 400 || err.status === 503)
+      ) {
         const msg = err.data.message;
         if (msg.startsWith("Missing:")) {
           toast.error("Please fill in all required fields and try again.");

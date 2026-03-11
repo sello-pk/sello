@@ -216,7 +216,7 @@ const Login = () => {
         err?.message?.includes("Failed to fetch")
       ) {
         errorMessage =
-          "We couldn't connect right now. Please check your internet connection and try again.";
+          "Request couldn't complete. Check your connection and try again.";
       } else if (
         err?.error === "TypeError: Failed to fetch" ||
         err?.data?.error === "TypeError: Failed to fetch"

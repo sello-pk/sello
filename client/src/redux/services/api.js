@@ -13,6 +13,23 @@ import { API_BASE_URL } from "@redux/config";
 let isRefreshing = false;
 let refreshPromise = null;
 
+/** True when request is listing create/edit with multipart (likely large payload). */
+function isListingImageUpload(args) {
+  const url = args?.url || "";
+  const method = (args?.method || "GET").toUpperCase();
+  if (!(args?.body instanceof FormData)) return false;
+  if (method === "POST" && url.startsWith("/cars") && !/\/cars\//.test(url))
+    return true;
+  if (method === "PUT" && /\/cars\/[^/?]+/.test(url)) return true;
+  if (url.includes("submit-car")) return true;
+  return false;
+}
+
+const MSG_FETCH_UPLOAD =
+  "Upload didn't finish — the connection may have dropped or timed out. Try fewer photos (e.g. 5–8), smaller images, wait a minute, then post again.";
+const MSG_FETCH_GENERIC =
+  "Request couldn't complete. If you were uploading photos, try fewer or smaller images and retry. Otherwise check your connection.";
+
 export const api = createApi({
   reducerPath: "api",
   // Optimize caching configuration
@@ -106,19 +123,24 @@ export const api = createApi({
         // Don't redirect automatically - let components handle it
       }
 
-      // Handle network errors (Failed to fetch) – user-friendly message
+      // Handle network errors (Failed to fetch) — avoid blaming "internet" only; uploads often time out
       if (
         baseResult.error &&
         (baseResult.error.status === "FETCH_ERROR" ||
           baseResult.error.error === "TypeError: Failed to fetch")
       ) {
+        const uploadAttempt = isListingImageUpload(args);
+        const message = uploadAttempt ? MSG_FETCH_UPLOAD : MSG_FETCH_GENERIC;
+        if (import.meta.env.DEV && baseResult.error?.error) {
+          logger.warn("FETCH_ERROR", { url: args?.url, error: baseResult.error.error });
+        }
         return {
           error: {
             status: "FETCH_ERROR",
             data: {
-              message:
-                "We couldn't connect right now. Please check your internet connection and try again.",
-              error: "Network error - Failed to fetch",
+              message,
+              code: uploadAttempt ? "UPLOAD_TIMEOUT_OR_NETWORK" : "NETWORK",
+              error: baseResult.error.error || "Failed to fetch",
             },
             originalStatus: "FETCH_ERROR",
           },
@@ -127,14 +149,14 @@ export const api = createApi({
 
       return baseResult;
     } catch (error) {
-      // API request error – user-friendly message
+      const uploadAttempt = isListingImageUpload(args);
       return {
         error: {
           status: "FETCH_ERROR",
           data: {
-            message:
-              "We couldn't connect right now. Please check your internet connection and try again.",
-            error: "Failed to fetch",
+            message: uploadAttempt ? MSG_FETCH_UPLOAD : MSG_FETCH_GENERIC,
+            code: uploadAttempt ? "UPLOAD_TIMEOUT_OR_NETWORK" : "NETWORK",
+            error: error?.message || "Failed to fetch",
           },
           originalStatus: "FETCH_ERROR",
         },

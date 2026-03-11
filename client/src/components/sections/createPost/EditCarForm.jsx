@@ -208,7 +208,7 @@ const EditCarForm = () => {
         }
       }
     }
-  }, [car, makes, getModelsByMake, years, currentUser, navigate]);
+  }, [car, makes, models, years, currentUser, navigate]);
 
   // Initialize available data when car data loads
   useEffect(() => {

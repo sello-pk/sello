@@ -27,12 +27,12 @@ router.get("/cars/stats/counts-by-make", cache(1800, () => "cache:cars:stats:cou
 router.get("/cars/:id", validateObjectId('id'), cache(600, cacheKeys.car), getSingleCar);
 
 // Actions
-router.post("/cars", auth, upload.array("images", 10), async (req, res, next) => {
+router.post("/cars", auth, upload.array("images", 15), async (req, res, next) => {
     await invalidateCache("cache:cars:*");
     next();
 }, createCar);
 
-router.put("/cars/:id", auth, validateObjectId('id'), upload.array("images", 10), async (req, res, next) => {
+router.put("/cars/:id", auth, validateObjectId('id'), upload.array("images", 15), async (req, res, next) => {
     await invalidateCache(`cache:cars:${req.params.id}`);
     await invalidateCache("cache:cars:list:*");
     next();

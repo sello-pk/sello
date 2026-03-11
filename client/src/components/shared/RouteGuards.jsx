@@ -92,7 +92,7 @@ const AdminRoute = () => {
       return (
         <div className="min-h-screen flex items-center justify-center bg-white">
           <div className="text-center">
-            <p className="text-red-500 mb-2">We couldn't connect. Please check your internet and try again.</p>
+            <p className="text-red-500 mb-2">Couldn't load. Check your connection and try again.</p>
             <p className="text-gray-600 text-sm">
               Please check your connection and try again
             </p>

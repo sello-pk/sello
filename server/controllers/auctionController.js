@@ -13,7 +13,11 @@ import Car from "../models/carModel.js";
 import Notification from "../models/notificationModel.js";
 import Logger from "../utils/logger.js";
 import User from "../models/userModel.js";
-import { uploadCloudinary } from "../utils/helpers.js";
+import { uploadListingImagesToCloudinary } from "../utils/helpers.js";
+import {
+  LISTING_MAX_TOTAL_BYTES,
+  MSG_IMAGE_TOTAL_EXCEEDED,
+} from "../constants/listingUpload.js";
 import { evaluateAuctionBidAccess } from "../utils/auctionAccess.js";
 
 const MIN_BID_INCREMENT = 50000; // PKR 50,000
@@ -975,20 +979,31 @@ export const submitCarToAuction = async (req, res) => {
       }
     } else {
       // Scenario 2: Create new car for auction
-      // Handle image uploads
+      // Handle image uploads — parallel + total size cap (same as listing uploads)
       const images = req.files?.images || [];
-      const imageUrls = [];
-
-      for (const image of images) {
+      const totalBytes = images.reduce((sum, img) => sum + (img.buffer?.length || 0), 0);
+      if (totalBytes > LISTING_MAX_TOTAL_BYTES) {
+        return res.status(400).json({
+          success: false,
+          message: MSG_IMAGE_TOTAL_EXCEEDED,
+        });
+      }
+      let imageUrls = [];
+      if (images.length > 0) {
         try {
-          const result = await uploadCloudinary(image.buffer, {
+          imageUrls = await uploadListingImagesToCloudinary(images, {
             folder: "auction_cars",
-            quality: 80,
-            fetch_format: "auto",
           });
-          imageUrls.push(result.secure_url);
         } catch (error) {
           Logger.error("Image upload failed for auction car", error);
+          const code = error?.http_code ?? error?.error?.http_code;
+          const msg =
+            code === 502 || code === 503
+              ? "Image service was busy. Try again with fewer photos."
+              : error?.name === "TimeoutError" || code === 499
+                ? "Image upload timed out. Use fewer or smaller images."
+                : error?.message || "Image upload failed.";
+          return res.status(503).json({ success: false, message: msg });
         }
       }
 
