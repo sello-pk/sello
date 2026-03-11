@@ -9,10 +9,8 @@ import toast from "react-hot-toast";
 import {
   useLoginUserMutation,
   useGoogleLoginMutation,
-  api,
 } from "../../redux/services/api";
-import { setAccessToken } from "../../utils/tokenRefresh.js";
-import { store } from "../../redux/store";
+import { applyLoginSession } from "../../utils/tokenManager.js";
 import { Spinner } from "../../components/ui/Loading";
 import SEO from "../../components/common/SEO";
 
@@ -67,16 +65,8 @@ const Login = () => {
         throw new Error("Failed to extract login credentials from response.");
       }
 
-      // Store access token (refresh token is handled via httpOnly cookie on the server)
-      setAccessToken(token);
-
-      // Store user data
-      localStorage.setItem("user", JSON.stringify(user));
-
-      // Invalidate and refetch user queries (mutation already does this, but ensure it happens)
-      if (api?.util?.invalidateTags) {
-        store.dispatch(api.util.invalidateTags(["User"]));
-      }
+      // Persist session + reset RTK caches so getMe/Navbar show this user, not previous account
+      applyLoginSession(token, user);
 
       toast.success("Login successful");
 
@@ -141,14 +131,7 @@ const Login = () => {
         throw new Error("Invalid response from server. Please try again.");
       }
 
-      // Store access token (refresh token is handled via httpOnly cookie on the server)
-      setAccessToken(responseToken);
-      localStorage.setItem("user", JSON.stringify(responseUser));
-
-      // Invalidate and refetch user queries
-      if (api?.util?.invalidateTags) {
-        store.dispatch(api.util.invalidateTags(["User"]));
-      }
+      applyLoginSession(responseToken, responseUser);
 
       toast.success("Google login successful");
 

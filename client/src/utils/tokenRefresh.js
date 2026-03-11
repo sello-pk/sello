@@ -73,8 +73,12 @@ export const refreshAccessToken = async () => {
       accessToken: newAccessToken,
     };
   } catch (error) {
-    // If refresh fails, clear all tokens
-    clearTokens();
+    // Full session wipe like logout (tokens + user + RTK caches) so UI never shows stale user
+    void import("./tokenManager.js")
+      .then((m) => m.clearAuthSession())
+      .catch(() => {
+        clearTokens();
+      });
     throw error;
   }
 };

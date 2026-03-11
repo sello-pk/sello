@@ -15,7 +15,7 @@ import {
   useGetInviteByTokenQuery,
   useAcceptInviteMutation,
 } from "../../redux/services/adminApi";
-import { setAccessToken } from "../../utils/tokenRefresh.js";
+import { applyLoginSession } from "../../utils/tokenManager.js";
 
 // DetailItem component for invitation details
 const DetailItem = ({ icon, label, value, badge = false }) => {
@@ -96,9 +96,6 @@ const AcceptInvite = () => {
       localStorage.removeItem("email");
       localStorage.removeItem("otp");
 
-      // STEP 2: Store access token and user data (refresh token handled via httpOnly cookie)
-      setAccessToken(tokenData);
-
       const completeUserData = {
         ...userData,
         adminRole: userData.adminRole || inviteData?.role,
@@ -109,7 +106,8 @@ const AcceptInvite = () => {
         status: "active",
       };
 
-      localStorage.setItem("user", JSON.stringify(completeUserData));
+      // Persist session + reset caches so admin layout sees this user only
+      applyLoginSession(tokenData, completeUserData);
 
       // STEP 3: Clear email and OTP AGAIN (defensive programming)
       localStorage.removeItem("email");

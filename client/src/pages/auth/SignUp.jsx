@@ -12,8 +12,6 @@ import {
 } from "../../redux/services/api";
 import { Spinner } from "../../components/ui/Loading";
 import DealerSignup from "./DealerSignup";
-import { setAccessToken } from "../../utils/tokenRefresh.js";
-
 // Check if Google OAuth is configured
 const hasGoogleClientId = !!import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -113,9 +111,8 @@ const SignUp = () => {
         throw new Error("Invalid response from server. Please try again.");
       }
 
-      // Store access token (refresh token is handled via httpOnly cookie on the server)
-      setAccessToken(responseToken);
-      localStorage.setItem("user", JSON.stringify(responseUser));
+      const { applyLoginSession } = await import("../../utils/tokenManager.js");
+      applyLoginSession(responseToken, responseUser);
 
       toast.success("Google sign-up successful!");
       

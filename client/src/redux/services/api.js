@@ -81,11 +81,17 @@ export const api = createApi({
               // Token refresh succeeded but no new token received - clear and fail
               clearTokens();
               localStorage.removeItem("user");
+              void import("../../utils/tokenManager.js").then((m) =>
+                m.clearAuthSession(),
+              );
             }
           } catch (refreshError) {
             // Refresh failed, clear tokens and let it fall through to 401 handling
             clearTokens();
             localStorage.removeItem("user");
+            void import("../../utils/tokenManager.js").then((m) =>
+              m.clearAuthSession(),
+            );
           }
         }
 
@@ -93,6 +99,9 @@ export const api = createApi({
         if (url.includes("/users/me") || url.includes("/auth/")) {
           clearTokens();
           localStorage.removeItem("user");
+          void import("../../utils/tokenManager.js").then((m) =>
+            m.clearAuthSession(),
+          );
         }
         // Don't redirect automatically - let components handle it
       }
@@ -392,8 +401,10 @@ export const api = createApi({
       },
       invalidatesTags: ["User"],
       transformResponse: () => {
-        // Clear tokens on successful logout
-        clearTokens();
+        // Full session wipe so next login does not see cached getMe / previous user
+        void import("../../utils/tokenManager.js").then((m) =>
+          m.clearAuthSession(),
+        );
         return { success: true };
       },
     }),

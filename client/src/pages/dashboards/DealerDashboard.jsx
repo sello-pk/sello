@@ -199,15 +199,13 @@ const DealerDashboard = () => {
   const handleLogout = async () => {
     try {
       await logout().unwrap();
-      // clearTokens is called by transformResponse, but ensure cleanup
-      localStorage.removeItem("user");
+      const { clearAuthSession } = await import("../../utils/tokenManager");
+      clearAuthSession();
       toast.success("Logged out successfully");
       navigate("/login");
     } catch (error) {
-      // Clear tokens even if logout request fails
-      const { clearTokens } = await import("../../utils/tokenRefresh");
-      clearTokens();
-      localStorage.removeItem("user");
+      const { clearAuthSession } = await import("../../utils/tokenManager");
+      clearAuthSession();
       toast.error("Logout failed");
       navigate("/login");
     }

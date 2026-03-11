@@ -42,7 +42,7 @@ import {
   useGetLiveAuctionQuery,
   useGetMyAuctionAccessStatusQuery,
 } from "../../../redux/services/api";
-import { clearTokens } from "../../../utils/tokenRefresh";
+import { clearAuthSession } from "../../../utils/tokenManager";
 import { useSupportChat } from "../../../contexts/SupportChatContext";
 import NotificationsSection from "./NotificationsSection";
 import DealerRequestForm from "../../features/profile/DealerRequestForm";
@@ -269,14 +269,12 @@ const ProfileHero = () => {
   const handleLogout = async () => {
     try {
       await logout().unwrap();
-      clearTokens();
-      localStorage.removeItem("user");
+      clearAuthSession();
       navigate("/login");
     } catch (err) {
       console.error("Logout failed", err);
-      // Clear tokens even if logout request fails
-      clearTokens();
-      localStorage.removeItem("user");
+      // Clear session even if logout request fails (stale RTK cache = wrong user on next login)
+      clearAuthSession();
       navigate("/login");
     }
   };

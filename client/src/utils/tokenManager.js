@@ -1,96 +1,105 @@
 /**
- * Centralized Token Management Utility
- * Provides secure token storage and retrieval with expiration checks
- * 
- * This utility centralizes all token operations to ensure consistency
- * and makes it easier to implement security improvements (e.g., httpOnly cookies)
+ * Centralized token + session management.
+ * Refresh token is httpOnly on server; access token in localStorage (SPA tradeoff).
+ * Logout / login-as-other-user must reset RTK caches or getMe keeps showing previous user.
  */
+import { getAccessToken, setAccessToken, clearTokens } from "./tokenRefresh.js";
+import { store } from "../redux/store.js";
+import { api } from "../redux/services/api.js";
+import { adminApi } from "../redux/services/adminApi.js";
 
-import { getAccessToken, setAccessToken, clearTokens } from './tokenRefresh.js';
+const USER_STORAGE_KEY = "user";
+
+/**
+ * Wipe client auth state and all RTK Query caches (same as full logout on client).
+ */
+export function clearAuthSession() {
+  clearTokens();
+  try {
+    localStorage.removeItem(USER_STORAGE_KEY);
+  } catch {
+    // ignore
+  }
+  try {
+    store.dispatch(api.util.resetApiState());
+  } catch {
+    // ignore
+  }
+  try {
+    store.dispatch(adminApi.util.resetApiState());
+  } catch {
+    // ignore
+  }
+}
+
+/**
+ * Persist new session after login; resets caches so UI shows current user only.
+ */
+export function applyLoginSession(accessToken, user) {
+  if (accessToken) {
+    setAccessToken(accessToken);
+  }
+  if (user) {
+    try {
+      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+    } catch {
+      // ignore
+    }
+  }
+  try {
+    store.dispatch(api.util.resetApiState());
+  } catch {
+    // ignore
+  }
+  try {
+    store.dispatch(adminApi.util.resetApiState());
+  } catch {
+    // ignore
+  }
+}
 
 /**
  * Check if access token is expired (client-side check)
- * Note: This is a best-effort check. Server always validates tokens.
  */
 export const isTokenExpired = (token) => {
   if (!token) return true;
-  
   try {
-    // JWT tokens have 3 parts separated by dots
-    const parts = token.split('.');
+    const parts = token.split(".");
     if (parts.length !== 3) return true;
-    
-    // Decode payload (second part)
     const payload = JSON.parse(atob(parts[1]));
-    
-    // Check expiration (exp is in seconds, Date.now() is in milliseconds)
-    if (payload.exp && payload.exp * 1000 < Date.now()) {
-      return true;
-    }
-    
+    if (payload.exp && payload.exp * 1000 < Date.now()) return true;
     return false;
-  } catch (error) {
-    // If we can't parse the token, consider it expired
+  } catch {
     return true;
   }
 };
 
-/**
- * Get access token with expiration check
- * Returns null if token is expired or missing
- */
 export const getValidAccessToken = () => {
   const token = getAccessToken();
   if (!token) return null;
-  
   if (isTokenExpired(token)) {
-    // Token expired, clear it
     clearTokens();
     return null;
   }
-  
   return token;
 };
 
-/**
- * Check if user is authenticated
- * Checks for valid (non-expired) access token
- */
-export const isAuthenticated = () => {
-  const token = getValidAccessToken();
-  return !!token;
-};
+export const isAuthenticated = () => !!getValidAccessToken();
 
-/**
- * Get user data from localStorage
- */
 export const getUser = () => {
   try {
-    const userStr = localStorage.getItem('user');
+    const userStr = localStorage.getItem("user");
     if (!userStr) return null;
     return JSON.parse(userStr);
-  } catch (error) {
+  } catch {
     return null;
   }
 };
 
-/**
- * Clear all authentication data
- */
-export const clearAuth = () => {
-  clearTokens();
-  localStorage.removeItem('user');
-};
+export const clearAuth = () => clearAuthSession();
 
-/**
- * Store authentication data (access token + user)
- * Refresh token is managed server-side via httpOnly cookie.
- */
 export const storeAuth = (accessToken, _refreshToken, user) => {
-  setAccessToken(accessToken);
-  if (user) {
-    localStorage.setItem('user', JSON.stringify(user));
-  }
+  applyLoginSession(accessToken, user);
 };
 
 export default {
@@ -100,9 +109,9 @@ export default {
   getUser,
   clearAuth,
   storeAuth,
-  // Re-export token refresh utilities
+  clearAuthSession,
+  applyLoginSession,
   getAccessToken,
   setAccessToken,
-  clearTokens
+  clearTokens,
 };
-

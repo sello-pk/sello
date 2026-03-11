@@ -51,6 +51,12 @@ export const SERVER_CONFIG = {
       const prod = process.env.PRODUCTION_URL.trim();
       if (prod && !origins.includes(prod)) origins.push(prod);
     }
+    // Production fallback: always allow known frontend so CORS works for https://sello.pk
+    if (process.env.NODE_ENV === "production") {
+      ["https://sello.pk", "https://www.sello.pk"].forEach((o) => {
+        if (o && !origins.includes(o)) origins.push(o);
+      });
+    }
     // Optional: extra origins for staging/testing (comma-separated)
     if (process.env.CORS_EXTRA_ORIGINS) {
       process.env.CORS_EXTRA_ORIGINS.split(",").forEach((o) => {
