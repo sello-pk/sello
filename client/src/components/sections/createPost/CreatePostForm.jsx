@@ -84,7 +84,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
     images: [],
   });
 
-  // Get categories - always fetch all car categories to get years
+  // Makes/models scoped by vehicle type (years still from separate year-only query in hook)
   const {
     makes,
     models,
@@ -93,13 +93,14 @@ const CreatePostForm = ({ initialPrefill = null }) => {
     cities,
     getCitiesByCountry,
     isLoading: categoriesLoading,
-  } = useCarCategories(null); // Always pass null to get all years
+  } = useCarCategories(formData.vehicleType || null);
 
   const [createCar, { isLoading }] = useCreateCarMutation();
 
   const resolveModelsBySelectedMake = (selectedMakeName) => {
     if (!Array.isArray(models) || models.length === 0) return [];
-    if (!selectedMakeName) return models;
+    // No make selected → no models (avoid showing every model in the dropdown)
+    if (!selectedMakeName || !String(selectedMakeName).trim()) return [];
 
     const normalizedMake = String(selectedMakeName).trim().toLowerCase();
     const matchedMakeIds = (makes || [])
@@ -185,8 +186,8 @@ const CreatePostForm = ({ initialPrefill = null }) => {
           make: "", // Reset make when vehicle type changes
           model: "", // Reset model when vehicle type changes
         }));
-        // Reset available models when vehicle type changes
-        setAvailableModels(models);
+        // Reset available models when vehicle type changes (make/model cleared)
+        setAvailableModels([]);
       }
 
       // When make changes, update available models
@@ -756,15 +757,19 @@ const CreatePostForm = ({ initialPrefill = null }) => {
               placeholder={
                 !formData.vehicleType
                   ? "Select vehicle type first"
-                  : categoriesLoading
-                    ? "Loading..."
-                    : availableModels.length === 0
-                      ? "No models available"
-                      : !formData.make
-                        ? "All Models"
+                  : !formData.make
+                    ? "Select make first"
+                    : categoriesLoading
+                      ? "Loading..."
+                      : availableModels.length === 0
+                        ? "No models for this make"
                         : "Select Model"
               }
-              disabled={!formData.vehicleType || categoriesLoading}
+              disabled={
+                !formData.vehicleType ||
+                !formData.make ||
+                categoriesLoading
+              }
               isLoading={categoriesLoading}
               required
             />

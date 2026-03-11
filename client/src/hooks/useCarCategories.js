@@ -70,7 +70,7 @@ export const useCarCategories = (vehicleType = null) => {
   );
 
   const makes = useMemo(() => {
-    const makesList = carCategories
+    let makesList = carCategories
       .filter((cat) => cat.subType === "make" && cat.isActive)
       .sort((a, b) => {
         // Sort by order field first, then alphabetically
@@ -80,11 +80,29 @@ export const useCarCategories = (vehicleType = null) => {
         return (a.name || "").localeCompare(b.name || "");
       });
 
+    // When vehicleType is set, only include makes for that type (avoids Car+Bike "Honda" mixing)
+    if (vehicleType) {
+      const forType = makesList.filter((cat) => cat.vehicleType === vehicleType);
+      // If DB has typed makes, use only those. Otherwise fall back to untyped (legacy) so we don't break empty UIs.
+      makesList =
+        forType.length > 0
+          ? forType
+          : makesList.filter((cat) => cat.vehicleType == null);
+      // Dedupe by name keeping first (stable order already applied)
+      const seen = new Set();
+      makesList = makesList.filter((m) => {
+        const key = String(m.name || "").trim().toLowerCase();
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    }
+
     return makesList;
-  }, [carCategories]);
+  }, [carCategories, vehicleType]);
 
   const models = useMemo(() => {
-    return carCategories
+    let modelList = carCategories
       .filter((cat) => cat.subType === "model" && cat.isActive)
       .sort((a, b) => {
         const orderA = a.order || 0;
@@ -92,7 +110,17 @@ export const useCarCategories = (vehicleType = null) => {
         if (orderA !== orderB) return orderA - orderB;
         return (a.name || "").localeCompare(b.name || "");
       });
-  }, [carCategories]);
+
+    if (vehicleType) {
+      const forType = modelList.filter((cat) => cat.vehicleType === vehicleType);
+      modelList =
+        forType.length > 0
+          ? forType
+          : modelList.filter((cat) => cat.vehicleType == null);
+    }
+
+    return modelList;
+  }, [carCategories, vehicleType]);
 
   const years = useMemo(() => {
     return yearCategoriesArray

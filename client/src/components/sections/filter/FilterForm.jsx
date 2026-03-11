@@ -90,7 +90,7 @@ const FilterForm = ({ onFilter }) => {
 
   const resolveModelsBySelectedMake = (selectedMakeName) => {
     if (!Array.isArray(models) || models.length === 0) return [];
-    if (!selectedMakeName) return models;
+    if (!selectedMakeName || !String(selectedMakeName).trim()) return [];
 
     const normalizedMake = String(selectedMakeName).trim().toLowerCase();
     const matchedMakeIds = (makes || [])
@@ -488,7 +488,7 @@ const FilterForm = ({ onFilter }) => {
     });
     // setQueryParams(null); // Removed - parent handles it
     if (onFilter) onFilter(null); // Notify parent to clear results
-    setAvailableModels(models);
+    setAvailableModels([]);
     setAvailableCities(cities);
     toast.success("Filters cleared");
   };
@@ -618,15 +618,17 @@ const FilterForm = ({ onFilter }) => {
               placeholder={
                 !filters.vehicleType
                   ? "Select vehicle type first"
-                  : categoriesLoading
-                    ? "Loading..."
-                    : availableModels.length === 0
-                      ? "No models available"
-                      : !filters.make
-                        ? "All Models"
+                  : !filters.make
+                    ? "Select make first"
+                    : categoriesLoading
+                      ? "Loading..."
+                      : availableModels.length === 0
+                        ? "No models for this make"
                         : "Select Model"
               }
-              disabled={!filters.vehicleType || categoriesLoading}
+              disabled={
+                !filters.vehicleType || !filters.make || categoriesLoading
+              }
               isLoading={categoriesLoading}
             />
           </div>

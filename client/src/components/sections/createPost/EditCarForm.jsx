@@ -106,7 +106,7 @@ const EditCarForm = () => {
 
   const resolveModelsBySelectedMake = (selectedMakeName) => {
     if (!Array.isArray(models) || models.length === 0) return [];
-    if (!selectedMakeName) return models;
+    if (!selectedMakeName || !String(selectedMakeName).trim()) return [];
 
     const normalizedMake = String(selectedMakeName).trim().toLowerCase();
     const matchedMakeIds = (makes || [])
@@ -483,15 +483,19 @@ const EditCarForm = () => {
               placeholder={
                 !formData.vehicleType
                   ? "Select vehicle type first"
-                  : categoriesLoading
-                    ? "Loading..."
-                    : availableModels.length === 0
-                      ? "No models available"
-                      : !formData.make
-                        ? "All Models"
+                  : !formData.make
+                    ? "Select make first"
+                    : categoriesLoading
+                      ? "Loading..."
+                      : availableModels.length === 0
+                        ? "No models for this make"
                         : "Select Model"
               }
-              disabled={!formData.vehicleType || categoriesLoading}
+              disabled={
+                !formData.vehicleType ||
+                !formData.make ||
+                categoriesLoading
+              }
               isLoading={categoriesLoading}
               required
             />

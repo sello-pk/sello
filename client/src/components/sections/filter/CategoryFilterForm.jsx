@@ -69,7 +69,7 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
 
   const resolveModelsBySelectedMake = (selectedMakeName) => {
     if (!Array.isArray(models) || models.length === 0) return [];
-    if (!selectedMakeName) return models;
+    if (!selectedMakeName || !String(selectedMakeName).trim()) return [];
 
     const normalizedMake = String(selectedMakeName).trim().toLowerCase();
     const matchedMakeIds = (makes || [])
@@ -180,7 +180,7 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
     }
   };
 
-  // Initialize available models - show all if no make selected, filtered if make selected
+  // Initialize available models - empty until make selected, then filtered by make
   useEffect(() => {
     setAvailableModels(resolveModelsBySelectedMake(filters.make));
   }, [filters.make, makes, models]);
@@ -400,7 +400,7 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
       userLng: "",
     });
     if (onFilter) onFilter(null);
-    setAvailableModels(models);
+    setAvailableModels([]);
     setAvailableCities(cities);
     toast.success("Filters cleared");
   };
@@ -499,15 +499,15 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
               label: model.name,
             }))}
             placeholder={
-              categoriesLoading
-                ? "Loading..."
-                : availableModels.length === 0
-                  ? "No models available"
-                  : !filters.make
-                    ? "All Models"
+              !filters.make
+                ? "Select make first"
+                : categoriesLoading
+                  ? "Loading..."
+                  : availableModels.length === 0
+                    ? "No models for this make"
                     : "Select Model"
             }
-            disabled={categoriesLoading}
+            disabled={!filters.make || categoriesLoading}
             isLoading={categoriesLoading}
           />
         </div>
