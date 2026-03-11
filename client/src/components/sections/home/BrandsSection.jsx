@@ -2,7 +2,6 @@ import React, { memo, useMemo } from "react";
 import BrandMarquee from "../../BrandMarquee";
 import { Link, useNavigate } from "react-router-dom";
 import { brandsCategory } from "../../../assets/assets";
-import RecentlyViewedCars from "./RecentlyViewedCars";
 // import brands from "../../../assets/carLogos/brands";
 
 const BrandsSection = () => {
@@ -123,9 +122,6 @@ const BrandsSection = () => {
             })}
           </div>
         </div>
-
-        {/* Recently Viewed Cars - Full width section */}
-        <RecentlyViewedCars />
 
         {/* ad */}
         <div className="ad"></div>

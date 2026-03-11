@@ -344,6 +344,13 @@ const ProfileHero = () => {
       onClick: () => setActiveSection("auctions"),
     },
     {
+      id: "my-listings",
+      label: "My Listings",
+      icon: FiFileText,
+      onClick: () => navigate("/my-listings"),
+      highlight: true,
+    },
+    {
       id: "chats",
       label: "My Chats",
       icon: FiMessageSquare,
@@ -704,6 +711,23 @@ const ProfileHero = () => {
                           PKR {metrics.earnings.toLocaleString()}
                         </div>
                       </div>
+                    </div>
+                    {/* Individual users: direct link to their listings (sidebar also has My Listings) */}
+                    <div className="mt-6 flex flex-wrap gap-3">
+                      <button
+                        type="button"
+                        onClick={() => navigate("/my-listings")}
+                        className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90 text-sm font-medium"
+                      >
+                        View my listings
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => navigate("/create-post")}
+                        className="px-4 py-2 border border-primary-500 text-primary-500 rounded-lg hover:bg-primary-50 text-sm font-medium"
+                      >
+                        Create post
+                      </button>
                     </div>
                   </>
                 )}

@@ -11,6 +11,8 @@ const vehicleTypes = [
     { name: "Van", slug: "van", description: "Vans and utility vehicles", order: 4 },
     { name: "Bike", slug: "bike", description: "Motorcycles and bikes", order: 5 },
     { name: "E-bike", slug: "e-bike", description: "Electric bikes and scooters", order: 6 },
+    // Must match carModel / categoryController — listings page uses API categories when non-empty
+    { name: "Farm", slug: "farm", description: "Farm vehicles and agricultural equipment", order: 7 },
 ];
 
 const initializeVehicleCategories = async () => {

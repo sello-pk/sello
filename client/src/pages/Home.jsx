@@ -7,11 +7,11 @@ import CustomerReview from "../components/sections/home/CustomerReview";
 import BlogSection from "../components/sections/home/BlogSection";
 import NewsLatter from "../components/utils/NewsLatter";
 import BuySellCards from "../components/utils/BuySellCards";
-import GetAllCarsSection from "../components/sections/listings/GetAllCarsSection";
 import BannerCarousal from "../components/utils/BannerCarousal";
 import SEO from "../components/common/SEO";
 import StructuredData from "../components/common/StructuredData";
 import Video from "../components/sections/home/Video";
+import RecentlyViewedCars from "../components/sections/home/RecentlyViewedCars";
 
 const Home = () => {
   const location = useLocation();
@@ -38,10 +38,10 @@ const Home = () => {
         <Video />
         <BannerCarousal />
         <FeaturedCarsCarousel />
-        <GetAllCarsSection />
         <CustomerReview key="customer-review" />
         <BlogSection />
         <BuySellCards />
+        <RecentlyViewedCars />
         <NewsLatter />
       </div>
     </div>

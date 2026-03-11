@@ -41,8 +41,9 @@ const RecentlyViewedCars = () => {
   }
 
   return (
-    <section className="py-16  w-full">
-      <div className="px-3 sm:px-4 md:px-0 lg:px-0 max-w-full mx-auto">
+    <section className="py-16 w-full">
+      {/* Match other home sections — constrained width, centered (not edge-to-edge) */}
+      <div className="max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
