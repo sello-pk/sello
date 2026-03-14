@@ -52,6 +52,11 @@ export const getErrorMessage = (error) => {
     return "We couldn't find what you're looking for.";
   }
 
+  // 413 Request Entity Too Large (upload too big — proxy or server)
+  if (error?.status === 413 || error?.originalStatus === 413) {
+    return "Images are too large. Use 5–8 photos and smaller file sizes, then try again.";
+  }
+
   // 502/503 Service unavailable (e.g. image upload backend busy)
   if (error?.status === 502 || error?.status === 503) {
     const msg = error?.data?.message;

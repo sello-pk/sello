@@ -27,6 +27,7 @@ export const SocketProvider = ({ children }) => {
   const socketRef = useRef(null);
   const listenersRef = useRef(new Map());
   const reconnectTimeoutRef = useRef(null);
+  const connectErrorLoggedRef = useRef(false);
 
   // Get token from localStorage with proper error handling
   const getToken = () => {
@@ -58,9 +59,11 @@ export const SocketProvider = ({ children }) => {
     setConnectionAttempted(true);
 
     try {
+      // Use polling only to avoid "WebSocket connection failed" when WSS is unavailable (e.g. proxy/SSL).
+      // Real-time (chats, notifications) still works; server supports polling.
       const newSocket = io(SOCKET_BASE_URL, {
         auth: { token: currentToken },
-        transports: ["websocket", "polling"],
+        transports: ["polling"],
         reconnection: true,
         reconnectionDelay: 2000,
         reconnectionAttempts: 5,
@@ -69,9 +72,8 @@ export const SocketProvider = ({ children }) => {
       });
 
       newSocket.on("connect", () => {
-        console.log("🔌 Socket connected successfully!");
+        connectErrorLoggedRef.current = false;
         setSocketConnected(true);
-        // Clear any stored error flag on successful connection
         sessionStorage.removeItem("socketErrorShown");
 
         // Join essential rooms
@@ -96,8 +98,12 @@ export const SocketProvider = ({ children }) => {
       });
 
       newSocket.on("connect_error", (error) => {
-        console.error("❌ Socket connection error:", error.message);
         setSocketConnected(false);
+        // Log only once per session to avoid console spam when WSS is unavailable
+        if (!connectErrorLoggedRef.current) {
+          connectErrorLoggedRef.current = true;
+          console.warn("Socket connection unavailable:", error.message);
+        }
 
         // If it's an authentication error (like expired token), don't auto-reconnect
         // This prevents infinite loops with an expired token

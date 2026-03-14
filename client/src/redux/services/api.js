@@ -26,7 +26,9 @@ function isListingImageUpload(args) {
 }
 
 const MSG_FETCH_UPLOAD =
-  "Upload didn't finish — the connection may have dropped or timed out. Try fewer photos (e.g. 5–8), smaller images, wait a minute, then post again.";
+  "Upload didn't finish — connection may have dropped, timed out, or request was too large (413). Use 5–8 photos, smaller images, wait a minute, then try again.";
+const MSG_413 =
+  "Images are too large. Use 5–8 photos and smaller file sizes, then try again.";
 const MSG_FETCH_GENERIC =
   "Request couldn't complete. If you were uploading photos, try fewer or smaller images and retry. Otherwise check your connection.";
 
@@ -121,6 +123,22 @@ export const api = createApi({
           );
         }
         // Don't redirect automatically - let components handle it
+      }
+
+      // 413 Request Entity Too Large (often from proxy/nginx) — suggest fewer/smaller images
+      if (baseResult.error && (baseResult.error.originalStatus === 413 || baseResult.error.status === 413)) {
+        const uploadAttempt = isListingImageUpload(args);
+        return {
+          error: {
+            status: 413,
+            data: {
+              message: uploadAttempt ? MSG_413 : baseResult.error?.data?.message || MSG_413,
+              code: "REQUEST_TOO_LARGE",
+              error: baseResult.error?.data?.error,
+            },
+            originalStatus: 413,
+          },
+        };
       }
 
       // Handle network errors (Failed to fetch) — avoid blaming "internet" only; uploads often time out

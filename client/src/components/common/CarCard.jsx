@@ -46,12 +46,13 @@ const CarCard = ({
   }, [savedCarsData]);
 
   const id = car?._id;
-  const displayTitle = car && `${car.make || ""} ${car.model || ""} ${car.year || ""}`.trim() || "Car Listing";
+  const rawTitle = car && `${car.make || ""} ${car.model || ""} ${car.year || ""}`.trim();
+  const displayTitle = (rawTitle && rawTitle !== "undefined") ? rawTitle : (car?.title || "Car Listing");
   const displayPrice = car?.price;
   const priceFormatted =
     typeof displayPrice === "number"
       ? displayPrice.toLocaleString()
-      : (displayPrice && String(displayPrice)) || "N/A";
+      : (displayPrice != null && displayPrice !== "" && String(displayPrice)) || "N/A";
   const displayImage = car?.images?.[0] || images?.carPlaceholder || null;
   const displayLocation = car?.city || car?.location || "—";
   const displayMileage = car?.mileage ?? "—";
