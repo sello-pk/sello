@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { IoIosArrowRoundUp } from "react-icons/io";
+import { FaPhone, FaWhatsapp } from "react-icons/fa";
 import { Image as LazyImage } from "../ui/Image";
 import {
   useSaveCarMutation,
@@ -20,6 +21,7 @@ import { getErrorMessage } from "../../utils/errorHandler";
  * @param {React.ReactNode} [props.actions] - Optional actions (e.g. Edit / Mark Sold)
  * @param {boolean} [props.showWhatsApp] - Show WhatsApp CTA
  * @param {string} [props.whatsappNumber] - WhatsApp number for link
+ * @param {boolean} [props.showContactButtons] - Show phone & WhatsApp icons (default true; set false for "my listings")
  */
 const CarCard = ({
   car,
@@ -27,6 +29,7 @@ const CarCard = ({
   actions,
   showWhatsApp = false,
   whatsappNumber,
+  showContactButtons = true,
 }) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -84,11 +87,27 @@ const CarCard = ({
   };
   const isClickable = Boolean(car?._id);
 
+  const contactNumber = car?.contactNumber || "";
+  const waNumber =
+    whatsappNumber ||
+    car?.postedBy?.dealerInfo?.whatsappNumber ||
+    car?.contactNumber ||
+    "";
+  const listingUrl =
+    typeof window !== "undefined" && car?._id
+      ? `${window.location.origin}${buildCarUrl(car)}`
+      : "";
+  const waDigits = waNumber ? waNumber.replace(/\D/g, "") : "";
+  const waCode = waDigits.startsWith("92") ? waDigits : `92${waDigits.replace(/^0/, "")}`;
   const whatsappUrl =
-    whatsappNumber &&
-    `https://wa.me/${whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent(
-      `Hi, I'm interested in: ${displayTitle} - Ref: ${displayRef}`,
-    )}`;
+    waCode.length > 2
+      ? `https://wa.me/${waCode}?text=${encodeURIComponent(
+          `Hi, I'm interested in this car: ${displayTitle}. ${listingUrl ? `Link: ${listingUrl}` : ""}`.trim(),
+        )}`
+      : "";
+  const phoneUrl = contactNumber ? `tel:${contactNumber.replace(/\s/g, "")}` : "";
+  const showPhone = showContactButtons && !car?.isSold && !!phoneUrl;
+  const showWhatsAppBtn = showContactButtons && !car?.isSold && !!whatsappUrl;
 
   const displayTitleShort =
     car && (car.make || car.model)
@@ -210,25 +229,38 @@ const CarCard = ({
               <p className="text-xs text-gray-500">Starting from</p>
               <p className="text-lg font-bold text-primary-500 truncate">PKR {priceFormatted}</p>
             </div>
-            {showWhatsApp && whatsappUrl ? (
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#16a34a] text-white text-sm font-semibold hover:bg-[#15803d]"
-              >
-                {images.chatIcon && (
-                  <img src={images.chatIcon} alt="" className="w-4 h-4 object-contain invert" />
+            <div className="flex items-center justify-between gap-2 flex-wrap min-w-0">
+              <div className="flex items-center gap-2">
+                {showPhone && (
+                  <a
+                    href={phoneUrl}
+                    onClick={(e) => e.stopPropagation()}
+                    className="p-2.5 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                    title="Call"
+                    aria-label="Call"
+                  >
+                    <FaPhone className="w-4 h-4" />
+                  </a>
                 )}
-                WhatsApp
-              </a>
-            ) : (
-              <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary-500 text-white text-sm font-semibold hover:brightness-110 transition-colors">
+                {showWhatsAppBtn && (
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="p-2.5 rounded-lg bg-[#25D366] text-white hover:opacity-90 transition-colors"
+                    title="WhatsApp"
+                    aria-label="WhatsApp"
+                  >
+                    <FaWhatsapp className="w-4 h-4" />
+                  </a>
+                )}
+              </div>
+              <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary-500 text-white text-sm font-semibold hover:brightness-110 transition-colors shrink-0">
                 VIEW DETAILS
                 <IoIosArrowRoundUp className="w-4 h-4 rotate-[43deg]" />
               </span>
-            )}
+            </div>
           </div>
           {actions && (
             <div className="mt-3 pt-3 border-t border-[#e5e7eb]" onClick={(e) => e.stopPropagation()}>
@@ -362,30 +394,37 @@ const CarCard = ({
           </span>
         </div>
 
-        <div className="mt-3 pt-3 flex items-center justify-end border-t border-[#e5e7eb]">
-          {showWhatsApp && whatsappUrl ? (
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#16a34a] text-white text-sm font-semibold hover:bg-[#15803d] transition-colors shadow-sm"
-            >
-              {images.chatIcon && (
-                <img
-                  src={images.chatIcon}
-                  alt=""
-                  className="w-4 h-4 object-contain invert"
-                />
-              )}
-              WhatsApp
-            </a>
-          ) : (
-            <span className="inline-flex items-center gap-1.5 text-primary-500 font-semibold text-sm hover:underline group-hover:text-primary-600 transition-colors">
-              View Details
-              <IoIosArrowRoundUp className="w-4 h-4 rotate-[43deg]" />
-            </span>
-          )}
+        <div className="mt-3 pt-3 flex items-center justify-between gap-2 border-t border-[#e5e7eb]">
+          <div className="flex items-center gap-2">
+            {showPhone && (
+              <a
+                href={phoneUrl}
+                onClick={(e) => e.stopPropagation()}
+                className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                title="Call"
+                aria-label="Call"
+              >
+                <FaPhone className="w-4 h-4" />
+              </a>
+            )}
+            {showWhatsAppBtn && (
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="p-2 rounded-lg bg-[#25D366] text-white hover:opacity-90 transition-colors"
+                title="WhatsApp"
+                aria-label="WhatsApp"
+              >
+                <FaWhatsapp className="w-4 h-4" />
+              </a>
+            )}
+          </div>
+          <span className="inline-flex items-center gap-1.5 text-primary-500 font-semibold text-sm hover:underline group-hover:text-primary-600 transition-colors shrink-0">
+            View Details
+            <IoIosArrowRoundUp className="w-4 h-4 rotate-[43deg]" />
+          </span>
         </div>
         {actions && (
           <div className="mt-3 pt-3 border-t border-[#e5e7eb]" onClick={(e) => e.stopPropagation()}>

@@ -60,7 +60,7 @@ export const getAllCars = async (req, res) => {
     }
 
     const cars = await Car.find(query)
-      .select("title make model year price images city location status featured condition fuelType transmission mileage postedBy createdAt viewsgeoLocation vehicleType features carDoors horsepower engineCapacity")
+      .select("title make model year price images city location status featured condition fuelType transmission mileage postedBy createdAt viewsgeoLocation vehicleType features carDoors horsepower engineCapacity contactNumber isSold")
       .skip(skip)
       .limit(limit)
       .populate("postedBy", "name email role sellerRating isVerified dealerInfo")

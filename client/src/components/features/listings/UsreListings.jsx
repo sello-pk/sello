@@ -39,6 +39,9 @@ const UserListings = () => {
   const [updatingCars, setUpdatingCars] = useState(new Set());
   const [relistCar, { isLoading: isRelisting }] = useRelistCarMutation();
 
+  const cars = Array.isArray(data?.cars) ? data.cars : [];
+  const sortedCars = useMemo(() => sortCars(cars, sortBy), [cars, sortBy]);
+
   const handleMarkAsSold = async (car, isSold) => {
     if (
       window.confirm(
@@ -96,9 +99,6 @@ const UserListings = () => {
     );
   }
 
-  const cars = Array.isArray(data?.cars) ? data.cars : [];
-  const sortedCars = useMemo(() => sortCars(cars, sortBy), [cars, sortBy]);
-
   return (
     <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-gray-100">
       <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">My Listings</h2>
@@ -132,6 +132,7 @@ const UserListings = () => {
               key={car._id}
               car={car}
               variant={viewMode === "list" ? "list" : "grid"}
+              showContactButtons={false}
               actions={
                 <div className="space-y-2">
                   <div className="flex gap-2">
