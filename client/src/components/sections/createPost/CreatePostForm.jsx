@@ -76,6 +76,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
     city: "",
     location: "",
     contactNumber: "",
+    whatsappNumber: "",
     geoLocation: "",
     warranty: "",
     ownerType: "",
@@ -314,6 +315,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       "city",
       "location",
       "contactNumber",
+      "whatsappNumber",
       "geoLocation",
       "warranty",
       "ownerType",
@@ -432,6 +434,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         city: "",
         location: "",
         contactNumber: "",
+        whatsappNumber: "",
         geoLocation: "",
         warranty: "",
         ownerType: "",
@@ -507,6 +510,10 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       toast.error("Invalid contact number. Must be 9-15 digits.");
       return;
     }
+    if (formData.whatsappNumber && !/^\+?\d{9,15}$/.test(formData.whatsappNumber)) {
+      toast.error("Invalid WhatsApp number. Must be 9-15 digits or leave empty.");
+      return;
+    }
 
     const data = prepareFormData();
 
@@ -549,6 +556,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         city: "",
         location: "",
         contactNumber: "",
+        whatsappNumber: "",
         geoLocation: "",
         warranty: "",
         ownerType: "",
@@ -807,8 +815,8 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         </div>
 
         {["Bus", "Car"].includes(formData.vehicleType) ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2 pl-2">
-            <div>
+          <>
+            <div className="mb-2 pl-2">
               <label className="block mb-1">Price (PKR)</label>
               <Input
                 inputType="number"
@@ -818,26 +826,46 @@ const CreatePostForm = ({ initialPrefill = null }) => {
                 required
               />
             </div>
-            <div>
-              <label className="block mb-1">Contact Number</label>
-              <Input
-                inputType="tel"
-                value={formData.contactNumber}
-                onChange={(e) => handleChange("contactNumber", e.target.value)}
-                placeholder="e.g., +923134211023"
-                required
-              />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2 pl-2">
+              <div>
+                <label className="block mb-1">Phone Number</label>
+                <Input
+                  inputType="tel"
+                  value={formData.contactNumber}
+                  onChange={(e) => handleChange("contactNumber", e.target.value)}
+                  placeholder="e.g., +923134211023"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block mb-1">
+                  WhatsApp Number
+                  <button
+                    type="button"
+                    onClick={() => handleChange("whatsappNumber", formData.contactNumber)}
+                    className="ml-2 text-sm font-normal text-primary-500 hover:text-primary-600 hover:underline focus:outline-none"
+                  >
+                    Same as Phone
+                  </button>
+                </label>
+                <Input
+                  inputType="tel"
+                  value={formData.whatsappNumber}
+                  onChange={(e) => handleChange("whatsappNumber", e.target.value)}
+                  placeholder="Optional, e.g., +923134211023"
+                />
+              </div>
+              <div>
+                <label className="block mb-1">Mileage (km)</label>
+                <Input
+                  inputType="number"
+                  value={formData.mileage}
+                  onChange={(e) => handleChange("mileage", e.target.value)}
+                  placeholder="e.g., 50000"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block mb-1">Mileage (km)</label>
-              <Input
-                inputType="number"
-                value={formData.mileage}
-                onChange={(e) => handleChange("mileage", e.target.value)}
-                placeholder="e.g., 50000"
-              />
-            </div>
-          </div>
+          </>
         ) : (
           <>
             {/* Price - Full Width */}
@@ -852,14 +880,10 @@ const CreatePostForm = ({ initialPrefill = null }) => {
               />
             </div>
 
-            {/* Contact Number, Mileage in same row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2 pl-2">
-              <div
-                className={
-                  formData.vehicleType === "Car" ? "" : "md:col-span-3"
-                }
-              >
-                <label className="block mb-1">Contact Number</label>
+            {/* Phone Number, WhatsApp Number, Mileage */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2 pl-2">
+              <div>
+                <label className="block mb-1">Phone Number</label>
                 <Input
                   inputType="tel"
                   value={formData.contactNumber}
@@ -870,11 +894,27 @@ const CreatePostForm = ({ initialPrefill = null }) => {
                   required
                 />
               </div>
-              <div
-                className={
-                  formData.vehicleType === "Car" ? "" : "md:col-span-3"
-                }
-              >
+              <div>
+                <label className="block mb-1">
+                  WhatsApp Number
+                  <button
+                    type="button"
+                    onClick={() => handleChange("whatsappNumber", formData.contactNumber)}
+                    className="ml-2 text-sm font-normal text-primary-500 hover:text-primary-600 hover:underline focus:outline-none"
+                  >
+                    Same as Phone
+                  </button>
+                </label>
+                <Input
+                  inputType="tel"
+                  value={formData.whatsappNumber}
+                  onChange={(e) =>
+                    handleChange("whatsappNumber", e.target.value)
+                  }
+                  placeholder="Optional, e.g., +923134211023"
+                />
+              </div>
+              <div>
                 <label className="block mb-1">Mileage (km)</label>
                 <Input
                   inputType="number"

@@ -138,6 +138,14 @@ const carSchema = new mongoose.Schema(
         message: "Contact number must be 9-15 digits",
       },
     },
+    whatsappNumber: {
+      type: String,
+      default: "",
+      validate: {
+        validator: (v) => !v || /^\+?\d{9,15}$/.test(v),
+        message: "WhatsApp number must be 9-15 digits",
+      },
+    },
     geoLocation: {
       type: {
         type: String,

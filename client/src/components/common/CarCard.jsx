@@ -90,6 +90,7 @@ const CarCard = ({
   const contactNumber = car?.contactNumber || "";
   const waNumber =
     whatsappNumber ||
+    car?.whatsappNumber ||
     car?.postedBy?.dealerInfo?.whatsappNumber ||
     car?.contactNumber ||
     "";

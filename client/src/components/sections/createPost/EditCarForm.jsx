@@ -74,6 +74,7 @@ const EditCarForm = () => {
     city: "",
     location: "",
     contactNumber: "",
+    whatsappNumber: "",
     geoLocation: "",
     warranty: "",
     ownerType: "",
@@ -169,6 +170,7 @@ const EditCarForm = () => {
         city: car.city || "",
         location: car.location || "",
         contactNumber: car.contactNumber || "",
+        whatsappNumber: car.whatsappNumber || "",
         geoLocation: geoLoc,
         ownerType: car.ownerType || "",
         images: [],
@@ -272,6 +274,10 @@ const EditCarForm = () => {
     }
     if (!/^\+?\d{9,15}$/.test(formData.contactNumber)) {
       toast.error("Invalid contact number. Must be 9-15 digits.");
+      return;
+    }
+    if (formData.whatsappNumber && !/^\+?\d{9,15}$/.test(formData.whatsappNumber)) {
+      toast.error("Invalid WhatsApp number. Must be 9-15 digits or leave empty.");
       return;
     }
     let parsedGeoLocation;
@@ -435,13 +441,32 @@ const EditCarForm = () => {
         </div>
 
         <div className="mb-2">
-          <label className="block mb-1">Contact Number</label>
+          <label className="block mb-1">Phone Number</label>
           <Input
             inputType="tel"
             value={formData.contactNumber}
             onChange={(e) => handleChange("contactNumber", e.target.value)}
             placeholder="e.g., +923134211023"
             required
+          />
+        </div>
+
+        <div className="mb-2">
+          <label className="block mb-1">
+            WhatsApp Number
+            <button
+              type="button"
+              onClick={() => handleChange("whatsappNumber", formData.contactNumber)}
+              className="ml-2 text-sm font-normal text-primary-500 hover:text-primary-600 hover:underline focus:outline-none"
+            >
+              Same as Phone
+            </button>
+          </label>
+          <Input
+            inputType="tel"
+            value={formData.whatsappNumber}
+            onChange={(e) => handleChange("whatsappNumber", e.target.value)}
+            placeholder="Optional, e.g., +923134211023"
           />
         </div>
 
