@@ -6,7 +6,7 @@ import { HiHome, HiChevronRight } from "react-icons/hi";
  * Breadcrumb Navigation Component
  * Provides navigation path for better UX
  */
-const Breadcrumb = ({ items = [] }) => {
+const Breadcrumb = ({ items = [], hideHome = false }) => {
   const location = useLocation();
 
   // Auto-generate breadcrumbs from path if items not provided
@@ -30,15 +30,22 @@ const Breadcrumb = ({ items = [] }) => {
   };
 
   const breadcrumbs = generateBreadcrumbs();
+  const showHomeIcon = !hideHome;
 
   return (
     <nav className="flex items-center space-x-2 text-sm text-gray-600 py-3 bg-gray-50 border-b border-gray-200">
-      <Link to="/" className="hover:text-primary-500 transition-colors">
-        <HiHome className="w-4 h-4" />
-      </Link>
+      {showHomeIcon && (
+        <>
+          <Link to="/" className="hover:text-primary-500 transition-colors">
+            <HiHome className="w-4 h-4" />
+          </Link>
+        </>
+      )}
       {breadcrumbs.map((crumb, index) => (
         <React.Fragment key={index}>
-          <HiChevronRight className="w-4 h-4 text-gray-400" />
+          {(showHomeIcon || index > 0) && (
+            <HiChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+          )}
           {index === breadcrumbs.length - 1 ? (
             <span className="text-gray-900 font-medium">{crumb.label}</span>
           ) : (

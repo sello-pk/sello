@@ -74,7 +74,6 @@ const CarDetails = () => {
   }, []);
 
   const breadcrumbItems = [
-    { label: "Home", path: "/" },
     { label: "Cars", path: "/cars" },
     {
       label: car
@@ -198,7 +197,7 @@ const CarDetails = () => {
         </>
       )}
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Breadcrumb items={breadcrumbItems} />
+        <Breadcrumb items={breadcrumbItems} hideHome />
       </div>
 
       {/* Hero Section */}

@@ -1,14 +1,15 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
-  FaBookmark,
-  FaRegBookmark,
+  FaHeart,
+  FaRegHeart,
   FaChevronRight,
   FaChevronLeft,
   FaTimes,
   FaSearchPlus,
   FaSearchMinus,
   FaExpand,
+  FaRegBookmark,
 } from "react-icons/fa";
 import { CiImageOn } from "react-icons/ci";
 import { useParams, useLocation } from "react-router-dom";
@@ -455,7 +456,7 @@ const CarDetailsGallerySection = () => {
                 </>
               )}
 
-              {/* Save/Bookmark Button */}
+              {/* Save (heart) Button */}
               <button
                 onClick={toggleSave}
                 disabled={isSaving || isUnsaving}
@@ -463,9 +464,9 @@ const CarDetailsGallerySection = () => {
                 title={isSaved ? "Remove from saved" : "Save car"}
               >
                 {isSaved ? (
-                  <FaBookmark className="text-primary-500" size={20} />
+                  <FaHeart className="text-primary-500" size={20} />
                 ) : (
-                  <FaRegBookmark className="text-gray-700" size={20} />
+                  <FaRegHeart className="text-gray-700" size={20} />
                 )}
               </button>
 
@@ -529,16 +530,16 @@ const CarDetailsGallerySection = () => {
                 </>
               )}
 
-              {/* Save Button */}
+              {/* Save (heart) Button */}
               <button
                 onClick={toggleSave}
                 disabled={isSaving || isUnsaving}
                 className="absolute top-3 right-3 bg-white/90 p-2 rounded-full shadow-lg disabled:opacity-50"
               >
                 {isSaved ? (
-                  <FaBookmark className="text-primary-500" size={18} />
+                  <FaHeart className="text-primary-500" size={18} />
                 ) : (
-                  <FaRegBookmark className="text-gray-700" size={18} />
+                  <FaRegHeart className="text-gray-700" size={18} />
                 )}
               </button>
             </div>

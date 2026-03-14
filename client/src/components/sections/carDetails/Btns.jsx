@@ -18,6 +18,7 @@ import {
   FaShareAlt,
   FaPhone,
   FaCommentDots,
+  FaWhatsapp,
 } from "react-icons/fa";
 import { extractCarIdFromSlug } from "../../../utils/urlBuilders";
 
@@ -103,6 +104,25 @@ const Btns = () => {
     }
   };
 
+  const handleWhatsApp = () => {
+    if (isSold) {
+      toast.error("This car has been sold. WhatsApp is disabled.");
+      return;
+    }
+    const number =
+      car?.postedBy?.dealerInfo?.whatsappNumber || car?.contactNumber;
+    if (!number) {
+      toast.error("WhatsApp number not available");
+      return;
+    }
+    const digits = number.replace(/\D/g, "");
+    const waNumber = digits.startsWith("92") ? digits : `92${digits.replace(/^0/, "")}`;
+    const detailsUrl = typeof window !== "undefined" ? window.location.href : "";
+    const defaultMessage = `Hi, I'm interested in this car listing on Sello: ${detailsUrl}`;
+    const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(defaultMessage)}`;
+    window.open(waUrl, "_blank", "noopener,noreferrer");
+  };
+
   const handleSaveListing = async () => {
     if (!currentUser) {
       toast.error("Please login to save listings");
@@ -153,6 +173,17 @@ const Btns = () => {
               >
                 <FaPhone />
                 Call Now
+              </button>
+            )}
+
+            {/* WhatsApp Button */}
+            {!isSold && (car?.contactNumber || car?.postedBy?.dealerInfo?.whatsappNumber) && (
+              <button
+                onClick={handleWhatsApp}
+                className="flex items-center gap-2 bg-[#25D366] text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-colors"
+              >
+                <FaWhatsapp size={20} />
+                WhatsApp
               </button>
             )}
 
