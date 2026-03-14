@@ -28,52 +28,39 @@ const fallbackDescriptions = {
   Van: "Vans and utility vehicles",
   Bike: "Motorcycles and bikes",
   "E-bike": "Electric bikes and scooters",
+  Farm: "Farm vehicles and agricultural equipment",
 };
 
+const FALLBACK_CATEGORIES = [
+  { name: "Car", slug: "car", description: "Cars, sedans, SUVs, and other passenger vehicles" },
+  { name: "Bus", slug: "bus", description: "Buses and commercial passenger vehicles" },
+  { name: "Truck", slug: "truck", description: "Trucks and heavy-duty vehicles" },
+  { name: "Van", slug: "van", description: "Vans and utility vehicles" },
+  { name: "Bike", slug: "bike", description: "Motorcycles and bikes" },
+  { name: "E-bike", slug: "e-bike", description: "Electric bikes and scooters" },
+  { name: "Farm", slug: "farm", description: "Farm vehicles and agricultural equipment" },
+];
+
+const SLUG_ORDER = ["car", "bus", "truck", "van", "bike", "e-bike", "farm"];
+
 const BrowsByTypeSection = () => {
-  const { categories, isLoading } = useVehicleCategories();
+  const { categories } = useVehicleCategories();
 
-  // Fallback categories if backend returns empty
-  const fallbackCategories = [
-    {
-      name: "Car",
-      slug: "car",
-      description: "Cars, sedans, SUVs, and other passenger vehicles",
-    },
-    {
-      name: "Bus",
-      slug: "bus",
-      description: "Buses and commercial passenger vehicles",
-    },
-    {
-      name: "Truck",
-      slug: "truck",
-      description: "Trucks and heavy-duty vehicles",
-    },
-    {
-      name: "Van",
-      slug: "van",
-      description: "Vans and utility vehicles",
-    },
-    {
-      name: "Bike",
-      slug: "bike",
-      description: "Motorcycles and bikes",
-    },
-    {
-      name: "E-bike",
-      slug: "e-bike",
-      description: "Electric bikes and scooters",
-    },
-    {
-      name: "Farm",
-      slug: "farm",
-      description: "Farm vehicles and agricultural equipment",
-    },
-  ];
-
-  const displayCategories =
-    categories.length > 0 ? categories : fallbackCategories;
+  // Always show all 7 vehicle types: use API data when present, otherwise fallback.
+  // Fixes production bug where API may not return "Farm", causing it to flash then disappear.
+  const displayCategories = React.useMemo(() => {
+    const bySlug = {};
+    categories.forEach((c) => {
+      const slug = (c.slug || "").toLowerCase().trim();
+      if (slug) bySlug[slug] = c;
+    });
+    return SLUG_ORDER.map((slug) => {
+      const fromApi = bySlug[slug];
+      const fromFallback = FALLBACK_CATEGORIES.find((f) => (f.slug || "").toLowerCase() === slug);
+      if (fromApi && fromApi.isActive !== false) return fromApi;
+      return fromFallback;
+    }).filter(Boolean);
+  }, [categories]);
 
   // Map category slugs to correct routes
   const getCategoryRoute = (slug) => {
