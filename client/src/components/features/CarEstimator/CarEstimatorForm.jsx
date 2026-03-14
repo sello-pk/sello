@@ -143,10 +143,11 @@ export default function CarEstimatorForm({ onEstimate }) {
 
   const [errors, setErrors] = useState({});
 
+  // Models only after make is selected (division of concerns: make → model)
   const availableModels = useMemo(() => {
-    if (!formData.make) return Array.isArray(models) ? models : [];
+    if (!formData.make) return [];
     return getModelsByMake?.[formData.make] || [];
-  }, [formData.make, getModelsByMake, models]);
+  }, [formData.make, getModelsByMake]);
 
   const setField = (field, value) => {
     setFormData((prev) => ({
@@ -366,8 +367,9 @@ export default function CarEstimatorForm({ onEstimate }) {
                         label: capitalize(model.name),
                       }))}
                       placeholder={
-                        formData.make ? "Select model" : "All models"
+                        formData.make ? "Select model" : "Select make first"
                       }
+                      isDisabled={!formData.make}
                       isClearable
                       isSearchable
                       theme={customTheme}

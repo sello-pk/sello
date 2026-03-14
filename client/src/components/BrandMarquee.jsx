@@ -11,8 +11,8 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
   const sliderRef = useRef(null);
   const navigate = useNavigate();
 
-  // Fetch brands from admin categories - always prioritize admin data
-  const { makes, isLoading } = useCarCategories();
+  // Home marquee: show only car brands so we don't mix car + bike logos
+  const { makes, isLoading } = useCarCategories("Car");
 
   // Always use admin categories if available
   const brands = useMemo(() => {
@@ -38,9 +38,10 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
     return result;
   }, [brands]);
 
-  // Handle brand click - navigate directly to search results
+  // Handle brand click - search for cars (marquee is car brands only)
   const handleBrandClick = (brandName) => {
-    navigate(`/search-results?make=${encodeURIComponent(brandName)}`);
+    const params = new URLSearchParams({ make: brandName, vehicleType: "Car" });
+    navigate(`/search-results?${params.toString()}`);
   };
 
   // Scroll function for buttons

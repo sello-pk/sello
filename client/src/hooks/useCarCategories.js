@@ -80,15 +80,19 @@ export const useCarCategories = (vehicleType = null) => {
         return (a.name || "").localeCompare(b.name || "");
       });
 
-    // When vehicleType is set, only include makes for that type (avoids Car+Bike "Honda" mixing)
+    // When vehicleType is set: only include makes for that type (strict — no mixing Car/Bike)
     if (vehicleType) {
-      const forType = makesList.filter((cat) => cat.vehicleType === vehicleType);
-      // If DB has typed makes, use only those. Otherwise fall back to untyped (legacy) so we don't break empty UIs.
-      makesList =
-        forType.length > 0
-          ? forType
-          : makesList.filter((cat) => cat.vehicleType == null);
-      // Dedupe by name keeping first (stable order already applied)
+      makesList = makesList.filter((cat) => cat.vehicleType === vehicleType);
+      // Dedupe by name (e.g. one Suzuki per type)
+      const seen = new Set();
+      makesList = makesList.filter((m) => {
+        const key = String(m.name || "").trim().toLowerCase();
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    } else {
+      // No vehicle type (e.g. "All Brands"): dedupe by name so we don't show Car Suzuki + Bike Suzuki as two cards
       const seen = new Set();
       makesList = makesList.filter((m) => {
         const key = String(m.name || "").trim().toLowerCase();
@@ -111,12 +115,9 @@ export const useCarCategories = (vehicleType = null) => {
         return (a.name || "").localeCompare(b.name || "");
       });
 
+    // Strict: when vehicleType is set, only models for that type (no fallback to null)
     if (vehicleType) {
-      const forType = modelList.filter((cat) => cat.vehicleType === vehicleType);
-      modelList =
-        forType.length > 0
-          ? forType
-          : modelList.filter((cat) => cat.vehicleType == null);
+      modelList = modelList.filter((cat) => cat.vehicleType === vehicleType);
     }
 
     return modelList;

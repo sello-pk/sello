@@ -166,6 +166,7 @@ const FilterForm = ({ onFilter }) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
 
     if (field === "vehicleType") {
+      setAvailableModels([]); // Models depend on make; make is cleared below
       // Clear fields that are not relevant to selected type and reset dependent fields
       setFilters((prev) => ({
         ...prev,
