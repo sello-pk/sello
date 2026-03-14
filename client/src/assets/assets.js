@@ -167,6 +167,9 @@ export const images = {
   cc,
   location,
   wheel,
+  callIcon,
+  chatIcon,
+  shareIcon,
   // Car Types
   sedan,
   loan,

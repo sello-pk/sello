@@ -1,10 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useParams, useSearchParams, Navigate } from "react-router-dom";
 import { useGetFilteredCarsQuery } from "../../redux/services/api";
 import { useVehicleCategories } from "../../hooks/useVehicleCategories";
 import CarCard from "../../components/common/CarCard";
 import FilterForm from "../../components/sections/filter/FilterForm";
 import LatestBlogsSection from "../../components/features/blog/LatestBlogsSection";
+import SortAndViewOptions from "../../components/listings/SortAndViewOptions";
+
+const sortCars = (cars, sortBy) => {
+  if (!cars?.length) return cars;
+  const list = [...cars];
+  switch (sortBy) {
+    case "price-low": return list.sort((a, b) => (a.price || 0) - (b.price || 0));
+    case "price-high": return list.sort((a, b) => (b.price || 0) - (a.price || 0));
+    case "year-new": return list.sort((a, b) => (b.year || 0) - (a.year || 0));
+    case "year-old": return list.sort((a, b) => (a.year || 0) - (b.year || 0));
+    case "mileage-low": return list.sort((a, b) => (a.mileage || 0) - (b.mileage || 0));
+    case "mileage-high": return list.sort((a, b) => (b.mileage || 0) - (a.mileage || 0));
+    case "oldest": return list.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+    case "newest":
+    default: return list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+  }
+};
 import {
   FaCar,
   FaBus,
@@ -42,6 +59,8 @@ const CategoryPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { getCategoryBySlug } = useVehicleCategories();
   const [page, setPage] = useState(parseInt(searchParams.get("page")) || 1);
+  const [sortBy, setSortBy] = useState("newest");
+  const [viewMode, setViewMode] = useState("grid");
   const [filters, setFilters] = useState(() => {
     const params = {};
     searchParams.forEach((value, key) => {
@@ -95,6 +114,7 @@ const CategoryPage = () => {
   const { data, isLoading, error } = useGetFilteredCarsQuery(queryParams);
 
   const cars = data?.cars || [];
+  const sortedCars = useMemo(() => sortCars(cars, sortBy), [cars, sortBy]);
   const total = data?.total || 0;
   const pages = data?.pages || 0;
 
@@ -248,15 +268,33 @@ const CategoryPage = () => {
 
             {/* All Listings Preview */}
             <div className="mt-12">
-              <div className="text-center mb-8">
+              <div className="text-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">
                   Latest Listings
                 </h2>
-                <p className="text-gray-600 mb-6">
+                <p className="text-gray-600 mb-4">
                   Browse all available vehicles
                 </p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {!isLoading && !error && cars.length > 0 && (
+                <div className="mb-4">
+                  <SortAndViewOptions
+                    sortBy={sortBy}
+                    onSortChange={setSortBy}
+                    viewMode={viewMode}
+                    onViewChange={setViewMode}
+                    totalResults={Math.min(cars.length, 8)}
+                    resultLabel="vehicles"
+                  />
+                </div>
+              )}
+              <div
+                className={`${
+                  viewMode === "list"
+                    ? "grid grid-cols-1 gap-6"
+                    : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                }`}
+              >
                 {isLoading ? (
                   <div className="col-span-full text-center py-12">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
@@ -287,7 +325,13 @@ const CategoryPage = () => {
                 ) : (
                   cars
                     .slice(0, 8)
-                    .map((car) => <CarCard key={car._id} car={car} />)
+                    .map((car) => (
+                      <CarCard
+                        key={car._id}
+                        car={car}
+                        variant={viewMode === "list" ? "list" : "grid"}
+                      />
+                    ))
                 )}
               </div>
 
@@ -383,14 +427,32 @@ const CategoryPage = () => {
                   </div>
                 ) : (
                   <>
-                    <div className="mb-6">
-                      <h2 className="text-2xl font-bold text-gray-800">
+                    <div className="mb-4">
+                      <h2 className="text-2xl font-bold text-gray-800 mb-4">
                         {currentCategory?.name} Listings ({total})
                       </h2>
+                      <SortAndViewOptions
+                        sortBy={sortBy}
+                        onSortChange={setSortBy}
+                        viewMode={viewMode}
+                        onViewChange={setViewMode}
+                        totalResults={sortedCars.length}
+                        resultLabel="vehicles"
+                      />
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
-                      {cars.map((car) => (
-                        <CarCard key={car._id} car={car} />
+                    <div
+                      className={`mb-8 ${
+                        viewMode === "list"
+                          ? "grid grid-cols-1 gap-4"
+                          : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                      }`}
+                    >
+                      {sortedCars.map((car) => (
+                        <CarCard
+                          key={car._id}
+                          car={car}
+                          variant={viewMode === "list" ? "list" : "grid"}
+                        />
                       ))}
                     </div>
 

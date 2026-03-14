@@ -1,218 +1,397 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { buildCarUrl } from "../../utils/urlBuilders";
-import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
+import { IoIosArrowRoundUp } from "react-icons/io";
 import { Image as LazyImage } from "../ui/Image";
-import { images } from "../../assets/assets";
 import {
   useSaveCarMutation,
   useUnsaveCarMutation,
   useGetSavedCarsQuery,
-  useGetMeQuery,
 } from "../../redux/services/api";
+import { buildCarUrl } from "../../utils/urlBuilders";
+import { images } from "../../assets/assets";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "../../utils/errorHandler";
 
-const CarCard = ({ car }) => {
+/**
+ * Car listing card used across listing pages. Supports grid (default) and list layout.
+ * @param {Object} props.car - Car object
+ * @param {string} [props.variant] - "grid" | "list"
+ * @param {React.ReactNode} [props.actions] - Optional actions (e.g. Edit / Mark Sold)
+ * @param {boolean} [props.showWhatsApp] - Show WhatsApp CTA
+ * @param {string} [props.whatsappNumber] - WhatsApp number for link
+ */
+const CarCard = ({
+  car,
+  variant = "grid",
+  actions,
+  showWhatsApp = false,
+  whatsappNumber,
+}) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+
   const [saveCar, { isLoading: isSaving }] = useSaveCarMutation();
   const [unsaveCar, { isLoading: isUnsaving }] = useUnsaveCarMutation();
-
-  // Get saved cars from API if user is logged in
   const { data: savedCarsData } = useGetSavedCarsQuery(undefined, {
     skip: !token,
   });
 
-  // Extract saved car IDs
   const savedCars = React.useMemo(() => {
     if (!savedCarsData || !Array.isArray(savedCarsData)) return [];
-    return savedCarsData.map((car) => car._id || car.id).filter(Boolean);
+    return savedCarsData.map((c) => c._id || c.id).filter(Boolean);
   }, [savedCarsData]);
 
-  const carId = car?._id;
-  const carImage = car?.images?.[0] || images.carPlaceholder;
-  const carMake = car?.make || "Unknown Make";
-  const carModel = car?.model || "Unknown Model";
-  const carYear = car?.year || "N/A";
-  const carPrice = car?.price?.toLocaleString() || "N/A";
-  const isSaved = savedCars.includes(carId);
+  const id = car?._id;
+  const displayTitle = car && `${car.make || ""} ${car.model || ""} ${car.year || ""}`.trim() || "Car Listing";
+  const displayPrice = car?.price;
+  const priceFormatted =
+    typeof displayPrice === "number"
+      ? displayPrice.toLocaleString()
+      : (displayPrice && String(displayPrice)) || "N/A";
+  const displayImage = car?.images?.[0] || images?.carPlaceholder || null;
+  const displayLocation = car?.city || car?.location || "—";
+  const displayMileage = car?.mileage ?? "—";
+  const displayFuel = car?.fuelType ?? "—";
+  const displayTransmission = car?.transmission ?? "—";
+  const displayTag = car?.isSold ? "sold" : car?.featured ? "featured" : "for_sale";
+  const displayRef = car?._id?.slice(-6)?.toUpperCase() || "";
+  const isSaved = id ? savedCars.includes(id) : false;
 
-  const toggleSave = async (e) => {
+  const handleBookmark = async (e) => {
     e.stopPropagation();
+    if (!id) return;
     if (!token) {
       toast.error("Please login to save cars");
       navigate("/login");
       return;
     }
-
     try {
       if (isSaved) {
-        await unsaveCar(carId).unwrap();
-        toast.success("Car removed from saved");
+        await unsaveCar(id).unwrap();
+        toast.success("Removed from saved");
       } else {
-        await saveCar(carId).unwrap();
-        toast.success("Car saved successfully");
+        await saveCar(id).unwrap();
+        toast.success("Saved");
       }
-    } catch (error) {
-      toast.error(getErrorMessage(error));
+    } catch (err) {
+      toast.error(getErrorMessage(err));
     }
   };
 
   const handleCardClick = () => {
-    navigate(buildCarUrl(car));
+    if (car?._id) navigate(buildCarUrl(car));
+  };
+  const isClickable = Boolean(car?._id);
+
+  const whatsappUrl =
+    whatsappNumber &&
+    `https://wa.me/${whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent(
+      `Hi, I'm interested in: ${displayTitle} - Ref: ${displayRef}`,
+    )}`;
+
+  const displayTitleShort =
+    car && (car.make || car.model)
+      ? `${car.make || ""} ${car.model || ""}`.trim()
+      : displayTitle;
+  const displayYear = car?.year;
+
+  const tagLabel =
+    displayTag === "sold"
+      ? "SOLD"
+      : displayTag === "featured"
+        ? "Featured"
+        : displayTag === "verified"
+          ? "Verified"
+          : "For Sale";
+
+  const tagStyles = {
+    sold: "bg-[#111827] text-white",
+    featured: "bg-primary-500 text-white",
+    verified: "bg-[#16a34a] text-white",
+    for_sale: "bg-[#111827]/80 text-white",
   };
 
+  const mileageText =
+    displayMileage === "—" || displayMileage == null
+      ? "—"
+      : typeof displayMileage === "number"
+        ? `${displayMileage.toLocaleString()} km`
+        : String(displayMileage).endsWith("km")
+          ? displayMileage
+          : `${displayMileage} km`;
+
+  // List variant: horizontal row — image left, content right
+  if (variant === "list") {
+    return (
+      <div
+        role={isClickable ? "button" : undefined}
+        tabIndex={isClickable ? 0 : undefined}
+        onClick={isClickable ? handleCardClick : undefined}
+        onKeyDown={
+          isClickable
+            ? (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleCardClick();
+                }
+              }
+            : undefined
+        }
+        className={`group bg-white rounded-xl overflow-hidden border border-[#e5e7eb] shadow-sm hover:shadow-md transition-all duration-300 flex flex-col sm:flex-row ${isClickable ? "cursor-pointer" : ""}`}
+      >
+        <div className="relative w-full aspect-[3/2] sm:w-64 sm:aspect-auto sm:h-48 md:w-72 lg:w-80 flex-shrink-0 overflow-hidden bg-[#f3f4f6]">
+          {displayImage ? (
+            <LazyImage
+              src={displayImage}
+              alt={displayTitle}
+              className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
+              width="100%"
+              height="100%"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center bg-[#e5e7eb] text-[#6b7280] text-sm">
+              No image
+            </div>
+          )}
+          <span
+            className={`absolute top-2 left-2 px-2 py-1 rounded-lg text-xs font-bold uppercase ${tagStyles[displayTag] || tagStyles.for_sale}`}
+          >
+            {tagLabel}
+          </span>
+          {id && (
+            <button
+              type="button"
+              onClick={handleBookmark}
+              disabled={isSaving || isUnsaving}
+              className="absolute top-2 right-2 p-1.5 rounded-full bg-white/95 shadow border border-gray-100 disabled:opacity-50 z-10"
+              aria-label={isSaved ? "Unsave" : "Save"}
+            >
+              {isSaved ? (
+                <AiFillHeart className="w-4 h-4 text-primary-500" />
+              ) : (
+                <AiOutlineHeart className="w-4 h-4 text-gray-500 hover:text-primary-500" />
+              )}
+            </button>
+          )}
+        </div>
+
+        <div className="flex-1 flex flex-col justify-between p-4 min-w-0">
+          <div>
+            <h3 className="text-[#111827] font-bold text-base sm:text-lg leading-tight line-clamp-1">
+              {displayTitleShort}
+            </h3>
+            {displayYear != null && displayYear !== "" && (
+              <p className="text-[#6b7280] text-sm mt-0.5">{displayYear}</p>
+            )}
+            <div className="flex flex-wrap items-center gap-3 mt-2 text-[#6b7280] text-sm">
+              <span className="flex items-center gap-1.5">
+                {images.milesIcon && (
+                  <img src={images.milesIcon} alt="" className="w-4 h-4 object-contain opacity-80" />
+                )}
+                {mileageText}
+              </span>
+              <span className="flex items-center gap-1.5">
+                {images.fuelTypeIcon && (
+                  <img src={images.fuelTypeIcon} alt="" className="w-4 h-4 object-contain opacity-80" />
+                )}
+                {displayFuel}
+              </span>
+              <span className="flex items-center gap-1.5">
+                {images.transmissionIcon && (
+                  <img src={images.transmissionIcon} alt="" className="w-4 h-4 object-contain opacity-80" />
+                )}
+                {displayTransmission}
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3 mt-3 pt-3 border-t border-[#e5e7eb]">
+            <div className="min-w-0">
+              <p className="text-xs text-gray-500">Starting from</p>
+              <p className="text-lg font-bold text-primary-500 truncate">PKR {priceFormatted}</p>
+            </div>
+            {showWhatsApp && whatsappUrl ? (
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#16a34a] text-white text-sm font-semibold hover:bg-[#15803d]"
+              >
+                {images.chatIcon && (
+                  <img src={images.chatIcon} alt="" className="w-4 h-4 object-contain invert" />
+                )}
+                WhatsApp
+              </a>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary-500 text-white text-sm font-semibold hover:brightness-110 transition-colors">
+                VIEW DETAILS
+                <IoIosArrowRoundUp className="w-4 h-4 rotate-[43deg]" />
+              </span>
+            )}
+          </div>
+          {actions && (
+            <div className="mt-3 pt-3 border-t border-[#e5e7eb]" onClick={(e) => e.stopPropagation()}>
+              {actions}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Grid variant (default)
   return (
     <div
-      className="md:px-6 md:py-6 bg-white rounded-lg cursor-pointer"
-      style={{
-        boxShadow: "none",
-        border: "none",
-      }}
-      onClick={handleCardClick}
+      role={isClickable ? "button" : undefined}
+      tabIndex={isClickable ? 0 : undefined}
+      onClick={isClickable ? handleCardClick : undefined}
+      onKeyDown={
+        isClickable
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handleCardClick();
+              }
+            }
+          : undefined
+      }
+      className={`group bg-white rounded-xl overflow-hidden border border-[#e5e7eb] shadow-md hover:shadow-xl transition-all duration-300 flex flex-col ${isClickable ? "cursor-pointer" : ""}`}
     >
-      <div
-        className="w-full h-full border-0 rounded-bl-2xl rounded-br-2xl md:pb-4 pb-8"
-        style={{
-          boxShadow: "none",
-          border: "none",
-        }}
-      >
-        {/* 4:3 + cover: consistent frame; new uploads are pre-cropped to 4:3 in imageCompress */}
-        <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100 rounded-t-lg">
+      <div className="relative w-full aspect-[3/2] overflow-hidden bg-[#f3f4f6]">
+        {displayImage ? (
           <LazyImage
-            src={carImage}
-            alt={`${carMake} ${carModel}`}
-            className={`absolute inset-0 w-full h-full object-cover object-center ${car?.isSold ? "opacity-60" : ""}`}
+            src={displayImage}
+            alt={displayTitle}
+            className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
             width="100%"
             height="100%"
           />
-          {/* Sold Badge */}
-          {car?.isSold && (
-            <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold z-10">
-              SOLD
-            </div>
-          )}
-          {/* Featured Badge */}
-          {car?.featured && !car?.isSold && (
-            <div className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold z-10">
-              FEATURED
-            </div>
-          )}
-          {/* Verified Dealer Badge */}
-          {car?.postedBy?.role === "dealer" &&
-            car?.postedBy?.dealerInfo?.verified &&
-            !car?.isSold && (
-              <div
-                className={`absolute ${
-                  car?.featured ? "top-14" : "top-4"
-                } left-4 bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold z-10 flex items-center gap-1 shadow-lg`}
-              >
-                <svg
-                  className="w-3 h-3"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                VERIFIED DEALER
-              </div>
-            )}
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-[#e5e7eb] text-[#6b7280] text-sm">
+            No image
+          </div>
+        )}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 45%, transparent 70%)",
+          }}
+        />
+        <div className="absolute bottom-0 left-0 right-0 px-3 py-2 flex items-end justify-between">
+          <p className="text-white font-bold text-lg sm:text-xl tracking-tight drop-shadow-lg">
+            PKR {priceFormatted}
+          </p>
+        </div>
+        <span
+          className={`absolute top-3 left-3 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide shadow-md ${tagStyles[displayTag] || tagStyles.for_sale}`}
+        >
+          {tagLabel}
+        </span>
+        {id && (
           <button
-            onClick={toggleSave}
+            type="button"
+            onClick={handleBookmark}
             disabled={isSaving || isUnsaving}
-            className="absolute top-4 right-4 bg-white p-2 rounded-full shadow-md hover:bg-gray-50 transition-colors disabled:opacity-50 z-10"
-            title={isSaved ? "Remove from saved" : "Save car"}
+            className="absolute top-3 right-3 p-2.5 rounded-full bg-white/95 shadow-lg hover:bg-white hover:scale-105 disabled:opacity-50 z-10 transition-all"
+            aria-label={isSaved ? "Unsave" : "Save"}
           >
             {isSaved ? (
-              <BsBookmarkFill className="text-primary-500 text-xl" />
+              <AiFillHeart className="w-5 h-5 text-primary-500" />
             ) : (
-              <BsBookmark className="text-gray-400 hover:text-primary-500 text-xl transition-colors" />
+              <AiOutlineHeart className="w-5 h-5 text-gray-500 hover:text-primary-500 transition-colors" />
             )}
           </button>
+        )}
+      </div>
+
+      <div className="p-4 flex flex-col flex-1">
+        <h3 className="text-[#111827] font-bold text-base leading-tight line-clamp-2">
+          {displayTitle}
+        </h3>
+        <div className="flex items-center gap-1.5 mt-1.5 text-[#6b7280] text-xs">
+          {images.location && (
+            <img
+              src={images.location}
+              alt=""
+              className="w-3.5 h-3.5 flex-shrink-0 opacity-80"
+            />
+          )}
+          <span className="truncate">{displayLocation}</span>
         </div>
-
-        <div className="p-5">
-          {/* Dealer Badge in Card */}
-          {car?.postedBy?.role === "dealer" &&
-            car?.postedBy?.dealerInfo &&
-            car?.postedBy?.dealerInfo?.verified && (
-              <div className="mb-2 flex items-center gap-1">
-                <svg
-                  className="w-4 h-4 text-green-500"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span className="text-xs font-semibold text-green-600">
-                  {car?.postedBy?.dealerInfo?.businessName || "Verified Dealer"}
-                </span>
-              </div>
-            )}
-          <h4 className="md:text-xl text-lg font-medium">
-            {carMake} {carModel} - {carYear}
-          </h4>
-
-          <div className="flex items-center my-3 justify-around border-b border-gray-200 pb-3">
-            <div className="flex items-center flex-col gap-2">
-              <LazyImage
+        <div className="border-t border-[#e5e7eb] my-3" />
+        <div className="flex items-center justify-between gap-2 text-[#6b7280] text-xs">
+          <span className="flex items-center gap-2 min-w-0">
+            {images.milesIcon && (
+              <img
                 src={images.milesIcon}
-                alt="Miles Icon"
-                width={24}
-                height={24}
-                className="w-6 h-6 object-contain"
+                alt=""
+                className="w-3.5 h-3.5 flex-shrink-0 object-contain opacity-80"
               />
-              {car?.mileage || "N/A"} km
-            </div>
-            <div className="flex items-center flex-col gap-2">
-              <LazyImage
+            )}
+            <span className="truncate">
+              {displayMileage === "—" || displayMileage == null
+                ? "—"
+                : typeof displayMileage === "number"
+                  ? `${displayMileage.toLocaleString()} km`
+                  : String(displayMileage).endsWith("km")
+                    ? displayMileage
+                    : `${displayMileage} km`}
+            </span>
+          </span>
+          <span className="flex items-center gap-2 min-w-0">
+            {images.fuelTypeIcon && (
+              <img
+                src={images.fuelTypeIcon}
+                alt=""
+                className="w-3.5 h-3.5 flex-shrink-0 object-contain opacity-80"
+              />
+            )}
+            <span className="truncate">{displayFuel}</span>
+          </span>
+          <span className="flex items-center gap-2 min-w-0">
+            {images.transmissionIcon && (
+              <img
                 src={images.transmissionIcon}
-                alt="Transmission Icon"
-                width={24}
-                height={24}
-                className="w-6 h-6 object-contain"
+                alt=""
+                className="w-3.5 h-3.5 flex-shrink-0 object-contain opacity-80"
               />
-              {car?.transmission || "N/A"}
-            </div>
-            <div className="flex items-center flex-col gap-2">
-              <LazyImage
-                src={images.fuelIcon}
-                alt="Fuel Icon"
-                width={24}
-                height={24}
-                className="w-6 h-6 object-contain"
-              />
-              {car?.fuelType || "N/A"}
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between mt-4">
-            <div>
-              <p className="text-2xl font-bold text-primary-500">
-                PKR {carPrice}
-              </p>
-            </div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate(buildCarUrl(car));
-              }}
-              className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90 transition"
-            >
-              View Details
-            </button>
-          </div>
+            )}
+            <span className="truncate">{displayTransmission}</span>
+          </span>
         </div>
+
+        <div className="mt-3 pt-3 flex items-center justify-end border-t border-[#e5e7eb]">
+          {showWhatsApp && whatsappUrl ? (
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#16a34a] text-white text-sm font-semibold hover:bg-[#15803d] transition-colors shadow-sm"
+            >
+              {images.chatIcon && (
+                <img
+                  src={images.chatIcon}
+                  alt=""
+                  className="w-4 h-4 object-contain invert"
+                />
+              )}
+              WhatsApp
+            </a>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 text-primary-500 font-semibold text-sm hover:underline group-hover:text-primary-600 transition-colors">
+              View Details
+              <IoIosArrowRoundUp className="w-4 h-4 rotate-[43deg]" />
+            </span>
+          )}
+        </div>
+        {actions && (
+          <div className="mt-3 pt-3 border-t border-[#e5e7eb]" onClick={(e) => e.stopPropagation()}>
+            {actions}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,7 +1,14 @@
 import React from "react";
 import { FiGrid, FiList, FiChevronDown } from "react-icons/fi";
 
-const SortAndViewOptions = ({ sortBy, onSortChange, viewMode, onViewChange, totalResults }) => {
+const SortAndViewOptions = ({
+  sortBy,
+  onSortChange,
+  viewMode,
+  onViewChange,
+  totalResults = 0,
+  resultLabel = "cars",
+}) => {
   const sortOptions = [
     { value: "newest", label: "Newest First" },
     { value: "oldest", label: "Oldest First" },
@@ -14,22 +21,24 @@ const SortAndViewOptions = ({ sortBy, onSortChange, viewMode, onViewChange, tota
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6 min-w-0 overflow-hidden">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 min-w-0">
         {/* Results Count */}
-        <div className="text-sm text-gray-600">
-          <span className="font-semibold text-gray-900">{totalResults || 0}</span>{" "}
-          {totalResults === 1 ? "car found" : "cars found"}
+        <div className="text-sm text-gray-600 min-w-0 shrink-0">
+          <span className="font-semibold text-gray-900">{totalResults}</span>{" "}
+          {totalResults === 1
+            ? `${resultLabel.replace(/s$/, "")} found`
+            : `${resultLabel} found`}
         </div>
 
         {/* Sort and View Options */}
-        <div className="flex items-center gap-4 w-full sm:w-auto">
+        <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto min-w-0">
           {/* Sort Dropdown */}
-          <div className="relative flex-1 sm:flex-initial">
+          <div className="relative flex-1 min-w-0 sm:flex-initial sm:min-w-[140px]">
             <select
               value={sortBy}
               onChange={(e) => onSortChange(e.target.value)}
-              className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm font-medium text-gray-700 hover:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent cursor-pointer w-full sm:w-auto"
+              className="appearance-none bg-white border border-gray-300 rounded-lg px-3 sm:px-4 py-2 pr-8 text-sm font-medium text-gray-700 hover:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent cursor-pointer w-full min-w-0"
             >
               {sortOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -41,7 +50,7 @@ const SortAndViewOptions = ({ sortBy, onSortChange, viewMode, onViewChange, tota
           </div>
 
           {/* View Mode Toggle */}
-          <div className="flex items-center gap-2 border border-gray-300 rounded-lg p-1">
+          <div className="flex items-center gap-0.5 border border-gray-300 rounded-lg p-1 shrink-0">
             <button
               onClick={() => onViewChange("grid")}
               className={`p-2 rounded transition-colors ${

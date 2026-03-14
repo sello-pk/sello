@@ -10,7 +10,7 @@ import SEO from "../../components/common/SEO";
 
 const CarListings = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 min-w-0 overflow-x-hidden">
       <SEO
         title="Buy and Sell cars in Pakistan | Trusted Brands - Sello.pk"
         description="Buy and sell cars in Pakistan with Confidence. Explore premium brands, buy used cars, compare models and sell your car through trusted sellers on sello.pk"
@@ -18,7 +18,7 @@ const CarListings = () => {
         canonical="https://sello.pk/cars"
       />
       <ListingHeroSection />
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0">
         <BrowsByTypeSection />
         <GetAllCarsSection />
         <NeedInspiration />

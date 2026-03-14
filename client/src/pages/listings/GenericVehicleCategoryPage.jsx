@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   useSearchParams,
   Link,
@@ -10,7 +10,24 @@ import { HiOutlineArrowLeft } from "react-icons/hi2";
 import CarCard from "../../components/common/CarCard";
 import CategoryFilterForm from "../../components/sections/filter/CategoryFilterForm";
 import ListingsCategoryBlogsSection from "../../components/sections/listings/ListingsCategoryBlogsSection";
+import SortAndViewOptions from "../../components/listings/SortAndViewOptions";
 import { vehicleCategoryConfig } from "../../config/vehicleCategoryConfig";
+
+const sortCars = (cars, sortBy) => {
+  if (!cars?.length) return cars;
+  const list = [...cars];
+  switch (sortBy) {
+    case "price-low": return list.sort((a, b) => (a.price || 0) - (b.price || 0));
+    case "price-high": return list.sort((a, b) => (b.price || 0) - (a.price || 0));
+    case "year-new": return list.sort((a, b) => (b.year || 0) - (a.year || 0));
+    case "year-old": return list.sort((a, b) => (a.year || 0) - (b.year || 0));
+    case "mileage-low": return list.sort((a, b) => (a.mileage || 0) - (b.mileage || 0));
+    case "mileage-high": return list.sort((a, b) => (b.mileage || 0) - (a.mileage || 0));
+    case "oldest": return list.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+    case "newest":
+    default: return list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+  }
+};
 
 const GenericVehicleCategoryPage = () => {
   const { categoryType } = useParams();
@@ -19,6 +36,8 @@ const GenericVehicleCategoryPage = () => {
 
   const [searchParams] = useSearchParams();
   const [page, setPage] = useState(parseInt(searchParams.get("page")) || 1);
+  const [sortBy, setSortBy] = useState("newest");
+  const [viewMode, setViewMode] = useState("grid");
   const [isExpanded, setIsExpanded] = useState(false);
   const [isExpanded2, setIsExpanded2] = useState(false);
   const [filters, setFilters] = useState(() => {
@@ -50,6 +69,7 @@ const GenericVehicleCategoryPage = () => {
   const { data, isLoading, error } = useGetFilteredCarsQuery(queryParams);
 
   const cars = data?.cars || [];
+  const sortedCars = useMemo(() => sortCars(cars, sortBy), [cars, sortBy]);
   const total = data?.total || 0;
   const pages = data?.pages || 0;
 
@@ -177,14 +197,32 @@ const GenericVehicleCategoryPage = () => {
               </div>
             ) : (
               <>
-                <div className="mb-6 flex justify-between items-center">
-                  <h2 className="text-2xl font-bold text-gray-800">
+                <div className="mb-4">
+                  <h2 className="text-2xl font-bold text-gray-800 mb-4">
                     {config.title} Listings ({total})
                   </h2>
+                  <SortAndViewOptions
+                    sortBy={sortBy}
+                    onSortChange={setSortBy}
+                    viewMode={viewMode}
+                    onViewChange={setViewMode}
+                    totalResults={sortedCars.length}
+                    resultLabel="vehicles"
+                  />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                  {cars.map((car) => (
-                    <CarCard key={car._id} car={car} />
+                <div
+                  className={`mb-8 ${
+                    viewMode === "list"
+                      ? "grid grid-cols-1 gap-4"
+                      : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+                  }`}
+                >
+                  {sortedCars.map((car) => (
+                    <CarCard
+                      key={car._id}
+                      car={car}
+                      variant={viewMode === "list" ? "list" : "grid"}
+                    />
                   ))}
                 </div>
 

@@ -8,7 +8,7 @@ import {
   IoIosArrowForward,
 } from "react-icons/io";
 import { FiStar, FiZap } from "react-icons/fi";
-import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { Image as LazyImage } from "../../ui/Image";
 import {
   useSaveCarMutation,
@@ -122,31 +122,10 @@ const FeaturedCarsCarousel = () => {
 
   if (isLoading) {
     return (
-      <section className="relative overflow-hidden">
-        {/* Enhanced Flag Banner Background */}
-        <div className="absolute inset-0">
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-primary-500/90 via-primary-400/95 to-primary-500/90"></div>
-
-          {/* Subtle pattern overlay */}
-          <div className="absolute inset-0 opacity-[0.15]">
-            <div
-              className="w-full h-full"
-              style={{
-                backgroundImage:
-                  "repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.1) 20px, rgba(255,255,255,0.1) 40px)",
-              }}
-            ></div>
-          </div>
-
-          {/* Decorative circles */}
-          <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full -mr-40 -mt-40 blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-80 h-80 bg-white/10 rounded-full -ml-40 -mb-40 blur-3xl"></div>
-        </div>
-
-        <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 relative z-10">
+      <section className="relative py-14 bg-gray-50">
+        <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-2 border-primary-500 border-t-transparent"></div>
           </div>
         </div>
       </section>
@@ -158,109 +137,72 @@ const FeaturedCarsCarousel = () => {
   }
 
   return (
-    <section className="relative py-16 bg-[#050B20] overflow-hidden">
-      {/* Enhanced Flag Banner Background with Primary-500 Shade */}
-      <div className="absolute inset-0">
-        {/* Main gradient overlay for depth */}
-        <div className="absolute inset-0"></div>
-
-        {/* Subtle diagonal stripe pattern - Flag style */}
-        <div className="absolute inset-0 opacity-[0.12]">
-          <div className="w-full h-full"></div>
-        </div>
-
-        {/* Soft circular decorative elements with blur */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/15 rounded-full -mr-48 -mt-48 blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/15 rounded-full -ml-48 -mb-48 blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-white/10 rounded-full blur-3xl"></div>
-
-        {/* Wave effect at bottom */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-40 opacity-20"
-          style={{
-            background:
-              "linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.4) 100%)",
-          }}
-        ></div>
-
-        {/* Additional subtle texture */}
-        <div
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.5) 1px, transparent 0)",
-            backgroundSize: "40px 40px",
-          }}
-        ></div>
-      </div>
-
-      <div className="container mx-auto px-4 md:px-16 relative z-10">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-10">
-          <div className="flex items-center gap-4">
-            <div className="bg-white/25 backdrop-blur-md rounded-full p-4 shadow-lg ring-2 ring-white/20">
-              <FiStar className="text-white text-3xl md:text-4xl drop-shadow-lg" />
+    <section className="relative py-12 md:py-14 bg-gray-100 overflow-hidden">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header - OLX/PakWheels style: clean and simple */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <div className="bg-white border border-gray-200 rounded-lg p-2.5 shadow-sm">
+              <FiStar className="text-primary-500 text-2xl md:text-3xl" />
             </div>
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-2 drop-shadow-lg">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
                 Featured Cars
               </h2>
-              <p className="text-white/95 text-sm md:text-base drop-shadow-md">
-                Hand-picked premium vehicles just for you
+              <p className="text-gray-600 text-sm mt-0.5">
+                Hand-picked premium vehicles
               </p>
             </div>
           </div>
           <button
-            onClick={() => navigate("/cars")}
-            className="hidden md:flex items-center gap-2 bg-white/25 hover:bg-white/35 backdrop-blur-md text-white px-6 py-3 rounded-lg transition-all font-medium shadow-lg ring-2 ring-white/20 hover:ring-white/30 hover:scale-105"
+            onClick={() => navigate("/listings")}
+            className="hidden md:flex items-center gap-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-primary-500 hover:text-primary-500 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm"
           >
             View All
-            <IoIosArrowRoundUp className="text-xl rotate-[40deg]" />
+            <IoIosArrowRoundUp className="text-lg rotate-[40deg]" />
           </button>
         </div>
 
         {/* Carousel Container */}
         <div className="relative">
-          {/* Navigation Buttons */}
           {featuredCars.length > 1 && (
             <>
               <button
                 onClick={handlePrev}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white/90 hover:bg-white backdrop-blur-sm p-3 rounded-full shadow-lg transition-all transform hover:scale-110"
+                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 z-20 bg-white border border-gray-200 hover:border-primary-500 hover:bg-primary-50 p-2.5 rounded-lg shadow-md transition-all"
                 aria-label="Previous"
               >
-                <IoIosArrowBack className="text-2xl text-primary-500" />
+                <IoIosArrowBack className="text-xl text-gray-700 hover:text-primary-500" />
               </button>
               <button
                 onClick={handleNext}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white/90 hover:bg-white backdrop-blur-sm p-3 rounded-full shadow-lg transition-all transform hover:scale-110"
+                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 z-20 bg-white border border-gray-200 hover:border-primary-500 hover:bg-primary-50 p-2.5 rounded-lg shadow-md transition-all"
                 aria-label="Next"
               >
-                <IoIosArrowForward className="text-2xl text-primary-500" />
+                <IoIosArrowForward className="text-xl text-gray-700 hover:text-primary-500" />
               </button>
             </>
           )}
 
-          {/* Carousel */}
           <div
             ref={sliderRef}
-            className="flex gap-6 overflow-x-auto scroll-smooth scrollbar-hide pb-4"
+            className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide pb-2"
             style={{
               scrollbarWidth: "none",
               msOverflowStyle: "none",
               WebkitScrollbar: { display: "none" },
             }}
           >
-            {featuredCars.map((car, index) => {
+            {featuredCars.map((car) => {
               const carId = car._id;
               const carImage = car?.images?.[0] || images.carPlaceholder;
               const carMake = car?.make || "Unknown";
               const carModel = car?.model || "Unknown";
               const carYear = car?.year || "N/A";
               const carPrice = car?.price?.toLocaleString() || "N/A";
-              const carMileage = car?.mileage || "N/A";
-              const carFuelType = car?.fuelType || "N/A";
-              const carTransmission = car?.transmission || "N/A";
+              const carMileage = car?.mileage != null ? `${Number(car.mileage).toLocaleString()} km` : "—";
+              const carFuelType = car?.fuelType || "—";
+              const carTransmission = car?.transmission || "—";
               const carVehicleType = car?.vehicleType || "Car";
               const isSaved = savedCars.includes(carId);
 
@@ -268,108 +210,86 @@ const FeaturedCarsCarousel = () => {
                 <div
                   key={carId}
                   onClick={() => navigate(buildCarUrl(car))}
-                  className="min-w-[320px] md:min-w-[380px] bg-white rounded-xl shadow-xl hover:shadow-2xl transition-all cursor-pointer transform hover:-translate-y-2 flex-shrink-0"
+                  className="min-w-[280px] sm:min-w-[300px] md:min-w-[320px] flex-shrink-0 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-gray-300 transition-all cursor-pointer overflow-hidden"
                 >
                   <div className="relative">
-                    {/* Featured Flag Banner */}
-                    <div className="absolute top-0 left-0 z-20 bg-primary-500  px-6 py-2 rounded-br-lg shadow-lg flex items-center gap-2">
-                      <FiStar className="text-white" size={16} />
-                      <span className="font-bold text-sm">FEATURED</span>
-                    </div>
-
-                    {/* Vehicle Type Badge */}
-                    <div className="absolute top-0 right-0 z-20 bg-primary-500 px-3 py-2 rounded-bl-lg shadow-lg">
-                      <span className="font-semibold text-xs">
-                        {carVehicleType}
-                      </span>
-                    </div>
-
-                    {/* Car Image */}
-                    <div className="relative h-48 md:h-56 overflow-hidden rounded-t-xl">
+                    {/* Car Image - all image overlays inside here so they don't overlap card body */}
+                    <div className="relative h-44 md:h-52 overflow-hidden bg-gray-100">
                       <LazyImage
                         src={carImage}
                         alt={`${carMake} ${carModel}`}
                         className="w-full h-full object-cover"
                       />
-                      {/* Gradient Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
 
-                      {/* Boost Badge */}
-                      {car?.isBoosted &&
-                        new Date(car?.boostExpiry) > new Date() && (
-                          <div className="absolute bottom-2 left-2 bg-gradient-to-r from-primary-400 to-primary-500 text-white px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 shadow-lg">
-                            <FiZap size={12} />
-                            BOOSTED
-                          </div>
-                        )}
+                      {/* Featured badge - primary-500, top-left */}
+                      <div className="absolute top-2 left-2 z-20 bg-primary-500 text-white px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm">
+                        <FiStar size={12} />
+                        <span className="font-semibold text-xs">FEATURED</span>
+                      </div>
 
-                      {/* Save Button */}
+                      {/* Vehicle type - bottom-left of image only (keeps it off the "View" button below) */}
+                      <div className="absolute bottom-2 left-2 z-20 bg-gray-900/80 text-white px-2 py-1 rounded-md text-xs font-medium">
+                        {carVehicleType}
+                      </div>
+
+                      {car?.isBoosted && new Date(car?.boostExpiry) > new Date() && (
+                        <div className="absolute bottom-2 left-16 bg-primary-500 text-white px-2 py-1 rounded text-xs font-semibold flex items-center gap-1">
+                          <FiZap size={10} />
+                          BOOSTED
+                        </div>
+                      )}
+
+                      {/* Heart (save) icon - top-right only */}
                       <button
                         onClick={(e) => toggleSave(carId, e)}
                         disabled={isSaving || isUnsaving}
-                        className="absolute bottom-2 right-2 bg-white/90 hover:bg-white backdrop-blur-sm p-2 rounded-full shadow-lg transition-all disabled:opacity-50 z-10"
+                        className="absolute top-2 right-2 z-20 bg-white/95 hover:bg-white p-1.5 rounded-full shadow border border-gray-100 disabled:opacity-50"
                         title={isSaved ? "Remove from saved" : "Save car"}
                       >
                         {isSaved ? (
-                          <BsBookmarkFill className="text-primary-500 text-xl" />
+                          <AiFillHeart className="text-primary-500 text-lg" />
                         ) : (
-                          <BsBookmark className="text-gray-600 hover:text-primary-500 text-xl transition-colors" />
+                          <AiOutlineHeart className="text-gray-500 hover:text-primary-500 text-lg transition-colors" />
                         )}
                       </button>
                     </div>
 
-                    {/* Car Details */}
-                    <div className="p-5">
-                      <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 line-clamp-1">
-                        {carMake} {carModel} - {carYear}
+                    {/* Card body - white bg, clear hierarchy */}
+                    <div className="p-4 bg-white">
+                      <h3 className="text-base font-bold text-gray-900 mb-1.5 line-clamp-2 leading-snug">
+                        {carMake} {carModel} {carYear}
                       </h3>
 
-                      {/* Specs */}
-                      <div className="flex items-center gap-4 mb-4 text-sm text-gray-600">
-                        <div className="flex items-center gap-1">
-                          <img
-                            src={images?.milesIcon}
-                            alt="miles"
-                            className="w-4 h-4"
-                          />
-                          <span>{carMileage} km</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <img
-                            src={images?.fuelTypeIcon}
-                            alt="fuel"
-                            className="w-4 h-4"
-                          />
-                          <span>{carFuelType}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <img
-                            src={images?.transmissionIcon}
-                            alt="transmission"
-                            className="w-4 h-4"
-                          />
-                          <span>{carTransmission}</span>
-                        </div>
+                      <div className="flex items-center gap-3 mb-3 text-xs text-gray-600">
+                        {images?.milesIcon && (
+                          <span className="flex items-center gap-1">
+                            <img src={images.milesIcon} alt="" className="w-3.5 h-3.5 opacity-70" />
+                            {carMileage}
+                          </span>
+                        )}
+                        {images?.fuelTypeIcon && (
+                          <span className="flex items-center gap-1">
+                            <img src={images.fuelTypeIcon} alt="" className="w-3.5 h-3.5 opacity-70" />
+                            {carFuelType}
+                          </span>
+                        )}
+                        {images?.transmissionIcon && (
+                          <span className="flex items-center gap-1">
+                            <img src={images.transmissionIcon} alt="" className="w-3.5 h-3.5 opacity-70" />
+                            {carTransmission}
+                          </span>
+                        )}
                       </div>
 
-                      {/* Price and CTA */}
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                        <div>
-                          <p className="text-sm text-gray-500">Price</p>
-                          <p className="text-2xl font-bold text-primary-500">
-                            PKR {carPrice}
-                          </p>
-                        </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(buildCarUrl(car));
-                          }}
-                          className="bg-primary-500 hover:opacity-90 px-6 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2"
-                        >
-                          View Details
-                          <IoIosArrowRoundUp className="text-lg rotate-[40deg]" />
-                        </button>
+                      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <p className="text-lg font-bold text-primary-500">
+                          PKR {carPrice}
+                        </p>
+                        <span className="text-primary-500 font-semibold text-sm hover:underline flex items-center gap-0.5">
+                          View
+                          <IoIosArrowRoundUp className="text-base rotate-[43deg]" />
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -378,23 +298,18 @@ const FeaturedCarsCarousel = () => {
             })}
           </div>
 
-          {/* Carousel Indicators */}
           {featuredCars.length > 1 && (
-            <div className="flex justify-center gap-2 mt-6">
-              {featuredCars
-                .slice(0, Math.min(5, featuredCars.length))
-                .map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentIndex(index)}
-                    className={`h-2 rounded-full transition-all ${
-                      index === currentIndex
-                        ? "bg-white w-8"
-                        : "bg-white/50 w-2 hover:bg-white/75"
-                    }`}
-                    aria-label={`Go to slide ${index + 1}`}
-                  />
-                ))}
+            <div className="flex justify-center gap-1.5 mt-5">
+              {featuredCars.slice(0, Math.min(5, featuredCars.length)).map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentIndex(i)}
+                  className={`h-1.5 rounded-full transition-all ${
+                    i === currentIndex ? "bg-primary-500 w-6" : "bg-gray-300 w-1.5 hover:bg-gray-400"
+                  }`}
+                  aria-label={`Go to slide ${i + 1}`}
+                />
+              ))}
             </div>
           )}
         </div>

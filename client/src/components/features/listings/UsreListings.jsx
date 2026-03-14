@@ -1,35 +1,43 @@
-import React, { useState } from "react";
-import { IoIosArrowRoundUp } from "react-icons/io";
-import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
+import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { buildCarUrl } from "../../../utils/urlBuilders";
 import {
   useGetMyCarsQuery,
   useRelistCarMutation,
 } from "../../../redux/services/api";
-import { Image as LazyImage } from "../../../components/ui/Image";
-import { images } from "../../../assets/assets";
 import toast from "react-hot-toast";
 import { API_BASE_URL } from "../../../redux/config";
+import SortAndViewOptions from "../../listings/SortAndViewOptions";
+import CarCard from "../../common/CarCard";
+
+const sortCars = (cars, sortBy) => {
+  if (!cars?.length) return cars;
+  const list = [...cars];
+  switch (sortBy) {
+    case "price-low": return list.sort((a, b) => (a.price || 0) - (b.price || 0));
+    case "price-high": return list.sort((a, b) => (b.price || 0) - (a.price || 0));
+    case "year-new": return list.sort((a, b) => (b.year || 0) - (a.year || 0));
+    case "year-old": return list.sort((a, b) => (a.year || 0) - (b.year || 0));
+    case "mileage-low": return list.sort((a, b) => (a.mileage || 0) - (b.mileage || 0));
+    case "mileage-high": return list.sort((a, b) => (b.mileage || 0) - (a.mileage || 0));
+    case "oldest": return list.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+    case "newest":
+    default: return list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+  }
+};
 
 const UserListings = () => {
   const navigate = useNavigate();
-  const [statusFilter, _setStatusFilter] = useState("all"); // 'all', 'active', 'sold', 'expired'
+  const [statusFilter, _setStatusFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
+  const [viewMode, setViewMode] = useState("grid");
   const {
     data,
     isLoading,
     error: listingsError,
     refetch,
   } = useGetMyCarsQuery(statusFilter !== "all" ? { status: statusFilter } : {});
-  const [savedCars, setSavedCars] = useState([]);
   const [updatingCars, setUpdatingCars] = useState(new Set());
   const [relistCar, { isLoading: isRelisting }] = useRelistCarMutation();
-
-  const toggleSave = (id) => {
-    setSavedCars((prev) =>
-      prev.includes(id) ? prev.filter((carId) => carId !== id) : [...prev, id],
-    );
-  };
 
   const handleMarkAsSold = async (car, isSold) => {
     if (
@@ -72,209 +80,119 @@ const UserListings = () => {
 
   if (isLoading) {
     return (
-      <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-[#F5F5F5]">
-        <h2 className="md:text-4xl text-2xl font-medium mb-8">My Listings</h2>
-        <p>Loading your cars...</p>
+      <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-gray-100">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">My Listings</h2>
+        <p className="text-gray-600">Loading your cars...</p>
       </section>
     );
   }
 
   if (listingsError) {
     return (
-      <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-[#F5F5F5]">
-        <h2 className="md:text-4xl text-2xl font-medium mb-8">My Listings</h2>
+      <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-gray-100">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">My Listings</h2>
         <p className="text-red-500">Error loading your listings</p>
       </section>
     );
   }
 
   const cars = Array.isArray(data?.cars) ? data.cars : [];
+  const sortedCars = useMemo(() => sortCars(cars, sortBy), [cars, sortBy]);
 
   return (
-    <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-[#F5F5F5]">
-      <h2 className="md:text-4xl text-2xl font-medium mb-8">My Listings</h2>
+    <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-gray-100">
+      <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">My Listings</h2>
+      <p className="text-gray-600 text-sm mb-6">Manage and edit your posted vehicles</p>
 
       {cars.length === 0 ? (
-        <p>You haven’t posted any cars yet.</p>
+        <div className="rounded-xl border border-gray-200 bg-white py-16 text-center">
+          <p className="text-gray-600">You haven’t posted any cars yet.</p>
+        </div>
       ) : (
-        <div className="my-5 grid md:grid-cols-3 grid-cols-1 md:gap-10 gap-6 ">
-          {cars.map((car, index) => {
-            const carId = car?._id || index;
-            const carImage = car?.images?.[0] || images.carPlaceholder;
-            const carMake = car?.make || "Unknown Make";
-            const carModel = car?.model || "Unknown Model";
-            const carYear = car?.year || "N/A";
-            const carPrice = car?.price?.toLocaleString() || "N/A";
-
-            return (
-              <div
-                className="md:px-6 md:py-8 bg-[#D9D9D9] rounded-lg shadow-sm"
-                key={carId}
-              >
-                <div className="w-full h-full border border-gray-100 rounded-bl-2xl rounded-br-2xl md:pb-8 pb-14">
-                  {/* 4:3 box + cover matches normalized uploads; legacy photos fill uniformly */}
-                  <div className="relative w-full aspect-[4/3] bg-gray-100 overflow-hidden rounded-t-lg">
-                    <LazyImage
-                      src={carImage}
-                      alt={`${carMake} ${carModel}`}
-                      className={`absolute inset-0 w-full h-full object-cover object-center ${
-                        car?.isSold ? "opacity-60" : ""
-                      }`}
-                      width="100%"
-                      height="100%"
-                    />
-                    {car?.isSold && (
-                      <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold z-10">
-                        SOLD
-                      </div>
-                    )}
+        <>
+          <div className="mb-4">
+            <SortAndViewOptions
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+              viewMode={viewMode}
+              onViewChange={setViewMode}
+              totalResults={sortedCars.length}
+              resultLabel="listings"
+            />
+          </div>
+          <div
+            className={`${
+              viewMode === "list"
+                ? "grid grid-cols-1 gap-4"
+                : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+            }`}
+          >
+          {sortedCars.map((car) => (
+            <CarCard
+              key={car._id}
+              car={car}
+              variant={viewMode === "list" ? "list" : "grid"}
+              actions={
+                <div className="space-y-2">
+                  <div className="flex gap-2">
                     <button
-                      onClick={() => toggleSave(carId)}
-                      className="absolute top-4 right-4 bg-white p-2 rounded-full shadow-md"
+                      type="button"
+                      onClick={() => navigate(`/edit-car/${car._id}`)}
+                      disabled={car?.isSold}
+                      className={`flex-1 px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors ${
+                        car?.isSold
+                          ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                          : "bg-primary-500 hover:brightness-110 text-white"
+                      }`}
                     >
-                      {savedCars.includes(carId) ? (
-                        <BsBookmarkFill className="text-primary-500 text-xl" />
-                      ) : (
-                        <BsBookmark className="text-primary-500 text-xl" />
-                      )}
+                      {car?.isSold ? "Edit disabled" : "Edit"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleMarkAsSold(car, car?.isSold)}
+                      disabled={updatingCars.has(car._id)}
+                      className={`flex-1 px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-primary-500 hover:brightness-110 text-white`}
+                    >
+                      {updatingCars.has(car._id)
+                        ? "Updating..."
+                        : car?.isSold
+                          ? "Mark available"
+                          : "Mark as Sold"}
                     </button>
                   </div>
-
-                  <div className="p-5">
-                    <h4 className="md:text-xl text-lg font-medium">
-                      {carMake} {carModel} - {carYear}
-                    </h4>
-
-                    <div className="flex items-center my-3 justify-around border-b border-gray-200 pb-3">
-                      <div className="flex items-center flex-col gap-2">
-                        <LazyImage
-                          src={images.milesIcon}
-                          alt="Miles Icon"
-                          width={24}
-                          height={24}
-                          className="w-6 h-6 object-contain"
-                        />
-                        {car?.mileage || "N/A"} km
-                      </div>
-                      <div className="flex items-center flex-col gap-2">
-                        <LazyImage
-                          src={images.fuelTypeIcon}
-                          alt="Fuel Icon"
-                          width={24}
-                          height={24}
-                          className="w-6 h-6 object-contain"
-                        />
-                        {car?.fuelType || "N/A"}
-                      </div>
-                      <div className="flex items-center flex-col gap-2">
-                        <LazyImage
-                          src={images.transmissionIcon}
-                          alt="Transmission Icon"
-                          width={24}
-                          height={24}
-                          className="w-6 h-6 object-contain"
-                        />
-                        {car?.transmission || "N/A"}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between py-4">
-                      <div className="flex items-center gap-2 md:text-xl font-medium text-lg">
-                        PKR{" "}
-                        <h5
-                          className={`price ${
-                            car?.isSold ? "line-through text-gray-500" : ""
-                          }`}
-                        >
-                          {carPrice}
-                        </h5>
-                      </div>
-                      <button
-                        onClick={() => car && navigate(buildCarUrl(car))}
-                        className="text-primary-500 flex items-center gap-2"
-                        disabled={!car?._id}
-                      >
-                        View Details
-                        <IoIosArrowRoundUp className="text-2xl rotate-[43deg]" />
-                      </button>
-                    </div>
-                    <div className="space-y-2">
-                      {/* Action Buttons */}
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => navigate(`/edit-car/${car._id}`)}
-                          disabled={car?.isSold}
-                          className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                            car?.isSold
-                              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                              : "bg-primary-500 hover:opacity-90 text-white"
-                          }`}
-                        >
-                          {car?.isSold ? "Edit Disabled" : "Edit"}
-                        </button>
-                        <button
-                          onClick={() => handleMarkAsSold(car, car?.isSold)}
-                          disabled={updatingCars.has(car._id)}
-                          className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                            car?.isSold
-                              ? "bg-green-500 hover:bg-green-600 text-white"
-                              : "bg-primary-500 hover:opacity-90 text-white"
-                          } disabled:opacity-50 disabled:cursor-not-allowed`}
-                        >
-                          {updatingCars.has(car._id)
-                            ? "Updating..."
-                            : car?.isSold
-                              ? "Mark as Available"
-                              : "Mark as Sold"}
-                        </button>
-                      </div>
-
-                      {/* Relist button for sold/expired listings */}
-                      {(car?.status === "sold" ||
-                        car?.status === "expired") && (
-                        <button
-                          onClick={async () => {
-                            if (
-                              window.confirm(
-                                "Relist this car? A new active listing will be created.",
-                              )
-                            ) {
-                              try {
-                                setUpdatingCars((prev) =>
-                                  new Set(prev).add(car._id),
-                                );
-                                await relistCar(car._id).unwrap();
-                                toast.success("Car relisted successfully!");
-                                refetch();
-                              } catch (error) {
-                                toast.error(
-                                  error?.data?.message ||
-                                    "Failed to relist car",
-                                );
-                              } finally {
-                                setUpdatingCars((prev) => {
-                                  const newSet = new Set(prev);
-                                  newSet.delete(car._id);
-                                  return newSet;
-                                });
-                              }
-                            }
-                          }}
-                          disabled={isRelisting || updatingCars.has(car?._id)}
-                          className="w-full px-4 py-2 bg-primary-500 hover:opacity-90 text-white rounded-md font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
-                        >
-                          {isRelisting || updatingCars.has(car?._id)
-                            ? "Relisting..."
-                            : "Relist"}
-                        </button>
-                      )}
-                    </div>
-                  </div>
+                  {(car?.status === "sold" || car?.status === "expired") && (
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        if (window.confirm("Relist this car? A new active listing will be created.")) {
+                          try {
+                            setUpdatingCars((prev) => new Set(prev).add(car._id));
+                            await relistCar(car._id).unwrap();
+                            toast.success("Car relisted successfully!");
+                            refetch();
+                          } catch (error) {
+                            toast.error(error?.data?.message || "Failed to relist car");
+                          } finally {
+                            setUpdatingCars((prev) => {
+                              const next = new Set(prev);
+                              next.delete(car._id);
+                              return next;
+                            });
+                          }
+                        }
+                      }}
+                      disabled={isRelisting || updatingCars.has(car?._id)}
+                      className="w-full px-4 py-2.5 bg-primary-500 hover:brightness-110 text-white rounded-lg font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isRelisting || updatingCars.has(car?._id) ? "Relisting..." : "Relist"}
+                    </button>
+                  )}
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              }
+            />
+          ))}
+          </div>
+        </>
       )}
     </section>
   );

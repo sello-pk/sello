@@ -11,7 +11,7 @@ import NewsLatter from "../../components/utils/NewsLatter";
 
 const UserListingPage = () => {
   return (
-    <div className="bg-[#F5F5F5]">
+    <div className="bg-gray-100">
       <UserListingHero />
 
       {/* Constrained Width Sections - Like Header */}

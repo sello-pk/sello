@@ -1,35 +1,41 @@
 import React, { useState, useEffect, useMemo, useCallback, memo } from "react";
-import { images } from "../../../assets/assets";
 import { IoIosArrowRoundUp } from "react-icons/io";
-import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
-import { buildCarUrl } from "../../../utils/urlBuilders";
-import {
-  useGetCarsQuery,
-  useGetMeQuery,
-  useGetSavedCarsQuery,
-  useSaveCarMutation,
-  useUnsaveCarMutation,
-} from "../../../redux/services/api";
-import { Image as LazyImage } from "../../ui/Image";
-import { formatPrice } from "../../../utils";
-import toast from "react-hot-toast";
+import { useGetCarsQuery } from "../../../redux/services/api";
+import CarCard from "../../common/CarCard";
+import SortAndViewOptions from "../../listings/SortAndViewOptions";
 
-// Skeleton Loader Component
+const sortCars = (cars, sortBy) => {
+  if (!cars?.length) return cars;
+  const list = [...cars];
+  switch (sortBy) {
+    case "price-low": return list.sort((a, b) => (a.price || 0) - (b.price || 0));
+    case "price-high": return list.sort((a, b) => (b.price || 0) - (a.price || 0));
+    case "year-new": return list.sort((a, b) => (b.year || 0) - (a.year || 0));
+    case "year-old": return list.sort((a, b) => (a.year || 0) - (b.year || 0));
+    case "mileage-low": return list.sort((a, b) => (a.mileage || 0) - (b.mileage || 0));
+    case "mileage-high": return list.sort((a, b) => (b.mileage || 0) - (a.mileage || 0));
+    case "oldest": return list.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+    case "newest":
+    default: return list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+  }
+};
+
+// Skeleton matching CarCard layout (rounded-xl, 3:2 image, content block)
 const CarCardSkeleton = () => (
-  <div className="md:px-6 md:py-8 bg-white rounded-lg shadow-sm animate-pulse">
-    <div className="w-full h-48 bg-gray-200 rounded-t-lg"></div>
-    <div className="p-4">
-      <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
-      <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
-      <div className="flex justify-between mb-4">
-        <div className="h-3 bg-gray-200 rounded w-1/4"></div>
-        <div className="h-3 bg-gray-200 rounded w-1/4"></div>
-        <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+  <div className="bg-white rounded-xl overflow-hidden border border-[#e5e7eb] shadow-md animate-pulse flex flex-col">
+    <div className="w-full aspect-[3/2] bg-gray-200" />
+    <div className="p-4 flex flex-col flex-1">
+      <div className="h-4 bg-gray-200 rounded w-3/4" />
+      <div className="h-3 bg-gray-100 rounded w-1/2 mt-1.5" />
+      <div className="border-t border-gray-100 my-3" />
+      <div className="flex justify-between gap-2">
+        <div className="h-3 bg-gray-100 rounded w-14" />
+        <div className="h-3 bg-gray-100 rounded w-12" />
+        <div className="h-3 bg-gray-100 rounded w-14" />
       </div>
-      <div className="flex justify-between items-center">
-        <div className="h-6 bg-gray-200 rounded w-1/3"></div>
-        <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+      <div className="border-t border-gray-100 mt-3 pt-3 flex justify-end">
+        <div className="h-5 bg-gray-200 rounded w-24" />
       </div>
     </div>
   </div>
@@ -48,6 +54,8 @@ const GetAllCarsSection = () => {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState("all");
   const [page, setPage] = useState(1);
+  const [sortBy, setSortBy] = useState("newest");
+  const [viewMode, setViewMode] = useState("grid");
   const [displayLimit, setDisplayLimit] = useState(12); // For Load More feature
   const [allLoadedCars, setAllLoadedCars] = useState([]); // Accumulate loaded cars
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -56,26 +64,6 @@ const GetAllCarsSection = () => {
   const isHomePage = location.pathname === "/" || location.pathname === "/home";
   const limit = isHomePage ? 6 : 12; // Show 6 on home, 12 on listing page
   const LOAD_MORE_THRESHOLD = 100; // Switch to pagination after 100 items
-
-  // Get user data and saved cars
-  const token = localStorage.getItem("token");
-  const { isLoading: isLoadingUser, isError: isUserError } = useGetMeQuery(
-    undefined,
-    {
-      skip: !token, // Skip if no token
-    },
-  );
-  const { data: savedCarsData } = useGetSavedCarsQuery(undefined, {
-    skip: !token || isLoadingUser || isUserError, // Only fetch if user is logged in
-  });
-  const [saveCar, { isLoading: isSaving }] = useSaveCarMutation();
-  const [unsaveCar, { isLoading: isUnsaving }] = useUnsaveCarMutation();
-
-  // Extract saved car IDs
-  const savedCars = useMemo(() => {
-    if (!savedCarsData || !Array.isArray(savedCarsData)) return [];
-    return savedCarsData.map((car) => car._id || car.id).filter(Boolean);
-  }, [savedCarsData]);
 
   // Get URL parameters
   const [searchParams] = useSearchParams();
@@ -196,57 +184,6 @@ const GetAllCarsSection = () => {
   //   }
   // };
 
-  // handlePageChange();
-
-  const toggleSave = useCallback(
-    async (carId, e) => {
-      e?.stopPropagation(); // Prevent navigation when clicking save button
-
-      // Check token first - this is the most reliable check
-      const currentToken = localStorage.getItem("token");
-      if (!currentToken) {
-        toast.error("Please login to save cars");
-        navigate("/login");
-        return;
-      }
-
-      const isSaved = savedCars.includes(carId);
-
-      try {
-        if (isSaved) {
-          await unsaveCar(carId).unwrap();
-          toast.success("Car removed from saved list");
-        } else {
-          await saveCar(carId).unwrap();
-          toast.success("Car saved successfully");
-        }
-      } catch (error) {
-        // Check if it's an authentication error
-        const errorStatus = error?.status || error?.data?.status;
-        const errorMessage = error?.data?.message || error?.message || "";
-
-        if (
-          errorStatus === 401 ||
-          errorStatus === 403 ||
-          errorMessage.toLowerCase().includes("auth") ||
-          errorMessage.toLowerCase().includes("login") ||
-          errorMessage.toLowerCase().includes("unauthorized")
-        ) {
-          toast.error("Your session has expired. Please login again.");
-          // Only clear token and redirect if it's actually an auth error
-          setTimeout(() => {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            navigate("/login");
-          }, 1000);
-        } else {
-          toast.error(errorMessage || "Failed to update saved cars");
-        }
-      }
-    },
-    [savedCars, saveCar, unsaveCar, navigate],
-  );
-
   // Define the available tabs - memoized
   const tabs = useMemo(
     () => [
@@ -258,13 +195,18 @@ const GetAllCarsSection = () => {
   );
 
   // Filter cars based on active tab (client-side fallback) - memoized
-  // Note: Backend already filters by condition, but this is a safety fallback
   const filteredCars = useMemo(() => {
     if (activeTab === "all") return cars;
     return cars.filter(
       (car) => car.condition?.toLowerCase() === activeTab.toLowerCase(),
     );
   }, [cars, activeTab]);
+
+  // Sorted cars for listing page (sort only when not home)
+  const sortedCars = useMemo(
+    () => (isHomePage ? filteredCars : sortCars(filteredCars, sortBy)),
+    [filteredCars, sortBy, isHomePage],
+  );
 
   // Prevent rendering on search-results page to avoid conflicts
   if (
@@ -277,13 +219,16 @@ const GetAllCarsSection = () => {
   // Show skeleton loaders while loading
   if (isLoading) {
     return (
-      <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-[#F5F5F5]">
+      <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-10 md:py-12">
         <div className="max-w-8xl mx-auto w-full">
-          <h2 className="md:text-4xl text-2xl font-medium mb-8">
+          <h2 className="text-2xl md:text-3xl font-bold text-[#0B0C1E] mb-2">
             Explore All Vehicles
           </h2>
-          <div className="grid md:grid-cols-3 grid-cols-1 md:gap-10 gap-6">
-            {[...Array(6)].map((_, index) => (
+          <p className="text-gray-500 text-sm mb-6">
+            Browse new and used vehicles
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, index) => (
               <CarCardSkeleton key={index} />
             ))}
           </div>
@@ -292,7 +237,7 @@ const GetAllCarsSection = () => {
     );
   }
 
-  if (error && carsData && carsData.length > 0) {
+  if (error && carsData?.cars?.length > 0) {
     // Extract error message from RTK Query error structure
     const errorMessage =
       error?.data?.message ||
@@ -301,14 +246,14 @@ const GetAllCarsSection = () => {
       "Unknown error occurred";
 
     return (
-      <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-[#F5F5F5]">
+      <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-10 md:py-12">
         <div className="max-w-8xl mx-auto w-full">
-          <div className="text-center">
-            <h2 className="text-xl text-red-500 mb-4">Error loading cars</h2>
-            <p className="text-gray-600 mb-4">{errorMessage}</p>
+          <div className="rounded-xl border border-[#e5e7eb] bg-white py-12 px-6 text-center">
+            <h2 className="text-xl font-semibold text-red-600 mb-2">Error loading vehicles</h2>
+            <p className="text-gray-600 mb-6">{errorMessage}</p>
             <button
               onClick={() => navigate(0)}
-              className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90 transition-colors"
+              className="px-6 py-2.5 bg-[#ff8a00] text-white rounded-xl font-semibold hover:brightness-110 transition-all"
             >
               Retry
             </button>
@@ -319,22 +264,25 @@ const GetAllCarsSection = () => {
   }
 
   return (
-    <section className="px-3 max-w-8xl mx-auto  sm:px-4 md:px-6 lg:px-8 py-12">
-      <div className="">
-        <h2 className="md:text-4xl text-2xl font-medium">
+    <section className="px-3 max-w-8xl mx-auto sm:px-4 md:px-6 lg:px-8 py-10 md:py-12 min-w-0 overflow-x-hidden">
+      <div className="min-w-0">
+        <h2 className="text-2xl md:text-3xl font-bold text-[#0B0C1E]">
           Explore All Vehicles
         </h2>
+        <p className="text-gray-500 text-sm mt-1">
+          Browse new and used vehicles
+        </p>
 
         {/* Tabs */}
-        <div className="flex space-x-8 border-b mt-5 border-gray-200 overflow-x-auto pb-2">
+        <div className="flex gap-1 mt-6 p-1 bg-gray-100 rounded-xl w-fit overflow-x-auto">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
-              className={`pb-3 text-lg font-medium text-[#0B0C1E] transition-all duration-300 whitespace-nowrap ${
+              className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
                 activeTab === tab.id
-                  ? "border-b-[3px] border-[#FFB400]"
-                  : "text-opacity-60 hover:text-opacity-100"
+                  ? "bg-white text-[#0B0C1E] shadow-sm"
+                  : "text-gray-600 hover:text-[#0B0C1E] hover:bg-white/50"
               }`}
             >
               {tab.label}
@@ -342,197 +290,57 @@ const GetAllCarsSection = () => {
           ))}
         </div>
 
-        {/* Results Count */}
-        {!isHomePage && totalCars > 0 && (
-          <div className="my-4 text-sm text-gray-600 flex items-center justify-between">
-            <span>
-              Showing <span className="font-semibold">{cars.length}</span> of{" "}
-              <span className="font-semibold">{totalCars}</span> vehicles
-            </span>
-            {shouldShowLoadMore && (
-              <span className="text-xs text-gray-500">
-                ({totalLoaded} loaded)
-              </span>
-            )}
+        {/* Sort and view (listings page only) */}
+        {!isHomePage && filteredCars.length > 0 && (
+          <div className="mt-5">
+            <SortAndViewOptions
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+              viewMode={viewMode}
+              onViewChange={setViewMode}
+              totalResults={sortedCars.length}
+              resultLabel="vehicles"
+            />
           </div>
         )}
 
         {/* Cars Grid */}
-        <div className="my-5 grid md:grid-cols-3 grid-cols-1 md:gap-10 gap-6">
+        <div
+          className={`mt-6 min-w-0 ${
+            !isHomePage && viewMode === "list"
+              ? "grid grid-cols-1 gap-4 sm:gap-6"
+              : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
+          }`}
+        >
           {filteredCars.length === 0 ? (
-            <p className="col-span-full text-center text-gray-500 py-8">
-              {activeTab === "all"
-                ? "No vehicles available at the moment."
-                : `No ${activeTab} vehicles found.`}
-            </p>
+            <div className="col-span-full rounded-xl border border-[#e5e7eb] bg-white py-16 px-6 text-center">
+              <p className="text-gray-500 text-lg">
+                {activeTab === "all"
+                  ? "No vehicles available at the moment."
+                  : `No ${activeTab} vehicles found.`}
+              </p>
+              <p className="text-gray-400 text-sm mt-2">
+                Try another tab or check back later.
+              </p>
+            </div>
           ) : (
-            (isHomePage ? filteredCars.slice(0, 6) : filteredCars).map(
-              (car, index) => {
-                const carId = car?._id || index;
-                const carImage = car?.images?.[0] || images.carPlaceholder;
-                const carMake = car?.make || "Unknown Make";
-                const carModel = car?.model || "Unknown Model";
-                // Validate and format year
-                const carYear =
-                  car?.year &&
-                  typeof car.year === "number" &&
-                  car.year > 1900 &&
-                  car.year < 2100
-                    ? car.year
-                    : "N/A";
-
-                // Format price properly using utility function
-                const carPrice = formatPrice(car?.price);
-
-                return (
-                  <div
-                    className="md:px-6 md:py-8 bg-[#FFFFFF] rounded-lg shadow-sm"
-                    key={carId}
-                  >
-                    <div className="w-full h-full border border-gray-100 rounded-bl-2xl rounded-br-2xl md:pb-8 pb-14">
-                      <div className="relative w-full aspect-[4/3] bg-gray-100 overflow-hidden rounded-t-lg">
-                        <LazyImage
-                          src={carImage}
-                          alt={`${carMake} ${carModel}`}
-                          className="absolute inset-0 w-full h-full object-cover object-center"
-                          width="100%"
-                          height="100%"
-                          onError={() => {
-                            // This will be handled by the LazyImage component
-                          }}
-                        />
-                        {/* Featured Badge */}
-                        {car?.featured && (
-                          <div className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold z-10">
-                            FEATURED
-                          </div>
-                        )}
-                        {/* Verified Dealer Badge */}
-                        {car?.postedBy?.role === "dealer" &&
-                          car?.postedBy?.dealerInfo?.verified && (
-                            <div
-                              className={`absolute ${
-                                car?.featured ? "top-14" : "top-4"
-                              } left-4 bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold z-10 flex items-center gap-1 shadow-lg`}
-                            >
-                              <svg
-                                className="w-3 h-3"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                              VERIFIED DEALER
-                            </div>
-                          )}
-                        <button
-                          onClick={(e) => toggleSave(carId, e)}
-                          disabled={isSaving || isUnsaving}
-                          className="absolute top-4 right-4 bg-white p-2 rounded-full shadow-md hover:bg-gray-50 transition-colors disabled:opacity-50 z-10"
-                          title={
-                            savedCars.includes(carId)
-                              ? "Remove from saved"
-                              : "Save car"
-                          }
-                        >
-                          {savedCars.includes(carId) ? (
-                            <BsBookmarkFill className="text-primary-500 text-xl" />
-                          ) : (
-                            <BsBookmark className="text-gray-400 hover:text-primary-500 text-xl transition-colors" />
-                          )}
-                        </button>
-                      </div>
-
-                      <div className="p-5">
-                        {/* Dealer Badge in Card */}
-                        {car?.postedBy?.role === "dealer" &&
-                          car?.postedBy?.dealerInfo &&
-                          car?.postedBy?.dealerInfo?.verified && (
-                            <div className="mb-2 flex items-center gap-1">
-                              <svg
-                                className="w-4 h-4 text-green-500"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                              <span className="text-xs font-semibold text-green-600">
-                                {car?.postedBy?.dealerInfo?.businessName ||
-                                  "Verified Dealer"}
-                              </span>
-                            </div>
-                          )}
-                        <h4 className="md:text-xl text-lg font-medium">
-                          {carMake} {carModel} - {carYear}
-                        </h4>
-
-                        <div className="flex items-center my-3 justify-around border-b border-gray-200 pb-3">
-                          <div className="flex items-center flex-col gap-2">
-                            <LazyImage
-                              src={images.milesIcon}
-                              alt="Miles Icon"
-                              width={24}
-                              height={24}
-                              className="w-6 h-6 object-contain"
-                            />
-                            {car?.mileage
-                              ? `${car.mileage.toLocaleString()} km`
-                              : "N/A"}
-                          </div>
-                          <div className="flex items-center flex-col gap-2">
-                            <LazyImage
-                              src={images.fuelTypeIcon}
-                              alt="Fuel Icon"
-                              width={24}
-                              height={24}
-                              className="w-6 h-6 object-contain"
-                            />
-                            {car?.fuelType || "N/A"}
-                          </div>
-                          <div className="flex items-center flex-col gap-2">
-                            <LazyImage
-                              src={images.transmissionIcon}
-                              alt="Transmission Icon"
-                              width={24}
-                              height={24}
-                              className="w-6 h-6 object-contain"
-                            />
-                            {car?.transmission || "N/A"}
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between py-4">
-                          <div className="flex items-center gap-2 md:text-xl font-medium text-lg">
-                            PKR <h5 className={`price`}>{carPrice}</h5>
-                          </div>
-                          <button
-                            onClick={() => car && navigate(buildCarUrl(car))}
-                            className={`flex items-center gap-2 text-primary-500`}
-                          >
-                            View Details
-                            <IoIosArrowRoundUp className="text-2xl rotate-[43deg]" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              },
+            (isHomePage ? filteredCars.slice(0, 6) : sortedCars).map(
+              (car) => (
+                <CarCard
+                  key={car._id}
+                  car={car}
+                  variant={
+                    !isHomePage && viewMode === "list" ? "list" : "grid"
+                  }
+                />
+              ),
             )
           )}
         </div>
 
         {/* View All Link - Show on home page when there are cars */}
         {isHomePage && filteredCars.length > 0 && (
-          <div className="flex justify-center mt-8">
+          <div className="flex justify-center mt-10">
             <button
               onClick={() => {
                 const params = new URLSearchParams();
@@ -543,7 +351,7 @@ const GetAllCarsSection = () => {
                   `/listings${params.toString() ? "?" + params.toString() : ""}`,
                 );
               }}
-              className="px-6 py-3 bg-primary-500 text-white rounded-lg hover:opacity-90 transition-colors font-medium flex items-center gap-2"
+              className="px-6 py-3 bg-[#ff8a00] text-white rounded-xl font-semibold hover:brightness-110 transition-all shadow-md flex items-center gap-2"
             >
               View All Vehicles
               <IoIosArrowRoundUp className="text-xl rotate-[40deg]" />
@@ -557,7 +365,7 @@ const GetAllCarsSection = () => {
             <button
               onClick={handleLoadMore}
               disabled={isLoadingMore}
-              className="px-8 py-3 bg-primary-500 text-white rounded-lg hover:opacity-90 transition-all duration-200 font-medium shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-8 py-3 bg-[#ff8a00] text-white rounded-xl font-semibold transition-all duration-200 shadow-md hover:shadow-lg hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {isLoadingMore ? (
                 <>
@@ -597,153 +405,72 @@ const GetAllCarsSection = () => {
 
         {/* Pagination Controls - Show after 100 items or when total > 100 */}
         {shouldShowPagination && totalPages > 1 && (
-          <div className="flex flex-col items-center gap-4 mt-10">
-            {/* Page Numbers */}
+          <div className="flex flex-col items-center gap-5 mt-10 pt-8 border-t border-[#e5e7eb]">
+            <span className="text-sm text-gray-600 font-medium">
+              Page {page} of {totalPages}
+            </span>
             <div className="flex flex-wrap justify-center items-center gap-2">
-              {/* First Page */}
-              {page > 3 && (
-                <>
-                  <button
-                    onClick={() => {
-                      setPage(1);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                    className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50 transition-colors font-medium"
-                  >
-                    1
-                  </button>
-                  {page > 4 && <span className="px-2 text-gray-400">...</span>}
-                </>
-              )}
-
-              {/* Previous Pages */}
-              {page > 1 && page <= totalPages && (
-                <>
-                  {page > 2 && (
-                    <button
-                      onClick={() => {
-                        setPage(page - 2);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                      className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50 transition-colors font-medium"
-                    >
-                      {page - 2}
-                    </button>
-                  )}
-                  <button
-                    onClick={() => {
-                      setPage(page - 1);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                    className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50 transition-colors font-medium"
-                  >
-                    {page - 1}
-                  </button>
-                </>
-              )}
-
-              {/* Current Page */}
-              <button
-                className="px-4 py-2 border-2 border-primary-500 rounded-lg shadow-sm bg-primary-500 text-white font-medium"
-                disabled
-              >
-                {page}
-              </button>
-
-              {/* Next Pages */}
-              {page < totalPages && (
-                <>
-                  <button
-                    onClick={() => {
-                      setPage(page + 1);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                    className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50 transition-colors font-medium"
-                  >
-                    {page + 1}
-                  </button>
-                  {page < totalPages - 1 && (
-                    <button
-                      onClick={() => {
-                        setPage(page + 2);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                      className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50 transition-colors font-medium"
-                    >
-                      {page + 2}
-                    </button>
-                  )}
-                </>
-              )}
-
-              {/* Last Page */}
-              {page < totalPages - 2 && (
-                <>
-                  {page < totalPages - 3 && (
-                    <span className="px-2 text-gray-400">...</span>
-                  )}
-                  <button
-                    onClick={() => {
-                      setPage(totalPages);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                    className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50 transition-colors font-medium"
-                  >
-                    {totalPages}
-                  </button>
-                </>
-              )}
-            </div>
-
-            {/* Navigation Buttons */}
-            <div className="flex items-center gap-4">
               <button
                 onClick={() => {
                   setPage((p) => Math.max(p - 1, 1));
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 disabled={page === 1}
-                className="px-6 py-2.5 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2"
+                className="px-4 py-2.5 rounded-xl border border-[#e5e7eb] bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2 text-sm"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
                 Previous
               </button>
-              <span className="text-sm text-gray-600 font-medium">
-                Page {page} of {totalPages}
+              {page > 2 && (
+                <button
+                  onClick={() => { setPage(1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                  className="px-4 py-2.5 rounded-xl border border-[#e5e7eb] bg-white hover:bg-gray-50 font-medium text-sm"
+                >
+                  1
+                </button>
+              )}
+              {page > 3 && <span className="px-1 text-gray-400">...</span>}
+              {page > 1 && (
+                <button
+                  onClick={() => { setPage(page - 1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                  className="px-4 py-2.5 rounded-xl border border-[#e5e7eb] bg-white hover:bg-gray-50 font-medium text-sm"
+                >
+                  {page - 1}
+                </button>
+              )}
+              <span className="px-4 py-2.5 rounded-xl bg-[#ff8a00] text-white font-semibold text-sm">
+                {page}
               </span>
+              {page < totalPages && (
+                <button
+                  onClick={() => { setPage(page + 1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                  className="px-4 py-2.5 rounded-xl border border-[#e5e7eb] bg-white hover:bg-gray-50 font-medium text-sm"
+                >
+                  {page + 1}
+                </button>
+              )}
+              {page < totalPages - 2 && <span className="px-1 text-gray-400">...</span>}
+              {page < totalPages - 1 && (
+                <button
+                  onClick={() => { setPage(totalPages); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                  className="px-4 py-2.5 rounded-xl border border-[#e5e7eb] bg-white hover:bg-gray-50 font-medium text-sm"
+                >
+                  {totalPages}
+                </button>
+              )}
               <button
                 onClick={() => {
                   setPage((p) => Math.min(p + 1, totalPages));
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 disabled={page === totalPages}
-                className="px-6 py-2.5 border border-primary-500 rounded-lg shadow-sm bg-primary-500 text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2"
+                className="px-4 py-2.5 rounded-xl bg-[#ff8a00] text-white font-semibold hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 text-sm"
               >
                 Next
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
             </div>
