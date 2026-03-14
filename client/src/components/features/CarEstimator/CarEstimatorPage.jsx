@@ -102,14 +102,14 @@ const CarEstimatorPage = () => {
       />
       <div className="min-h-screen bg-gray-50">
         {/* Hero Header */}
-        <section className="relative w-full overflow-hidden md:min-h-[48vh]">
+        <section className="relative w-full overflow-hidden min-h-[48vh] md:h-[48vh]">
           <img
             src={estimatorHero}
             alt="car estimator hero image"
             className="absolute inset-0 h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-slate-900/70" />
-          <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:min-h-[48vh] md:py-14">
+          <div className="relative z-10 flex min-h-[48vh] md:h-[48vh] flex-col justify-center max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-10">
             <div className="text-center">
               <MotionDiv
                 initial={{ opacity: 0, y: 20 }}

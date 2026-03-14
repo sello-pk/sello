@@ -94,7 +94,7 @@ const App = () => {
         </>
       )}
 
-      <main id="main-content" className="min-w-0 overflow-x-hidden">
+      <main id="main-content" className="min-w-0 overflow-x-hidden pb-24 sm:pb-20">
         <AppRouter />
       </main>
 

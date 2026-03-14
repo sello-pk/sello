@@ -111,7 +111,7 @@ const GenericVehicleCategoryPage = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div
-        className="relative text-white"
+        className="relative min-h-[48vh] md:h-[48vh] text-white overflow-hidden"
         style={{
           backgroundImage: `url("${config.bgImage}")`,
           backgroundSize: "cover",
@@ -119,35 +119,38 @@ const GenericVehicleCategoryPage = () => {
           backgroundColor: "#1a1a1a",
         }}
       >
-        <div className="relative z-10 container mx-auto px-4 py-20 bg-black/40">
+        <div className="relative z-10 flex min-h-[48vh] md:h-[48vh] w-full flex-col justify-center items-center px-4 sm:px-6 py-6 sm:py-8 md:py-10 bg-black/50">
           <Link
             to="/listings"
-            className="inline-flex items-center gap-2 mb-8 text-white/90 hover:text-white transition"
+            className="absolute left-4 sm:left-6 top-6 sm:top-8 z-20 inline-flex flex-wrap items-center gap-2 text-white/90 hover:text-white transition max-w-full"
           >
-            <HiOutlineArrowLeft /> Back to All Vehicles
+            <HiOutlineArrowLeft className="flex-shrink-0" />
+            <span className="break-words">Back to All Vehicles</span>
           </Link>
 
-          <div className="text-center max-w-4xl mx-auto">
-            <div className="mb-8">
-              <div className="inline-flex items-center justify-center w-24 h-24 bg-white/20 backdrop-blur-sm rounded-2xl">
-                <Icon className="text-5xl text-white" />
+          <div className="flex justify-center items-center w-full max-w-full">
+            <div className="text-center w-full max-w-2xl mx-auto px-6 sm:px-8 py-5 sm:py-6 shrink-0">
+              <div className="mb-4">
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl">
+                  <Icon className="text-4xl text-white drop-shadow-md" />
+                </div>
               </div>
+
+              <h1 className="text-4xl md:text-5xl font-bold mb-3 text-white drop-shadow-lg">
+                {config.title}
+              </h1>
+              <p className="text-base md:text-lg text-white/95 mb-5 max-w-xl mx-auto leading-relaxed drop-shadow-lg">
+                {config.description}
+              </p>
+
+              {total > 0 && (
+                <div className="inline-flex items-center gap-4 px-5 py-2.5 rounded-full">
+                  <span className="text-white font-semibold text-sm md:text-base">
+                    {total} {total === 1 ? "Listing" : "Listings"} Available
+                  </span>
+                </div>
+              )}
             </div>
-
-            <h1 className="text-5xl md:text-6xl font-bold mb-4">
-              {config.title}
-            </h1>
-            <p className="text-xl md:text-2xl text-white/95 mb-8 max-w-3xl mx-auto leading-relaxed">
-              {config.description}
-            </p>
-
-            {total > 0 && (
-              <div className="inline-flex items-center gap-4 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full">
-                <span className="text-white font-semibold">
-                  {total} {total === 1 ? "Listing" : "Listings"} Available
-                </span>
-              </div>
-            )}
           </div>
         </div>
       </div>
