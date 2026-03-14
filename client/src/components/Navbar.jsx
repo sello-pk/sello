@@ -41,10 +41,7 @@ const Navbar = () => {
   };
 
   // Only fetch if token exists
-  const {
-    data: currentUser,
-    isLoading,
-  } = useGetMeQuery(undefined, {
+  const { data: currentUser, isLoading } = useGetMeQuery(undefined, {
     skip: !token,
   });
 
@@ -267,7 +264,7 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className={`w-full sticky top-0 z-50 border-b backdrop-blur-md overflow-x-hidden ${
+        className={`w-full sticky top-0 z-50 border-b backdrop-blur-md ${
           isListingsTheme
             ? "bg-white/95 text-gray-700 border-gray-200"
             : "bg-primary-500 text-white border-primary-400"
@@ -331,7 +328,7 @@ const Navbar = () => {
                 </button>
 
                 {openAuctionsDropdown && (
-                  <div className="absolute top-full left-0 pt-2 z-50">
+                  <div className="absolute top-full left-0 pt-2 z-[100]">
                     <div className="w-64 rounded-xl border border-gray-200 bg-white shadow-lg text-gray-700 py-2">
                       {publicAuctionLinks.map((link) => (
                         <Link
@@ -396,7 +393,7 @@ const Navbar = () => {
                 </button>
 
                 {openCompanyDropdown && (
-                  <div className="absolute top-full left-0 pt-2 z-50">
+                  <div className="absolute top-full left-0 pt-2 z-[100]">
                     <div className="w-56 rounded-xl border border-gray-200 bg-white shadow-lg text-gray-700 py-2">
                       {companyLinks.slice(0, 3).map((link) => (
                         <Link
