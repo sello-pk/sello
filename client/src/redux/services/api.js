@@ -478,12 +478,17 @@ export const api = createApi({
       },
     }),
 
-    // ✅ Get Car Counts by Make
+    // ✅ Get Car Counts by Make (optional vehicleType to scope counts: Car, Bike, etc.)
     getCarCountsByMake: builder.query({
-      query: () => ({
-        url: "/cars/stats/counts-by-make",
-        method: "GET",
-      }),
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        if (params?.vehicleType) searchParams.set("vehicleType", params.vehicleType);
+        const qs = searchParams.toString();
+        return {
+          url: `/cars/stats/counts-by-make${qs ? `?${qs}` : ""}`,
+          method: "GET",
+        };
+      },
       transformResponse: (response) => {
         const data = response?.data || response;
         // The backend returns an array: [{_id: "Brand", count: 10}]

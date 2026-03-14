@@ -23,7 +23,7 @@ const router = express.Router();
 // Public
 router.get("/cars", cache(300, cacheKeys.carListings), getAllCars);
 router.get("/cars/filter", cache(300, cacheKeys.carListings), getFilteredCars);
-router.get("/cars/stats/counts-by-make", cache(1800, () => "cache:cars:stats:counts-by-make"), getCarCountsByMake);
+router.get("/cars/stats/counts-by-make", cache(1800, (req) => `cache:cars:stats:counts-by-make:${req.query?.vehicleType || "all"}`), getCarCountsByMake);
 router.get("/cars/:id", validateObjectId('id'), cache(600, cacheKeys.car), getSingleCar);
 
 // Actions

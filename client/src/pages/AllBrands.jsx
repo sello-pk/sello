@@ -23,9 +23,12 @@ const AllBrands = () => {
     selectedVehicleType,
   );
 
-  // Fetch counts by make from API (global counts; listing counts per make)
+  // Fetch counts by make; when a vehicle type tab is selected, scope counts to that type only
   const { data: carCountsByMake = {}, isLoading: countsLoading } =
-    useGetCarCountsByMakeQuery(undefined, { refetchOnMountOrArgChange: true });
+    useGetCarCountsByMakeQuery(
+      selectedVehicleType ? { vehicleType: selectedVehicleType } : {},
+      { refetchOnMountOrArgChange: true },
+    );
 
   // Filter active brands with images and sort by order; when a vehicle type tab is selected, show only that type
   const activeBrands = React.useMemo(() => {
@@ -56,7 +59,7 @@ const AllBrands = () => {
         if (orderA !== orderB) return orderA - orderB;
         return (a.name || "").localeCompare(b.name || "");
       });
-  }, [makes, carCountsByMake]);
+  }, [makes, carCountsByMake, selectedVehicleType]);
 
   const isLoading = categoriesLoading || countsLoading;
 

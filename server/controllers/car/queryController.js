@@ -120,17 +120,20 @@ export const getSingleCar = async (req, res) => {
 
 export const getCarCountsByMake = async (req, res) => {
   try {
-    const now = new Date();
+    const match = {
+      status: { $nin: ["deleted", "expired"] },
+      $or: [
+        { isApproved: true },
+        { isApproved: { $exists: false } }
+      ]
+    };
+    // Scope counts by vehicle type when provided (so Bike tab shows only bike listing counts)
+    const validVehicleTypes = ["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"];
+    if (req.query.vehicleType && validVehicleTypes.includes(req.query.vehicleType)) {
+      match.vehicleType = req.query.vehicleType;
+    }
     const counts = await Car.aggregate([
-      { 
-        $match: { 
-          status: { $nin: ["deleted", "expired"] },
-          $or: [
-            { isApproved: true },
-            { isApproved: { $exists: false } }
-          ]
-        } 
-      },
+      { $match: match },
       {
         $group: {
           _id: { $toLower: { $trim: { input: "$make" } } },
