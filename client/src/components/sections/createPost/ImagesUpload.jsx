@@ -8,7 +8,6 @@ import {
   LISTING_MAX_FILE_MB,
   MSG_INVALID_TYPE,
   msgFileTooLarge,
-  msgTooManyImages,
   msgTotalExceeded,
   MSG_FITTED_PARTIAL,
 } from "../../../constants/listingImages";
@@ -42,7 +41,7 @@ const ImagesUpload = ({ onImagesChange }) => {
     e.preventDefault();
     setIsDragging(false);
     const files = Array.from(e.dataTransfer.files).filter((file) =>
-      file.type.startsWith("image/")
+      file.type.startsWith("image/"),
     );
     if (files.length > 0) processFiles(files);
   };
@@ -69,12 +68,12 @@ const ImagesUpload = ({ onImagesChange }) => {
       const remainingSlots = MAX_FILES - currentCount;
       if (remainingSlots > 0) {
         toast.error(
-          `Only ${remainingSlots} more image(s) allowed. Maximum ${MAX_FILES} per listing.`
+          `Only ${remainingSlots} more image(s) allowed. Maximum ${MAX_FILES} per listing.`,
         );
         validFiles.splice(remainingSlots);
       } else {
         toast.error(
-          `Maximum ${MAX_FILES} images per listing. Remove some first.`
+          `Maximum ${MAX_FILES} images per listing. Remove some first.`,
         );
         return;
       }
@@ -140,7 +139,7 @@ const ImagesUpload = ({ onImagesChange }) => {
       const progress = Math.min((elapsed / duration) * 100, 100);
 
       setUploads((prev) =>
-        prev.map((u) => (u.id === upload.id ? { ...u, progress } : u))
+        prev.map((u) => (u.id === upload.id ? { ...u, progress } : u)),
       );
 
       if (progress < 100) {
@@ -148,7 +147,7 @@ const ImagesUpload = ({ onImagesChange }) => {
       } else {
         setUploads((prev) => {
           const updated = prev.map((u) =>
-            u.id === upload.id ? { ...u, progress: 100, status: "done" } : u
+            u.id === upload.id ? { ...u, progress: 100, status: "done" } : u,
           );
           if (activeIndex === null) {
             const newIndex = updated.findIndex((u) => u.id === upload.id);
@@ -187,69 +186,117 @@ const ImagesUpload = ({ onImagesChange }) => {
   };
 
   const completedUploads = uploads.filter((u) => u.status === "done");
+  const openFileInput = () => fileInputRef.current?.click();
 
   return (
-    <div className="max-w-xl mx-auto rounded-xl overflow-hidden">
-      <div
-        className={`relative px-4 py-8 transition-all duration-300 ${
-          isDragging
-            ? "bg-primary-300 ring-4 ring-primary-300 ring-opacity-50"
-            : "bg-gray-100"
-        }`}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      >
-        <div className="box h-10 w-10 md:h-12 md:w-12 rounded-full bg-gradient-to-r from-primary-400 to-primary-500 absolute top-6 z-10 left-1/2 transform -translate-x-1/2 -translate-y-1/2 shadow-md shadow-gray-300"></div>
-        <div className="bg-white rounded-xl border-2 border-primary-300 border-dashed h-40 md:h-48 flex items-center justify-center overflow-hidden group relative">
-          {activeIndex !== null ? (
+    <div className="max-w-xl mx-auto">
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/jpg,image/png,image/webp"
+          multiple
+          onChange={handleImageUpload}
+          className="hidden"
+          id="imagesFileInput"
+        />
+
+        {/* Drop zone - dashed border, white background */}
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={openFileInput}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              openFileInput();
+            }
+          }}
+          className={`relative min-h-[200px] md:min-h-[220px] rounded-xl border-2 border-dashed flex items-center justify-center overflow-hidden transition-colors cursor-pointer select-none ${
+            isDragging
+              ? "border-primary-300 bg-primary-30/50"
+              : "border-gray-300 bg-white"
+          }`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
+          {activeIndex !== null && uploads[activeIndex]?.preview ? (
             <>
               <img
-                src={uploads[activeIndex]?.preview}
+                src={uploads[activeIndex].preview}
                 alt="preview"
-                className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+                className="w-full h-full min-h-[200px] object-contain transition-transform duration-500 group-hover:scale-105"
               />
               <button
                 type="button"
-                onClick={() => removeFile(uploads[activeIndex].id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeFile(uploads[activeIndex].id);
+                }}
                 className="absolute top-3 right-3 bg-red-500 text-white text-xs px-2 py-1 rounded hover:bg-red-600 shadow"
               >
                 Remove
               </button>
             </>
           ) : (
-            <div className="text-center p-6">
-              <p className="text-primary-500 text-sm">No image uploaded yet</p>
+            <div className="flex flex-col items-center justify-center gap-4 py-8 px-4">
+              {/* Image icon - two overlapping squares, primary 3n light primary 3ounded square */}
+              <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-primary-500">
+                <svg
+                  className="w-8 h-8 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.8}
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <p className="text-gray-700 text-sm text-center">
+                Drop your images here. or{" "}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openFileInput();
+                  }}
+                  className="text-primary-400 font-medium hover:text-primary-500 hover:underline focus:outline-none"
+                >
+                  browse
+                </button>
+              </p>
             </div>
           )}
         </div>
 
-        {(isCompressing ||
-          uploads.some((u) => u.status === "uploading")) && (
-          <div className="mt-4 space-y-2">
+        {(isCompressing || uploads.some((u) => u.status === "uploading")) && (
+          <div className="px-4 py-3 space-y-2 border-t border-gray-100">
             {isCompressing && (
-              <div className="bg-white p-3 shadow-sm border rounded text-sm text-gray-600">
+              <p className="text-sm text-gray-600">
                 Optimizing images for faster upload…
-              </div>
+              </p>
             )}
             {uploads
               .filter((u) => u.status === "uploading")
               .map((upload) => (
-                <div
-                  key={upload.id}
-                  className="bg-white p-3 shadow-sm border rounded"
-                >
-                  <div className="flex justify-between mb-1">
-                    <span className="text-sm text-gray-700 truncate pr-2">
+                <div key={upload.id} className="flex flex-col gap-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-700 truncate pr-2">
                       {upload.file.name}
                     </span>
-                    <span className="text-xs text-primary-500 font-semibold">
+                    <span className="text-primary-500 font-medium shrink-0">
                       {Math.round(upload.progress)}%
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-gray-200 rounded-full h-1.5">
                     <div
-                      className="h-2 rounded-full bg-gradient-to-r from-primary-500 to-primary-300 transition-all"
+                      className="h-1.5 rounded-full bg-primary-500 transition-all"
                       style={{ width: `${upload.progress}%` }}
                     />
                   </div>
@@ -258,30 +305,15 @@ const ImagesUpload = ({ onImagesChange }) => {
           </div>
         )}
 
-        <div className="mt-4 text-center">
-          <div className="text-sm text-gray-600 mb-2">
-            Up to {MAX_FILES} photos per listing • {LISTING_MAX_TOTAL_MB}MB total
-            (all images combined) • JPG, PNG, WebP
-          </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleImageUpload}
-            className="hidden"
-            id="fileInput"
-          />
-          <label
-            htmlFor="fileInput"
-            className="inline-block px-6 py-3 bg-gradient-to-r from-primary-400 to-primary-500 hover:scale-x-110 rounded-lg cursor-pointer hover:bg-gradient-to-l transition"
-          >
-            Select Images
-          </label>
+        <div className="px-4 py-3 border-t border-gray-100 bg-gray-50/50">
+          <p className="text-xs text-gray-500 text-center">
+            Up to {MAX_FILES} photos • {LISTING_MAX_TOTAL_MB}MB total • JPG,
+            PNG, WebP
+          </p>
         </div>
 
         {completedUploads.length > 0 && (
-          <div className="flex justify-center mt-6 gap-2">
+          <div className="flex justify-center py-3 gap-2 flex-wrap">
             {uploads.map(
               (upload, idx) =>
                 upload.status === "done" && (
@@ -289,13 +321,13 @@ const ImagesUpload = ({ onImagesChange }) => {
                     type="button"
                     key={upload.id}
                     onClick={() => setActiveIndex(idx)}
-                    className={`w-3 h-3 rounded-full ${
+                    className={`w-3 h-3 rounded-full transition-colors ${
                       activeIndex === idx
-                        ? "bg-gradient-to-r from-primary-400 to-primary-500 shadow"
-                        : "bg-gray-400"
+                        ? "bg-primary-300 ring-2 ring-primary-300 ring-offset-1"
+                        : "bg-gray-300 hover:bg-gray-400"
                     }`}
                   />
-                )
+                ),
             )}
           </div>
         )}
