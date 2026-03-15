@@ -1,95 +1,57 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
-import { images } from "../../../assets/assets";
-import { FaApple } from "react-icons/fa";
-import { IoLogoGooglePlaystore } from "react-icons/io5";
+import { useLocation, Link } from "react-router-dom";
+import createPost from "../../../assets/createPost.gif";
+import { MdArrowOutward } from "react-icons/md";
 
 const BannerInFilter = () => {
   const location = useLocation();
-
-  // Check if current location is create-post
   const isCreatePostPage = location.pathname === "/create-post";
 
   return (
-    <div className="my-10">
+    <div className="my-8 md:my-10 w-full overflow-hidden">
       <div
-        className={`w-full rounded-tl-[40px] rounded-br-[40px] flex flex-col md:flex-row items-center justify-between py-4 px-6 md:px-12 bg-primary-500
-        `}
+        className={`w-full flex flex-col md:flex-row md:items-center md:justify-between gap-6 md:gap-8 py-6 pl-6 pr-6 sm:pl-8 sm:pr-8 md:pl-10 md:pr-10 lg:pl-12 lg:pr-12 xl:pl-16 xl:pr-16 bg-[#F5F5F5] rounded-xl md:rounded-2xl ${
+          isCreatePostPage ? "text-black" : "text-white"
+        }`}
       >
-        {/* Left Content */}
-        <div className="max-w-xl text-center md:text-left">
-          <h2
-            className={`text-2xl md:text-4xl font-semibold py-2 ${
-              isCreatePostPage ? "text-black" : "text-white"
-            }`}
-          >
-            Shop Used Cars, Whether You're on The Lot or On The Go
+        {/* Left: Content + Buttons */}
+        <div className="flex-1 min-w-0 flex flex-col items-start text-left max-w-xl">
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold leading-tight">
+            Sell Your Car in Just a Few Steps
           </h2>
-          <p
-            className={`py-2 text-sm md:text-base ${
-              isCreatePostPage ? "text-black" : "text-white"
-            }`}
-          >
-            Download our app to save cars and create alerts, scan window
-            stickers on our lot for more details, and even call dibs on a car by
-            holding for up to 7 days.
+          <p className="mt-2 sm:mt-3 text-sm sm:text-base text-gray-600 md:text-gray-700 leading-relaxed">
+            Posting your car on Sello.pk is fast and simple. Upload photos, add
+            details, and publish your listing in minutes.
           </p>
-
-          {/* Store Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 mt-6">
-            {/* Apple Button */}
-            <button
-              className={`flex items-center gap-3 shadow-md px-5 py-3 rounded-xl border hover:shadow-lg transition
-              ${
-                isCreatePostPage
-                  ? "bg-black text-white border-black hover:bg-gray-900"
-                  : "bg-white text-primary-500 border-gray-200 hover:bg-gray-100"
-              }`}
+          <div className="mt-4 sm:mt-5 flex flex-wrap gap-3">
+            {!isCreatePostPage && (
+              <Link
+                to="/create-post"
+                className="inline-flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-lg bg-primary-500 text-white font-medium text-sm sm:text-base hover:opacity-90 transition-opacity"
+              >
+                Post your car
+                <MdArrowOutward className="w-4 h-4 shrink-0" />
+              </Link>
+            )}
+            <Link
+              to="/listings"
+              className="inline-flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-lg border-2 border-gray-300 text-gray-700 font-medium text-sm sm:text-base hover:border-primary-500 hover:text-primary-500 transition-colors"
             >
-              <FaApple
-                className={`text-3xl md:text-4xl ${
-                  isCreatePostPage ? "text-white" : "text-primary-500"
-                }`}
-              />
-              <div className="flex flex-col items-start leading-tight text-left">
-                <span className="text-xs md:text-sm">Download on the</span>
-                <span className="text-sm md:text-lg font-semibold">
-                  App Store
-                </span>
-              </div>
-            </button>
-
-            {/* Google Play Button */}
-            <button
-              className={`flex items-center gap-3 shadow-md px-5 py-3 rounded-xl border hover:shadow-lg transition
-              ${
-                isCreatePostPage
-                  ? "bg-black text-white border-black hover:bg-gray-900"
-                  : "bg-white text-primary-500 border-gray-200 hover:bg-gray-100"
-              }`}
-            >
-              <IoLogoGooglePlaystore
-                className={`text-3xl md:text-4xl ${
-                  isCreatePostPage ? "text-white" : "text-primary-500"
-                }`}
-              />
-              <div className="flex flex-col items-start leading-tight text-left">
-                <span className="text-xs md:text-sm">Get it on</span>
-                <span className="text-sm md:text-lg font-semibold">
-                  Google Play
-                </span>
-              </div>
-            </button>
+              Browse listings
+              <MdArrowOutward className="w-4 h-4 shrink-0" />
+            </Link>
           </div>
         </div>
 
-        {/* Right Image */}
-        <div className="mt-8 md:mt-0 md:ml-8 w-[220px] sm:w-[300px] md:w-[350px]">
-          <img
-            src={images.app}
-            alt="App Preview"
-            className="w-full h-auto drop-shadow-lg"
-          />
+        {/* Image - gap from right edge via banner padding */}
+        <div className="flex-shrink-0 flex justify-center md:justify-end">
+          <div className="w-[180px] h-[280px] sm:w-[200px] sm:h-[320px] md:w-[220px] md:h-[360px] lg:w-[240px] lg:h-[400px]">
+            <img
+              src={createPost}
+              alt="Create listing preview"
+              className="w-full h-full object-contain drop-shadow-lg"
+            />
+          </div>
         </div>
       </div>
     </div>
