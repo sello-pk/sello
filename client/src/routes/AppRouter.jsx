@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import RouteLoader from "../components/common/RouteLoader";
 import {
   ProtectedRoute,
@@ -136,9 +136,11 @@ const HelpCenter = lazy(() => import("../pages/help/HelpCenter.jsx"));
 const FAQs = lazy(() => import("../pages/help/FAQs.jsx"));
 
 const AppRouter = () => {
+  const location = useLocation();
+  // Force route tree to remount when location changes (fixes production bug: URL updates but view stays, e.g. after leaving /filter)
   return (
     <Suspense fallback={<RouteLoader />}>
-      <Routes>
+      <Routes key={location.key ?? location.pathname}>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
