@@ -1,12 +1,19 @@
 /**
  * Listing image upload limits (cars / auction submit-car).
- * Keep in sync with client ImagesUpload.jsx
+ * Keep in sync with client constants/listingImages.js and ImagesUpload.jsx
+ *
+ * Production: If uploads fail after 4–5 images, the reverse proxy (e.g. nginx)
+ * is likely limiting request body size. Set body limit to at least 40MB, e.g.:
+ *   nginx: client_max_body_size 40m;
+ *   Then reload nginx.
  */
 export const LISTING_MAX_IMAGES = 15;
 /** Total size of all images in one request (bytes) */
 export const LISTING_MAX_TOTAL_BYTES = 35 * 1024 * 1024; // 35MB
 /** Per-file ceiling for multer (single huge file still capped) */
 export const LISTING_MAX_FILE_BYTES = 35 * 1024 * 1024; // 35MB
+/** Min request body size for proxy (for docs / error messages) */
+export const UPLOAD_PROXY_MIN_BODY_MB = 40;
 
 /** User-facing labels (single source for server error messages) */
 export const LISTING_IMAGE_LIMITS_LABEL = `${LISTING_MAX_IMAGES} images max, ${Math.round(LISTING_MAX_TOTAL_BYTES / (1024 * 1024))}MB total per listing`;

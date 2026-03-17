@@ -8,6 +8,7 @@ import {
   LISTING_MAX_IMAGES,
   MSG_IMAGE_FILE_TOO_LARGE,
   MSG_IMAGE_TOO_MANY,
+  UPLOAD_PROXY_MIN_BODY_MB,
 } from "../constants/listingUpload.js";
 
 /**
@@ -134,7 +135,7 @@ export const multerErrorHandler = (err, req, res, next) => {
       message = MSG_IMAGE_TOO_MANY;
     } else if (code === "LIMIT_PART_COUNT") {
       message =
-        "Upload request is too large. Reduce the number or size of images and try again.";
+        `Upload request is too large. Allowed: up to ${LISTING_MAX_IMAGES} images, 35MB total. If using a reverse proxy (e.g. nginx), set body limit to at least ${UPLOAD_PROXY_MIN_BODY_MB}MB (client_max_body_size ${UPLOAD_PROXY_MIN_BODY_MB}m) and reload.`;
     } else if (
       err.message &&
       (err.message.includes("Only images") ||
@@ -142,7 +143,7 @@ export const multerErrorHandler = (err, req, res, next) => {
     ) {
       message = err.message;
     } else {
-      message = `Image upload failed. Use JPG, PNG, or WebP only — up to ${LISTING_MAX_IMAGES} images and 35MB total per listing.`;
+      message = `Image upload failed. Use JPG, PNG, or WebP only — up to ${LISTING_MAX_IMAGES} images and 35MB total per listing. If upload fails after a few images, set proxy body limit to at least ${UPLOAD_PROXY_MIN_BODY_MB}MB (e.g. nginx: client_max_body_size ${UPLOAD_PROXY_MIN_BODY_MB}m).`;
     }
 
     Logger.warn("Multer upload error", { code, message, url: req?.originalUrl });

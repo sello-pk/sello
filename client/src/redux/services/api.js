@@ -26,9 +26,9 @@ function isListingImageUpload(args) {
 }
 
 const MSG_FETCH_UPLOAD =
-  "Upload didn't finish — connection may have dropped, timed out, or request was too large (413). Use 5–8 photos, smaller images, wait a minute, then try again.";
+  "Upload didn't finish — connection may have dropped, timed out, or request was too large. Allowed: up to 15 images, 35MB total. If it fails after a few images, your server's proxy may limit body size; set it to at least 40MB (e.g. nginx: client_max_body_size 40m).";
 const MSG_413 =
-  "Images are too large. Use 5–8 photos and smaller file sizes, then try again.";
+  "Request too large. Allowed: up to 15 images, 35MB total. If your server uses nginx (or similar), set client_max_body_size 40m and reload, then try again.";
 const MSG_FETCH_GENERIC =
   "Request couldn't complete. If you were uploading photos, try fewer or smaller images and retry. Otherwise check your connection.";
 
