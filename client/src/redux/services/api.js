@@ -1173,10 +1173,29 @@ export const api = createApi({
       providesTags: ["Auction"],
       transformResponse: (response) => response?.data || response,
     }),
-    getAuctionCarBids: builder.query({
-      query: (auctionCarId) => `/auctions/car/${auctionCarId}/bids`,
+    getLiveAuctionByCarId: builder.query({
+      query: (carId) => `/auctions/live-by-car/${carId}`,
       providesTags: ["Auction"],
-      transformResponse: (response) => response?.data || response,
+      transformResponse: (response) => response?.data ?? null,
+      transformErrorResponse: (response) => {
+        // 404 = car not in active auction; treat as success with null
+        if (response?.status === 404) return { data: null };
+        return response;
+      },
+    }),
+    getAuctionCarBids: builder.query({
+      query: (args) => {
+        const id = typeof args === "string" ? args : args?.auctionCarId;
+        const params = typeof args === "object" && args ? args : {};
+        const searchParams = new URLSearchParams();
+        if (params.page) searchParams.append("page", params.page);
+        if (params.limit) searchParams.append("limit", params.limit);
+        if (params.sort === "oldest") searchParams.append("sort", "oldest");
+        const qs = searchParams.toString();
+        return `/auctions/car/${id}/bids${qs ? `?${qs}` : ""}`;
+      },
+      providesTags: ["Auction"],
+      transformResponse: (response) => response,
     }),
     placeBid: builder.mutation({
       query: (data) => ({
@@ -1189,6 +1208,14 @@ export const api = createApi({
     setProxyBid: builder.mutation({
       query: (data) => ({
         url: "/auctions/proxy-bid",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Auction"],
+    }),
+    buyNow: builder.mutation({
+      query: (data) => ({
+        url: "/auctions/buy-now",
         method: "POST",
         body: data,
       }),
@@ -1242,6 +1269,19 @@ export const api = createApi({
       providesTags: ["Auction"],
       transformResponse: (response) => response?.data || response,
     }),
+    getEscrowById: builder.query({
+      query: (id) => `/escrow/${id}`,
+      providesTags: ["Auction"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    payEscrow: builder.mutation({
+      query: (body) => ({
+        url: "/escrow/pay",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Auction"],
+    }),
     getMyAuctionResult: builder.query({
       query: (auctionCarId) => `/auctions/my/result/${auctionCarId}`,
       providesTags: ["Auction"],
@@ -1258,12 +1298,94 @@ export const api = createApi({
       transformResponse: (response) => response?.data || response,
     }),
     submitCarToAuction: builder.mutation({
+      query: (data) => {
+        const file = data?.inspectionReportFile;
+        if (file instanceof File) {
+          const form = new FormData();
+          form.append("inspectionReport", file);
+          [
+            "auctionId",
+            "carId",
+            "startingBid",
+            "reservePrice",
+            "buyNowPrice",
+            "title",
+            "description",
+            "make",
+            "model",
+            "year",
+            "condition",
+            "price",
+            "colorExterior",
+            "colorInterior",
+            "fuelType",
+            "engineCapacity",
+            "transmission",
+            "mileage",
+            "features",
+            "regionalSpec",
+            "bodyType",
+            "country",
+            "city",
+            "location",
+            "vehicleType",
+            "vehicleTypeCategory",
+            "videoUrls",
+          ].forEach((key) => {
+            const v = data[key];
+            if (v === undefined || v === null) return;
+            form.append(key, typeof v === "object" ? JSON.stringify(v) : v);
+          });
+          if (data.images?.length) {
+            data.images.forEach((img) => {
+              if (img instanceof File) form.append("images", img);
+            });
+          }
+          if (data.damageImages?.length) {
+            data.damageImages.forEach((img) => {
+              if (img instanceof File) form.append("damageImages", img);
+            });
+          }
+          return { url: "/auctions/submit-car", method: "POST", body: form };
+        }
+        return { url: "/auctions/submit-car", method: "POST", body: data };
+      },
+      invalidatesTags: ["Auction"],
+    }),
+    getAuctionStats: builder.query({
+      query: (auctionId) => `/auctions/${auctionId}/stats`,
+      providesTags: ["Auction"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    extendAuction: builder.mutation({
+      query: ({ id, minutes }) => ({
+        url: `/auctions/${id}/extend`,
+        method: "POST",
+        body: { minutes },
+      }),
+      invalidatesTags: ["Auction"],
+    }),
+    getMyAuctionAnalytics: builder.query({
+      query: () => "/auctions/my/auction-analytics",
+      providesTags: ["Auction"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    getInspectionTimeSlots: builder.query({
+      query: () => "/inspections/time-slots",
+      transformResponse: (response) => response?.data || response,
+    }),
+    bookInspection: builder.mutation({
       query: (data) => ({
-        url: "/auctions/submit-car",
+        url: "/inspections/book",
         method: "POST",
         body: data,
       }),
       invalidatesTags: ["Auction"],
+    }),
+    getMyInspectionBookings: builder.query({
+      query: () => "/inspections/my-bookings",
+      providesTags: ["Auction"],
+      transformResponse: (response) => response?.data || response,
     }),
 
     // ═══════════════════════════ Payment / Wallet Endpoints ════════════════════
@@ -1388,6 +1510,7 @@ export const {
   useGetAuctionByIdQuery,
   useGetAuctionCarsQuery,
   useGetAuctionCarDetailQuery,
+  useGetLiveAuctionByCarIdQuery,
   useGetAuctionCarBidsQuery,
   usePlaceBidMutation,
   useSetProxyBidMutation,
@@ -1399,9 +1522,17 @@ export const {
   useGetMyBidsQuery,
   useGetMyWonAuctionsQuery,
   useGetMyEscrowsQuery,
+  useGetEscrowByIdQuery,
+  usePayEscrowMutation,
   useGetMyAuctionResultQuery,
   useGetMyWalletTransactionsQuery,
   useSubmitCarToAuctionMutation,
+  useGetAuctionStatsQuery,
+  useExtendAuctionMutation,
+  useGetMyAuctionAnalyticsQuery,
+  useGetInspectionTimeSlotsQuery,
+  useBookInspectionMutation,
+  useGetMyInspectionBookingsQuery,
   useGetMyWalletQuery,
   useCreateDepositMutation,
   useGetMyDepositsQuery,

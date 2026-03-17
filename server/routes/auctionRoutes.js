@@ -4,6 +4,7 @@ import {
   authorize,
   requireAuctionBidAccess,
 } from "../middlewares/authMiddleware.js";
+import { bidRateLimiter } from "../middlewares/securityMiddleware.js";
 import { hasAnyPermission } from "../middlewares/permissionMiddleware.js";
 import { upload } from "../middlewares/multer.js";
 import {
@@ -12,8 +13,10 @@ import {
   getLiveAuction,
   getAuctionCars,
   getAuctionCarDetail,
+  getLiveAuctionByCarId,
   placeBid,
   setProxyBid,
+  buyNow,
   placeOfflineBid,
   getBidsForCar,
   submitTokenPayment,
@@ -45,9 +48,20 @@ import {
   adminBulkRefundTokens,
   getPaymentStats,
   getMyWalletTransactions,
+  getAuctionSettingsHandler,
+  updateAuctionSettingsHandler,
+  extendAuction,
+  getAuctionStats,
+  getDealerAuctionAnalytics,
+  adminGetAuctionExtensions,
+  adminGetSecurityEvents,
+  getInspectionTimeSlots,
+  bookInspection,
+  getMyInspectionBookings,
 } from "../controllers/auctionController.js";
 
 const router = express.Router();
+const inspectionRouter = express.Router();
 
 // ── Admin (must come before /:id to avoid param collision) ──────────────────
 router.post(
@@ -185,8 +199,9 @@ router.put(
 );
 
 // ── Authenticated User ─────────────────────────────────────────────────────
-router.post("/bid", auth, requireAuctionBidAccess, placeBid);
+router.post("/bid", auth, requireAuctionBidAccess, bidRateLimiter, placeBid);
 router.post("/proxy-bid", auth, requireAuctionBidAccess, setProxyBid);
+router.post("/buy-now", auth, requireAuctionBidAccess, buyNow);
 router.post("/token-payment", auth, submitTokenPayment);
 router.get("/my/token-payments", auth, getMyTokenPayments);
 router.post("/watchlist", auth, addToWatchlist);
@@ -197,14 +212,34 @@ router.get("/my/won", auth, getMyWonAuctions);
 router.get("/my/escrows", auth, getMyEscrows);
 router.get("/my/result/:auctionCarId", auth, getMyAuctionResult);
 router.get("/my/transactions", auth, getMyWalletTransactions);
-router.post("/submit-car", auth, upload.fields([{ name: 'images', maxCount: 15 }]), submitCarToAuction);
+router.get("/my/auction-analytics", auth, getDealerAuctionAnalytics);
+router.post(
+  "/submit-car",
+  auth,
+  upload.fields([
+    { name: "images", maxCount: 15 },
+    { name: "inspectionReport", maxCount: 1 },
+    { name: "damageImages", maxCount: 5 },
+    { name: "documents", maxCount: 5 },
+  ]),
+  submitCarToAuction
+);
 
 // ── Public (specific routes first, then parameterized) ─────────────────────
 router.get("/live", getLiveAuction);
+router.get("/live-by-car/:carId", getLiveAuctionByCarId);
 router.get("/car/:id", getAuctionCarDetail);
 router.get("/car/:auctionCarId/bids", getBidsForCar);
 router.get("/", getAuctions);
 router.get("/:auctionId/cars", getAuctionCars);
+router.get("/:auctionId/stats", getAuctionStats);
+router.post("/:id/extend", auth, extendAuction);
 router.get("/:id", getAuctionById);
 
+// Inspection routes (mounted at /inspections in index)
+inspectionRouter.get("/time-slots", getInspectionTimeSlots);
+inspectionRouter.post("/book", auth, bookInspection);
+inspectionRouter.get("/my-bookings", auth, getMyInspectionBookings);
+
 export default router;
+export { inspectionRouter };

@@ -1240,6 +1240,58 @@ export const adminApi = createApi({
       providesTags: ["Auctions"],
       transformResponse: (response) => response?.data || response,
     }),
+    getAuctionSettings: builder.query({
+      query: () => "/auctions/admin/auction-settings",
+      providesTags: ["Auctions"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    updateAuctionSettings: builder.mutation({
+      query: (body) => ({
+        url: "/auctions/admin/auction-settings",
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    getInspectionBookings: builder.query({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        if (params.status) searchParams.append("status", params.status);
+        if (params.from) searchParams.append("from", params.from);
+        if (params.to) searchParams.append("to", params.to);
+        return `/admin/inspection-bookings?${searchParams.toString()}`;
+      },
+      providesTags: ["Auctions"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    updateInspectionBooking: builder.mutation({
+      query: ({ id, status }) => ({
+        url: `/admin/inspection-bookings/${id}`,
+        method: "PATCH",
+        body: { status },
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    getAuctionExtensions: builder.query({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        if (params.auctionId) searchParams.append("auctionId", params.auctionId);
+        return `/auctions/admin/auction-extensions?${searchParams.toString()}`;
+      },
+      providesTags: ["Auctions"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    getSecurityEvents: builder.query({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        if (params.resolved) searchParams.append("resolved", params.resolved);
+        if (params.type) searchParams.append("type", params.type);
+        if (params.limit) searchParams.append("limit", params.limit);
+        return `/auctions/admin/security-events?${searchParams.toString()}`;
+      },
+      providesTags: ["Auctions"],
+      transformResponse: (response) => response?.data || response,
+    }),
 
     // ═══════════════════════════ Admin Payment/Wallet Endpoints ═══════════════
     adminGetAllWallets: builder.query({
@@ -1446,6 +1498,12 @@ export const {
   useAdminRefundTokenMutation,
   useAdminBulkRefundTokensMutation,
   useGetPaymentStatsQuery,
+  useGetAuctionSettingsQuery,
+  useUpdateAuctionSettingsMutation,
+  useGetInspectionBookingsQuery,
+  useUpdateInspectionBookingMutation,
+  useGetAuctionExtensionsQuery,
+  useGetSecurityEventsQuery,
   useAdminGetAllWalletsQuery,
   useAdminUpdateWalletBalanceMutation,
   useAdminGetAllDepositsQuery,

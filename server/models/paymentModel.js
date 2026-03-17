@@ -32,7 +32,7 @@ const depositSchema = new mongoose.Schema(
     amount: { type: Number, required: true, min: 1 },
     method: {
       type: String,
-      enum: ["jazzcash", "easypaisa", "bank_transfer", "cash_office", "other"],
+      enum: ["jazzcash", "easypaisa", "bank_transfer", "stripe", "cash_office", "other"],
       required: true,
     },
     transactionId: { type: String, default: "" },
@@ -96,6 +96,8 @@ const platformSettingsSchema = new mongoose.Schema(
     platformFeePercent: { type: Number, default: 5 },
     platformFeeFixed: { type: Number, default: 0 },
     minDeposit: { type: Number, default: 10000 },
+    /** Min deposit as % of vehicle value (2–5); 0 = use fixed minDeposit only. */
+    minDepositPercent: { type: Number, default: 0, min: 0, max: 100 },
     maxDeposit: { type: Number, default: 50000000 },
     depositTiers: [
       {

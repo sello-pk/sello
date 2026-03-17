@@ -27,12 +27,15 @@ import {
   useGetAuctionCarDetailQuery,
   usePlaceBidMutation,
   useSetProxyBidMutation,
+  useBuyNowMutation,
   useAddToAuctionWatchlistMutation,
   useRemoveFromAuctionWatchlistMutation,
   useGetMeQuery,
   useGetMyTokenPaymentsQuery,
   useGetMyAuctionAccessStatusQuery,
   useGetMyWalletQuery,
+  useBookInspectionMutation,
+  useGetInspectionTimeSlotsQuery,
 } from "@redux/services/api";
 import { useSocket } from "@contexts/SocketContext";
 
@@ -130,6 +133,10 @@ export default function CarDetail() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showGallery, setShowGallery] = useState(false);
   const [showProxyBidForm, setShowProxyBidForm] = useState(false);
+  const [showInspectionModal, setShowInspectionModal] = useState(false);
+  const [inspectionDate, setInspectionDate] = useState("");
+  const [inspectionTimeSlot, setInspectionTimeSlot] = useState("");
+  const [inspectionNotes, setInspectionNotes] = useState("");
   const [isFollowing, setIsFollowing] = useState(false);
   const [bidAmount, setBidAmount] = useState(0);
   const [proxyMax, setProxyMax] = useState(0);
@@ -164,17 +171,31 @@ export default function CarDetail() {
   });
   const [placeBidMut, { isLoading: bidding }] = usePlaceBidMutation();
   const [setProxyBidMut] = useSetProxyBidMutation();
+  const [buyNowMut, { isLoading: buying }] = useBuyNowMutation();
   const [addWatch] = useAddToAuctionWatchlistMutation();
   const [removeWatch] = useRemoveFromAuctionWatchlistMutation();
+  const [bookInspectionMut, { isLoading: bookingInspection }] = useBookInspectionMutation();
+  const { data: timeSlots = [] } = useGetInspectionTimeSlotsQuery();
 
   const car = detail?.car || {};
   const auction = detail?.auction || {};
   const bids = detail?.bids || [];
   const currentHigh = detail?.currentBid || detail?.startingBid || 0;
-  const minimumBid = currentHigh + 50000;
+  const minimumBid = detail?.minimumNextBid ?? currentHigh + 50000;
+  const totalBidders = detail?.totalBidders ?? 0;
+  const buyNowPrice = detail?.buyNowPrice != null ? Number(detail.buyNowPrice) : null;
   const walletBalance = walletData?.wallet?.balance || 0;
   const hasWalletFundsForBid = walletBalance >= minimumBid;
   const canPlaceBid = hasVerifiedToken || hasWalletFundsForBid;
+  const isAuctionEnded =
+    detail?.status === "sold" ||
+    (auction?.endTime && new Date(auction.endTime) <= new Date());
+  const canBuyNow =
+    auction?.status === "live" &&
+    buyNowPrice > 0 &&
+    detail?.status !== "sold" &&
+    hasAuctionAccess &&
+    (walletBalance >= buyNowPrice || hasVerifiedToken);
 
   useEffect(() => {
     setBidAmount(currentHigh + 50000);
@@ -207,6 +228,56 @@ export default function CarDetail() {
       removeEventListener("new-bid", handleNewBid);
     };
   }, [addEventListener, removeEventListener, handleNewBid]);
+
+  const handleAuctionExtended = useCallback(
+    (data) => {
+      if (data?.auctionId === auction?._id) {
+        toast("Auction extended by 2 minutes", { icon: "⏱️" });
+        refetch();
+      }
+    },
+    [auction?._id, refetch],
+  );
+  const handleOutbid = useCallback(
+    (data) => {
+      if (data?.auctionCarId === auctionCarId) {
+        toast("You were outbid", { icon: "🔔" });
+        refetch();
+      }
+    },
+    [auctionCarId, refetch],
+  );
+  const handleWon = useCallback(
+    (data) => {
+      if (data?.auctionCarId === auctionCarId) {
+        toast.success("You won this lot!");
+        navigate(`/auctions/result?car_id=${auctionCarId}`, { replace: true });
+      }
+    },
+    [auctionCarId, navigate],
+  );
+
+  useEffect(() => {
+    if (!addEventListener) return;
+    addEventListener("auction:extended", handleAuctionExtended);
+    addEventListener("auction:outbid", handleOutbid);
+    addEventListener("auction:won", handleWon);
+    return () => {
+      removeEventListener("auction:extended", handleAuctionExtended);
+      removeEventListener("auction:outbid", handleOutbid);
+      removeEventListener("auction:won", handleWon);
+    };
+  }, [addEventListener, removeEventListener, handleAuctionExtended, handleOutbid, handleWon]);
+
+  const handleBuyNow = async () => {
+    try {
+      await buyNowMut({ auctionCarId }).unwrap();
+      toast.success("Buy now successful! You have won this lot.");
+      navigate(`/auctions/result?car_id=${auctionCarId}`, { replace: true });
+    } catch (err) {
+      toast.error(err?.data?.message || "Buy now failed");
+    }
+  };
 
   const handlePlaceBid = async () => {
     try {
@@ -421,7 +492,26 @@ export default function CarDetail() {
               </div>
             </div>
 
-            {/* Inspection */}
+            {/* Inspection Report (PDF download – Hybrid dealer model) */}
+            {detail?.inspectionReportPdfUrl && (
+              <div className="bg-white rounded-2xl border border-slate-200 p-6">
+                <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-[#FFA602]" />
+                  Inspection Report
+                </h3>
+                <a
+                  href={detail.inspectionReportPdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-800 rounded-lg hover:bg-amber-100 font-medium"
+                >
+                  <FileText className="w-4 h-4" />
+                  Download inspection report (PDF)
+                </a>
+              </div>
+            )}
+
+            {/* Inspection (structured) */}
             {Object.keys(inspection).some(
               (k) => k !== "notes" && inspection[k],
             ) && (
@@ -516,6 +606,11 @@ export default function CarDetail() {
                       Reserve: {formatPrice(detail.reservePrice)}
                     </p>
                   )}
+                  {totalBidders > 0 && (
+                    <p className="text-sm text-slate-500 mt-1">
+                      {totalBidders} bidder{totalBidders !== 1 ? "s" : ""}
+                    </p>
+                  )}
                 </div>
                 <div className="p-6">
                   <p className="text-sm font-medium text-slate-700 mb-3">
@@ -559,7 +654,16 @@ export default function CarDetail() {
                     ))}
                   </div>
 
-                  {auction.status === "live" && (
+                  {isAuctionEnded && (
+                    <div className="bg-slate-100 border border-slate-200 rounded-lg p-4 text-center">
+                      <p className="font-medium text-slate-700">
+                        {detail?.status === "sold"
+                          ? "This lot has been sold"
+                          : "Auction has ended"}
+                      </p>
+                    </div>
+                  )}
+                  {auction.status === "live" && !isAuctionEnded && (
                     <div className="space-y-3">
                       {!isLoggedIn ? (
                         <Button
@@ -582,17 +686,29 @@ export default function CarDetail() {
                           </Button>
                         </div>
                       ) : !canPlaceBid ? (
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-700 text-center">
                             Add funds to your wallet or pay the refundable PKR
                             10,000 token to start bidding
                           </div>
-                          <Button
-                            className="w-full"
-                            onClick={() => navigate("/auctions/token-payment")}
-                          >
-                            Add Funds / Pay Token
-                          </Button>
+                          <div className="flex flex-col sm:flex-row gap-2">
+                            <Button
+                              className="flex-1"
+                              onClick={() => navigate("/auctions/token-payment")}
+                            >
+                              Pay Token (PKR 10,000)
+                            </Button>
+                            <Button
+                              variant="outline"
+                              className="flex-1"
+                              onClick={() => navigate("/auctions/transactions")}
+                            >
+                              Add to Wallet
+                            </Button>
+                          </div>
+                          <p className="text-xs text-slate-500 text-center">
+                            Token: one-time refundable deposit. Wallet: add funds for bids &amp; when you win.
+                          </p>
                         </div>
                       ) : (
                         <>
@@ -616,7 +732,7 @@ export default function CarDetail() {
                             </Button>
                           </div>
                           <p className="text-xs text-slate-500 text-center">
-                            Minimum increment: PKR 50,000
+                            Minimum next bid: {formatPrice(minimumBid)}
                           </p>
                         </>
                       )}
@@ -625,11 +741,28 @@ export default function CarDetail() {
                 </div>
               </div>
 
+              {/* Buy Now */}
+              {canBuyNow && (
+                <div className="mt-4">
+                  <Button
+                    className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg"
+                    onClick={handleBuyNow}
+                    disabled={buying}
+                  >
+                    {buying ? "Processing..." : `Buy Now – ${formatPrice(buyNowPrice)}`}
+                  </Button>
+                  <p className="text-xs text-slate-500 text-center mt-2">
+                    Purchase this lot immediately at the buy-now price
+                  </p>
+                </div>
+              )}
+
               {/* Proxy Bid */}
               {isLoggedIn &&
                 hasAuctionAccess &&
                 canPlaceBid &&
-                auction.status === "live" && (
+                auction.status === "live" &&
+                !isAuctionEnded && (
                   <div className="mt-4">
                     <Button
                       variant="outline"
@@ -640,6 +773,20 @@ export default function CarDetail() {
                     </Button>
                   </div>
                 )}
+
+              {/* Book Inspection */}
+              {isLoggedIn && auctionCarId && (auction?.status === "live" || detail?.status === "approved" || detail?.status === "live") && (
+                <div className="mt-3">
+                  <Button
+                    variant="outline"
+                    className="w-full border-slate-300 text-slate-700 hover:bg-slate-50"
+                    onClick={() => setShowInspectionModal(true)}
+                  >
+                    <Calendar className="w-4 h-4 mr-2 inline" />
+                    Book Physical Inspection
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -688,6 +835,95 @@ export default function CarDetail() {
               <p className="text-xs text-slate-500 text-center">
                 You'll be notified if you're outbid
               </p>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Book Inspection Modal */}
+      {showInspectionModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white rounded-2xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-[#FFA602]" />
+                Book Physical Inspection
+              </h3>
+              <button
+                onClick={() => setShowInspectionModal(false)}
+                className="p-2 hover:bg-slate-100 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <p className="text-slate-600 text-sm mb-4">
+              Schedule a visit to Okara Auction Yard to inspect this vehicle.
+            </p>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-slate-700 mb-1 block">Date *</label>
+                <input
+                  type="date"
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg"
+                  value={inspectionDate}
+                  onChange={(e) => setInspectionDate(e.target.value)}
+                  min={new Date().toISOString().slice(0, 10)}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-700 mb-1 block">Time slot *</label>
+                <select
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg"
+                  value={inspectionTimeSlot}
+                  onChange={(e) => setInspectionTimeSlot(e.target.value)}
+                >
+                  <option value="">Select time</option>
+                  {(Array.isArray(timeSlots) ? timeSlots : ["09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM"]).map((slot) => (
+                    <option key={slot} value={slot}>{slot}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-700 mb-1 block">Notes (optional)</label>
+                <textarea
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg resize-none"
+                  rows={2}
+                  value={inspectionNotes}
+                  onChange={(e) => setInspectionNotes(e.target.value)}
+                  placeholder="Any special requests"
+                />
+              </div>
+              <p className="text-xs text-slate-500 flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5" />
+                Okara Auction Yard, Punjab
+              </p>
+              <Button
+                className="w-full"
+                disabled={!inspectionDate || !inspectionTimeSlot || bookingInspection}
+                onClick={async () => {
+                  try {
+                    await bookInspectionMut({
+                      auctionCarId,
+                      inspectionDate: new Date(inspectionDate).toISOString(),
+                      timeSlot: inspectionTimeSlot,
+                      notes: inspectionNotes,
+                    }).unwrap();
+                    toast.success("Inspection booked. We'll confirm shortly.");
+                    setShowInspectionModal(false);
+                    setInspectionDate("");
+                    setInspectionTimeSlot("");
+                    setInspectionNotes("");
+                  } catch (e) {
+                    toast.error(e?.data?.message || "Failed to book inspection");
+                  }
+                }}
+              >
+                {bookingInspection ? "Booking..." : "Confirm Booking"}
+              </Button>
             </div>
           </motion.div>
         </div>

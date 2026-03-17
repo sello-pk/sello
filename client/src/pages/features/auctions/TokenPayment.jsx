@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import {
@@ -171,6 +171,13 @@ export default function TokenPayment() {
                     <li>3. We'll verify within 1-2 hours</li>
                     <li>4. Token is fully refundable if you don't win</li>
                   </ul>
+                  <p className="text-xs mt-2 text-slate-600">
+                    Need a higher bid limit? Add funds to your{" "}
+                    <Link to="/auctions/transactions" className="text-[#FFA602] font-medium hover:underline">
+                      wallet
+                    </Link>{" "}
+                    (Deposits tab).
+                  </p>
                   {!hasAuctionAccess && (
                     <p className="text-xs mt-2 text-amber-700">
                       Tip: You can submit token payment now. Bid placement still

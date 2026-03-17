@@ -24,6 +24,7 @@ import {
   useGetMyBidsQuery,
   useGetMyWonAuctionsQuery,
   useGetMyEscrowsQuery,
+  usePayEscrowMutation,
   useGetMyTokenPaymentsQuery,
   useGetMyWalletTransactionsQuery,
   useGetMyWalletQuery,
@@ -85,10 +86,14 @@ const txnTypeLabels = {
   deposit: "Deposit",
   bid_hold: "Bid Hold",
   bid_refund: "Bid Refund",
+  bid_lock: "Bid Locked",
   withdrawal: "Withdrawal",
   refund: "Refund",
   admin_credit: "Admin Credit",
   admin_debit: "Admin Debit",
+  penalty: "Penalty",
+  dealer_commission: "Dealer Commission",
+  inspection_fee: "Inspection Fee",
 };
 
 const tabs = [
@@ -102,30 +107,11 @@ const tabs = [
 ];
 
 const depositMethods = [
-  {
-    id: "jazzcash",
-    label: "JazzCash",
-    account: "0300-XXXXXXX",
-    color: "bg-red-50 border-red-200",
-  },
-  {
-    id: "easypaisa",
-    label: "EasyPaisa",
-    account: "0345-XXXXXXX",
-    color: "bg-green-50 border-green-200",
-  },
-  {
-    id: "bank_transfer",
-    label: "Bank Transfer",
-    account: "HBL — IBAN: PK00HABB00000000XXXXX",
-    color: "bg-blue-50 border-blue-200",
-  },
-  {
-    id: "cash_office",
-    label: "Cash at Office",
-    account: "Okara Auction Yard, Punjab",
-    color: "bg-amber-50 border-amber-200",
-  },
+  { id: "jazzcash", label: "JazzCash", account: "0300-XXXXXXX", color: "bg-red-50 border-red-200" },
+  { id: "easypaisa", label: "EasyPaisa", account: "0345-XXXXXXX", color: "bg-green-50 border-green-200" },
+  { id: "bank_transfer", label: "Bank Transfer", account: "HBL — IBAN: PK00HABB00000000XXXXX", color: "bg-blue-50 border-blue-200" },
+  { id: "stripe", label: "Stripe", account: "Card / Online", color: "bg-indigo-50 border-indigo-200" },
+  { id: "cash_office", label: "Cash at Office", account: "Okara Auction Yard, Punjab", color: "bg-amber-50 border-amber-200" },
 ];
 
 const refundTypes = [
@@ -149,6 +135,11 @@ const refundTypes = [
     label: "Partial withdrawal",
     desc: "Partial refund as per admin rules",
   },
+  {
+    id: "withdrawal",
+    label: "Withdraw balance",
+    desc: "Request withdrawal; admin will approve or reject",
+  },
   { id: "other", label: "Other reason", desc: "Subject to admin review" },
 ];
 
@@ -160,6 +151,7 @@ export default function BuyerTransactions() {
     amount: "",
     method: "",
     transactionId: "",
+    receiptUrl: "",
     notes: "",
   });
   const [refundData, setRefundData] = useState({
@@ -171,8 +163,9 @@ export default function BuyerTransactions() {
   const { data: myBids = [], isLoading: bidsLoading } = useGetMyBidsQuery();
   const { data: wonAuctions = [], isLoading: wonLoading } =
     useGetMyWonAuctionsQuery();
-  const { data: escrows = [], isLoading: escrowLoading } =
+  const { data: escrows = [], isLoading: escrowLoading, refetch: refetchEscrows } =
     useGetMyEscrowsQuery();
+  const [payEscrow, { isLoading: payingEscrow }] = usePayEscrowMutation();
   const { data: tokenData, isLoading: tokenLoading } =
     useGetMyTokenPaymentsQuery();
   const { data: walletData, isLoading: walletLoading } =
@@ -211,16 +204,21 @@ export default function BuyerTransactions() {
   const walletTransactions = walletData?.transactions || [];
   const walletSummary = walletData?.summary || {};
 
+  const availableBalance = wallet?.availableBalance ?? (wallet ? Math.max(0, (wallet.balance || 0) - (wallet.totalBidHeld || 0)) : 0);
+  const lockedTokens = wallet?.lockedTokens ?? wallet?.totalBidHeld ?? 0;
+  const isFrozen = walletInfo?.isFrozen === true;
+
   const summaryCards = useMemo(() => {
     const balance = wallet?.balance || 0;
     const activeEscrowCount = walletData?.activeEscrows || 0;
     const totalDeposited = wallet?.totalDeposited || 0;
     const totalSpent = Math.abs(
       (walletSummary.escrow_payment?.total || 0) +
-        (walletSummary.bid_hold?.total || 0),
+        (walletSummary.bid_hold?.total || 0) +
+        (walletSummary.bid_lock?.total || 0),
     );
-    return { balance, activeEscrowCount, totalDeposited, totalSpent };
-  }, [wallet, walletData, walletSummary]);
+    return { balance, availableBalance, lockedTokens, activeEscrowCount, totalDeposited, totalSpent };
+  }, [wallet, walletData, walletSummary, availableBalance, lockedTokens]);
 
   const handleSubmitDeposit = async () => {
     if (!depositData.amount || !depositData.method) {
@@ -231,11 +229,12 @@ export default function BuyerTransactions() {
         amount: Number(depositData.amount),
         method: depositData.method,
         transactionId: depositData.transactionId,
+        receiptUrl: depositData.receiptUrl || undefined,
         notes: depositData.notes,
       }).unwrap();
       toast.success("Deposit submitted for approval");
       setShowDepositForm(false);
-      setDepositData({ amount: "", method: "", transactionId: "", notes: "" });
+      setDepositData({ amount: "", method: "", transactionId: "", receiptUrl: "", notes: "" });
       refetchDeposits();
     } catch (err) {
       toast.error(err?.data?.message || "Failed to submit deposit");
@@ -289,6 +288,11 @@ export default function BuyerTransactions() {
         </div>
 
         {/* Wallet Summary Cards */}
+        {isFrozen && (
+          <div className="mb-4 bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
+            Your wallet is frozen. You cannot deposit or withdraw until an admin resolves this. Contact support.
+          </div>
+        )}
         {!hasAuctionAccess && (
           <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-700">
             Auction bidding access is not approved yet (status:{" "}
@@ -306,9 +310,12 @@ export default function BuyerTransactions() {
             <p className="text-2xl font-bold">
               {formatPrice(summaryCards.balance)}
             </p>
-            <p className="text-xs opacity-80">Wallet Balance</p>
+            <p className="text-xs opacity-80">Total Balance</p>
+            <p className="text-[10px] mt-1 opacity-80">
+              Available: {formatPrice(summaryCards.availableBalance)} · Locked: {formatPrice(summaryCards.lockedTokens)}
+            </p>
             {maxBidLimit > 0 && (
-              <p className="text-[10px] mt-1 opacity-70">
+              <p className="text-[10px] mt-0.5 opacity-70">
                 Max bid: {formatPrice(maxBidLimit)}
               </p>
             )}
@@ -676,10 +683,25 @@ export default function BuyerTransactions() {
                             Payment Instructions
                           </p>
                           <p className="text-xs text-blue-600 mt-1">
-                            Please complete your remaining payment of{" "}
-                            {formatPrice(escrow.amountDue)} before the deadline.
-                            Contact support if you need assistance.
+                            {escrow.amountDue > 0
+                              ? `Please pay the remaining balance of ${formatPrice(escrow.amountDue)} before the deadline. You can pay from your wallet below.`
+                              : "No balance due. Mark as paid to continue."}
                           </p>
+                          <Button
+                            className="mt-3"
+                            disabled={payingEscrow || (escrow.amountDue > 0 && (wallet?.balance ?? 0) < escrow.amountDue)}
+                            onClick={async () => {
+                              try {
+                                await payEscrow({ escrowId: escrow._id }).unwrap();
+                                toast.success("Payment received. Escrow updated.");
+                                refetchEscrows();
+                              } catch (e) {
+                                toast.error(e?.data?.message || "Payment failed");
+                              }
+                            }}
+                          >
+                            {payingEscrow ? "Processing..." : escrow.amountDue > 0 ? `Pay ${formatPrice(escrow.amountDue)} from wallet` : "Mark as paid"}
+                          </Button>
                         </div>
                       )}
                     </div>
@@ -873,6 +895,23 @@ export default function BuyerTransactions() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Receipt URL (optional)
+                      </label>
+                      <input
+                        className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-[#FFA602]"
+                        type="url"
+                        value={depositData.receiptUrl}
+                        onChange={(e) =>
+                          setDepositData({
+                            ...depositData,
+                            receiptUrl: e.target.value,
+                          })
+                        }
+                        placeholder="https://... (upload receipt elsewhere and paste link)"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">
                         Notes (optional)
                       </label>
                       <textarea
@@ -918,7 +957,7 @@ export default function BuyerTransactions() {
                   Request a refund from your wallet balance
                 </p>
               </div>
-              {(wallet?.balance || 0) > 0 && (
+              {availableBalance > 0 && !isFrozen && (
                 <Button onClick={() => setShowRefundForm(true)}>
                   <Undo className="w-4 h-4 mr-2" />
                   Request Refund
@@ -1020,7 +1059,7 @@ export default function BuyerTransactions() {
                   <div className="space-y-4">
                     <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-700">
                       <p className="font-medium">
-                        Available Balance: {formatPrice(wallet?.balance)}
+                        Available Balance: {formatPrice(availableBalance)}
                       </p>
                       <p className="text-xs mt-1">
                         A platform fee will be deducted from your refund amount.
@@ -1040,7 +1079,7 @@ export default function BuyerTransactions() {
                             amount: e.target.value,
                           })
                         }
-                        max={wallet?.balance || 0}
+                        max={availableBalance || 0}
                         placeholder="Enter amount"
                       />
                     </div>

@@ -36,6 +36,7 @@ import {
   useGetAuctionsQuery,
   useGetLiveAuctionQuery,
   useSubmitCarToAuctionMutation,
+  useGetMyAuctionAnalyticsQuery,
 } from "../../redux/services/api";
 import { useGetSellerBuyerChatsQuery } from "../../redux/services/api";
 import { Spinner } from "../../components/ui/Loading";
@@ -66,6 +67,7 @@ const DealerDashboard = () => {
     auctionId: "",
     carId: "",
     images: [],
+    inspectionReportFile: null,
     inspection_report: {},
   });
   const photoInputRef = useRef(null);
@@ -93,6 +95,7 @@ const DealerDashboard = () => {
         auctionId: "",
         carId: "",
         images: [],
+        inspectionReportFile: null,
         inspection_report: {},
       };
     });
@@ -103,6 +106,7 @@ const DealerDashboard = () => {
   const { data: watchlistItems = [] } = useGetMyAuctionWatchlistQuery();
   const { data: upcomingAuctions = [] } = useGetAuctionsQuery({ status: "scheduled", limit: 5 });
   const { data: liveAuction } = useGetLiveAuctionQuery();
+  const { data: auctionAnalytics } = useGetMyAuctionAnalyticsQuery();
 
   const auctionStats = {
     totalAuctions: wonAuctions.length,
@@ -265,6 +269,10 @@ const DealerDashboard = () => {
       toast.error("Select auction, car and starting bid");
       return;
     }
+    if (!newCar.inspectionReportFile || !(newCar.inspectionReportFile instanceof File)) {
+      toast.error("Inspection report (PDF) is required. Please upload the vehicle inspection report.");
+      return;
+    }
 
     try {
       await submitCarToAuction({
@@ -273,6 +281,7 @@ const DealerDashboard = () => {
         startingBid: Number(newCar.starting_bid),
         reservePrice: newCar.reserve_price ? Number(newCar.reserve_price) : undefined,
         buyNowPrice: newCar.buy_now_price ? Number(newCar.buy_now_price) : undefined,
+        inspectionReportFile: newCar.inspectionReportFile,
       }).unwrap();
 
       toast.success("Vehicle submitted for auction approval");
@@ -296,6 +305,7 @@ const DealerDashboard = () => {
           auctionId: "",
           carId: "",
           images: [],
+          inspectionReportFile: null,
           inspection_report: {},
         };
       });
@@ -644,6 +654,41 @@ const DealerDashboard = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Auction Analytics (dealer auction stats from API) */}
+              {auctionAnalytics && (
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <FiBarChart2 className="text-primary-500" /> Auction Analytics
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <div>
+                      <p className="text-xs text-gray-500">Cars Submitted</p>
+                      <p className="text-xl font-bold text-gray-900">{auctionAnalytics.carsSubmitted ?? 0}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Pending Approval</p>
+                      <p className="text-xl font-bold text-amber-600">{auctionAnalytics.pendingApproval ?? 0}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">In Auction</p>
+                      <p className="text-xl font-bold text-blue-600">{auctionAnalytics.inAuction ?? 0}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Sold</p>
+                      <p className="text-xl font-bold text-green-600">{auctionAnalytics.sold ?? 0}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Total Auction Revenue</p>
+                      <p className="text-lg font-bold text-gray-900">PKR {(auctionAnalytics.totalAuctionRevenue ?? 0).toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Avg Sale Price</p>
+                      <p className="text-lg font-bold text-gray-900">PKR {(auctionAnalytics.averageSalePrice ?? 0).toLocaleString()}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Subscription Status Card - Only show if subscription tab is enabled */}
               {showSubscriptionTab && (
@@ -1763,6 +1808,29 @@ const DealerDashboard = () => {
                       </p>
                     </div>
 
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                      <label className="block text-sm font-medium text-amber-800 mb-2">
+                        Inspection Report (PDF) *
+                      </label>
+                      <p className="text-xs text-amber-700 mb-2">
+                        Upload the vehicle inspection report. Required for every auction submission.
+                      </p>
+                      <input
+                        type="file"
+                        accept=".pdf,application/pdf"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          setNewCar((prev) => ({ ...prev, inspectionReportFile: file || null }));
+                        }}
+                        className="w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-amber-500 file:text-white file:font-medium hover:file:bg-amber-600"
+                      />
+                      {newCar.inspectionReportFile && (
+                        <p className="text-xs text-emerald-700 mt-2">
+                          Selected: {newCar.inspectionReportFile.name}
+                        </p>
+                      )}
+                    </div>
+
                     {/* Summary */}
                     <div className="bg-gray-50 rounded-xl p-4">
                       <h4 className="font-medium text-gray-900 mb-3">
@@ -1843,6 +1911,7 @@ const DealerDashboard = () => {
                     disabled={
                       isSubmittingAuctionCar ||
                       auctionOptions.length === 0 ||
+                      !newCar.inspectionReportFile ||
                       !newCar.starting_bid ||
                       !newCar.auctionId ||
                       !newCar.carId

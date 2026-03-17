@@ -338,10 +338,10 @@ const ProfileHero = () => {
 
   const menuItems = [
     {
-      id: "auctions",
-      label: "Auctions",
-      icon: FiActivity,
-      onClick: () => setActiveSection("auctions"),
+      id: "overview",
+      label: "Dashboard",
+      icon: FiUser,
+      onClick: () => setActiveSection("overview"),
     },
     {
       id: "my-listings",
@@ -351,8 +351,26 @@ const ProfileHero = () => {
       highlight: true,
     },
     {
+      id: "auctions",
+      label: "My Auctions",
+      icon: FiActivity,
+      onClick: () => setActiveSection("auctions"),
+    },
+    {
+      id: "wallet-transactions",
+      label: "Wallet",
+      icon: FiCreditCard,
+      onClick: () => navigate("/auctions/transactions"),
+    },
+    {
+      id: "watchlist",
+      label: "Watchlist",
+      icon: FiHeart,
+      onClick: () => navigate("/auctions/watchlist"),
+    },
+    {
       id: "chats",
-      label: "My Chats",
+      label: "Chats",
       icon: FiMessageSquare,
       onClick: () => navigate("/my-chats"),
     },
@@ -920,14 +938,32 @@ const ProfileHero = () => {
                     </h3>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <Link to="/auctions/transactions" className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-gray-700">Won Auctions</span>
+                        <span className="text-sm font-medium text-gray-700">My Bids & Bid History</span>
+                        <FiActivity className="text-orange-500" size={16} />
+                      </div>
+                      <p className="text-sm text-gray-600 mb-1">View all bids and activity</p>
+                      <p className="text-xs text-orange-500 font-medium">View →</p>
+                    </Link>
+
+                    <Link to="/auctions/transactions" className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium text-gray-700">Auctions Won</span>
                         <FiTrendingUp className="text-emerald-500" size={16} />
                       </div>
                       <p className="text-2xl font-bold text-gray-900 mb-1">{wonAuctions.length}</p>
                       <p className="text-sm text-gray-600">Cars you've won</p>
+                    </Link>
+
+                    <Link to="/auctions/transactions" className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium text-gray-700">Auction Payments</span>
+                        <FiCreditCard className="text-blue-500" size={16} />
+                      </div>
+                      <p className="text-sm text-gray-600 mb-1">Pay escrow, view ledger</p>
+                      <p className="text-xs text-orange-500 font-medium">Wallet →</p>
                     </Link>
 
                     <Link to="/auctions/watchlist" className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
@@ -965,6 +1001,17 @@ const ProfileHero = () => {
                         </>
                       )}
                     </div>
+
+                    {user?.role === "dealer" && (
+                      <Link to="/dealer/dashboard" className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-sm font-medium text-gray-700">My Auction Listings</span>
+                          <FiFileText className="text-orange-500" size={16} />
+                        </div>
+                        <p className="text-sm text-gray-600 mb-1">Manage cars in auction</p>
+                        <p className="text-xs text-orange-500 font-medium">Dealer Dashboard →</p>
+                      </Link>
+                    )}
                   </div>
                 </div>
 

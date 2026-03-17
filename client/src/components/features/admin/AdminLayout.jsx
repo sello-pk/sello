@@ -156,7 +156,7 @@ const AdminLayout = ({ children }) => {
   };
 
   return (
-    <div className="admin-theme flex h-screen bg-gray-100 dark:bg-gray-900 relative">
+    <div className="admin-theme flex h-screen overflow-hidden bg-gray-100 dark:bg-gray-900 relative">
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div
@@ -165,13 +165,13 @@ const AdminLayout = ({ children }) => {
         />
       )}
 
-      {/* Sidebar - Dark Grey */}
+      {/* Sidebar - fixed height, never shrinks; only main content scrolls */}
       <aside
         className={`${sidebarOpen ? "w-64" : "w-20"} ${
           mobileMenuOpen
             ? "translate-x-0"
             : "-translate-x-full lg:translate-x-0"
-        } fixed lg:static h-full bg-[#050B20] dark:bg-gray-900 text-white transition-all duration-300 flex flex-col z-50`}
+        } fixed lg:static h-screen lg:h-full flex-shrink-0 bg-[#050B20] dark:bg-gray-900 text-white transition-all duration-300 flex flex-col z-50`}
       >
         {/* Logo - Primary Orange Header */}
         <div className="bg-primary-500 px-4 py-2 flex items-center justify-between">
@@ -254,8 +254,8 @@ const AdminLayout = ({ children }) => {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
+      {/* Main Content - takes remaining width; only this column scrolls */}
+      <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden lg:ml-0">
         {/* Mobile Header */}
         <header className="lg:hidden bg-primary-500 dark:bg-primary-600 text-white py-3 px-4 flex items-center justify-between shadow-md z-30">
           <button
@@ -275,10 +275,10 @@ const AdminLayout = ({ children }) => {
           </button>
         </header>
 
-        {/* Page Content */}
+        {/* Page Content - only this box scrolls (overflow-y: auto) */}
         <main
           ref={mainContentRef}
-          className="flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-900 p-4 lg:p-6"
+          className="flex-1 min-h-0 h-full overflow-y-auto overflow-x-hidden bg-gray-100 dark:bg-gray-900 p-4 lg:p-6"
         >
           <ErrorBoundary>
             {isRouteChanging ? (

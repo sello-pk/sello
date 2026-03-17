@@ -23,6 +23,23 @@ export const apiLimiter = rateLimit({
   },
 });
 
+/** Auction bid rate limit – 5 bids per 10 seconds per user (when authenticated) */
+export const bidRateLimiter = rateLimit({
+  windowMs: 10 * 1000,
+  max: 5,
+  message: { success: false, message: "Too many bids. Please slow down." },
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => {
+    if (req.user?._id) return `bid:${req.user._id}`;
+    return req.ip || req.socket?.remoteAddress || "anonymous";
+  },
+  handler: (req, res, _next, options) => {
+    Logger.warn("Bid rate limit exceeded", { userId: req.user?._id, path: req.originalUrl });
+    res.status(429).json(options.message);
+  },
+});
+
 /**
  * Validate file upload security
  */

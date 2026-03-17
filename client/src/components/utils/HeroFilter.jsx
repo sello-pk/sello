@@ -52,7 +52,10 @@ const HeroFilter = () => {
     const selectedMakeName = String(filters.make).trim().toLowerCase();
     const matchedMakeIds = (makes || [])
       .filter(
-        (make) => String(make?.name || "").trim().toLowerCase() === selectedMakeName,
+        (make) =>
+          String(make?.name || "")
+            .trim()
+            .toLowerCase() === selectedMakeName,
       )
       .map((make) => String(make?._id || ""));
 
@@ -60,7 +63,8 @@ const HeroFilter = () => {
 
     return models.filter((model) => {
       const parent =
-        typeof model?.parentCategory === "object" && model?.parentCategory !== null
+        typeof model?.parentCategory === "object" &&
+        model?.parentCategory !== null
           ? model.parentCategory._id
           : model?.parentCategory;
       return matchedMakeIds.includes(String(parent || ""));
@@ -247,7 +251,9 @@ const HeroFilter = () => {
                     (option) => option.value === filters.model,
                   ) || null
                 }
-                onChange={(option) => handleChange("model", option?.value || "")}
+                onChange={(option) =>
+                  handleChange("model", option?.value || "")
+                }
                 options={modelSelectOptions}
                 placeholder="Model"
                 isClearable={!!filters.make}
@@ -315,16 +321,23 @@ const HeroFilter = () => {
             <button
               type="button"
               onClick={() => navigate("/listings")}
-              className="h-12 w-full sm:w-auto border border-primary text-primary px-6 rounded-lg font-semibold hover:bg-gray-50 transition-colors min-w-[200px]"
+              className="h-12 w-full sm:w-auto border border-primary   text-primary px-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors min-w-[200px]"
             >
               Browse Listings
             </button>
             <button
               type="button"
               onClick={() => navigate("/create-post")}
-              className="h-12 w-full sm:w-auto bg-primary text-white px-6 rounded-lg font-semibold hover:opacity-90 transition-opacity min-w-[170px]"
+              className="h-12 w-full sm:w-auto border border-primary   text-primary px-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors min-w-[200px]"
             >
               Sell Your Car
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/auctions/live")}
+              className="h-12 w-full sm:w-auto border border-primary   text-primary px-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors min-w-[200px]"
+            >
+              Live Auction
             </button>
           </div>
         </form>

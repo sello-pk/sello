@@ -142,6 +142,28 @@ export const uploadCloudinary = (fileBuffer, options = {}) => {
 };
 
 /**
+ * Upload a raw file (e.g. PDF) to Cloudinary. Use for inspection reports and documents.
+ */
+export const uploadRawToCloudinary = (fileBuffer, options = {}) => {
+  return new Promise((resolve, reject) => {
+    if (!fileBuffer || !Buffer.isBuffer(fileBuffer)) {
+      reject(new Error("Invalid file buffer for raw upload"));
+      return;
+    }
+    const folder = options.folder || "sello_uploads";
+    const dataUri = `data:application/pdf;base64,${fileBuffer.toString("base64")}`;
+    cloudinary.uploader.upload(dataUri, {
+      folder,
+      resource_type: "raw",
+    }, (err, res) => {
+      if (err) reject(err);
+      else if (!res?.secure_url) reject(new Error("Cloudinary returned no URL"));
+      else resolve(res.secure_url);
+    });
+  });
+};
+
+/**
  * Upload one buffer with retries (502/503/timeout).
  */
 async function uploadCloudinaryWithRetry(fileBuffer, options = {}) {

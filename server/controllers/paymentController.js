@@ -59,12 +59,18 @@ export const getMyWallet = async (req, res) => {
     res.json({
       success: true,
       data: {
-        wallet,
+        wallet: {
+          ...wallet.toObject?.() || wallet,
+          availableBalance: Math.max(0, (wallet.balance || 0) - (wallet.totalBidHeld || 0)),
+          lockedTokens: wallet.totalBidHeld || 0,
+        },
         activeBids,
         maxBidLimit,
+        isFrozen: wallet.isActive === false,
         settings: {
           minDeposit: settings.minDeposit,
           maxDeposit: settings.maxDeposit,
+          minDepositPercent: settings.minDepositPercent,
           platformFeePercent: settings.platformFeePercent,
           depositTiers: settings.depositTiers,
           isWalletSystemEnabled: settings.isWalletSystemEnabled,
@@ -208,12 +214,23 @@ export const adminGetAllWallets = async (req, res) => {
 export const adminUpdateWalletBalance = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { amount, type, notes } = req.body;
+    const { amount, type, notes, isActive } = req.body;
+    const wallet = await getOrCreateWallet(userId);
+
+    if (typeof isActive === "boolean") {
+      wallet.isActive = isActive;
+      wallet.lastTransactionAt = new Date();
+      await wallet.save();
+      return res.json({
+        success: true,
+        data: wallet,
+        message: wallet.isActive ? "Wallet unfrozen" : "Wallet frozen",
+      });
+    }
+
     if (!amount || !type) {
       return res.status(400).json({ success: false, message: "Amount and type (credit/debit) are required" });
     }
-
-    const wallet = await getOrCreateWallet(userId);
     const numAmount = Number(amount);
 
     if (type === "credit") {
@@ -468,7 +485,7 @@ export const adminUpdatePlatformSettings = async (req, res) => {
     let settings = await PlatformSettings.findOne();
     if (!settings) settings = new PlatformSettings();
 
-    const allowed = ["platformFeePercent", "platformFeeFixed", "minDeposit", "maxDeposit", "depositTiers", "refundPenaltyPercent", "isWalletSystemEnabled", "updatedBy"];
+    const allowed = ["platformFeePercent", "platformFeeFixed", "minDeposit", "maxDeposit", "minDepositPercent", "depositTiers", "refundPenaltyPercent", "isWalletSystemEnabled", "updatedBy"];
     allowed.forEach((key) => {
       if (updates[key] !== undefined) settings[key] = updates[key];
     });

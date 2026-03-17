@@ -10,7 +10,8 @@ import userDomainRoutes from "./userDomainRoutes.js";
 import inventoryDomainRoutes from "./inventoryDomainRoutes.js";
 import billingDomainRoutes from "./billingDomainRoutes.js";
 import utilityDomainRoutes from "./utilityDomainRoutes.js";
-import auctionRoutes from "./auctionRoutes.js";
+import auctionRoutes, { inspectionRouter } from "./auctionRoutes.js";
+import escrowRoutes from "./escrowRoutes.js";
 import paymentRoutes from "./paymentRoutes.js";
 
 // Mapping
@@ -23,6 +24,8 @@ router.use("/", inventoryDomainRoutes); // /cars, /valuations, /vehicle-attribut
 router.use("/", billingDomainRoutes); // /billing, /subscription-plans
 router.use("/", utilityDomainRoutes); // /utility (analytics, maps, upload, seo)
 router.use("/auctions", auctionRoutes); // /auctions (live auction system)
+router.use("/escrow", escrowRoutes);   // /escrow/:id, /escrow/pay (winner escrow payment)
+router.use("/inspections", inspectionRouter); // /inspections/book, /inspections/my-bookings
 router.use("/payments", paymentRoutes); // /payments (wallet, deposits, refunds)
 
 export default router;

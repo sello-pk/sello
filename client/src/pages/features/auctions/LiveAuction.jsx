@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   IoSearch as Search,
@@ -17,6 +18,7 @@ import { GiGavel as Gavel } from "react-icons/gi";
 import {
   useGetLiveAuctionQuery,
   useGetAuctionCarsQuery,
+  useGetAuctionsQuery,
 } from "@redux/services/api";
 import { useSocket } from "@contexts/SocketContext";
 import { useCarCategories } from "@hooks/useCarCategories";
@@ -225,8 +227,7 @@ export default function LiveAuction() {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState("grid");
   const [filters, setFilters] = useState(defaultFilters);
-
-  const { data: liveAuction, isLoading: auctionLoading } =
+  const { data: liveAuction, isLoading: auctionLoading, refetch: refetchAuction } =
     useGetLiveAuctionQuery(undefined, { pollingInterval: 30000 });
 
   const auctionId = liveAuction?._id;
@@ -236,7 +237,18 @@ export default function LiveAuction() {
     { skip: !auctionId, pollingInterval: 15000 },
   );
 
+  const { data: upcomingList = [] } = useGetAuctionsQuery(
+    { status: "scheduled", limit: 6 },
+    { skip: false },
+  );
+  const { data: endedList = [] } = useGetAuctionsQuery(
+    { status: "completed", limit: 6 },
+    { skip: false },
+  );
+
   const displayCars = carsResponse?.data || [];
+  const upcomingAuctions = Array.isArray(upcomingList) ? upcomingList : upcomingList?.data || [];
+  const endedAuctions = Array.isArray(endedList) ? endedList : endedList?.data || [];
 
   // Get dynamic categories for makes
   const { makes, isLoading: categoriesLoading } = useCarCategories();
@@ -256,6 +268,27 @@ export default function LiveAuction() {
     refetchCars();
   }, [refetchCars]);
 
+  const handleAuctionExtended = useCallback(
+    (data) => {
+      if (data?.auctionId === auctionId) {
+        refetchCars();
+        toast("Auction extended by 2 minutes");
+      }
+    },
+    [auctionId, refetchCars],
+  );
+
+  const handleAuctionEnded = useCallback(
+    (data) => {
+      if (data?.auctionId === auctionId) {
+        refetchCars();
+        refetchAuction();
+        toast("Auction has ended");
+      }
+    },
+    [auctionId, refetchCars, refetchAuction],
+  );
+
   useEffect(() => {
     if (!addEventListener) return;
     addEventListener("new-bid", handleNewBid);
@@ -263,6 +296,16 @@ export default function LiveAuction() {
       removeEventListener("new-bid", handleNewBid);
     };
   }, [addEventListener, removeEventListener, handleNewBid]);
+
+  useEffect(() => {
+    if (!addEventListener) return;
+    addEventListener("auction:extended", handleAuctionExtended);
+    addEventListener("auction:ended", handleAuctionEnded);
+    return () => {
+      removeEventListener("auction:extended", handleAuctionExtended);
+      removeEventListener("auction:ended", handleAuctionEnded);
+    };
+  }, [addEventListener, removeEventListener, handleAuctionExtended, handleAuctionEnded]);
 
   const clearAllFilters = () => {
     setFilters(defaultFilters);
@@ -286,18 +329,75 @@ export default function LiveAuction() {
 
   if (!liveAuction) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-center">
-          <Gavel className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-slate-700 mb-2">
-            No Live Auction
-          </h2>
-          <p className="text-slate-500 mb-6">
-            Check back soon or view the schedule
-          </p>
-          <Link to="/auctions/schedule">
-            <Button>View Schedule</Button>
-          </Link>
+      <div className="min-h-screen bg-slate-50">
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center mb-10">
+            <Gavel className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-slate-700 mb-2">No Live Auction</h2>
+            <p className="text-slate-500 mb-6">Check back soon or view upcoming and past auctions below.</p>
+            <Link to="/auctions/schedule">
+              <Button>View Full Schedule</Button>
+            </Link>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <div>
+              <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <Clock className="w-5 h-5 text-[#FFA602]" />
+                Upcoming Auctions
+              </h3>
+              {upcomingAuctions.length === 0 ? (
+                <p className="text-slate-500 text-sm">No upcoming auctions scheduled.</p>
+              ) : (
+                <ul className="space-y-3">
+                  {upcomingAuctions.map((a) => (
+                    <li key={a._id}>
+                      <Link
+                        to="/auctions/schedule"
+                        className="block bg-white rounded-xl border border-slate-200 p-4 hover:shadow-md transition-shadow"
+                      >
+                        <p className="font-semibold text-slate-900">{a.title}</p>
+                        <p className="text-sm text-slate-500 mt-1">
+                          Starts: {a.startTime ? new Date(a.startTime).toLocaleString() : "—"}
+                        </p>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <Link to="/auctions/schedule" className="inline-block mt-3 text-sm text-[#FFA602] hover:underline font-medium">
+                View schedule →
+              </Link>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <Car className="w-5 h-5 text-slate-500" />
+                Ended Auctions
+              </h3>
+              {endedAuctions.length === 0 ? (
+                <p className="text-slate-500 text-sm">No ended auctions to show.</p>
+              ) : (
+                <ul className="space-y-3">
+                  {endedAuctions.map((a) => (
+                    <li key={a._id}>
+                      <Link
+                        to="/auctions/schedule"
+                        className="block bg-white rounded-xl border border-slate-200 p-4 hover:shadow-md transition-shadow"
+                      >
+                        <p className="font-semibold text-slate-900">{a.title}</p>
+                        <p className="text-sm text-slate-500 mt-1">
+                          Ended: {a.endTime ? new Date(a.endTime).toLocaleString() : "—"}
+                        </p>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <Link to="/auctions/schedule" className="inline-block mt-3 text-sm text-[#FFA602] hover:underline font-medium">
+                View schedule →
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -325,6 +425,12 @@ export default function LiveAuction() {
               </div>
             </div>
             <div className="flex items-center gap-4">
+              <Link
+                to="/auctions/transactions"
+                className="text-sm text-white/80 hover:text-white transition-colors"
+              >
+                Wallet
+              </Link>
               <div className="flex items-center gap-2 text-slate-400 text-sm">
                 <RefreshCw className="w-4 h-4 animate-spin" />
                 Live updates
@@ -494,6 +600,66 @@ export default function LiveAuction() {
             </Button>
           </div>
         )}
+
+        {/* Upcoming & Ended — same layout as when no live auction */}
+        <div className="grid md:grid-cols-2 gap-8 mt-12 pt-12 border-t border-slate-200">
+          <div>
+            <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <Clock className="w-5 h-5 text-[#FFA602]" />
+              Upcoming Auctions
+            </h3>
+            {upcomingAuctions.length === 0 ? (
+              <p className="text-slate-500 text-sm">No upcoming auctions.</p>
+            ) : (
+              <ul className="space-y-3">
+                {upcomingAuctions.slice(0, 3).map((a) => (
+                  <li key={a._id}>
+                    <Link
+                      to="/auctions/schedule"
+                      className="block bg-white rounded-xl border border-slate-200 p-4 hover:shadow-md transition-shadow"
+                    >
+                      <p className="font-semibold text-slate-900">{a.title}</p>
+                      <p className="text-sm text-slate-500 mt-1">
+                        Starts: {a.startTime ? new Date(a.startTime).toLocaleString() : "—"}
+                      </p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <Link to="/auctions/schedule" className="inline-block mt-3 text-sm text-[#FFA602] hover:underline font-medium">
+              View schedule →
+            </Link>
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <Car className="w-5 h-5 text-slate-500" />
+              Ended Auctions
+            </h3>
+            {endedAuctions.length === 0 ? (
+              <p className="text-slate-500 text-sm">No ended auctions.</p>
+            ) : (
+              <ul className="space-y-3">
+                {endedAuctions.slice(0, 3).map((a) => (
+                  <li key={a._id}>
+                    <Link
+                      to="/auctions/schedule"
+                      className="block bg-white rounded-xl border border-slate-200 p-4 hover:shadow-md transition-shadow"
+                    >
+                      <p className="font-semibold text-slate-900">{a.title}</p>
+                      <p className="text-sm text-slate-500 mt-1">
+                        Ended: {a.endTime ? new Date(a.endTime).toLocaleString() : "—"}
+                      </p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <Link to="/auctions/schedule" className="inline-block mt-3 text-sm text-[#FFA602] hover:underline font-medium">
+              View schedule →
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

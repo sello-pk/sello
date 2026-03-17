@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import { useGetSingleCarQuery } from "../../redux/services/api";
+import { useGetSingleCarQuery, useGetLiveAuctionByCarIdQuery } from "../../redux/services/api";
 import { useRecentlyViewedCars } from "../../hooks/useRecentlyViewedCars";
 import CarDetailsHeroSection from "../../components/sections/carDetails/CarDetailsHeroSection";
 import CarDetailsGallerySection from "../../components/sections/carDetails/CarDetailsGallerySection";
@@ -18,6 +18,7 @@ import UserReviewSection from "../../components/reviews/UserReviewSection";
 import SEO from "../../components/common/SEO";
 import StructuredData from "../../components/common/StructuredData";
 import { extractCarIdFromSlug } from "../../utils/urlBuilders";
+import AuctionBidBlock from "../../components/auction/AuctionBidBlock";
 
 const CarDetails = () => {
   const { id: routeParam } = useParams();
@@ -32,8 +33,10 @@ const CarDetails = () => {
     error,
   } = useGetSingleCarQuery(extractedCarId, {
     skip: !extractedCarId,
-    // Force refetch when the car ID changes
     refetchOnMountOrArgChange: true,
+  });
+  const { data: liveAuctionByCar } = useGetLiveAuctionByCarIdQuery(extractedCarId, {
+    skip: !extractedCarId,
   });
   const { addRecentlyViewed } = useRecentlyViewedCars();
 
@@ -199,6 +202,35 @@ const CarDetails = () => {
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         <Breadcrumb items={breadcrumbItems} hideHome />
       </div>
+
+      {/* Auction: banner + inline bidding when car is in live/upcoming auction */}
+      {liveAuctionByCar?.auctionCarId && (
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 mt-2 space-y-4">
+          <Link
+            to={`/auctions/car-detail?id=${liveAuctionByCar.auctionCarId}`}
+            className="flex items-center justify-between gap-4 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-amber-900 hover:bg-amber-100 transition-colors"
+          >
+            <span className="font-medium">
+              {liveAuctionByCar.auction?.status === "live"
+                ? "Also in Live Auction"
+                : "In Upcoming Auction"}
+              {liveAuctionByCar.auction?.title && ` — ${liveAuctionByCar.auction.title}`}
+            </span>
+            <span className="text-sm shrink-0">
+              {liveAuctionByCar.currentBid != null
+                ? `Current bid: PKR ${Number(liveAuctionByCar.currentBid).toLocaleString()}`
+                : `Starting bid: PKR ${Number(liveAuctionByCar.startingBid || 0).toLocaleString()}`}
+              {" · View full page →"}
+            </span>
+          </Link>
+          {/* Inline bidding: countdown, current bid, bid history, place bid */}
+          {liveAuctionByCar.auction?.status === "live" && (
+            <div className="max-w-md">
+              <AuctionBidBlock auctionCarId={liveAuctionByCar.auctionCarId} />
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Hero Section */}
       <CarDetailsHeroSection key={`hero-${routeParam}`} />

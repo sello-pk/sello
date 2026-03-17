@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AdminLayout from "../../components/features/admin/AdminLayout";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
@@ -19,6 +19,10 @@ import {
   IoShieldCheckmarkOutline as ShieldCheck,
   IoWarningOutline as AlertTriangle,
   IoStatsChartOutline as BarChart3,
+  IoCalendarOutline as CalendarDays,
+  IoExtensionPuzzleOutline as ExtensionPuzzle,
+  IoShieldOutline as ShieldAlert,
+  IoSettingsOutline as SettingsIcon,
 } from "react-icons/io5";
 import { GiGavel as Gavel } from "react-icons/gi";
 import {
@@ -40,6 +44,12 @@ import {
   useAdminRefundTokenMutation,
   useAdminBulkRefundTokensMutation,
   useGetPaymentStatsQuery,
+  useGetAuctionSettingsQuery,
+  useUpdateAuctionSettingsMutation,
+  useGetInspectionBookingsQuery,
+  useUpdateInspectionBookingMutation,
+  useGetAuctionExtensionsQuery,
+  useGetSecurityEventsQuery,
 } from "@redux/services/adminApi";
 import { useGetAuctionsQuery, useGetCarsQuery } from "@redux/services/api";
 
@@ -75,6 +85,10 @@ const tabs = [
   { id: "cars", label: "Cars", icon: Car },
   { id: "payments", label: "Token Payments", icon: Wallet },
   { id: "escrows", label: "Escrow", icon: ShieldCheck },
+  { id: "inspections", label: "Inspection Bookings", icon: CalendarDays },
+  { id: "extensions", label: "Auction Extensions", icon: ExtensionPuzzle },
+  { id: "risk", label: "Risk Monitor", icon: ShieldAlert },
+  { id: "settings", label: "Auction Settings", icon: SettingsIcon },
 ];
 
 export default function AuctionManagement() {
@@ -87,11 +101,17 @@ export default function AuctionManagement() {
   const [offlineBidderName, setOfflineBidderName] = useState("Floor Bid");
   const [addCarData, setAddCarData] = useState({ auctionId: "", carId: "", startingBid: "" });
   const [carSearch, setCarSearch] = useState("");
+  const [auctionStatusFilter, setAuctionStatusFilter] = useState("all");
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState("all");
 
   const [newAuction, setNewAuction] = useState({ title: "", description: "", startTime: "", endTime: "", location: "Okara Auction Yard, Punjab" });
 
   const { data: dashboard, isLoading: dashLoading, refetch: refetchDash } = useGetAuctionDashboardQuery();
-  const { data: auctions = [], refetch: refetchAuctions } = useGetAuctionsQuery({ limit: 100 });
+  const { data: auctionsResponse, refetch: refetchAuctions } = useGetAuctionsQuery({
+    limit: 100,
+    ...(auctionStatusFilter !== "all" ? { status: auctionStatusFilter } : {}),
+  });
+  const auctions = Array.isArray(auctionsResponse) ? auctionsResponse : auctionsResponse?.data ?? [];
   const { data: auctionCars = [], refetch: refetchCars } = useAdminGetAllAuctionCarsQuery({});
   const { data: tokenPayments = [], refetch: refetchPayments } = useAdminGetAllTokenPaymentsQuery({});
 
@@ -106,7 +126,6 @@ export default function AuctionManagement() {
   const [addCarToAuction, { isLoading: addingCar }] = useAdminAddCarToAuctionMutation();
   const { data: carsData } = useGetCarsQuery({ limit: 200, search: carSearch });
 
-  const [paymentStatusFilter, setPaymentStatusFilter] = useState("all");
   const [escrowStatusFilter, setEscrowStatusFilter] = useState("all");
   const { data: allEscrows = [], refetch: refetchEscrows } = useAdminGetAllEscrowsQuery(
     escrowStatusFilter === "overdue" ? { overdue: "true" } : escrowStatusFilter !== "all" ? { status: escrowStatusFilter } : {}
@@ -115,6 +134,32 @@ export default function AuctionManagement() {
   const [refundToken] = useAdminRefundTokenMutation();
   const [bulkRefundTokens, { isLoading: bulkRefunding }] = useAdminBulkRefundTokensMutation();
   const { data: paymentStats } = useGetPaymentStatsQuery();
+  const { data: auctionSettings, refetch: refetchSettings } = useGetAuctionSettingsQuery();
+  const [updateAuctionSettings, { isLoading: savingSettings }] = useUpdateAuctionSettingsMutation();
+  const { data: inspectionBookings = [], refetch: refetchBookings } = useGetInspectionBookingsQuery();
+  const [updateInspectionBooking] = useUpdateInspectionBookingMutation();
+  const { data: extensionLog = [] } = useGetAuctionExtensionsQuery();
+  const { data: securityEvents = [] } = useGetSecurityEventsQuery({ limit: 100 });
+  const [settingsForm, setSettingsForm] = useState({
+    minBidIncrement: 50000,
+    antiSnipeTriggerSeconds: 120,
+    antiSnipeExtensionSeconds: 120,
+    paymentWindowHours: 48,
+    tokenDepositPercent: 0,
+    maxProxyBid: 100000000,
+    activeBidderWindowMinutes: 15,
+    listingFee: 0,
+    buyerFeePercent: 0,
+    sellerCommissionPercent: 0,
+    auctionDepositAmount: 0,
+    auctionEntryFee: 0,
+    dealerSubscriptionFee: 0,
+    tokenDeposit: 10000,
+  });
+
+  useEffect(() => {
+    if (auctionSettings && Object.keys(auctionSettings).length) setSettingsForm((s) => ({ ...s, ...auctionSettings }));
+  }, [auctionSettings]);
 
   const handleCreate = async () => {
     try {
@@ -220,7 +265,7 @@ export default function AuctionManagement() {
 
   return (
     <AdminLayout>
-    <div className="p-6">
+    <div className="p-6 overflow-x-hidden min-w-0 max-w-full">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Auction Management</h1>
@@ -229,11 +274,11 @@ export default function AuctionManagement() {
         <Button onClick={() => setShowCreateModal(true)}><Plus className="w-4 h-4 mr-2" />Create Auction</Button>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-2 mb-6 overflow-x-auto border-b border-slate-200 pb-4">
+      {/* Tabs - wrap on narrow screens to avoid horizontal page scroll */}
+      <div className="flex flex-wrap gap-2 mb-6 border-b border-slate-200 pb-4">
         {tabs.map((tab) => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${activeTab === tab.id ? "bg-[#FFA602] text-white" : "text-slate-600 hover:bg-slate-100"}`}>
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex-shrink-0 ${activeTab === tab.id ? "bg-[#FFA602] text-white" : "text-slate-600 hover:bg-slate-100"}`}>
             <tab.icon className="w-4 h-4" />{tab.label}
           </button>
         ))}
@@ -242,7 +287,7 @@ export default function AuctionManagement() {
       {/* Dashboard */}
       {activeTab === "dashboard" && (
         <div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 mb-6">
             {[
               { label: "Total Auctions", value: stats.totalAuctions, icon: Gavel, color: "text-[#FFA602]" },
               { label: "Live Now", value: stats.liveAuctions, icon: Zap, color: "text-red-500" },
@@ -250,10 +295,16 @@ export default function AuctionManagement() {
               { label: "Total Bids", value: stats.totalBids, icon: TrendingUp, color: "text-emerald-500" },
               { label: "Verified Users", value: stats.totalUsers, icon: Users, color: "text-purple-500" },
               { label: "Pending Payments", value: stats.pendingPayments, icon: Clock, color: "text-amber-500" },
+              { label: "Average Sale Price", value: stats.averageSalePrice != null ? `PKR ${Number(stats.averageSalePrice).toLocaleString()}` : "—", icon: BarChart3, color: "text-slate-600" },
+              { label: "Bids per Auction", value: stats.bidsPerAuction != null ? Number(stats.bidsPerAuction).toFixed(1) : "—", icon: TrendingUp, color: "text-indigo-500" },
+              { label: "Conversion Rate", value: stats.conversionRate != null ? `${Number(stats.conversionRate).toFixed(1)}%` : "—", icon: BarChart3, color: "text-teal-500" },
+              { label: "Sold", value: stats.soldCount, icon: Check, color: "text-emerald-600" },
+              { label: "Unsold", value: stats.unsoldCount, icon: X, color: "text-slate-500" },
+              { label: "Completed Auctions", value: stats.completedAuctions, icon: Gavel, color: "text-blue-600" },
             ].map((s, i) => (
               <div key={i} className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
                 <s.icon className={`w-6 h-6 ${s.color} mb-2`} />
-                <p className="text-2xl font-bold text-slate-900">{s.value || 0}</p>
+                <p className="text-2xl font-bold text-slate-900">{s.value ?? 0}</p>
                 <p className="text-xs text-slate-500">{s.label}</p>
               </div>
             ))}
@@ -311,8 +362,25 @@ export default function AuctionManagement() {
       {/* Auctions List */}
       {activeTab === "auctions" && (
         <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <span className="text-sm text-slate-500">Status:</span>
+            {["all", "live", "scheduled", "completed", "draft", "cancelled"].map((s) => (
+              <button
+                key={s}
+                onClick={() => setAuctionStatusFilter(s)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${auctionStatusFilter === s ? "bg-[#FFA602] text-white" : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"}`}
+              >
+                {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
+              </button>
+            ))}
+            {auctionStatusFilter === "completed" && stats.completedAuctions != null && (
+              <span className="text-xs text-slate-500 ml-1">({stats.completedAuctions} completed)</span>
+            )}
+          </div>
           {auctions.length === 0 ? (
-            <div className="text-center py-20 text-slate-500">No auctions created yet</div>
+            <div className="text-center py-20 text-slate-500">
+              {auctionStatusFilter !== "all" ? `No ${auctionStatusFilter} auctions` : "No auctions created yet"}
+            </div>
           ) : auctions.map((auction) => (
             <div key={auction._id} className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
               <div className="flex flex-col md:flex-row justify-between gap-4">
@@ -520,6 +588,107 @@ export default function AuctionManagement() {
                 })}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "inspections" && (
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead><tr className="text-left text-slate-500 border-b bg-slate-50">
+              <th className="p-4">User</th><th className="p-4">Car</th><th className="p-4">Date</th><th className="p-4">Time</th><th className="p-4">Status</th><th className="p-4">Action</th>
+            </tr></thead>
+            <tbody>
+              {inspectionBookings.length === 0 ? (
+                <tr><td colSpan="6" className="text-center py-10 text-slate-500">No inspection bookings</td></tr>
+              ) : inspectionBookings.map((b) => (
+                <tr key={b._id} className="border-b border-slate-100 hover:bg-slate-50">
+                  <td className="p-4"><p className="font-medium">{b.user?.name}</p><p className="text-xs text-slate-500">{b.user?.email}</p></td>
+                  <td className="p-4">{b.car?.title || `${b.car?.make} ${b.car?.model}`}</td>
+                  <td className="p-4">{new Date(b.inspectionDate).toLocaleDateString()}</td>
+                  <td className="p-4">{b.timeSlot}</td>
+                  <td className="p-4"><Badge className={statusColors[b.status] || "bg-slate-100"}>{b.status}</Badge></td>
+                  <td className="p-4">
+                    {b.status === "pending" && (
+                      <Button className="px-2 py-1 text-xs" onClick={async () => {
+                        try { await updateInspectionBooking({ id: b._id, status: "confirmed" }).unwrap(); toast.success("Booking confirmed"); refetchBookings(); }
+                        catch (e) { toast.error(e?.data?.message || "Failed"); }
+                      }}>Confirm</Button>
+                    )}
+                    {b.status === "confirmed" && (
+                      <Button variant="outline" className="px-2 py-1 text-xs" onClick={async () => {
+                        try { await updateInspectionBooking({ id: b._id, status: "completed" }).unwrap(); toast.success("Marked completed"); refetchBookings(); }
+                        catch (e) { toast.error(e?.data?.message || "Failed"); }
+                      }}>Complete</Button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {activeTab === "extensions" && (
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead><tr className="text-left text-slate-500 border-b bg-slate-50">
+              <th className="p-4">Auction</th><th className="p-4">Extended by</th><th className="p-4">Minutes</th><th className="p-4">Reason</th><th className="p-4">When</th>
+            </tr></thead>
+            <tbody>
+              {(extensionLog.length === 0) ? (
+                <tr><td colSpan="5" className="text-center py-10 text-slate-500">No extension log</td></tr>
+              ) : extensionLog.map((e) => (
+                <tr key={e._id} className="border-b border-slate-100">
+                  <td className="p-4 font-medium">{e.auction?.title}</td>
+                  <td className="p-4">{e.extendedBy?.name}</td>
+                  <td className="p-4">+{e.extensionMinutes} min</td>
+                  <td className="p-4">{e.reason?.replace("_", " ")}</td>
+                  <td className="p-4 text-slate-500">{new Date(e.createdAt).toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {activeTab === "risk" && (
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead><tr className="text-left text-slate-500 border-b bg-slate-50">
+              <th className="p-4">Type</th><th className="p-4">Severity</th><th className="p-4">User</th><th className="p-4">Details</th><th className="p-4">When</th>
+            </tr></thead>
+            <tbody>
+              {securityEvents.length === 0 ? (
+                <tr><td colSpan="5" className="text-center py-10 text-slate-500">No security events</td></tr>
+              ) : securityEvents.map((e) => (
+                <tr key={e._id} className="border-b border-slate-100 hover:bg-slate-50">
+                  <td className="p-4 font-medium">{e.type?.replace(/_/g, " ")}</td>
+                  <td className="p-4"><Badge className={e.severity === "critical" ? "bg-red-100 text-red-700" : e.severity === "high" ? "bg-amber-100 text-amber-700" : "bg-slate-100"}>{e.severity}</Badge></td>
+                  <td className="p-4">{e.userId?.name || e.userId?.email || "—"}</td>
+                  <td className="p-4 text-xs text-slate-500 max-w-xs truncate">{JSON.stringify(e.details || {})}</td>
+                  <td className="p-4 text-slate-500">{new Date(e.createdAt).toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {activeTab === "settings" && (
+        <div className="max-w-2xl">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
+            <h3 className="text-lg font-bold text-slate-900">Auction operation settings</h3>
+            {["minBidIncrement", "antiSnipeTriggerSeconds", "antiSnipeExtensionSeconds", "paymentWindowHours", "tokenDepositPercent", "maxProxyBid", "activeBidderWindowMinutes", "listingFee", "buyerFeePercent", "sellerCommissionPercent", "auctionDepositAmount", "auctionEntryFee", "dealerSubscriptionFee", "tokenDeposit"].map((key) => (
+              <div key={key}>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{key.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase())}</label>
+                <input type="number" className="w-full px-4 py-2 border border-slate-200 rounded-lg" value={settingsForm[key] ?? ""} onChange={(e) => setSettingsForm((s) => ({ ...s, [key]: Number(e.target.value) }))} />
+              </div>
+            ))}
+            <Button disabled={savingSettings} onClick={async () => {
+              try { await updateAuctionSettings(settingsForm).unwrap(); toast.success("Settings saved"); refetchSettings(); }
+              catch (e) { toast.error(e?.data?.message || "Failed"); }
+            }}>{savingSettings ? "Saving..." : "Save settings"}</Button>
           </div>
         </div>
       )}

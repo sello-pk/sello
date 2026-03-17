@@ -135,19 +135,20 @@ const CustomerReview = () => {
 
   return (
     <section className="relative px-3 max-w-8xl mx-auto sm:px-4 md:px-6 lg:px-8 py-16 overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 bg-grid-black/[0.02] bg-[size:50px_50px]"></div>
-      <div className="absolute top-0 left-1/4 w-72 h-72 bg-primary-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-      <div className="absolute top-0 right-1/4 w-72 h-72  rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-      <div className="absolute -bottom-8 left-1/3 w-72 h-72 bg-primary-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+      {/* Background: gradient + decoration (behind content) */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-br from-slate-50 via-white to-primary-50/30" aria-hidden />
+      <div className="absolute inset-0 z-0 bg-grid-black/[0.02] bg-[size:50px_50px]" aria-hidden />
+      <div className="absolute top-0 left-1/4 w-72 h-72 bg-primary-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob z-0" aria-hidden />
+      <div className="absolute top-0 right-1/4 w-72 h-72 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000 z-0" aria-hidden />
+      <div className="absolute -bottom-8 left-1/3 w-72 h-72 bg-primary-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000 z-0" aria-hidden />
 
-      <div className="relative max-w-full mx-auto">
+      <div className="relative z-10 max-w-full mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent mb-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-slate-900 mb-3">
             What Our Customers Say
           </h2>
-          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto">
+          <p className="text-base text-slate-600 max-w-2xl mx-auto">
             Real experiences from genuine buyers and sellers across Pakistan
           </p>
         </div>
@@ -156,7 +157,7 @@ const CustomerReview = () => {
         <div className="relative max-w-full mx-auto">
           {/* Desktop: Show 3 cards */}
           <div className="hidden lg:grid lg:grid-cols-3 lg:gap-8 mb-12">
-            {allReviews.map((review, index) => (
+            {allReviews.map((review) => (
               <div
                 key={review.id}
                 className="group relative bg-gradient-to-br from-white via-white to-primary-50/30 backdrop-blur-xl rounded-3xl shadow-xl border border-white/50 p-8 h-full flex flex-col justify-between hover:shadow-2xl hover:shadow-primary-500/20 transition-all duration-500 hover:-translate-y-2 overflow-hidden"

@@ -66,8 +66,9 @@ const SellerDashboard = () => {
   const { data: tokenData } = useGetMyTokenPaymentsQuery();
   const { data: wonAuctions = [] } = useGetMyWonAuctionsQuery();
   const { data: watchlistItems = [] } = useGetMyAuctionWatchlistQuery();
-  const { data: upcomingAuctions = [] } = useGetAuctionsQuery({ status: "scheduled", limit: 5 });
+  const { data: upcomingRaw = [] } = useGetAuctionsQuery({ status: "scheduled", limit: 5 });
   const { data: liveAuction } = useGetLiveAuctionQuery();
+  const upcomingAuctions = Array.isArray(upcomingRaw) ? upcomingRaw : upcomingRaw?.data || [];
 
   const auctionStats = {
     totalAuctions: wonAuctions.length,
@@ -239,9 +240,7 @@ const SellerDashboard = () => {
       <div className="w-64 bg-white shadow-lg flex flex-col">
         <div className="p-6 border-b border-gray-200">
           <h2 className="text-2xl font-bold text-primary-500">SELLO</h2>
-          <p className="text-xs text-gray-500 mt-1">
-            {user?.role === "dealer" ? "Dealer Dashboard" : "My Dashboard"}
-          </p>
+          <p className="text-xs text-gray-500 mt-1">My Dashboard</p>
         </div>
 
         <nav className="flex-1 p-4 space-y-2">
@@ -300,6 +299,22 @@ const SellerDashboard = () => {
           </button>
 
           <button
+            onClick={() => navigate("/auctions/transactions")}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+          >
+            <FiCreditCard size={20} />
+            <span>Wallet & Transactions</span>
+          </button>
+
+          <button
+            onClick={() => navigate("/auctions/transactions")}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+          >
+            <FiActivity size={20} />
+            <span>My Bids</span>
+          </button>
+
+          <button
             onClick={() => navigate("/seller/chats")}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
           >
@@ -320,7 +335,7 @@ const SellerDashboard = () => {
             className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
           >
             <FiUser size={20} />
-            <span>Profile</span>
+            <span>Profile & Verification</span>
           </button>
         </nav>
 
@@ -342,7 +357,7 @@ const SellerDashboard = () => {
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-white">
                 {user.role === "dealer"
-                  ? "Dealer Dashboard"
+                  ? "My Dashboard"
                   : "Seller Dashboard"}
               </h2>
               <p className="text-slate-400">
@@ -357,10 +372,31 @@ const SellerDashboard = () => {
               className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-amber-500 hover:to-orange-500 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-all hover:shadow-lg"
             >
               <FiPlus size={20} />
-              Submit New Vehicle
+              Submit to Auction
             </button>
           </div>
         </header>
+
+        {/* Verification status banner – only for unverified dealers */}
+        {user?.role === "dealer" && !user?.dealerInfo?.verified && (
+          <div className="mx-6 mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <FiAlertCircle className="text-amber-600 shrink-0" size={24} />
+              <div>
+                <p className="font-medium text-amber-900">Dealer verification pending</p>
+                <p className="text-sm text-amber-700">
+                  After approval you’ll get the full Dealer Dashboard: submit cars to auction, dealer analytics, and more.
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/profile"
+              className="px-4 py-2 bg-amber-500 text-white rounded-lg font-medium hover:bg-amber-600 transition-colors text-sm"
+            >
+              Profile & Verification
+            </Link>
+          </div>
+        )}
 
         <main className="flex-1 overflow-y-auto p-6">
           {activeTab === "dashboard" && (
@@ -412,6 +448,49 @@ const SellerDashboard = () => {
                     PKR {stats.totalEarnings.toLocaleString()}
                   </div>
                 </div>
+              </div>
+
+              {/* Quick links: Wallet, Transactions, My Bids */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Link
+                  to="/auctions/transactions"
+                  className="flex items-center gap-4 p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md hover:border-primary-200 transition-all"
+                >
+                  <div className="w-12 h-12 rounded-lg bg-primary-100 flex items-center justify-center">
+                    <FiCreditCard className="text-primary-500" size={24} />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900">Wallet & Transactions</p>
+                    <p className="text-sm text-gray-500">View balance, deposits, bids, escrow</p>
+                  </div>
+                  <FiChevronRight className="text-gray-400 ml-auto" size={20} />
+                </Link>
+                <Link
+                  to="/auctions/transactions"
+                  className="flex items-center gap-4 p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md hover:border-orange-200 transition-all"
+                >
+                  <div className="w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center">
+                    <FiActivity className="text-orange-500" size={24} />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900">My Bids</p>
+                    <p className="text-sm text-gray-500">Bid history, won auctions, payments</p>
+                  </div>
+                  <FiChevronRight className="text-gray-400 ml-auto" size={20} />
+                </Link>
+                <Link
+                  to="/seller/chats"
+                  className="flex items-center gap-4 p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md hover:border-blue-200 transition-all"
+                >
+                  <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
+                    <FiMessageSquare className="text-blue-500" size={24} />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900">Messages</p>
+                    <p className="text-sm text-gray-500">Buyer and seller chats</p>
+                  </div>
+                  <FiChevronRight className="text-gray-400 ml-auto" size={20} />
+                </Link>
               </div>
 
               {/* Recent Listings */}

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Hero from "../components/sections/home/Hero";
+import HowAuctionsWork from "../components/auction/HowAuctionsWork";
 import BrandsSection from "../components/sections/home/BrandsSection";
 import FeaturedCarsCarousel from "../components/sections/home/FeaturedCarsCarousel";
 import CustomerReview from "../components/sections/home/CustomerReview";
@@ -38,6 +39,7 @@ const Home = () => {
         <Video />
         <BannerCarousal />
         <FeaturedCarsCarousel />
+        <HowAuctionsWork />
         <CustomerReview key="customer-review" />
         <BlogSection />
         <BuySellCards />

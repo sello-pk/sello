@@ -7,6 +7,13 @@ const carSchema = new mongoose.Schema(
       ref: "User", // name of the User model
       required: true,
     },
+    /** Listing type: normal (fixed price) or auction (bid-based). Same car model for both. */
+    listingType: {
+      type: String,
+      enum: ["normal", "auction"],
+      default: "normal",
+      index: true,
+    },
     title: { type: String, required: true },
     description: { type: String, default: "" },
     make: { type: String, required: true },

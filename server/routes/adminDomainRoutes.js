@@ -13,6 +13,10 @@ import {
 import {
   getAllSettings, getSetting, upsertSetting, deleteSetting, uploadFile
 } from "../controllers/settingsController.js";
+import {
+  adminGetInspectionBookings,
+  adminUpdateInspectionBooking,
+} from "../controllers/auctionController.js";
 
 const router = express.Router();
 
@@ -61,6 +65,16 @@ router.put(
   "/admin/auction-access/review/:userId",
   hasAnyPermission("approveDealers", "editDealers"),
   reviewAuctionAccessRequest,
+);
+router.get(
+  "/admin/inspection-bookings",
+  hasAnyPermission("viewAuctions", "manageAuctions", "viewListings"),
+  adminGetInspectionBookings,
+);
+router.patch(
+  "/admin/inspection-bookings/:id",
+  hasAnyPermission("manageAuctions", "approveListings"),
+  adminUpdateInspectionBooking,
 );
 router.get("/admin/analytics/summary", hasAnyPermission("viewAnalytics", "createReports", "exportReports"), getAnalyticsSummary);
 router.get(
