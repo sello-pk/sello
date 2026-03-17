@@ -1516,6 +1516,7 @@ export const {
   useGetAuctionCarBidsQuery,
   usePlaceBidMutation,
   useSetProxyBidMutation,
+  useBuyNowMutation,
   useSubmitTokenPaymentMutation,
   useGetMyTokenPaymentsQuery,
   useAddToAuctionWatchlistMutation,
