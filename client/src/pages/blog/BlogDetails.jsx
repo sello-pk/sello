@@ -17,32 +17,36 @@ const BlogDetails = () => {
   const { id } = useParams();
 
   // Check if id looks like a MongoDB ObjectId (24 hex characters)
-  const isObjectId = /^[0-9a-fA-F]{24}$/.test(id);
+  const isObjectId = /^[0-9a-fA-F]{24}$/.test(id ?? "");
 
-  // Always call hooks in the same order
+  // Only run the relevant query to avoid double requests and loading-state conflicts (fixes infinite loading in Chrome/Edge)
   const {
     data: blogById,
     isLoading: isLoadingById,
     isError: isErrorById,
-  } = useGetBlogByIdQuery(id);
+    error: errorById,
+  } = useGetBlogByIdQuery(id, { skip: !isObjectId });
   const {
     data: blogBySlug,
     isLoading: isLoadingBySlug,
     isError: isErrorBySlug,
-  } = useGetBlogBySlugQuery(id);
+    error: errorBySlug,
+  } = useGetBlogBySlugQuery(id, { skip: isObjectId });
 
   // Use appropriate data based on ObjectId detection
   const blog = isObjectId ? blogById : blogBySlug;
   const isLoading = isObjectId ? isLoadingById : isLoadingBySlug;
   const isError = isObjectId ? isErrorById : isErrorBySlug;
 
-  // Check if this is a hardcoded blog post when backend query fails
+  // Check if this is a hardcoded blog post when backend returns 404 (loading must be done)
+  const is404 =
+    errorById?.status === 404 || errorBySlug?.status === 404;
   const hardcodedBlog =
-    isLoadingById &&
-    isLoadingBySlug &&
-    isError &&
-    (isErrorById?.status === 404 || isErrorBySlug?.status === 404)
-      ? hardcodedBlogPosts[isObjectId ? id : id]
+    !isLoadingById &&
+    !isLoadingBySlug &&
+    is404 &&
+    (isErrorById || isErrorBySlug)
+      ? hardcodedBlogPosts[id] ?? null
       : null;
 
   // Get related blogs (same category, excluding current blog)
@@ -106,8 +110,9 @@ const BlogDetails = () => {
     }
   }, [isErrorById, isErrorBySlug]);
 
-  // Show skeleton while loading
-  if (isLoading) {
+  // Show spinner only on initial load when we have no data (avoids flicker when refetch runs in Chrome/Edge)
+  const isInitialLoad = isLoading && !blog && !hardcodedBlog;
+  if (isInitialLoad) {
     return (
       <div>
         <BlogsHeroSection />

@@ -11,7 +11,9 @@ import { adminApi } from "../redux/services/adminApi.js";
 const USER_STORAGE_KEY = "user";
 
 /**
- * Wipe client auth state and all RTK Query caches (same as full logout on client).
+ * Wipe client auth state and invalidate only auth/user-related cache.
+ * Does NOT reset entire API state, so public data (brands, blogs, listings) stays cached
+ * and "No brands" / empty sections after refresh failure or logout are avoided.
  */
 export function clearAuthSession() {
   clearTokens();
@@ -21,19 +23,19 @@ export function clearAuthSession() {
     // ignore
   }
   try {
-    store.dispatch(api.util.resetApiState());
+    store.dispatch(api.util.invalidateTags(["User"]));
   } catch {
     // ignore
   }
   try {
-    store.dispatch(adminApi.util.resetApiState());
+    store.dispatch(adminApi.util.invalidateTags(["Users"]));
   } catch {
     // ignore
   }
 }
 
 /**
- * Persist new session after login; resets caches so UI shows current user only.
+ * Persist new session after login; invalidate user cache so getMe refetches and UI shows current user.
  */
 export function applyLoginSession(accessToken, user) {
   if (accessToken) {
@@ -47,12 +49,12 @@ export function applyLoginSession(accessToken, user) {
     }
   }
   try {
-    store.dispatch(api.util.resetApiState());
+    store.dispatch(api.util.invalidateTags(["User"]));
   } catch {
     // ignore
   }
   try {
-    store.dispatch(adminApi.util.resetApiState());
+    store.dispatch(adminApi.util.invalidateTags(["Users"]));
   } catch {
     // ignore
   }

@@ -811,12 +811,14 @@ export const api = createApi({
       query: (id) => `/blogs/${id}`,
       providesTags: (result, error, id) => [{ type: "Blog", id }],
       transformResponse: (response) => response?.data || response,
+      refetchOnMountOrArgChange: false,
     }),
 
     getBlogBySlug: builder.query({
       query: (slug) => `/blogs/slug/${slug}`,
       providesTags: (result, error, slug) => [{ type: "Blog", id: slug }],
       transformResponse: (response) => response?.data || response,
+      refetchOnMountOrArgChange: false,
     }),
 
     // Categories (Public)

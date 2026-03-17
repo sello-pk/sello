@@ -20,10 +20,17 @@ export class Logger {
   static error(msg, err = null, meta = {}) { console.error(`[ERROR] ${msg}`, err, meta); }
   static analytics(event, userId, meta = {}) { console.log(`[ANALYTICS] ${event}`, { userId, ...meta }); }
   static request(req, res, responseTime) {
-    const msg = `${req.method} ${req.originalUrl || req.url} ${res.statusCode} ${responseTime}ms`;
+    const url = req.originalUrl || req.url || "";
+    const msg = `${req.method} ${url} ${res.statusCode} ${responseTime}ms`;
     if (res.statusCode >= 500) this.error(`API Error: ${msg}`);
-    else if (res.statusCode >= 400) this.warn(`API Warning: ${msg}`);
-    else this.info(`API Request: ${msg}`);
+    else if (res.statusCode >= 400) {
+      // 401 on refresh-token or blog comments is expected when not logged in – log as info to reduce noise
+      const expected401 = res.statusCode === 401 && (
+        url.includes("/auth/refresh-token") || url.includes("/comments")
+      );
+      if (expected401) this.info(`API Request: ${msg}`);
+      else this.warn(`API Warning: ${msg}`);
+    } else this.info(`API Request: ${msg}`);
   }
   static query(operation, collection, duration, meta = {}) {
     const msg = `DB Query: ${operation} ${collection} (${duration}ms)`;

@@ -329,24 +329,12 @@ export const getAllBlogs = async (req, res) => {
     // Build Filter Query
     const query = {};
 
-    // DEBUG: Log which database we are using
-    if (mongoose.connection.db) {
-      console.log(
-        `[DEBUG] Fetching blogs from database: ${mongoose.connection.db.databaseName}`,
-      );
-      const count = await Blog.countDocuments({});
-      console.log(`[DEBUG] Total blogs in collection (all statuses): ${count}`);
-      console.log(`[DEBUG] User role: ${req.user?.role || "anonymous"}`);
-      console.log(`[DEBUG] Status parameter: ${status}`);
-    }
-
     // Handle admin access vs public access
     const isAdmin = req.user && req.user.role === "admin";
 
     // If admin requests 'all' or is admin without status filter, show all blogs
     if (isAdmin && (status === "all" || !status)) {
       // Don't filter by status - show all blogs for admin
-      console.log("[DEBUG] Admin access - showing all blogs");
     } else if (status && status !== "all") {
       // Specific status filter (both admin and public)
       query.status = status;
@@ -398,8 +386,6 @@ export const getAllBlogs = async (req, res) => {
     stats.forEach((s) => {
       if (s._id) metrics[s._id] = s.count;
     });
-
-    console.log(`[DEBUG] Returning ${blogs.length} blogs`);
 
     return res.status(200).json({
       success: true,

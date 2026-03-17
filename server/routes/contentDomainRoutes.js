@@ -135,8 +135,8 @@ router.delete(
 );
 
 /* ------------------------------ BLOG COMMENTS ----------------------------- */
-// Public comment endpoints (require authentication)
-router.get("/blogs/:blogId/comments", auth, getBlogComments);
+// GET comments is public (approved only); POST/DELETE require auth
+router.get("/blogs/:blogId/comments", getBlogComments);
 router.post("/blogs/:blogId/comments", auth, createComment);
 router.delete("/blogs/comments/:commentId", auth, deleteComment);
 router.get(

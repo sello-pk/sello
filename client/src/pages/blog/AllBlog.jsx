@@ -4,7 +4,7 @@ import BlogsHeroSection from "../../components/features/blog/BlogsHeroSection";
 import BlogPosts from "../../components/features/blog/allBlogs/BlogPosts";
 import NewsLatter from "../../components/utils/NewsLatter";
 import SEO from "../../components/common/SEO";
-import { useGetAllCategoriesQuery } from "../../redux/services/adminApi";
+import { useGetCategoriesQuery } from "../../redux/services/api";
 import { FiSearch, FiX } from "react-icons/fi";
 
 const AllBlog = () => {
@@ -15,11 +15,11 @@ const AllBlog = () => {
   );
   const [sortBy, setSortBy] = useState(searchParams.get("sort") || "newest");
 
-  const { data: categoriesData } = useGetAllCategoriesQuery({
+  const { data: categoriesData } = useGetCategoriesQuery({
     type: "blog",
     isActive: true,
   });
-  const categories = categoriesData || [];
+  const categories = Array.isArray(categoriesData) ? categoriesData : categoriesData?.data ?? [];
 
   const handleSearch = (e) => {
     e.preventDefault();

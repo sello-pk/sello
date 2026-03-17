@@ -9,14 +9,21 @@ import { isValidObjectId } from "./sanitizeMiddleware.js";
 
 const isProduction = process.env.NODE_ENV === "production";
 
+/** Skip rate limit for localhost in development (avoids 429 from polling + many components) */
+const isLocalhost = (req) => {
+  const raw = req.ip || req.socket?.remoteAddress || req.headers["x-forwarded-for"];
+  const ip = typeof raw === "string" ? raw.split(",")[0].trim() : raw;
+  return ip === "::1" || ip === "127.0.0.1" || ip === "::ffff:127.0.0.1";
+};
+
 /** General API rate limit – protects all /api routes from abuse */
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: isProduction ? 300 : 1000,
+  max: isProduction ? 300 : 10000,
   message: { success: false, message: "Too many requests. Please try again in a few minutes." },
   standardHeaders: true,
   legacyHeaders: false,
-  skip: (req) => req.path === "/health",
+  skip: (req) => req.path === "/health" || (!isProduction && isLocalhost(req)),
   handler: (req, res, _next, options) => {
     Logger.warn("Rate limit exceeded", { ip: req.ip || req.headers["x-forwarded-for"], path: req.originalUrl });
     res.status(429).json(options.message);
