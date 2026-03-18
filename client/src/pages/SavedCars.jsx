@@ -4,7 +4,7 @@ import {
   useUnsaveCarMutation,
 } from "../redux/services/api";
 import { useNavigate } from "react-router-dom";
-import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
+import { AiFillHeart } from "react-icons/ai";
 import { IoIosArrowRoundUp } from "react-icons/io";
 import { Image as LazyImage } from "../components/ui/Image";
 import { images } from "../assets/assets";
@@ -33,42 +33,46 @@ const SavedCars = () => {
   return (
     <div className="min-h-screen bg-[#F5F5F5] px-4 sm:px-6 lg:px-8 py-12">
       <div className="max-w-8xl mx-auto">
-        <h1 className="text-3xl md:text-4xl font-semibold mb-8">Saved Cars</h1>
+        <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-8">
+          Saved Cars
+        </h1>
 
         {isLoading ? (
-          <div className="grid md:grid-cols-3 grid-cols-1 md:gap-10 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="md:px-6 md:py-8 bg-white rounded-lg shadow-sm animate-pulse"
+                className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden animate-pulse"
               >
-                <div className="h-48 bg-gray-200 rounded-t-lg"></div>
-                <div className="p-5">
-                  <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-44 md:h-52 bg-gray-200" />
+                <div className="p-4 space-y-3">
+                  <div className="h-5 bg-gray-200 rounded w-4/5" />
+                  <div className="h-3 bg-gray-200 rounded w-full" />
+                  <div className="h-10 bg-gray-100 rounded mt-4" />
                 </div>
               </div>
             ))}
           </div>
         ) : cars.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-            <BsBookmark className="text-6xl text-gray-300 mx-auto mb-4" />
-            <h1 className="text-2xl font-semibold text-gray-700 mb-2">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 text-center max-w-lg mx-auto">
+            <AiFillHeart className="text-5xl text-primary-500/40 mx-auto mb-4" />
+            <h2 className="text-2xl font-semibold text-gray-800 mb-2">
               No Saved Cars
-            </h1>
+            </h2>
             <p className="text-gray-500 mb-6">
-              You haven't saved any cars yet. Start exploring and save your
-              favorites!
+              You haven&apos;t saved any cars yet. Start exploring and save
+              your favorites!
             </p>
             <button
+              type="button"
               onClick={() => navigate("/cars")}
-              className="bg-primary-500 hover:opacity-90 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              className="bg-primary-500 hover:opacity-90 text-white px-6 py-3 rounded-lg font-medium transition-opacity"
             >
               Browse Cars
             </button>
           </div>
         ) : (
-          <div className="grid md:grid-cols-3 grid-cols-1 md:gap-10 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {cars.map((car) => {
               const carId = car._id || car.id;
               const carImage =
@@ -78,104 +82,123 @@ const SavedCars = () => {
               const carMake = car?.make || "Unknown";
               const carModel = car?.model || "Unknown";
               const carYear = car?.year || "N/A";
-              const carPrice = car?.price?.toLocaleString() || "N/A";
-              const carMileage = car?.mileage || "N/A";
-              const carFuelType = car?.fuelType || "N/A";
-              const carTransmission = car?.transmission || "N/A";
-              const carTitle = car?.title || `${carMake} ${carModel}`;
+              const carPrice =
+                car?.price != null
+                  ? Number(car.price).toLocaleString()
+                  : "N/A";
+              const carMileage =
+                car?.mileage != null
+                  ? `${Number(car.mileage).toLocaleString()} km`
+                  : "—";
+              const carFuelType = car?.fuelType || "—";
+              const carTransmission = car?.transmission || "—";
+              const engineLabel = car?.engineCapacity
+                ? `${car.engineCapacity} CC`
+                : "CC N/A";
 
               return (
                 <div
                   key={carId}
-                  className="md:px-6 md:py-8 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => car && navigate(buildCarUrl(car))}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      car && navigate(buildCarUrl(car));
+                    }
+                  }}
+                  className="bg-white border border-gray-200 rounded-xl shadow-md hover:shadow-xl hover:border-gray-300 transition-all duration-300 cursor-pointer overflow-hidden flex flex-col"
                 >
-                  <div className="w-full h-full border border-gray-100 rounded-bl-2xl rounded-br-2xl md:pb-8 pb-14">
-                    <div className="h-48 relative">
-                      <LazyImage
-                        src={carImage}
-                        alt={carTitle}
-                        className="rounded-t-lg"
-                        width="100%"
-                        height="100%"
-                        onError={(e) => {
-                          e.target.src =
-                            images?.carPlaceholder ||
-                            "https://via.placeholder.com/400x300?text=No+Image";
-                        }}
-                      />
-                      {car?.isSold && (
-                        <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold z-10">
-                          SOLD
-                        </div>
+                  <div className="relative h-44 md:h-52 overflow-hidden bg-gray-100">
+                    <LazyImage
+                      src={carImage}
+                      alt={`${carMake} ${carModel}`}
+                      className="w-full h-full object-cover"
+                      width="100%"
+                      height="100%"
+                      onError={(e) => {
+                        e.target.src =
+                          images?.carPlaceholder ||
+                          "https://via.placeholder.com/400x300?text=No+Image";
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
+                    {car?.isSold && (
+                      <div className="absolute top-2 left-2 z-20 bg-red-600 text-white px-2.5 py-1 rounded-md text-xs font-bold uppercase shadow-sm">
+                        SOLD
+                      </div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={(e) => handleUnsave(carId, e)}
+                      className="absolute top-2 right-2 z-20 bg-white/95 hover:bg-white p-1.5 rounded-full shadow border border-gray-100 transition-colors"
+                      title="Remove from saved"
+                      aria-label="Remove from saved"
+                    >
+                      <AiFillHeart className="text-primary-500 text-lg" />
+                    </button>
+                  </div>
+
+                  <div className="p-4 bg-white flex-1 flex flex-col">
+                    <h3 className="text-base font-bold text-gray-900 mb-1.5 line-clamp-2 leading-snug">
+                      {carMake} {carModel} - {carYear}
+                    </h3>
+
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 py-3 text-xs text-gray-600 border-b border-gray-100">
+                      {images?.milesIcon && (
+                        <span className="flex items-center gap-1.5">
+                          <img
+                            src={images.milesIcon}
+                            alt=""
+                            className="w-3.5 h-3.5 opacity-70 object-contain"
+                          />
+                          {carMileage}
+                        </span>
                       )}
-                      <button
-                        onClick={(e) => handleUnsave(carId, e)}
-                        className="absolute top-4 right-4 bg-white p-2 rounded-full shadow-md hover:bg-gray-50 transition-colors z-10"
-                        title="Remove from saved"
-                      >
-                        <BsBookmarkFill className="text-primary-500 text-xl" />
-                      </button>
+                      {images?.fuelTypeIcon && (
+                        <span className="flex items-center gap-1.5">
+                          <img
+                            src={images.fuelTypeIcon}
+                            alt=""
+                            className="w-3.5 h-3.5 opacity-70 object-contain"
+                          />
+                          {carFuelType}
+                        </span>
+                      )}
+                      {images?.transmissionIcon && (
+                        <span className="flex items-center gap-1.5">
+                          <img
+                            src={images.transmissionIcon}
+                            alt=""
+                            className="w-3.5 h-3.5 opacity-70 object-contain"
+                          />
+                          {carTransmission}
+                        </span>
+                      )}
                     </div>
 
-                    <div className="p-5">
-                      <h4 className="md:text-xl text-lg font-medium">
-                        {carMake} {carModel} - {carYear}
-                      </h4>
+                    <div className="flex flex-wrap items-center gap-3 py-3 text-xs text-gray-600 border-b border-gray-100">
+                      <span className="flex items-center gap-1.5">
+                        {images?.cc && (
+                          <img
+                            src={images.cc}
+                            alt=""
+                            className="w-3.5 h-3.5 opacity-70 object-contain"
+                          />
+                        )}
+                        {engineLabel}
+                      </span>
+                    </div>
 
-                      <div className="flex items-center my-3 justify-around border-b border-gray-200 pb-3">
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={images?.milesIcon}
-                            alt="miles"
-                            className="w-5 h-5"
-                          />
-                          <span className="text-sm">{carMileage} km</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={images?.fuelTypeIcon}
-                            alt="fuel"
-                            className="w-5 h-5"
-                          />
-                          <span className="text-sm">{carFuelType}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={images?.transmissionIcon}
-                            alt="transmission"
-                            className="w-5 h-5"
-                          />
-                          <span className="text-sm">{carTransmission}</span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center my-3 justify-around pb-3">
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={images?.cc}
-                            alt="engine"
-                            className="w-5 h-5"
-                          />
-                          <span className="text-sm">
-                            {car?.engineCapacity
-                              ? `${car.engineCapacity} CC`
-                              : "N/A"}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between mt-4">
-                        <h6 className="text-lg md:text-xl font-semibold">
-                          PKR {carPrice}
-                        </h6>
-                        <button
-                          onClick={() => car && navigate(buildCarUrl(car))}
-                          className="flex items-center gap-2 text-primary-500 hover:underline text-sm md:text-base"
-                        >
-                          View Details
-                          <IoIosArrowRoundUp className="text-xl rotate-[40deg]" />
-                        </button>
-                      </div>
+                    <div className="mt-auto flex items-center justify-between gap-3 pt-3">
+                      <p className="text-lg font-bold text-gray-900 truncate">
+                        PKR {carPrice}
+                      </p>
+                      <span className="text-primary-500 font-semibold text-sm flex items-center gap-0.5 shrink-0">
+                        View Details
+                        <IoIosArrowRoundUp className="text-base rotate-[43deg]" />
+                      </span>
                     </div>
                   </div>
                 </div>

@@ -51,7 +51,7 @@ const BottomHeader = () => {
         />
         <div className="flex items-center gap-6">
           {" "}
-          <Link to="/save">
+          <Link to="/saved-cars">
             <FaRegHeart className="w-5 h-5 hover:text-primary ease text-white shrink-0" />
           </Link>
           <Link to="/filter" className="text-white">
