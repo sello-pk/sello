@@ -1,12 +1,16 @@
 import React, { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
+  HiOutlineArrowLeft,
+  HiOutlineClock,
+  HiOutlineHome,
+} from "react-icons/hi2";
+import {
   useGetBlogByIdQuery,
   useGetBlogBySlugQuery,
   useGetBlogsQuery,
 } from "../../redux/services/api";
 import { formatDate } from "../../utils";
-import BlogsHeroSection from "../../components/features/blog/BlogsHeroSection";
 import SEO from "../../components/common/SEO";
 import { Spinner } from "../../components/ui/Loading";
 import { buildBlogUrl } from "../../utils/urlBuilders";
@@ -16,10 +20,8 @@ import { hardcodedBlogPosts } from "../../assets/blogs/blogAssets";
 const BlogDetails = () => {
   const { id } = useParams();
 
-  // Check if id looks like a MongoDB ObjectId (24 hex characters)
   const isObjectId = /^[0-9a-fA-F]{24}$/.test(id ?? "");
 
-  // Only run the relevant query to avoid double requests and loading-state conflicts (fixes infinite loading in Chrome/Edge)
   const {
     data: blogById,
     isLoading: isLoadingById,
@@ -33,12 +35,10 @@ const BlogDetails = () => {
     error: errorBySlug,
   } = useGetBlogBySlugQuery(id, { skip: isObjectId });
 
-  // Use appropriate data based on ObjectId detection
   const blog = isObjectId ? blogById : blogBySlug;
   const isLoading = isObjectId ? isLoadingById : isLoadingBySlug;
   const isError = isObjectId ? isErrorById : isErrorBySlug;
 
-  // Check if this is a hardcoded blog post when backend returns 404 (loading must be done)
   const is404 =
     errorById?.status === 404 || errorBySlug?.status === 404;
   const hardcodedBlog =
@@ -49,7 +49,6 @@ const BlogDetails = () => {
       ? hardcodedBlogPosts[id] ?? null
       : null;
 
-  // Get related blogs (same category, excluding current blog)
   const { data: relatedBlogsData } = useGetBlogsQuery(
     {
       limit: 3,
@@ -66,7 +65,6 @@ const BlogDetails = () => {
 
   const relatedBlogs = React.useMemo(() => {
     if (!relatedBlogsData) return [];
-
     const blogsArray =
       relatedBlogsData?.blogs || relatedBlogsData?.data?.blogs || [];
     return blogsArray
@@ -74,10 +72,8 @@ const BlogDetails = () => {
       .slice(0, 3);
   }, [relatedBlogsData, blog?._id, hardcodedBlog?._id]);
 
-  // Use either the backend blog or hardcoded blog
   const currentBlog = blog || hardcodedBlog;
 
-  // Normalize tags so we never show raw JSON like #["How to Inspect a Used Car"]
   const normalizedTags = React.useMemo(() => {
     const raw = currentBlog?.tags;
     if (!raw) return [];
@@ -103,53 +99,63 @@ const BlogDetails = () => {
     return [];
   }, [currentBlog?.tags]);
 
-  // Redirect to 404 or show error
-  useEffect(() => {
-    if (isErrorById?.status === 404 || isErrorBySlug?.status === 404) {
-      // Blog not found - could redirect or show error
-    }
-  }, [isErrorById, isErrorBySlug]);
+  const [heroImgFailed, setHeroImgFailed] = React.useState(false);
 
-  // Show spinner only on initial load when we have no data (avoids flicker when refetch runs in Chrome/Edge)
+  useEffect(() => {
+    setHeroImgFailed(false);
+  }, [blog?._id, hardcodedBlog?._id, id]);
+
   const isInitialLoad = isLoading && !blog && !hardcodedBlog;
   if (isInitialLoad) {
     return (
-      <div>
-        <BlogsHeroSection />
-        <div className="max-w-8xl mx-auto w-full px-4 md:px-6 lg:px-8 py-8 md:py-12">
-          <Spinner fullScreen={false} />
-        </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <Spinner fullScreen={false} />
       </div>
     );
   }
 
   if (isError && !hardcodedBlog && !currentBlog) {
     return (
-      <div>
-        <BlogsHeroSection />
-        <div className="max-w-8xl mx-auto w-full px-4 md:px-6 lg:px-8 py-8 md:py-12">
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Blog Post Not Found
-            </h2>
-            <p className="text-gray-600 mb-6">
-              The blog post you're looking for doesn't exist or has been
-              removed.
-            </p>
-            <Link
-              to="/blog"
-              className="inline-block px-6 py-3 bg-primary-500 text-white rounded-lg hover:opacity-90 transition-colors"
-            >
-              Back to All Blogs
-            </Link>
-          </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Blog Post Not Found
+          </h1>
+          <p className="text-gray-600 mb-6 max-w-md mx-auto">
+            The blog post you&apos;re looking for doesn&apos;t exist or has been
+            removed.
+          </p>
+          <Link
+            to="/blog"
+            className="inline-flex items-center gap-2 text-primary-500 font-medium hover:underline"
+          >
+            <HiOutlineArrowLeft className="w-5 h-5" /> Back to all blogs
+          </Link>
         </div>
       </div>
     );
   }
 
+  const authorName = currentBlog.author?.name || "Sello";
+  const authorInitials =
+    authorName
+      .split(/\s+/)
+      .map((w) => w[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() || "SE";
+  const displayDate = formatDate(
+    currentBlog.publishedAt || currentBlog.createdAt,
+  );
+  const readLabel = `${currentBlog.readTime || 5} min read`;
+  const categoryName = currentBlog.category?.name || "Blog";
+  const hasFeaturedUrl = Boolean(currentBlog.featuredImage);
+  const showHeroPhoto = hasFeaturedUrl && !heroImgFailed;
+  const canUseComments =
+    currentBlog._id && /^[0-9a-fA-F]{24}$/.test(String(currentBlog._id));
+
   return (
-    <div>
+    <>
       <SEO
         title={currentBlog.metaTitle || currentBlog.title}
         description={
@@ -169,340 +175,216 @@ const BlogDetails = () => {
           (normalizedTags.length > 0 ? normalizedTags.join(", ") : undefined)
         }
       />
-      <BlogsHeroSection />
-      <div className="max-w-8xl mx-auto w-full px-4 md:px-6 lg:px-8 py-8 md:py-12">
-        {/* Content column: same width as image, centered (hr center + width respective of image) */}
-        <div className="max-w-3xl mx-auto w-full">
-          {/* Featured Image - fit inside box like categories (no crop/overflow) */}
-          {currentBlog.featuredImage && (
-            <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center min-h-[200px] max-h-[420px] aspect-video w-full">
-              <img
-                src={currentBlog.featuredImage}
-                alt={currentBlog.title}
-                className="max-h-full max-w-full w-full h-full object-cover object-center"
-                loading="eager"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src =
-                    "https://via.placeholder.com/1200x500?text=Blog+Image";
-                  e.target.className =
-                    "max-h-full max-w-full w-full h-full object-cover object-center";
-                }}
-              />
-            </div>
-          )}
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+          <nav aria-label="Breadcrumb" className="mb-8">
+            <ol className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
+              <li>
+                <Link
+                  to="/"
+                  className="hover:text-primary-500 transition-colors inline-flex items-center gap-1"
+                >
+                  <HiOutlineHome className="w-4 h-4" /> Home
+                </Link>
+              </li>
+              <li aria-hidden className="text-gray-300">
+                /
+              </li>
+              <li>
+                <Link
+                  to="/blog"
+                  className="hover:text-primary-500 transition-colors"
+                >
+                  Blog
+                </Link>
+              </li>
+              <li aria-hidden className="text-gray-300">
+                /
+              </li>
+              <li
+                className="text-gray-900 font-medium truncate max-w-[180px] sm:max-w-xs"
+                title={currentBlog.title}
+              >
+                {currentBlog.title}
+              </li>
+            </ol>
+          </nav>
 
-          {/* Horizontal rule - centered, full width of content */}
-          <hr className="my-8 border-gray-200 w-full" />
-
-          {/* Blog Header */}
-          <div className="mb-8">
-            {/* Author and Date Info */}
-            <div className="flex items-center gap-3 text-sm text-gray-600 mb-4">
-              {currentBlog.author?.avatar ? (
+          <article className="bg-[#FDFBF7] rounded-3xl overflow-hidden shadow-lg border border-gray-100">
+            <div className="relative w-full h-64 md:h-80 lg:h-[440px] overflow-hidden shrink-0">
+              {showHeroPhoto ? (
                 <img
-                  src={currentBlog.author.avatar}
-                  alt={currentBlog.author?.name || "Author"}
-                  className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                  src={currentBlog.featuredImage}
+                  alt=""
+                  className="absolute inset-0 size-full block object-cover object-center"
+                  loading="eager"
+                  onError={() => setHeroImgFailed(true)}
                 />
               ) : (
-                <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
-                  {(currentBlog.author?.name || "A")[0].toUpperCase()}
-                </div>
+                <div
+                  className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-[#050B20]"
+                  aria-hidden
+                />
               )}
-              <div className="flex flex-wrap items-center gap-2">
-                <span>
-                  By{" "}
-                  <span className="font-semibold text-gray-900">
-                    {currentBlog.author?.name || "Admin"}
+              <div className="absolute inset-0 bg-black/35" aria-hidden />
+              <div className="absolute top-6 left-6 right-6 flex flex-wrap items-center justify-between gap-3">
+                {currentBlog.category?._id ? (
+                  <Link
+                    to={`/blog/all?category=${currentBlog.category._id}`}
+                    className="inline-flex items-center gap-2 bg-white/95 text-gray-800 px-3 py-1.5 rounded-full text-sm font-semibold shadow hover:bg-white transition-colors"
+                  >
+                    <span className="w-1.5 h-1.5 bg-primary-500 rounded-full" />
+                    {categoryName}
+                  </Link>
+                ) : (
+                  <span className="inline-flex items-center gap-2 bg-white/95 text-gray-800 px-3 py-1.5 rounded-full text-sm font-semibold shadow">
+                    <span className="w-1.5 h-1.5 bg-primary-500 rounded-full" />
+                    {categoryName}
                   </span>
+                )}
+                <span className="inline-flex items-center gap-1.5 text-white/90 text-sm drop-shadow">
+                  <HiOutlineClock className="w-4 h-4" /> {readLabel}
                 </span>
-                <span>|</span>
-                <span>
-                  {formatDate(currentBlog.publishedAt || currentBlog.createdAt)}
-                </span>
+              </div>
+              <div className="absolute bottom-6 left-6 right-6">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white drop-shadow-lg leading-tight">
+                  {currentBlog.title}
+                </h1>
               </div>
             </div>
 
-            {/* Category and Meta Info - inline, no clipping */}
-            <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500 mb-6 min-w-0 overflow-visible">
-              {currentBlog.category && (
-                <>
-                  <Link
-                    to={`/blog?category=${currentBlog.category._id}`}
-                    className="inline-flex items-center flex-shrink-0 px-3 py-1.5 rounded-full bg-primary-50 text-primary-600 hover:bg-primary-100 font-medium"
-                  >
-                    {currentBlog.category.name}
-                  </Link>
-                  <span className="flex-shrink-0">·</span>
-                </>
-              )}
-              <span className="flex-shrink-0">
-                {currentBlog.readTime || 5} min read
-              </span>
-              {currentBlog.views > 0 && (
-                <>
-                  <span className="flex-shrink-0">·</span>
-                  <span className="flex-shrink-0">
+            <div className="p-8 md:p-10 lg:p-12">
+              <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-6 border-b border-gray-200">
+                <div className="flex items-center gap-3">
+                  {currentBlog.author?.avatar ? (
+                    <img
+                      src={currentBlog.author.avatar}
+                      alt={authorName}
+                      className="w-11 h-11 rounded-full object-cover border border-primary-500/20"
+                    />
+                  ) : (
+                    <div className="w-11 h-11 rounded-full bg-primary-500/10 flex items-center justify-center border border-primary-500/20">
+                      <span className="text-sm font-bold text-primary-600">
+                        {authorInitials}
+                      </span>
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">
+                      {authorName}
+                    </p>
+                    <p className="text-sm text-gray-500">{displayDate}</p>
+                  </div>
+                </div>
+                {currentBlog.views > 0 && (
+                  <span className="text-sm text-gray-500">
                     {currentBlog.views} views
                   </span>
-                </>
+                )}
+              </div>
+
+              {currentBlog.excerpt && (
+                <p className="text-lg text-gray-600 leading-relaxed mb-8 pl-1 border-l-4 border-primary-500/50">
+                  {currentBlog.excerpt}
+                </p>
               )}
-            </div>
 
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-8 leading-tight">
-              {currentBlog.title}
-            </h2>
-          </div>
+              {currentBlog.content ? (
+                <div
+                  className="blog-detail-body estimator-blog-body prose prose-lg max-w-none text-gray-700 leading-relaxed prose-headings:text-gray-900"
+                  dangerouslySetInnerHTML={{ __html: currentBlog.content }}
+                />
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <p>No content available for this blog post.</p>
+                </div>
+              )}
 
-          {/* Blog Content */}
-          <div className="blog-content-wrapper mb-8">
-            {currentBlog.content ? (
-              <div
-                className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-headings:mt-8 prose-headings:mb-4 prose-h1:text-4xl prose-h1:font-bold prose-h1:mt-10 prose-h1:mb-6 prose-h2:text-3xl prose-h2:font-bold prose-h2:mt-8 prose-h2:mb-4 prose-h3:text-2xl prose-h3:font-bold prose-h3:mt-6 prose-h3:mb-3 prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6 prose-p:text-base prose-a:text-primary-500 prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 prose-strong:font-bold prose-img:rounded-lg prose-img:shadow-md prose-img:my-8 prose-img:w-full prose-ul:my-6 prose-ol:my-6 prose-li:my-2 prose-blockquote:border-l-4 prose-blockquote:border-primary-500 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:my-6"
-                dangerouslySetInnerHTML={{ __html: currentBlog.content }}
-              />
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                <p>No content available for this blog post.</p>
-              </div>
-            )}
-          </div>
-          <style>{`
-          .blog-content-wrapper {
-            width: 100%;
-            position: relative;
-            isolation: isolate;
-          }
-          .blog-content-wrapper .prose {
-            color: #374151;
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-          }
-          .blog-content-wrapper .prose > *:first-child {
-            margin-top: 0 !important;
-          }
-          .blog-content-wrapper .prose > *:last-child {
-            margin-bottom: 0 !important;
-          }
-          .blog-content-wrapper .prose h1,
-          .blog-content-wrapper .prose h2,
-          .blog-content-wrapper .prose h3,
-          .blog-content-wrapper .prose h4,
-          .blog-content-wrapper .prose h5,
-          .blog-content-wrapper .prose h6 {
-            line-height: 1.3 !important;
-            font-weight: 700 !important;
-            color: #111827 !important;
-            clear: both !important;
-            display: block !important;
-            width: 100% !important;
-            position: relative !important;
-            z-index: 1;
-            page-break-after: avoid;
-          }
-          .blog-content-wrapper .prose h1 {
-            font-size: 2.25rem !important;
-            margin-top: 2.5rem !important;
-            margin-bottom: 1.5rem !important;
-          }
-          .blog-content-wrapper .prose h2 {
-            font-size: 1.875rem !important;
-            margin-top: 2rem !important;
-            margin-bottom: 1rem !important;
-          }
-          .blog-content-wrapper .prose h3 {
-            font-size: 1.5rem !important;
-            margin-top: 1.5rem !important;
-            margin-bottom: 0.75rem !important;
-          }
-          .blog-content-wrapper .prose h4 {
-            font-size: 1.25rem !important;
-            margin-top: 1.25rem !important;
-            margin-bottom: 0.5rem !important;
-          }
-          .blog-content-wrapper .prose p {
-            margin-top: 1.5rem !important;
-            margin-bottom: 1.5rem !important;
-            line-height: 1.75 !important;
-            font-size: 1rem !important;
-            color: #374151 !important;
-            display: block !important;
-            width: 100% !important;
-            position: relative !important;
-            z-index: 1;
-            clear: both;
-          }
-          .blog-content-wrapper .prose p:first-of-type {
-            margin-top: 0 !important;
-          }
-          .blog-content-wrapper .prose img {
-            margin: 2rem auto !important;
-            display: block !important;
-            max-width: 100% !important;
-            height: auto !important;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            clear: both;
-          }
-          .blog-content-wrapper .prose ul,
-          .blog-content-wrapper .prose ol {
-            margin-top: 1.5rem !important;
-            margin-bottom: 1.5rem !important;
-            padding-left: 1.75rem !important;
-            clear: both;
-          }
-          .blog-content-wrapper .prose li {
-            margin-top: 0.5rem !important;
-            margin-bottom: 0.5rem !important;
-            line-height: 1.75;
-          }
-          .blog-content-wrapper .prose blockquote {
-            border-left: 4px solid #FFA602 !important;
-            padding-left: 1.5rem !important;
-            margin: 2rem 0 !important;
-            font-style: italic;
-            color: #4B5563;
-            clear: both;
-          }
-          .blog-content-wrapper .prose a {
-            color: #FFA602 !important;
-            text-decoration: none !important;
-            font-weight: 500;
-            transition: text-decoration 0.2s;
-          }
-          .blog-content-wrapper .prose a:hover {
-            text-decoration: underline !important;
-          }
-          .blog-content-wrapper .prose strong {
-            font-weight: 700 !important;
-            color: #111827 !important;
-          }
-          .blog-content-wrapper .prose em {
-            font-style: italic !important;
-          }
-          .blog-content-wrapper .prose u {
-            text-decoration: underline !important;
-          }
-          .blog-content-wrapper .prose code {
-            background-color: #F3F4F6;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.875em;
-            font-family: 'Courier New', monospace;
-          }
-          .blog-content-wrapper .prose pre {
-            background-color: #1F2937;
-            color: #F9FAFB;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            overflow-x: auto;
-            margin: 2rem 0;
-            clear: both;
-          }
-          .blog-content-wrapper .prose pre code {
-            background-color: transparent;
-            padding: 0;
-            color: inherit;
-          }
-          .blog-content-wrapper .prose hr {
-            margin: 2rem 0;
-            border: none;
-            border-top: 1px solid #E5E7EB;
-            clear: both;
-          }
-          /* Ensure no floating elements cause overlap */
-          .blog-content-wrapper .prose * {
-            box-sizing: border-box;
-          }
-        `}</style>
+              {normalizedTags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-gray-200">
+                  {normalizedTags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1.5 bg-white border border-gray-200 text-gray-700 rounded-full text-sm font-medium"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
 
-          {/* Tags - use normalized list so we never show raw JSON */}
-          {normalizedTags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-8">
-              {normalizedTags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm font-medium"
+              {relatedBlogs.length > 0 && (
+                <section className="mt-10 pt-8 border-t border-gray-200" aria-label="Related articles">
+                  <h2 className="text-xl font-bold text-gray-900 mb-4">
+                    Related articles
+                  </h2>
+                  <ul className="space-y-3">
+                    {relatedBlogs.map((relatedBlog) => (
+                      <li key={relatedBlog._id}>
+                        <Link
+                          to={`/blog/${relatedBlog.slug || relatedBlog._id}`}
+                          className="group flex items-start gap-3 p-4 rounded-xl bg-white border border-gray-100 hover:border-primary-200 hover:shadow-md transition-all"
+                        >
+                          <span className="w-2 h-2 rounded-full bg-primary-500 flex-shrink-0 mt-2" />
+                          <div className="min-w-0 flex-1">
+                            <span className="font-medium text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-2 block">
+                              {relatedBlog.title}
+                            </span>
+                            <span className="text-sm text-gray-500">
+                              {formatDate(
+                                relatedBlog.publishedAt ||
+                                  relatedBlog.createdAt,
+                              )}
+                            </span>
+                          </div>
+                          <HiOutlineArrowLeft className="w-5 h-5 flex-shrink-0 text-gray-400 group-hover:text-primary-500 group-hover:translate-x-0.5 transition-all rotate-180" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
+              <div className="mt-10 pt-8 border-t border-gray-200">
+                <Link
+                  to="/blog"
+                  className="inline-flex items-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-xl font-semibold hover:opacity-95 transition-opacity shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
                 >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Related Blogs Section */}
-          {relatedBlogs.length > 0 && (
-            <div className="border-t border-gray-200 pt-8 mt-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                Related Articles
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {relatedBlogs.map((relatedBlog) => (
-                  <Link
-                    key={relatedBlog._id}
-                    to={`/blog/${relatedBlog.slug || relatedBlog._id}`}
-                    className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-                  >
-                    <div className="w-full h-48 overflow-hidden bg-gray-100 flex items-center justify-center">
-                      {relatedBlog.featuredImage ? (
-                        <img
-                          src={relatedBlog.featuredImage}
-                          alt={relatedBlog.title}
-                          className="max-h-full max-w-full w-auto h-auto object-contain object-center group-hover:scale-105 transition-transform duration-300"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src =
-                              "https://via.placeholder.com/400x200?text=Blog";
-                          }}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-                          No image
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-4">
-                      <h4 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary-500 transition-colors">
-                        {relatedBlog.title}
-                      </h4>
-                      <p className="text-sm text-gray-500 mb-2">
-                        {formatDate(
-                          relatedBlog.publishedAt || relatedBlog.createdAt,
-                        )}
-                      </p>
-                      <p className="text-sm text-gray-600 line-clamp-2">
-                        {relatedBlog.excerpt ||
-                          relatedBlog.content
-                            ?.replace(/<[^>]*>/g, "")
-                            .substring(0, 100) + "..."}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
+                  <HiOutlineArrowLeft className="w-5 h-5" /> Back to all blogs
+                </Link>
               </div>
             </div>
+          </article>
+
+          {canUseComments && (
+            <div className="mt-10 bg-[#FDFBF7] rounded-3xl overflow-hidden shadow-lg border border-gray-100 p-8 md:p-10">
+              <BlogCommentsSection blogId={currentBlog._id} />
+            </div>
           )}
-
-          {/* Navigation */}
-          <div className="border-t border-gray-200 pt-8 mt-8">
-            <Link
-              to="/blog"
-              className="text-primary-500 hover:underline inline-flex items-center gap-2"
-            >
-              ← Back to all blogs
-            </Link>
-          </div>
         </div>
-
-        {/* Comments Section - same width as blog content above */}
-        {currentBlog && (
-          <div className="max-w-3xl mx-auto w-full">
-            <BlogCommentsSection blogId={currentBlog._id} />
-          </div>
-        )}
       </div>
-    </div>
+
+      <style>{`
+        .blog-detail-body.prose > *:first-child { margin-top: 0 !important; }
+        .blog-detail-body.prose > *:last-child { margin-bottom: 0 !important; }
+        .blog-detail-body.prose h1, .blog-detail-body.prose h2, .blog-detail-body.prose h3 {
+          line-height: 1.3; font-weight: 700; color: #111827; clear: both;
+        }
+        .blog-detail-body.prose p {
+          margin-top: 1.25rem; margin-bottom: 1.25rem; line-height: 1.75; color: #374151;
+        }
+        .blog-detail-body.prose img {
+          margin: 1.5rem auto; display: block; max-width: 100%; height: auto;
+          border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        .blog-detail-body.prose a { color: #FFA602; font-weight: 500; }
+        .blog-detail-body.prose a:hover { text-decoration: underline; }
+        .blog-detail-body.prose blockquote {
+          border-left: 4px solid #FFA602; padding-left: 1.25rem; font-style: italic; color: #4B5563;
+        }
+        .blog-detail-body.prose ul, .blog-detail-body.prose ol { padding-left: 1.5rem; }
+      `}</style>
+    </>
   );
 };
 
