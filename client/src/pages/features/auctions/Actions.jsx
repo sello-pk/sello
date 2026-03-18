@@ -21,6 +21,7 @@ import {
   useGetMeQuery,
   useGetMyAuctionAccessStatusQuery,
 } from "@redux/services/api";
+import HowAuctionsWork from "../../../components/auction/HowAuctionsWork";
 
 const CountdownTimer = ({ targetDate }) => {
   const [time, setTime] = React.useState({ d: 0, h: 0, m: 0, s: 0 });
@@ -80,11 +81,10 @@ const Button = ({
     "inline-flex items-center justify-center font-medium transition-all duration-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2";
   const variants = {
     default:
-      "bg-gradient-to-r from-[#FFA602] to-amber-500 text-white hover:from-amber-500 hover:to-[#FFA602] focus:ring-[#FFA602] shadow-lg shadow-[#FFA602]/30",
+      "bg-gradient-to-r from-primary to-amber-500 text-white hover:from-amber-500 hover:to-primary focus:ring-primary shadow-lg shadow-primary/30",
     outline:
-      "border-2 border-[#FFA602] text-[#FFA602] hover:bg-[#FFA602] hover:text-white focus:ring-[#FFA602]",
-    white:
-      "bg-white text-[#FFA602] hover:bg-white/90 focus:ring-white shadow-lg",
+      "border-2 border-primary text-primary hover:bg-primary hover:text-white focus:ring-primary",
+    white: "bg-white text-primary hover:bg-white/90 focus:ring-white shadow-lg",
   };
   const sizes = { default: "px-4 py-2 text-sm", lg: "px-6 py-3 text-base" };
 
@@ -168,7 +168,7 @@ export default function AuctionsActions() {
   return (
     <div className="min-h-screen w-full bg-slate-50">
       {/* Hero */}
-      <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+      <section className="relative h-[68vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920"
@@ -191,7 +191,7 @@ export default function AuctionsActions() {
               )}
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
                 Pakistan's Largest Hybrid
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#FFA602] to-amber-500">
+                <span className="block text-transparent bg-clip-text bg-primary">
                   Car Auction
                 </span>
                 Platform
@@ -201,7 +201,7 @@ export default function AuctionsActions() {
                 online auctions or attend our physical auction events.
               </p>
               <div className="flex items-center gap-2 text-slate-400 mb-8">
-                <MapPin className="w-5 h-5 text-[#FFA602]" />
+                <MapPin className="w-5 h-5 text-primary" />
                 <span>Serving Buyers & Sellers Across Pakistan</span>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
@@ -281,7 +281,7 @@ export default function AuctionsActions() {
                 transition={{ delay: i * 0.1 }}
                 className="text-center"
               >
-                <stat.icon className="w-8 h-8 mx-auto mb-2 text-[#FFA602]" />
+                <stat.icon className="w-8 h-8 mx-auto mb-2 text-primary" />
                 <p className="text-2xl md:text-3xl font-bold text-slate-900">
                   {stat.value}
                 </p>
@@ -299,7 +299,7 @@ export default function AuctionsActions() {
           whileInView={{ opacity: 1, y: 0 }}
           className="text-center mb-10"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#050B20] mb-3">
             Why Choose Us?
           </h2>
           <p className="text-slate-500 max-w-2xl mx-auto">
@@ -318,86 +318,54 @@ export default function AuctionsActions() {
               whileHover={{ y: -5 }}
               className="bg-white p-4 rounded-xl shadow-md text-center border border-slate-100"
             >
-              <item.icon className="w-8 h-8 mx-auto text-[#FFA602] mb-2" />
+              <item.icon className="w-8 h-8 mx-auto text-primary mb-2" />
               <p className="font-medium text-sm">{item.text}</p>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="py-20 bg-gradient-to-br from-slate-900 to-slate-800">
-        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
-              How It Works
-            </h2>
-            <p className="text-slate-400 max-w-2xl mx-auto">
-              Simple, transparent, and secure bidding process
-            </p>
-          </motion.div>
-          <div className="grid md:grid-cols-4 gap-8">
-            {howItWorks.map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.15 }}
-                className="relative text-center group"
-              >
-                <div className="w-20 h-20 bg-gradient-to-br from-[#FFA602] to-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-[#FFA602]/30 group-hover:scale-110 transition-transform duration-300">
-                  <item.icon className="w-10 h-10 text-white" />
-                </div>
-                <span className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 text-7xl font-bold text-white/5">
-                  {item.step}
-                </span>
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  {item.title}
-                </h3>
-                <p className="text-slate-400 text-sm leading-relaxed">
-                  {item.desc}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HowAuctionsWork />
 
       {/* CTA */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            className="bg-gradient-to-r from-[#FFA602] to-amber-500 rounded-3xl p-12 md:p-16 shadow-2xl shadow-[#FFA602]/25"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Ready to Find Your Next Car?
-            </h2>
-            <p className="text-white/80 mb-8 text-lg max-w-2xl mx-auto">
-              Join thousands of buyers who trust Okara Auto Auction
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to={registerLink}>
-                <Button variant="white" size="lg" className="w-full sm:w-auto">
-                  {ctaLabel} <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </Link>
-              <Link to="/auctions/schedule">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-white text-white hover:bg-white/20 bg-transparent w-full sm:w-auto"
-                >
-                  <Calendar className="w-5 h-5 mr-2" /> View Schedule
-                </Button>
-              </Link>
+      <section className="bg-gray-50 relative overflow-hidden">
+        <div className="relative bg-white py-16 md:py-20 w-full rounded-tl-[60px] md:rounded-tl-[80px] shadow-lg">
+          <div className="max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8">
+            <div className="max-w-full mx-auto text-center">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.98 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, amount: 0.4 }}
+                className="group relative bg-white rounded-2xl md:rounded-3xl p-8 sm:p-10 md:p-12 shadow-lg border border-gray-100 hover:border-primary-200 hover:shadow-2xl transition-all duration-500 overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-primary-50/60 to-transparent rounded-2xl md:rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <div className="relative">
+                  <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                    Ready to Find Your Next Car?
+                  </h2>
+                  <p className="text-slate-600 mb-8 text-lg max-w-2xl mx-auto">
+                    Join thousands of buyers who trust Okara Auto Auction
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center mt-2">
+                    <Link to={registerLink}>
+                      <Button size="lg" className="w-full sm:w-auto">
+                        {ctaLabel} <ArrowRight className="w-5 h-5 ml-2" />
+                      </Button>
+                    </Link>
+                    <Link to="/auctions/schedule">
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        className="w-full sm:w-auto"
+                      >
+                        <Calendar className="w-5 h-5 mr-2" /> View Schedule
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
     </div>
