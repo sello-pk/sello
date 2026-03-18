@@ -47,7 +47,7 @@ const parseRangeLikeNumber = (value) => {
 
 const CreatePostForm = ({ initialPrefill = null }) => {
   const navigate = useNavigate();
-  const prefillAppliedRef = useRef(false);
+  const appliedPrefillKeyRef = useRef(null);
   const [availableModels, setAvailableModels] = useState([]);
   const [availableYears, setAvailableYears] = useState([]);
   const [availableCities, setAvailableCities] = useState([]);
@@ -125,16 +125,22 @@ const CreatePostForm = ({ initialPrefill = null }) => {
     });
   };
 
-  // Apply prefill from estimator (Sell your car) when categories are ready
+  // Apply prefill (from estimator or inspiration pills) when the form is ready.
+  // For inspiration pills, we should not block on `makes` being loaded.
   useEffect(() => {
-    if (
-      !initialPrefill ||
-      prefillAppliedRef.current ||
-      !Array.isArray(makes) ||
-      makes.length === 0
-    )
-      return;
-    prefillAppliedRef.current = true;
+    if (!initialPrefill) return;
+
+    const prefillKey = JSON.stringify(initialPrefill);
+    if (appliedPrefillKeyRef.current === prefillKey) return;
+
+    const hasMakeOrModel =
+      Boolean(initialPrefill.make) || Boolean(initialPrefill.model);
+    const makeReady = Array.isArray(makes) && makes.length > 0;
+
+    // If prefill wants make/model, we wait until `makes` data exists.
+    if (hasMakeOrModel && !makeReady) return;
+
+    appliedPrefillKeyRef.current = prefillKey;
     setFormData((prev) => ({
       ...prev,
       make: (initialPrefill.make && String(initialPrefill.make).trim()) || prev.make,
@@ -143,9 +149,11 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       year: (initialPrefill.year && String(initialPrefill.year).trim()) || prev.year,
       fuelType: (initialPrefill.fuelType && String(initialPrefill.fuelType).trim()) || prev.fuelType,
       transmission: (initialPrefill.transmission && String(initialPrefill.transmission).trim()) || prev.transmission,
+      condition: (initialPrefill.condition && String(initialPrefill.condition).trim()) || prev.condition,
       mileage: (initialPrefill.mileage != null && initialPrefill.mileage !== "")
         ? String(initialPrefill.mileage).trim()
         : prev.mileage,
+      bodyType: (initialPrefill.bodyType && String(initialPrefill.bodyType).trim()) || prev.bodyType,
     }));
   }, [initialPrefill, makes]);
 
