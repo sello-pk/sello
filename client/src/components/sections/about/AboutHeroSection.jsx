@@ -4,7 +4,7 @@ import { images } from "../../../assets/assets";
 const AboutHeroSection = () => {
   const navigate = useNavigate();
   return (
-    <section className="relative bg-[#272525] md:h-[80vh] overflow-hidden">
+    <section className="relative bg-[#050B20] md:h-[80vh] overflow-hidden">
       <div className="max-w-8xl mx-auto w-full h-full pl-3 pr-3 sm:pl-4 sm:pr-4 md:pl-6 md:pr-6 lg:pl-8 lg:pr-8">
         <div className="h-full flex flex-col md:flex-row items-center">
           {/* Left Side */}

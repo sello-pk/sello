@@ -22,7 +22,7 @@ const ReviewSliderBanner = () => {
   return (
     <div className="h-[70vh] w-full px-3 sm:px-4 md:px-6 lg:px-8 py-5">
       <div className="max-w-[86rem] mx-auto w-full h-full">
-        <div className="bg-[#272525] w-full h-full flex flex-col md:flex-row items-center justify-center rounded-tr-[40px] rounded-bl-[40px] gap-8 p-6">
+        <div className="bg-[#050B20] w-full h-full flex flex-col md:flex-row items-center justify-center rounded-tr-[40px] rounded-bl-[40px] gap-8 p-6">
           {/* Left Section */}
           <div className="w-full md:w-[40%] md:border-r-[1px] border-gray-400 md:h-[80%] p-3 flex flex-col items-center justify-center text-gray-200 text-sm">
             <h3 className="uppercase tracking-[0.3rem] mb-3 text-xs md:text-sm">
