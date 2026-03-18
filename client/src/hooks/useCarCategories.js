@@ -281,5 +281,7 @@ export const useCarCategories = (vehicleType = null) => {
     getCitiesByCountry,
     getCitiesByState,
     isLoading,
+    /** True only while car make/model categories are loading (not years/locations) */
+    isCarCategoriesLoading: carLoading,
   };
 };

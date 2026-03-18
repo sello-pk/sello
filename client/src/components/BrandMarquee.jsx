@@ -1,4 +1,11 @@
-import React, { useRef, useMemo, useState, useCallback } from "react";
+import React, {
+  useRef,
+  useMemo,
+  useState,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { useCarCategories } from "../hooks/useCarCategories";
 import { fixImageUrl } from "../utils/imageUtils";
@@ -6,6 +13,23 @@ import {
   MdOutlineKeyboardArrowLeft,
   MdOutlineKeyboardArrowRight,
 } from "react-icons/md";
+
+const KF_ID = "brand-marquee-keyframes";
+const PX_PER_SEC = 38;
+
+function injectMarqueeKeyframes() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById(KF_ID)) return;
+  const s = document.createElement("style");
+  s.id = KF_ID;
+  s.textContent = `
+@keyframes brandMarqueeKF {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+`;
+  document.head.appendChild(s);
+}
 
 function BrandTile({ brand, onSelect }) {
   const brandName = brand.name || brand.brandName || "Brand";
@@ -47,10 +71,11 @@ function BrandTile({ brand, onSelect }) {
 }
 
 const BrandMarquee = ({ brands: propBrands = [] }) => {
-  const scrollRef = useRef(null);
+  const trackRef = useRef(null);
+  const [durationSec, setDurationSec] = useState(45);
   const navigate = useNavigate();
 
-  const { makes, isLoading } = useCarCategories("Car");
+  const { makes, isCarCategoriesLoading } = useCarCategories("Car");
 
   const brands = useMemo(() => {
     if (makes && makes.length > 0) {
@@ -60,6 +85,61 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
     }
     return propBrands || [];
   }, [makes, propBrands]);
+
+  const brandsKey = useMemo(
+    () => brands.map((b) => b._id || b.name).join(","),
+    [brands],
+  );
+
+  const reducedMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const row = useMemo(() => {
+    if (brands.length === 0) return [];
+    if (brands.length === 1) return [brands[0], brands[0]];
+    return [...brands, ...brands];
+  }, [brands]);
+
+  useEffect(() => {
+    injectMarqueeKeyframes();
+  }, []);
+
+  useLayoutEffect(() => {
+    const el = trackRef.current;
+    if (!el || row.length < 2 || reducedMotion) return;
+
+    const update = () => {
+      const w = el.scrollWidth;
+      if (w < 16) return;
+      const half = w / 2;
+      const sec = Math.max(18, Math.min(100, half / PX_PER_SEC));
+      setDurationSec(sec);
+    };
+
+    const ro = new ResizeObserver(() => requestAnimationFrame(update));
+    ro.observe(el);
+    update();
+    return () => ro.disconnect();
+  }, [brandsKey, row.length, reducedMotion]);
+
+  const nudgeAnimation = useCallback(
+    (dir) => {
+      const el = trackRef.current;
+      if (!el || reducedMotion) return;
+      const anim = el.getAnimations?.()?.[0];
+      if (!anim) return;
+      try {
+        anim.playbackRate = dir === "right" ? 5 : -4;
+        window.setTimeout(() => {
+          anim.playbackRate = 1;
+        }, 420);
+      } catch {
+        /* Safari may not support negative rate for left */
+      }
+    },
+    [reducedMotion],
+  );
 
   const handleBrandClick = useCallback(
     (brandName) => {
@@ -72,58 +152,72 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
     [navigate],
   );
 
-  const scroll = (direction) => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const amount = Math.min(320, el.clientWidth * 0.85);
-    el.scrollBy({
-      left: direction === "left" ? -amount : amount,
-      behavior: "smooth",
-    });
-  };
+  const showNav =
+    brands.length >= 1 && !isCarCategoriesLoading && row.length >= 2;
 
   return (
     <div className="w-full py-3 sm:py-4">
       <div className="relative rounded-xl sm:px-6 md:px-10 py-2 sm:py-3">
-        {brands.length > 1 && (
+        {showNav && !reducedMotion && (
           <>
             <button
               type="button"
-              onClick={() => scroll("left")}
-              className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 h-10 w-10 items-center justify-center rounded-full bg-white shadow-md hover:bg-primary-500 hover:text-white transition-colors border border-gray-200"
+              onClick={() => nudgeAnimation("left")}
+              className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 h-11 w-11 items-center justify-center rounded-full bg-white text-gray-700 shadow-md border border-gray-200 hover:bg-primary-500 hover:text-white hover:border-primary-500 transition-all duration-200"
               aria-label="Previous brands"
             >
-              <MdOutlineKeyboardArrowLeft size={24} className="text-gray-700 hover:text-white" />
+              <MdOutlineKeyboardArrowLeft size={22} className="shrink-0" aria-hidden />
             </button>
             <button
               type="button"
-              onClick={() => scroll("right")}
-              className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 h-10 w-10 items-center justify-center rounded-full bg-primary-500 text-white shadow-md hover:opacity-90 transition-opacity border border-primary-600"
+              onClick={() => nudgeAnimation("right")}
+              className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 h-11 w-11 items-center justify-center rounded-full bg-white text-gray-700 shadow-md border border-gray-200 hover:bg-primary-500 hover:text-white hover:border-primary-500 transition-all duration-200"
               aria-label="Next brands"
             >
-              <MdOutlineKeyboardArrowRight size={24} className="text-white" />
+              <MdOutlineKeyboardArrowRight size={22} className="shrink-0" aria-hidden />
             </button>
           </>
         )}
 
         <div
-          ref={scrollRef}
-          className="overflow-x-auto scrollbar-hide w-full scroll-smooth overscroll-x-contain px-1 md:px-2"
-          style={{ WebkitOverflowScrolling: "touch" }}
+          className={`w-full overflow-hidden px-1 md:px-2 ${!reducedMotion ? "group/marquee" : "overflow-x-auto scrollbar-hide"}`}
         >
-          <div className="flex gap-4 sm:gap-6 md:gap-8 w-max py-1">
-            {isLoading ? (
-              <div className="flex items-center justify-center min-w-[200px] py-8 text-gray-400">
+          <div
+            ref={trackRef}
+            key={brandsKey}
+            className="flex w-max gap-4 sm:gap-6 md:gap-8 py-1"
+            style={
+              reducedMotion || isCarCategoriesLoading
+                ? undefined
+                : {
+                    animationName: "brandMarqueeKF",
+                    animationDuration: `${durationSec}s`,
+                    animationTimingFunction: "linear",
+                    animationIterationCount: "infinite",
+                    willChange: "transform",
+                  }
+            }
+          >
+            {isCarCategoriesLoading ? (
+              <div className="flex items-center justify-center min-w-[200px] py-8 text-gray-400 shrink-0">
                 Loading...
               </div>
             ) : brands.length === 0 ? (
-              <div className="flex items-center justify-center min-w-[200px] py-8 text-gray-400">
+              <div className="flex items-center justify-center min-w-[200px] py-8 text-gray-400 shrink-0">
                 No brands
               </div>
-            ) : (
+            ) : reducedMotion ? (
               brands.map((brand) => (
                 <BrandTile
                   key={brand._id || brand.name}
+                  brand={brand}
+                  onSelect={handleBrandClick}
+                />
+              ))
+            ) : (
+              row.map((brand, i) => (
+                <BrandTile
+                  key={`${brand._id || brand.name}-${i}`}
                   brand={brand}
                   onSelect={handleBrandClick}
                 />
