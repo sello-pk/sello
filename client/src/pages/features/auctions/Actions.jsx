@@ -22,6 +22,7 @@ import {
   useGetMyAuctionAccessStatusQuery,
 } from "@redux/services/api";
 import HowAuctionsWork from "../../../components/auction/HowAuctionsWork";
+import AuctionBlogsSection from "../../../components/features/auctions/AuctionBlogsSection";
 
 const CountdownTimer = ({ targetDate }) => {
   const [time, setTime] = React.useState({ d: 0, h: 0, m: 0, s: 0 });
@@ -326,6 +327,8 @@ export default function AuctionsActions() {
       </section>
 
       <HowAuctionsWork />
+
+      <AuctionBlogsSection />
 
       {/* CTA */}
       <section className="bg-gray-50 relative overflow-hidden">

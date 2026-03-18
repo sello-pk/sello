@@ -26,6 +26,9 @@ const CarEstimator = lazy(() => import("../pages/features/CarEstimator.jsx"));
 const EstimatorGuideDetail = lazy(
   () => import("../pages/features/EstimatorGuideDetail.jsx"),
 );
+const AuctionGuideDetail = lazy(
+  () => import("../pages/features/AuctionGuideDetail.jsx"),
+);
 const CategoryGuideDetail = lazy(
   () => import("../pages/listings/CategoryGuideDetail.jsx"),
 );
@@ -172,6 +175,7 @@ const AppRouter = () => {
           element={<EstimatorGuideDetail />}
         />
         <Route path="/auctions" element={<AuctionsActions />} />
+        <Route path="/auctions/guide/:blogId" element={<AuctionGuideDetail />} />
         <Route path="/auctions/live" element={<LiveAuction />} />
         <Route path="/auctions/schedule" element={<AuctionSchedule />} />
         <Route path="/auctions/trust-legal" element={<TrustLegal />} />
