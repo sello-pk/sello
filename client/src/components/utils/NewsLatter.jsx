@@ -34,15 +34,15 @@ const NewsLatter = () => {
   };
 
   return (
-    <div className="bg-[#050B20] flex md:flex-row flex-col items-center justify-between px-3 sm:px-4 md:px-6 lg:px-8 py-12">
-      <div className="text-white md:py-10 py-5">
-        <h2 className="md:text-4xl text-3xl py-4">Join Sello</h2>
+    <div className="bg-[#050B20] flex md:flex-row flex-col items-center justify-between px-3 sm:px-4 md:px-6 lg:px-8 pt-10 sm:pt-12 pb-0">
+      <div className="text-white md:pt-4 md:pb-2 py-4">
+        <h2 className="md:text-4xl text-3xl py-2 md:py-3">Join Sello</h2>
         <p className="">
           Get your car prices, advice from the experts, and new cars for sale
           updates in one place.
         </p>
       </div>
-      <div className="md:py-10 py-5">
+      <div className="md:pt-4 md:pb-2 py-4">
         <form
           onSubmit={handleSubmit}
           className="field bg-white/20 h-12 sm:h-14 md:h-16 w-full max-w-md mx-auto px-3 sm:px-4 flex items-center justify-between gap-2 sm:gap-3 rounded-full"
