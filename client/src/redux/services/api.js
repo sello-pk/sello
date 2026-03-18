@@ -450,7 +450,16 @@ export const api = createApi({
     }),
 
     getCars: builder.query({
-      query: ({ page = 1, limit = 12, condition, search } = {}) => {
+      query: ({
+        page = 1,
+        limit = 12,
+        condition,
+        search,
+        transmission,
+        fuelType,
+        bodyType,
+        vehicleType,
+      } = {}) => {
         const params = new URLSearchParams({
           page: String(page),
           limit: String(limit),
@@ -465,6 +474,12 @@ export const api = createApi({
         if (search) {
           params.append("search", search);
         }
+
+        // Add advanced filters if provided (used by listings "Browse By Types" UI)
+        if (transmission) params.append("transmission", transmission);
+        if (fuelType) params.append("fuelType", fuelType);
+        if (bodyType) params.append("bodyType", bodyType);
+        if (vehicleType) params.append("vehicleType", vehicleType);
 
         return {
           url: `/cars?${params.toString()}`,

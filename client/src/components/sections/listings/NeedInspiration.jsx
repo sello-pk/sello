@@ -5,10 +5,20 @@ import toast from "react-hot-toast";
 const NeedInspiration = () => {
   const navigate = useNavigate();
 
-  const handleInspirationClick = (searchTerm) => {
-    // Navigate to listings page with search term
-    navigate(`/listings?search=${encodeURIComponent(searchTerm)}`);
-    toast.success(`Searching for ${searchTerm}...`);
+  const handleInspirationClick = (filters) => {
+    const params = new URLSearchParams();
+
+    // Only set supported filters to avoid sending unknown query params.
+    Object.entries(filters).forEach(([key, value]) => {
+      if (key === "label") return;
+      if (value !== undefined && value !== null && String(value).trim() !== "") {
+        params.set(key, String(value));
+      }
+    });
+
+    const qs = params.toString();
+    navigate(`/search-results${qs ? `?${qs}` : ""}`);
+    toast.success(`Showing ${filters.label}...`);
   };
 
   return (
@@ -18,19 +28,40 @@ const NeedInspiration = () => {
         {[
           {
             name: "Automatic Cars",
-            action: () => handleInspirationClick("automatic"),
+            label: "Automatic Cars",
+            action: () =>
+              handleInspirationClick({ label: "Automatic Cars", transmission: "Automatic" }),
           },
-          { name: "SUVs", action: () => handleInspirationClick("suv") },
+          {
+            name: "SUVs",
+            label: "SUVs",
+            action: () => handleInspirationClick({ label: "SUVs", bodyType: "SUV" }),
+          },
           {
             name: "Electric Cars",
-            action: () => handleInspirationClick("electric"),
+            label: "Electric Cars",
+            action: () =>
+              handleInspirationClick({ label: "Electric Cars", fuelType: "Electric" }),
           },
-          { name: "New Arrivals", action: () => handleInspirationClick("new") },
-          { name: "Petrol", action: () => handleInspirationClick("petrol") },
-          { name: "Diesel", action: () => handleInspirationClick("diesel") },
+          {
+            name: "New Arrivals",
+            label: "New Arrivals",
+            action: () => handleInspirationClick({ label: "New Arrivals", condition: "new" }),
+          },
+          {
+            name: "Petrol",
+            label: "Petrol",
+            action: () => handleInspirationClick({ label: "Petrol", fuelType: "Petrol" }),
+          },
+          {
+            name: "Diesel",
+            label: "Diesel",
+            action: () => handleInspirationClick({ label: "Diesel", fuelType: "Diesel" }),
+          },
         ].map((item, index) => (
           <button
             key={index}
+            type="button"
             onClick={item.action}
             className="md:text-base text-[#0B0C1E] hover:bg-primary-500 hover:text-white ease-out transition-all text-lg bg-white px-5 py-2 rounded-lg shadow-md hover:shadow-lg"
           >

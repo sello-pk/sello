@@ -60,11 +60,13 @@ const PartnerOffersSection = () => {
 
       {/* Partner Benefits Section */}
       <div className="mb-12">
-        <div className="bg-gradient-to-r from-primary-100 via-primary-200 to-primary-100 rounded-3xl p-8 border border-primary/20">
-          <div className="grid md:grid-cols-2 gap-8">
+        <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-lg relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-50/60 via-transparent to-transparent opacity-90 pointer-events-none" />
+          <div className="relative grid md:grid-cols-2 gap-8">
             {/* Exclusive Offers */}
-            <div className="group">
-              <div className="flex items-start gap-4">
+            <div className="group relative bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-100 hover:border-primary-200 hover:shadow-2xl transition-all duration-500">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary-50/60 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="relative flex items-start gap-4">
                 <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
                   <svg
                     className="w-6 h-6 text-black"
@@ -94,8 +96,9 @@ const PartnerOffersSection = () => {
             </div>
 
             {/* Expert Advice */}
-            <div className="group">
-              <div className="flex items-start gap-4">
+            <div className="group relative bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-100 hover:border-primary-200 hover:shadow-2xl transition-all duration-500">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary-50/60 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="relative flex items-start gap-4">
                 <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
                   <svg
                     className="w-6 h-6 text-black"

@@ -68,6 +68,19 @@ const GetAllCarsSection = () => {
   // Get URL parameters
   const [searchParams] = useSearchParams();
   const urlSearch = searchParams.get("search") || "";
+  const urlCondition = (searchParams.get("condition") || "").toLowerCase();
+  const urlTransmission = searchParams.get("transmission") || "";
+  const urlFuelType = searchParams.get("fuelType") || "";
+  const urlBodyType = searchParams.get("bodyType") || "";
+  const urlVehicleType = searchParams.get("vehicleType") || "";
+
+  // Keep the "New / Used" tab in sync with URL query param.
+  // This ensures the "Or Browse By Types" buttons filter correctly on arrival.
+  useEffect(() => {
+    if (urlCondition === "new" || urlCondition === "used") setActiveTab(urlCondition);
+    else setActiveTab("all");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlCondition]);
 
   // Memoize query params to prevent unnecessary refetches
   const queryParams = useMemo(
@@ -78,8 +91,22 @@ const GetAllCarsSection = () => {
       ...(activeTab !== "all" && { condition: activeTab }),
       // Apply search term if present in URL
       ...(urlSearch && { search: urlSearch }),
+      // Additional "Or Browse By Types" filters (passed from URL)
+      ...(urlTransmission && { transmission: urlTransmission }),
+      ...(urlFuelType && { fuelType: urlFuelType }),
+      ...(urlBodyType && { bodyType: urlBodyType }),
+      ...(urlVehicleType && { vehicleType: urlVehicleType }),
     }),
-    [page, activeTab, limit, urlSearch],
+    [
+      page,
+      activeTab,
+      limit,
+      urlSearch,
+      urlTransmission,
+      urlFuelType,
+      urlBodyType,
+      urlVehicleType,
+    ],
   );
 
   // Call backend with pagination and filtering
@@ -90,7 +117,15 @@ const GetAllCarsSection = () => {
     setPage(1);
     setDisplayLimit(12);
     setAllLoadedCars([]);
-  }, [activeTab]);
+  }, [
+    activeTab,
+    urlSearch,
+    urlCondition,
+    urlTransmission,
+    urlFuelType,
+    urlBodyType,
+    urlVehicleType,
+  ]);
 
   // Accumulate cars when new data arrives (for Load More feature)
   useEffect(() => {
@@ -171,9 +206,18 @@ const GetAllCarsSection = () => {
   }, [displayLimit, totalLoaded, page, totalPages, isLoadingMore]);
 
   // Handle tab change with useCallback
-  const handleTabChange = useCallback((tab) => {
-    setActiveTab(tab);
-  }, []);
+  const handleTabChange = useCallback(
+    (tab) => {
+      setActiveTab(tab);
+      // Sync condition back to URL so backend filters match.
+      const params = new URLSearchParams(searchParams);
+      if (tab === "all") params.delete("condition");
+      else params.set("condition", tab);
+
+      navigate(`/listings${params.toString() ? `?${params.toString()}` : ""}`);
+    },
+    [navigate, searchParams],
+  );
 
   // Handle page change with loading state
   // const handlePageChange = (newPage) => {
