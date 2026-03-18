@@ -16,9 +16,9 @@ import {
 
 const KF_ID = "brand-marquee-keyframes";
 /** Lower = slower scroll. Min/max seconds cap how fast/slow a loop feels in prod. */
-const PX_PER_SEC = 16;
-const MIN_LOOP_SEC = 52;
-const MAX_LOOP_SEC = 240;
+const PX_PER_SEC = 12;
+const MIN_LOOP_SEC = 85;
+const MAX_LOOP_SEC = 260;
 
 function injectMarqueeKeyframes() {
   if (typeof document === "undefined") return;
@@ -77,6 +77,7 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
   const trackRef = useRef(null);
   const [durationSec, setDurationSec] = useState(70);
   const [hoverPause, setHoverPause] = useState(false);
+  const [focusPause, setFocusPause] = useState(false);
   const navigate = useNavigate();
 
   const { makes, isCarCategoriesLoading } = useCarCategories("Car");
@@ -127,6 +128,7 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
     const ro = new ResizeObserver(() => requestAnimationFrame(update));
     ro.observe(el);
     update();
+    const t = window.setTimeout(update, 0);
     return () => ro.disconnect();
   }, [brandsKey, row.length, reducedMotion]);
 
@@ -168,6 +170,10 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
         className="relative rounded-xl sm:px-6 md:px-10 py-2 sm:py-3"
         onMouseEnter={() => setHoverPause(true)}
         onMouseLeave={() => setHoverPause(false)}
+        onPointerEnter={() => setHoverPause(true)}
+        onPointerLeave={() => setHoverPause(false)}
+        onFocusCapture={() => setFocusPause(true)}
+        onBlurCapture={() => setFocusPause(false)}
       >
         {showNav && !reducedMotion && (
           <>
@@ -205,7 +211,8 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
                     animationDuration: `${durationSec}s`,
                     animationTimingFunction: "linear",
                     animationIterationCount: "infinite",
-                    animationPlayState: hoverPause ? "paused" : "running",
+                    animationPlayState:
+                      hoverPause || focusPause ? "paused" : "running",
                     willChange: "transform",
                   }
             }
