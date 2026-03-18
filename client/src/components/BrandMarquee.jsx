@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo } from "react";
+import React, { useRef, useMemo, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCarCategories } from "../hooks/useCarCategories";
 import { fixImageUrl } from "../utils/imageUtils";
@@ -7,14 +7,51 @@ import {
   MdOutlineKeyboardArrowRight,
 } from "react-icons/md";
 
+function BrandTile({ brand, onSelect }) {
+  const brandName = brand.name || brand.brandName || "Brand";
+  const [imgFailed, setImgFailed] = useState(false);
+  const fixedImage = fixImageUrl(brand.image || brand.img);
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(brandName)}
+      className="bg-white rounded-2xl p-2.5 sm:p-3 flex flex-col items-center justify-center w-[5.25rem] h-28 sm:w-24 sm:h-28 md:w-28 md:h-32 shadow-sm shrink-0 cursor-pointer border border-gray-100 hover:border-primary-300 hover:shadow-md transition-shadow text-left"
+    >
+      <div className="flex-1 w-full min-h-0 rounded-xl bg-gray-50 flex items-center justify-center mb-1 p-1.5 sm:p-2 overflow-hidden">
+        {!imgFailed && fixedImage ? (
+          <img
+            src={fixedImage}
+            alt=""
+            width={112}
+            height={64}
+            decoding="async"
+            draggable={false}
+            className="object-contain max-w-full max-h-12 sm:max-h-14 md:max-h-16 w-auto h-auto pointer-events-none"
+            onError={() => setImgFailed(true)}
+          />
+        ) : (
+          <span
+            className="text-xl font-semibold text-gray-400 select-none"
+            aria-hidden
+          >
+            {brandName.charAt(0).toUpperCase()}
+          </span>
+        )}
+      </div>
+      <p className="text-[11px] sm:text-xs md:text-sm font-semibold text-gray-700 text-center w-full truncate mt-0.5">
+        {brandName}
+      </p>
+    </button>
+  );
+}
+
 const BrandMarquee = ({ brands: propBrands = [] }) => {
-  const sliderRef = useRef(null);
+  const scrollRef = useRef(null);
   const navigate = useNavigate();
 
-  // Home marquee: show only car brands so we don't mix car + bike logos
   const { makes, isLoading } = useCarCategories("Car");
 
-  // Always use admin categories if available
   const brands = useMemo(() => {
     if (makes && makes.length > 0) {
       return makes
@@ -24,158 +61,73 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
     return propBrands || [];
   }, [makes, propBrands]);
 
-  // For infinite scroll marquee, we need enough duplicates for seamless CSS animation
-  const items = useMemo(() => {
-    if (brands.length === 0) return [];
-    if (brands.length === 1) return brands;
-
-    // Repeat enough to fill screens and loop
-    const repeatCount = brands.length < 10 ? 4 : 2;
-    let result = [];
-    for (let i = 0; i < repeatCount; i++) {
-      result = [...result, ...brands];
-    }
-    return result;
-  }, [brands]);
-
-  // Handle brand click - search for cars (marquee is car brands only)
-  const handleBrandClick = (brandName) => {
-    const params = new URLSearchParams({ make: brandName, vehicleType: "Car" });
-    navigate(`/search-results?${params.toString()}`);
-  };
-
-  // Scroll function for buttons
-  const scroll = (direction) => {
-    const container = sliderRef.current?.parentElement;
-    if (container) {
-      const scrollAmount = 400;
-      container.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
+  const handleBrandClick = useCallback(
+    (brandName) => {
+      const params = new URLSearchParams({
+        make: brandName,
+        vehicleType: "Car",
       });
-    }
+      navigate(`/search-results?${params.toString()}`);
+    },
+    [navigate],
+  );
+
+  const scroll = (direction) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const amount = Math.min(320, el.clientWidth * 0.85);
+    el.scrollBy({
+      left: direction === "left" ? -amount : amount,
+      behavior: "smooth",
+    });
   };
-
-  // Auto-scroll animation
-  useEffect(() => {
-    const el = sliderRef.current;
-    if (!el || items.length === 0 || brands.length === 1) return;
-
-    const animationName = `marquee-${brands.length}-${Date.now()}`;
-    const animationDuration = Math.max(25, brands.length * 6); // Slow, premium speed
-    const repeatCount = brands.length < 10 ? 4 : 2;
-    const translatePercent = 100 / repeatCount;
-
-    const styleSheet = document.createElement("style");
-    styleSheet.textContent = `
-      @keyframes ${animationName} {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-${translatePercent}%); }
-      }
-      .${animationName} {
-        display: flex;
-        width: max-content;
-        animation: ${animationName} ${animationDuration}s linear infinite;
-        will-change: transform;
-      }
-      .${animationName}:hover {
-        animation-play-state: paused;
-      }
-    `;
-    document.head.appendChild(styleSheet);
-    el.classList.add(animationName);
-
-    return () => {
-      if (el && el.classList.contains(animationName)) {
-        el.classList.remove(animationName);
-      }
-      if (styleSheet.parentNode) {
-        styleSheet.parentNode.removeChild(styleSheet);
-      }
-    };
-  }, [items.length, brands.length]);
 
   return (
-    <div className="w-full py-3 sm:py-4 backdrop-blur-sm">
-      <div className="relative rounded-xl px-1 sm:px-7 py-2 sm:py-3 overflow-hidden">
-        {/* Slider buttons */}
+    <div className="w-full py-3 sm:py-4">
+      <div className="relative rounded-xl sm:px-6 md:px-10 py-2 sm:py-3">
         {brands.length > 1 && (
           <>
             <button
               type="button"
               onClick={() => scroll("left")}
-              className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-20 h-10 w-10 items-center justify-center rounded-full bg-white shadow-lg hover:bg-primary-500 hover:text-black transition-all hover:scale-110 border border-gray-100"
+              className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 h-10 w-10 items-center justify-center rounded-full bg-white shadow-md hover:bg-primary-500 hover:text-white transition-colors border border-gray-200"
               aria-label="Previous brands"
             >
-              <MdOutlineKeyboardArrowLeft size={24} className="text-gray-700" />
+              <MdOutlineKeyboardArrowLeft size={24} className="text-gray-700 hover:text-white" />
             </button>
             <button
               type="button"
               onClick={() => scroll("right")}
-              className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-20 h-10 w-10 items-center justify-center rounded-full bg-white shadow-lg hover:bg-primary-500 hover:text-black transition-all hover:scale-110 border border-gray-100"
+              className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 h-10 w-10 items-center justify-center rounded-full bg-primary-500 text-white shadow-md hover:opacity-90 transition-opacity border border-primary-600"
               aria-label="Next brands"
             >
-              <MdOutlineKeyboardArrowRight
-                size={24}
-                className="text-gray-700"
-              />
+              <MdOutlineKeyboardArrowRight size={24} className="text-white" />
             </button>
           </>
         )}
 
-        {/* Slider track */}
         <div
-          className="relative overflow-x-auto scrollbar-hide w-full"
-          style={{ scrollBehavior: "smooth" }}
+          ref={scrollRef}
+          className="overflow-x-auto scrollbar-hide w-full scroll-smooth overscroll-x-contain px-1 md:px-2"
+          style={{ WebkitOverflowScrolling: "touch" }}
         >
-          {/* Soft fade/blur at track edges for premium marquee look */}
-          <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-6 sm:w-10 md:w-14 bg-gradient-to-r from-white via-white/70 to-transparent backdrop-blur-[1px]" />
-          <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-6 sm:w-10 md:w-14 bg-gradient-to-l from-white via-white/70 to-transparent backdrop-blur-[1px]" />
-
-          <div
-            ref={sliderRef}
-            className="relative z-0 flex gap-4 sm:gap-6 md:gap-8"
-          >
+          <div className="flex gap-4 sm:gap-6 md:gap-8 w-max py-1">
             {isLoading ? (
-              <div className="flex items-center justify-center w-full py-8 text-gray-400">
+              <div className="flex items-center justify-center min-w-[200px] py-8 text-gray-400">
                 Loading...
               </div>
-            ) : items.length === 0 ? (
-              <div className="flex items-center justify-center w-full py-8 text-gray-400">
+            ) : brands.length === 0 ? (
+              <div className="flex items-center justify-center min-w-[200px] py-8 text-gray-400">
                 No brands
               </div>
             ) : (
-              items.map((brand, index) => {
-                const brandName = brand.name || brand.brandName || "Brand";
-                const brandImage = brand.image || brand.img;
-                // Fix image URL format using utility function
-                const fixedImage = fixImageUrl(brandImage);
-                return (
-                  <div
-                    key={`${brand._id || brandName}-${index}`}
-                    onClick={() => handleBrandClick(brandName)}
-                    className="bg-white/95 rounded-2xl p-2.5 sm:p-3 flex flex-col items-center justify-center w-20 h-24 sm:w-24 sm:h-28 md:w-28 md:h-32 shadow-sm flex-shrink-0 cursor-pointer border border-gray-100/80 hover:border-primary-200 hover:shadow-lg transition-all duration-300 group hover:-translate-y-0.5"
-                  >
-                    <div className="flex-1 w-full rounded-xl bg-gradient-to-b from-gray-50 to-white flex items-center justify-center mb-1 p-1.5 sm:p-2">
-                      <img
-                        src={fixedImage}
-                        alt={brandName}
-                        className="object-contain w-full h-full max-h-12 sm:max-h-14 md:max-h-16"
-                        loading="lazy"
-                        onError={(e) => {
-                          e.target.style.display = "none";
-                          if (e.target.parentElement)
-                            e.target.parentElement.innerHTML =
-                              '<div class="text-xs text-gray-300">No logo</div>';
-                        }}
-                      />
-                    </div>
-                    <p className="text-[11px] sm:text-xs md:text-sm font-semibold text-gray-700 group-hover:text-primary-500 transition-colors line-clamp-1">
-                      {brandName}
-                    </p>
-                  </div>
-                );
-              })
+              brands.map((brand) => (
+                <BrandTile
+                  key={brand._id || brand.name}
+                  brand={brand}
+                  onSelect={handleBrandClick}
+                />
+              ))
             )}
           </div>
         </div>
