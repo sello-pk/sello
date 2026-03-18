@@ -8,6 +8,7 @@ import BannerInUesrListings from "../../components/features/listings/BannerInUes
 import ReviewSectionInUser from "../../components/features/listings/ReviewSectionInUser";
 import ContactMap from "../../components/features/listings/ContactMap";
 import NewsLatter from "../../components/utils/NewsLatter";
+import CustomerReview from "../../components/sections/home/CustomerReview";
 
 const UserListingPage = () => {
   return (
@@ -42,7 +43,7 @@ const UserListingPage = () => {
         <BannerInUesrListings />
       </div>
 
-      <ReviewSectionInUser />
+      <CustomerReview key="customer-review" />
 
       <div className="w-full">
         <ContactMap />
