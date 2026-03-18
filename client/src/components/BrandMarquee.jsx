@@ -15,7 +15,10 @@ import {
 } from "react-icons/md";
 
 const KF_ID = "brand-marquee-keyframes";
-const PX_PER_SEC = 38;
+/** Lower = slower scroll. Min/max seconds cap how fast/slow a loop feels in prod. */
+const PX_PER_SEC = 16;
+const MIN_LOOP_SEC = 52;
+const MAX_LOOP_SEC = 240;
 
 function injectMarqueeKeyframes() {
   if (typeof document === "undefined") return;
@@ -72,7 +75,8 @@ function BrandTile({ brand, onSelect }) {
 
 const BrandMarquee = ({ brands: propBrands = [] }) => {
   const trackRef = useRef(null);
-  const [durationSec, setDurationSec] = useState(45);
+  const [durationSec, setDurationSec] = useState(70);
+  const [hoverPause, setHoverPause] = useState(false);
   const navigate = useNavigate();
 
   const { makes, isCarCategoriesLoading } = useCarCategories("Car");
@@ -113,7 +117,10 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
       const w = el.scrollWidth;
       if (w < 16) return;
       const half = w / 2;
-      const sec = Math.max(18, Math.min(100, half / PX_PER_SEC));
+      const sec = Math.max(
+        MIN_LOOP_SEC,
+        Math.min(MAX_LOOP_SEC, half / PX_PER_SEC),
+      );
       setDurationSec(sec);
     };
 
@@ -157,7 +164,11 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
 
   return (
     <div className="w-full py-3 sm:py-4">
-      <div className="relative rounded-xl sm:px-6 md:px-10 py-2 sm:py-3">
+      <div
+        className="relative rounded-xl sm:px-6 md:px-10 py-2 sm:py-3"
+        onMouseEnter={() => setHoverPause(true)}
+        onMouseLeave={() => setHoverPause(false)}
+      >
         {showNav && !reducedMotion && (
           <>
             <button
@@ -180,7 +191,7 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
         )}
 
         <div
-          className={`w-full overflow-hidden px-1 md:px-2 ${!reducedMotion ? "group/marquee" : "overflow-x-auto scrollbar-hide"}`}
+          className={`w-full overflow-hidden px-1 md:px-2 ${!reducedMotion ? "" : "overflow-x-auto scrollbar-hide"}`}
         >
           <div
             ref={trackRef}
@@ -194,6 +205,7 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
                     animationDuration: `${durationSec}s`,
                     animationTimingFunction: "linear",
                     animationIterationCount: "infinite",
+                    animationPlayState: hoverPause ? "paused" : "running",
                     willChange: "transform",
                   }
             }
