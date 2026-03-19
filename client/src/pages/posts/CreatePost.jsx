@@ -53,26 +53,31 @@ const CreatePost = () => {
 
   const formKey = prefill ? JSON.stringify(prefill) : "no-prefill";
 
+  /** Match Navbar: max-w-8xl + px-3 sm:px-4 md:px-6 lg:px-8 */
+  const pageGutter =
+    "max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8";
+
   return (
-    <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
-      <CreatePostForm key={formKey} initialPrefill={prefill} />
+    <div className="w-full min-w-0">
+      <div className={pageGutter}>
+        <CreatePostForm key={formKey} initialPrefill={prefill} />
+      </div>
       <WhyChooseUsUtility />
       <InpirationSectoin />
       <BannerInFilter />
-      <div className="py-12 bg-[#F5F5F5]">
-        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
+      <div className="w-full bg-[#F5F5F5] py-12">
+        <div className={pageGutter}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h1 className="md:text-4xl text-2xl font-semibold">
               Explore Our Premium Brands
             </h1>
             <Link
               to="/view-all-brands"
-              className="flex items-center gap-2 text-primary-500"
+              className="flex items-center gap-2 text-primary-500 shrink-0"
             >
               Show All Brands <MdArrowOutward />
             </Link>
           </div>
-          {/* BrandMarquee will fetch brands from admin categories automatically */}
           <BrandMarquee />
         </div>
       </div>

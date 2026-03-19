@@ -8,27 +8,34 @@ import { Link } from "react-router-dom";
 import { MdArrowOutward } from "react-icons/md";
 import FindOutMore from "../../components/sections/createPost/FindOutMore";
 
+/** Same horizontal rhythm as Navbar: max-w-8xl + px-3 sm:px-4 md:px-6 lg:px-8 */
+const PAGE_GUTTER =
+  "max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8";
+
 const EditCar = () => {
   return (
-    <div>
-      <EditCarForm />
+    <div className="w-full min-w-0">
+      <div className={PAGE_GUTTER}>
+        <EditCarForm />
+      </div>
       <WhyChooseUsUtility />
       <InpirationSectoin />
       <BannerInFilter />
-      <div className="px-4 md:px-16 py-12 bg-[#F5F5F5]">
-        <div className="flex items-center justify-between">
-          <h1 className="md:text-4xl text-2xl font-semibold">
-            Explore Our Premium Brands
-          </h1>
-          <Link
-            to="/view-all-brands"
-            className="flex items-center gap-2 text-primary-500"
-          >
-            Show All Brands <MdArrowOutward />
-          </Link>
+      <div className="w-full bg-[#F5F5F5] py-12">
+        <div className={PAGE_GUTTER}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h1 className="md:text-4xl text-2xl font-semibold">
+              Explore Our Premium Brands
+            </h1>
+            <Link
+              to="/view-all-brands"
+              className="flex items-center gap-2 text-primary-500 shrink-0"
+            >
+              Show All Brands <MdArrowOutward />
+            </Link>
+          </div>
+          <BrandMarquee />
         </div>
-        {/* BrandMarquee will fetch brands from admin categories automatically */}
-        <BrandMarquee />
       </div>
       <FindOutMore />
     </div>

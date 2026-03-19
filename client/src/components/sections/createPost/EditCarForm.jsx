@@ -347,7 +347,7 @@ const EditCarForm = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="px-4 md:px-20 py-12"
+      className="w-full py-12"
       encType="multipart/form-data"
     >
       <h2 className="text-center md:text-3xl font-semibold">Edit Car</h2>

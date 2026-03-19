@@ -3,20 +3,15 @@ import { useLocation, Link } from "react-router-dom";
 import createPost from "../../../assets/createPost.gif";
 import { MdArrowOutward } from "react-icons/md";
 
-const BannerInFilter = () => {
+const BannerInFilter = ({ skipOuterGutter = false }) => {
   const location = useLocation();
   const isCreatePostPage = location.pathname === "/create-post";
 
-  return (
-    <div className="my-8 md:my-10 w-full overflow-hidden">
-      <div
-        className={`w-full flex flex-col md:flex-row md:items-center md:justify-between gap-6 md:gap-8 py-6 pl-6 pr-6 sm:pl-8 sm:pr-8 md:pl-10 md:pr-10 lg:pl-12 lg:pr-12 xl:pl-16 xl:pr-16 bg-[#F5F5F5] rounded-xl md:rounded-2xl ${
-          isCreatePostPage ? "text-black" : "text-white"
-        }`}
-      >
+  const inner = (
+      <div className="w-full flex flex-col md:flex-row md:items-center md:justify-between gap-6 md:gap-8 py-6 px-5 sm:px-6 md:px-8 bg-[#F5F5F5] rounded-xl md:rounded-2xl text-gray-900 border border-gray-200/80">
         {/* Left: Content + Buttons */}
         <div className="flex-1 min-w-0 flex flex-col items-start text-left max-w-xl">
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold leading-tight">
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold leading-tight text-gray-900">
             Sell Your Car in Just a Few Steps
           </h2>
           <p className="mt-2 sm:mt-3 text-sm sm:text-base text-gray-600 md:text-gray-700 leading-relaxed">
@@ -54,6 +49,17 @@ const BannerInFilter = () => {
           </div>
         </div>
       </div>
+  );
+
+  return (
+    <div className="my-8 md:my-10 w-full overflow-hidden">
+      {skipOuterGutter ? (
+        inner
+      ) : (
+        <div className="max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8">
+          {inner}
+        </div>
+      )}
     </div>
   );
 };
