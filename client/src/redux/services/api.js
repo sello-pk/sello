@@ -13,22 +13,31 @@ import { API_BASE_URL } from "@redux/config";
 let isRefreshing = false;
 let refreshPromise = null;
 
-/** True when request is listing create/edit with multipart (likely large payload). */
-function isListingImageUpload(args) {
+/**
+ * Multipart uploads that can be large (listings, dealer docs, auction access).
+ * Used for 413 / failed-fetch messages. Nginx default client_max_body_size (1m)
+ * rejects even a single phone photo — browser may show CORS + Failed to fetch.
+ */
+function isMultipartDocumentUpload(args) {
+  if (!(args?.body instanceof FormData)) return false;
   const url = args?.url || "";
   const method = (args?.method || "GET").toUpperCase();
-  if (!(args?.body instanceof FormData)) return false;
+  if (method !== "POST" && method !== "PUT" && method !== "PATCH") return false;
   if (method === "POST" && url.startsWith("/cars") && !/\/cars\//.test(url))
     return true;
   if (method === "PUT" && /\/cars\/[^/?]+/.test(url)) return true;
   if (url.includes("submit-car")) return true;
+  if (url.includes("/users/auction-access/request")) return true;
+  if (url.includes("/users/request-dealer")) return true;
+  if (url.includes("/users/dealer-profile")) return true;
+  if (url.includes("/verification/submit")) return true;
   return false;
 }
 
 const MSG_FETCH_UPLOAD =
-  "Upload didn't finish — connection may have dropped, timed out, or request was too large. Allowed: up to 15 images, 35MB total. If it fails after a few images, your server's proxy may limit body size; set it to at least 40MB (e.g. nginx: client_max_body_size 40m).";
+  "Upload didn't finish — the file may be larger than your API proxy allows (nginx often defaults to 1MB). Ops: set client_max_body_size 40m; on api.sello.pk reload nginx. Listings: up to 15 images, 35MB total.";
 const MSG_413 =
-  "Request too large. Allowed: up to 15 images, 35MB total. If your server uses nginx (or similar), set client_max_body_size 40m and reload, then try again.";
+  "Request body too large (413). Even one photo can fail if nginx client_max_body_size is too small (default 1m). Set client_max_body_size 40m (or higher) for api.sello.pk, reload nginx, retry. App allows up to ~35MB per file.";
 const MSG_FETCH_GENERIC =
   "Request couldn't complete. If you were uploading photos, try fewer or smaller images and retry. Otherwise check your connection.";
 
@@ -127,7 +136,7 @@ export const api = createApi({
 
       // 413 Request Entity Too Large (often from proxy/nginx) — suggest fewer/smaller images
       if (baseResult.error && (baseResult.error.originalStatus === 413 || baseResult.error.status === 413)) {
-        const uploadAttempt = isListingImageUpload(args);
+        const uploadAttempt = isMultipartDocumentUpload(args);
         return {
           error: {
             status: 413,
@@ -147,7 +156,7 @@ export const api = createApi({
         (baseResult.error.status === "FETCH_ERROR" ||
           baseResult.error.error === "TypeError: Failed to fetch")
       ) {
-        const uploadAttempt = isListingImageUpload(args);
+        const uploadAttempt = isMultipartDocumentUpload(args);
         const message = uploadAttempt ? MSG_FETCH_UPLOAD : MSG_FETCH_GENERIC;
         if (import.meta.env.DEV && baseResult.error?.error) {
           logger.warn("FETCH_ERROR", { url: args?.url, error: baseResult.error.error });
@@ -167,7 +176,7 @@ export const api = createApi({
 
       return baseResult;
     } catch (error) {
-      const uploadAttempt = isListingImageUpload(args);
+      const uploadAttempt = isMultipartDocumentUpload(args);
       return {
         error: {
           status: "FETCH_ERROR",

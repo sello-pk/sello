@@ -81,8 +81,9 @@ app.use(
 app.options("*", cors());
 
 /* ---------------------------- BODY PARSERS --------------------------- */
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+// Match multer/proxy expectations: dealer & auction-access multipart can exceed 10mb total
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser());
 
 /* ---------------------------- MIDDLEWARES --------------------------- */
