@@ -197,6 +197,38 @@ const makeCapabilityDocs = async (files = []) => {
   return uploaded;
 };
 
+/** Legacy users may have no auctionCapabilities in Mongo — nested writes throw otherwise */
+function ensureAuctionCapabilityShell(user) {
+  if (!user.auctionCapabilities) {
+    user.auctionCapabilities = {
+      auctionBidder: {
+        status: "not_requested",
+        documents: [],
+        rejectionReason: "",
+      },
+      auctionDealer: {
+        status: "not_requested",
+        documents: [],
+        rejectionReason: "",
+      },
+      graceUntil: null,
+    };
+    return;
+  }
+  const ac = user.auctionCapabilities;
+  if (!ac.auctionBidder) {
+    ac.auctionBidder = { status: "not_requested", documents: [], rejectionReason: "" };
+  } else if (!Array.isArray(ac.auctionBidder.documents)) {
+    ac.auctionBidder.documents = [];
+  }
+  if (!ac.auctionDealer) {
+    ac.auctionDealer = { status: "not_requested", documents: [], rejectionReason: "" };
+  } else if (!Array.isArray(ac.auctionDealer.documents)) {
+    ac.auctionDealer.documents = [];
+  }
+  user.markModified("auctionCapabilities");
+}
+
 export const submitAuctionAccessRequest = async (req, res) => {
   try {
     const requestTypes = parseRequestTypesInput(req.body.requestTypes).filter((type) =>
@@ -212,6 +244,8 @@ export const submitAuctionAccessRequest = async (req, res) => {
 
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    ensureAuctionCapabilityShell(user);
 
     const licenseFiles = filesFromField(req.files, "businessLicense");
     const documentFiles = filesFromField(req.files, "documents");
@@ -230,7 +264,17 @@ export const submitAuctionAccessRequest = async (req, res) => {
       }
     }
 
-    let docs = await makeCapabilityDocs(documentFiles);
+    let docs = [];
+    try {
+      docs = await makeCapabilityDocs(documentFiles);
+    } catch (docErr) {
+      Logger.error("submitAuctionAccessRequest documents upload", docErr);
+      return res.status(400).json({
+        success: false,
+        message:
+          "Could not upload supporting documents. Use PDF or images under 35MB each.",
+      });
+    }
     if (licenseUrl) {
       docs = [
         {
@@ -285,7 +329,13 @@ export const submitAuctionAccessRequest = async (req, res) => {
         dealerPatch.businessLicense = docs[0].url;
       }
 
+      if (dealerPatch.establishedYear !== undefined && dealerPatch.establishedYear !== "") {
+        const y = parseInt(String(dealerPatch.establishedYear), 10);
+        dealerPatch.establishedYear = Number.isFinite(y) ? y : null;
+      }
+
       user.dealerInfo = dealerPatch;
+      user.markModified("dealerInfo");
       user.auctionCapabilities.auctionDealer.status = "pending";
       user.auctionCapabilities.auctionDealer.requestedAt = now;
       user.auctionCapabilities.auctionDealer.rejectionReason = "";
@@ -334,7 +384,27 @@ export const submitAuctionAccessRequest = async (req, res) => {
         message: msg || "Invalid dealer profile data. Check all fields and try again.",
       });
     }
-    return res.status(500).json({ success: false, message: "Server error" });
+    if (error.name === "CastError") {
+      return res.status(400).json({
+        success: false,
+        message: error.message || "Invalid data in the form. Check numbers and text fields.",
+      });
+    }
+    const cloudCode = error.http_code ?? error.error?.http_code;
+    if (cloudCode) {
+      return res.status(502).json({
+        success: false,
+        message:
+          "File upload service returned an error. Check Cloudinary credentials and try a smaller file.",
+      });
+    }
+    const isProd = process.env.NODE_ENV === "production";
+    return res.status(500).json({
+      success: false,
+      message: isProd
+        ? "Server error"
+        : error.message || "Server error",
+    });
   }
 };
 
