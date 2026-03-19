@@ -158,15 +158,16 @@ export const uploadRawToCloudinary = (fileBuffer, options = {}) => {
       return;
     }
     const folder = options.folder || "sello_uploads";
-    const dataUri = `data:application/pdf;base64,${fileBuffer.toString("base64")}`;
-    cloudinary.uploader.upload(dataUri, {
-      folder,
-      resource_type: "raw",
-    }, (err, res) => {
-      if (err) reject(err);
-      else if (!res?.secure_url) reject(new Error("Cloudinary returned no URL"));
-      else resolve(res.secure_url);
-    });
+    const stream = cloudinary.uploader.upload_stream(
+      { folder, resource_type: "raw" },
+      (err, res) => {
+        if (err) reject(err);
+        else if (!res?.secure_url) reject(new Error("Cloudinary returned no URL"));
+        else resolve(res.secure_url);
+      },
+    );
+    stream.on("error", reject);
+    stream.end(fileBuffer);
   });
 };
 

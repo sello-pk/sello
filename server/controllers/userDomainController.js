@@ -6,8 +6,16 @@ import AccountDeletionRequest from "../models/accountDeletionRequestModel.js";
 import SavedSearch from "../models/savedSearchModel.js";
 import Review from "../models/reviewModel.js";
 import Report from "../models/reportModel.js";
+import path from "path";
 import Car from "../models/carModel.js";
-import { uploadCloudinary, Logger, sendEmail, parseArray, buildCarQuery } from "../utils/helpers.js";
+import {
+  uploadCloudinary,
+  uploadRawToCloudinary,
+  Logger,
+  sendEmail,
+  parseArray,
+  buildCarQuery,
+} from "../utils/helpers.js";
 import mongoose from "mongoose";
 import { AUCTION_REQUEST_TYPES, normalizeAuctionCapabilities } from "../utils/auctionAccess.js";
 
@@ -142,10 +150,44 @@ const parseRequestTypesInput = (value) => {
   }
 };
 
+/** Multer may return one file or an array per field name */
+function filesFromField(files, field) {
+  if (!files?.[field]) return [];
+  const f = files[field];
+  return Array.isArray(f) ? f : [f];
+}
+
+/** FormData sends JSON.stringify([...]) for array fields — Mongoose needs real arrays */
+function parseMultipartJsonArray(value) {
+  if (value == null || value === "") return [];
+  if (Array.isArray(value)) return value.map((v) => String(v).trim()).filter(Boolean);
+  if (typeof value === "string") {
+    try {
+      const p = JSON.parse(value);
+      return Array.isArray(p) ? p.map((v) => String(v).trim()).filter(Boolean) : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
+/** PDFs must use Cloudinary resource_type "raw"; images use default image pipeline */
+async function uploadOneCapabilityFile(file) {
+  if (!file?.buffer) throw new Error("Invalid upload file");
+  const ext = path.extname(file.originalname || "").toLowerCase();
+  const mime = (file.mimetype || "").toLowerCase();
+  const isPdf = mime === "application/pdf" || ext === ".pdf";
+  if (isPdf) {
+    return uploadRawToCloudinary(file.buffer, { folder: "sello_auction_access" });
+  }
+  return uploadCloudinary(file.buffer, { folder: "sello_auction_access" });
+}
+
 const makeCapabilityDocs = async (files = []) => {
   const uploaded = [];
   for (const file of files) {
-    const url = await uploadCloudinary(file.buffer, { folder: "sello_auction_access" });
+    const url = await uploadOneCapabilityFile(file);
     uploaded.push({
       name: file.originalname || "document",
       url,
@@ -171,19 +213,78 @@ export const submitAuctionAccessRequest = async (req, res) => {
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
-    const docs = await makeCapabilityDocs(req.files?.documents || []);
+    const licenseFiles = filesFromField(req.files, "businessLicense");
+    const documentFiles = filesFromField(req.files, "documents");
+
+    let licenseUrl = null;
+    if (licenseFiles.length > 0) {
+      try {
+        licenseUrl = await uploadOneCapabilityFile(licenseFiles[0]);
+      } catch (uploadErr) {
+        Logger.error("submitAuctionAccessRequest license upload", uploadErr);
+        return res.status(400).json({
+          success: false,
+          message:
+            "Could not upload your license file. Use a PDF or image (JPG, PNG, WebP) under 35MB.",
+        });
+      }
+    }
+
+    let docs = await makeCapabilityDocs(documentFiles);
+    if (licenseUrl) {
+      docs = [
+        {
+          name: licenseFiles[0].originalname || "business-license",
+          url: licenseUrl,
+          kind: "business_license",
+        },
+        ...docs,
+      ];
+    }
+
     const now = new Date();
 
     if (requestTypes.includes("dealer")) {
+      const existing =
+        user.dealerInfo && typeof user.dealerInfo.toObject === "function"
+          ? user.dealerInfo.toObject()
+          : { ...(user.dealerInfo || {}) };
+
+      const { requestTypes: _rt, ...bodyRest } = req.body || {};
       const dealerPatch = {
-        ...user.dealerInfo,
-        ...req.body,
+        ...existing,
+        ...bodyRest,
         verified: false,
         verifiedAt: null,
       };
-      if (docs[0]?.url && !dealerPatch.businessLicense) {
+      delete dealerPatch.requestTypes;
+
+      for (const key of ["specialties", "languages", "paymentMethods", "services"]) {
+        if (bodyRest[key] !== undefined && bodyRest[key] !== "") {
+          dealerPatch[key] = parseMultipartJsonArray(bodyRest[key]);
+        }
+      }
+
+      if (bodyRest.facebook || bodyRest.instagram || bodyRest.twitter || bodyRest.linkedin) {
+        dealerPatch.socialMedia = {
+          ...(dealerPatch.socialMedia || {}),
+          ...(bodyRest.facebook && { facebook: String(bodyRest.facebook).trim() }),
+          ...(bodyRest.instagram && { instagram: String(bodyRest.instagram).trim() }),
+          ...(bodyRest.twitter && { twitter: String(bodyRest.twitter).trim() }),
+          ...(bodyRest.linkedin && { linkedin: String(bodyRest.linkedin).trim() }),
+        };
+        delete dealerPatch.facebook;
+        delete dealerPatch.instagram;
+        delete dealerPatch.twitter;
+        delete dealerPatch.linkedin;
+      }
+
+      if (licenseUrl) {
+        dealerPatch.businessLicense = licenseUrl;
+      } else if (docs[0]?.url && !dealerPatch.businessLicense) {
         dealerPatch.businessLicense = docs[0].url;
       }
+
       user.dealerInfo = dealerPatch;
       user.auctionCapabilities.auctionDealer.status = "pending";
       user.auctionCapabilities.auctionDealer.requestedAt = now;
@@ -223,6 +324,16 @@ export const submitAuctionAccessRequest = async (req, res) => {
     });
   } catch (error) {
     Logger.error("submitAuctionAccessRequest error", error);
+    if (error.name === "ValidationError") {
+      const msg = Object.values(error.errors || {})
+        .map((e) => e.message)
+        .filter(Boolean)
+        .join(" ");
+      return res.status(400).json({
+        success: false,
+        message: msg || "Invalid dealer profile data. Check all fields and try again.",
+      });
+    }
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
