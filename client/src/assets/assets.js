@@ -134,6 +134,9 @@ import truckCatBlog2 from "./categories/catBlogs/truckCatBlog2.svg";
 import vanCatBlog from "./categories/catBlogs/vanCatBlog.svg";
 import vanCatBlog2 from "./categories/catBlogs/vanCatBlog2.svg";
 
+import trustLegal from "./images/trustLegal.png";
+import auctionSchedule from "./images/auctionSchedule.png";
+
 export const images = {
   car1,
   searchIcon,
@@ -187,6 +190,8 @@ export const images = {
   amingarageLogo,
   wbDigitalLogo,
   mianMotors,
+  auctionSchedule,
+  trustLegal
 };
 
 // Export app and social media icons for footer

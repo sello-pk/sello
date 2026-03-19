@@ -13,6 +13,7 @@ import {
   Mail,
   Building2,
 } from "lucide-react";
+import { images } from "../../../assets/assets";
 
 // ==================== CUSTOM COMPONENTS ====================
 
@@ -101,7 +102,7 @@ const AccordionTrigger = ({ children, isOpen, onToggle, className = "" }) => {
 const AccordionContent = ({ children, isOpen, className = "" }) => {
   return (
     <div
-      className={`px-4 pb-3 text-slate-600 ${isOpen ? "block" : "hidden"} ${className}`}
+      className={`px-4 pb-3 text-slate-500 ${isOpen ? "block" : "hidden"} ${className}`}
     >
       {children}
     </div>
@@ -230,33 +231,40 @@ By participating in our auctions, you acknowledge and accept these limitations.`
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <div className="bg-gradient-to-br from-slate-900 to-slate-800 py-16">
-        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <div className="w-16 h-16 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <FileText className="w-8 h-8 text-orange-400" />
+      {/* Hero header — responsive height, type scale, safe padding */}
+      <header className="relative w-full overflow-hidden">
+        <div className="relative flex min-h-[200px] h-[28vh] sm:min-h-[240px] sm:h-[32vh] md:h-[34vh] lg:h-[38vh] max-h-[420px] md:max-h-none items-center justify-center">
+          <img
+            src={images.trustLegal}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover object-center"
+            decoding="async"
+          />
+          <div className="absolute inset-0 bg-[#050B20]/70" aria-hidden />
+          <div className="relative z-10 w-full max-w-3xl mx-auto px-4 sm:px-6 md:px-8 py-8 sm:py-10 md:py-12 flex flex-col items-center text-center gap-2 sm:gap-3">
+            <div className="bg-primary-500 p-2.5 sm:p-3 rounded-full shadow-lg ring-4 ring-white/10">
+              <FileText
+                className="h-6 w-6 sm:h-7 sm:w-7 text-white shrink-0"
+                aria-hidden
+              />
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Trust & Legal
+            <h1 className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight">
+              Trust &amp; Legal
             </h1>
-            <p className="text-slate-400 max-w-2xl mx-auto">
+            <p className="text-white/90 text-sm sm:text-base md:text-lg max-w-xl mx-auto leading-relaxed">
               Understanding our platform policies, terms of service, and your
               rights as a buyer or seller
             </p>
-          </motion.div>
+          </div>
         </div>
-      </div>
+      </header>
 
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Location Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 mb-8 text-white"
+          className="bg-gradient-to-br from-primary-500 to-primary-400 rounded-2xl p-6 mb-8 text-white"
         >
           <div className="flex items-start gap-4">
             <Building2 className="w-8 h-8 flex-shrink-0" />
@@ -292,14 +300,14 @@ By participating in our auctions, you acknowledge and accept these limitations.`
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
-                      <section.icon className="w-5 h-5 text-orange-600" />
+                    <div className="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
+                      <section.icon className="w-5 h-5 text-primary-500" />
                     </div>
                     {section.title}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-slate-600 whitespace-pre-line leading-relaxed">
+                  <div className="text-slate-500 whitespace-pre-line leading-relaxed">
                     {section.content}
                   </div>
                 </CardContent>
@@ -317,7 +325,7 @@ By participating in our auctions, you acknowledge and accept these limitations.`
             <CardHeader>
               <CardTitle className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <HelpCircle className="w-5 h-5 text-blue-600" />
+                  <HelpCircle className="w-5 h-5 text-blue-500" />
                 </div>
                 Frequently Asked Questions
               </CardTitle>
@@ -329,7 +337,7 @@ By participating in our auctions, you acknowledge and accept these limitations.`
                     <AccordionTrigger className="text-left">
                       {faq.question}
                     </AccordionTrigger>
-                    <AccordionContent className="text-slate-600">
+                    <AccordionContent className="text-slate-500">
                       {faq.answer}
                     </AccordionContent>
                   </AccordionItem>
@@ -343,24 +351,24 @@ By participating in our auctions, you acknowledge and accept these limitations.`
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-8 bg-slate-900 rounded-2xl p-8 text-center"
+          className="mt-8 rounded-2xl p-6 sm:p-8 text-center border border-primary-200/80 bg-gradient-to-br from-primary-50 via-white to-primary-100 shadow-sm"
         >
-          <h3 className="text-xl font-bold text-white mb-4">Have Questions?</h3>
-          <p className="text-slate-400 mb-6">
+          <h3 className="text-xl font-bold text-black mb-4">Have Questions?</h3>
+          <p className="text-slate-600 mb-6">
             Our support team is here to help with any questions about our
             policies or platform.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="tel:+923134211023"
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-white/10 rounded-xl text-white hover:bg-white/20 transition-colors"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-primary rounded-xl text-white hover:bg-opacity-80 transition-colors"
             >
               <Phone className="w-5 h-5" />
               +923134211023
             </a>
             <a
               href="mailto:info@sello.pk"
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-white/10 rounded-xl text-white hover:bg-white/20 transition-colors"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-primary rounded-xl text-white hover:opacity-80 transition-colors"
             >
               <Mail className="w-5 h-5" />
               info@sello.pk
