@@ -78,6 +78,8 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
   const [durationSec, setDurationSec] = useState(70);
   const [hoverPause, setHoverPause] = useState(false);
   const [focusPause, setFocusPause] = useState(false);
+  /** Briefly unpause so arrow nudge works even if user was hovering the track (paused CSS anim ignores playbackRate). */
+  const [navBoost, setNavBoost] = useState(false);
   const navigate = useNavigate();
 
   const { makes, isCarCategoriesLoading } = useCarCategories("Car");
@@ -136,18 +138,46 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
     (dir) => {
       const el = trackRef.current;
       if (!el || reducedMotion) return;
-      const anim = el.getAnimations?.()?.[0];
-      if (!anim) return;
+      setNavBoost(true);
+      const anims = el.getAnimations?.() || [];
+      const anim =
+        anims.find((a) => a.animationName === "brandMarqueeKF") || anims[0];
+      if (!anim) {
+        window.setTimeout(() => setNavBoost(false), 500);
+        return;
+      }
+      const forward = dir === "right";
       try {
-        anim.playbackRate = dir === "right" ? 5 : -4;
+        if (anim.playState === "paused") anim.play();
+        anim.playbackRate = forward ? 6 : -5;
         window.setTimeout(() => {
-          anim.playbackRate = 1;
-        }, 420);
+          try {
+            anim.playbackRate = 1;
+          } catch {
+            /* ignore */
+          }
+          setNavBoost(false);
+        }, 450);
       } catch {
-        /* Safari may not support negative rate for left */
+        try {
+          const timing = anim.effect?.getComputedTiming?.();
+          const end =
+            typeof timing?.endTime === "number" && Number.isFinite(timing.endTime)
+              ? timing.endTime
+              : durationSec * 1000;
+          const step = Math.min(end * 0.04, 4000);
+          const ct = Number(anim.currentTime) || 0;
+          const next = forward
+            ? (ct + step) % Math.max(end, 1)
+            : (ct - step + Math.max(end, 1)) % Math.max(end, 1);
+          anim.currentTime = next;
+        } catch {
+          /* ignore */
+        }
+        window.setTimeout(() => setNavBoost(false), 500);
       }
     },
-    [reducedMotion],
+    [reducedMotion, durationSec],
   );
 
   const handleBrandClick = useCallback(
@@ -164,40 +194,29 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
   const showNav =
     brands.length >= 1 && !isCarCategoriesLoading && row.length >= 2;
 
+  const playPaused =
+    !navBoost && (hoverPause || focusPause) && !reducedMotion;
+
   return (
     <div className="w-full py-3 sm:py-4">
-      <div
-        className="relative rounded-xl sm:px-6 md:px-10 py-2 sm:py-3"
-        onMouseEnter={() => setHoverPause(true)}
-        onMouseLeave={() => setHoverPause(false)}
-        onPointerEnter={() => setHoverPause(true)}
-        onPointerLeave={() => setHoverPause(false)}
-        onFocusCapture={() => setFocusPause(true)}
-        onBlurCapture={() => setFocusPause(false)}
-      >
+      <div className="relative flex items-center gap-2 md:gap-3 rounded-xl sm:px-2 md:px-4 lg:px-8 py-2 sm:py-3">
         {showNav && !reducedMotion && (
-          <>
-            <button
-              type="button"
-              onClick={() => nudgeAnimation("left")}
-              className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 h-11 w-11 items-center justify-center rounded-full bg-white text-gray-700 shadow-md border border-gray-200 hover:bg-primary-500 hover:text-white hover:border-primary-500 transition-all duration-200"
-              aria-label="Previous brands"
-            >
-              <MdOutlineKeyboardArrowLeft size={22} className="shrink-0" aria-hidden />
-            </button>
-            <button
-              type="button"
-              onClick={() => nudgeAnimation("right")}
-              className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 h-11 w-11 items-center justify-center rounded-full bg-white text-gray-700 shadow-md border border-gray-200 hover:bg-primary-500 hover:text-white hover:border-primary-500 transition-all duration-200"
-              aria-label="Next brands"
-            >
-              <MdOutlineKeyboardArrowRight size={22} className="shrink-0" aria-hidden />
-            </button>
-          </>
+          <button
+            type="button"
+            onClick={() => nudgeAnimation("left")}
+            className="hidden md:flex shrink-0 z-20 h-11 w-11 items-center justify-center rounded-full bg-white text-gray-700 shadow-md border border-gray-200 hover:bg-primary-500 hover:text-white hover:border-primary-500 transition-all duration-200"
+            aria-label="Previous brands"
+          >
+            <MdOutlineKeyboardArrowLeft size={22} className="shrink-0" aria-hidden />
+          </button>
         )}
 
         <div
-          className={`w-full overflow-hidden px-1 md:px-2 ${!reducedMotion ? "" : "overflow-x-auto scrollbar-hide"}`}
+          className={`min-w-0 flex-1 overflow-hidden px-1 md:px-2 ${!reducedMotion ? "" : "overflow-x-auto scrollbar-hide"}`}
+          onMouseEnter={() => setHoverPause(true)}
+          onMouseLeave={() => setHoverPause(false)}
+          onFocusCapture={() => setFocusPause(true)}
+          onBlurCapture={() => setFocusPause(false)}
         >
           <div
             ref={trackRef}
@@ -211,8 +230,7 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
                     animationDuration: `${durationSec}s`,
                     animationTimingFunction: "linear",
                     animationIterationCount: "infinite",
-                    animationPlayState:
-                      hoverPause || focusPause ? "paused" : "running",
+                    animationPlayState: playPaused ? "paused" : "running",
                     willChange: "transform",
                   }
             }
@@ -244,6 +262,17 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
             )}
           </div>
         </div>
+
+        {showNav && !reducedMotion && (
+          <button
+            type="button"
+            onClick={() => nudgeAnimation("right")}
+            className="hidden md:flex shrink-0 z-20 h-11 w-11 items-center justify-center rounded-full bg-white text-gray-700 shadow-md border border-gray-200 hover:bg-primary-500 hover:text-white hover:border-primary-500 transition-all duration-200"
+            aria-label="Next brands"
+          >
+            <MdOutlineKeyboardArrowRight size={22} className="shrink-0" aria-hidden />
+          </button>
+        )}
       </div>
     </div>
   );
