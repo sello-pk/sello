@@ -11,6 +11,7 @@ import {
   IoArrowForward as ArrowRight,
 } from "react-icons/io5";
 import { useGetAuctionsQuery } from "@redux/services/api";
+import { images } from "../../../assets/assets";
 
 const Badge = ({ children, className = "", ...props }) => (
   <span
@@ -168,16 +169,34 @@ export default function AuctionSchedule() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="bg-gradient-to-br from-slate-900 to-slate-800 py-16">
-        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
-            Auction Schedule
-          </h1>
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            Browse upcoming, live, and past auctions
-          </p>
+      <header className="relative w-full overflow-hidden">
+        <div className="relative flex min-h-[200px] h-[28vh] sm:min-h-[240px] sm:h-[32vh] md:h-[34vh] lg:h-[38vh] max-h-[420px] md:max-h-none items-center justify-center">
+          <img
+            src={images.auctionSchedule}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover object-center"
+            decoding="async"
+          />
+          <div
+            className="absolute inset-0 bg-slate-900/65"
+            aria-hidden
+          />
+          <div className="relative z-10 w-full max-w-3xl mx-auto px-4 sm:px-6 md:px-8 py-8 sm:py-10 flex flex-col items-center text-center gap-2 sm:gap-3">
+            <div className="bg-primary-500 p-2.5 sm:p-3 rounded-full shadow-lg ring-4 ring-white/10">
+              <Calendar
+                className="h-6 w-6 sm:h-7 sm:w-7 text-white shrink-0"
+                aria-hidden
+              />
+            </div>
+            <h1 className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight">
+              Auction Schedule
+            </h1>
+            <p className="text-white/90 text-sm sm:text-base md:text-lg max-w-xl mx-auto leading-relaxed">
+              Browse upcoming, live, and past auctions
+            </p>
+          </div>
         </div>
-      </div>
+      </header>
 
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Tabs */}
