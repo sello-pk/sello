@@ -80,6 +80,8 @@ const LocationPickerModal = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
+  const [isResolvingAddress, setIsResolvingAddress] = useState(false);
   const [mapCenter, setMapCenter] = useState([25.276987, 55.296249]); // Dubai default
   const [mapZoom, setMapZoom] = useState(13);
   const [address, setAddress] = useState("");
@@ -113,38 +115,46 @@ const LocationPickerModal = ({
 
   // Reverse geocode to get address
   const reverseGeocode = async (lat, lng) => {
+    setIsResolvingAddress(true);
     try {
-      // Try OpenStreetMap Nominatim first (free)
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`
-      );
-      const data = await response.json();
-
-      if (data && data.display_name) {
-        setAddress(data.display_name);
-        return;
-      }
-    } catch (error) {
-      console.error("Reverse geocode error:", error);
-    }
-
-    // Fallback to Google Geocoding if available
-    const googleApiKey =
-      import.meta.env.VITE_REACT_APP_GOOGLE_MAPS_API_KEY ||
-      import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-    if (googleApiKey) {
       try {
+        // Try OpenStreetMap Nominatim first (free)
         const response = await fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleApiKey}`
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`
         );
         const data = await response.json();
 
-        if (data.status === "OK" && data.results.length > 0) {
-          setAddress(data.results[0].formatted_address);
+        if (data && data.display_name) {
+          setAddress(data.display_name);
+          return data.display_name;
         }
       } catch (error) {
-        console.error("Google geocode error:", error);
+        console.error("Reverse geocode error:", error);
       }
+
+      // Fallback to Google Geocoding if available
+      const googleApiKey =
+        import.meta.env.VITE_REACT_APP_GOOGLE_MAPS_API_KEY ||
+        import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+      if (googleApiKey) {
+        try {
+          const response = await fetch(
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleApiKey}`
+          );
+          const data = await response.json();
+
+          if (data.status === "OK" && data.results.length > 0) {
+            setAddress(data.results[0].formatted_address);
+            return data.results[0].formatted_address;
+          }
+        } catch (error) {
+          console.error("Google geocode error:", error);
+        }
+      }
+
+      return "";
+    } finally {
+      setIsResolvingAddress(false);
     }
   };
 
@@ -249,11 +259,51 @@ const LocationPickerModal = ({
     }
   }, []);
 
+  const handleUseCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported in this browser.");
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const location = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+        setCurrentLocation(location);
+        setSelectedLocation(location);
+        setMapCenter([location.lat, location.lng]);
+        setMapZoom(16);
+        setLocationMode("auto");
+        setSearchResults([]);
+
+        await reverseGeocode(location.lat, location.lng);
+        toast.success("Using your current location");
+        setIsLocating(false);
+      },
+      (error) => {
+        let msg = "Unable to get current location.";
+        if (error?.code === 1) msg = "Location permission denied.";
+        if (error?.code === 2) msg = "Location unavailable.";
+        if (error?.code === 3) msg = "Location request timed out.";
+        toast.error(msg);
+        setIsLocating(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 30000,
+      }
+    );
+  };
+
   // Handle search result selection
   const handleSelectResult = (result) => {
-    const location = { lat: result.lat, lng: result.lon };
+    const location = { lat: Number(result.lat), lng: Number(result.lon) };
     setSelectedLocation(location);
-    setMapCenter([result.lat, result.lon]);
+    setMapCenter([Number(result.lat), Number(result.lon)]);
     setMapZoom(15);
     setSearchQuery(result.display_name);
     setAddress(result.display_name);
@@ -273,7 +323,7 @@ const LocationPickerModal = ({
       const locationData = {
         coordinates: {
           lat: selectedLocation.lat,
-          lng: selectedLocation.lon,
+          lng: selectedLocation.lng,
         },
         address:
           address ||
@@ -345,6 +395,19 @@ const LocationPickerModal = ({
         <div className="flex-1 min-h-0 overflow-y-auto">
           {/* Search and Controls */}
           <div className="p-4 border-b space-y-3">
+            <div className="flex items-center justify-end">
+              <button
+                onClick={handleUseCurrentLocation}
+                disabled={isLocating}
+                className="px-3 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {isLocating && (
+                  <span className="inline-block h-4 w-4 rounded-full border-2 border-white border-b-transparent animate-spin" />
+                )}
+                {isLocating ? "Locating..." : "Use Current Location"}
+              </button>
+            </div>
+
             {/* Search Input */}
             <div className="relative">
               <input
@@ -358,6 +421,11 @@ const LocationPickerModal = ({
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-500"></div>
                 </div>
+              )}
+              {isSearching && (
+                <p className="text-xs text-gray-500 mt-2">
+                  Searching location...
+                </p>
               )}
 
               {/* Search Results */}
@@ -390,9 +458,14 @@ const LocationPickerModal = ({
                       6
                     )}, Lng: ${selectedLocation.lng.toFixed(6)}`}
                 </p>
+                {isResolvingAddress && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Resolving address...
+                  </p>
+                )}
                 {locationMode === "auto" && (
                   <p className="text-xs text-primary-600 mt-1 flex items-center gap-1">
-                    <FiMapPin className="w-3 h-3" /> Live tracking active
+                    <FiMapPin className="w-3 h-3" /> Using current location
                   </p>
                 )}
               </div>
@@ -456,10 +529,10 @@ const LocationPickerModal = ({
             </button>
             <button
               onClick={handleConfirm}
-              disabled={!selectedLocation}
+              disabled={!selectedLocation || isResolvingAddress || isLocating}
               className="px-8 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium shadow-md"
             >
-              Select Location
+              {isResolvingAddress ? "Resolving..." : "Select Location"}
             </button>
           </div>
         </div>
