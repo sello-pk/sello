@@ -98,6 +98,18 @@ export const initializeSocket = (server) => {
 
   // Handle connection errors at the server level
   io.engine.on("connection_error", (err) => {
+    // Common during server restarts / stale polling SIDs; not actionable.
+    if (
+      err?.code === 1 ||
+      err?.message?.includes("Session ID unknown") ||
+      err?.message?.includes("Transport unknown")
+    ) {
+      Logger.warn("Socket transient connection error", {
+        code: err.code,
+        message: err.message,
+      });
+      return;
+    }
     Logger.error("Socket connection error", err, {
       code: err.code,
       message: err.message,

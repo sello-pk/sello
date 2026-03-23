@@ -165,10 +165,16 @@ export const getAuctionCars = async (req, res) => {
     } = req.query;
 
     const auction = await Auction.findById(auctionId).select("status").lean();
-    const visibleStatuses =
-      auction?.status === "live"
-        ? ["approved", "live", "pending"]
-        : ["approved", "live"];
+    const visibleStatuses = ["approved", "live"];
+
+    // Self-heal stale records: live auctions should not keep lots in "pending".
+    // This makes dealer submissions visible immediately even if lifecycle cron is delayed/disabled.
+    if (auction?.status === "live") {
+      await AuctionCar.updateMany(
+        { auction: auctionId, status: "pending" },
+        { status: "live" },
+      );
+    }
 
     const filter = {
       auction: auctionId,
@@ -644,9 +650,10 @@ export const buyNow = async (req, res) => {
     if (!hasWallet && !verified)
       return res.status(403).json({
         success: false,
-        message: hasWallet
-          ? `Insufficient balance. Buy now price is PKR ${buyNowPrice.toLocaleString()}.`
-          : "You must deposit funds before using buy now",
+        message:
+          wallet && wallet.balance < buyNowPrice
+            ? `Insufficient balance. Buy now price is PKR ${buyNowPrice.toLocaleString()} and your wallet has PKR ${wallet.balance.toLocaleString()}.`
+            : "You must deposit funds before using buy now",
       });
 
     // Refund any current winning bidder
@@ -1962,6 +1969,19 @@ export const verifyTokenPayment = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Payment not found" });
 
+    if (!["verify", "reject"].includes(action)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid action. Use 'verify' or 'reject'.",
+      });
+    }
+    if (payment.status !== "pending") {
+      return res.status(400).json({
+        success: false,
+        message: `Only pending payments can be reviewed. Current status: ${payment.status}`,
+      });
+    }
+
     if (action === "verify") {
       payment.status = "verified";
       payment.verifiedBy = req.user._id;
@@ -2424,14 +2444,15 @@ export const adminRefundToken = async (req, res) => {
       return res
         .status(400)
         .json({ success: false, message: "Already refunded" });
-    if (!["verified", "pending"].includes(payment.status)) {
+    if (payment.status !== "verified") {
       return res.status(400).json({
         success: false,
-        message: `Cannot refund a ${payment.status} payment`,
+        message: `Only verified payments can be refunded. Current status: ${payment.status}`,
       });
     }
 
     payment.status = "refunded";
+    payment.refundedAt = new Date();
     await payment.save();
 
     await logWalletTxn({
@@ -2486,14 +2507,41 @@ export const adminBulkRefundTokens = async (req, res) => {
       .map((ac) => ac.winner?.toString())
       .filter(Boolean);
 
+    const auctionCarIds = (
+      await AuctionCar.find({ auction: auctionId }).select("_id").lean()
+    ).map((row) => row._id);
+
+    const bidderIds = (
+      await Bid.find({
+        auctionCar: { $in: auctionCarIds },
+        bidder: { $ne: null },
+      })
+        .select("bidder")
+        .lean()
+    )
+      .map((b) => b.bidder?.toString())
+      .filter(Boolean);
+
+    const participants = [...new Set(bidderIds)];
+    const winners = new Set(winnerIds);
+    const refundableUserIds = participants.filter((id) => !winners.has(id));
+
+    if (refundableUserIds.length === 0) {
+      return res.json({
+        success: true,
+        message: "0 token deposits refunded",
+      });
+    }
+
     const toRefund = await TokenPayment.find({
       status: "verified",
-      user: { $nin: winnerIds.map((id) => id) },
+      user: { $in: refundableUserIds },
     });
 
     let refunded = 0;
     for (const payment of toRefund) {
       payment.status = "refunded";
+      payment.refundedAt = new Date();
       await payment.save();
       await logWalletTxn({
         user: payment.user,
@@ -2686,6 +2734,17 @@ export const runAuctionLifecycle = async () => {
         { status: "live" },
       );
       Logger.info(`Auction ${auction._id} auto-transitioned to live`);
+    }
+
+    // Self-heal: if a live auction still has pending lots, promote them to live.
+    const liveAuctionIds = (
+      await Auction.find({ status: "live" }).select("_id").lean()
+    ).map((a) => a._id);
+    if (liveAuctionIds.length > 0) {
+      await AuctionCar.updateMany(
+        { auction: { $in: liveAuctionIds }, status: "pending" },
+        { status: "live" },
+      );
     }
 
     // Live → Completed (past end time) – delegate to engine
