@@ -129,11 +129,15 @@ cloudinary.config({
 /** Max concurrent uploads to Cloudinary — balanced for speed + reliability */
 const LISTING_UPLOAD_CONCURRENCY = Math.max(
   1,
-  parseInt(process.env.CLOUDINARY_UPLOAD_CONCURRENCY, 10) || 2,
+  parseInt(process.env.CLOUDINARY_UPLOAD_CONCURRENCY, 10) || 3,
 );
 const LISTING_UPLOAD_RETRIES = Math.max(
   1,
-  parseInt(process.env.CLOUDINARY_UPLOAD_RETRIES, 10) || 2,
+  parseInt(process.env.CLOUDINARY_UPLOAD_RETRIES, 10) || 3,
+);
+const LISTING_UPLOAD_MAX_CONCURRENCY = Math.max(
+  LISTING_UPLOAD_CONCURRENCY,
+  parseInt(process.env.CLOUDINARY_UPLOAD_MAX_CONCURRENCY, 10) || 4,
 );
 
 function isTransientCloudinaryError(err) {
@@ -162,8 +166,11 @@ export const uploadCloudinary = (fileBuffer, options = {}) => {
       return;
     }
 
-    // Add timeout to prevent hanging
-    const timeoutMs = options.timeout || 60000; // 60 seconds timeout
+    // Scale timeout by payload size to reduce false timeouts on larger photos.
+    const bytes = fileBuffer.length || 0;
+    const timeoutMs =
+      options.timeout ||
+      Math.max(45000, Math.min(120000, 45000 + Math.ceil(bytes / 200000)));
     const timeout = setTimeout(() => {
       reject(new Error("Upload timeout"));
       stream.destroy();
@@ -300,10 +307,27 @@ export async function uploadListingImagesToCloudinary(files, options = {}) {
   if (!files?.length) return [];
 
   const buffers = files.map((f) => f.buffer).filter(Boolean);
+  const totalBytes = buffers.reduce((sum, b) => sum + (b?.length || 0), 0);
+  let adaptiveConcurrency = LISTING_UPLOAD_CONCURRENCY;
+  if (totalBytes <= 10 * 1024 * 1024) adaptiveConcurrency = 4;
+  else if (totalBytes <= 30 * 1024 * 1024) adaptiveConcurrency = 3;
+  else adaptiveConcurrency = 2;
+  const effectiveConcurrency = Math.max(
+    1,
+    Math.min(LISTING_UPLOAD_MAX_CONCURRENCY, adaptiveConcurrency),
+  );
+
+  Logger.info("Listing image upload scheduling", {
+    count: buffers.length,
+    totalMB: Math.round((totalBytes / (1024 * 1024)) * 100) / 100,
+    concurrency: effectiveConcurrency,
+    retries: LISTING_UPLOAD_RETRIES,
+  });
+
   const urls = [];
 
-  for (let i = 0; i < buffers.length; i += LISTING_UPLOAD_CONCURRENCY) {
-    const chunk = buffers.slice(i, i + LISTING_UPLOAD_CONCURRENCY);
+  for (let i = 0; i < buffers.length; i += effectiveConcurrency) {
+    const chunk = buffers.slice(i, i + effectiveConcurrency);
     const chunkUrls = await Promise.all(
       chunk.map((buffer) => uploadCloudinaryWithRetry(buffer, { folder })),
     );

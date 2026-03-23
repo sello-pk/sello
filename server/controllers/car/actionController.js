@@ -110,6 +110,7 @@ const parseGeoLocation = (rawGeoLocation) => {
 export const createCar = async (req, res) => {
   try {
     if (!req.user) return res.status(401).json({ success: false, message: "Unauthorized" });
+    const requestStartedAt = Date.now();
 
     const validation = validateRequiredFields(req.body.vehicleType || "Car", req.body);
     if (!validation.isValid) {
@@ -141,8 +142,47 @@ export const createCar = async (req, res) => {
     }
     if (req.body.regionalSpec !== undefined && req.body.regionalSpec !== "") carData.regionalSpec = req.body.regionalSpec;
 
+    // Idempotency guard: prevent accidental duplicate posts caused by retries/double-clicks.
+    const duplicateWindowMinutes = Math.max(
+      1,
+      parseInt(process.env.CREATE_CAR_DEDUP_WINDOW_MINUTES, 10) || 15,
+    );
+    const since = new Date(Date.now() - duplicateWindowMinutes * 60 * 1000);
+    const recentDuplicate = await Car.findOne({
+      postedBy: req.user._id,
+      title: carData.title,
+      make: carData.make,
+      model: carData.model,
+      year: Number(carData.year),
+      price: Number(carData.price),
+      createdAt: { $gte: since },
+      status: { $ne: "deleted" },
+    })
+      .sort({ createdAt: -1 })
+      .lean();
+    if (recentDuplicate) {
+      Logger.warn("Create car deduplicated recent request", {
+        userId: req.user._id,
+        carId: recentDuplicate._id,
+        windowMinutes: duplicateWindowMinutes,
+      });
+      return res.status(200).json({
+        success: true,
+        data: recentDuplicate,
+        deduplicated: true,
+        message: "Your listing was already created recently.",
+      });
+    }
+
     const car = await Car.create(carData);
     await User.findByIdAndUpdate(req.user._id, { $push: { carsPosted: car._id } });
+
+    Logger.info("Create car completed", {
+      userId: req.user._id,
+      carId: car._id,
+      imageCount: images.length,
+      durationMs: Date.now() - requestStartedAt,
+    });
 
     return res.status(201).json({ success: true, data: car });
   } catch (error) {

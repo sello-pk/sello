@@ -41,6 +41,112 @@ const MSG_413 =
 const MSG_FETCH_GENERIC =
   "Request couldn't complete. If you were uploading photos, try fewer or smaller images and retry. Otherwise check your connection.";
 
+const CLIENT_UPLOAD_MAX_IMAGE_EDGE = 1920;
+const CLIENT_UPLOAD_IMAGE_QUALITY = 0.78;
+const CLIENT_UPLOAD_SKIP_BYTES = 450 * 1024;
+const CLIENT_UPLOAD_MIN_TOTAL_BYTES = 2 * 1024 * 1024;
+
+function isOptimizableImage(file) {
+  return (
+    file instanceof File &&
+    typeof file.type === "string" &&
+    file.type.startsWith("image/") &&
+    file.type !== "image/gif" &&
+    file.type !== "image/svg+xml"
+  );
+}
+
+function shouldOptimizeImage(file, totalImageBytes) {
+  if (!isOptimizableImage(file)) return false;
+  if (file.size >= CLIENT_UPLOAD_SKIP_BYTES) return true;
+  return totalImageBytes >= CLIENT_UPLOAD_MIN_TOTAL_BYTES;
+}
+
+function fileNameToWebp(name = "image.jpg") {
+  return name.replace(/\.[^.]+$/, "") + ".webp";
+}
+
+async function toOptimizedWebpFile(file) {
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    return file;
+  }
+  try {
+    const bitmap = await createImageBitmap(file);
+    const maxSide = Math.max(bitmap.width || 1, bitmap.height || 1);
+    const scale =
+      maxSide > CLIENT_UPLOAD_MAX_IMAGE_EDGE
+        ? CLIENT_UPLOAD_MAX_IMAGE_EDGE / maxSide
+        : 1;
+    const width = Math.max(1, Math.round((bitmap.width || 1) * scale));
+    const height = Math.max(1, Math.round((bitmap.height || 1) * scale));
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      bitmap.close?.();
+      return file;
+    }
+    ctx.drawImage(bitmap, 0, 0, width, height);
+    bitmap.close?.();
+
+    const blob = await new Promise((resolve) => {
+      canvas.toBlob(resolve, "image/webp", CLIENT_UPLOAD_IMAGE_QUALITY);
+    });
+    if (!blob) return file;
+
+    // Keep original if optimization is not meaningfully smaller.
+    if (blob.size >= file.size * 0.95) return file;
+
+    return new File([blob], fileNameToWebp(file.name), {
+      type: "image/webp",
+      lastModified: Date.now(),
+    });
+  } catch {
+    return file;
+  }
+}
+
+async function optimizeUploadFormData(
+  formData,
+  imageFields = ["images", "damageImages"],
+) {
+  if (!(formData instanceof FormData)) return formData;
+  const entries = Array.from(formData.entries());
+  if (!entries.length) return formData;
+
+  const imageFieldSet = new Set(imageFields);
+  const totalImageBytes = entries.reduce((sum, [key, value]) => {
+    if (
+      imageFieldSet.has(key) &&
+      value instanceof File &&
+      isOptimizableImage(value)
+    ) {
+      return sum + value.size;
+    }
+    return sum;
+  }, 0);
+
+  const processed = await Promise.all(
+    entries.map(async ([key, value]) => {
+      if (
+        imageFieldSet.has(key) &&
+        value instanceof File &&
+        shouldOptimizeImage(value, totalImageBytes)
+      ) {
+        const optimized = await toOptimizedWebpFile(value);
+        return [key, optimized];
+      }
+      return [key, value];
+    }),
+  );
+
+  const rebuilt = new FormData();
+  processed.forEach(([key, value]) => rebuilt.append(key, value));
+  return rebuilt;
+}
+
 export const api = createApi({
   reducerPath: "api",
   // Optimize caching configuration
@@ -563,12 +669,13 @@ export const api = createApi({
 
     // ✅ Create Car Endpoint
     createCar: builder.mutation({
-      query: (arg) => {
-        // Support both direct FormData or object with formData and params
-        const formData = arg instanceof FormData ? arg : arg.formData;
-        const params = arg instanceof FormData ? {} : arg.params || {};
+      queryFn: async (arg, _api, _extra, fetchWithBQ) => {
+        const formData = arg instanceof FormData ? arg : arg?.formData;
+        const params = arg instanceof FormData ? {} : arg?.params || {};
+        const optimizedFormData = await optimizeUploadFormData(formData, [
+          "images",
+        ]);
 
-        // Build query string
         const queryParams = new URLSearchParams();
         Object.entries(params).forEach(([key, value]) => {
           if (value !== undefined && value !== null) {
@@ -577,20 +684,13 @@ export const api = createApi({
         });
         const queryString = queryParams.toString();
 
-        return {
+        const result = await fetchWithBQ({
           url: `/cars${queryString ? `?${queryString}` : ""}`,
           method: "POST",
-          body: formData,
-          // Important: Don't set Content-Type header for FormData
-          // The browser will set it with the correct boundary
-          headers: {},
-          // Ensure credentials are included for authenticated requests
-          credentials: "include",
-          // Handle file upload progress if needed
-          onUploadProgress: (progressEvent) => {
-            // Upload progress tracking (silent)
-          },
-        };
+          body: optimizedFormData,
+        });
+        if (result.error) return { error: result.error };
+        return { data: result.data };
       },
       invalidatesTags: ["Cars"],
       // Add error handling
@@ -774,11 +874,18 @@ export const api = createApi({
 
     // Edit Car
     editCar: builder.mutation({
-      query: ({ carId, formData }) => ({
-        url: `/cars/${carId}`,
-        method: "PUT",
-        body: formData,
-      }),
+      queryFn: async ({ carId, formData }, _api, _extra, fetchWithBQ) => {
+        const optimizedFormData = await optimizeUploadFormData(formData, [
+          "images",
+        ]);
+        const result = await fetchWithBQ({
+          url: `/cars/${carId}`,
+          method: "PUT",
+          body: optimizedFormData,
+        });
+        if (result.error) return { error: result.error };
+        return { data: result.data };
+      },
       invalidatesTags: ["Cars", "User"],
       transformResponse: (response) => {
         return response?.data || response;
@@ -1334,7 +1441,7 @@ export const api = createApi({
       transformResponse: (response) => response?.data || response,
     }),
     submitCarToAuction: builder.mutation({
-      query: (data) => {
+      queryFn: async (data, _api, _extra, fetchWithBQ) => {
         const file = data?.inspectionReportFile;
         if (file instanceof File) {
           const form = new FormData();
@@ -1386,9 +1493,26 @@ export const api = createApi({
               if (img instanceof File) form.append("damageImages", img);
             });
           }
-          return { url: "/auctions/submit-car", method: "POST", body: form };
+          const optimizedForm = await optimizeUploadFormData(form, [
+            "images",
+            "damageImages",
+          ]);
+          const result = await fetchWithBQ({
+            url: "/auctions/submit-car",
+            method: "POST",
+            body: optimizedForm,
+          });
+          if (result.error) return { error: result.error };
+          return { data: result.data };
         }
-        return { url: "/auctions/submit-car", method: "POST", body: data };
+
+        const result = await fetchWithBQ({
+          url: "/auctions/submit-car",
+          method: "POST",
+          body: data,
+        });
+        if (result.error) return { error: result.error };
+        return { data: result.data };
       },
       invalidatesTags: ["Auction"],
     }),

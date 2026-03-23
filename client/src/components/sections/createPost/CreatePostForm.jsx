@@ -48,6 +48,7 @@ const parseRangeLikeNumber = (value) => {
 const CreatePostForm = ({ initialPrefill = null }) => {
   const navigate = useNavigate();
   const appliedPrefillKeyRef = useRef(null);
+  const submitLockRef = useRef(false);
   const [availableModels, setAvailableModels] = useState([]);
   const [availableYears, setAvailableYears] = useState([]);
   const [availableCities, setAvailableCities] = useState([]);
@@ -398,6 +399,8 @@ const CreatePostForm = ({ initialPrefill = null }) => {
   };
 
   const handleForceCreate = async () => {
+    if (submitLockRef.current || isLoading) return;
+    submitLockRef.current = true;
     try {
       const data = prepareFormData();
       // Send force=true param
@@ -470,11 +473,14 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         return;
       }
       toast.error(getErrorMessage(err));
+    } finally {
+      submitLockRef.current = false;
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitLockRef.current || isLoading) return;
 
     // Early validation - check images first (most common issue)
     if (!formData.images || formData.images.length === 0) {
@@ -523,6 +529,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       return;
     }
 
+    submitLockRef.current = true;
     const data = prepareFormData();
 
     try {
@@ -608,6 +615,8 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       }
 
       toast.error(errorMessage);
+    } finally {
+      submitLockRef.current = false;
     }
   };
 
