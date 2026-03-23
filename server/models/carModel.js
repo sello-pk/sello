@@ -315,7 +315,6 @@ carSchema.index({
   createdAt: -1,
 });
 carSchema.index({ postedBy: 1 });
-carSchema.index({ featured: 1 });
 carSchema.index({ isSold: 1, isApproved: 1 });
 carSchema.index({ status: 1, autoDeleteDate: 1, isAutoDeleted: 1 });
 carSchema.index({ vehicleType: 1, status: 1, isApproved: 1 });

@@ -29,6 +29,10 @@ export class Logger {
   }
   static request(req, res, responseTime) {
     const url = req.originalUrl || req.url || "";
+    // Keep logs readable: conditional/etag cache hits are expected and frequent.
+    if (res.statusCode === 304) return;
+    if (req.method === "OPTIONS") return;
+
     const msg = `${req.method} ${url} ${res.statusCode} ${responseTime}ms`;
     if (res.statusCode >= 500) this.error(`API Error: ${msg}`);
     else if (res.statusCode >= 400) {

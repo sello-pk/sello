@@ -398,7 +398,7 @@ export default function LiveAuction() {
                 </ul>
               )}
               <Link to="/auctions/schedule" className="inline-block mt-3 text-sm text-[#FFA602] hover:underline font-medium">
-                View schedule ->
+                View schedule -&gt;
               </Link>
             </div>
             <div>
@@ -426,7 +426,7 @@ export default function LiveAuction() {
                 </ul>
               )}
               <Link to="/auctions/schedule" className="inline-block mt-3 text-sm text-[#FFA602] hover:underline font-medium">
-                View schedule ->
+                View schedule -&gt;
               </Link>
             </div>
           </div>
@@ -665,7 +665,7 @@ export default function LiveAuction() {
               </ul>
             )}
             <Link to="/auctions/schedule" className="inline-block mt-3 text-sm text-[#FFA602] hover:underline font-medium">
-              View schedule ->
+              View schedule -&gt;
             </Link>
           </div>
           <div>
@@ -693,7 +693,7 @@ export default function LiveAuction() {
               </ul>
             )}
             <Link to="/auctions/schedule" className="inline-block mt-3 text-sm text-[#FFA602] hover:underline font-medium">
-              View schedule ->
+              View schedule -&gt;
             </Link>
           </div>
         </div>

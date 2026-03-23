@@ -103,58 +103,32 @@ categorySchema.index(
   },
 );
 
-// Unique index for years (name + subType must be unique for years)
-// Using collation for case-insensitive comparison
+// Unique index for years/countries with same key pattern.
+// Merge into one declaration to avoid duplicate-key-pattern warnings.
 categorySchema.index(
   { name: 1, subType: 1, type: 1 },
   {
     unique: true,
-    collation: { locale: "en", strength: 2 }, // Case-insensitive comparison
+    collation: { locale: "en", strength: 2 },
     partialFilterExpression: {
-      type: "car",
-      subType: "year",
+      $or: [
+        { type: "car", subType: "year" },
+        { type: "location", subType: "country" },
+      ],
     },
   },
 );
 
-// Unique index for countries (name + subType must be unique for countries)
-// Using collation for case-insensitive comparison
-categorySchema.index(
-  { name: 1, subType: 1, type: 1 },
-  {
-    unique: true,
-    collation: { locale: "en", strength: 2 }, // Case-insensitive comparison
-    partialFilterExpression: {
-      type: "location",
-      subType: "country",
-    },
-  },
-);
-
-// Unique index for states (name + parentCategory + subType must be unique for states)
-// Using collation for case-insensitive comparison
+// Unique index for states/cities with same key pattern.
+// Merge into one declaration to avoid duplicate-key-pattern warnings.
 categorySchema.index(
   { name: 1, parentCategory: 1, subType: 1, type: 1 },
   {
     unique: true,
-    collation: { locale: "en", strength: 2 }, // Case-insensitive comparison
+    collation: { locale: "en", strength: 2 },
     partialFilterExpression: {
       type: "location",
-      subType: "state",
-    },
-  },
-);
-
-// Unique index for cities (name + parentCategory + subType must be unique for cities)
-// Using collation for case-insensitive comparison
-categorySchema.index(
-  { name: 1, parentCategory: 1, subType: 1, type: 1 },
-  {
-    unique: true,
-    collation: { locale: "en", strength: 2 }, // Case-insensitive comparison
-    partialFilterExpression: {
-      type: "location",
-      subType: "city",
+      subType: { $in: ["state", "city"] },
     },
   },
 );

@@ -147,6 +147,18 @@ const startServer = () => {
     // Handle connection errors without force-closing long-lived socket.io transports.
     server.on("connection", (socket) => {
       socket.on("error", (error) => {
+        if (
+          error?.code === "ECONNRESET" ||
+          error?.code === "EPIPE" ||
+          error?.code === "ECONNABORTED"
+        ) {
+          Logger.warn("Socket connection reset by client", {
+            code: error.code,
+            remoteAddress: socket.remoteAddress,
+            remotePort: socket.remotePort,
+          });
+          return;
+        }
         Logger.error("Socket error", error, {
           remoteAddress: socket.remoteAddress,
           remotePort: socket.remotePort,
