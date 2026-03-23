@@ -87,14 +87,8 @@ export const initializeSocket = (server) => {
     // Additional stability settings
     connectTimeout: 45000, // 45 seconds
     serveClient: false,
-    // Handle connection retries gracefully
-    forceNew: true,
     // Better error handling
     rememberUpgrade: false,
-    // Reduce reconnection attempts to prevent spam
-    reconnectionAttempts: 5,
-    reconnectionDelay: 1000,
-    reconnectionDelayMax: 5000,
   });
 
   // Global error handler for socket.io

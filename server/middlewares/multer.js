@@ -37,7 +37,7 @@ const fileFilter = (req, file, cb) => {
 };
 
 export const upload = multer({
-  storage: multer.memoryStorage(),
+  storage,
   fileFilter: fileFilter,
   limits: {
     fileSize: LISTING_MAX_FILE_BYTES, // 35MB per file (total per listing enforced in controller)
@@ -48,10 +48,28 @@ export const upload = multer({
 
 // Single file upload for avatars
 export const uploadSingle = multer({
-  storage: multer.memoryStorage(),
+  storage,
   fileFilter: fileFilter,
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB for avatars
     files: 1,
+  },
+});
+
+// Auction submit-car can include:
+// - images: max LISTING_MAX_IMAGES (15)
+// - inspectionReport: 1 PDF
+// - damageImages: 5
+// - documents: 5
+// Total max files = 15 + 1 + 5 + 5 = 26
+export const MAX_AUCTION_SUBMIT_FILES = 26;
+
+export const auctionSubmitCarUpload = multer({
+  storage,
+  fileFilter,
+  limits: {
+    fileSize: LISTING_MAX_FILE_BYTES,
+    files: MAX_AUCTION_SUBMIT_FILES,
+    fieldSize: 20 * 1024 * 1024,
   },
 });

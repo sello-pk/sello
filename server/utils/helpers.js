@@ -15,19 +15,27 @@ const __dirname = path.dirname(__filename);
 /* -------------------------------------------------------------------------- */
 
 export class Logger {
-  static info(msg, meta = {}) { console.log(`[INFO] ${msg}`, meta); }
-  static warn(msg, meta = {}) { console.warn(`[WARN] ${msg}`, meta); }
-  static error(msg, err = null, meta = {}) { console.error(`[ERROR] ${msg}`, err, meta); }
-  static analytics(event, userId, meta = {}) { console.log(`[ANALYTICS] ${event}`, { userId, ...meta }); }
+  static info(msg, meta = {}) {
+    console.log(`[INFO] ${msg}`, meta);
+  }
+  static warn(msg, meta = {}) {
+    console.warn(`[WARN] ${msg}`, meta);
+  }
+  static error(msg, err = null, meta = {}) {
+    console.error(`[ERROR] ${msg}`, err, meta);
+  }
+  static analytics(event, userId, meta = {}) {
+    console.log(`[ANALYTICS] ${event}`, { userId, ...meta });
+  }
   static request(req, res, responseTime) {
     const url = req.originalUrl || req.url || "";
     const msg = `${req.method} ${url} ${res.statusCode} ${responseTime}ms`;
     if (res.statusCode >= 500) this.error(`API Error: ${msg}`);
     else if (res.statusCode >= 400) {
       // 401 on refresh-token or blog comments is expected when not logged in – log as info to reduce noise
-      const expected401 = res.statusCode === 401 && (
-        url.includes("/auth/refresh-token") || url.includes("/comments")
-      );
+      const expected401 =
+        res.statusCode === 401 &&
+        (url.includes("/auth/refresh-token") || url.includes("/comments"));
       if (expected401) this.info(`API Request: ${msg}`);
       else this.warn(`API Warning: ${msg}`);
     } else this.info(`API Request: ${msg}`);
@@ -39,7 +47,13 @@ export class Logger {
   }
 }
 
-export const createAuditLog = async (actor, action, details = {}, target = null, req = null) => {
+export const createAuditLog = async (
+  actor,
+  action,
+  details = {},
+  target = null,
+  req = null,
+) => {
   try {
     await AuditLog.create({
       actor: actor._id || actor,
@@ -49,9 +63,11 @@ export const createAuditLog = async (actor, action, details = {}, target = null,
       target: target?._id || target,
       ipAddress: req?.ip,
       userAgent: req?.headers?.["user-agent"],
-      timestamp: new Date()
+      timestamp: new Date(),
     });
-  } catch (e) { console.error("Audit log failed", e.message); }
+  } catch (e) {
+    console.error("Audit log failed", e.message);
+  }
 };
 
 export const getAuditLogs = async (query = {}, options = {}) => {
@@ -69,19 +85,31 @@ export const getAuditLogs = async (query = {}, options = {}) => {
 /* -------------------------------------------------------------------------- */
 
 export const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
-export const safeParseInt = (v, d = 0) => isNaN(parseInt(v)) ? d : parseInt(v);
-export const safeParseFloat = (v, d = 0) => isNaN(parseFloat(v)) ? d : parseFloat(v);
-export const safeParseJSON = (s, d = null) => { try { return JSON.parse(s); } catch { return d; } };
+export const safeParseInt = (v, d = 0) =>
+  isNaN(parseInt(v)) ? d : parseInt(v);
+export const safeParseFloat = (v, d = 0) =>
+  isNaN(parseFloat(v)) ? d : parseFloat(v);
+export const safeParseJSON = (s, d = null) => {
+  try {
+    return JSON.parse(s);
+  } catch {
+    return d;
+  }
+};
 export const isValidEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 
 export const parseArray = (val) => {
   if (!val) return [];
-  if (Array.isArray(val)) return val.map(v => String(v).trim()).filter(Boolean);
+  if (Array.isArray(val))
+    return val.map((v) => String(v).trim()).filter(Boolean);
   try {
     const p = JSON.parse(val);
-    if (Array.isArray(p)) return p.map(v => String(v).trim()).filter(Boolean);
+    if (Array.isArray(p)) return p.map((v) => String(v).trim()).filter(Boolean);
   } catch {}
-  return String(val).split(",").map(v => v.trim()).filter(Boolean);
+  return String(val)
+    .split(",")
+    .map((v) => v.trim())
+    .filter(Boolean);
 };
 
 /* -------------------------------------------------------------------------- */
@@ -91,17 +119,17 @@ export const parseArray = (val) => {
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-/** Max concurrent uploads to Cloudinary — parallel bursts cause 502/timeouts */
+/** Max concurrent uploads to Cloudinary — balanced for speed + reliability */
 const LISTING_UPLOAD_CONCURRENCY = Math.max(
   1,
-  parseInt(process.env.CLOUDINARY_UPLOAD_CONCURRENCY, 10) || 3
+  parseInt(process.env.CLOUDINARY_UPLOAD_CONCURRENCY, 10) || 2,
 );
 const LISTING_UPLOAD_RETRIES = Math.max(
   1,
-  parseInt(process.env.CLOUDINARY_UPLOAD_RETRIES, 10) || 3
+  parseInt(process.env.CLOUDINARY_UPLOAD_RETRIES, 10) || 2,
 );
 
 function isTransientCloudinaryError(err) {
@@ -110,7 +138,11 @@ function isTransientCloudinaryError(err) {
   const msg = (err?.message || "").toLowerCase();
   if (code === 502 || code === 503 || code === 499) return true;
   if (name === "TimeoutError") return true;
-  if (msg.includes("502") || msg.includes("timeout") || msg.includes("unexpected status"))
+  if (
+    msg.includes("502") ||
+    msg.includes("timeout") ||
+    msg.includes("unexpected status")
+  )
     return true;
   return false;
 }
@@ -125,6 +157,14 @@ export const uploadCloudinary = (fileBuffer, options = {}) => {
       reject(new Error("Invalid file buffer for upload"));
       return;
     }
+
+    // Add timeout to prevent hanging
+    const timeoutMs = options.timeout || 60000; // 60 seconds timeout
+    const timeout = setTimeout(() => {
+      reject(new Error("Upload timeout"));
+      stream.destroy();
+    }, timeoutMs);
+
     const uploadOptions = {
       folder: options.folder || "sello_uploads",
       resource_type: "image",
@@ -132,18 +172,23 @@ export const uploadCloudinary = (fileBuffer, options = {}) => {
       quality: options.quality ?? "auto:eco",
       fetch_format: "auto",
       transformation: options.transformation || [
-        { width: 1600, height: 1600, crop: "limit" },
+        { width: 1200, height: 1200, crop: "limit" }, // Reduced size for faster upload
       ],
     };
     const stream = cloudinary.uploader.upload_stream(
       uploadOptions,
       (err, res) => {
+        clearTimeout(timeout);
         if (err) reject(err);
-        else if (!res?.secure_url) reject(new Error("Cloudinary returned no URL"));
+        else if (!res?.secure_url)
+          reject(new Error("Cloudinary returned no URL"));
         else resolve(res.secure_url);
-      }
+      },
     );
-    stream.on("error", reject);
+    stream.on("error", (err) => {
+      clearTimeout(timeout);
+      reject(err);
+    });
     stream.end(fileBuffer);
   });
 };
@@ -157,16 +202,29 @@ export const uploadRawToCloudinary = (fileBuffer, options = {}) => {
       reject(new Error("Invalid file buffer for raw upload"));
       return;
     }
+
+    // Add timeout to prevent hanging
+    const timeoutMs = options.timeout || 90000; // 90 seconds timeout for PDFs/docs
+    const timeout = setTimeout(() => {
+      reject(new Error("Upload timeout"));
+      stream.destroy();
+    }, timeoutMs);
+
     const folder = options.folder || "sello_uploads";
     const stream = cloudinary.uploader.upload_stream(
       { folder, resource_type: "raw" },
       (err, res) => {
+        clearTimeout(timeout);
         if (err) reject(err);
-        else if (!res?.secure_url) reject(new Error("Cloudinary returned no URL"));
+        else if (!res?.secure_url)
+          reject(new Error("Cloudinary returned no URL"));
         else resolve(res.secure_url);
       },
     );
-    stream.on("error", reject);
+    stream.on("error", (err) => {
+      clearTimeout(timeout);
+      reject(err);
+    });
     stream.end(fileBuffer);
   });
 };
@@ -181,11 +239,43 @@ async function uploadCloudinaryWithRetry(fileBuffer, options = {}) {
       return await uploadCloudinary(fileBuffer, options);
     } catch (err) {
       lastErr = err;
-      if (!isTransientCloudinaryError(err) || attempt === LISTING_UPLOAD_RETRIES) {
+      if (
+        !isTransientCloudinaryError(err) ||
+        attempt === LISTING_UPLOAD_RETRIES
+      ) {
         throw err;
       }
       const delayMs = 800 * attempt;
       Logger.warn("Cloudinary upload retry", {
+        attempt,
+        delayMs,
+        http_code: err?.http_code,
+        name: err?.name,
+      });
+      await new Promise((r) => setTimeout(r, delayMs));
+    }
+  }
+  throw lastErr;
+}
+
+/**
+ * Upload one raw buffer (PDF/docs) with retries for transient Cloudinary failures.
+ */
+export async function uploadRawToCloudinaryWithRetry(fileBuffer, options = {}) {
+  let lastErr;
+  for (let attempt = 1; attempt <= LISTING_UPLOAD_RETRIES; attempt++) {
+    try {
+      return await uploadRawToCloudinary(fileBuffer, options);
+    } catch (err) {
+      lastErr = err;
+      if (
+        !isTransientCloudinaryError(err) ||
+        attempt === LISTING_UPLOAD_RETRIES
+      ) {
+        throw err;
+      }
+      const delayMs = 1000 * attempt;
+      Logger.warn("Cloudinary raw upload retry", {
         attempt,
         delayMs,
         http_code: err?.http_code,
@@ -211,9 +301,7 @@ export async function uploadListingImagesToCloudinary(files, options = {}) {
   for (let i = 0; i < buffers.length; i += LISTING_UPLOAD_CONCURRENCY) {
     const chunk = buffers.slice(i, i + LISTING_UPLOAD_CONCURRENCY);
     const chunkUrls = await Promise.all(
-      chunk.map((buffer) =>
-        uploadCloudinaryWithRetry(buffer, { folder })
-      )
+      chunk.map((buffer) => uploadCloudinaryWithRetry(buffer, { folder })),
     );
     urls.push(...chunkUrls);
   }
@@ -225,15 +313,21 @@ export async function uploadListingImagesToCloudinary(files, options = {}) {
 /* -------------------------------------------------------------------------- */
 
 export const sendEmail = async (to, subject, html) => {
-  if (process.env.ENABLE_EMAIL_NOTIFICATIONS === "false") return { actuallySent: false };
+  if (process.env.ENABLE_EMAIL_NOTIFICATIONS === "false")
+    return { actuallySent: false };
   const transporter = nodemailer.createTransport({
     host: EMAIL_CONFIG.HOST,
     port: EMAIL_CONFIG.PORT,
     secure: EMAIL_CONFIG.PORT === 465,
-    auth: { user: EMAIL_CONFIG.MAIL, pass: EMAIL_CONFIG.PASSWORD }
+    auth: { user: EMAIL_CONFIG.MAIL, pass: EMAIL_CONFIG.PASSWORD },
   });
   try {
-    const info = await transporter.sendMail({ from: EMAIL_CONFIG.MAIL, to, subject, html });
+    const info = await transporter.sendMail({
+      from: EMAIL_CONFIG.MAIL,
+      to,
+      subject,
+      html,
+    });
     return { actuallySent: true, messageId: info.messageId };
   } catch (e) {
     Logger.error("Email failed", e);
@@ -245,7 +339,8 @@ export const sendEmail = async (to, subject, html) => {
 /*                                PHONE UTILITY                               */
 /* -------------------------------------------------------------------------- */
 
-export const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
+export const generateOtp = () =>
+  Math.floor(100000 + Math.random() * 900000).toString();
 
 export const sendVerificationCode = async (phone, code) => {
   Logger.info(`OTP for ${phone}: ${code}`);
@@ -324,4 +419,16 @@ export const buildCarQuery = (query) => {
   return { filter };
 };
 
-export default { Logger, createAuditLog, getAuditLogs, isValidObjectId, safeParseInt, parseArray, uploadCloudinary, sendEmail, generateOtp, trackEvent, buildCarQuery };
+export default {
+  Logger,
+  createAuditLog,
+  getAuditLogs,
+  isValidObjectId,
+  safeParseInt,
+  parseArray,
+  uploadCloudinary,
+  sendEmail,
+  generateOtp,
+  trackEvent,
+  buildCarQuery,
+};

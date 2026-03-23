@@ -26,7 +26,6 @@ export const SocketProvider = ({ children }) => {
   const [connectionAttempted, setConnectionAttempted] = useState(false);
   const socketRef = useRef(null);
   const listenersRef = useRef(new Map());
-  const reconnectTimeoutRef = useRef(null);
   const connectErrorLoggedRef = useRef(false);
 
   // Get token from localStorage with proper error handling
@@ -51,24 +50,18 @@ export const SocketProvider = ({ children }) => {
       socketRef.current.close();
     }
 
-    // Clear any existing reconnect timeout
-    if (reconnectTimeoutRef.current) {
-      clearTimeout(reconnectTimeoutRef.current);
-    }
-
     setConnectionAttempted(true);
 
     try {
-      // Use polling only to avoid "WebSocket connection failed" when WSS is unavailable (e.g. proxy/SSL).
-      // Real-time (chats, notifications) still works; server supports polling.
+      // Prefer websocket, fallback to polling.
       const newSocket = io(SOCKET_BASE_URL, {
         auth: { token: currentToken },
-        transports: ["polling"],
+        transports: ["websocket", "polling"],
         reconnection: true,
         reconnectionDelay: 2000,
         reconnectionAttempts: 5,
         timeout: 15000,
-        forceNew: true,
+        withCredentials: true,
       });
 
       newSocket.on("connect", () => {
@@ -131,11 +124,6 @@ export const SocketProvider = ({ children }) => {
           sessionStorage.setItem(errorKey, "true");
         }
 
-        // Attempt to reconnect after a delay for network issues
-        reconnectTimeoutRef.current = setTimeout(() => {
-          console.log("🔄 Attempting to reconnect socket...");
-          newSocket.connect();
-        }, 3000);
       });
 
       // Handle reconnection events
@@ -193,9 +181,6 @@ export const SocketProvider = ({ children }) => {
 
     return () => {
       clearTimeout(connectionDelay);
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
       if (socketRef.current) {
         socketRef.current.removeAllListeners();
         socketRef.current.close();

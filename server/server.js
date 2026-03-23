@@ -144,18 +144,8 @@ const startServer = () => {
     server.keepAliveTimeout = 65000; // 65 seconds
     server.headersTimeout = 66000; // 66 seconds
 
-    // Handle connection issues proactively
+    // Handle connection errors without force-closing long-lived socket.io transports.
     server.on("connection", (socket) => {
-      socket.setTimeout(90000); // 90 seconds
-
-      socket.on("timeout", () => {
-        Logger.warn("Socket timeout detected", {
-          remoteAddress: socket.remoteAddress,
-          remotePort: socket.remotePort,
-        });
-        socket.destroy();
-      });
-
       socket.on("error", (error) => {
         Logger.error("Socket error", error, {
           remoteAddress: socket.remoteAddress,

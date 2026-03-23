@@ -24,7 +24,7 @@ import { useSocket } from "@contexts/SocketContext";
 import { useCarCategories } from "@hooks/useCarCategories";
 import SearchableSelect from "@components/common/SearchableSelect";
 
-// ── Shared tiny components ─────────────────────────────────────────────────
+// Shared tiny components
 
 const Badge = ({ children, variant = "default", className = "", ...props }) => {
   const variants = {
@@ -118,9 +118,23 @@ const CountdownTimer = ({ targetDate }) => {
   );
 };
 
-const CarCard = ({ auctionCar, compact = false }) => {
+const CarCard = ({ auctionCar, compact = false, auctionLocation, auctionEndTime }) => {
   const car = auctionCar.car || {};
   const img = Array.isArray(car.images) ? car.images[0] : car.images;
+  const bidValue = auctionCar.currentBid || auctionCar.startingBid || car.price || 0;
+  const city = car.city || car.registrationCity || "Unknown";
+  const mileage = Number(car.mileage || 0).toLocaleString();
+
+  const getTimeLeft = () => {
+    if (!auctionEndTime) return { h: "00", m: "00", s: "00" };
+    const diff = Math.max(0, new Date(auctionEndTime).getTime() - Date.now());
+    return {
+      h: String(Math.floor(diff / 3600000)).padStart(2, "0"),
+      m: String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0"),
+      s: String(Math.floor((diff % 60000) / 1000)).padStart(2, "0"),
+    };
+  };
+  const t = getTimeLeft();
 
   if (compact) {
     return (
@@ -143,7 +157,7 @@ const CarCard = ({ auctionCar, compact = false }) => {
                     {car.make} {car.model}
                   </h3>
                   <p className="text-slate-500 text-sm">
-                    {car.year} • {car.mileage?.toLocaleString()} km
+                    {car.year} • {mileage} km
                   </p>
                 </div>
                 <Badge variant="success">Live</Badge>
@@ -152,10 +166,7 @@ const CarCard = ({ auctionCar, compact = false }) => {
                 <div>
                   <span className="text-sm text-slate-500">Current Bid</span>
                   <p className="font-bold text-[#FFA602] text-xl">
-                    PKR{" "}
-                    {(
-                      auctionCar.currentBid || auctionCar.startingBid
-                    )?.toLocaleString()}
+                    PKR {Number(bidValue).toLocaleString()}
                   </p>
                 </div>
                 <span className="text-xs text-slate-500">
@@ -171,49 +182,70 @@ const CarCard = ({ auctionCar, compact = false }) => {
 
   return (
     <Link to={`/auctions/car-detail?id=${auctionCar._id}`} className="block">
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all border border-slate-200">
-        <div className="h-48 bg-slate-200 relative">
-          {img && (
+      <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all border border-slate-200">
+        <div className="h-64 bg-slate-200 relative">
+          {img ? (
             <img
               src={img}
               alt={`${car.make} ${car.model}`}
               className="w-full h-full object-cover"
             />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-slate-500 text-sm">
+              No image available
+            </div>
           )}
-          <Badge className="absolute top-2 right-2 bg-[#FFA602] text-white border-0">
-            Live
+          <Badge className="absolute top-3 left-3 bg-red-500/90 text-white border-0">
+            LIVE
           </Badge>
+          <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 text-slate-700 flex items-center justify-center">
+            <Gavel className="w-4 h-4" />
+          </div>
+          <div className="absolute bottom-3 left-3 bg-black/70 text-white text-xs px-2 py-1 rounded-lg flex items-center gap-1">
+            <MapPin className="w-3.5 h-3.5" />
+            {auctionLocation || "Auction Yard"}
+          </div>
         </div>
         <div className="p-4">
-          <div className="flex justify-between items-start mb-2">
-            <div>
-              <h3 className="font-semibold text-lg">
-                {car.make} {car.model}
-              </h3>
-              <p className="text-slate-500 text-sm">
-                {car.year} • {car.mileage?.toLocaleString()} km
+          <h3 className="font-semibold text-2xl text-slate-900 leading-tight line-clamp-1">
+            {car.year} {car.make} {car.model}
+          </h3>
+          <div className="flex items-center gap-4 mt-2 text-slate-500 text-sm">
+            <span>{mileage} km</span>
+            <span>{city}</span>
+          </div>
+
+          <div className="mt-4 rounded-xl bg-slate-50 p-3">
+            <p className="text-xs uppercase tracking-wide text-slate-500">Current Bid</p>
+            <div className="flex items-center justify-between mt-1">
+              <p className="text-3xl font-bold text-slate-900">
+                PKR {Number(bidValue).toLocaleString()}
               </p>
+              <Gavel className="w-6 h-6 text-[#FFA602]" />
             </div>
           </div>
-          <div className="flex justify-between items-center">
-            <div>
-              <span className="text-xs text-slate-500">Current Bid</span>
-              <p className="font-bold text-[#FFA602]">
-                PKR{" "}
-                {(
-                  auctionCar.currentBid || auctionCar.startingBid
-                )?.toLocaleString()}
-              </p>
+
+          <div className="mt-4">
+            <p className="text-sm text-slate-500 mb-2">Ends in:</p>
+            <div className="flex items-center gap-2">
+              {[t.h, t.m, t.s].map((part, idx) => (
+                <React.Fragment key={`${auctionCar._id}-time-${idx}`}>
+                  <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center text-sm font-bold">
+                    {part}
+                  </div>
+                  {idx < 2 && <span className="text-slate-500">:</span>}
+                </React.Fragment>
+              ))}
             </div>
-            <Button size="sm">Place Bid</Button>
           </div>
+
+          <Button className="w-full mt-4">Place Bid</Button>
         </div>
       </div>
     </Link>
   );
 };
-
-// ── Main ────────────────────────────────────────────────────────────────────
+// Main
 
 const defaultFilters = {
   make: "all",
@@ -358,7 +390,7 @@ export default function LiveAuction() {
                       >
                         <p className="font-semibold text-slate-900">{a.title}</p>
                         <p className="text-sm text-slate-500 mt-1">
-                          Starts: {a.startTime ? new Date(a.startTime).toLocaleString() : "—"}
+                          Starts: {a.startTime ? new Date(a.startTime).toLocaleString() : "-"}
                         </p>
                       </Link>
                     </li>
@@ -366,7 +398,7 @@ export default function LiveAuction() {
                 </ul>
               )}
               <Link to="/auctions/schedule" className="inline-block mt-3 text-sm text-[#FFA602] hover:underline font-medium">
-                View schedule →
+                View schedule ->
               </Link>
             </div>
             <div>
@@ -386,7 +418,7 @@ export default function LiveAuction() {
                       >
                         <p className="font-semibold text-slate-900">{a.title}</p>
                         <p className="text-sm text-slate-500 mt-1">
-                          Ended: {a.endTime ? new Date(a.endTime).toLocaleString() : "—"}
+                          Ended: {a.endTime ? new Date(a.endTime).toLocaleString() : "-"}
                         </p>
                       </Link>
                     </li>
@@ -394,7 +426,7 @@ export default function LiveAuction() {
                 </ul>
               )}
               <Link to="/auctions/schedule" className="inline-block mt-3 text-sm text-[#FFA602] hover:underline font-medium">
-                View schedule →
+                View schedule ->
               </Link>
             </div>
           </div>
@@ -578,7 +610,12 @@ export default function LiveAuction() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
               >
-                <CarCard auctionCar={ac} compact={viewMode === "list"} />
+                <CarCard
+                  auctionCar={ac}
+                  compact={viewMode === "list"}
+                  auctionLocation={liveAuction?.location}
+                  auctionEndTime={liveAuction?.endTime}
+                />
               </motion.div>
             ))}
           </motion.div>
@@ -601,7 +638,7 @@ export default function LiveAuction() {
           </div>
         )}
 
-        {/* Upcoming & Ended — same layout as when no live auction */}
+        {/* Upcoming & Ended: same layout as when no live auction */}
         <div className="grid md:grid-cols-2 gap-8 mt-12 pt-12 border-t border-slate-200">
           <div>
             <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
@@ -620,7 +657,7 @@ export default function LiveAuction() {
                     >
                       <p className="font-semibold text-slate-900">{a.title}</p>
                       <p className="text-sm text-slate-500 mt-1">
-                        Starts: {a.startTime ? new Date(a.startTime).toLocaleString() : "—"}
+                        Starts: {a.startTime ? new Date(a.startTime).toLocaleString() : "-"}
                       </p>
                     </Link>
                   </li>
@@ -628,7 +665,7 @@ export default function LiveAuction() {
               </ul>
             )}
             <Link to="/auctions/schedule" className="inline-block mt-3 text-sm text-[#FFA602] hover:underline font-medium">
-              View schedule →
+              View schedule ->
             </Link>
           </div>
           <div>
@@ -648,7 +685,7 @@ export default function LiveAuction() {
                     >
                       <p className="font-semibold text-slate-900">{a.title}</p>
                       <p className="text-sm text-slate-500 mt-1">
-                        Ended: {a.endTime ? new Date(a.endTime).toLocaleString() : "—"}
+                        Ended: {a.endTime ? new Date(a.endTime).toLocaleString() : "-"}
                       </p>
                     </Link>
                   </li>
@@ -656,7 +693,7 @@ export default function LiveAuction() {
               </ul>
             )}
             <Link to="/auctions/schedule" className="inline-block mt-3 text-sm text-[#FFA602] hover:underline font-medium">
-              View schedule →
+              View schedule ->
             </Link>
           </div>
         </div>
@@ -664,3 +701,5 @@ export default function LiveAuction() {
     </div>
   );
 }
+
+

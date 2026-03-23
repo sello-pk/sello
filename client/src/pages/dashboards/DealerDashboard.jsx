@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { buildCarUrl } from "../../utils/urlBuilders";
 import {
@@ -71,7 +77,8 @@ const DealerDashboard = () => {
     inspection_report: {},
   });
   const photoInputRef = useRef(null);
-  const [submitCarToAuction, { isLoading: isSubmittingAuctionCar }] = useSubmitCarToAuctionMutation();
+  const [submitCarToAuction, { isLoading: isSubmittingAuctionCar }] =
+    useSubmitCarToAuctionMutation();
   const { data: tokenData } = useGetMyTokenPaymentsQuery();
 
   const closeAuctionModal = useCallback(() => {
@@ -104,7 +111,17 @@ const DealerDashboard = () => {
   }, []);
   const { data: wonAuctions = [] } = useGetMyWonAuctionsQuery();
   const { data: watchlistItems = [] } = useGetMyAuctionWatchlistQuery();
-  const { data: upcomingAuctions = [] } = useGetAuctionsQuery({ status: "scheduled", limit: 5 });
+  const { data: upcomingAuctions = [], refetch: refetchAuctions } =
+    useGetAuctionsQuery(
+      {
+        page: 1,
+        limit: 100,
+      },
+      {
+        pollingInterval: 30000,
+        refetchOnMountOrArgChange: true,
+      },
+    );
   const { data: liveAuction } = useGetLiveAuctionQuery();
   const { data: auctionAnalytics } = useGetMyAuctionAnalyticsQuery();
 
@@ -112,7 +129,10 @@ const DealerDashboard = () => {
     totalAuctions: wonAuctions.length,
     activeAuctions: liveAuction ? 1 : 0,
     soldAuctions: wonAuctions.length,
-    totalAuctionSales: wonAuctions.reduce((sum, w) => sum + (w.finalPrice || 0), 0),
+    totalAuctionSales: wonAuctions.reduce(
+      (sum, w) => sum + (w.finalPrice || 0),
+      0,
+    ),
     tokenBalance: tokenData?.tokenBalance || 0,
     hasVerifiedToken: tokenData?.hasVerifiedToken || false,
     watchlistCount: watchlistItems.length,
@@ -151,13 +171,29 @@ const DealerDashboard = () => {
   const cars = carsData?.cars || [];
   const chats = chatsData || [];
   const auctionOptions = useMemo(() => {
-    const raw = [...(liveAuction ? [liveAuction] : []), ...(upcomingAuctions || [])].filter(Boolean);
+    const list = Array.isArray(upcomingAuctions) ? upcomingAuctions : [];
+    const raw = [...(liveAuction ? [liveAuction] : []), ...list]
+      .filter(Boolean)
+      .filter((a) => ["scheduled", "draft", "live"].includes(a?.status));
     const byId = new Map();
     raw.forEach((a) => {
       if (a?._id && !byId.has(a._id)) byId.set(a._id, a);
     });
     return Array.from(byId.values());
-  }, [liveAuction, upcomingAuctions]);
+  }, [upcomingAuctions, liveAuction]);
+
+  useEffect(() => {
+    if (!newCar.auctionId) return;
+    const exists = auctionOptions.some((a) => a?._id === newCar.auctionId);
+    if (!exists) {
+      setNewCar((prev) => ({ ...prev, auctionId: "" }));
+    }
+  }, [auctionOptions, newCar.auctionId]);
+
+  useEffect(() => {
+    if (!showAddCar) return;
+    refetchAuctions();
+  }, [showAddCar, refetchAuctions]);
 
   // Calculate statistics - handle undefined/null safely
   const activeListingsCount = Array.isArray(cars)
@@ -184,7 +220,6 @@ const DealerDashboard = () => {
     listingLimit === -1
       ? "Unlimited"
       : Math.max(0, listingLimit - activeListingsCount);
-
 
   const stats = {
     totalAds: cars.length,
@@ -220,22 +255,92 @@ const DealerDashboard = () => {
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
   const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png"];
 
-  const processPhotoFiles = (files) => {
-    const list = Array.from(files).filter((f) => ALLOWED_TYPES.includes(f.type));
+  // Compress image before upload
+  const compressImage = (file) => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const img = new Image();
+
+      img.onload = () => {
+        // Calculate new dimensions (max 1200px)
+        const MAX_WIDTH = 1200;
+        const MAX_HEIGHT = 1200;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // Draw and compress
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            resolve(
+              new File([blob], file.name, {
+                type: "image/jpeg",
+                lastModified: Date.now(),
+              }),
+            );
+          },
+          "image/jpeg",
+          0.8, // 80% quality
+        );
+      };
+
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  const processPhotoFiles = async (files) => {
+    const list = Array.from(files).filter((f) =>
+      ALLOWED_TYPES.includes(f.type),
+    );
     const valid = [];
+
     for (const file of list) {
       if (file.size > MAX_FILE_SIZE) {
         toast.error(`${file.name} is over 10MB. Max 10MB per image.`);
         continue;
       }
-      valid.push({ file, preview: URL.createObjectURL(file) });
+
+      try {
+        // Compress image
+        const compressedFile = await compressImage(file);
+        valid.push({
+          file: compressedFile,
+          preview: URL.createObjectURL(compressedFile),
+        });
+      } catch (error) {
+        console.error("Image compression failed:", error);
+        // Use original if compression fails
+        valid.push({ file, preview: URL.createObjectURL(file) });
+      }
     }
+
     const current = newCar.images || [];
     if (current.length + valid.length > MAX_PHOTOS) {
       toast.error(`Maximum ${MAX_PHOTOS} photos. Remove some first.`);
       valid.splice(MAX_PHOTOS - current.length);
     }
-    if (valid.length) setNewCar((prev) => ({ ...prev, images: [...(prev.images || []), ...valid] }));
+    if (valid.length)
+      setNewCar((prev) => ({
+        ...prev,
+        images: [...(prev.images || []), ...valid],
+      }));
   };
 
   const handlePhotoSelect = (e) => {
@@ -265,25 +370,113 @@ const DealerDashboard = () => {
   };
 
   const handleSubmitAuctionCar = async () => {
-    if (!newCar.auctionId || !newCar.carId || !newCar.starting_bid) {
-      toast.error("Select auction, car and starting bid");
+    // Validate that either an existing car is selected OR new car details are provided
+    const hasNewCarDetails = newCar.make && newCar.model && newCar.year;
+    const hasExistingCar = newCar.carId;
+
+    if (!newCar.auctionId || !newCar.starting_bid) {
+      toast.error("Select auction and starting bid");
       return;
     }
-    if (!newCar.inspectionReportFile || !(newCar.inspectionReportFile instanceof File)) {
-      toast.error("Inspection report (PDF) is required. Please upload the vehicle inspection report.");
+
+    if (!hasExistingCar && !hasNewCarDetails) {
+      toast.error(
+        "Please either select an existing listing or provide vehicle details in previous steps",
+      );
       return;
     }
+    if (
+      !newCar.inspectionReportFile ||
+      !(newCar.inspectionReportFile instanceof File)
+    ) {
+      toast.error(
+        "Inspection report (PDF) is required. Please upload the vehicle inspection report.",
+      );
+      return;
+    }
+
+    // Show progress toast
+    const progressToast = toast.loading("Uploading images and documents...", {
+      duration: 0,
+    });
 
     try {
-      await submitCarToAuction({
+      const submissionData = {
         auctionId: newCar.auctionId,
-        carId: newCar.carId,
         startingBid: Number(newCar.starting_bid),
-        reservePrice: newCar.reserve_price ? Number(newCar.reserve_price) : undefined,
-        buyNowPrice: newCar.buy_now_price ? Number(newCar.buy_now_price) : undefined,
+        reservePrice: newCar.reserve_price
+          ? Number(newCar.reserve_price)
+          : undefined,
+        buyNowPrice: newCar.buy_now_price
+          ? Number(newCar.buy_now_price)
+          : undefined,
         inspectionReportFile: newCar.inspectionReportFile,
-      }).unwrap();
+      };
 
+      // Include carId only if selecting an existing car
+      if (hasExistingCar) {
+        submissionData.carId = newCar.carId;
+      } else {
+        // Include new car details if creating a new listing
+        const carDetails = newCar.newCarDetails || {
+          make: newCar.make,
+          model: newCar.model,
+          year: newCar.year,
+          mileage: newCar.mileage,
+          condition: newCar.condition,
+          engine_type: newCar.engine_type,
+          transmission: newCar.transmission,
+          color: newCar.color,
+          registration_city: newCar.registration_city,
+          images: newCar.images || [],
+        };
+
+        // Add required fields that might be missing
+        Object.assign(submissionData, {
+          ...carDetails,
+          title: `${newCar.year} ${newCar.make} ${newCar.model}`,
+          description: `Vehicle submitted for auction: ${newCar.year} ${newCar.make} ${newCar.model}`,
+          price: Number(newCar.starting_bid),
+          vehicleType: "Car",
+          vehicleTypeCategory: undefined, // Remove this field entirely since it's optional
+          city: carDetails.registration_city || "Not specified",
+          country: "Pakistan",
+          features: [],
+          fuelType:
+            newCar.engine_type === "petrol"
+              ? "Petrol"
+              : newCar.engine_type === "diesel"
+                ? "Diesel"
+                : "Petrol",
+          colorExterior: carDetails.color || "Not specified",
+          condition: "Used", // Always use "Used" as it's the only valid enum for auction cars
+          transmission:
+            newCar.transmission === "automatic" ? "Automatic" : "Manual",
+          contactNumber: user?.phone || "+923000000000", // Get from user or provide default
+          warranty: "Doesn't Apply",
+          ownerType: "Dealer",
+          geoLocation: {
+            type: "Point",
+            coordinates: [67.0011, 24.8607], // Default Pakistan coordinates
+          },
+          location:
+            user.dealerInfo?.city ||
+            carDetails.registration_city ||
+            "Not specified", // Use actual location
+        });
+
+        // Convert images array to File objects for FormData
+        if (carDetails.images && carDetails.images.length > 0) {
+          submissionData.images = carDetails.images.map(
+            (img) => img.file || img,
+          );
+        }
+      }
+
+      await submitCarToAuction(submissionData).unwrap();
+
+      // Dismiss progress toast and show success
+      toast.dismiss(progressToast);
       toast.success("Vehicle submitted for auction approval");
       setNewCar((prev) => {
         (prev.images || []).forEach((item) => {
@@ -312,7 +505,13 @@ const DealerDashboard = () => {
       setShowAddCar(false);
       setCurrentStep(1);
     } catch (error) {
-      toast.error(error?.data?.message || "Failed to submit vehicle for auction");
+      // Dismiss progress toast and show error
+      toast.dismiss(progressToast);
+      toast.error(
+        error?.data?.message?.includes("Auction not accepting submissions")
+          ? "Selected auction is not open for submissions. Please choose a draft, scheduled, or live auction."
+          : error?.data?.message || "Failed to submit vehicle for auction",
+      );
     }
   };
 
@@ -571,7 +770,28 @@ const DealerDashboard = () => {
             </div>
             <button
               onClick={() => {
-                setCurrentStep(4);
+                // Always start the auction submission wizard from step 1.
+                // The previous code forced step 4, which feels like "going to Pricing by default".
+                setCurrentStep(1);
+                setNewCar({
+                  make: "",
+                  model: "",
+                  year: "",
+                  mileage: "",
+                  condition: "",
+                  engine_type: "",
+                  transmission: "",
+                  color: "",
+                  registration_city: "",
+                  starting_bid: "",
+                  reserve_price: "",
+                  buy_now_price: "",
+                  auctionId: "",
+                  carId: "",
+                  images: [],
+                  inspectionReportFile: null,
+                  inspection_report: {},
+                });
                 setShowAddCar(true);
               }}
               className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-amber-500 hover:to-orange-500 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-all hover:shadow-lg"
@@ -659,32 +879,53 @@ const DealerDashboard = () => {
               {auctionAnalytics && (
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <FiBarChart2 className="text-primary-500" /> Auction Analytics
+                    <FiBarChart2 className="text-primary-500" /> Auction
+                    Analytics
                   </h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                     <div>
                       <p className="text-xs text-gray-500">Cars Submitted</p>
-                      <p className="text-xl font-bold text-gray-900">{auctionAnalytics.carsSubmitted ?? 0}</p>
+                      <p className="text-xl font-bold text-gray-900">
+                        {auctionAnalytics.carsSubmitted ?? 0}
+                      </p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">Pending Approval</p>
-                      <p className="text-xl font-bold text-amber-600">{auctionAnalytics.pendingApproval ?? 0}</p>
+                      <p className="text-xl font-bold text-amber-600">
+                        {auctionAnalytics.pendingApproval ?? 0}
+                      </p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">In Auction</p>
-                      <p className="text-xl font-bold text-blue-600">{auctionAnalytics.inAuction ?? 0}</p>
+                      <p className="text-xl font-bold text-blue-600">
+                        {auctionAnalytics.inAuction ?? 0}
+                      </p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">Sold</p>
-                      <p className="text-xl font-bold text-green-600">{auctionAnalytics.sold ?? 0}</p>
+                      <p className="text-xl font-bold text-green-600">
+                        {auctionAnalytics.sold ?? 0}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500">Total Auction Revenue</p>
-                      <p className="text-lg font-bold text-gray-900">PKR {(auctionAnalytics.totalAuctionRevenue ?? 0).toLocaleString()}</p>
+                      <p className="text-xs text-gray-500">
+                        Total Auction Revenue
+                      </p>
+                      <p className="text-lg font-bold text-gray-900">
+                        PKR{" "}
+                        {(
+                          auctionAnalytics.totalAuctionRevenue ?? 0
+                        ).toLocaleString()}
+                      </p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">Avg Sale Price</p>
-                      <p className="text-lg font-bold text-gray-900">PKR {(auctionAnalytics.averageSalePrice ?? 0).toLocaleString()}</p>
+                      <p className="text-lg font-bold text-gray-900">
+                        PKR{" "}
+                        {(
+                          auctionAnalytics.averageSalePrice ?? 0
+                        ).toLocaleString()}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -1032,60 +1273,125 @@ const DealerDashboard = () => {
               {/* Won Auctions */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Won Auctions</h3>
-                  <Link to="/auctions/transactions" className="text-orange-500 hover:text-orange-600 font-medium">View All</Link>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Won Auctions
+                  </h3>
+                  <Link
+                    to="/auctions/transactions"
+                    className="text-orange-500 hover:text-orange-600 font-medium"
+                  >
+                    View All
+                  </Link>
                 </div>
                 <div className="space-y-3">
                   {wonAuctions.length === 0 ? (
-                    <p className="text-sm text-gray-500 text-center py-6">No won auctions yet. Start bidding on live auctions!</p>
-                  ) : wonAuctions.slice(0, 3).map((item) => {
-                    const car = item.car || {};
-                    const img = Array.isArray(car.images) ? car.images[0] : car.images;
-                    return (
-                      <Link key={item._id} to={`/auctions/result?car_id=${item._id}`} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-green-50 hover:bg-green-100 transition-colors">
-                        <div className="flex items-center gap-3">
-                          <div className="w-16 h-12 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
-                            {img && <img src={img} alt={`${car.make} ${car.model}`} className="w-full h-full object-contain object-center" />}
+                    <p className="text-sm text-gray-500 text-center py-6">
+                      No won auctions yet. Start bidding on live auctions!
+                    </p>
+                  ) : (
+                    wonAuctions.slice(0, 3).map((item) => {
+                      const car = item.car || {};
+                      const img = Array.isArray(car.images)
+                        ? car.images[0]
+                        : car.images;
+                      return (
+                        <Link
+                          key={item._id}
+                          to={`/auctions/result?car_id=${item._id}`}
+                          className="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-green-50 hover:bg-green-100 transition-colors"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-16 h-12 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                              {img && (
+                                <img
+                                  src={img}
+                                  alt={`${car.make} ${car.model}`}
+                                  className="w-full h-full object-contain object-center"
+                                />
+                              )}
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-gray-900">
+                                {car.year} {car.make} {car.model}
+                              </h4>
+                              <p className="text-sm text-gray-600">
+                                Final: PKR {item.finalPrice?.toLocaleString()}
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <h4 className="font-semibold text-gray-900">{car.year} {car.make} {car.model}</h4>
-                            <p className="text-sm text-gray-600">Final: PKR {item.finalPrice?.toLocaleString()}</p>
-                          </div>
-                        </div>
-                        <span className="text-sm text-green-600 font-medium bg-green-100 px-2 py-1 rounded">Won</span>
-                      </Link>
-                    );
-                  })}
+                          <span className="text-sm text-green-600 font-medium bg-green-100 px-2 py-1 rounded">
+                            Won
+                          </span>
+                        </Link>
+                      );
+                    })
+                  )}
                 </div>
               </div>
 
               {/* Upcoming Auctions */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Upcoming Auctions</h3>
-                  <Link to="/auctions/schedule" className="text-orange-500 hover:text-orange-600 font-medium">View Schedule</Link>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Upcoming Auctions
+                  </h3>
+                  <Link
+                    to="/auctions/schedule"
+                    className="text-orange-500 hover:text-orange-600 font-medium"
+                  >
+                    View Schedule
+                  </Link>
                 </div>
                 <div className="space-y-3">
                   {liveAuction && (
-                    <Link to="/auctions/live" className="block p-3 border border-red-200 rounded-lg bg-red-50 hover:bg-red-100 transition-colors">
+                    <Link
+                      to="/auctions/live"
+                      className="block p-3 border border-red-200 rounded-lg bg-red-50 hover:bg-red-100 transition-colors"
+                    >
                       <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium text-gray-900">{liveAuction.title}</span>
-                        <span className="text-xs bg-red-500 text-white px-2 py-1 rounded animate-pulse">LIVE</span>
+                        <span className="font-medium text-gray-900">
+                          {liveAuction.title}
+                        </span>
+                        <span className="text-xs bg-red-500 text-white px-2 py-1 rounded animate-pulse">
+                          LIVE
+                        </span>
                       </div>
-                      <div className="text-sm text-gray-600">{liveAuction.totalCars || 0} cars • {liveAuction.totalBids || 0} bids</div>
+                      <div className="text-sm text-gray-600">
+                        {liveAuction.totalCars || 0} cars •{" "}
+                        {liveAuction.totalBids || 0} bids
+                      </div>
                     </Link>
                   )}
-                  {upcomingAuctions.length > 0 ? upcomingAuctions.slice(0, 3).map((a) => (
-                    <div key={a._id} className="p-3 border border-gray-200 rounded-lg bg-blue-50">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium text-gray-900">{a.title}</span>
-                        <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">{a.totalCars || 0} Cars</span>
-                      </div>
-                      <div className="text-sm text-gray-600">Starts: {new Date(a.startTime).toLocaleDateString("en-PK", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</div>
-                    </div>
-                  )) : !liveAuction && (
-                    <p className="text-sm text-gray-500 text-center py-4">No upcoming auctions</p>
-                  )}
+                  {upcomingAuctions.length > 0
+                    ? upcomingAuctions.slice(0, 3).map((a) => (
+                        <div
+                          key={a._id}
+                          className="p-3 border border-gray-200 rounded-lg bg-blue-50"
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="font-medium text-gray-900">
+                              {a.title}
+                            </span>
+                            <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">
+                              {a.totalCars || 0} Cars
+                            </span>
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            Starts:{" "}
+                            {new Date(a.startTime).toLocaleDateString("en-PK", {
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </div>
+                        </div>
+                      ))
+                    : !liveAuction && (
+                        <p className="text-sm text-gray-500 text-center py-4">
+                          No upcoming auctions
+                        </p>
+                      )}
                 </div>
               </div>
 
@@ -1096,47 +1402,95 @@ const DealerDashboard = () => {
                   Auction Summary
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <Link to="/auctions/transactions" className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <Link
+                    to="/auctions/transactions"
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                  >
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-medium text-gray-700">Won</span>
+                      <span className="text-sm font-medium text-gray-700">
+                        Won
+                      </span>
                       <FiTrendingUp className="text-emerald-500" size={16} />
                     </div>
-                    <p className="text-2xl font-bold text-gray-900 mb-1">{wonAuctions.length}</p>
+                    <p className="text-2xl font-bold text-gray-900 mb-1">
+                      {wonAuctions.length}
+                    </p>
                     <p className="text-sm text-gray-600">Cars won at auction</p>
                   </Link>
 
-                  <Link to="/auctions/watchlist" className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <Link
+                    to="/auctions/watchlist"
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                  >
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-medium text-gray-700">Watchlist</span>
+                      <span className="text-sm font-medium text-gray-700">
+                        Watchlist
+                      </span>
                       <FiHeart className="text-red-400" size={16} />
                     </div>
-                    <p className="text-2xl font-bold text-gray-900 mb-1">{watchlistItems.length}</p>
-                    <p className="text-sm text-gray-600">Cars you're following</p>
+                    <p className="text-2xl font-bold text-gray-900 mb-1">
+                      {watchlistItems.length}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Cars you're following
+                    </p>
                   </Link>
 
-                  <Link to="/auctions/token-payment" className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <Link
+                    to="/auctions/token-payment"
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                  >
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-medium text-gray-700">Token</span>
+                      <span className="text-sm font-medium text-gray-700">
+                        Token
+                      </span>
                       <FiCreditCard className="text-purple-500" size={16} />
                     </div>
-                    <p className="text-2xl font-bold text-gray-900 mb-1">PKR {auctionStats.tokenBalance.toLocaleString()}</p>
-                    <p className="text-sm text-gray-600">{auctionStats.hasVerifiedToken ? "✓ Verified" : "Not verified"}</p>
+                    <p className="text-2xl font-bold text-gray-900 mb-1">
+                      PKR {auctionStats.tokenBalance.toLocaleString()}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {auctionStats.hasVerifiedToken
+                        ? "✓ Verified"
+                        : "Not verified"}
+                    </p>
                   </Link>
 
                   <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-medium text-gray-700">Status</span>
-                      <FiZap className={liveAuction ? "text-red-500" : "text-gray-400"} size={16} />
+                      <span className="text-sm font-medium text-gray-700">
+                        Status
+                      </span>
+                      <FiZap
+                        className={
+                          liveAuction ? "text-red-500" : "text-gray-400"
+                        }
+                        size={16}
+                      />
                     </div>
                     {liveAuction ? (
                       <>
-                        <p className="text-lg font-bold text-red-600 mb-1">{liveAuction.title}</p>
-                        <Link to="/auctions/live" className="text-sm text-orange-500 font-medium">Join Now →</Link>
+                        <p className="text-lg font-bold text-red-600 mb-1">
+                          {liveAuction.title}
+                        </p>
+                        <Link
+                          to="/auctions/live"
+                          className="text-sm text-orange-500 font-medium"
+                        >
+                          Join Now →
+                        </Link>
                       </>
                     ) : (
                       <>
-                        <p className="text-lg font-bold text-gray-400 mb-1">No Live Auction</p>
-                        <Link to="/auctions/schedule" className="text-sm text-orange-500 font-medium">View Schedule →</Link>
+                        <p className="text-lg font-bold text-gray-400 mb-1">
+                          No Live Auction
+                        </p>
+                        <Link
+                          to="/auctions/schedule"
+                          className="text-sm text-orange-500 font-medium"
+                        >
+                          View Schedule →
+                        </Link>
                       </>
                     )}
                   </div>
@@ -1589,7 +1943,9 @@ const DealerDashboard = () => {
                         role="button"
                         tabIndex={0}
                         onClick={() => photoInputRef.current?.click()}
-                        onKeyDown={(e) => e.key === "Enter" && photoInputRef.current?.click()}
+                        onKeyDown={(e) =>
+                          e.key === "Enter" && photoInputRef.current?.click()
+                        }
                         onDragOver={handlePhotoDragOver}
                         onDrop={handlePhotoDrop}
                         className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer transition-colors hover:border-primary-400 hover:bg-primary-50/30 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
@@ -1598,13 +1954,15 @@ const DealerDashboard = () => {
                           className="mx-auto text-primary-500 mb-2"
                           size={32}
                         />
-                        <p className="text-gray-700 font-medium">Click to upload images</p>
+                        <p className="text-gray-700 font-medium">
+                          Click to upload images
+                        </p>
                         <p className="text-sm text-gray-500 mt-1">
                           PNG, JPG up to 10MB each
                         </p>
                         {(newCar.images?.length || 0) > 0 && (
                           <p className="text-sm text-primary-600 mt-2 font-medium">
-                            {(newCar.images?.length || 0)} photo(s) added
+                            {newCar.images?.length || 0} photo(s) added
                           </p>
                         )}
                       </div>
@@ -1635,11 +1993,12 @@ const DealerDashboard = () => {
                           ))}
                         </div>
                       )}
-                      {(newCar.images?.length || 0) > 0 && (newCar.images?.length || 0) < MIN_PHOTOS && (
-                        <p className="text-sm text-amber-600 mt-2">
-                          Add at least {MIN_PHOTOS} photos to continue.
-                        </p>
-                      )}
+                      {(newCar.images?.length || 0) > 0 &&
+                        (newCar.images?.length || 0) < MIN_PHOTOS && (
+                          <p className="text-sm text-amber-600 mt-2">
+                            Add at least {MIN_PHOTOS} photos to continue.
+                          </p>
+                        )}
                     </div>
                   </div>
                 )}
@@ -1706,20 +2065,23 @@ const DealerDashboard = () => {
                       </select>
                       {auctionOptions.length === 0 && (
                         <p className="text-xs text-primary-600 mt-1">
-                          No active/scheduled auctions found. Ask admin to create or schedule an auction first.
+                          No draft/scheduled/live auctions found. Ask admin to
+                          create or activate an auction first.
                         </p>
                       )}
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Select Existing Listing *
+                        Select Existing Listing (Optional)
                       </label>
                       <select
                         value={newCar.carId}
                         onChange={(e) =>
                           setNewCar((prev) => {
-                            const selectedCar = cars.find((car) => car._id === e.target.value);
+                            const selectedCar = cars.find(
+                              (car) => car._id === e.target.value,
+                            );
                             return {
                               ...prev,
                               carId: e.target.value,
@@ -1742,6 +2104,10 @@ const DealerDashboard = () => {
                             </option>
                           ))}
                       </select>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Or provide vehicle details in previous steps (Basic
+                        Info, Photos, Inspection)
+                      </p>
                     </div>
 
                     <div>
@@ -1813,14 +2179,18 @@ const DealerDashboard = () => {
                         Inspection Report (PDF) *
                       </label>
                       <p className="text-xs text-amber-700 mb-2">
-                        Upload the vehicle inspection report. Required for every auction submission.
+                        Upload the vehicle inspection report. Required for every
+                        auction submission.
                       </p>
                       <input
                         type="file"
                         accept=".pdf,application/pdf"
                         onChange={(e) => {
                           const file = e.target.files?.[0];
-                          setNewCar((prev) => ({ ...prev, inspectionReportFile: file || null }));
+                          setNewCar((prev) => ({
+                            ...prev,
+                            inspectionReportFile: file || null,
+                          }));
                         }}
                         className="w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-amber-500 file:text-white file:font-medium hover:file:bg-amber-600"
                       />
@@ -1883,7 +2253,11 @@ const DealerDashboard = () => {
                   }
                   className="px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                 >
-                  {currentStep === 4 ? "Cancel" : currentStep > 1 ? "Back" : "Cancel"}
+                  {currentStep === 4
+                    ? "Cancel"
+                    : currentStep > 1
+                      ? "Back"
+                      : "Cancel"}
                 </button>
 
                 {currentStep < 4 ? (
@@ -1897,7 +2271,8 @@ const DealerDashboard = () => {
                           !newCar.year ||
                           !newCar.mileage ||
                           !newCar.condition)) ||
-                      (currentStep === 2 && (newCar.images?.length || 0) < MIN_PHOTOS)
+                      (currentStep === 2 &&
+                        (newCar.images?.length || 0) < MIN_PHOTOS)
                     }
                     className="px-5 py-2.5 bg-primary-500 text-white rounded-lg hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium transition-colors"
                   >
@@ -1914,11 +2289,14 @@ const DealerDashboard = () => {
                       !newCar.inspectionReportFile ||
                       !newCar.starting_bid ||
                       !newCar.auctionId ||
-                      !newCar.carId
+                      (!newCar.carId &&
+                        !(newCar.make && newCar.model && newCar.year))
                     }
                     className="px-5 py-2.5 bg-primary-500 text-white rounded-lg hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
                   >
-                    {isSubmittingAuctionCar ? "Submitting..." : "Submit for Approval"}
+                    {isSubmittingAuctionCar
+                      ? "Submitting..."
+                      : "Submit for Approval"}
                   </button>
                 )}
               </div>

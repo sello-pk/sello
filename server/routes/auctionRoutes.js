@@ -6,7 +6,7 @@ import {
 } from "../middlewares/authMiddleware.js";
 import { bidRateLimiter } from "../middlewares/securityMiddleware.js";
 import { hasAnyPermission } from "../middlewares/permissionMiddleware.js";
-import { upload } from "../middlewares/multer.js";
+import { upload, auctionSubmitCarUpload } from "../middlewares/multer.js";
 import {
   getAuctions,
   getAuctionById,
@@ -169,6 +169,34 @@ router.get(
   hasAnyPermission("viewFinancialReports", "viewAnalytics"),
   getPaymentStats,
 );
+router.get(
+  "/admin/auction-settings",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("viewAuctions", "manageAuctions", "managePlatformSettings"),
+  getAuctionSettingsHandler,
+);
+router.put(
+  "/admin/auction-settings",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("manageAuctions", "managePlatformSettings"),
+  updateAuctionSettingsHandler,
+);
+router.get(
+  "/admin/auction-extensions",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("viewAuctions", "viewAuditLogs"),
+  adminGetAuctionExtensions,
+);
+router.get(
+  "/admin/security-events",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("viewAuctions", "viewAuditLogs"),
+  adminGetSecurityEvents,
+);
 router.put(
   "/admin/:id/go-live",
   auth,
@@ -216,7 +244,7 @@ router.get("/my/auction-analytics", auth, getDealerAuctionAnalytics);
 router.post(
   "/submit-car",
   auth,
-  upload.fields([
+  auctionSubmitCarUpload.fields([
     { name: "images", maxCount: 15 },
     { name: "inspectionReport", maxCount: 1 },
     { name: "damageImages", maxCount: 5 },

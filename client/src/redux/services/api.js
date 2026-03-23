@@ -135,13 +135,19 @@ export const api = createApi({
       }
 
       // 413 Request Entity Too Large (often from proxy/nginx) — suggest fewer/smaller images
-      if (baseResult.error && (baseResult.error.originalStatus === 413 || baseResult.error.status === 413)) {
+      if (
+        baseResult.error &&
+        (baseResult.error.originalStatus === 413 ||
+          baseResult.error.status === 413)
+      ) {
         const uploadAttempt = isMultipartDocumentUpload(args);
         return {
           error: {
             status: 413,
             data: {
-              message: uploadAttempt ? MSG_413 : baseResult.error?.data?.message || MSG_413,
+              message: uploadAttempt
+                ? MSG_413
+                : baseResult.error?.data?.message || MSG_413,
               code: "REQUEST_TOO_LARGE",
               error: baseResult.error?.data?.error,
             },
@@ -159,7 +165,10 @@ export const api = createApi({
         const uploadAttempt = isMultipartDocumentUpload(args);
         const message = uploadAttempt ? MSG_FETCH_UPLOAD : MSG_FETCH_GENERIC;
         if (import.meta.env.DEV && baseResult.error?.error) {
-          logger.warn("FETCH_ERROR", { url: args?.url, error: baseResult.error.error });
+          logger.warn("FETCH_ERROR", {
+            url: args?.url,
+            error: baseResult.error.error,
+          });
         }
         return {
           error: {
@@ -524,7 +533,8 @@ export const api = createApi({
     getCarCountsByMake: builder.query({
       query: (params = {}) => {
         const searchParams = new URLSearchParams();
-        if (params?.vehicleType) searchParams.set("vehicleType", params.vehicleType);
+        if (params?.vehicleType)
+          searchParams.set("vehicleType", params.vehicleType);
         const qs = searchParams.toString();
         return {
           url: `/cars/stats/counts-by-make${qs ? `?${qs}` : ""}`,
@@ -1357,6 +1367,10 @@ export const api = createApi({
             "vehicleType",
             "vehicleTypeCategory",
             "videoUrls",
+            "geoLocation",
+            "contactNumber",
+            "warranty",
+            "ownerType",
           ].forEach((key) => {
             const v = data[key];
             if (v === undefined || v === null) return;

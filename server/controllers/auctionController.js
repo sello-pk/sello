@@ -16,7 +16,11 @@ import Car from "../models/carModel.js";
 import Notification from "../models/notificationModel.js";
 import Logger from "../utils/logger.js";
 import User from "../models/userModel.js";
-import { uploadListingImagesToCloudinary, uploadRawToCloudinary } from "../utils/helpers.js";
+import {
+  uploadListingImagesToCloudinary,
+  uploadRawToCloudinaryWithRetry,
+  parseArray,
+} from "../utils/helpers.js";
 import {
   LISTING_MAX_TOTAL_BYTES,
   MSG_IMAGE_TOTAL_EXCEEDED,
@@ -35,7 +39,10 @@ import {
   getActiveBidderCount as engineGetActiveBidderCount,
 } from "../services/auctionEngine.js";
 import * as auctionEmailService from "../services/auctionEmailService.js";
-import { getAuctionSettings, invalidateAuctionSettingsCache } from "../services/auctionEngine.js";
+import {
+  getAuctionSettings,
+  invalidateAuctionSettingsCache,
+} from "../services/auctionEngine.js";
 import { AuctionExtensionLog } from "../models/auctionExtensionLogModel.js";
 import { SecurityEvent } from "../models/securityEventModel.js";
 
@@ -157,9 +164,15 @@ export const getAuctionCars = async (req, res) => {
       limit = 30,
     } = req.query;
 
+    const auction = await Auction.findById(auctionId).select("status").lean();
+    const visibleStatuses =
+      auction?.status === "live"
+        ? ["approved", "live", "pending"]
+        : ["approved", "live"];
+
     const filter = {
       auction: auctionId,
-      status: { $in: ["approved", "live"] },
+      status: { $in: visibleStatuses },
     };
 
     const cars = await AuctionCar.find(filter)
@@ -244,11 +257,19 @@ export const getLiveAuctionByCarId = async (req, res) => {
       .populate("auction", "title status startTime endTime")
       .lean();
     if (!ac || !ac.auction) {
-      return res.status(404).json({ success: false, data: null, message: "Not in an active auction" });
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: "Not in an active auction",
+      });
     }
     const auctionStatus = ac.auction.status;
     if (auctionStatus !== "live" && auctionStatus !== "scheduled") {
-      return res.status(404).json({ success: false, data: null, message: "Not in an active auction" });
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: "Not in an active auction",
+      });
     }
     res.json({
       success: true,
@@ -263,7 +284,9 @@ export const getLiveAuctionByCarId = async (req, res) => {
     });
   } catch (error) {
     Logger.error("getLiveAuctionByCarId error", error);
-    res.status(500).json({ success: false, message: "Failed to check auction" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to check auction" });
   }
 };
 
@@ -290,7 +313,10 @@ export const getAuctionCarDetail = async (req, res) => {
       .populate("bidder", "name")
       .lean();
 
-    const totalBidders = await Bid.distinct("bidder", { auctionCar: ac._id, bidder: { $exists: true, $ne: null } }).then((arr) => arr.length);
+    const totalBidders = await Bid.distinct("bidder", {
+      auctionCar: ac._id,
+      bidder: { $exists: true, $ne: null },
+    }).then((arr) => arr.length);
     const minimumNextBid = engineGetMinNextBid(ac);
 
     res.json({
@@ -328,9 +354,16 @@ export const placeBid = async (req, res) => {
 
     // Server-side validation (engine; use per-lot bidIncrement or settings)
     const settings = await engineGetAuctionSettings();
-    const validation = engineValidateBid(ac.auction, ac, amount, settings?.minBidIncrement);
+    const validation = engineValidateBid(
+      ac.auction,
+      ac,
+      amount,
+      settings?.minBidIncrement,
+    );
     if (!validation.valid)
-      return res.status(400).json({ success: false, message: validation.message });
+      return res
+        .status(400)
+        .json({ success: false, message: validation.message });
 
     const wallet = await Wallet.findOne({ user: userId });
     if (wallet && wallet.isActive === false) {
@@ -376,7 +409,9 @@ export const placeBid = async (req, res) => {
     }).populate("bidder", "email name");
     const ext = extendAuctionIfNeeded(ac.auction);
     if (ext.extended && ext.newEndTime) {
-      await Auction.findByIdAndUpdate(ac.auction._id, { endTime: ext.newEndTime });
+      await Auction.findByIdAndUpdate(ac.auction._id, {
+        endTime: ext.newEndTime,
+      });
       ac.auction.endTime = ext.newEndTime;
       const io = req.app.get("io");
       if (io) {
@@ -397,7 +432,10 @@ export const placeBid = async (req, res) => {
       const prevWallet = await Wallet.findOne({ user: prevWinningBid.bidder });
       if (prevWallet) {
         prevWallet.balance += prevWinningBid.amount;
-        prevWallet.totalBidHeld = Math.max(0, prevWallet.totalBidHeld - prevWinningBid.amount);
+        prevWallet.totalBidHeld = Math.max(
+          0,
+          prevWallet.totalBidHeld - prevWinningBid.amount,
+        );
         prevWallet.lastTransactionAt = new Date();
         await prevWallet.save();
         await logWalletTxn({
@@ -476,7 +514,9 @@ export const placeBid = async (req, res) => {
     // Real-time broadcast (keep existing event; add aliases)
     const io = req.app.get("io");
     if (io) {
-      const populatedBid = await Bid.findById(bid._id).populate("bidder", "name").lean();
+      const populatedBid = await Bid.findById(bid._id)
+        .populate("bidder", "name")
+        .lean();
       io.to(`auction:${ac.auction._id}`).emit("new-bid", {
         auctionCarId,
         bid: populatedBid,
@@ -509,12 +549,14 @@ export const placeBid = async (req, res) => {
         actionUrl: resultUrl,
       }).catch(() => {});
       if (prevWinningBid.bidder.email) {
-        auctionEmailService.sendOutbid(prevWinningBid.bidder.email, {
-          auctionTitle: ac.auction.title,
-          carLabel: ac.car?.title || "Auction car",
-          newBidAmount: amount,
-          resultUrl,
-        }).catch(() => {});
+        auctionEmailService
+          .sendOutbid(prevWinningBid.bidder.email, {
+            auctionTitle: ac.auction.title,
+            carLabel: ac.car?.title || "Auction car",
+            newBidAmount: amount,
+            resultUrl,
+          })
+          .catch(() => {});
       }
     }
 
@@ -575,14 +617,24 @@ export const buyNow = async (req, res) => {
       .populate("auction")
       .populate("car", "title make model year");
     if (!ac)
-      return res.status(404).json({ success: false, message: "Auction car not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Auction car not found" });
     if (ac.auction.status !== "live")
-      return res.status(400).json({ success: false, message: "Auction is not live" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Auction is not live" });
     if (!["approved", "live"].includes(ac.status))
-      return res.status(400).json({ success: false, message: "This lot is not available for buy now" });
+      return res.status(400).json({
+        success: false,
+        message: "This lot is not available for buy now",
+      });
     const buyNowPrice = ac.buyNowPrice != null ? Number(ac.buyNowPrice) : null;
     if (buyNowPrice == null || buyNowPrice <= 0)
-      return res.status(400).json({ success: false, message: "Buy now is not available for this lot" });
+      return res.status(400).json({
+        success: false,
+        message: "Buy now is not available for this lot",
+      });
 
     const wallet = await Wallet.findOne({ user: userId });
     const hasWallet = wallet && wallet.balance >= buyNowPrice;
@@ -598,12 +650,18 @@ export const buyNow = async (req, res) => {
       });
 
     // Refund any current winning bidder
-    const prevWin = await Bid.findOne({ auctionCar: auctionCarId, isWinning: true });
+    const prevWin = await Bid.findOne({
+      auctionCar: auctionCarId,
+      isWinning: true,
+    });
     if (prevWin && prevWin.bidder) {
       const prevWallet = await Wallet.findOne({ user: prevWin.bidder });
       if (prevWallet) {
         prevWallet.balance += prevWin.amount;
-        prevWallet.totalBidHeld = Math.max(0, prevWallet.totalBidHeld - prevWin.amount);
+        prevWallet.totalBidHeld = Math.max(
+          0,
+          prevWallet.totalBidHeld - prevWin.amount,
+        );
         prevWallet.lastTransactionAt = new Date();
         await prevWallet.save();
         await logWalletTxn({
@@ -616,7 +674,10 @@ export const buyNow = async (req, res) => {
         });
       }
     }
-    await Bid.updateMany({ auctionCar: auctionCarId, isWinning: true }, { isWinning: false });
+    await Bid.updateMany(
+      { auctionCar: auctionCarId, isWinning: true },
+      { isWinning: false },
+    );
 
     if (hasWallet) {
       wallet.balance -= buyNowPrice;
@@ -651,7 +712,10 @@ export const buyNow = async (req, res) => {
     ac.currentBidder = userId;
     await ac.save();
 
-    await ProxyBid.updateMany({ auctionCar: auctionCarId }, { isActive: false });
+    await ProxyBid.updateMany(
+      { auctionCar: auctionCarId },
+      { isActive: false },
+    );
 
     const winnerWallet = await Wallet.findOne({ user: userId });
     const walletDeduction = winnerWallet ? buyNowPrice : 10000;
@@ -665,7 +729,10 @@ export const buyNow = async (req, res) => {
     );
 
     if (winnerWallet) {
-      winnerWallet.totalBidHeld = Math.max(0, winnerWallet.totalBidHeld - buyNowPrice);
+      winnerWallet.totalBidHeld = Math.max(
+        0,
+        winnerWallet.totalBidHeld - buyNowPrice,
+      );
       await winnerWallet.save();
       await logWalletTxn({
         user: userId,
@@ -698,7 +765,10 @@ export const buyNow = async (req, res) => {
 
     const io = req.app.get("io");
     if (io) {
-      io.to(`auction:${ac.auction._id}`).emit("auction:ended", { auctionCarId, auctionId: ac.auction._id });
+      io.to(`auction:${ac.auction._id}`).emit("auction:ended", {
+        auctionCarId,
+        auctionId: ac.auction._id,
+      });
       io.to(`auction:${ac.auction._id}`).emit("new-bid", {
         auctionCarId,
         bid: await Bid.findById(bid._id).populate("bidder", "name").lean(),
@@ -721,12 +791,14 @@ export const buyNow = async (req, res) => {
     const user = await User.findById(userId).select("email").lean();
     if (user?.email) {
       const resultUrl = `${process.env.CLIENT_URL || "http://localhost:5173"}/auctions/result?car_id=${ac._id}`;
-      auctionEmailService.sendAuctionWon(user.email, {
-        carLabel: ac.car?.title || "Auction car",
-        finalPrice: buyNowPrice,
-        amountDue,
-        resultUrl,
-      }).catch(() => {});
+      auctionEmailService
+        .sendAuctionWon(user.email, {
+          carLabel: ac.car?.title || "Auction car",
+          finalPrice: buyNowPrice,
+          amountDue,
+          resultUrl,
+        })
+        .catch(() => {});
     }
 
     res.json({
@@ -736,7 +808,9 @@ export const buyNow = async (req, res) => {
     });
   } catch (error) {
     Logger.error("buyNow error", error);
-    res.status(500).json({ success: false, message: "Failed to process buy now" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to process buy now" });
   }
 };
 
@@ -805,7 +879,8 @@ export const getBidsForCar = async (req, res) => {
     const { auctionCarId } = req.params;
     const page = Math.max(1, Number(req.query.page) || 1);
     const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 50));
-    const sort = req.query.sort === "oldest" ? { createdAt: 1 } : { amount: -1 };
+    const sort =
+      req.query.sort === "oldest" ? { createdAt: 1 } : { amount: -1 };
 
     const [bids, total] = await Promise.all([
       Bid.find({ auctionCar: auctionCarId })
@@ -1031,12 +1106,17 @@ export const getEscrowById = async (req, res) => {
       .lean();
 
     if (!escrow)
-      return res.status(404).json({ success: false, message: "Escrow not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Escrow not found" });
 
     const isBuyer = escrow.buyer?._id?.toString() === req.user._id.toString();
     const isAdmin = req.user.role === "admin";
     if (!isBuyer && !isAdmin)
-      return res.status(403).json({ success: false, message: "Not authorized to view this escrow" });
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to view this escrow",
+      });
 
     res.json({ success: true, data: escrow });
   } catch (error) {
@@ -1050,14 +1130,23 @@ export const payEscrow = async (req, res) => {
   try {
     const { escrowId } = req.body;
     if (!escrowId)
-      return res.status(400).json({ success: false, message: "escrowId required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "escrowId required" });
 
-    const escrow = await Escrow.findById(escrowId).populate("buyer", "name email");
+    const escrow = await Escrow.findById(escrowId).populate(
+      "buyer",
+      "name email",
+    );
     if (!escrow)
-      return res.status(404).json({ success: false, message: "Escrow not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Escrow not found" });
 
     if (escrow.buyer._id.toString() !== req.user._id.toString())
-      return res.status(403).json({ success: false, message: "Not authorized to pay this escrow" });
+      return res
+        .status(403)
+        .json({ success: false, message: "Not authorized to pay this escrow" });
 
     if (escrow.status !== "pending")
       return res.status(400).json({
@@ -1115,7 +1204,9 @@ export const payEscrow = async (req, res) => {
     });
   } catch (error) {
     Logger.error("payEscrow error", error);
-    res.status(500).json({ success: false, message: "Failed to process escrow payment" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to process escrow payment" });
   }
 };
 
@@ -1205,8 +1296,10 @@ export const submitCarToAuction = async (req, res) => {
       condition,
       price,
       colorExterior,
+      color,
       colorInterior,
       fuelType,
+      engine_type,
       engineCapacity,
       transmission,
       mileage,
@@ -1215,6 +1308,7 @@ export const submitCarToAuction = async (req, res) => {
       bodyType,
       country,
       city,
+      registration_city,
       location,
       carDoors,
       contactNumber,
@@ -1230,12 +1324,49 @@ export const submitCarToAuction = async (req, res) => {
       videoUrls,
     } = req.body;
 
+    if (!auctionId) {
+      return res.status(400).json({
+        success: false,
+        message: "Auction is required for submission",
+      });
+    }
+
+    const auction = await Auction.findById(auctionId).select("status title");
+    if (!auction || !["draft", "scheduled", "live"].includes(auction.status)) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Auction not accepting submissions. Please select a draft, scheduled, or live auction.",
+      });
+    }
+
+    // Parse geoLocation from JSON string if it's a string (from FormData)
+    let parsedGeoLocation = geoLocation;
+    if (typeof geoLocation === "string") {
+      try {
+        parsedGeoLocation = JSON.parse(geoLocation);
+      } catch (e) {
+        console.error("Failed to parse geoLocation:", e);
+        parsedGeoLocation = {
+          type: "Point",
+          coordinates: [67.0011, 24.8607], // Default coordinates
+        };
+      }
+    }
+    if (!parsedGeoLocation || !Array.isArray(parsedGeoLocation?.coordinates)) {
+      parsedGeoLocation = {
+        type: "Point",
+        coordinates: [67.0011, 24.8607],
+      };
+    }
+
     // Hybrid model: inspection report PDF is mandatory for every auction submission
     const inspectionReportFile = req.files?.inspectionReport?.[0];
     if (!inspectionReportFile || !inspectionReportFile.buffer) {
       return res.status(400).json({
         success: false,
-        message: "Inspection report (PDF) is required. Please upload the vehicle inspection report.",
+        message:
+          "Inspection report (PDF) is required. Please upload the vehicle inspection report.",
       });
     }
 
@@ -1263,9 +1394,21 @@ export const submitCarToAuction = async (req, res) => {
       }
     } else {
       // Scenario 2: Create new car for auction
+      // Validate required fields for new car creation
+      if (!make || !model || !year) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Make, model, and year are required when creating a new listing",
+        });
+      }
+
       // Handle image uploads — parallel + total size cap (same as listing uploads)
       const images = req.files?.images || [];
-      const totalBytes = images.reduce((sum, img) => sum + (img.buffer?.length || 0), 0);
+      const totalBytes = images.reduce(
+        (sum, img) => sum + (img.buffer?.length || 0),
+        0,
+      );
       if (totalBytes > LISTING_MAX_TOTAL_BYTES) {
         return res.status(400).json({
           success: false,
@@ -1291,83 +1434,128 @@ export const submitCarToAuction = async (req, res) => {
         }
       }
 
+      let parsedFeatures = [];
+      try {
+        parsedFeatures = parseArray(features);
+      } catch {
+        parsedFeatures = [];
+      }
+
       // Create new car (listingType auction for hybrid model)
       car = await Car.create({
-        title,
-        description,
+        title: title || `${make} ${model} ${year}`,
+        description:
+          description ||
+          `Vehicle submitted for auction: ${make} ${model} ${year}`,
         vehicleType: vehicleType || "Car",
-        vehicleTypeCategory,
         make,
         model,
         year,
-        condition,
-        price: startingBid || price,
-        colorExterior,
-        colorInterior,
-        fuelType,
+        condition: condition || "Used",
+        price: startingBid || price || 0,
+        colorExterior: colorExterior || color || "Not specified",
+        colorInterior: colorInterior || "Not specified",
+        fuelType: fuelType || engine_type || "Petrol",
         engineCapacity,
-        transmission,
-        mileage,
-        features: features ? JSON.parse(features) : [],
+        transmission: transmission || "Manual",
+        mileage: mileage || 0,
+        features: parsedFeatures,
         regionalSpec,
         bodyType,
-        country,
-        city,
-        location,
+        country: country || "Pakistan",
+        city: city || registration_city || "Not specified",
+        location: location || city || registration_city || "Not specified",
         carDoors,
         contactNumber,
-        geoLocation,
+        geoLocation: parsedGeoLocation, // Use the parsed geoLocation object
         horsepower,
         warranty,
         numberOfCylinders,
         ownerType,
         batteryRange,
         motorPower,
-        images: imageUrls,
+        images: imageUrls || [],
         postedBy: req.user._id,
-        status: "pending",
+        status: "active", // Changed from "pending" to "active" as that's the valid enum
         listingType: "auction",
         isApproved: false,
       });
-    }
-
-    const auction = await Auction.findById(auctionId);
-    if (!auction || !["draft", "scheduled"].includes(auction.status)) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Auction not accepting submissions" });
     }
 
     const existing = await AuctionCar.findOne({
       auction: auctionId,
       car: car._id,
     });
-    if (existing)
+    if (existing) {
+      if (
+        existing.status === "pending" &&
+        existing.submittedBy?.toString() === req.user._id.toString()
+      ) {
+        const promotedStatus = auction.status === "live" ? "live" : "approved";
+        existing.status = promotedStatus;
+        await existing.save();
+        return res.status(200).json({
+          success: true,
+          data: existing,
+          message: "Existing pending submission is now active in auction",
+        });
+      }
       return res.status(400).json({
         success: false,
         message: "Car already submitted to this auction",
       });
+    }
 
     let inspectionReportPdfUrl = null;
     let damageImageUrls = [];
     let documentUrls = [];
     try {
-      inspectionReportPdfUrl = await uploadRawToCloudinary(inspectionReportFile.buffer, { folder: "auction_inspection" });
+      inspectionReportPdfUrl = await uploadRawToCloudinaryWithRetry(
+        inspectionReportFile.buffer,
+        { folder: "auction_inspection" },
+      );
     } catch (err) {
       Logger.error("Inspection report PDF upload failed", err);
-      return res.status(503).json({ success: false, message: "Failed to upload inspection report. Try again." });
+      return res.status(503).json({
+        success: false,
+        message: "Failed to upload inspection report. Try again.",
+      });
     }
     const damageFiles = req.files?.damageImages || [];
     if (damageFiles.length > 0) {
-      damageImageUrls = await uploadListingImagesToCloudinary(damageFiles, { folder: "auction_damage" });
+      try {
+        damageImageUrls = await uploadListingImagesToCloudinary(damageFiles, {
+          folder: "auction_damage",
+        });
+      } catch (err) {
+        Logger.error("Damage image upload failed", err);
+        return res.status(503).json({
+          success: false,
+          message: "Failed to upload damage images. Try fewer/smaller files.",
+        });
+      }
     }
     const docFiles = req.files?.documents || [];
     if (docFiles.length > 0) {
-      documentUrls = await Promise.all(
-        docFiles.map((f) => uploadRawToCloudinary(f.buffer, { folder: "auction_documents" }))
-      );
+      try {
+        documentUrls = await Promise.all(
+          docFiles.map((f) =>
+            uploadRawToCloudinaryWithRetry(f.buffer, {
+              folder: "auction_documents",
+            }),
+          ),
+        );
+      } catch (err) {
+        Logger.error("Auction document upload failed", err);
+        return res.status(503).json({
+          success: false,
+          message: "Failed to upload one or more documents. Please retry.",
+        });
+      }
     }
-    const parsedVideoUrls = Array.isArray(videoUrls) ? videoUrls : (typeof videoUrls === "string" ? (videoUrls ? JSON.parse(videoUrls) : []) : []);
+    const parsedVideoUrls = parseArray(videoUrls);
+
+    const auctionCarStatus = auction.status === "live" ? "live" : "approved";
 
     const ac = await AuctionCar.create({
       auction: auctionId,
@@ -1376,7 +1564,7 @@ export const submitCarToAuction = async (req, res) => {
       reservePrice: reservePrice || null,
       buyNowPrice: buyNowPrice || null,
       submittedBy: req.user._id,
-      status: req.user.role === "admin" ? "approved" : "pending",
+      status: auctionCarStatus,
       inspectionReportPdfUrl,
       damageImageUrls,
       documentUrls,
@@ -1393,8 +1581,18 @@ export const submitCarToAuction = async (req, res) => {
         : "Car created and submitted to auction",
     });
   } catch (error) {
-    Logger.error("submitCarToAuction error", error);
-    res.status(500).json({ success: false, message: "Failed to submit car" });
+    Logger.error("submitCarToAuction error", {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      body: req.body,
+      user: req.user?._id,
+      files: req.files ? Object.keys(req.files) : [],
+    });
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to submit car",
+    });
   }
 };
 
@@ -1467,7 +1665,7 @@ export const goLive = async (req, res) => {
     await auction.save();
 
     await AuctionCar.updateMany(
-      { auction: auction._id, status: "approved" },
+      { auction: auction._id, status: { $in: ["approved", "pending"] } },
       { status: "live" },
     );
 
@@ -1833,16 +2031,32 @@ export const getAuctionDashboard = async (req, res) => {
 
     const soldPipeline = [
       { $match: { status: "sold", finalPrice: { $gt: 0 } } },
-      { $group: { _id: null, total: { $sum: "$finalPrice" }, count: { $sum: 1 } } },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$finalPrice" },
+          count: { $sum: 1 },
+        },
+      },
     ];
     const soldAgg = await AuctionCar.aggregate(soldPipeline);
-    const avgSalePrice = soldAgg[0]?.count ? soldAgg[0].total / soldAgg[0].count : 0;
+    const avgSalePrice = soldAgg[0]?.count
+      ? soldAgg[0].total / soldAgg[0].count
+      : 0;
     const auctionBidPipeline = [
       { $match: { status: { $in: ["completed", "live"] } } },
-      { $group: { _id: null, totalBids: { $sum: "$totalBids" }, count: { $sum: 1 } } },
+      {
+        $group: {
+          _id: null,
+          totalBids: { $sum: "$totalBids" },
+          count: { $sum: 1 },
+        },
+      },
     ];
     const auctionBidAgg = await Auction.aggregate(auctionBidPipeline);
-    const bidsPerAuction = auctionBidAgg[0]?.count ? auctionBidAgg[0].totalBids / auctionBidAgg[0].count : 0;
+    const bidsPerAuction = auctionBidAgg[0]?.count
+      ? auctionBidAgg[0].totalBids / auctionBidAgg[0].count
+      : 0;
     const lotsClosed = soldCount + unsoldCount;
     const conversionRate = lotsClosed > 0 ? (soldCount / lotsClosed) * 100 : 0;
 
@@ -2058,15 +2272,22 @@ export const adminUpdateEscrowStatus = async (req, res) => {
       const settings = await getAuctionSettings();
       const listingFee = settings?.listingFee ?? 0;
       const buyerFeePercent = settings?.buyerFeePercent ?? 0;
-      const sellerSuccessFeePercent = settings?.sellerSuccessFeePercent ?? settings?.sellerCommissionPercent ?? 0;
+      const sellerSuccessFeePercent =
+        settings?.sellerSuccessFeePercent ??
+        settings?.sellerCommissionPercent ??
+        0;
       const inspectionFee = settings?.inspectionFee ?? 0;
       const dealerCommissionPercent = settings?.dealerCommissionPercent ?? 0;
       const dealerCommissionFixed = settings?.dealerCommissionFixed ?? 0;
       const dealerCommission = dealerCommissionPercent
         ? Math.round(finalPrice * (dealerCommissionPercent / 100))
         : dealerCommissionFixed;
-      const platformCut = Math.round(finalPrice * (sellerSuccessFeePercent / 100)) + listingFee;
-      const sellerAmount = Math.max(0, finalPrice - platformCut - inspectionFee - dealerCommission);
+      const platformCut =
+        Math.round(finalPrice * (sellerSuccessFeePercent / 100)) + listingFee;
+      const sellerAmount = Math.max(
+        0,
+        finalPrice - platformCut - inspectionFee - dealerCommission,
+      );
       const dealerId = ac?.submittedBy?._id || ac?.submittedBy;
       const sellerId = ac?.car?.postedBy;
 
@@ -2461,7 +2682,7 @@ export const runAuctionLifecycle = async () => {
       auction.status = "live";
       await auction.save();
       await AuctionCar.updateMany(
-        { auction: auction._id, status: "approved" },
+        { auction: auction._id, status: { $in: ["approved", "pending"] } },
         { status: "live" },
       );
       Logger.info(`Auction ${auction._id} auto-transitioned to live`);
@@ -2487,7 +2708,9 @@ export const getAuctionSettingsHandler = async (req, res) => {
     res.json({ success: true, data: settings });
   } catch (error) {
     Logger.error("getAuctionSettings error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch auction settings" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch auction settings" });
   }
 };
 
@@ -2519,20 +2742,24 @@ export const updateAuctionSettingsHandler = async (req, res) => {
       if (body[k] !== undefined) update[k] = Number(body[k]);
     });
     if (Object.keys(update).length === 0) {
-      return res.status(400).json({ success: false, message: "No valid fields to update" });
+      return res
+        .status(400)
+        .json({ success: false, message: "No valid fields to update" });
     }
     update.updatedBy = req.user._id;
     const doc = await AuctionSettings.findOneAndUpdate(
       {},
       { $set: update },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     ).lean();
     invalidateAuctionSettingsCache();
     const { updatedBy, createdAt, updatedAt, __v, _id, ...data } = doc;
     res.json({ success: true, data, message: "Auction settings updated" });
   } catch (error) {
     Logger.error("updateAuctionSettings error", error);
-    res.status(500).json({ success: false, message: "Failed to update auction settings" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to update auction settings" });
   }
 };
 
@@ -2552,16 +2779,29 @@ export const extendAuction = async (req, res) => {
       });
     }
     const auction = await Auction.findById(auctionId);
-    if (!auction) return res.status(404).json({ success: false, message: "Auction not found" });
+    if (!auction)
+      return res
+        .status(404)
+        .json({ success: false, message: "Auction not found" });
     if (auction.status !== "live") {
-      return res.status(400).json({ success: false, message: "Only live auctions can be extended" });
+      return res.status(400).json({
+        success: false,
+        message: "Only live auctions can be extended",
+      });
     }
     const isAdmin = req.user.role === "admin";
-    const isDealer = req.user.role === "dealer" || req.user.dealerInfo?.verified;
-    const submittedCars = await AuctionCar.find({ auction: auctionId, submittedBy: req.user._id }).limit(1);
+    const isDealer =
+      req.user.role === "dealer" || req.user.dealerInfo?.verified;
+    const submittedCars = await AuctionCar.find({
+      auction: auctionId,
+      submittedBy: req.user._id,
+    }).limit(1);
     const isSeller = submittedCars.length > 0;
     if (!isAdmin && !isSeller) {
-      return res.status(403).json({ success: false, message: "Only admin or the seller can extend this auction" });
+      return res.status(403).json({
+        success: false,
+        message: "Only admin or the seller can extend this auction",
+      });
     }
     const previousEndTime = new Date(auction.endTime);
     const extensionMs = Number(minutes) * 60 * 1000;
@@ -2591,7 +2831,9 @@ export const extendAuction = async (req, res) => {
     });
   } catch (error) {
     Logger.error("extendAuction error", error);
-    res.status(500).json({ success: false, message: "Failed to extend auction" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to extend auction" });
   }
 };
 
@@ -2600,9 +2842,17 @@ export const getAuctionStats = async (req, res) => {
     const { auctionId } = req.params;
     const settings = await getAuctionSettings();
     const windowMinutes = settings.activeBidderWindowMinutes || 15;
-    const activeBidders = await engineGetActiveBidderCount(auctionId, windowMinutes);
-    const auction = await Auction.findById(auctionId).select("totalBids totalCars totalSold status").lean();
-    if (!auction) return res.status(404).json({ success: false, message: "Auction not found" });
+    const activeBidders = await engineGetActiveBidderCount(
+      auctionId,
+      windowMinutes,
+    );
+    const auction = await Auction.findById(auctionId)
+      .select("totalBids totalCars totalSold status")
+      .lean();
+    if (!auction)
+      return res
+        .status(404)
+        .json({ success: false, message: "Auction not found" });
     res.json({
       success: true,
       data: {
@@ -2615,7 +2865,9 @@ export const getAuctionStats = async (req, res) => {
     });
   } catch (error) {
     Logger.error("getAuctionStats error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch auction stats" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch auction stats" });
   }
 };
 
@@ -2631,13 +2883,20 @@ export const getDealerAuctionAnalytics = async (req, res) => {
       .lean();
     const submitted = cars.length;
     const pending = cars.filter((c) => c.status === "pending").length;
-    const approved = cars.filter((c) => c.status === "approved" || c.status === "live").length;
+    const approved = cars.filter(
+      (c) => c.status === "approved" || c.status === "live",
+    ).length;
     const inAuction = cars.filter((c) => c.status === "live").length;
     const sold = cars.filter((c) => c.status === "sold").length;
     const unsold = cars.filter((c) => c.status === "unsold").length;
     const soldCars = cars.filter((c) => c.status === "sold" && c.finalPrice);
-    const totalRevenue = soldCars.reduce((sum, c) => sum + (c.finalPrice || 0), 0);
-    const averageSalePrice = soldCars.length ? totalRevenue / soldCars.length : 0;
+    const totalRevenue = soldCars.reduce(
+      (sum, c) => sum + (c.finalPrice || 0),
+      0,
+    );
+    const averageSalePrice = soldCars.length
+      ? totalRevenue / soldCars.length
+      : 0;
     res.json({
       success: true,
       data: {
@@ -2653,7 +2912,9 @@ export const getDealerAuctionAnalytics = async (req, res) => {
     });
   } catch (error) {
     Logger.error("getDealerAuctionAnalytics error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch dealer analytics" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch dealer analytics" });
   }
 };
 
@@ -2674,7 +2935,9 @@ export const adminGetAuctionExtensions = async (req, res) => {
     res.json({ success: true, data: list });
   } catch (error) {
     Logger.error("adminGetAuctionExtensions error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch extension log" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch extension log" });
   }
 };
 
@@ -2693,7 +2956,9 @@ export const adminGetSecurityEvents = async (req, res) => {
     res.json({ success: true, data: list });
   } catch (error) {
     Logger.error("adminGetSecurityEvents error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch security events" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch security events" });
   }
 };
 
@@ -2702,7 +2967,16 @@ export const adminGetSecurityEvents = async (req, res) => {
 // ═══════════════════════════════════════════════════════════════════════════
 
 const INSPECTION_YARD = "Okara Auction Yard, Punjab";
-const INSPECTION_TIME_SLOTS = ["09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM"];
+const INSPECTION_TIME_SLOTS = [
+  "09:00 AM",
+  "10:00 AM",
+  "11:00 AM",
+  "12:00 PM",
+  "02:00 PM",
+  "03:00 PM",
+  "04:00 PM",
+  "05:00 PM",
+];
 
 export const getInspectionTimeSlots = (req, res) => {
   res.json({ success: true, data: INSPECTION_TIME_SLOTS });
@@ -2716,12 +2990,16 @@ export const bookInspection = async (req, res) => {
     if (!date || !timeSlot || !INSPECTION_TIME_SLOTS.includes(timeSlot)) {
       return res.status(400).json({
         success: false,
-        message: "Valid inspectionDate and timeSlot required. Slots: " + INSPECTION_TIME_SLOTS.join(", "),
+        message:
+          "Valid inspectionDate and timeSlot required. Slots: " +
+          INSPECTION_TIME_SLOTS.join(", "),
       });
     }
     const carRef = auctionCarId || carId;
     if (!carRef) {
-      return res.status(400).json({ success: false, message: "auctionCarId or carId required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "auctionCarId or carId required" });
     }
     const ac = await AuctionCar.findById(carRef)
       .populate("car")
@@ -2743,10 +3021,14 @@ export const bookInspection = async (req, res) => {
       .populate("car", "title make model year")
       .populate("auction", "title")
       .lean();
-    res.status(201).json({ success: true, data: populated, message: "Inspection booked" });
+    res
+      .status(201)
+      .json({ success: true, data: populated, message: "Inspection booked" });
   } catch (error) {
     Logger.error("bookInspection error", error);
-    res.status(500).json({ success: false, message: "Failed to book inspection" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to book inspection" });
   }
 };
 
@@ -2760,7 +3042,9 @@ export const getMyInspectionBookings = async (req, res) => {
     res.json({ success: true, data: list });
   } catch (error) {
     Logger.error("getMyInspectionBookings error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch bookings" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch bookings" });
   }
 };
 
@@ -2783,7 +3067,9 @@ export const adminGetInspectionBookings = async (req, res) => {
     res.json({ success: true, data: list });
   } catch (error) {
     Logger.error("adminGetInspectionBookings error", error);
-    res.status(500).json({ success: false, message: "Failed to fetch inspection bookings" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch inspection bookings" });
   }
 };
 
@@ -2792,10 +3078,15 @@ export const adminUpdateInspectionBooking = async (req, res) => {
     const { status } = req.body;
     const allowed = ["pending", "confirmed", "completed", "cancelled"];
     if (!status || !allowed.includes(status)) {
-      return res.status(400).json({ success: false, message: "Valid status required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Valid status required" });
     }
     const booking = await InspectionBooking.findById(req.params.id);
-    if (!booking) return res.status(404).json({ success: false, message: "Booking not found" });
+    if (!booking)
+      return res
+        .status(404)
+        .json({ success: false, message: "Booking not found" });
     booking.status = status;
     if (status === "confirmed") {
       booking.confirmedBy = req.user._id;
@@ -2809,6 +3100,8 @@ export const adminUpdateInspectionBooking = async (req, res) => {
     res.json({ success: true, data: populated, message: "Booking updated" });
   } catch (error) {
     Logger.error("adminUpdateInspectionBooking error", error);
-    res.status(500).json({ success: false, message: "Failed to update booking" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to update booking" });
   }
 };
