@@ -486,17 +486,24 @@ export default function AuctionManagement() {
           <div className="overflow-x-auto bg-white rounded-xl border border-slate-200 shadow-sm">
             <table className="w-full text-sm">
               <thead><tr className="text-left text-slate-500 border-b bg-slate-50">
-                <th className="p-4">User</th><th className="p-4">Amount</th><th className="p-4">Method</th><th className="p-4">Transaction ID</th><th className="p-4">Status</th><th className="p-4">Date</th><th className="p-4">Actions</th>
+                <th className="p-4">User</th><th className="p-4">Amount</th><th className="p-4">Method</th><th className="p-4">Transaction ID</th><th className="p-4">Receipt</th><th className="p-4">Status</th><th className="p-4">Date</th><th className="p-4">Actions</th>
               </tr></thead>
               <tbody>
                 {(paymentStatusFilter === "all" ? tokenPayments : tokenPayments.filter((p) => p.status === paymentStatusFilter)).length === 0 ? (
-                  <tr><td colSpan="7" className="text-center py-10 text-slate-500">No token payments</td></tr>
+                  <tr><td colSpan="8" className="text-center py-10 text-slate-500">No token payments</td></tr>
                 ) : (paymentStatusFilter === "all" ? tokenPayments : tokenPayments.filter((p) => p.status === paymentStatusFilter)).map((p) => (
                   <tr key={p._id} className="border-b border-slate-100 hover:bg-slate-50">
                     <td className="p-4"><div><p className="font-medium">{p.user?.name}</p><p className="text-xs text-slate-500">{p.user?.email}</p></div></td>
                     <td className="p-4 font-semibold">PKR {p.amount?.toLocaleString()}</td>
                     <td className="p-4 capitalize">{p.paymentMethod}</td>
                     <td className="p-4 font-mono text-xs">{p.transactionId}</td>
+                    <td className="p-4 text-xs">
+                      {p.receiptUrl ? (
+                        <a href={p.receiptUrl} target="_blank" rel="noreferrer" className="text-[#FFA602] hover:underline">Open proof</a>
+                      ) : (
+                        <span className="text-slate-400">Not attached</span>
+                      )}
+                    </td>
                     <td className="p-4"><Badge className={statusColors[p.status] || ""}>{p.status}</Badge></td>
                     <td className="p-4 text-slate-500">{new Date(p.createdAt).toLocaleDateString()}</td>
                     <td className="p-4">

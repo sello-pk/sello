@@ -25,6 +25,7 @@ import {
   useGetMyWonAuctionsQuery,
   useGetMyEscrowsQuery,
   usePayEscrowMutation,
+  useRaiseEscrowDisputeMutation,
   useGetMyTokenPaymentsQuery,
   useGetMyWalletTransactionsQuery,
   useGetMyWalletQuery,
@@ -166,6 +167,8 @@ export default function BuyerTransactions() {
   const { data: escrows = [], isLoading: escrowLoading, refetch: refetchEscrows } =
     useGetMyEscrowsQuery();
   const [payEscrow, { isLoading: payingEscrow }] = usePayEscrowMutation();
+  const [raiseEscrowDispute, { isLoading: raisingDispute }] =
+    useRaiseEscrowDisputeMutation();
   const { data: tokenData, isLoading: tokenLoading } =
     useGetMyTokenPaymentsQuery();
   const { data: walletData, isLoading: walletLoading } =
@@ -298,7 +301,10 @@ export default function BuyerTransactions() {
             Auction bidding access is not approved yet (status:{" "}
             {bidderStatus.replaceAll("_", " ")}). You can still manage deposits
             and refunds.{" "}
-            <Link to="/profile" className="underline font-medium">
+            <Link
+              to="/profile?section=auction-access"
+              className="underline font-medium"
+            >
               Request/track access in Profile
             </Link>
             .
@@ -702,6 +708,50 @@ export default function BuyerTransactions() {
                           >
                             {payingEscrow ? "Processing..." : escrow.amountDue > 0 ? `Pay ${formatPrice(escrow.amountDue)} from wallet` : "Mark as paid"}
                           </Button>
+                        </div>
+                      )}
+                      {(escrow.status === "pending" || escrow.status === "in_escrow") && (
+                        <div className="mt-3 p-3 bg-red-50 rounded-lg border border-red-100">
+                          <p className="text-xs text-red-700 font-medium">
+                            Issue with vehicle, payment, or delivery?
+                          </p>
+                          <p className="text-xs text-red-600 mt-1">
+                            Raise a dispute and our admin team will review this escrow.
+                          </p>
+                          <Button
+                            variant="danger"
+                            className="mt-3"
+                            disabled={raisingDispute}
+                            onClick={async () => {
+                              const reason = window.prompt(
+                                "Describe your issue (minimum 10 characters):",
+                                "",
+                              );
+                              if (!reason || reason.trim().length < 10) {
+                                toast.error("Please provide a clear dispute reason.");
+                                return;
+                              }
+                              try {
+                                await raiseEscrowDispute({
+                                  escrowId: escrow._id,
+                                  reason,
+                                }).unwrap();
+                                toast.success("Dispute submitted successfully.");
+                                refetchEscrows();
+                              } catch (e) {
+                                toast.error(
+                                  e?.data?.message || "Failed to submit dispute",
+                                );
+                              }
+                            }}
+                          >
+                            {raisingDispute ? "Submitting..." : "Raise Dispute"}
+                          </Button>
+                          {escrow.disputeReason && (
+                            <p className="text-xs text-red-700 mt-2">
+                              Existing dispute: {escrow.disputeReason}
+                            </p>
+                          )}
                         </div>
                       )}
                     </div>

@@ -1372,6 +1372,11 @@ export const api = createApi({
       }),
       invalidatesTags: ["Auction"],
     }),
+    getTokenPaymentMeta: builder.query({
+      query: () => "/auctions/token-payment/meta",
+      providesTags: ["Auction"],
+      transformResponse: (response) => response?.data || response,
+    }),
     getMyTokenPayments: builder.query({
       query: () => "/auctions/my/token-payments",
       providesTags: ["Auction"],
@@ -1422,6 +1427,14 @@ export const api = createApi({
         url: "/escrow/pay",
         method: "POST",
         body,
+      }),
+      invalidatesTags: ["Auction"],
+    }),
+    raiseEscrowDispute: builder.mutation({
+      query: ({ escrowId, reason }) => ({
+        url: `/escrow/${escrowId}/dispute`,
+        method: "POST",
+        body: { reason },
       }),
       invalidatesTags: ["Auction"],
     }),
@@ -1680,6 +1693,7 @@ export const {
   useSetProxyBidMutation,
   useBuyNowMutation,
   useSubmitTokenPaymentMutation,
+  useGetTokenPaymentMetaQuery,
   useGetMyTokenPaymentsQuery,
   useAddToAuctionWatchlistMutation,
   useRemoveFromAuctionWatchlistMutation,
@@ -1689,6 +1703,7 @@ export const {
   useGetMyEscrowsQuery,
   useGetEscrowByIdQuery,
   usePayEscrowMutation,
+  useRaiseEscrowDisputeMutation,
   useGetMyAuctionResultQuery,
   useGetMyWalletTransactionsQuery,
   useSubmitCarToAuctionMutation,

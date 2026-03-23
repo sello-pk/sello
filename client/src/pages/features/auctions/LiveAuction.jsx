@@ -23,6 +23,9 @@ import {
 import { useSocket } from "@contexts/SocketContext";
 import { useCarCategories } from "@hooks/useCarCategories";
 import SearchableSelect from "@components/common/SearchableSelect";
+import LiveAuctionUpdates from "@components/auction/LiveAuctionUpdates";
+import AuctionSavedSearches from "@components/auction/AuctionSavedSearches";
+import AuctionNotificationDropdown from "@components/auction/AuctionNotificationDropdown";
 
 // Shared tiny components
 
@@ -157,7 +160,7 @@ const CarCard = ({ auctionCar, compact = false, auctionLocation, auctionEndTime 
                     {car.make} {car.model}
                   </h3>
                   <p className="text-slate-500 text-sm">
-                    {car.year} • {mileage} km
+                    {car.year} - {mileage} km
                   </p>
                 </div>
                 <Badge variant="success">Live</Badge>
@@ -278,7 +281,13 @@ export default function LiveAuction() {
     { skip: false },
   );
 
-  const displayCars = carsResponse?.data || [];
+  const displayCars = Array.isArray(carsResponse?.data)
+    ? carsResponse.data
+    : Array.isArray(carsResponse?.cars)
+      ? carsResponse.cars
+      : Array.isArray(carsResponse)
+        ? carsResponse
+        : [];
   const upcomingAuctions = Array.isArray(upcomingList) ? upcomingList : upcomingList?.data || [];
   const endedAuctions = Array.isArray(endedList) ? endedList : endedList?.data || [];
 
@@ -457,6 +466,7 @@ export default function LiveAuction() {
               </div>
             </div>
             <div className="flex items-center gap-4">
+              <AuctionNotificationDropdown />
               <Link
                 to="/auctions/transactions"
                 className="text-sm text-white/80 hover:text-white transition-colors"
@@ -572,6 +582,22 @@ export default function LiveAuction() {
                 </button>
               </div>
             </div>
+          </div>
+          <div className="mt-4 grid lg:grid-cols-2 gap-4">
+            <AuctionSavedSearches
+              filters={filters}
+              searchQuery={searchQuery}
+              onApply={(nextFilters, nextSearch) => {
+                setFilters((p) => ({ ...p, ...nextFilters }));
+                setSearchQuery(nextSearch || "");
+              }}
+            />
+            <LiveAuctionUpdates
+              auctionId={auctionId}
+              socket={socket}
+              addEventListener={addEventListener}
+              removeEventListener={removeEventListener}
+            />
           </div>
           {activeFiltersCount > 0 && (
             <div className="flex items-center gap-2 mt-4 pt-4 border-t border-slate-100">

@@ -174,6 +174,8 @@ const tokenPaymentSchema = new mongoose.Schema(
       required: true,
     },
     transactionId: { type: String, required: true },
+    /** Optional proof screenshot/image URL uploaded by user. */
+    receiptUrl: { type: String, default: "" },
     status: {
       type: String,
       enum: ["pending", "verified", "rejected", "refunded"],
@@ -238,6 +240,9 @@ const escrowSchema = new mongoose.Schema(
     paymentDeadline: { type: Date, required: true },
     paidAt: { type: Date, default: null },
     releasedAt: { type: Date, default: null },
+    /** Buyer-initiated dispute (admin reviews in dashboard). */
+    disputeReason: { type: String, default: "" },
+    disputedAt: { type: Date, default: null },
   },
   { timestamps: true }
 );

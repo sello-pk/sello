@@ -20,6 +20,7 @@ import {
   placeOfflineBid,
   getBidsForCar,
   submitTokenPayment,
+  getTokenPaymentMeta,
   getMyTokenPayments,
   addToWatchlist,
   removeFromWatchlist,
@@ -231,6 +232,7 @@ router.post("/bid", auth, requireAuctionBidAccess, bidRateLimiter, placeBid);
 router.post("/proxy-bid", auth, requireAuctionBidAccess, setProxyBid);
 router.post("/buy-now", auth, requireAuctionBidAccess, buyNow);
 router.post("/token-payment", auth, submitTokenPayment);
+router.get("/token-payment/meta", auth, getTokenPaymentMeta);
 router.get("/my/token-payments", auth, getMyTokenPayments);
 router.post("/watchlist", auth, addToWatchlist);
 router.delete("/watchlist/:auctionCarId", auth, removeFromWatchlist);

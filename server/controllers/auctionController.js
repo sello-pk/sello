@@ -323,15 +323,32 @@ export const getAuctionCarDetail = async (req, res) => {
       auctionCar: ac._id,
       bidder: { $exists: true, $ne: null },
     }).then((arr) => arr.length);
+    const settings = await getAuctionSettings();
+    const bidIncrement = Number(ac?.bidIncrement || settings?.minBidIncrement || 5000);
     const minimumNextBid = engineGetMinNextBid(ac);
+    const quickBidSuggestions = [1, 2, 5, 10].map(
+      (step) => minimumNextBid + step * bidIncrement,
+    );
+    const reserveMet = ac?.reservePrice ? Number(ac.currentBid || 0) >= Number(ac.reservePrice) : null;
+    const priceChart = [...(bids || [])]
+      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+      .map((bid) => ({
+        amount: bid.amount,
+        at: bid.createdAt,
+        type: bid.bidType || "online",
+      }));
 
     res.json({
       success: true,
       data: {
         ...ac,
         currentBidder: null,
+        bidIncrement,
         minimumNextBid,
+        quickBidSuggestions,
+        reserveMet,
         totalBidders,
+        priceChart,
         bids: sanitizeBidsForPublic(bids),
       },
     });
@@ -916,11 +933,33 @@ export const getBidsForCar = async (req, res) => {
 
 export const submitTokenPayment = async (req, res) => {
   try {
-    const { paymentMethod, transactionId } = req.body;
-    if (!paymentMethod || !transactionId) {
+    const paymentMethod = String(req.body?.paymentMethod || "").trim().toLowerCase();
+    const transactionId = String(req.body?.transactionId || "").trim();
+    const receiptUrl = String(req.body?.receiptUrl || "").trim();
+    const allowedMethods = ["jazzcash", "easypaisa", "bank_transfer"];
+
+    if (!paymentMethod || !transactionId || !receiptUrl) {
       return res.status(400).json({
         success: false,
-        message: "Payment method and transaction ID required",
+        message: "Payment method, transaction ID, and receipt proof are required",
+      });
+    }
+    if (!allowedMethods.includes(paymentMethod)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid payment method",
+      });
+    }
+    if (transactionId.length < 4 || transactionId.length > 64) {
+      return res.status(400).json({
+        success: false,
+        message: "Transaction ID must be between 4 and 64 characters",
+      });
+    }
+    if (receiptUrl.length < 8 || receiptUrl.length > 250000) {
+      return res.status(400).json({
+        success: false,
+        message: "Receipt proof looks invalid. Please upload again.",
       });
     }
 
@@ -937,11 +976,26 @@ export const submitTokenPayment = async (req, res) => {
             : "Your previous payment is still pending verification",
       });
     }
+    const existingTx = await TokenPayment.findOne({
+      user: req.user._id,
+      transactionId,
+    }).lean();
+    if (existingTx) {
+      return res.status(400).json({
+        success: false,
+        message: "This transaction ID has already been submitted",
+      });
+    }
+
+    const settings = await getAuctionSettings();
+    const tokenAmount = Number(settings?.tokenDeposit || 10000);
 
     const payment = await TokenPayment.create({
       user: req.user._id,
+      amount: tokenAmount,
       paymentMethod,
       transactionId,
+      receiptUrl,
     });
 
     res.status(201).json({
@@ -959,6 +1013,7 @@ export const submitTokenPayment = async (req, res) => {
 
 export const getMyTokenPayments = async (req, res) => {
   try {
+    const settings = await getAuctionSettings();
     const payments = await TokenPayment.find({ user: req.user._id })
       .sort({ createdAt: -1 })
       .lean();
@@ -969,6 +1024,8 @@ export const getMyTokenPayments = async (req, res) => {
         payments,
         tokenBalance: verified ? verified.amount : 0,
         hasVerifiedToken: !!verified,
+        tokenDepositAmount: Number(settings?.tokenDeposit || 10000),
+        paymentWindowHours: Number(settings?.paymentWindowHours || 48),
       },
     });
   } catch (error) {
@@ -976,6 +1033,48 @@ export const getMyTokenPayments = async (req, res) => {
     res
       .status(500)
       .json({ success: false, message: "Failed to fetch payments" });
+  }
+};
+
+export const getTokenPaymentMeta = async (req, res) => {
+  try {
+    const settings = await getAuctionSettings();
+    res.json({
+      success: true,
+      data: {
+        tokenDepositAmount: Number(settings?.tokenDeposit || 10000),
+        paymentWindowHours: Number(settings?.paymentWindowHours || 48),
+        methods: [
+          {
+            id: "jazzcash",
+            name: "JazzCash",
+            accountName: "Okara Auto Auction",
+            accountLabel: "Send to",
+            accountValue: "0300-1234567",
+          },
+          {
+            id: "easypaisa",
+            name: "EasyPaisa",
+            accountName: "Okara Auto Auction",
+            accountLabel: "Send to",
+            accountValue: "0300-7654321",
+          },
+          {
+            id: "bank_transfer",
+            name: "Bank Transfer",
+            accountName: "Okara Auto Auction Pvt Ltd",
+            accountLabel: "HBL Account",
+            accountValue: "1234567890",
+          },
+        ],
+        supportPhone: "0300-1234567",
+      },
+    });
+  } catch (error) {
+    Logger.error("getTokenPaymentMeta error", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch token payment info" });
   }
 };
 
@@ -1214,6 +1313,66 @@ export const payEscrow = async (req, res) => {
     res
       .status(500)
       .json({ success: false, message: "Failed to process escrow payment" });
+  }
+};
+
+/** POST /api/escrow/:id/dispute – buyer flags an issue (pending or in_escrow) */
+export const raiseEscrowDispute = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const reason = String(req.body?.reason || "").trim();
+    if (reason.length < 10) {
+      return res.status(400).json({
+        success: false,
+        message: "Please describe the issue (at least 10 characters).",
+      });
+    }
+
+    const escrow = await Escrow.findById(id).populate("buyer", "name email");
+    if (!escrow) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Escrow not found" });
+    }
+
+    if (escrow.buyer._id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to dispute this escrow",
+      });
+    }
+
+    if (!["pending", "in_escrow"].includes(escrow.status)) {
+      return res.status(400).json({
+        success: false,
+        message: `This escrow cannot be disputed in status "${escrow.status}".`,
+      });
+    }
+
+    escrow.status = "disputed";
+    escrow.disputeReason = reason.slice(0, 4000);
+    escrow.disputedAt = new Date();
+    await escrow.save();
+
+    await Notification.create({
+      title: "Escrow dispute submitted",
+      message:
+        "We received your dispute. Our team will review and contact you shortly.",
+      type: "warning",
+      recipient: req.user._id,
+      actionUrl: "/auctions/transactions",
+    });
+
+    res.json({
+      success: true,
+      data: escrow,
+      message: "Dispute submitted successfully.",
+    });
+  } catch (error) {
+    Logger.error("raiseEscrowDispute error", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to submit dispute" });
   }
 };
 

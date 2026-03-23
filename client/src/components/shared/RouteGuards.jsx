@@ -185,7 +185,7 @@ const AuctionCapabilityRoute = () => {
     if (user.role === "admin" || (user.role === "dealer" && user?.dealerInfo?.verified)) {
       return <Outlet />;
     }
-    return <Navigate to="/profile" replace />;
+    return <Navigate to="/profile?section=auction-access" replace />;
   }
 
   if (user.role === "admin") {
@@ -202,7 +202,7 @@ const AuctionCapabilityRoute = () => {
     (user.role === "dealer" && user?.dealerInfo?.verified);
 
   if (!hasAccess) {
-    return <Navigate to="/profile" replace />;
+    return <Navigate to="/profile?section=auction-access" replace />;
   }
 
   return <Outlet />;

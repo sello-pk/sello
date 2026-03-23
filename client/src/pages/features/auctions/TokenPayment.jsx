@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
@@ -8,20 +8,18 @@ import {
   IoCheckmarkCircleOutline as CheckCircle,
   IoInformationCircleOutline as Info,
   IoArrowBack as ArrowLeft,
+  IoCallOutline as Phone,
+  IoCopyOutline as Copy,
+  IoCardOutline as Card,
+  IoPhonePortraitOutline as PhonePayment,
+  IoBusinessOutline as Bank,
 } from "react-icons/io5";
 import {
   useSubmitTokenPaymentMutation,
   useGetMyTokenPaymentsQuery,
   useGetMyAuctionAccessStatusQuery,
+  useGetTokenPaymentMetaQuery,
 } from "@redux/services/api";
-
-const Badge = ({ children, className = "" }) => (
-  <span
-    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${className}`}
-  >
-    {children}
-  </span>
-);
 
 const Button = ({
   children,
@@ -32,12 +30,12 @@ const Button = ({
 }) => {
   const v = {
     default:
-      "bg-gradient-to-r from-[#FFA602] to-amber-500 text-white hover:from-amber-500 hover:to-[#FFA602] shadow-lg shadow-[#FFA602]/30",
-    outline: "border-2 border-slate-300 text-slate-700 hover:bg-slate-100",
+      "bg-gradient-to-r from-primary to-amber-500 text-white hover:from-amber-500 hover:to-primary shadow-lg shadow-primary/30",
+    outline: "border border-slate-300 text-slate-700 hover:bg-slate-100",
   };
   return (
     <button
-      className={`inline-flex items-center justify-center font-medium px-6 py-3 text-sm transition-all duration-300 rounded-lg focus:outline-none disabled:opacity-50 ${v[variant]} ${className}`}
+      className={`inline-flex items-center justify-center font-medium px-6 py-3 text-sm transition-all duration-300 rounded-xl focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed ${v[variant]} ${className}`}
       disabled={disabled}
       {...props}
     >
@@ -46,255 +44,335 @@ const Button = ({
   );
 };
 
-const paymentMethods = [
-  {
-    id: "jazzcash",
-    name: "JazzCash",
-    color: "bg-red-50 border-red-200",
-    textColor: "text-red-700",
-    account: "0300-XXXXXXX",
-  },
-  {
-    id: "easypaisa",
-    name: "EasyPaisa",
-    color: "bg-green-50 border-green-200",
-    textColor: "text-green-700",
-    account: "0345-XXXXXXX",
-  },
-  {
-    id: "bank_transfer",
-    name: "Bank Transfer",
-    color: "bg-blue-50 border-blue-200",
-    textColor: "text-blue-700",
-    account: "HBL - IBAN PK36...",
-  },
-];
+const StatusBadge = ({ status }) => {
+  const classes = {
+    pending: "bg-amber-100 text-amber-700",
+    verified: "bg-emerald-100 text-emerald-700",
+    rejected: "bg-red-100 text-red-700",
+    refunded: "bg-blue-100 text-blue-700",
+  };
+  return (
+    <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${classes[status] || "bg-slate-100 text-slate-700"}`}>
+      {status || "unknown"}
+    </span>
+  );
+};
 
-const statusColors = {
-  pending: "bg-amber-100 text-amber-700",
-  verified: "bg-emerald-100 text-emerald-700",
-  rejected: "bg-red-100 text-red-700",
-  refunded: "bg-blue-100 text-blue-700",
+const iconByMethod = {
+  jazzcash: PhonePayment,
+  easypaisa: PhonePayment,
+  bank_transfer: Bank,
 };
 
 export default function TokenPayment() {
   const navigate = useNavigate();
-  const [selectedMethod, setSelectedMethod] = useState(null);
+  const [selectedMethod, setSelectedMethod] = useState("");
   const [transactionId, setTransactionId] = useState("");
+  const [receiptUrl, setReceiptUrl] = useState("");
+  const [receiptName, setReceiptName] = useState("");
 
   const { data: tokenData, isLoading } = useGetMyTokenPaymentsQuery();
   const { data: auctionAccess } = useGetMyAuctionAccessStatusQuery();
-  const [submitPayment, { isLoading: submitting }] =
-    useSubmitTokenPaymentMutation();
+  const { data: tokenMeta } = useGetTokenPaymentMetaQuery();
+  const [submitPayment, { isLoading: submitting }] = useSubmitTokenPaymentMutation();
+
+  const tokenDepositAmount = tokenMeta?.tokenDepositAmount || tokenData?.tokenDepositAmount || 10000;
+  const paymentWindowHours = tokenMeta?.paymentWindowHours || tokenData?.paymentWindowHours || 48;
+  const supportPhone = tokenMeta?.supportPhone || "0300-1234567";
+
+  const methods = useMemo(() => {
+    if (Array.isArray(tokenMeta?.methods) && tokenMeta.methods.length > 0) {
+      return tokenMeta.methods;
+    }
+    return [
+      { id: "jazzcash", name: "JazzCash", accountName: "Okara Auto Auction", accountLabel: "Send to", accountValue: "0300-1234567" },
+      { id: "easypaisa", name: "EasyPaisa", accountName: "Okara Auto Auction", accountLabel: "Send to", accountValue: "0300-7654321" },
+      { id: "bank_transfer", name: "Bank Transfer", accountName: "Okara Auto Auction Pvt Ltd", accountLabel: "HBL Account", accountValue: "1234567890" },
+    ];
+  }, [tokenMeta]);
+
+  const selectedMethodData = methods.find((m) => m.id === selectedMethod) || null;
 
   const handleSubmit = async () => {
-    if (!selectedMethod || !transactionId.trim())
-      return toast.error("Please select method and enter transaction ID");
+    if (!selectedMethod || !transactionId.trim() || !receiptUrl.trim()) {
+      toast.error("Please select method, add transaction ID, and upload receipt proof");
+      return;
+    }
     try {
       await submitPayment({
         paymentMethod: selectedMethod,
         transactionId: transactionId.trim(),
+        receiptUrl: receiptUrl.trim(),
       }).unwrap();
-      toast.success("Payment submitted! Awaiting verification.");
+      toast.success("Payment submitted. Verification in progress.");
       navigate("/auctions/live");
     } catch (err) {
       toast.error(err?.data?.message || "Failed to submit payment");
     }
   };
 
-  if (isLoading)
+  const handleCopy = async (value) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      toast.success("Copied");
+    } catch {
+      toast.error("Copy failed");
+    }
+  };
+
+  const handleReceiptFile = (file) => {
+    if (!file) return;
+    const maxMb = 6;
+    if (file.size > maxMb * 1024 * 1024) {
+      toast.error(`Receipt image must be smaller than ${maxMb}MB`);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setReceiptUrl(String(reader.result || ""));
+      setReceiptName(file.name);
+    };
+    reader.onerror = () => toast.error("Failed to read receipt file");
+    reader.readAsDataURL(file);
+  };
+
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <p>Loading...</p>
+        <p className="text-slate-600">Loading token payment...</p>
       </div>
     );
+  }
 
   const hasVerified = tokenData?.hasVerifiedToken;
   const payments = tokenData?.payments || [];
-  const bidderStatus =
-    auctionAccess?.auctionCapabilities?.auctionBidder?.status ||
-    "not_requested";
-  const dealerStatus =
-    auctionAccess?.auctionCapabilities?.auctionDealer?.status ||
-    "not_requested";
-  const hasAuctionAccess =
-    bidderStatus === "approved" || dealerStatus === "approved";
+  const walletBalance = tokenData?.tokenBalance || 0;
+  const bidderStatus = auctionAccess?.auctionCapabilities?.auctionBidder?.status || "not_requested";
+  const dealerStatus = auctionAccess?.auctionCapabilities?.auctionDealer?.status || "not_requested";
+  const hasAuctionAccess = bidderStatus === "approved" || dealerStatus === "approved";
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-slate-500 hover:text-slate-700 mb-6"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          Back
-        </button>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">
-            Bid Token Payment
-          </h1>
-          <p className="text-slate-500 mb-8">
-            Pay a refundable PKR 10,000 deposit to start bidding
+    <div className="min-h-screen bg-slate-100 pb-12">
+      <section className="bg-gradient-to-r from-slate-900 to-slate-800 text-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <button
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center gap-2 text-slate-300 hover:text-white mb-5"
+          >
+            <ArrowLeft className="w-5 h-5" /> Back
+          </button>
+          <h1 className="text-3xl font-bold">Token Payment</h1>
+          <p className="text-slate-300 mt-2">
+            Secure your bidding access with a refundable deposit.
           </p>
+        </div>
+      </section>
 
-          {hasVerified ? (
-            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-8 text-center">
-              <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-emerald-700 mb-2">
-                Token Verified!
-              </h2>
-              <p className="text-emerald-600 mb-6">
-                You're all set to bid. Your token balance: PKR{" "}
-                {tokenData.tokenBalance?.toLocaleString()}
-              </p>
-              <Button onClick={() => navigate("/auctions/live")}>
-                Go to Live Auction
-              </Button>
-            </div>
-          ) : (
-            <>
-              {/* Info */}
-              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-8 flex gap-4">
-                <Info className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <h3 className="font-semibold text-amber-800 mb-1">
-                    How it works
-                  </h3>
-                  <ul className="text-sm text-amber-700 space-y-1">
-                    <li>1. Send PKR 10,000 to the account below</li>
-                    <li>2. Enter your transaction ID here</li>
-                    <li>3. We'll verify within 1-2 hours</li>
-                    <li>4. Token is fully refundable if you don't win</li>
-                  </ul>
-                  <p className="text-xs mt-2 text-slate-600">
-                    Need a higher bid limit? Add funds to your{" "}
-                    <Link to="/auctions/transactions" className="text-[#FFA602] font-medium hover:underline">
-                      wallet
-                    </Link>{" "}
-                    (Deposits tab).
-                  </p>
-                  {!hasAuctionAccess && (
-                    <p className="text-xs mt-2 text-amber-700">
-                      Tip: You can submit token payment now. Bid placement still
-                      needs bidder/dealer approval (
-                      {bidderStatus.replaceAll("_", " ")}).
-                    </p>
-                  )}
-                  {!hasAuctionAccess && (
-                    <Button
-                      variant="outline"
-                      className="mt-3"
-                      onClick={() => navigate("/profile")}
-                    >
-                      Request Auction Access
-                    </Button>
-                  )}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+        {hasVerified ? (
+          <div className="bg-white rounded-2xl border border-emerald-200 p-8 text-center shadow-sm">
+            <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-emerald-700 mb-2">Token Verified</h2>
+            <p className="text-slate-600 mb-6">
+              You can place bids now. Available token balance: PKR {Number(walletBalance).toLocaleString()}.
+            </p>
+            <Button onClick={() => navigate("/auctions/live")}>Go to Live Auction</Button>
+          </div>
+        ) : (
+          <div className="grid lg:grid-cols-3 gap-6">
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="lg:col-span-2 space-y-6">
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="rounded-2xl p-5 bg-gradient-to-r from-primary to-amber-500 text-white">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm opacity-90">Token Amount</p>
+                      <span className="text-xs bg-white/20 rounded-full px-2 py-1">Refundable</span>
+                    </div>
+                    <p className="text-5xl font-bold mt-2">PKR {Number(tokenDepositAmount).toLocaleString()}</p>
+                    <p className="text-sm mt-2 opacity-90">This amount is applied to your first winning bid.</p>
+                  </div>
+
+                  <div className="rounded-2xl p-5 border border-slate-200 bg-slate-50">
+                    <div className="flex items-center gap-2 text-slate-700 font-semibold mb-3">
+                      <Wallet className="w-5 h-5" /> Your Token Balance
+                    </div>
+                    <p className="text-4xl font-bold text-slate-900">PKR {Number(walletBalance).toLocaleString()}</p>
+                    <p className="text-sm text-slate-500 mt-1">Current balance</p>
+                  </div>
                 </div>
               </div>
 
-              {/* Method selection */}
-              <div className="mb-6">
-                <h3 className="font-semibold text-slate-900 mb-3">
-                  Select Payment Method
-                </h3>
-                <div className="grid gap-3">
-                  {paymentMethods.map((m) => (
-                    <button
-                      key={m.id}
-                      onClick={() => setSelectedMethod(m.id)}
-                      className={`p-4 rounded-xl border-2 text-left transition-all ${selectedMethod === m.id ? `${m.color} border-[#FFA602] ring-2 ring-[#FFA602]/20` : "bg-white border-slate-200 hover:bg-slate-50"}`}
-                    >
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className={`font-semibold ${m.textColor}`}>
-                            {m.name}
-                          </p>
-                          <p className="text-sm text-slate-500 mt-1">
-                            Send to: {m.account}
-                          </p>
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <h3 className="text-xl font-semibold text-slate-900 mb-4">Select Payment Method</h3>
+                <div className="space-y-3">
+                  {methods.map((method) => {
+                    const Icon = iconByMethod[method.id] || Card;
+                    const active = selectedMethod === method.id;
+                    return (
+                      <button
+                        key={method.id}
+                        onClick={() => setSelectedMethod(method.id)}
+                        className={`w-full rounded-xl border p-4 text-left transition ${active ? "border-primary bg-primary/5" : "border-slate-200 bg-white hover:bg-slate-50"}`}
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-3">
+                            <span className={`w-10 h-10 rounded-xl flex items-center justify-center ${active ? "bg-primary/10 text-primary" : "bg-slate-100 text-slate-500"}`}>
+                              <Icon className="w-5 h-5" />
+                            </span>
+                            <div>
+                              <p className="font-semibold text-slate-900">{method.name}</p>
+                              <p className="text-sm text-slate-500">{method.accountLabel}: {method.accountValue}</p>
+                            </div>
+                          </div>
+                          {active && <CheckCircle className="w-5 h-5 text-primary" />}
                         </div>
-                        <div
-                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedMethod === m.id ? "border-[#FFA602] bg-[#FFA602]" : "border-slate-300"}`}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <h3 className="text-xl font-semibold text-slate-900 mb-4">Payment Instructions</h3>
+                <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 mb-4">
+                  <div className="space-y-3">
+                    <div className="grid sm:grid-cols-[140px_1fr_auto] gap-2 items-center">
+                      <p className="text-slate-500">Account Name</p>
+                      <p className="font-semibold text-slate-900">
+                        {selectedMethodData?.accountName || "Select a payment method"}
+                      </p>
+                      {selectedMethodData?.accountName && (
+                        <button
+                          onClick={() => handleCopy(selectedMethodData.accountName)}
+                          className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-100"
                         >
-                          {selectedMethod === m.id && (
-                            <CheckCircle className="w-3 h-3 text-white" />
-                          )}
-                        </div>
-                      </div>
-                    </button>
-                  ))}
+                          <Copy className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                    <div className="grid sm:grid-cols-[140px_1fr_auto] gap-2 items-center">
+                      <p className="text-slate-500">Account/Number</p>
+                      <p className="font-semibold text-slate-900">{selectedMethodData?.accountValue || "Select a payment method"}</p>
+                      {selectedMethodData?.accountValue && (
+                        <button
+                          onClick={() => handleCopy(selectedMethodData.accountValue)}
+                          className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-100"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              {/* Transaction ID */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Transaction ID / Reference
-                </label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Transaction ID / Reference Number *</label>
                 <input
                   type="text"
                   value={transactionId}
                   onChange={(e) => setTransactionId(e.target.value)}
-                  placeholder="Enter your transaction reference number"
-                  className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FFA602]"
+                  placeholder="Enter your transaction ID"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
                 />
-              </div>
+                <label className="block text-sm font-semibold text-slate-700 mt-4 mb-2">
+                  Upload Receipt Proof *
+                </label>
+                <input
+                  type="file"
+                  accept="image/*,application/pdf"
+                  onChange={(e) => handleReceiptFile(e.target.files?.[0])}
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl bg-white"
+                />
+                {receiptName && (
+                  <p className="text-xs text-slate-500 mt-2">Selected: {receiptName}</p>
+                )}
+                {!receiptName && (
+                  <p className="text-xs text-slate-500 mt-2">
+                    Upload screenshot/photo/PDF receipt as payment proof.
+                  </p>
+                )}
+                {receiptUrl?.startsWith("data:image/") && (
+                  <img
+                    src={receiptUrl}
+                    alt="Receipt preview"
+                    className="mt-3 max-h-44 rounded-lg border border-slate-200"
+                  />
+                )}
+                <p className="text-sm text-slate-500 mt-2">Verification typically takes 1-2 hours during business hours.</p>
 
-              <Button
-                onClick={handleSubmit}
-                disabled={
-                  submitting || !selectedMethod || !transactionId.trim()
-                }
-                className="w-full"
-              >
-                <Wallet className="w-5 h-5 mr-2" />
-                {submitting ? "Submitting..." : "Submit Payment"}
-              </Button>
-
-              <div className="flex items-center justify-center gap-2 mt-4 text-sm text-slate-500">
-                <ShieldCheck className="w-4 h-4" />
-                <span>Secure & refundable deposit</span>
-              </div>
-            </>
-          )}
-
-          {/* Payment History */}
-          {payments.length > 0 && (
-            <div className="mt-10">
-              <h3 className="font-semibold text-slate-900 mb-4">
-                Payment History
-              </h3>
-              <div className="space-y-3">
-                {payments.map((p) => (
-                  <div
-                    key={p._id}
-                    className="bg-white rounded-xl border border-slate-200 p-4 flex justify-between items-center"
-                  >
-                    <div>
-                      <p className="font-medium text-slate-900">
-                        PKR {p.amount?.toLocaleString()}
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        {p.paymentMethod} — {p.transactionId}
-                      </p>
-                      <p className="text-xs text-slate-400">
-                        {new Date(p.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <Badge className={statusColors[p.status] || ""}>
-                      {p.status}
-                    </Badge>
+                {!hasAuctionAccess && (
+                  <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm text-amber-700">
+                    Bidding still requires auction approval (current status: {bidderStatus.replaceAll("_", " ")}).
+                    <Link to="/profile?section=auction-access" className="ml-1 font-semibold underline">Request access</Link>
                   </div>
-                ))}
+                )}
+
+                <Button
+                  onClick={handleSubmit}
+                  disabled={submitting || !selectedMethod || !transactionId.trim() || !receiptUrl.trim()}
+                  className="w-full mt-5"
+                >
+                  {submitting ? "Submitting..." : "Confirm Payment"}
+                </Button>
               </div>
+            </motion.div>
+
+            <motion.aside initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                <h4 className="font-semibold text-slate-900 mb-3">Refund Policy</h4>
+                <ul className="space-y-2 text-sm text-slate-600">
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> Full refund if you don't win any auction</li>
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> Token deducted from winning amount</li>
+                  <li className="flex items-start gap-2"><Info className="w-4 h-4 text-amber-500 mt-0.5" /> Refunds processed within 5-7 business days</li>
+                  <li className="flex items-start gap-2"><Info className="w-4 h-4 text-amber-500 mt-0.5" /> Winner must complete remaining payment within {paymentWindowHours} hours</li>
+                </ul>
+              </div>
+
+              <div className="bg-slate-900 text-white rounded-2xl p-5 shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <ShieldCheck className="w-5 h-5 text-primary" />
+                  <h4 className="font-semibold">Secure Payment</h4>
+                </div>
+                <p className="text-sm text-slate-300">Your payment information is encrypted. We never store sensitive financial details.</p>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 shadow-sm">
+                <h4 className="font-semibold text-slate-900 mb-2">Need help?</h4>
+                <p className="text-sm text-slate-600 mb-2">Contact support for payment assistance.</p>
+                <a href={`tel:${supportPhone}`} className="inline-flex items-center gap-2 text-blue-700 font-semibold">
+                  <Phone className="w-4 h-4" /> {supportPhone}
+                </a>
+              </div>
+            </motion.aside>
+          </div>
+        )}
+
+        {payments.length > 0 && (
+          <div className="mt-8 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">Payment History</h3>
+            <div className="space-y-3">
+              {payments.map((payment) => (
+                <div key={payment._id} className="border border-slate-200 rounded-xl p-4 flex items-center justify-between gap-4">
+                  <div>
+                    <p className="font-semibold text-slate-900">PKR {Number(payment.amount || 0).toLocaleString()}</p>
+                    <p className="text-sm text-slate-500">{payment.paymentMethod} - {payment.transactionId}</p>
+                    {payment.receiptUrl && (
+                      <a
+                        href={payment.receiptUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs text-primary hover:underline"
+                      >
+                        View receipt proof
+                      </a>
+                    )}
+                    <p className="text-xs text-slate-400">{new Date(payment.createdAt).toLocaleString()}</p>
+                  </div>
+                  <StatusBadge status={payment.status} />
+                </div>
+              ))}
             </div>
-          )}
-        </motion.div>
+          </div>
+        )}
       </div>
     </div>
   );

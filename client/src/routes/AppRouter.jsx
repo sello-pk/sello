@@ -49,6 +49,18 @@ const TokenPayment = lazy(
   () => import("../pages/features/auctions/TokenPayment.jsx"),
 );
 const Watchlist = lazy(() => import("../pages/features/auctions/Watchlist.jsx"));
+const CompareVehicles = lazy(
+  () => import("../pages/features/auctions/CompareVehicles.jsx"),
+);
+const BuyerDashboardAuction = lazy(
+  () => import("../pages/features/auctions/BuyerDashboard.jsx"),
+);
+const WalletDashboardAuction = lazy(
+  () => import("../pages/features/auctions/WalletDashboard.jsx"),
+);
+const SellerAuctionDashboard = lazy(
+  () => import("../pages/features/auctions/SellerAuctionDashboard.jsx"),
+);
 const FilteredResults = lazy(
   () => import("../pages/listings/FilteredResults.jsx"),
 );
@@ -177,9 +189,14 @@ const AppRouter = () => {
         <Route path="/auctions" element={<AuctionsActions />} />
         <Route path="/auctions/guide/:blogId" element={<AuctionGuideDetail />} />
         <Route path="/auctions/live" element={<LiveAuction />} />
+        <Route path="/auctions/betting" element={<LiveAuction />} />
         <Route path="/auctions/schedule" element={<AuctionSchedule />} />
         <Route path="/auctions/trust-legal" element={<TrustLegal />} />
         <Route path="/auctions/car-detail" element={<CarDetail />} />
+        <Route path="/auctions/compare" element={<CompareVehicles />} />
+        <Route path="/auctions/buyer-dashboard" element={<BuyerDashboardAuction />} />
+        <Route path="/auctions/wallet" element={<WalletDashboardAuction />} />
+        <Route path="/auctions/seller-dashboard" element={<SellerAuctionDashboard />} />
 
         {/* Auth Flow */}
         <Route path="/forgot-password" element={<ForgotPassword />} />

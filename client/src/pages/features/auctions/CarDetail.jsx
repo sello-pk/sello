@@ -21,7 +21,7 @@ import {
   IoInformationCircleOutline as Info,
   IoHeartOutline as Heart,
   IoHeartDislikeOutline as HeartOff,
-  IoFlashOutline as Zap,
+  IoHammerOutline as Gavel,
 } from "react-icons/io5";
 import {
   useGetAuctionCarDetailQuery,
@@ -36,8 +36,10 @@ import {
   useGetMyWalletQuery,
   useBookInspectionMutation,
   useGetInspectionTimeSlotsQuery,
+  useCreateValuationMutation,
 } from "@redux/services/api";
 import { useSocket } from "@contexts/SocketContext";
+import BidPriceChart from "@components/auction/BidPriceChart";
 
 const Badge = ({ children, variant = "default", className = "", ...props }) => {
   const variants = {
@@ -86,7 +88,7 @@ const Button = ({
   );
 };
 
-const CountdownTimer = ({ targetDate, size = "default" }) => {
+const CountdownTimer = ({ targetDate }) => {
   const [time, setTime] = React.useState({ d: 0, h: 0, m: 0, s: 0 });
   React.useEffect(() => {
     if (!targetDate) return;
@@ -105,22 +107,21 @@ const CountdownTimer = ({ targetDate, size = "default" }) => {
   }, [targetDate]);
   const pad = (n) => String(n).padStart(2, "0");
   return (
-    <div
-      className={`flex items-center justify-center gap-2 ${size === "large" ? "text-3xl" : "text-2xl"} font-bold text-white`}
-    >
+    <div className="flex items-center justify-center gap-3">
       {[
         { v: time.d, l: "Days" },
         { v: time.h, l: "Hours" },
         { v: time.m, l: "Mins" },
+        { v: time.s, l: "Secs" },
       ].map((t, i) => (
         <React.Fragment key={t.l}>
-          {i > 0 && <span>:</span>}
-          <div className="text-center">
-            <span>{pad(t.v)}</span>
-            <span className="block text-xs font-normal text-slate-400">
+          <div className="w-16 rounded-xl bg-[#101c35] border border-white/10 py-2 text-center">
+            <div className="text-xl font-bold text-white">{pad(t.v)}</div>
+            <div className="text-[10px] uppercase tracking-wide text-slate-300">
               {t.l}
-            </span>
+            </div>
           </div>
+          {i < 3 && <span className="text-slate-400 font-semibold">:</span>}
         </React.Fragment>
       ))}
     </div>
@@ -140,6 +141,8 @@ export default function CarDetail() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [bidAmount, setBidAmount] = useState(0);
   const [proxyMax, setProxyMax] = useState(0);
+  const [activeTab, setActiveTab] = useState("specs");
+  const [valuationResult, setValuationResult] = useState(null);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -175,6 +178,7 @@ export default function CarDetail() {
   const [addWatch] = useAddToAuctionWatchlistMutation();
   const [removeWatch] = useRemoveFromAuctionWatchlistMutation();
   const [bookInspectionMut, { isLoading: bookingInspection }] = useBookInspectionMutation();
+  const [createValuationMut, { isLoading: valuating }] = useCreateValuationMutation();
   const { data: timeSlots = [] } = useGetInspectionTimeSlotsQuery();
 
   const car = detail?.car || {};
@@ -182,6 +186,9 @@ export default function CarDetail() {
   const bids = detail?.bids || [];
   const currentHigh = detail?.currentBid || detail?.startingBid || 0;
   const minimumBid = detail?.minimumNextBid ?? currentHigh + 50000;
+  const quickBidSuggestions = Array.isArray(detail?.quickBidSuggestions)
+    ? detail.quickBidSuggestions
+    : [minimumBid, minimumBid + 10000, minimumBid + 25000, minimumBid + 50000];
   const totalBidders = detail?.totalBidders ?? 0;
   const buyNowPrice = detail?.buyNowPrice != null ? Number(detail.buyNowPrice) : null;
   const walletBalance = walletData?.wallet?.balance || 0;
@@ -296,6 +303,30 @@ export default function CarDetail() {
       setShowProxyBidForm(false);
     } catch (err) {
       toast.error(err?.data?.message || "Failed to set proxy bid");
+    }
+  };
+
+  const handleGetValuation = async () => {
+    try {
+      const payload = {
+        make: car.make,
+        model: car.model,
+        year: car.year,
+        mileage: car.mileage || 0,
+        engineType: car.fuelType || "Petrol",
+        transmission: car.transmission || "Automatic",
+        condition: car.condition || "good",
+      };
+      const valuation = await createValuationMut(payload).unwrap();
+      const estimate =
+        valuation?.estimation?.estimatedValue ||
+        valuation?.estimation?.averageValue ||
+        valuation?.estimation?.price ||
+        null;
+      setValuationResult(estimate);
+      toast.success("Valuation generated");
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to generate valuation");
     }
   };
 
@@ -476,97 +507,137 @@ export default function CarDetail() {
               )}
             </div>
 
-            {/* Specs */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-6">
-              <h3 className="font-semibold text-lg mb-4">Specifications</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {specs.map((spec, i) => (
-                  <div key={i} className="bg-slate-50 rounded-xl p-4">
-                    <spec.icon className="w-5 h-5 text-[#FFA602] mb-2" />
-                    <p className="text-xs text-slate-500 mb-1">{spec.label}</p>
-                    <p className="font-semibold text-slate-900 capitalize">
-                      {spec.value || "N/A"}
-                    </p>
-                  </div>
+            <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+              <div className="grid grid-cols-3 border-b border-slate-200">
+                {[
+                  { id: "specs", label: "Specifications" },
+                  { id: "inspection", label: "Inspection Report" },
+                  { id: "chart", label: "Price Chart" },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`px-3 py-4 text-sm font-semibold transition ${
+                      activeTab === tab.id
+                        ? "bg-white text-slate-900"
+                        : "bg-slate-50 text-slate-500 hover:text-slate-700"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
                 ))}
               </div>
-            </div>
 
-            {/* Inspection Report (PDF download – Hybrid dealer model) */}
-            {detail?.inspectionReportPdfUrl && (
-              <div className="bg-white rounded-2xl border border-slate-200 p-6">
-                <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-[#FFA602]" />
-                  Inspection Report
-                </h3>
-                <a
-                  href={detail.inspectionReportPdfUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-800 rounded-lg hover:bg-amber-100 font-medium"
-                >
-                  <FileText className="w-4 h-4" />
-                  Download inspection report (PDF)
-                </a>
-              </div>
-            )}
-
-            {/* Inspection (structured) */}
-            {Object.keys(inspection).some(
-              (k) => k !== "notes" && inspection[k],
-            ) && (
-              <div className="bg-white rounded-2xl border border-slate-200 p-6">
-                <h3 className="font-semibold text-lg mb-4">
-                  Inspection Report
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                  {Object.entries(inspection)
-                    .filter(([k]) => k !== "notes" && k !== "_id")
-                    .map(
-                      ([key, val]) =>
-                        val && (
-                          <div key={key} className="text-center">
-                            <div
-                              className={`rounded-xl p-4 border ${inspColors[val] || ""}`}
-                            >
-                              {val === "pass" ? (
-                                <CheckCircle className="w-8 h-8 mx-auto mb-2" />
-                              ) : (
-                                <AlertTriangle className="w-8 h-8 mx-auto mb-2" />
-                              )}
-                              <p className="text-xs uppercase tracking-wide mb-1">
-                                {key}
-                              </p>
-                              <p className="font-semibold capitalize">
-                                {val.replace("_", " ")}
-                              </p>
-                            </div>
-                          </div>
-                        ),
-                    )}
-                </div>
-                {inspection.notes && (
-                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
-                    <Info className="w-4 h-4 inline mr-1" />
-                    {inspection.notes}
+              {activeTab === "specs" && (
+                <div className="p-6">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {specs.map((spec, i) => (
+                      <div key={i} className="bg-slate-50 rounded-xl p-4">
+                        <spec.icon className="w-5 h-5 text-[#FFA602] mb-2" />
+                        <p className="text-xs text-slate-500 mb-1">{spec.label}</p>
+                        <p className="font-semibold text-slate-900 capitalize">
+                          {spec.value || "N/A"}
+                        </p>
+                      </div>
+                    ))}
                   </div>
-                )}
-              </div>
-            )}
+                </div>
+              )}
+
+              {activeTab === "inspection" && (
+                <div className="p-6">
+                  {detail?.inspectionReportPdfUrl && (
+                    <a
+                      href={detail.inspectionReportPdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 mb-4 bg-amber-50 text-amber-800 rounded-lg hover:bg-amber-100 font-medium"
+                    >
+                      <FileText className="w-4 h-4" />
+                      Download inspection report (PDF)
+                    </a>
+                  )}
+                  {Object.keys(inspection).some((k) => k !== "notes" && inspection[k]) ? (
+                    <>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                        {Object.entries(inspection)
+                          .filter(([k]) => k !== "notes" && k !== "_id")
+                          .map(
+                            ([key, val]) =>
+                              val && (
+                                <div key={key} className="text-center">
+                                  <div className={`rounded-xl p-4 border ${inspColors[val] || ""}`}>
+                                    {val === "pass" ? (
+                                      <CheckCircle className="w-8 h-8 mx-auto mb-2" />
+                                    ) : (
+                                      <AlertTriangle className="w-8 h-8 mx-auto mb-2" />
+                                    )}
+                                    <p className="text-xs uppercase tracking-wide mb-1">{key}</p>
+                                    <p className="font-semibold capitalize">
+                                      {val.replace("_", " ")}
+                                    </p>
+                                  </div>
+                                </div>
+                              ),
+                          )}
+                      </div>
+                      {inspection.notes && (
+                        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+                          <Info className="w-4 h-4 inline mr-1" />
+                          {inspection.notes}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-sm text-slate-500">Inspection report not available.</div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === "chart" && (
+                <div className="p-6">
+                  <BidPriceChart
+                    bids={
+                      Array.isArray(detail?.priceChart) && detail.priceChart.length > 0
+                        ? detail.priceChart.map((p) => ({
+                            amount: p.amount,
+                            createdAt: p.at || p.createdAt,
+                          }))
+                        : bids
+                    }
+                    carLabel={`${car?.make || ""} ${car?.model || ""}`.trim()}
+                  />
+                </div>
+              )}
+            </div>
 
             {/* Actions */}
             {isLoggedIn && (
               <div className="bg-white rounded-2xl p-6 border border-slate-200">
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {auctionCarId &&
+                    (auction?.status === "live" ||
+                      detail?.status === "approved" ||
+                      detail?.status === "live") && (
+                      <Button
+                        variant="outline"
+                        className="w-full border-[#FFA602] text-[#FFA602] hover:bg-[#FFA602]/10"
+                        onClick={() => setShowInspectionModal(true)}
+                      >
+                        <Calendar className="w-5 h-5 mr-2" />
+                        Book Physical Inspection
+                      </Button>
+                    )}
                   <Button
                     variant="outline"
-                    className={`flex-1 ${isFollowing ? "bg-red-50 border-red-300 text-red-600" : "border-[#FFA602] text-[#FFA602] hover:bg-[#FFA602]/10"}`}
+                    className={`w-full ${isFollowing ? "bg-red-50 border-red-300 text-red-600" : "border-slate-300 text-slate-700 hover:bg-slate-50"}`}
                     onClick={toggleFollow}
                   >
                     {isFollowing ? (
                       <>
                         <HeartOff className="w-5 h-5 mr-2" />
-                        Unfollow
+                        Unfollow Car
                       </>
                     ) : (
                       <>
@@ -578,9 +649,14 @@ export default function CarDetail() {
                 </div>
               </div>
             )}
+
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+              <Clock className="w-4 h-4 inline mr-1" />
+              <strong>Important:</strong> Winning bidder must complete payment within 24-48 hours and collect the vehicle from Okara Auction Yard.
+            </div>
           </div>
 
-          {/* Right — Bid Panel */}
+          {/* Right - Bid Panel */}
           <div className="lg:col-span-2">
             <div className="sticky top-20">
               {/* Timer */}
@@ -592,14 +668,27 @@ export default function CarDetail() {
               {/* Bid Panel */}
               <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
                 <div className="p-6 border-b border-slate-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm text-slate-500">Current Bid</span>
+                  <div className="flex items-center justify-between mb-4 gap-3">
+                    <span className="text-lg font-semibold text-slate-900">
+                      Live Bidding
+                    </span>
                     <Badge className="bg-emerald-100 text-emerald-700">
-                      {auction.status === "live" ? "Live" : auction.status}
+                      {auction.status === "live"
+                        ? "Auto-updating"
+                        : auction.status}
                     </Badge>
                   </div>
-                  <p className="text-3xl font-bold text-slate-900 mb-2">
-                    {formatPrice(currentHigh)}
+                  <div className="bg-slate-100 rounded-xl p-4 mb-3">
+                    <span className="text-sm text-slate-500">Current Highest Bid</span>
+                    <p className="text-3xl font-bold text-slate-900 mt-1">
+                      {formatPrice(currentHigh)}
+                    </p>
+                  </div>
+                  <p className="text-sm text-slate-600">
+                    Minimum bid:{" "}
+                    <span className="font-semibold text-slate-900">
+                      {formatPrice(minimumBid)}
+                    </span>
                   </p>
                   {detail.reservePrice && (
                     <p className="text-sm text-slate-500">
@@ -680,7 +769,9 @@ export default function CarDetail() {
                           </div>
                           <Button
                             className="w-full"
-                            onClick={() => navigate("/profile")}
+                            onClick={() =>
+                              navigate("/profile?section=auction-access")
+                            }
                           >
                             Request Auction Access
                           </Button>
@@ -712,23 +803,45 @@ export default function CarDetail() {
                         </div>
                       ) : (
                         <>
+                          <div className="grid grid-cols-2 gap-2">
+                            {quickBidSuggestions.slice(0, 4).map((amount, idx) => (
+                              <button
+                                key={`${amount}-${idx}`}
+                                type="button"
+                                onClick={() => setBidAmount(Number(amount))}
+                                className={`rounded-lg border px-3 py-2 text-sm font-semibold transition ${
+                                  Number(bidAmount) === Number(amount)
+                                    ? "border-[#FFA602] bg-[#FFF4E0] text-[#B86A00]"
+                                    : "border-slate-200 hover:border-[#FFD89A] text-slate-700"
+                                }`}
+                              >
+                                {formatPrice(Number(amount))}
+                              </button>
+                            ))}
+                          </div>
                           <div className="flex gap-2">
-                            <input
-                              type="number"
-                              value={bidAmount}
-                              onChange={(e) =>
-                                setBidAmount(Number(e.target.value))
-                              }
-                              className="flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FFA602]"
-                              step="50000"
-                              min={minimumBid}
-                            />
+                            <div className="relative flex-1">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">
+                                PKR
+                              </span>
+                              <input
+                                type="number"
+                                value={bidAmount}
+                                onChange={(e) =>
+                                  setBidAmount(Number(e.target.value))
+                                }
+                                className="w-full pl-12 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FFA602]"
+                                step="50000"
+                                min={minimumBid}
+                                placeholder={String(minimumBid)}
+                              />
+                            </div>
                             <Button
                               onClick={handlePlaceBid}
                               disabled={bidding || bidAmount < minimumBid}
-                              className="px-6"
+                              className="px-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
                             >
-                              {bidding ? "..." : "Place Bid"}
+                              {bidding ? "..." : "Bid Now"}
                             </Button>
                           </div>
                           <p className="text-xs text-slate-500 text-center">
@@ -749,7 +862,7 @@ export default function CarDetail() {
                     onClick={handleBuyNow}
                     disabled={buying}
                   >
-                    {buying ? "Processing..." : `Buy Now – ${formatPrice(buyNowPrice)}`}
+                    {buying ? "Processing..." : `Buy Now - ${formatPrice(buyNowPrice)}`}
                   </Button>
                   <p className="text-xs text-slate-500 text-center mt-2">
                     Purchase this lot immediately at the buy-now price
@@ -774,19 +887,33 @@ export default function CarDetail() {
                   </div>
                 )}
 
-              {/* Book Inspection */}
-              {isLoggedIn && auctionCarId && (auction?.status === "live" || detail?.status === "approved" || detail?.status === "live") && (
-                <div className="mt-3">
-                  <Button
-                    variant="outline"
-                    className="w-full border-slate-300 text-slate-700 hover:bg-slate-50"
-                    onClick={() => setShowInspectionModal(true)}
-                  >
-                    <Calendar className="w-4 h-4 mr-2 inline" />
-                    Book Physical Inspection
-                  </Button>
-                </div>
-              )}
+              {/* AI Valuation */}
+              <div className="mt-6 bg-white rounded-2xl border border-slate-200 p-6">
+                <h3 className="text-2xl font-semibold text-slate-900 mb-2">
+                  AI Market Valuation
+                </h3>
+                <p className="text-sm text-slate-500 mb-4">
+                  Get an AI-powered market valuation estimate
+                </p>
+                {valuationResult ? (
+                  <div className="mb-4 rounded-xl bg-emerald-50 border border-emerald-200 p-4">
+                    <p className="text-sm text-emerald-700">
+                      Estimated market value
+                    </p>
+                    <p className="text-2xl font-bold text-emerald-700">
+                      {formatPrice(Number(valuationResult))}
+                    </p>
+                  </div>
+                ) : null}
+                <Button
+                  className="w-full"
+                  onClick={handleGetValuation}
+                  disabled={valuating}
+                >
+                  <Info className="w-4 h-4 mr-2" />
+                  {valuating ? "Getting valuation..." : "Get Valuation"}
+                </Button>
+              </div>
             </div>
           </div>
         </div>

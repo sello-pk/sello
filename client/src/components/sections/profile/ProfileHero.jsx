@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import {
   MdKeyboardArrowRight,
   MdEdit,
@@ -52,6 +52,7 @@ import AccountDeletionRequest from "../../features/profile/AccountDeletionReques
 
 const ProfileHero = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { openSupportChat } = useSupportChat();
   const [showProfilePopup, setShowProfilePopup] = useState(false);
   const [showDealerForm, setShowDealerForm] = useState(false);
@@ -207,6 +208,25 @@ const ProfileHero = () => {
       navigate("/login");
     }
   }, [isError, error, navigate]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const section = params.get("section");
+    if (!section) return;
+
+    if (section === "auction-access" || section === "become-dealer") {
+      setActiveSection("auctions");
+      setShowDealerForm(true);
+      return;
+    }
+    if (section === "auctions") {
+      setActiveSection("auctions");
+      return;
+    }
+    if (section === "dealer-profile") {
+      setActiveSection("dealer-profile");
+    }
+  }, [location.search]);
 
   const handleProfilePopup = () => {
     setShowProfilePopup(true);
