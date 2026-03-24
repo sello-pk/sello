@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { FaUpload, FaTimes, FaPlus } from "react-icons/fa";
 import { FiEdit2, FiSave, FiX } from "react-icons/fi";
 import toast from "react-hot-toast";
+import { useCarCategories } from "../../../hooks/useCarCategories";
 
 const DealerProfileEditSection = ({
   user,
@@ -19,18 +20,26 @@ const DealerProfileEditSection = ({
   const [languageInput, setLanguageInput] = useState("");
   const [paymentMethodInput, setPaymentMethodInput] = useState("");
   const [serviceInput, setServiceInput] = useState("");
-
-  const cities = [
-    "Lahore",
-    "Karachi",
-    "Islamabad",
-    "Rawalpindi",
-    "Faisalabad",
-    "Multan",
-    "Peshawar",
-    "Quetta",
-    "Sialkot",
-  ];
+  const { cities: categoryCities } = useCarCategories();
+  const cityOptions = useMemo(() => {
+    const fromDb = (categoryCities || [])
+      .map((city) => city?.name)
+      .filter(Boolean);
+    const uniqueDb = [...new Set(fromDb)];
+    if (uniqueDb.length > 0) return uniqueDb;
+    // Fallback to preserve UX if categories are not loaded yet.
+    return [
+      "Lahore",
+      "Karachi",
+      "Islamabad",
+      "Rawalpindi",
+      "Faisalabad",
+      "Multan",
+      "Peshawar",
+      "Quetta",
+      "Sialkot",
+    ];
+  }, [categoryCities]);
 
   const employeeCountOptions = ["1-10", "11-50", "51-100", "100+"];
   const commonSpecialties = [
@@ -137,6 +146,9 @@ const DealerProfileEditSection = ({
       });
 
       // Add files
+      if (dealerFiles.avatar) {
+        formDataToSend.append("avatar", dealerFiles.avatar);
+      }
       if (dealerFiles.businessLicense) {
         formDataToSend.append("businessLicense", dealerFiles.businessLicense);
       }
@@ -362,7 +374,7 @@ const DealerProfileEditSection = ({
                 className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50"
               >
                 <option value="">Select City</option>
-                {cities.map((city) => (
+                {cityOptions.map((city) => (
                   <option key={city} value={city}>
                     {city}
                   </option>
@@ -386,6 +398,9 @@ const DealerProfileEditSection = ({
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Business Address
               </label>
+              <p className="text-xs text-gray-500 mb-1">
+                Street, landmark, or directions — not the same as city/area above.
+              </p>
               <textarea
                 name="businessAddress"
                 value={dealerFormData.businessAddress}
@@ -924,12 +939,25 @@ const DealerProfileEditSection = ({
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Location</p>
+                  <p className="text-sm text-gray-600">City</p>
                   <p className="font-semibold text-gray-900">
-                    {user?.dealerInfo?.area || "N/A"},{" "}
-                    {user?.dealerInfo?.city || "N/A"}
+                    {user?.dealerInfo?.city || "Not set"}
                   </p>
                 </div>
+                <div>
+                  <p className="text-sm text-gray-600">Area</p>
+                  <p className="font-semibold text-gray-900">
+                    {user?.dealerInfo?.area || "Not set"}
+                  </p>
+                </div>
+                {user?.dealerInfo?.businessAddress ? (
+                  <div className="md:col-span-2">
+                    <p className="text-sm text-gray-600">Street / full address</p>
+                    <p className="font-semibold text-gray-900 whitespace-pre-wrap">
+                      {user.dealerInfo.businessAddress}
+                    </p>
+                  </div>
+                ) : null}
                 <div>
                   <p className="text-sm text-gray-600">Phone</p>
                   <p className="font-semibold text-gray-900">

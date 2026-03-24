@@ -223,6 +223,7 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
         "image/jpeg",
         "image/jpg",
         "image/png",
+        "image/webp",
       ];
       if (!allowedTypes.includes(file.type)) {
         setErrors((prev) => ({
@@ -304,7 +305,10 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
       // Create FormData for file upload
       const formDataToSend = new FormData();
       formDataToSend.append("businessName", formData.businessName.trim());
-      if (formData.businessLicense.trim()) {
+      // One multipart part named "businessLicense": prefer file so multer/body stay consistent.
+      if (businessLicenseFile) {
+        formDataToSend.append("businessLicense", businessLicenseFile);
+      } else if (formData.businessLicense.trim()) {
         formDataToSend.append(
           "businessLicense",
           formData.businessLicense.trim(),
@@ -356,11 +360,6 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
         formDataToSend.append("twitter", formData.twitter.trim());
       if (formData.linkedin)
         formDataToSend.append("linkedin", formData.linkedin.trim());
-
-      // Append file if provided
-      if (businessLicenseFile) {
-        formDataToSend.append("businessLicense", businessLicenseFile);
-      }
 
       // Use the API mutation - it should handle FormData
       const requestTypes = [];

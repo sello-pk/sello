@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { useCreateCarMutation } from "../../../redux/services/api";
+import { api } from "../../../redux/services/api";
 import { capitalize } from "../../../utils/formatters";
 import { getErrorMessage } from "../../../utils/errorHandler";
 
@@ -47,6 +49,7 @@ const parseRangeLikeNumber = (value) => {
 
 const CreatePostForm = ({ initialPrefill = null }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const appliedPrefillKeyRef = useRef(null);
   const submitLockRef = useRef(false);
   const [availableModels, setAvailableModels] = useState([]);
@@ -458,6 +461,10 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       setAvailableCities([]);
       setShowDuplicateWarning(false);
       setDuplicateInfo(null);
+
+      // Ensure listing pages get fresh data before route change.
+      dispatch(api.util.invalidateTags(["Cars"]));
+      dispatch(api.util.prefetch("getMyCars", {}, { force: true }));
       navigate(`/my-listings`);
     } catch (err) {
       if (err?.status === 401) {
@@ -582,6 +589,10 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       setAvailableModels([]);
       setAvailableYears([]);
       setAvailableCities([]);
+
+      // Ensure listing pages get fresh data before route change.
+      dispatch(api.util.invalidateTags(["Cars"]));
+      dispatch(api.util.prefetch("getMyCars", {}, { force: true }));
       navigate(`/my-listings`);
     } catch (err) {
       // Handle duplicate warning (409 Conflict) – let modal handle it

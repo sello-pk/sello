@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { buildCarUrl } from "../../utils/urlBuilders";
 import {
@@ -38,6 +38,7 @@ import { Spinner } from "../../components/ui/Loading";
 import toast from "react-hot-toast";
 import { Image as LazyImage } from "../../components/ui/Image";
 import { images } from "../../assets/assets";
+import { useCarCategories } from "../../hooks/useCarCategories";
 
 const SellerDashboard = () => {
   const navigate = useNavigate();
@@ -53,6 +54,7 @@ const SellerDashboard = () => {
     engine_type: "",
     transmission: "",
     color: "",
+    registration_country: "",
     registration_city: "",
     starting_bid: "",
     reserve_price: "",
@@ -69,6 +71,51 @@ const SellerDashboard = () => {
   const { data: upcomingRaw = [] } = useGetAuctionsQuery({ status: "scheduled", limit: 5 });
   const { data: liveAuction } = useGetLiveAuctionQuery();
   const upcomingAuctions = Array.isArray(upcomingRaw) ? upcomingRaw : upcomingRaw?.data || [];
+  const {
+    makes: categoryMakes,
+    models: categoryModels,
+    years: categoryYears,
+    countries: categoryCountries,
+    cities: categoryCities,
+    getCitiesByCountry,
+    isLoading: categoriesLoading,
+  } = useCarCategories("Car");
+
+  const selectedMake = useMemo(
+    () =>
+      (categoryMakes || []).find(
+        (m) =>
+          String(m?.name || "").toLowerCase() ===
+          String(newCar.make || "").toLowerCase(),
+      ),
+    [categoryMakes, newCar.make],
+  );
+
+  const availableModels = useMemo(() => {
+    if (!selectedMake?._id) return [];
+    return (categoryModels || []).filter((model) => {
+      const parentId =
+        typeof model?.parentCategory === "object"
+          ? model.parentCategory?._id
+          : model?.parentCategory;
+      return String(parentId || "") === String(selectedMake._id);
+    });
+  }, [categoryModels, selectedMake]);
+
+  const selectedCountry = useMemo(
+    () =>
+      (categoryCountries || []).find(
+        (c) =>
+          String(c?.name || "").toLowerCase() ===
+          String(newCar.registration_country || "").toLowerCase(),
+      ),
+    [categoryCountries, newCar.registration_country],
+  );
+
+  const availableRegistrationCities = useMemo(() => {
+    if (!selectedCountry?._id) return categoryCities || [];
+    return getCitiesByCountry?.[selectedCountry._id] || categoryCities || [];
+  }, [selectedCountry, getCitiesByCountry, categoryCities]);
 
   const auctionStats = {
     totalAuctions: wonAuctions.length,
@@ -948,43 +995,75 @@ const SellerDashboard = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Make *
                       </label>
-                      <input
-                        type="text"
+                      <select
                         value={newCar.make}
-                        onChange={(e) =>
-                          setNewCar({ ...newCar, make: e.target.value })
-                        }
-                        placeholder="e.g. Toyota"
+                        onChange={(e) => {
+                          setNewCar({
+                            ...newCar,
+                            make: e.target.value,
+                            model: "",
+                          });
+                        }}
+                        disabled={categoriesLoading}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                      />
+                      >
+                        <option value="">
+                          {categoriesLoading ? "Loading makes..." : "Select make"}
+                        </option>
+                        {categoryMakes.map((make) => (
+                          <option key={make._id} value={make.name}>
+                            {make.name}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Model *
                       </label>
-                      <input
-                        type="text"
+                      <select
                         value={newCar.model}
                         onChange={(e) =>
                           setNewCar({ ...newCar, model: e.target.value })
                         }
-                        placeholder="e.g. Corolla"
+                        disabled={!newCar.make || categoriesLoading}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                      />
+                      >
+                        <option value="">
+                          {!newCar.make
+                            ? "Select make first"
+                            : categoriesLoading
+                              ? "Loading models..."
+                              : "Select model"}
+                        </option>
+                        {availableModels.map((model) => (
+                          <option key={model._id} value={model.name}>
+                            {model.name}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Year *
                       </label>
-                      <input
-                        type="number"
+                      <select
                         value={newCar.year}
                         onChange={(e) =>
                           setNewCar({ ...newCar, year: e.target.value })
                         }
-                        placeholder="e.g. 2022"
+                        disabled={categoriesLoading}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                      />
+                      >
+                        <option value="">
+                          {categoriesLoading ? "Loading years..." : "Select year"}
+                        </option>
+                        {categoryYears.map((year) => (
+                          <option key={year._id} value={year.name}>
+                            {year.name}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1066,12 +1145,39 @@ const SellerDashboard = () => {
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                       />
                     </div>
-                    <div className="col-span-2">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Registration Country
+                      </label>
+                      <select
+                        value={newCar.registration_country}
+                        onChange={(e) =>
+                          setNewCar({
+                            ...newCar,
+                            registration_country: e.target.value,
+                            registration_city: "",
+                          })
+                        }
+                        disabled={categoriesLoading}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                      >
+                        <option value="">
+                          {categoriesLoading
+                            ? "Loading countries..."
+                            : "Select country"}
+                        </option>
+                        {categoryCountries.map((country) => (
+                          <option key={country._id} value={country.name}>
+                            {country.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Registration City
                       </label>
-                      <input
-                        type="text"
+                      <select
                         value={newCar.registration_city}
                         onChange={(e) =>
                           setNewCar({
@@ -1079,9 +1185,18 @@ const SellerDashboard = () => {
                             registration_city: e.target.value,
                           })
                         }
-                        placeholder="e.g. Lahore"
+                        disabled={categoriesLoading}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                      />
+                      >
+                        <option value="">
+                          {categoriesLoading ? "Loading cities..." : "Select city"}
+                        </option>
+                        {availableRegistrationCities.map((city) => (
+                          <option key={city._id} value={city.name}>
+                            {city.name}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                 )}

@@ -35,7 +35,11 @@ const UserListings = () => {
     isLoading,
     error: listingsError,
     refetch,
-  } = useGetMyCarsQuery(statusFilter !== "all" ? { status: statusFilter } : {});
+  } = useGetMyCarsQuery(statusFilter !== "all" ? { status: statusFilter } : {}, {
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+  });
   const [updatingCars, setUpdatingCars] = useState(new Set());
   const [relistCar, { isLoading: isRelisting }] = useRelistCarMutation();
 

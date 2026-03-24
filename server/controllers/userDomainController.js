@@ -229,6 +229,77 @@ function ensureAuctionCapabilityShell(user) {
   user.markModified("auctionCapabilities");
 }
 
+/**
+ * Build dealerInfo from multipart body for auction/dealer access — do not spread all of req.body
+ * (unknown keys, wrong types, or duplicate field names can break Mongoose saves).
+ */
+function buildDealerInfoPatchFromAccessBody(existingPlain, bodyRest, licenseUrl, fallbackDocUrl) {
+  const dealerPatch = { ...existingPlain };
+
+  const setTrim = (field) => {
+    if (bodyRest[field] === undefined || bodyRest[field] === null) return;
+    const s = String(bodyRest[field]).trim();
+    dealerPatch[field] = s || null;
+  };
+
+  for (const f of [
+    "businessName",
+    "businessAddress",
+    "businessPhone",
+    "whatsappNumber",
+    "city",
+    "area",
+    "vehicleTypes",
+    "description",
+    "website",
+    "employeeCount",
+  ]) {
+    setTrim(f);
+  }
+
+  for (const key of ["specialties", "languages", "paymentMethods", "services"]) {
+    if (bodyRest[key] !== undefined && bodyRest[key] !== "") {
+      dealerPatch[key] = parseMultipartJsonArray(bodyRest[key]);
+    }
+  }
+
+  if (
+    bodyRest.facebook !== undefined ||
+    bodyRest.instagram !== undefined ||
+    bodyRest.twitter !== undefined ||
+    bodyRest.linkedin !== undefined
+  ) {
+    dealerPatch.socialMedia = { ...(existingPlain.socialMedia || {}) };
+    for (const sm of ["facebook", "instagram", "twitter", "linkedin"]) {
+      if (bodyRest[sm] !== undefined) {
+        dealerPatch.socialMedia[sm] = String(bodyRest[sm]).trim() || null;
+      }
+    }
+  }
+
+  if (bodyRest.establishedYear !== undefined) {
+    if (bodyRest.establishedYear === "" || bodyRest.establishedYear == null) {
+      dealerPatch.establishedYear = null;
+    } else {
+      const y = parseInt(String(bodyRest.establishedYear), 10);
+      dealerPatch.establishedYear = Number.isFinite(y) ? y : null;
+    }
+  }
+
+  if (licenseUrl) {
+    dealerPatch.businessLicense = licenseUrl;
+  } else if (bodyRest.businessLicense !== undefined && bodyRest.businessLicense !== "") {
+    dealerPatch.businessLicense = String(bodyRest.businessLicense).trim() || null;
+  } else if (fallbackDocUrl && !dealerPatch.businessLicense) {
+    dealerPatch.businessLicense = fallbackDocUrl;
+  }
+
+  dealerPatch.verified = false;
+  dealerPatch.verifiedAt = null;
+
+  return dealerPatch;
+}
+
 export const submitAuctionAccessRequest = async (req, res) => {
   try {
     const requestTypes = parseRequestTypesInput(req.body.requestTypes).filter((type) =>
@@ -295,47 +366,23 @@ export const submitAuctionAccessRequest = async (req, res) => {
           : { ...(user.dealerInfo || {}) };
 
       const { requestTypes: _rt, ...bodyRest } = req.body || {};
-      const dealerPatch = {
-        ...existing,
-        ...bodyRest,
-        verified: false,
-        verifiedAt: null,
-      };
-      delete dealerPatch.requestTypes;
+      const fallbackLicenseFromDoc =
+        !licenseUrl && docs[0]?.url ? docs[0].url : null;
 
-      for (const key of ["specialties", "languages", "paymentMethods", "services"]) {
-        if (bodyRest[key] !== undefined && bodyRest[key] !== "") {
-          dealerPatch[key] = parseMultipartJsonArray(bodyRest[key]);
-        }
-      }
-
-      if (bodyRest.facebook || bodyRest.instagram || bodyRest.twitter || bodyRest.linkedin) {
-        dealerPatch.socialMedia = {
-          ...(dealerPatch.socialMedia || {}),
-          ...(bodyRest.facebook && { facebook: String(bodyRest.facebook).trim() }),
-          ...(bodyRest.instagram && { instagram: String(bodyRest.instagram).trim() }),
-          ...(bodyRest.twitter && { twitter: String(bodyRest.twitter).trim() }),
-          ...(bodyRest.linkedin && { linkedin: String(bodyRest.linkedin).trim() }),
-        };
-        delete dealerPatch.facebook;
-        delete dealerPatch.instagram;
-        delete dealerPatch.twitter;
-        delete dealerPatch.linkedin;
-      }
-
-      if (licenseUrl) {
-        dealerPatch.businessLicense = licenseUrl;
-      } else if (docs[0]?.url && !dealerPatch.businessLicense) {
-        dealerPatch.businessLicense = docs[0].url;
-      }
-
-      if (dealerPatch.establishedYear !== undefined && dealerPatch.establishedYear !== "") {
-        const y = parseInt(String(dealerPatch.establishedYear), 10);
-        dealerPatch.establishedYear = Number.isFinite(y) ? y : null;
-      }
+      const dealerPatch = buildDealerInfoPatchFromAccessBody(
+        existing,
+        bodyRest,
+        licenseUrl,
+        fallbackLicenseFromDoc,
+      );
 
       user.dealerInfo = dealerPatch;
       user.markModified("dealerInfo");
+
+      if (user.role !== "admin") {
+        user.role = "dealer";
+      }
+
       user.auctionCapabilities.auctionDealer.status = "pending";
       user.auctionCapabilities.auctionDealer.requestedAt = now;
       user.auctionCapabilities.auctionDealer.rejectionReason = "";
@@ -397,6 +444,21 @@ export const submitAuctionAccessRequest = async (req, res) => {
         message:
           "File upload service returned an error. Check Cloudinary credentials and try a smaller file.",
       });
+    }
+    if (error.name === "MongoServerError" || error.name === "MongoBulkWriteError") {
+      const code = error.code;
+      if (code === 11000) {
+        return res.status(400).json({
+          success: false,
+          message: "This submission conflicts with existing data. Contact support if it persists.",
+        });
+      }
+      if (code === 121) {
+        return res.status(400).json({
+          success: false,
+          message: "Some fields failed database validation. Check your details and try again.",
+        });
+      }
     }
     const isProd = process.env.NODE_ENV === "production";
     return res.status(500).json({
@@ -618,13 +680,168 @@ export const requestSeller = async (req, res) => {
 
 // dealer methods
 export const updateDealerProfile = async (req, res) => {
-    try {
-        const user = await User.findById(req.user._id);
-        if (user.role !== "dealer") return res.status(403).json({ success: false, message: "Not a dealer" });
-        user.dealerInfo = { ...user.dealerInfo, ...req.body };
-        await user.save();
-        return res.status(200).json({ success: true, data: user });
-    } catch (error) { return res.status(500).json({ success: false }); }
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    if (user.role !== "dealer") {
+      return res.status(403).json({ success: false, message: "Not a dealer" });
+    }
+
+    const bodyRest = req.body || {};
+    const existing =
+      user.dealerInfo && typeof user.dealerInfo.toObject === "function"
+        ? user.dealerInfo.toObject()
+        : { ...(user.dealerInfo || {}) };
+
+    const dealerPatch = { ...existing };
+
+    const setIfPresent = (field) => {
+      if (bodyRest[field] !== undefined) {
+        const s = String(bodyRest[field]).trim();
+        dealerPatch[field] = s || null;
+      }
+    };
+    for (const f of [
+      "businessName",
+      "businessAddress",
+      "businessPhone",
+      "whatsappNumber",
+      "city",
+      "area",
+      "vehicleTypes",
+      "description",
+      "website",
+      "employeeCount",
+    ]) {
+      setIfPresent(f);
+    }
+
+    for (const key of ["specialties", "languages", "paymentMethods", "services"]) {
+      if (bodyRest[key] !== undefined) {
+        dealerPatch[key] = parseMultipartJsonArray(bodyRest[key]);
+      }
+    }
+
+    if (
+      bodyRest.facebook !== undefined ||
+      bodyRest.instagram !== undefined ||
+      bodyRest.twitter !== undefined ||
+      bodyRest.linkedin !== undefined
+    ) {
+      dealerPatch.socialMedia = { ...(existing.socialMedia || {}) };
+      for (const sm of ["facebook", "instagram", "twitter", "linkedin"]) {
+        if (bodyRest[sm] !== undefined) {
+          dealerPatch.socialMedia[sm] = String(bodyRest[sm]).trim() || null;
+        }
+      }
+    }
+
+    if (bodyRest.establishedYear !== undefined) {
+      if (bodyRest.establishedYear === "" || bodyRest.establishedYear == null) {
+        dealerPatch.establishedYear = null;
+      } else {
+        const y = parseInt(String(bodyRest.establishedYear), 10);
+        dealerPatch.establishedYear = Number.isFinite(y) ? y : null;
+      }
+    }
+
+    dealerPatch.verified = existing.verified;
+    dealerPatch.verifiedAt = existing.verifiedAt;
+
+    const avatarFiles = filesFromField(req.files, "avatar");
+    if (avatarFiles.length > 0) {
+      try {
+        user.avatar = await uploadCloudinary(avatarFiles[0].buffer, {
+          folder: "avatars",
+          quality: 80,
+        });
+      } catch (uploadErr) {
+        Logger.error("updateDealerProfile avatar upload", uploadErr);
+        return res.status(400).json({
+          success: false,
+          message:
+            "Could not upload profile image. Use JPG or PNG (WebP) under the size limit.",
+        });
+      }
+    }
+
+    const licenseFiles = filesFromField(req.files, "businessLicense");
+    if (licenseFiles.length > 0) {
+      try {
+        dealerPatch.businessLicense = await uploadOneCapabilityFile(licenseFiles[0]);
+      } catch (uploadErr) {
+        Logger.error("updateDealerProfile license upload", uploadErr);
+        return res.status(400).json({
+          success: false,
+          message:
+            "Could not upload license file. Use a PDF or image (JPG, PNG, WebP) under 35MB.",
+        });
+      }
+    }
+
+    const showroomFiles = filesFromField(req.files, "showroomImages");
+    if (showroomFiles.length > 0) {
+      const prev = Array.isArray(dealerPatch.showroomImages)
+        ? [...dealerPatch.showroomImages]
+        : [];
+      const uploaded = [];
+      try {
+        for (const file of showroomFiles) {
+          uploaded.push(
+            await uploadCloudinary(file.buffer, { folder: "sello_showroom", quality: 85 }),
+          );
+        }
+      } catch (uploadErr) {
+        Logger.error("updateDealerProfile showroom upload", uploadErr);
+        return res.status(400).json({
+          success: false,
+          message:
+            "Could not upload showroom image(s). Use JPG or PNG under the size limit.",
+        });
+      }
+      dealerPatch.showroomImages = [...prev, ...uploaded].slice(0, 10);
+    }
+
+    user.dealerInfo = dealerPatch;
+    user.markModified("dealerInfo");
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Dealer profile updated",
+      data: user,
+    });
+  } catch (error) {
+    Logger.error("updateDealerProfile error", error);
+    if (error.name === "ValidationError") {
+      const msg = Object.values(error.errors || {})
+        .map((e) => e.message)
+        .filter(Boolean)
+        .join(" ");
+      return res.status(400).json({
+        success: false,
+        message: msg || "Invalid dealer profile data. Check all fields and try again.",
+      });
+    }
+    if (error.name === "CastError") {
+      return res.status(400).json({
+        success: false,
+        message: error.message || "Invalid data in the form.",
+      });
+    }
+    const cloudCode = error.http_code ?? error.error?.http_code;
+    if (cloudCode) {
+      return res.status(502).json({
+        success: false,
+        message: "File upload service error. Try a smaller file or try again later.",
+      });
+    }
+    const isProd = process.env.NODE_ENV === "production";
+    return res.status(500).json({
+      success: false,
+      message: isProd ? "Server error" : error.message || "Server error",
+    });
+  }
 };
 
 export const requestDealer = async (req, res) => {
