@@ -384,12 +384,12 @@ const CustomerReview = () => {
                   <div
                     className={`absolute inset-0 rounded-full transition-all duration-300 ${
                       index === currentReview
-                        ? "bg-gradient-to-r from-primary-500 to-primary-600 shadow-lg shadow-primary-500/25"
+                        ? "bg-gradient-to-r from-primary-500 to-primary-500 shadow-lg shadow-primary-500/25"
                         : "bg-slate-300 hover:bg-slate-400"
                     }`}
                   />
                   {index === currentReview && (
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary-500 to-primary-600 animate-pulse" />
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary-500 to-primary-500 animate-pulse" />
                   )}
                 </button>
               ))}

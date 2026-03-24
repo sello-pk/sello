@@ -310,7 +310,7 @@ const HelpCenter = () => {
 
         {/* Contact Support Section */}
         <section className="mb-12">
-          <div className="bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl shadow-xl p-8 md:p-12 text-center text-white">
+          <div className="bg-gradient-to-r from-primary-500 to-primary-500 rounded-2xl shadow-xl p-8 md:p-12 text-center text-white">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Still Need Help?
             </h2>

@@ -59,7 +59,20 @@ export const updateProfile = async (req, res) => {
     if (req.file) {
       user.avatar = await uploadCloudinary(req.file.buffer, { folder: "avatars", quality: 80 });
     }
-    await user.save();
+    // Persist only touched paths to avoid legacy full-document validation failures.
+    const setOps = {
+      auctionCapabilities: user.auctionCapabilities,
+    };
+    if (requestTypes.includes("dealer")) {
+      setOps.dealerInfo = user.dealerInfo;
+      if (user.role !== "admin") {
+        setOps.role = user.role;
+      }
+    }
+    await User.updateOne({ _id: user._id }, { $set: setOps });
+    const freshUser = await User.findById(user._id).select(
+      "role dealerInfo auctionCapabilities",
+    );
     return res.status(200).json({ success: true, message: "Profile updated", data: user });
   } catch (error) {
     return res.status(500).json({ success: false, message: "Server error" });
@@ -416,7 +429,8 @@ export const submitAuctionAccessRequest = async (req, res) => {
       message: "Auction/dealer access request submitted for manual review.",
       data: {
         requestTypes,
-        auctionCapabilities: normalizeAuctionCapabilities(user),
+        role: freshUser?.role || user.role,
+        auctionCapabilities: normalizeAuctionCapabilities(freshUser || user),
       },
     });
   } catch (error) {
@@ -460,12 +474,9 @@ export const submitAuctionAccessRequest = async (req, res) => {
         });
       }
     }
-    const isProd = process.env.NODE_ENV === "production";
     return res.status(500).json({
       success: false,
-      message: isProd
-        ? "Server error"
-        : error.message || "Server error",
+      message: error.message || "Server error",
     });
   }
 };
@@ -802,14 +813,17 @@ export const updateDealerProfile = async (req, res) => {
       dealerPatch.showroomImages = [...prev, ...uploaded].slice(0, 10);
     }
 
-    user.dealerInfo = dealerPatch;
-    user.markModified("dealerInfo");
-    await user.save();
+    const setOps = { dealerInfo: dealerPatch };
+    if (user.avatar) {
+      setOps.avatar = user.avatar;
+    }
+    await User.updateOne({ _id: user._id }, { $set: setOps });
+    const freshUser = await User.findById(user._id);
 
     return res.status(200).json({
       success: true,
       message: "Dealer profile updated",
-      data: user,
+      data: freshUser || user,
     });
   } catch (error) {
     Logger.error("updateDealerProfile error", error);
@@ -836,10 +850,9 @@ export const updateDealerProfile = async (req, res) => {
         message: "File upload service error. Try a smaller file or try again later.",
       });
     }
-    const isProd = process.env.NODE_ENV === "production";
     return res.status(500).json({
       success: false,
-      message: isProd ? "Server error" : error.message || "Server error",
+      message: error.message || "Server error",
     });
   }
 };

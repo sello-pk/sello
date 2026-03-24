@@ -140,7 +140,7 @@ const CategoryPage = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div
-        className="relative bg-gradient-to-br from-primary-500 to-primary-600 text-white py-20"
+        className="relative bg-gradient-to-br from-primary-500 to-primary-500 text-white py-20"
         style={{
           backgroundImage: `url(${isShowingAllCategories ? "/assets/categories/carCat.svg" : categoryBackgrounds[currentCategory?.name] || "/assets/categories/carCat.svg"})`,
           backgroundSize: "cover",
@@ -150,7 +150,7 @@ const CategoryPage = () => {
       >
         {/* Background Image Overlay */}
         <div className="absolute inset-0 bg-black/20">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-500/90 via-primary-600/70 to-primary-700/50"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-500/90 via-primary-500/70 to-primary-500/50"></div>
         </div>
 
         <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">

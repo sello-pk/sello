@@ -158,7 +158,7 @@ const BannerCarousal = () => {
                   />
                 </>
               ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-primary-400 via-primary-500 to-primary-600 flex items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary-400 via-primary-500 to-primary-500 flex items-center justify-center">
                   <span className="text-white text-xl">No Banner Image</span>
                 </div>
               )}

@@ -77,7 +77,7 @@ const JoinUsSection = () => {
               className="group relative bg-white/95 backdrop-blur-sm rounded-2xl p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border border-white/20 hover:-translate-y-2 hover:scale-[1.02]"
             >
               {/* Hover Effect Background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary-400/10 to-primary-600/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-primary-400/10 to-primary-500/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
               {/* Content */}
               <div className="relative">

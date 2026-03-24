@@ -636,7 +636,7 @@ const DealerDashboard = () => {
             <FiActivity size={20} />
             <span>Auctions</span>
             {auctionStats.activeAuctions > 0 && (
-              <span className="ml-auto bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full">
+              <span className="ml-auto bg-primary-500 text-white text-xs px-2 py-0.5 rounded-full">
                 {auctionStats.activeAuctions}
               </span>
             )}
@@ -794,7 +794,7 @@ const DealerDashboard = () => {
                 });
                 setShowAddCar(true);
               }}
-              className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-amber-500 hover:to-orange-500 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-all hover:shadow-lg"
+              className="bg-gradient-to-r from-primary-500 to-primary-500 hover:from-primary-500 hover:to-primary-500 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-all hover:shadow-lg"
             >
               <FiPlus size={20} />
               Submit New Vehicle
@@ -891,7 +891,7 @@ const DealerDashboard = () => {
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">Pending Approval</p>
-                      <p className="text-xl font-bold text-amber-600">
+                      <p className="text-xl font-bold text-primary-500">
                         {auctionAnalytics.pendingApproval ?? 0}
                       </p>
                     </div>
@@ -933,7 +933,7 @@ const DealerDashboard = () => {
 
               {/* Subscription Status Card - Only show if subscription tab is enabled */}
               {showSubscriptionTab && (
-                <div className="bg-gradient-to-r from-primary-500 to-primary-600 rounded-lg shadow-sm border border-gray-200 p-6 text-white">
+                <div className="bg-gradient-to-r from-primary-500 to-primary-500 rounded-lg shadow-sm border border-gray-200 p-6 text-white">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold">
                       Subscription Status
@@ -1123,19 +1123,19 @@ const DealerDashboard = () => {
             <div className="space-y-6">
               {/* Enhanced Auction Stats */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <div className="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                <div className="bg-gradient-to-br from-primary-50 to-primary-100 border border-primary-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
                   <div className="flex items-center justify-between mb-3">
-                    <div className="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center">
+                    <div className="w-12 h-12 bg-primary-500 rounded-lg flex items-center justify-center">
                       <FiActivity className="text-white" size={24} />
                     </div>
-                    <span className="text-2xl font-bold text-orange-600">
+                    <span className="text-2xl font-bold text-primary-500">
                       {auctionStats.totalAuctions}
                     </span>
                   </div>
-                  <p className="text-sm text-orange-700 font-medium">
+                  <p className="text-sm text-primary-500 font-medium">
                     Total Auctions
                   </p>
-                  <p className="text-xs text-orange-600 mt-1">
+                  <p className="text-xs text-primary-500 mt-1">
                     All time listings
                   </p>
                 </div>
@@ -1195,15 +1195,15 @@ const DealerDashboard = () => {
               {/* Enhanced Auction Actions */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
                 <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                    <FiActivity className="text-orange-600" size={20} />
+                  <div className="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
+                    <FiActivity className="text-primary-500" size={20} />
                   </div>
                   Auction Quick Actions
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Link
                     to="/auctions/token-payment"
-                    className="group p-6 border-2 border-gray-200 rounded-xl hover:border-orange-300 hover:shadow-lg transition-all bg-gradient-to-br from-emerald-50 to-emerald-100"
+                    className="group p-6 border-2 border-gray-200 rounded-xl hover:border-primary-300 hover:shadow-lg transition-all bg-gradient-to-br from-emerald-50 to-emerald-100"
                   >
                     <div className="flex flex-col items-center text-center">
                       <div className="w-16 h-16 bg-emerald-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -1224,19 +1224,19 @@ const DealerDashboard = () => {
 
                   <Link
                     to="/auctions/live"
-                    className="group p-6 border-2 border-gray-200 rounded-xl hover:border-orange-300 hover:shadow-lg transition-all bg-gradient-to-br from-orange-50 to-orange-100"
+                    className="group p-6 border-2 border-gray-200 rounded-xl hover:border-primary-300 hover:shadow-lg transition-all bg-gradient-to-br from-primary-50 to-primary-100"
                   >
                     <div className="flex flex-col items-center text-center">
-                      <div className="w-16 h-16 bg-orange-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                      <div className="w-16 h-16 bg-primary-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <FiActivity className="text-white" size={32} />
                       </div>
-                      <h4 className="font-bold text-orange-800 text-lg mb-2">
+                      <h4 className="font-bold text-primary-500 text-lg mb-2">
                         Live Auctions
                       </h4>
-                      <p className="text-sm text-orange-600">
+                      <p className="text-sm text-primary-500">
                         View and participate in active auctions
                       </p>
-                      <div className="flex items-center gap-1 mt-3 text-orange-600 group-hover:gap-2 transition-all">
+                      <div className="flex items-center gap-1 mt-3 text-primary-500 group-hover:gap-2 transition-all">
                         <span className="text-sm font-medium">
                           Enter Auction
                         </span>
@@ -1278,7 +1278,7 @@ const DealerDashboard = () => {
                   </h3>
                   <Link
                     to="/auctions/transactions"
-                    className="text-orange-500 hover:text-orange-600 font-medium"
+                    className="text-primary-500 hover:text-primary-500 font-medium"
                   >
                     View All
                   </Link>
@@ -1337,7 +1337,7 @@ const DealerDashboard = () => {
                   </h3>
                   <Link
                     to="/auctions/schedule"
-                    className="text-orange-500 hover:text-orange-600 font-medium"
+                    className="text-primary-500 hover:text-primary-500 font-medium"
                   >
                     View Schedule
                   </Link>
@@ -1398,7 +1398,7 @@ const DealerDashboard = () => {
               {/* Auction Summary Cards */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-6">
-                  <FiSettings className="text-orange-500" size={20} />
+                  <FiSettings className="text-primary-500" size={20} />
                   Auction Summary
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1475,7 +1475,7 @@ const DealerDashboard = () => {
                         </p>
                         <Link
                           to="/auctions/live"
-                          className="text-sm text-orange-500 font-medium"
+                          className="text-sm text-primary-500 font-medium"
                         >
                           Join Now →
                         </Link>
@@ -1487,7 +1487,7 @@ const DealerDashboard = () => {
                         </p>
                         <Link
                           to="/auctions/schedule"
-                          className="text-sm text-orange-500 font-medium"
+                          className="text-sm text-primary-500 font-medium"
                         >
                           View Schedule →
                         </Link>
@@ -1995,7 +1995,7 @@ const DealerDashboard = () => {
                       )}
                       {(newCar.images?.length || 0) > 0 &&
                         (newCar.images?.length || 0) < MIN_PHOTOS && (
-                          <p className="text-sm text-amber-600 mt-2">
+                          <p className="text-sm text-primary-500 mt-2">
                             Add at least {MIN_PHOTOS} photos to continue.
                           </p>
                         )}
@@ -2174,11 +2174,11 @@ const DealerDashboard = () => {
                       </p>
                     </div>
 
-                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                      <label className="block text-sm font-medium text-amber-800 mb-2">
+                    <div className="bg-primary-50 border border-primary-200 rounded-xl p-4">
+                      <label className="block text-sm font-medium text-primary-500 mb-2">
                         Inspection Report (PDF) *
                       </label>
-                      <p className="text-xs text-amber-700 mb-2">
+                      <p className="text-xs text-primary-500 mb-2">
                         Upload the vehicle inspection report. Required for every
                         auction submission.
                       </p>
@@ -2192,7 +2192,7 @@ const DealerDashboard = () => {
                             inspectionReportFile: file || null,
                           }));
                         }}
-                        className="w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-amber-500 file:text-white file:font-medium hover:file:bg-amber-600"
+                        className="w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-primary-500 file:text-white file:font-medium hover:file:bg-primary-500"
                       />
                       {newCar.inspectionReportFile && (
                         <p className="text-xs text-emerald-700 mt-2">

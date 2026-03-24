@@ -445,7 +445,7 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4">
         <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
-          <div className="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-4 flex justify-between items-center">
+          <div className="bg-gradient-to-r from-primary-500 to-primary-500 px-6 py-4 flex justify-between items-center">
             <h3 className="text-xl font-bold text-white">Dealer Status</h3>
             <button
               onClick={onClose}
@@ -512,10 +512,10 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl my-8 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 overflow-y-auto">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-5xl my-8 overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
+        <div className="bg-gradient-to-r from-primary-500 to-primary-500 px-6 md:px-8 py-5 flex justify-between items-center sticky top-0 z-10">
           <div>
             <h3 className="text-2xl font-bold text-white">
               Become a Verified Dealer
@@ -534,12 +534,12 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
         </div>
 
         {/* Progress Bar */}
-        <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+        <div className="px-6 md:px-8 py-4 bg-slate-50 border-b border-slate-200">
           <div className="flex items-center justify-between mb-2">
             {[1, 2, 3].map((step) => (
               <div key={step} className="flex items-center flex-1">
                 <div
-                  className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
+                  className={`flex items-center justify-center w-10 h-10 rounded-full border-2 font-semibold ${
                     currentStep >= step
                       ? "bg-primary-500 border-primary-500 text-white"
                       : "bg-white border-gray-300 text-gray-400"
@@ -567,11 +567,11 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
         {/* Body */}
         <form
           onSubmit={handleSubmit}
-          className="p-6 overflow-y-auto max-h-[calc(100vh-300px)]"
+          className="p-6 md:p-8 overflow-y-auto max-h-[calc(100vh-300px)] bg-slate-50/50"
         >
           {/* Step 1: Basic Information */}
           {currentStep === 1 && (
-            <div className="space-y-4">
+            <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 md:p-6 shadow-sm">
               <h3 className="text-xl font-semibold text-gray-800 mb-4">
                 Basic Information
               </h3>
@@ -923,7 +923,7 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
 
           {/* Step 2: Business Details */}
           {currentStep === 2 && (
-            <div className="space-y-4">
+            <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 md:p-6 shadow-sm">
               <h3 className="text-xl font-semibold text-gray-800 mb-4">
                 Business Details
               </h3>
@@ -1010,7 +1010,7 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                   {formData.specialties.map((specialty) => (
                     <span
                       key={specialty}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm"
+                      className="inline-flex items-center gap-1 px-3 py-1 bg-primary-50 text-primary-500 rounded-full text-sm"
                     >
                       {specialty}
                       <button
@@ -1018,7 +1018,7 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                         onClick={() =>
                           removeFromArray("specialties", specialty)
                         }
-                        className="hover:text-primary-900"
+                        className="hover:text-primary-500"
                       >
                         <FaTimes size={12} />
                       </button>
@@ -1087,13 +1087,13 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                   {formData.languages.map((language) => (
                     <span
                       key={language}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-primary-50 text-primary-800 rounded-full text-sm"
+                      className="inline-flex items-center gap-1 px-3 py-1 bg-primary-50 text-primary-500 rounded-full text-sm"
                     >
                       {language}
                       <button
                         type="button"
                         onClick={() => removeFromArray("languages", language)}
-                        className="hover:text-primary-600"
+                        className="hover:text-primary-500"
                       >
                         <FaTimes size={12} />
                       </button>
@@ -1300,7 +1300,7 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
 
           {/* Step 3: Review & Submit */}
           {currentStep === 3 && (
-            <div className="space-y-4">
+            <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 md:p-6 shadow-sm">
               <h3 className="text-xl font-semibold text-gray-800 mb-4">
                 Review Your Information
               </h3>
@@ -1379,10 +1379,10 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
 
               {/* Info Box */}
               <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
-                <h4 className="text-sm font-semibold text-primary-900 mb-2">
+                <h4 className="text-sm font-semibold text-primary-500 mb-2">
                   What happens next?
                 </h4>
-                <ul className="text-xs text-primary-800 space-y-1">
+                <ul className="text-xs text-primary-500 space-y-1">
                   <li>• Your request will be reviewed by our admin team</li>
                   <li>• Verification typically takes 1-3 business days</li>
                   <li>• You'll receive an email notification once verified</li>
@@ -1393,7 +1393,7 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
           )}
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between pt-6 border-t border-gray-200 mt-6">
+          <div className="flex justify-between pt-6 border-t border-slate-200 mt-8 sticky bottom-0 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 rounded-t-xl">
             <button
               type="button"
               onClick={currentStep === 1 ? onClose : handleBack}

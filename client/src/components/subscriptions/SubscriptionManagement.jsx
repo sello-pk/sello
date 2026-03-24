@@ -159,7 +159,7 @@ const SubscriptionManagement = () => {
     <div className="space-y-6">
       {/* Current Subscription Status */}
       {isActive && (
-        <div className="bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl shadow-lg p-6 text-white">
+        <div className="bg-gradient-to-r from-primary-500 to-primary-500 rounded-xl shadow-lg p-6 text-white">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-2xl font-bold mb-2">
@@ -379,7 +379,7 @@ const SubscriptionManagement = () => {
       {showPaymentModal && selectedPlan && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
-            <div className="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-4 flex justify-between items-center">
+            <div className="bg-gradient-to-r from-primary-500 to-primary-500 px-6 py-4 flex justify-between items-center">
               <h3 className="text-xl font-bold text-white">
                 Complete Subscription
               </h3>

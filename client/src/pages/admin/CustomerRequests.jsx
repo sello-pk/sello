@@ -310,7 +310,7 @@ const CustomerRequests = () => {
             >
               <FiMessageSquare size={20} />
             </button>
-            <div className="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-3 rounded-xl shadow-lg flex items-center">
+            <div className="bg-gradient-to-r from-primary-500 to-primary-500 text-white px-4 py-3 rounded-xl shadow-lg flex items-center">
               <FiMessageSquare className="mr-2" size={20} />
               <span className="font-semibold">
                 {allItems.length} Total Items
@@ -401,7 +401,7 @@ const CustomerRequests = () => {
                 onClick={() => setRequestType("all")}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   requestType === "all"
-                    ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-md"
+                    ? "bg-gradient-to-r from-primary-500 to-primary-500 text-white shadow-md"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
@@ -411,7 +411,7 @@ const CustomerRequests = () => {
                 onClick={() => setRequestType("requests")}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   requestType === "requests"
-                    ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-md"
+                    ? "bg-gradient-to-r from-primary-500 to-primary-500 text-white shadow-md"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
@@ -422,7 +422,7 @@ const CustomerRequests = () => {
                 onClick={() => setRequestType("contact_forms")}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   requestType === "contact_forms"
-                    ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-md"
+                    ? "bg-gradient-to-r from-primary-500 to-primary-500 text-white shadow-md"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
@@ -437,7 +437,7 @@ const CustomerRequests = () => {
                 onClick={() => setActiveTab("all")}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   activeTab === "all"
-                    ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-md"
+                    ? "bg-gradient-to-r from-primary-500 to-primary-500 text-white shadow-md"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
@@ -447,7 +447,7 @@ const CustomerRequests = () => {
                 onClick={() => setActiveTab("open")}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   activeTab === "open"
-                    ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-md"
+                    ? "bg-gradient-to-r from-primary-500 to-primary-500 text-white shadow-md"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
@@ -457,7 +457,7 @@ const CustomerRequests = () => {
                 onClick={() => setActiveTab("in_progress")}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   activeTab === "in_progress"
-                    ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-md"
+                    ? "bg-gradient-to-r from-primary-500 to-primary-500 text-white shadow-md"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
@@ -467,7 +467,7 @@ const CustomerRequests = () => {
                 onClick={() => setActiveTab("resolved")}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   activeTab === "resolved"
-                    ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-md"
+                    ? "bg-gradient-to-r from-primary-500 to-primary-500 text-white shadow-md"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
@@ -578,7 +578,7 @@ const CustomerRequests = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-primary-500 to-primary-600 flex items-center justify-center text-white text-sm font-semibold overflow-hidden border-2 border-white shadow-sm">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-primary-500 to-primary-500 flex items-center justify-center text-white text-sm font-semibold overflow-hidden border-2 border-white shadow-sm">
                             {item.user?.avatar ? (
                               <img
                                 src={item.user.avatar}
@@ -829,7 +829,7 @@ const CustomerRequests = () => {
                 <button
                   onClick={handleAddResponse}
                   disabled={!responseMessage.trim() || isAddingResponse}
-                  className="px-5 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-md hover:shadow-lg"
+                  className="px-5 py-2.5 bg-gradient-to-r from-primary-500 to-primary-500 text-white rounded-xl hover:from-primary-500 hover:to-primary-500 font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-md hover:shadow-lg"
                 >
                   {isAddingResponse ? (
                     <>

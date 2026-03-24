@@ -210,7 +210,7 @@ const CategoryListings = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div
-        className="relative min-h-[48vh] md:h-[48vh] bg-gradient-to-br from-primary-500 to-primary-600 text-white overflow-hidden"
+        className="relative min-h-[48vh] md:h-[48vh] bg-gradient-to-br from-primary-500 to-primary-500 text-white overflow-hidden"
         style={{
           backgroundImage: `url(${categoryBackgrounds[category] || "/assets/categories/carCat.svg"})`,
           backgroundSize: "cover",

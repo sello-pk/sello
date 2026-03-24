@@ -186,7 +186,7 @@ const UserReviewSection = ({ userId, carId, sellerName }) => {
       {showReviewForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
-            <div className="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-4 flex justify-between items-center">
+            <div className="bg-gradient-to-r from-primary-500 to-primary-500 px-6 py-4 flex justify-between items-center">
               <h3 className="text-xl font-bold text-white">Write a Review</h3>
               <button
                 onClick={() => {

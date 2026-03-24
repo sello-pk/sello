@@ -38,9 +38,9 @@ const ReviewsAnalysis = () => {
               Trusted by Car Buyers & Sellers
             </h2>
             <div className="flex items-center justify-center gap-3 mb-6">
-              <div className="w-24 h-1.5 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full"></div>
+              <div className="w-24 h-1.5 bg-gradient-to-r from-primary-500 to-primary-500 rounded-full"></div>
               <div className="w-3 h-3 bg-primary-500 rounded-full"></div>
-              <div className="w-24 h-1.5 bg-gradient-to-r from-primary-600 to-primary-500 rounded-full"></div>
+              <div className="w-24 h-1.5 bg-gradient-to-r from-primary-500 to-primary-500 rounded-full"></div>
             </div>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
               A quick snapshot of what customers consistently highlight about

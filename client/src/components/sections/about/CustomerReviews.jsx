@@ -41,7 +41,7 @@ const CustomerReviews = () => {
             Hear From Our Happy Customers
           </h2>
           <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="w-24 h-1.5 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full"></div>
+            <div className="w-24 h-1.5 bg-gradient-to-r from-primary-500 to-primary-500 rounded-full"></div>
             <div className="w-3 h-3 bg-primary-500 rounded-full"></div>
             <div className="w-24 h-1.5 bg-primary-500 rounded-full"></div>
           </div>
