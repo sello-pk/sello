@@ -602,9 +602,11 @@ const DealerDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-8xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-4">
+        <div className="flex min-h-[calc(100vh-2rem)] gap-4">
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-lg flex flex-col">
+      <div className="w-64 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
         {/* Logo */}
         <div className="p-6 border-b border-gray-200">
           <h2 className="text-2xl font-bold text-primary-500">SELLO</h2>
@@ -756,9 +758,9 @@ const DealerDashboard = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         {/* Top Header */}
-        <header className="bg-gradient-to-br from-slate-900 to-slate-800 px-6 py-6">
+        <header className="bg-gradient-to-br from-slate-900 to-slate-800 px-6 md:px-8 py-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-white capitalize">
@@ -797,13 +799,13 @@ const DealerDashboard = () => {
               className="bg-gradient-to-r from-primary-500 to-primary-500 hover:from-primary-500 hover:to-primary-500 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-all hover:shadow-lg"
             >
               <FiPlus size={20} />
-              Submit New Vehicle
+              Submit Vehicle to Auction
             </button>
           </div>
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-5 md:p-6 lg:p-8 bg-slate-50">
           {activeTab === "dashboard" && (
             <div className="space-y-6">
               {/* Stats Cards */}
@@ -2303,6 +2305,8 @@ const DealerDashboard = () => {
             </div>
           </div>
         )}
+      </div>
+        </div>
       </div>
     </div>
   );
