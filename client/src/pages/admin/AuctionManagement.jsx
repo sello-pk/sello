@@ -268,17 +268,17 @@ export default function AuctionManagement() {
     <div className="p-6 overflow-x-hidden min-w-0 max-w-full">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Auction Management</h1>
-          <p className="text-slate-500">Manage live auctions, cars, bids, and payments</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Auction Management</h1>
+          <p className="text-slate-500 dark:text-slate-300">Manage live auctions, cars, bids, and payments</p>
         </div>
         <Button onClick={() => setShowCreateModal(true)}><Plus className="w-4 h-4 mr-2" />Create Auction</Button>
       </div>
 
       {/* Tabs - wrap on narrow screens to avoid horizontal page scroll */}
-      <div className="flex flex-wrap gap-2 mb-6 border-b border-slate-200 pb-4">
+      <div className="flex flex-wrap gap-2 mb-6 border-b border-slate-200 dark:border-slate-700 pb-4">
         {tabs.map((tab) => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex-shrink-0 ${activeTab === tab.id ? "bg-[#FFA602] text-white" : "text-slate-600 hover:bg-slate-100"}`}>
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex-shrink-0 ${activeTab === tab.id ? "bg-[#FFA602] text-white" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"}`}>
             <tab.icon className="w-4 h-4" />{tab.label}
           </button>
         ))}
@@ -302,10 +302,10 @@ export default function AuctionManagement() {
               { label: "Unsold", value: stats.unsoldCount, icon: X, color: "text-slate-500" },
               { label: "Completed Auctions", value: stats.completedAuctions, icon: Gavel, color: "text-blue-600" },
             ].map((s, i) => (
-              <div key={i} className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+              <div key={i} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4 shadow-sm">
                 <s.icon className={`w-6 h-6 ${s.color} mb-2`} />
-                <p className="text-2xl font-bold text-slate-900">{s.value ?? 0}</p>
-                <p className="text-xs text-slate-500">{s.label}</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{s.value ?? 0}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-300">{s.label}</p>
               </div>
             ))}
           </div>
@@ -337,18 +337,18 @@ export default function AuctionManagement() {
           )}
 
           {dashboard?.recentBids?.length > 0 && (
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h3 className="font-semibold text-lg mb-4">Recent Bids</h3>
+            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+              <h3 className="font-semibold text-lg mb-4 text-slate-900 dark:text-slate-100">Recent Bids</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead><tr className="text-left text-slate-500 border-b"><th className="pb-3">Bidder</th><th className="pb-3">Amount</th><th className="pb-3">Type</th><th className="pb-3">Time</th></tr></thead>
+                  <thead><tr className="text-left text-slate-500 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700"><th className="pb-3">Bidder</th><th className="pb-3">Amount</th><th className="pb-3">Type</th><th className="pb-3">Time</th></tr></thead>
                   <tbody>
                     {dashboard.recentBids.map((bid) => (
-                      <tr key={bid._id} className="border-b border-slate-100">
-                        <td className="py-3 font-medium">{bid.bidder?.name || bid.bidderName}</td>
+                      <tr key={bid._id} className="border-b border-slate-100 dark:border-slate-800">
+                        <td className="py-3 font-medium text-slate-900 dark:text-slate-100">{bid.bidder?.name || bid.bidderName}</td>
                         <td className="py-3 font-semibold text-[#FFA602]">PKR {bid.amount?.toLocaleString()}</td>
                         <td className="py-3"><Badge className={bid.bidType === "offline" ? "bg-slate-100 text-slate-600" : "bg-blue-100 text-blue-600"}>{bid.bidType}</Badge></td>
-                        <td className="py-3 text-slate-500">{new Date(bid.createdAt).toLocaleString()}</td>
+                        <td className="py-3 text-slate-500 dark:text-slate-300">{new Date(bid.createdAt).toLocaleString()}</td>
                       </tr>
                     ))}
                   </tbody>
