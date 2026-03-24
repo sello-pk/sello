@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCarCategories } from "../hooks/useCarCategories";
+import { useGetAllCategoriesQuery } from "../redux/services/adminApi";
 import { useGetCarCountsByMakeQuery } from "../redux/services/api";
 import { Spinner } from "../components/ui/Loading";
 
@@ -19,8 +19,17 @@ const AllBrands = () => {
   const navigate = useNavigate();
   const [selectedVehicleType, setSelectedVehicleType] = useState(null); // null = All Brands
 
-  const { makes, isLoading: categoriesLoading } = useCarCategories(
-    selectedVehicleType,
+  // Fetch raw "make" categories and resolve by vehicleType in this page.
+  // This avoids same-name make collisions across types (e.g., Honda car vs bike).
+  const { data: allMakesRaw = [], isLoading: categoriesLoading } =
+    useGetAllCategoriesQuery(
+      { type: "car", subType: "make", isActive: "true" },
+      { refetchOnMountOrArgChange: true },
+    );
+
+  const makes = React.useMemo(
+    () => (Array.isArray(allMakesRaw) ? allMakesRaw : []),
+    [allMakesRaw],
   );
 
   // Fetch counts by make; when a vehicle type tab is selected, scope counts to that type only
@@ -41,16 +50,24 @@ const AllBrands = () => {
         (countsMapNormalized[normalizedKey] || 0) + carCountsByMake[key];
     });
 
-    return makes
-      .filter(
-        (brand) =>
-          brand.isActive &&
-          brand.image &&
-          (selectedVehicleType == null || brand.vehicleType === selectedVehicleType),
-      )
+    const filtered = makes.filter(
+      (brand) =>
+        brand?.isActive &&
+        brand?.image &&
+        (selectedVehicleType == null ||
+          brand?.vehicleType === selectedVehicleType),
+    );
+
+    // Keep every make entry separate by vehicle type (no cross-type merge).
+    return filtered
       .map((brand) => {
-        const brandNameNormalized = (brand.name || "").trim().toLowerCase();
-        const postCount = countsMapNormalized[brandNameNormalized] || 0;
+        const brandNameNormalized = (brand?.name || "").trim().toLowerCase();
+        // In "All Brands", make names can repeat across vehicle types.
+        // Avoid ambiguous count badges unless a specific type tab is selected.
+        const postCount =
+          selectedVehicleType == null
+            ? 0
+            : countsMapNormalized[brandNameNormalized] || 0;
         return { ...brand, postCount };
       })
       .sort((a, b) => {
@@ -63,9 +80,11 @@ const AllBrands = () => {
 
   const isLoading = categoriesLoading || countsLoading;
 
-  const handleBrandClick = (brandName) => {
-    const params = new URLSearchParams({ make: brandName });
-    if (selectedVehicleType) params.set("vehicleType", selectedVehicleType);
+  const handleBrandClick = (brand) => {
+    const params = new URLSearchParams({ make: brand.name || "" });
+    // Always include vehicleType to avoid cross-type make collisions in results.
+    const vehicleType = selectedVehicleType || brand?.vehicleType;
+    if (vehicleType) params.set("vehicleType", vehicleType);
     navigate(`/search-results?${params.toString()}`);
   };
 
@@ -128,7 +147,7 @@ const AllBrands = () => {
               return (
                 <div
                   key={brand._id || brand.slug}
-                  onClick={() => handleBrandClick(brandName)}
+                  onClick={() => handleBrandClick(brand)}
                   className="flex flex-col items-center justify-center cursor-pointer group transition-all hover:scale-105"
                 >
                   <div className="relative bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow w-full h-24 md:h-28 flex items-center justify-center mb-2">
@@ -159,6 +178,11 @@ const AllBrands = () => {
                     <p className="text-xs md:text-sm font-medium text-gray-700 group-hover:text-primary-500 transition-colors line-clamp-2 max-w-[100px]">
                       {brandName}
                     </p>
+                    {selectedVehicleType == null && brand?.vehicleType ? (
+                      <p className="text-[10px] md:text-xs text-gray-500 mt-0.5">
+                        {brand.vehicleType}
+                      </p>
+                    ) : null}
                   </div>
                 </div>
               );
