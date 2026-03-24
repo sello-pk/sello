@@ -669,7 +669,10 @@ const ProfileHero = () => {
                         </p>
                         <div className="flex flex-wrap gap-3">
                           <button
-                            onClick={() => setActiveSection("dealer-profile")}
+                            onClick={() => {
+                              setActiveSection("dealer-profile");
+                              setIsEditingDealer(true);
+                            }}
                             className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90 text-sm font-medium"
                           >
                             Edit Business Profile

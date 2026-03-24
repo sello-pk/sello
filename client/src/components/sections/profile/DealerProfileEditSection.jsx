@@ -396,22 +396,6 @@ const DealerProfileEditSection = ({
                 className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50"
               />
             </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Business Address
-              </label>
-              <p className="text-xs text-gray-500 mb-1">
-                Street, landmark, or directions — not the same as city/area above.
-              </p>
-              <textarea
-                name="businessAddress"
-                value={dealerFormData.businessAddress}
-                onChange={handleInputChange}
-                disabled={!isEditingDealer}
-                rows={3}
-                className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50"
-              />
-            </div>
           </div>
         </div>
 
@@ -961,14 +945,6 @@ const DealerProfileEditSection = ({
                     {user?.dealerInfo?.area || "Not set"}
                   </p>
                 </div>
-                {user?.dealerInfo?.businessAddress ? (
-                  <div className="md:col-span-2">
-                    <p className="text-sm text-gray-600">Street / full address</p>
-                    <p className="font-semibold text-gray-900 whitespace-pre-wrap">
-                      {user.dealerInfo.businessAddress}
-                    </p>
-                  </div>
-                ) : null}
                 <div>
                   <p className="text-sm text-gray-600">Phone</p>
                   <p className="font-semibold text-gray-900">
