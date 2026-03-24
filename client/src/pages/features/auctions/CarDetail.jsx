@@ -320,6 +320,7 @@ export default function CarDetail() {
       const valuation = await createValuationMut(payload).unwrap();
       const estimate =
         valuation?.estimation?.estimatedValue ||
+        valuation?.estimation?.averagePrice ||
         valuation?.estimation?.averageValue ||
         valuation?.estimation?.price ||
         null;
@@ -839,7 +840,7 @@ export default function CarDetail() {
                             <Button
                               onClick={handlePlaceBid}
                               disabled={bidding || bidAmount < minimumBid}
-                              className="px-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
+                              className="px-6 bg-gradient-to-r from-primary-500 to-primary-500 hover:opacity-90"
                             >
                               {bidding ? "..." : "Bid Now"}
                             </Button>

@@ -132,7 +132,14 @@ const removeOutliers = (cars) => {
 -------------------------------------------------- */
 export const getAIAdjustment = async (vehicleData, baselinePrice) => {
   const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error("OpenAI API Key missing");
+  if (!apiKey) {
+    return {
+      adjustedPrice: baselinePrice,
+      adjustmentPercent: 0,
+      reason: "AI adjustment unavailable; using market baseline.",
+      confidenceScore: 70,
+    };
+  }
 
   const prompt = `
 You are a Pakistani car market analyst.
@@ -185,10 +192,28 @@ Return JSON:
     }),
   });
 
-  const data = await response.json();
-  const result = JSON.parse(data.choices[0].message.content);
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`OpenAI request failed (${response.status}): ${errorText}`);
+  }
 
-  const adjustment = Math.max(-10, Math.min(10, result.adjustmentPercent));
+  const data = await response.json();
+  const content = data?.choices?.[0]?.message?.content;
+  if (!content) {
+    throw new Error("OpenAI response missing content");
+  }
+
+  let result = {};
+  try {
+    result = JSON.parse(content);
+  } catch {
+    throw new Error("OpenAI response was not valid JSON");
+  }
+
+  const adjustment = Math.max(
+    -10,
+    Math.min(10, Number(result.adjustmentPercent) || 0),
+  );
   const adjustedPrice = Math.round(baselinePrice * (1 + adjustment / 100));
 
   return {
@@ -267,7 +292,19 @@ export const calculateEstimation = async (vehicleData) => {
   else if (mileage > 120000) factor *= 0.92;
   else if (mileage < 40000) factor *= 1.05;
 
-  const cond = (condition || "good").toLowerCase();
+  const cond =
+    typeof condition === "string"
+      ? condition.toLowerCase()
+      : typeof condition === "object" && condition
+        ? String(
+            condition.engine ||
+              condition.body ||
+              condition.interior ||
+              condition.tire ||
+              condition.suspension ||
+              "good",
+          ).toLowerCase()
+        : "good";
   if (cond === "excellent") factor *= 1.07;
   if (cond === "fair") factor *= 0.9;
   if (cond === "poor") factor *= 0.75;
@@ -278,7 +315,18 @@ export const calculateEstimation = async (vehicleData) => {
      STEP 5: AI ADJUSTMENT (Small % Only)
   ------------------------------------------*/
 
-  const aiAdjustment = await getAIAdjustment(vehicleData, baselinePrice);
+  let aiAdjustment;
+  try {
+    aiAdjustment = await getAIAdjustment(vehicleData, baselinePrice);
+  } catch (error) {
+    Logger.error("AI valuation adjustment failed, using baseline:", error);
+    aiAdjustment = {
+      adjustedPrice: baselinePrice,
+      adjustmentPercent: 0,
+      reason: "AI valuation temporarily unavailable; using market baseline.",
+      confidenceScore: 70,
+    };
+  }
 
   return {
     averagePrice: aiAdjustment.adjustedPrice,

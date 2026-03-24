@@ -18,6 +18,25 @@ const parseMileageInput = (input) => {
   return numbers[0];
 };
 
+const normalizeConditionForStorage = (conditionInput) => {
+  if (!conditionInput) return undefined;
+  if (typeof conditionInput === "object" && !Array.isArray(conditionInput)) {
+    return conditionInput;
+  }
+  if (typeof conditionInput === "string") {
+    const c = conditionInput.trim().toLowerCase();
+    if (!c) return undefined;
+    return {
+      engine: c,
+      body: c,
+      interior: c,
+      tire: c,
+      suspension: c,
+    };
+  }
+  return undefined;
+};
+
 /**
  * Create a new valuation
  */
@@ -75,9 +94,14 @@ export const createValuation = async (req, res) => {
       ...vehicleData,
       year,
       mileage,
+      condition: normalizeConditionForStorage(vehicleData.condition),
     };
 
-    const estimation = await calculateEstimation(normalizedVehicleData);
+    const estimationInput = {
+      ...normalizedVehicleData,
+      condition: vehicleData.condition,
+    };
+    const estimation = await calculateEstimation(estimationInput);
 
     const valuation = new Valuation({
       userId: req.user?._id, // Optional user ID

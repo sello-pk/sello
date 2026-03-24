@@ -956,7 +956,16 @@ export const submitTokenPayment = async (req, res) => {
         message: "Transaction ID must be between 4 and 64 characters",
       });
     }
-    if (receiptUrl.length < 8 || receiptUrl.length > 250000) {
+    const isDataUrl = receiptUrl.startsWith("data:");
+    const isHttpUrl =
+      receiptUrl.startsWith("http://") || receiptUrl.startsWith("https://");
+    const maxDataUrlLength = 12 * 1024 * 1024; // allow base64 receipt uploads (~12MB text)
+    const maxHttpUrlLength = 2048;
+    const looksValidReceipt =
+      (isDataUrl && receiptUrl.length >= 32 && receiptUrl.length <= maxDataUrlLength) ||
+      (isHttpUrl && receiptUrl.length >= 8 && receiptUrl.length <= maxHttpUrlLength);
+
+    if (!looksValidReceipt) {
       return res.status(400).json({
         success: false,
         message: "Receipt proof looks invalid. Please upload again.",
