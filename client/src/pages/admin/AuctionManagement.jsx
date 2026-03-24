@@ -60,7 +60,7 @@ const Badge = ({ children, className = "" }) => (
 const Button = ({ children, variant = "default", className = "", ...props }) => {
   const v = {
     default: "bg-gradient-to-r from-[#FFA602] to-amber-500 text-white hover:from-amber-500 hover:to-[#FFA602]",
-    outline: "border border-slate-300 text-slate-700 hover:bg-slate-100",
+    outline: "border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800",
     danger: "bg-red-500 text-white hover:bg-red-600",
     success: "bg-emerald-500 text-white hover:bg-emerald-600",
   };
@@ -72,7 +72,7 @@ const statusColors = {
   scheduled: "bg-blue-100 text-blue-600",
   completed: "bg-emerald-100 text-emerald-600",
   draft: "bg-amber-100 text-amber-600",
-  cancelled: "bg-slate-100 text-slate-500",
+  cancelled: "bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-200",
   pending: "bg-amber-100 text-amber-600",
   approved: "bg-emerald-100 text-emerald-600",
   rejected: "bg-red-100 text-red-600",
@@ -340,7 +340,7 @@ export default function AuctionManagement() {
             <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
               <h3 className="font-semibold text-lg mb-4 text-slate-900 dark:text-slate-100">Recent Bids</h3>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="w-full text-sm text-slate-800 dark:text-slate-200">
                   <thead><tr className="text-left text-slate-500 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700"><th className="pb-3">Bidder</th><th className="pb-3">Amount</th><th className="pb-3">Type</th><th className="pb-3">Time</th></tr></thead>
                   <tbody>
                     {dashboard.recentBids.map((bid) => (
@@ -363,38 +363,38 @@ export default function AuctionManagement() {
       {activeTab === "auctions" && (
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-2 mb-4">
-            <span className="text-sm text-slate-500">Status:</span>
+            <span className="text-sm text-slate-500 dark:text-slate-300">Status:</span>
             {["all", "live", "scheduled", "completed", "draft", "cancelled"].map((s) => (
               <button
                 key={s}
                 onClick={() => setAuctionStatusFilter(s)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${auctionStatusFilter === s ? "bg-[#FFA602] text-white" : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${auctionStatusFilter === s ? "bg-[#FFA602] text-white" : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"}`}
               >
                 {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
               </button>
             ))}
             {auctionStatusFilter === "completed" && stats.completedAuctions != null && (
-              <span className="text-xs text-slate-500 ml-1">({stats.completedAuctions} completed)</span>
+              <span className="text-xs text-slate-500 dark:text-slate-300 ml-1">({stats.completedAuctions} completed)</span>
             )}
           </div>
           {auctions.length === 0 ? (
-            <div className="text-center py-20 text-slate-500">
+            <div className="text-center py-20 text-slate-500 dark:text-slate-300">
               {auctionStatusFilter !== "all" ? `No ${auctionStatusFilter} auctions` : "No auctions created yet"}
             </div>
           ) : auctions.map((auction) => (
-            <div key={auction._id} className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div key={auction._id} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm">
               <div className="flex flex-col md:flex-row justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-semibold text-lg text-slate-900">{auction.title}</h3>
+                    <h3 className="font-semibold text-lg text-slate-900 dark:text-slate-100">{auction.title}</h3>
                     <Badge className={statusColors[auction.status]}>{auction.status?.toUpperCase()}</Badge>
                   </div>
-                  <p className="text-sm text-slate-500">{auction.location}</p>
-                  <div className="flex gap-4 mt-2 text-sm text-slate-500">
+                  <p className="text-sm text-slate-500 dark:text-slate-300">{auction.location}</p>
+                  <div className="flex gap-4 mt-2 text-sm text-slate-500 dark:text-slate-300">
                     <span>Start: {new Date(auction.startTime).toLocaleString()}</span>
                     <span>End: {new Date(auction.endTime).toLocaleString()}</span>
                   </div>
-                  <div className="flex gap-4 mt-2 text-sm">
+                  <div className="flex gap-4 mt-2 text-sm text-slate-700 dark:text-slate-200">
                     <span>{auction.totalCars || 0} cars</span>
                     <span>{auction.totalBids || 0} bids</span>
                     <span>{auction.totalSold || 0} sold</span>
@@ -423,18 +423,18 @@ export default function AuctionManagement() {
           <div className="flex justify-end mb-4">
             <Button onClick={() => setShowAddCarModal(true)}><Plus className="w-4 h-4 mr-2" />Add Car to Auction</Button>
           </div>
-          <div className="overflow-x-auto bg-white rounded-xl border border-slate-200 shadow-sm">
-            <table className="w-full text-sm">
-              <thead><tr className="text-left text-slate-500 border-b bg-slate-50">
+          <div className="overflow-x-auto bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <table className="w-full text-sm text-slate-800 dark:text-slate-200">
+              <thead><tr className="text-left text-slate-500 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60">
                 <th className="p-4">Car</th><th className="p-4">Auction</th><th className="p-4">Starting Bid</th><th className="p-4">Current Bid</th><th className="p-4">Bids</th><th className="p-4">Status</th><th className="p-4">Actions</th>
               </tr></thead>
               <tbody>
                 {auctionCars.length === 0 ? (
-                  <tr><td colSpan="7" className="text-center py-10 text-slate-500">No cars submitted to auctions</td></tr>
+                  <tr><td colSpan="7" className="text-center py-10 text-slate-500 dark:text-slate-300">No cars submitted to auctions</td></tr>
                 ) : auctionCars.map((ac) => (
-                  <tr key={ac._id} className="border-b border-slate-100 hover:bg-slate-50">
-                    <td className="p-4 font-medium">{ac.car?.year} {ac.car?.make} {ac.car?.model}</td>
-                    <td className="p-4 text-slate-500">{ac.auction?.title}</td>
+                  <tr key={ac._id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                    <td className="p-4 font-medium text-slate-900 dark:text-slate-100">{ac.car?.year} {ac.car?.make} {ac.car?.model}</td>
+                    <td className="p-4 text-slate-500 dark:text-slate-300">{ac.auction?.title}</td>
                     <td className="p-4">PKR {ac.startingBid?.toLocaleString()}</td>
                     <td className="p-4 font-semibold text-[#FFA602]">PKR {(ac.currentBid || 0).toLocaleString()}</td>
                     <td className="p-4">{ac.bidCount || 0}</td>
@@ -467,15 +467,15 @@ export default function AuctionManagement() {
         <div>
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <div className="flex gap-2 items-center">
-              <span className="text-sm text-slate-500">Filter:</span>
+              <span className="text-sm text-slate-500 dark:text-slate-300">Filter:</span>
               {["all", "pending", "verified", "rejected", "refunded"].map((s) => (
                 <button key={s} onClick={() => setPaymentStatusFilter(s)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${paymentStatusFilter === s ? "bg-[#FFA602] text-white" : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"}`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${paymentStatusFilter === s ? "bg-[#FFA602] text-white" : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"}`}
                 >{s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}</button>
               ))}
             </div>
             <div className="flex gap-2">
-              <select className="px-3 py-1.5 text-xs border border-slate-200 rounded-lg" onChange={(e) => e.target.value && handleBulkRefund(e.target.value)} disabled={bulkRefunding}>
+              <select className="px-3 py-1.5 text-xs border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200" onChange={(e) => e.target.value && handleBulkRefund(e.target.value)} disabled={bulkRefunding}>
                 <option value="">Bulk Refund (select auction)</option>
                 {auctions.filter((a) => a.status === "completed").map((a) => (
                   <option key={a._id} value={a._id}>{a.title}</option>
@@ -483,29 +483,29 @@ export default function AuctionManagement() {
               </select>
             </div>
           </div>
-          <div className="overflow-x-auto bg-white rounded-xl border border-slate-200 shadow-sm">
-            <table className="w-full text-sm">
-              <thead><tr className="text-left text-slate-500 border-b bg-slate-50">
+          <div className="overflow-x-auto bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <table className="w-full text-sm text-slate-800 dark:text-slate-200">
+              <thead><tr className="text-left text-slate-500 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60">
                 <th className="p-4">User</th><th className="p-4">Amount</th><th className="p-4">Method</th><th className="p-4">Transaction ID</th><th className="p-4">Receipt</th><th className="p-4">Status</th><th className="p-4">Date</th><th className="p-4">Actions</th>
               </tr></thead>
               <tbody>
                 {(paymentStatusFilter === "all" ? tokenPayments : tokenPayments.filter((p) => p.status === paymentStatusFilter)).length === 0 ? (
-                  <tr><td colSpan="8" className="text-center py-10 text-slate-500">No token payments</td></tr>
+                  <tr><td colSpan="8" className="text-center py-10 text-slate-500 dark:text-slate-300">No token payments</td></tr>
                 ) : (paymentStatusFilter === "all" ? tokenPayments : tokenPayments.filter((p) => p.status === paymentStatusFilter)).map((p) => (
-                  <tr key={p._id} className="border-b border-slate-100 hover:bg-slate-50">
-                    <td className="p-4"><div><p className="font-medium">{p.user?.name}</p><p className="text-xs text-slate-500">{p.user?.email}</p></div></td>
-                    <td className="p-4 font-semibold">PKR {p.amount?.toLocaleString()}</td>
-                    <td className="p-4 capitalize">{p.paymentMethod}</td>
-                    <td className="p-4 font-mono text-xs">{p.transactionId}</td>
+                  <tr key={p._id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                    <td className="p-4"><div><p className="font-medium text-slate-900 dark:text-slate-100">{p.user?.name}</p><p className="text-xs text-slate-500 dark:text-slate-300">{p.user?.email}</p></div></td>
+                    <td className="p-4 font-semibold text-slate-900 dark:text-slate-100">PKR {p.amount?.toLocaleString()}</td>
+                    <td className="p-4 capitalize text-slate-700 dark:text-slate-200">{p.paymentMethod}</td>
+                    <td className="p-4 font-mono text-xs text-slate-700 dark:text-slate-200">{p.transactionId}</td>
                     <td className="p-4 text-xs">
                       {p.receiptUrl ? (
                         <a href={p.receiptUrl} target="_blank" rel="noreferrer" className="text-[#FFA602] hover:underline">Open proof</a>
                       ) : (
-                        <span className="text-slate-400">Not attached</span>
+                        <span className="text-slate-400 dark:text-slate-500">Not attached</span>
                       )}
                     </td>
                     <td className="p-4"><Badge className={statusColors[p.status] || ""}>{p.status}</Badge></td>
-                    <td className="p-4 text-slate-500">{new Date(p.createdAt).toLocaleDateString()}</td>
+                    <td className="p-4 text-slate-500 dark:text-slate-300">{new Date(p.createdAt).toLocaleDateString()}</td>
                     <td className="p-4">
                       <div className="flex gap-1">
                         {p.status === "pending" && (
@@ -533,30 +533,30 @@ export default function AuctionManagement() {
       {activeTab === "escrows" && (
         <div>
           <div className="flex gap-2 items-center mb-4">
-            <span className="text-sm text-slate-500">Filter:</span>
+            <span className="text-sm text-slate-500 dark:text-slate-300">Filter:</span>
             {["all", "pending", "in_escrow", "released", "refunded", "disputed", "overdue"].map((s) => (
               <button key={s} onClick={() => setEscrowStatusFilter(s)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${escrowStatusFilter === s ? "bg-[#FFA602] text-white" : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${escrowStatusFilter === s ? "bg-[#FFA602] text-white" : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"}`}
               >{s === "all" ? "All" : s === "in_escrow" ? "In Escrow" : s.charAt(0).toUpperCase() + s.slice(1)}</button>
             ))}
           </div>
-          <div className="overflow-x-auto bg-white rounded-xl border border-slate-200 shadow-sm">
-            <table className="w-full text-sm">
-              <thead><tr className="text-left text-slate-500 border-b bg-slate-50">
+          <div className="overflow-x-auto bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <table className="w-full text-sm text-slate-800 dark:text-slate-200">
+              <thead><tr className="text-left text-slate-500 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60">
                 <th className="p-4">Car</th><th className="p-4">Buyer</th><th className="p-4">Amount</th><th className="p-4">Due</th><th className="p-4">Status</th><th className="p-4">Deadline</th><th className="p-4">Actions</th>
               </tr></thead>
               <tbody>
                 {allEscrows.length === 0 ? (
-                  <tr><td colSpan="7" className="text-center py-10 text-slate-500">No escrows found</td></tr>
+                  <tr><td colSpan="7" className="text-center py-10 text-slate-500 dark:text-slate-300">No escrows found</td></tr>
                 ) : allEscrows.map((esc) => {
                   const car = esc.auctionCar?.car || {};
                   const isOverdue = esc.status === "pending" && new Date(esc.paymentDeadline) < new Date();
                   const hoursLeft = Math.max(0, Math.round((new Date(esc.paymentDeadline) - new Date()) / 3600000));
                   return (
-                    <tr key={esc._id} className={`border-b border-slate-100 hover:bg-slate-50 ${isOverdue ? "bg-red-50" : ""}`}>
-                      <td className="p-4 font-medium">{car.year} {car.make} {car.model}</td>
-                      <td className="p-4"><div><p className="font-medium">{esc.buyer?.name}</p><p className="text-xs text-slate-500">{esc.buyer?.email}</p></div></td>
-                      <td className="p-4 font-semibold">PKR {esc.amount?.toLocaleString()}</td>
+                    <tr key={esc._id} className={`border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 ${isOverdue ? "bg-red-50 dark:bg-red-900/20" : ""}`}>
+                      <td className="p-4 font-medium text-slate-900 dark:text-slate-100">{car.year} {car.make} {car.model}</td>
+                      <td className="p-4"><div><p className="font-medium text-slate-900 dark:text-slate-100">{esc.buyer?.name}</p><p className="text-xs text-slate-500 dark:text-slate-300">{esc.buyer?.email}</p></div></td>
+                      <td className="p-4 font-semibold text-slate-900 dark:text-slate-100">PKR {esc.amount?.toLocaleString()}</td>
                       <td className="p-4 font-semibold text-[#FFA602]">PKR {esc.amountDue?.toLocaleString()}</td>
                       <td className="p-4">
                         <Badge className={statusColors[esc.status] || "bg-slate-100 text-slate-600"}>{esc.status?.replace("_", " ")}</Badge>
@@ -565,7 +565,7 @@ export default function AuctionManagement() {
                       <td className="p-4">
                         <p className="text-xs">{new Date(esc.paymentDeadline).toLocaleString()}</p>
                         {esc.status === "pending" && !isOverdue && (
-                          <p className={`text-xs font-medium ${hoursLeft < 12 ? "text-red-500" : "text-slate-500"}`}>{hoursLeft}h left</p>
+                          <p className={`text-xs font-medium ${hoursLeft < 12 ? "text-red-500" : "text-slate-500 dark:text-slate-300"}`}>{hoursLeft}h left</p>
                         )}
                       </td>
                       <td className="p-4">
@@ -600,20 +600,20 @@ export default function AuctionManagement() {
       )}
 
       {activeTab === "inspections" && (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead><tr className="text-left text-slate-500 border-b bg-slate-50">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-x-auto">
+          <table className="w-full text-sm text-slate-800 dark:text-slate-200">
+            <thead><tr className="text-left text-slate-500 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60">
               <th className="p-4">User</th><th className="p-4">Car</th><th className="p-4">Date</th><th className="p-4">Time</th><th className="p-4">Status</th><th className="p-4">Action</th>
             </tr></thead>
             <tbody>
               {inspectionBookings.length === 0 ? (
-                <tr><td colSpan="6" className="text-center py-10 text-slate-500">No inspection bookings</td></tr>
+                <tr><td colSpan="6" className="text-center py-10 text-slate-500 dark:text-slate-300">No inspection bookings</td></tr>
               ) : inspectionBookings.map((b) => (
-                <tr key={b._id} className="border-b border-slate-100 hover:bg-slate-50">
-                  <td className="p-4"><p className="font-medium">{b.user?.name}</p><p className="text-xs text-slate-500">{b.user?.email}</p></td>
-                  <td className="p-4">{b.car?.title || `${b.car?.make} ${b.car?.model}`}</td>
-                  <td className="p-4">{new Date(b.inspectionDate).toLocaleDateString()}</td>
-                  <td className="p-4">{b.timeSlot}</td>
+                <tr key={b._id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                  <td className="p-4"><p className="font-medium text-slate-900 dark:text-slate-100">{b.user?.name}</p><p className="text-xs text-slate-500 dark:text-slate-300">{b.user?.email}</p></td>
+                  <td className="p-4 text-slate-700 dark:text-slate-200">{b.car?.title || `${b.car?.make} ${b.car?.model}`}</td>
+                  <td className="p-4 text-slate-700 dark:text-slate-200">{new Date(b.inspectionDate).toLocaleDateString()}</td>
+                  <td className="p-4 text-slate-700 dark:text-slate-200">{b.timeSlot}</td>
                   <td className="p-4"><Badge className={statusColors[b.status] || "bg-slate-100"}>{b.status}</Badge></td>
                   <td className="p-4">
                     {b.status === "pending" && (
@@ -637,21 +637,21 @@ export default function AuctionManagement() {
       )}
 
       {activeTab === "extensions" && (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead><tr className="text-left text-slate-500 border-b bg-slate-50">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-x-auto">
+          <table className="w-full text-sm text-slate-800 dark:text-slate-200">
+            <thead><tr className="text-left text-slate-500 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60">
               <th className="p-4">Auction</th><th className="p-4">Extended by</th><th className="p-4">Minutes</th><th className="p-4">Reason</th><th className="p-4">When</th>
             </tr></thead>
             <tbody>
               {(extensionLog.length === 0) ? (
-                <tr><td colSpan="5" className="text-center py-10 text-slate-500">No extension log</td></tr>
+                <tr><td colSpan="5" className="text-center py-10 text-slate-500 dark:text-slate-300">No extension log</td></tr>
               ) : extensionLog.map((e) => (
-                <tr key={e._id} className="border-b border-slate-100">
-                  <td className="p-4 font-medium">{e.auction?.title}</td>
-                  <td className="p-4">{e.extendedBy?.name}</td>
-                  <td className="p-4">+{e.extensionMinutes} min</td>
-                  <td className="p-4">{e.reason?.replace("_", " ")}</td>
-                  <td className="p-4 text-slate-500">{new Date(e.createdAt).toLocaleString()}</td>
+                <tr key={e._id} className="border-b border-slate-100 dark:border-slate-800">
+                  <td className="p-4 font-medium text-slate-900 dark:text-slate-100">{e.auction?.title}</td>
+                  <td className="p-4 text-slate-700 dark:text-slate-200">{e.extendedBy?.name}</td>
+                  <td className="p-4 text-slate-700 dark:text-slate-200">+{e.extensionMinutes} min</td>
+                  <td className="p-4 text-slate-700 dark:text-slate-200">{e.reason?.replace("_", " ")}</td>
+                  <td className="p-4 text-slate-500 dark:text-slate-300">{new Date(e.createdAt).toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>
@@ -660,21 +660,21 @@ export default function AuctionManagement() {
       )}
 
       {activeTab === "risk" && (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead><tr className="text-left text-slate-500 border-b bg-slate-50">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-x-auto">
+          <table className="w-full text-sm text-slate-800 dark:text-slate-200">
+            <thead><tr className="text-left text-slate-500 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60">
               <th className="p-4">Type</th><th className="p-4">Severity</th><th className="p-4">User</th><th className="p-4">Details</th><th className="p-4">When</th>
             </tr></thead>
             <tbody>
               {securityEvents.length === 0 ? (
-                <tr><td colSpan="5" className="text-center py-10 text-slate-500">No security events</td></tr>
+                <tr><td colSpan="5" className="text-center py-10 text-slate-500 dark:text-slate-300">No security events</td></tr>
               ) : securityEvents.map((e) => (
-                <tr key={e._id} className="border-b border-slate-100 hover:bg-slate-50">
-                  <td className="p-4 font-medium">{e.type?.replace(/_/g, " ")}</td>
+                <tr key={e._id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                  <td className="p-4 font-medium text-slate-900 dark:text-slate-100">{e.type?.replace(/_/g, " ")}</td>
                   <td className="p-4"><Badge className={e.severity === "critical" ? "bg-red-100 text-red-700" : e.severity === "high" ? "bg-amber-100 text-amber-700" : "bg-slate-100"}>{e.severity}</Badge></td>
-                  <td className="p-4">{e.userId?.name || e.userId?.email || "—"}</td>
-                  <td className="p-4 text-xs text-slate-500 max-w-xs truncate">{JSON.stringify(e.details || {})}</td>
-                  <td className="p-4 text-slate-500">{new Date(e.createdAt).toLocaleString()}</td>
+                  <td className="p-4 text-slate-700 dark:text-slate-200">{e.userId?.name || e.userId?.email || "—"}</td>
+                  <td className="p-4 text-xs text-slate-500 dark:text-slate-300 max-w-xs truncate">{JSON.stringify(e.details || {})}</td>
+                  <td className="p-4 text-slate-500 dark:text-slate-300">{new Date(e.createdAt).toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>
@@ -684,12 +684,12 @@ export default function AuctionManagement() {
 
       {activeTab === "settings" && (
         <div className="max-w-2xl">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
-            <h3 className="text-lg font-bold text-slate-900">Auction operation settings</h3>
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 space-y-4">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">Auction operation settings</h3>
             {["minBidIncrement", "antiSnipeTriggerSeconds", "antiSnipeExtensionSeconds", "paymentWindowHours", "tokenDepositPercent", "maxProxyBid", "activeBidderWindowMinutes", "listingFee", "buyerFeePercent", "sellerCommissionPercent", "auctionDepositAmount", "auctionEntryFee", "dealerSubscriptionFee", "tokenDeposit"].map((key) => (
               <div key={key}>
-                <label className="block text-sm font-medium text-slate-700 mb-1">{key.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase())}</label>
-                <input type="number" className="w-full px-4 py-2 border border-slate-200 rounded-lg" value={settingsForm[key] ?? ""} onChange={(e) => setSettingsForm((s) => ({ ...s, [key]: Number(e.target.value) }))} />
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">{key.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase())}</label>
+                <input type="number" className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={settingsForm[key] ?? ""} onChange={(e) => setSettingsForm((s) => ({ ...s, [key]: Number(e.target.value) }))} />
               </div>
             ))}
             <Button disabled={savingSettings} onClick={async () => {
@@ -704,33 +704,33 @@ export default function AuctionManagement() {
       <AnimatePresence>
         {showCreateModal && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white rounded-2xl max-w-lg w-full p-6">
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-700">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold">Create New Auction</h3>
-                <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-slate-100 rounded-lg"><X className="w-5 h-5" /></button>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">Create New Auction</h3>
+                <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-300"><X className="w-5 h-5" /></button>
               </div>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Title *</label>
-                  <input className="w-full px-4 py-2 border border-slate-200 rounded-lg" value={newAuction.title} onChange={(e) => setNewAuction({ ...newAuction, title: e.target.value })} placeholder="e.g. Auction #102" />
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Title *</label>
+                  <input className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={newAuction.title} onChange={(e) => setNewAuction({ ...newAuction, title: e.target.value })} placeholder="e.g. Auction #102" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
-                  <textarea className="w-full px-4 py-2 border border-slate-200 rounded-lg" rows="3" value={newAuction.description} onChange={(e) => setNewAuction({ ...newAuction, description: e.target.value })} />
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Description</label>
+                  <textarea className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" rows="3" value={newAuction.description} onChange={(e) => setNewAuction({ ...newAuction, description: e.target.value })} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Start Time *</label>
-                    <input type="datetime-local" className="w-full px-4 py-2 border border-slate-200 rounded-lg" value={newAuction.startTime} onChange={(e) => setNewAuction({ ...newAuction, startTime: e.target.value })} />
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Start Time *</label>
+                    <input type="datetime-local" className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={newAuction.startTime} onChange={(e) => setNewAuction({ ...newAuction, startTime: e.target.value })} />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">End Time *</label>
-                    <input type="datetime-local" className="w-full px-4 py-2 border border-slate-200 rounded-lg" value={newAuction.endTime} onChange={(e) => setNewAuction({ ...newAuction, endTime: e.target.value })} />
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">End Time *</label>
+                    <input type="datetime-local" className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={newAuction.endTime} onChange={(e) => setNewAuction({ ...newAuction, endTime: e.target.value })} />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Location</label>
-                  <input className="w-full px-4 py-2 border border-slate-200 rounded-lg" value={newAuction.location} onChange={(e) => setNewAuction({ ...newAuction, location: e.target.value })} />
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Location</label>
+                  <input className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={newAuction.location} onChange={(e) => setNewAuction({ ...newAuction, location: e.target.value })} />
                 </div>
                 <Button className="w-full" onClick={handleCreate} disabled={creating}>{creating ? "Creating..." : "Create Auction"}</Button>
               </div>
@@ -743,19 +743,19 @@ export default function AuctionManagement() {
       <AnimatePresence>
         {showOfflineBidModal && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white rounded-2xl max-w-md w-full p-6">
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold">Place Floor Bid</h3>
-                <button onClick={() => setShowOfflineBidModal(false)} className="p-2 hover:bg-slate-100 rounded-lg"><X className="w-5 h-5" /></button>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">Place Floor Bid</h3>
+                <button onClick={() => setShowOfflineBidModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-300"><X className="w-5 h-5" /></button>
               </div>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Bidder Name</label>
-                  <input className="w-full px-4 py-2 border border-slate-200 rounded-lg" value={offlineBidderName} onChange={(e) => setOfflineBidderName(e.target.value)} placeholder="Floor Bid" />
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Bidder Name</label>
+                  <input className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={offlineBidderName} onChange={(e) => setOfflineBidderName(e.target.value)} placeholder="Floor Bid" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Bid Amount (PKR)</label>
-                  <input type="number" className="w-full px-4 py-2 border border-slate-200 rounded-lg" value={offlineBidAmount} onChange={(e) => setOfflineBidAmount(e.target.value)} step="50000" />
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Bid Amount (PKR)</label>
+                  <input type="number" className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={offlineBidAmount} onChange={(e) => setOfflineBidAmount(e.target.value)} step="50000" />
                 </div>
                 <Button className="w-full" onClick={handleOfflineBid}><Gavel className="w-4 h-4 mr-2" />Place Floor Bid</Button>
               </div>
@@ -768,15 +768,15 @@ export default function AuctionManagement() {
       <AnimatePresence>
         {showAddCarModal && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white rounded-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto">
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold">Add Car to Auction</h3>
-                <button onClick={() => setShowAddCarModal(false)} className="p-2 hover:bg-slate-100 rounded-lg"><X className="w-5 h-5" /></button>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">Add Car to Auction</h3>
+                <button onClick={() => setShowAddCarModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-300"><X className="w-5 h-5" /></button>
               </div>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Select Auction *</label>
-                  <select className="w-full px-4 py-2 border border-slate-200 rounded-lg" value={addCarData.auctionId} onChange={(e) => setAddCarData({ ...addCarData, auctionId: e.target.value })}>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Select Auction *</label>
+                  <select className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={addCarData.auctionId} onChange={(e) => setAddCarData({ ...addCarData, auctionId: e.target.value })}>
                     <option value="">Choose an auction...</option>
                     {auctions.filter((a) => ["draft", "scheduled", "live"].includes(a.status)).map((a) => (
                       <option key={a._id} value={a._id}>{a.title} ({a.status})</option>
@@ -784,10 +784,10 @@ export default function AuctionManagement() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Search Car</label>
-                  <input className="w-full px-4 py-2 border border-slate-200 rounded-lg mb-2" placeholder="Search by make, model..." value={carSearch} onChange={(e) => setCarSearch(e.target.value)} />
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Select Car *</label>
-                  <select className="w-full px-4 py-2 border border-slate-200 rounded-lg" value={addCarData.carId} onChange={(e) => setAddCarData({ ...addCarData, carId: e.target.value })}>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Search Car</label>
+                  <input className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg mb-2 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" placeholder="Search by make, model..." value={carSearch} onChange={(e) => setCarSearch(e.target.value)} />
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Select Car *</label>
+                  <select className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={addCarData.carId} onChange={(e) => setAddCarData({ ...addCarData, carId: e.target.value })}>
                     <option value="">Choose a car...</option>
                     {(carsData?.data || carsData?.cars || []).map((c) => (
                       <option key={c._id} value={c._id}>{c.year} {c.make} {c.model} — PKR {c.price?.toLocaleString()}</option>
@@ -795,8 +795,8 @@ export default function AuctionManagement() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Starting Bid (PKR)</label>
-                  <input type="number" className="w-full px-4 py-2 border border-slate-200 rounded-lg" value={addCarData.startingBid} onChange={(e) => setAddCarData({ ...addCarData, startingBid: e.target.value })} placeholder="500000" step="50000" />
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Starting Bid (PKR)</label>
+                  <input type="number" className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={addCarData.startingBid} onChange={(e) => setAddCarData({ ...addCarData, startingBid: e.target.value })} placeholder="500000" step="50000" />
                 </div>
                 <Button className="w-full" onClick={handleAddCar} disabled={addingCar}>
                   <Car className="w-4 h-4 mr-2" />{addingCar ? "Adding..." : "Add Car to Auction"}
