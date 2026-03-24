@@ -163,7 +163,10 @@ const CarCard = ({ auctionCar, compact = false, auctionLocation, auctionEndTime 
                     {car.year} - {mileage} km
                   </p>
                 </div>
-                <Badge variant="success">Live</Badge>
+                <Badge className="inline-flex items-center px-3 py-1 gap-2 rounded-full text-xs font-medium bg-white !text-red-400 border border-white whitespace-nowrap animate-pulse duration-500 ease">
+                  <Zap className="w-3.5 h-3.5 shrink-0 !text-red-400" />
+                  Live
+                </Badge>
               </div>
               <div className="mt-3 flex justify-between items-center">
                 <div>
@@ -198,8 +201,9 @@ const CarCard = ({ auctionCar, compact = false, auctionLocation, auctionEndTime 
               No image available
             </div>
           )}
-          <Badge className="absolute top-3 left-3 bg-red-500/90 text-white border-0">
-            LIVE
+          <Badge className="absolute top-3 left-3 inline-flex items-center px-3 py-1 gap-2 rounded-full text-xs font-medium bg-white !text-red-400 border border-white whitespace-nowrap animate-pulse duration-500 ease">
+            <Zap className="w-3.5 h-3.5 shrink-0 !text-red-400" />
+            Live
           </Badge>
           <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 text-slate-700 flex items-center justify-center">
             <Gavel className="w-4 h-4" />
@@ -452,9 +456,9 @@ export default function LiveAuction() {
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <Badge className="bg-red-500 text-white border-0 animate-pulse">
-                  <Zap className="w-4 h-4 mr-1" />
-                  LIVE
+                <Badge className="inline-flex items-center px-3 py-1 gap-2 rounded-full text-xs font-medium bg-white !text-red-400 border border-white whitespace-nowrap animate-pulse duration-500 ease">
+                  <Zap className="w-3.5 h-3.5 shrink-0 !text-red-400" />
+                  Live
                 </Badge>
                 <h1 className="text-xl font-bold text-white">
                   {liveAuction.title}

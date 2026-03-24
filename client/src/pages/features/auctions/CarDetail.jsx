@@ -432,14 +432,14 @@ export default function CarDetail() {
                 )}
                 <button
                   onClick={() => setShowGallery(true)}
-                  className="absolute right-4 bottom-4 px-4 py-2 bg-white/90 rounded-lg flex items-center gap-2 text-sm font-medium hover:bg-white"
+                  className="absolute right-4 bottom-4 px-4 py-2 bg-white/95 text-slate-900 rounded-lg flex items-center gap-2 text-sm font-medium hover:bg-white border border-slate-200 shadow-sm"
                 >
                   <ZoomIn className="w-4 h-4" />
                   View All Photos
                 </button>
                 <div className="absolute left-4 bottom-4">
-                  <Badge className="bg-black/70 text-white border-0 backdrop-blur">
-                    <MapPin className="w-3 h-3 mr-1" />
+                  <Badge className="bg-slate-900/85 text-white border border-white/20 backdrop-blur-sm shadow-lg">
+                    <MapPin className="w-3 h-3 mr-1 text-amber-300" />
                     {auction.location || "Okara Auction Yard"}
                   </Badge>
                 </div>
