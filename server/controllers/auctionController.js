@@ -1062,9 +1062,9 @@ export const getTokenPaymentMeta = async (req, res) => {
           {
             id: "bank_transfer",
             name: "Bank Transfer",
-            accountName: "Okara Auto Auction Pvt Ltd",
-            accountLabel: "HBL Account",
-            accountValue: "1234567890",
+            accountName: "SELLO",
+            accountLabel: "UBL Account",
+            accountValue: "A/C: 349170949 | IBAN: PK95UNIL0109000349170949",
           },
         ],
         supportPhone: "0300-1234567",

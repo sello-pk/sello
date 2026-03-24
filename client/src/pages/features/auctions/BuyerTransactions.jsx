@@ -110,7 +110,7 @@ const tabs = [
 const depositMethods = [
   { id: "jazzcash", label: "JazzCash", account: "0300-XXXXXXX", color: "bg-red-50 border-red-200" },
   { id: "easypaisa", label: "EasyPaisa", account: "0345-XXXXXXX", color: "bg-green-50 border-green-200" },
-  { id: "bank_transfer", label: "Bank Transfer", account: "HBL — IBAN: PK00HABB00000000XXXXX", color: "bg-blue-50 border-blue-200" },
+  { id: "bank_transfer", label: "Bank Transfer", account: "UBL — A/C: 349170949 | IBAN: PK95UNIL0109000349170949 | Title: SELLO", color: "bg-blue-50 border-blue-200" },
   { id: "stripe", label: "Stripe", account: "Card / Online", color: "bg-indigo-50 border-indigo-200" },
   { id: "cash_office", label: "Cash at Office", account: "Okara Auction Yard, Punjab", color: "bg-amber-50 border-amber-200" },
 ];
