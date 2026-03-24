@@ -54,6 +54,7 @@ export const updateProfile = async (req, res) => {
   try {
     const { name, phone } = req.body;
     const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
     if (name) user.name = name.trim();
     if (phone !== undefined) user.phone = phone?.trim() || null;
     if (req.file) {
@@ -61,19 +62,20 @@ export const updateProfile = async (req, res) => {
     }
     // Persist only touched paths to avoid legacy full-document validation failures.
     const setOps = {
-      auctionCapabilities: user.auctionCapabilities,
+      name: user.name,
+      phone: user.phone,
     };
-    if (requestTypes.includes("dealer")) {
-      setOps.dealerInfo = user.dealerInfo;
-      if (user.role !== "admin") {
-        setOps.role = user.role;
-      }
+    if (user.avatar) {
+      setOps.avatar = user.avatar;
     }
     await User.updateOne({ _id: user._id }, { $set: setOps });
-    const freshUser = await User.findById(user._id).select(
-      "role dealerInfo auctionCapabilities",
-    );
-    return res.status(200).json({ success: true, message: "Profile updated", data: user });
+    const freshUser = await User.findById(user._id)
+      .select("-password -otp -otpExpiry");
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated",
+      data: freshUser || user,
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: "Server error" });
   }
@@ -168,6 +170,10 @@ function filesFromField(files, field) {
   if (!files?.[field]) return [];
   const f = files[field];
   return Array.isArray(f) ? f : [f];
+}
+
+function filesFromAnyField(files, fields = []) {
+  return fields.flatMap((field) => filesFromField(files, field));
 }
 
 /** FormData sends JSON.stringify([...]) for array fields — Mongoose needs real arrays */
@@ -331,7 +337,11 @@ export const submitAuctionAccessRequest = async (req, res) => {
 
     ensureAuctionCapabilityShell(user);
 
-    const licenseFiles = filesFromField(req.files, "businessLicense");
+    const licenseFiles = filesFromAnyField(req.files, [
+      "businessLicense",
+      "businessLicenseFile",
+      "license",
+    ]);
     const documentFiles = filesFromField(req.files, "documents");
 
     let licenseUrl = null;
@@ -423,6 +433,9 @@ export const submitAuctionAccessRequest = async (req, res) => {
     }
 
     await user.save();
+    const freshUser = await User.findById(user._id).select(
+      "role dealerInfo auctionCapabilities",
+    );
 
     return res.status(200).json({
       success: true,
@@ -776,7 +789,11 @@ export const updateDealerProfile = async (req, res) => {
       }
     }
 
-    const licenseFiles = filesFromField(req.files, "businessLicense");
+    const licenseFiles = filesFromAnyField(req.files, [
+      "businessLicense",
+      "businessLicenseFile",
+      "license",
+    ]);
     if (licenseFiles.length > 0) {
       try {
         dealerPatch.businessLicense = await uploadOneCapabilityFile(licenseFiles[0]);

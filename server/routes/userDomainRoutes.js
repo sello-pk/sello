@@ -20,7 +20,18 @@ const router = express.Router();
 // Profile
 router.get("/users/me", auth, getUserProfile);
 router.put("/users/profile", auth, upload.single("avatar"), updateProfile);
-router.put("/users/dealer-profile", auth, upload.fields([{ name: 'avatar', maxCount: 1 }, { name: 'businessLicense', maxCount: 1 }, { name: 'showroomImages', maxCount: 10 }]), updateDealerProfile);
+router.put(
+  "/users/dealer-profile",
+  auth,
+  upload.fields([
+    { name: "avatar", maxCount: 1 },
+    { name: "businessLicense", maxCount: 1 },
+    { name: "businessLicenseFile", maxCount: 1 },
+    { name: "license", maxCount: 1 },
+    { name: "showroomImages", maxCount: 10 },
+  ]),
+  updateDealerProfile,
+);
 
 // Wishlist
 router.post("/users/wishlist/:carId", auth, saveCar);
@@ -29,11 +40,25 @@ router.get("/users/wishlist", auth, getSavedCars);
 
 // Roles/Requests
 router.post("/users/request-seller", auth, requestSeller);
-router.post("/users/request-dealer", auth, upload.fields([{ name: 'businessLicense', maxCount: 1 }]), requestDealer);
+router.post(
+  "/users/request-dealer",
+  auth,
+  upload.fields([
+    { name: "businessLicense", maxCount: 1 },
+    { name: "businessLicenseFile", maxCount: 1 },
+    { name: "license", maxCount: 1 },
+  ]),
+  requestDealer,
+);
 router.post(
   "/users/auction-access/request",
   auth,
-  upload.fields([{ name: "documents", maxCount: 10 }, { name: "businessLicense", maxCount: 1 }]),
+  upload.fields([
+    { name: "documents", maxCount: 10 },
+    { name: "businessLicense", maxCount: 1 },
+    { name: "businessLicenseFile", maxCount: 1 },
+    { name: "license", maxCount: 1 },
+  ]),
   submitAuctionAccessRequest
 );
 router.get("/users/auction-access/status", auth, getMyAuctionAccessStatus);

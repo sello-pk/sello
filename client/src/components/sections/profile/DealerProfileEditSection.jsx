@@ -18,9 +18,6 @@ const DealerProfileEditSection = ({
   refetch,
 }) => {
   const [specialtyInput, setSpecialtyInput] = useState("");
-  const [languageInput, setLanguageInput] = useState("");
-  const [paymentMethodInput, setPaymentMethodInput] = useState("");
-  const [serviceInput, setServiceInput] = useState("");
   const isVerifiedDealer = user?.dealerInfo?.verified === true;
   const { cities: categoryCities } = useCarCategories();
   const cityOptions = useMemo(() => {
@@ -76,6 +73,7 @@ const DealerProfileEditSection = ({
     "Delivery",
     "Test Drive",
   ];
+  const DEALER_FILE_MAX_BYTES = 10 * 1024 * 1024;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -88,8 +86,19 @@ const DealerProfileEditSection = ({
       if (type === "avatar") {
         setDealerFiles((prev) => ({ ...prev, avatar: files[0] }));
       } else if (type === "businessLicense") {
+        if (files[0].size > DEALER_FILE_MAX_BYTES) {
+          toast.error("License file size must be less than 10MB");
+          return;
+        }
         setDealerFiles((prev) => ({ ...prev, businessLicense: files[0] }));
       } else if (type === "showroomImages") {
+        const oversized = Array.from(files).find(
+          (file) => file.size > DEALER_FILE_MAX_BYTES,
+        );
+        if (oversized) {
+          toast.error("Each showroom image must be less than 10MB");
+          return;
+        }
         setDealerFiles((prev) => ({
           ...prev,
           showroomImages: [
@@ -297,7 +306,7 @@ const DealerProfileEditSection = ({
                           : "Click to upload profile image"}
                     </span>
                     <span className="text-xs text-gray-500 mt-1">
-                      JPG, PNG (Max 5MB)
+                      JPG, PNG (Max 10MB)
                     </span>
                   </label>
                 </div>
@@ -520,7 +529,7 @@ const DealerProfileEditSection = ({
                           : "Click to upload or drag and drop"}
                     </span>
                     <span className="text-xs text-gray-500 mt-1">
-                      PDF, JPG, PNG (Max 5MB)
+                      PDF, JPG, PNG (Max 10MB)
                     </span>
                   </label>
                 </div>
@@ -559,7 +568,7 @@ const DealerProfileEditSection = ({
                       Click to upload showroom images
                     </span>
                     <span className="text-xs text-gray-500 mt-1">
-                      JPG, PNG (Max 5MB each, up to 10 images)
+                      JPG, PNG (Max 10MB each, up to 10 images)
                     </span>
                   </label>
                 </div>

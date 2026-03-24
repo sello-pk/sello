@@ -1506,6 +1506,11 @@ export const api = createApi({
               if (img instanceof File) form.append("damageImages", img);
             });
           }
+          if (data.documents?.length) {
+            data.documents.forEach((doc) => {
+              if (doc instanceof File) form.append("documents", doc);
+            });
+          }
           const optimizedForm = await optimizeUploadFormData(form, [
             "images",
             "damageImages",

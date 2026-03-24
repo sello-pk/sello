@@ -61,8 +61,6 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
   const [errors, setErrors] = useState({});
   const [specialtyInput, setSpecialtyInput] = useState("");
   const [languageInput, setLanguageInput] = useState("");
-  const [paymentMethodInput, setPaymentMethodInput] = useState("");
-  const [serviceInput, setServiceInput] = useState("");
   const [requestDealerAccess, setRequestDealerAccess] = useState(true);
   const [requestAuctionBidder, setRequestAuctionBidder] = useState(false);
 
@@ -232,11 +230,11 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
         }));
         return;
       }
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
+      // Keep dealer document uploads within the UI-supported limit.
+      if (file.size > 10 * 1024 * 1024) {
         setErrors((prev) => ({
           ...prev,
-          businessLicenseFile: "File size must be less than 5MB",
+          businessLicenseFile: "File size must be less than 10MB",
         }));
         return;
       }
@@ -645,7 +643,7 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                           : "Click to upload license file"}
                       </span>
                       <span className="text-xs text-gray-500 mt-1">
-                        PDF, JPG, PNG (Max 5MB)
+                        PDF, JPG, PNG (Max 10MB)
                       </span>
                     </label>
                   </div>

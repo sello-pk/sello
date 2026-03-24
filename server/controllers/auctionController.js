@@ -1536,7 +1536,9 @@ export const submitCarToAuction = async (req, res) => {
     }
 
     // Hybrid model: inspection report PDF is mandatory for every auction submission
-    const inspectionReportFile = req.files?.inspectionReport?.[0];
+    const inspectionReportFile =
+      req.files?.inspectionReport?.[0] ||
+      req.files?.inspectionReportFile?.[0];
     if (!inspectionReportFile || !inspectionReportFile.buffer) {
       return res.status(400).json({
         success: false,

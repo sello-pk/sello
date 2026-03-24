@@ -249,6 +249,7 @@ router.post(
   auctionSubmitCarUpload.fields([
     { name: "images", maxCount: 15 },
     { name: "inspectionReport", maxCount: 1 },
+    { name: "inspectionReportFile", maxCount: 1 },
     { name: "damageImages", maxCount: 5 },
     { name: "documents", maxCount: 5 },
   ]),

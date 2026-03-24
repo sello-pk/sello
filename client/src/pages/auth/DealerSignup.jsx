@@ -57,9 +57,8 @@ const DealerSignup = ({ onBack }) => {
   const [errors, setErrors] = useState({});
   const [specialtyInput, setSpecialtyInput] = useState("");
   const [languageInput, setLanguageInput] = useState("");
-  const [paymentMethodInput, setPaymentMethodInput] = useState("");
-  const [serviceInput, setServiceInput] = useState("");
   const [requestAuctionBidder, setRequestAuctionBidder] = useState(false);
+  const DEALER_DOC_MAX_BYTES = 10 * 1024 * 1024;
 
   const [registerUser] = useRegisterUserMutation();
   const navigate = useNavigate();
@@ -151,7 +150,7 @@ const DealerSignup = ({ onBack }) => {
       value
     ) {
       const urlPattern =
-        /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+        /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
       if (
         !urlPattern.test(value) &&
         !value.startsWith("http://") &&
@@ -168,6 +167,16 @@ const DealerSignup = ({ onBack }) => {
       if (type === "avatar") {
         setAvatar(file);
       } else if (type === "cnic") {
+        if (file.size > DEALER_DOC_MAX_BYTES) {
+          setErrors((prev) => ({
+            ...prev,
+            cnicFile: "File size must be less than 10MB",
+          }));
+          return;
+        }
+        if (errors.cnicFile) {
+          setErrors((prev) => ({ ...prev, cnicFile: "" }));
+        }
         setCnicFile(file);
       }
     }
@@ -358,7 +367,7 @@ const DealerSignup = ({ onBack }) => {
 
     try {
       setLoading(true);
-      const res = await registerUser(registrationData).unwrap();
+      await registerUser(registrationData).unwrap();
       toast.success(
         "Dealer registration submitted successfully! Pending admin verification.",
       );
@@ -738,7 +747,7 @@ const DealerSignup = ({ onBack }) => {
                             : "Click to upload or drag and drop"}
                         </span>
                         <span className="text-xs text-gray-500 mt-1">
-                          PDF, JPG, PNG (Max 5MB)
+                          PDF, JPG, PNG (Max 10MB)
                         </span>
                       </label>
                     </div>
