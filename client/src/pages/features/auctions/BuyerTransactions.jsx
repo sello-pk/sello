@@ -310,58 +310,68 @@ export default function BuyerTransactions() {
             .
           </div>
         )}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-gradient-to-br from-[#FFA602] to-amber-500 rounded-xl p-4 shadow-lg text-white">
-            <WalletIcon className="w-5 h-5 mb-1 opacity-80" />
-            <p className="text-2xl font-bold">
-              {formatPrice(summaryCards.balance)}
+        <div className="grid lg:grid-cols-[240px_1fr] gap-5">
+          <aside className="bg-white rounded-2xl border border-slate-200 shadow-sm p-3 h-fit lg:sticky lg:top-20">
+            <p className="px-2 py-1 text-xs font-semibold uppercase tracking-wide text-slate-400">
+              Wallet Menu
             </p>
-            <p className="text-xs opacity-80">Total Balance</p>
-            <p className="text-[10px] mt-1 opacity-80">
-              Available: {formatPrice(summaryCards.availableBalance)} · Locked: {formatPrice(summaryCards.lockedTokens)}
-            </p>
-            {maxBidLimit > 0 && (
-              <p className="text-[10px] mt-0.5 opacity-70">
-                Max bid: {formatPrice(maxBidLimit)}
-              </p>
-            )}
-          </div>
-          <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
-            <ArrowUp className="w-5 h-5 text-emerald-500 mb-1" />
-            <p className="text-xl font-bold text-slate-900">
-              {formatPrice(summaryCards.totalDeposited)}
-            </p>
-            <p className="text-xs text-slate-500">Total Deposited</p>
-          </div>
-          <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
-            <ShieldCheck className="w-5 h-5 text-blue-500 mb-1" />
-            <p className="text-xl font-bold text-slate-900">
-              {summaryCards.activeEscrowCount}
-            </p>
-            <p className="text-xs text-slate-500">Active Escrows</p>
-          </div>
-          <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
-            <ArrowDown className="w-5 h-5 text-red-500 mb-1" />
-            <p className="text-xl font-bold text-slate-900">
-              {formatPrice(summaryCards.totalSpent)}
-            </p>
-            <p className="text-xs text-slate-500">Total Spent</p>
-          </div>
-        </div>
+            <div className="space-y-1">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                    activeTab === tab.id
+                      ? "bg-[#FFA602] text-white shadow-sm"
+                      : "text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  <tab.icon className="w-4 h-4" />
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </aside>
 
-        {/* Tabs */}
-        <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${activeTab === tab.id ? "bg-[#FFA602] text-white" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"}`}
-            >
-              <tab.icon className="w-4 h-4" />
-              {tab.label}
-            </button>
-          ))}
-        </div>
+          <div className="space-y-5">
+            <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
+              <div className="bg-gradient-to-br from-[#FFA602] to-amber-500 rounded-xl p-4 shadow-lg text-white">
+                <WalletIcon className="w-5 h-5 mb-1 opacity-80" />
+                <p className="text-2xl font-bold">
+                  {formatPrice(summaryCards.balance)}
+                </p>
+                <p className="text-xs opacity-80">Total Balance</p>
+                <p className="text-[10px] mt-1 opacity-80">
+                  Available: {formatPrice(summaryCards.availableBalance)} · Locked: {formatPrice(summaryCards.lockedTokens)}
+                </p>
+                {maxBidLimit > 0 && (
+                  <p className="text-[10px] mt-0.5 opacity-70">
+                    Max bid: {formatPrice(maxBidLimit)}
+                  </p>
+                )}
+              </div>
+              <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+                <ArrowUp className="w-5 h-5 text-emerald-500 mb-1" />
+                <p className="text-xl font-bold text-slate-900">
+                  {formatPrice(summaryCards.totalDeposited)}
+                </p>
+                <p className="text-xs text-slate-500">Total Deposited</p>
+              </div>
+              <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+                <ShieldCheck className="w-5 h-5 text-blue-500 mb-1" />
+                <p className="text-xl font-bold text-slate-900">
+                  {summaryCards.activeEscrowCount}
+                </p>
+                <p className="text-xs text-slate-500">Active Escrows</p>
+              </div>
+              <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+                <ArrowDown className="w-5 h-5 text-red-500 mb-1" />
+                <p className="text-xl font-bold text-slate-900">
+                  {formatPrice(summaryCards.totalSpent)}
+                </p>
+                <p className="text-xs text-slate-500">Total Spent</p>
+              </div>
+            </div>
 
         {/* ─── My Bids ─── */}
         {activeTab === "bids" && (
@@ -1358,6 +1368,8 @@ export default function BuyerTransactions() {
             )}
           </div>
         )}
+          </div>
+        </div>
       </div>
     </div>
   );
