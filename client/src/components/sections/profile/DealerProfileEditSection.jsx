@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { FaUpload, FaTimes, FaPlus } from "react-icons/fa";
 import { FiEdit2, FiSave, FiX } from "react-icons/fi";
+import { RiVerifiedBadgeFill } from "react-icons/ri";
 import toast from "react-hot-toast";
 import { useCarCategories } from "../../../hooks/useCarCategories";
 
@@ -20,6 +21,7 @@ const DealerProfileEditSection = ({
   const [languageInput, setLanguageInput] = useState("");
   const [paymentMethodInput, setPaymentMethodInput] = useState("");
   const [serviceInput, setServiceInput] = useState("");
+  const isVerifiedDealer = user?.dealerInfo?.verified === true;
   const { cities: categoryCities } = useCarCategories();
   const cityOptions = useMemo(() => {
     const fromDb = (categoryCities || [])
@@ -934,8 +936,17 @@ const DealerProfileEditSection = ({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-600">Business Name</p>
-                  <p className="font-semibold text-gray-900">
+                  <p className="font-semibold text-gray-900 inline-flex items-center gap-2">
                     {user?.dealerInfo?.businessName || "Not set"}
+                    {isVerifiedDealer && (
+                      <span
+                        className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary-500 text-white shadow-sm"
+                        title="Verified dealer"
+                        aria-label="Verified dealer"
+                      >
+                        <RiVerifiedBadgeFill size={11} />
+                      </span>
+                    )}
                   </p>
                 </div>
                 <div>

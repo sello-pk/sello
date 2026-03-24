@@ -28,6 +28,7 @@ import {
   FiEdit,
   FiZap,
 } from "react-icons/fi";
+import { RiVerifiedBadgeFill } from "react-icons/ri";
 import {
   useGetMeQuery,
   useLogoutMutation,
@@ -92,6 +93,21 @@ const ProfileHero = () => {
   } = useGetMeQuery(undefined, {
     skip: !localStorage.getItem("token"),
   });
+
+  const isVerifiedAccount =
+    user?.role === "dealer"
+      ? user?.dealerInfo?.verified === true
+      : user?.verified === true;
+
+  const VerifiedDealerIcon = ({ className = "" }) => (
+    <span
+      className={`inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary-500 text-white shadow-sm ${className}`}
+      title="Verified dealer"
+      aria-label="Verified dealer"
+    >
+      <RiVerifiedBadgeFill size={14} />
+    </span>
+  );
   const { data: savedCarsData } = useGetSavedCarsQuery(undefined, {
     skip: !user || isLoading,
   });
@@ -502,12 +518,7 @@ const ProfileHero = () => {
                 <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 truncate">
                   {user?.name || "User"}
                 </h2>
-                {user?.verified && (
-                  <FiCheckCircle
-                    className="text-primary-500 flex-shrink-0"
-                    size={20}
-                  />
-                )}
+                {isVerifiedAccount && <VerifiedDealerIcon className="flex-shrink-0" />}
               </div>
               <p className="text-gray-500 text-sm mb-4">{user?.email || ""}</p>
 
@@ -632,8 +643,9 @@ const ProfileHero = () => {
                         </div>
                         <div className="border-l-4 border-primary-500 pl-4">
                           <p className="text-sm text-gray-600">Business Name</p>
-                          <p className="font-semibold text-gray-900 text-lg">
+                          <p className="font-semibold text-gray-900 text-lg inline-flex items-center gap-2">
                             {user?.dealerInfo?.businessName || "Not set"}
+                            {user?.dealerInfo?.verified && <VerifiedDealerIcon />}
                           </p>
                         </div>
                         <div className="border-l-4 border-green-500 pl-4">
