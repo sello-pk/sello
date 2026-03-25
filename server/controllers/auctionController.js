@@ -89,6 +89,48 @@ const requireVerifiedBidToken = async (userId) => {
   return !!verifiedToken;
 };
 
+const collapseAccidentalAuctionDuplicates = (items = []) => {
+  const deduped = new Map();
+
+  for (const item of items) {
+    const car = item?.car || {};
+    const submittedBy = item?.submittedBy?.toString?.() || "unknown";
+    const make = String(car.make || "").trim().toLowerCase();
+    const model = String(car.model || "").trim().toLowerCase();
+    const year = Number(car.year || 0);
+    const mileage = Number(car.mileage || 0);
+    const startingBid = Number(item?.startingBid || car.price || 0);
+    const createdBucket = item?.createdAt
+      ? Math.floor(new Date(item.createdAt).getTime() / (10 * 60 * 1000))
+      : "na";
+
+    const signature = [
+      submittedBy,
+      make,
+      model,
+      year,
+      mileage,
+      startingBid,
+      createdBucket,
+    ].join("|");
+
+    const existing = deduped.get(signature);
+    if (!existing) {
+      deduped.set(signature, item);
+      continue;
+    }
+
+    const existingCreatedAt = new Date(existing.createdAt || 0).getTime();
+    const currentCreatedAt = new Date(item.createdAt || 0).getTime();
+
+    if (currentCreatedAt < existingCreatedAt) {
+      deduped.set(signature, item);
+    }
+  }
+
+  return Array.from(deduped.values());
+};
+
 // ═══════════════════════════════════════════════════════════════════════════
 // PUBLIC  –  Auctions
 // ═══════════════════════════════════════════════════════════════════════════
@@ -201,6 +243,7 @@ export const getAuctionCars = async (req, res) => {
 
     // Client-side-friendly filtering (car fields are nested)
     let result = cars.filter((ac) => ac.car);
+    result = collapseAccidentalAuctionDuplicates(result);
 
     if (search) {
       const q = search.toLowerCase();
@@ -1579,6 +1622,13 @@ export const submitCarToAuction = async (req, res) => {
     // 2. Create new car and submit to auction (no carId, full car data provided)
 
     let car;
+    const duplicateWindowMinutes = Math.max(
+      1,
+      parseInt(process.env.CREATE_CAR_DEDUP_WINDOW_MINUTES, 10) || 15,
+    );
+    const duplicateSince = new Date(
+      Date.now() - duplicateWindowMinutes * 60 * 1000,
+    );
 
     if (carId) {
       // Scenario 1: Submit existing car
@@ -1643,6 +1693,52 @@ export const submitCarToAuction = async (req, res) => {
         parsedFeatures = parseArray(features);
       } catch {
         parsedFeatures = [];
+      }
+
+      const normalizedAuctionTitle = String(
+        title || `${make} ${model} ${year}`,
+      ).trim();
+      const normalizedYear = Number(year);
+      const normalizedMileage = Number(mileage || 0);
+      const normalizedStartingBid = Number(startingBid || price || 0);
+
+      const recentDuplicateCar = await Car.findOne({
+        postedBy: req.user._id,
+        listingType: "auction",
+        title: normalizedAuctionTitle,
+        make,
+        model,
+        year: normalizedYear,
+        mileage: normalizedMileage,
+        price: normalizedStartingBid,
+        createdAt: { $gte: duplicateSince },
+        status: { $ne: "deleted" },
+      })
+        .sort({ createdAt: -1 })
+        .select("_id")
+        .lean();
+
+      if (recentDuplicateCar?._id) {
+        const existingAuctionCar = await AuctionCar.findOne({
+          auction: auctionId,
+          car: recentDuplicateCar._id,
+        }).sort({ createdAt: -1 });
+
+        if (existingAuctionCar) {
+          Logger.warn("submitCarToAuction deduplicated recent request", {
+            userId: req.user._id,
+            auctionId,
+            auctionCarId: existingAuctionCar._id,
+            carId: recentDuplicateCar._id,
+            windowMinutes: duplicateWindowMinutes,
+          });
+          return res.status(200).json({
+            success: true,
+            data: existingAuctionCar,
+            deduplicated: true,
+            message: "This vehicle was already submitted to the selected auction.",
+          });
+        }
       }
 
       // Create new car (listingType auction for hybrid model)
@@ -1761,19 +1857,44 @@ export const submitCarToAuction = async (req, res) => {
 
     const auctionCarStatus = auction.status === "live" ? "live" : "approved";
 
-    const ac = await AuctionCar.create({
-      auction: auctionId,
-      car: car._id,
-      startingBid: startingBid || car.price,
-      reservePrice: reservePrice || null,
-      buyNowPrice: buyNowPrice || null,
-      submittedBy: req.user._id,
-      status: auctionCarStatus,
-      inspectionReportPdfUrl,
-      damageImageUrls,
-      documentUrls,
-      videoUrls: parsedVideoUrls.filter(Boolean),
-    });
+    let ac;
+    try {
+      ac = await AuctionCar.create({
+        auction: auctionId,
+        car: car._id,
+        startingBid: startingBid || car.price,
+        reservePrice: reservePrice || null,
+        buyNowPrice: buyNowPrice || null,
+        submittedBy: req.user._id,
+        status: auctionCarStatus,
+        inspectionReportPdfUrl,
+        damageImageUrls,
+        documentUrls,
+        videoUrls: parsedVideoUrls.filter(Boolean),
+      });
+    } catch (createError) {
+      if (createError?.code === 11000) {
+        const existingAuctionCar = await AuctionCar.findOne({
+          auction: auctionId,
+          car: car._id,
+        });
+        if (existingAuctionCar) {
+          Logger.warn("submitCarToAuction resolved duplicate key", {
+            userId: req.user._id,
+            auctionId,
+            auctionCarId: existingAuctionCar._id,
+            carId: car._id,
+          });
+          return res.status(200).json({
+            success: true,
+            data: existingAuctionCar,
+            deduplicated: true,
+            message: "This vehicle was already submitted to the selected auction.",
+          });
+        }
+      }
+      throw createError;
+    }
 
     await Auction.findByIdAndUpdate(auctionId, { $inc: { totalCars: 1 } });
 
