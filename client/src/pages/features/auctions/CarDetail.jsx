@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import {
   IoChevronBack as ChevronLeft,
@@ -193,7 +193,7 @@ export default function CarDetail() {
   const buyNowPrice = detail?.buyNowPrice != null ? Number(detail.buyNowPrice) : null;
   const walletBalance = walletData?.wallet?.balance || 0;
   const hasWalletFundsForBid = walletBalance >= minimumBid;
-  const canPlaceBid = hasVerifiedToken || hasWalletFundsForBid;
+  const canPlaceBid = hasVerifiedToken && hasWalletFundsForBid;
   const isAuctionEnded =
     detail?.status === "sold" ||
     (auction?.endTime && new Date(auction.endTime) <= new Date());
@@ -202,7 +202,8 @@ export default function CarDetail() {
     buyNowPrice > 0 &&
     detail?.status !== "sold" &&
     hasAuctionAccess &&
-    (walletBalance >= buyNowPrice || hasVerifiedToken);
+    hasVerifiedToken &&
+    walletBalance >= buyNowPrice;
 
   useEffect(() => {
     setBidAmount(currentHigh + 50000);
@@ -780,15 +781,18 @@ export default function CarDetail() {
                       ) : !canPlaceBid ? (
                         <div className="space-y-3">
                           <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-700 text-center">
-                            Add funds to your wallet or pay the refundable PKR
-                            10,000 token to start bidding
+                            {!hasVerifiedToken
+                              ? "Your token payment must be verified by admin before you can bid."
+                              : "Add enough funds to your wallet before placing a bid."}
                           </div>
                           <div className="flex flex-col sm:flex-row gap-2">
                             <Button
                               className="flex-1"
                               onClick={() => navigate("/auctions/token-payment")}
                             >
-                              Pay Token (PKR 10,000)
+                              {hasVerifiedToken
+                                ? "Token Verified"
+                                : "Complete Token Verification"}
                             </Button>
                             <Button
                               variant="outline"
@@ -799,7 +803,7 @@ export default function CarDetail() {
                             </Button>
                           </div>
                           <p className="text-xs text-slate-500 text-center">
-                            Token: one-time refundable deposit. Wallet: add funds for bids &amp; when you win.
+                            Token verification is mandatory. Wallet funds are also required for bidding and buy now.
                           </p>
                         </div>
                       ) : (

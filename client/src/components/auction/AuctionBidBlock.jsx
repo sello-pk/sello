@@ -45,7 +45,7 @@ export default function AuctionBidBlock({ auctionCarId, className = "" }) {
   const minimumBid = currentHigh + minIncrement;
   const walletBalance = walletData?.wallet?.balance || 0;
   const hasWalletFundsForBid = walletBalance >= minimumBid;
-  const canPlaceBid = hasVerifiedToken || hasWalletFundsForBid;
+  const canPlaceBid = hasVerifiedToken && hasWalletFundsForBid;
   const isLive = auction?.status === "live";
   const isEnded =
     detail?.status === "sold" ||
@@ -166,12 +166,27 @@ export default function AuctionBidBlock({ auctionCarId, className = "" }) {
                 Request auction access
               </button>
             ) : !canPlaceBid ? (
-              <Link
-                to="/auctions/transactions"
-                className="block w-full py-2.5 rounded-lg bg-primary-500 text-white font-medium text-sm text-center hover:opacity-90"
-              >
-                Add funds to wallet
-              </Link>
+              <div className="space-y-2">
+                <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 text-center">
+                  {!hasVerifiedToken
+                    ? "Your token payment must be admin-verified before bidding."
+                    : "Add enough funds to your wallet before bidding."}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <Link
+                    to="/auctions/token-payment"
+                    className="block w-full py-2.5 rounded-lg bg-primary-500 text-white font-medium text-sm text-center hover:opacity-90"
+                  >
+                    Token Payment
+                  </Link>
+                  <Link
+                    to="/auctions/transactions"
+                    className="block w-full py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 font-medium text-sm text-center hover:bg-gray-50"
+                  >
+                    Add Wallet Funds
+                  </Link>
+                </div>
+              </div>
             ) : (
               <>
                 <div className="flex gap-2">

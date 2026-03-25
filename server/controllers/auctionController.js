@@ -81,6 +81,14 @@ const hasAuctionDealerSubmissionAccess = (user) => {
   return dealerCapability === "approved";
 };
 
+const requireVerifiedBidToken = async (userId) => {
+  const verifiedToken = await TokenPayment.findOne({
+    user: userId,
+    status: "verified",
+  }).lean();
+  return !!verifiedToken;
+};
+
 // ═══════════════════════════════════════════════════════════════════════════
 // PUBLIC  –  Auctions
 // ═══════════════════════════════════════════════════════════════════════════
@@ -395,16 +403,21 @@ export const placeBid = async (req, res) => {
         message: "Your wallet is frozen. Contact support to resolve.",
       });
     }
+    const hasVerifiedToken = await requireVerifiedBidToken(userId);
+    if (!hasVerifiedToken) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "Your token payment is still pending admin verification. You can place bids only after it is verified.",
+      });
+    }
     const hasWallet = wallet && wallet.balance >= amount;
-    const verified = !hasWallet
-      ? await TokenPayment.findOne({ user: userId, status: "verified" })
-      : null;
-    if (!hasWallet && !verified) {
+    if (!hasWallet) {
       return res.status(403).json({
         success: false,
         message: wallet
-          ? `Insufficient wallet balance. You need PKR ${amount.toLocaleString()} but have PKR ${wallet.balance.toLocaleString()}`
-          : "You must deposit funds to your wallet before bidding",
+          ? `Insufficient wallet balance. You need PKR ${amount.toLocaleString()} but have PKR ${wallet.balance.toLocaleString()}.`
+          : "Add funds to your wallet before bidding.",
       });
     }
 
@@ -613,6 +626,15 @@ export const setProxyBid = async (req, res) => {
         message: `Proxy bid cannot exceed PKR ${MAX_PROXY_BID.toLocaleString()}`,
       });
 
+    const hasVerifiedToken = await requireVerifiedBidToken(userId);
+    if (!hasVerifiedToken) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "Your token payment is still pending admin verification. You can set proxy bids only after it is verified.",
+      });
+    }
+
     const proxy = await ProxyBid.findOneAndUpdate(
       { auctionCar: auctionCarId, bidder: userId },
       { maxAmount, isActive: true },
@@ -660,17 +682,22 @@ export const buyNow = async (req, res) => {
       });
 
     const wallet = await Wallet.findOne({ user: userId });
+    const hasVerifiedToken = await requireVerifiedBidToken(userId);
+    if (!hasVerifiedToken) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "Your token payment is still pending admin verification. You can use buy now only after it is verified.",
+      });
+    }
     const hasWallet = wallet && wallet.balance >= buyNowPrice;
-    const verified = !hasWallet
-      ? await TokenPayment.findOne({ user: userId, status: "verified" })
-      : null;
-    if (!hasWallet && !verified)
+    if (!hasWallet)
       return res.status(403).json({
         success: false,
         message:
           wallet && wallet.balance < buyNowPrice
             ? `Insufficient balance. Buy now price is PKR ${buyNowPrice.toLocaleString()} and your wallet has PKR ${wallet.balance.toLocaleString()}.`
-            : "You must deposit funds before using buy now",
+            : "Add funds to your wallet before using buy now.",
       });
 
     // Refund any current winning bidder

@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import {
   IoShieldCheckmarkOutline as ShieldCheck,
@@ -154,8 +153,10 @@ export default function TokenPayment() {
         transactionId: transactionId.trim(),
         receiptUrl: receiptUrl.trim(),
       }).unwrap();
-      toast.success("Payment submitted. Verification in progress.");
-      navigate("/auctions/live");
+      toast.success("Payment submitted. You can bid after admin verifies it.");
+      setTransactionId("");
+      setReceiptUrl("");
+      setReceiptName("");
     } catch (err) {
       toast.error(err?.data?.message || "Failed to submit payment");
     }
