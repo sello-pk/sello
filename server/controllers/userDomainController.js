@@ -321,6 +321,11 @@ function buildDealerInfoPatchFromAccessBody(existingPlain, bodyRest, licenseUrl,
   return dealerPatch;
 }
 
+const DEALER_REQUEST_FALLBACK_MESSAGE =
+  "We could not submit your dealer request right now. Please review your details and try again.";
+const DEALER_PROFILE_FALLBACK_MESSAGE =
+  "We could not update your dealer profile right now. Please review your details and try again.";
+
 export const submitAuctionAccessRequest = async (req, res) => {
   try {
     const requestTypes = parseRequestTypesInput(req.body.requestTypes).filter((type) =>
@@ -434,7 +439,8 @@ export const submitAuctionAccessRequest = async (req, res) => {
       }
     }
 
-    await user.save();
+    // Avoid full-document legacy validation failures on unrelated old fields.
+    await user.save({ validateModifiedOnly: true });
     const freshUser = await User.findById(user._id).select(
       "role dealerInfo auctionCapabilities",
     );
@@ -491,7 +497,7 @@ export const submitAuctionAccessRequest = async (req, res) => {
     }
     return res.status(500).json({
       success: false,
-      message: error.message || "Server error",
+      message: DEALER_REQUEST_FALLBACK_MESSAGE,
     });
   }
 };
@@ -873,7 +879,7 @@ export const updateDealerProfile = async (req, res) => {
     }
     return res.status(500).json({
       success: false,
-      message: error.message || "Server error",
+      message: DEALER_PROFILE_FALLBACK_MESSAGE,
     });
   }
 };

@@ -139,10 +139,10 @@ const startServer = () => {
     const PORT = SERVER_CONFIG.PORT;
     const server = http.createServer(app);
 
-    // Increase server timeout for long-running operations
-    server.timeout = 60000; // 60 seconds
-    server.keepAliveTimeout = 65000; // 65 seconds
-    server.headersTimeout = 66000; // 66 seconds
+    // Increase server timeout for long-running uploads and Cloudinary-backed requests.
+    server.timeout = 300000; // 5 minutes
+    server.keepAliveTimeout = 305000; // slightly above request timeout
+    server.headersTimeout = 310000; // must stay above keepAliveTimeout
 
     // Handle connection errors without force-closing long-lived socket.io transports.
     server.on("connection", (socket) => {

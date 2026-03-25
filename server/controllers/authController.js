@@ -5,7 +5,16 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import { uploadCloudinary, Logger, sendEmail, generateOtp, isValidEmail, sendVerificationCode } from "../utils/helpers.js";
+import {
+    uploadCloudinary,
+    uploadRawToCloudinary,
+    Logger,
+    sendEmail,
+    generateOtp,
+    isValidEmail,
+    sendVerificationCode,
+    parseArray,
+} from "../utils/helpers.js";
 import { getPasswordResetTemplate, getWelcomeTemplate } from "../utils/emailTemplates.js";
 import client from "../config/googleClient.js";
 import { AUCTION_REQUEST_TYPES } from "../utils/auctionAccess.js";
@@ -39,6 +48,28 @@ const clearAuthCookies = (res) => {
     res.clearCookie("refreshToken", { ...getRefreshCookieOptions(7), maxAge: undefined });
 };
 
+const parseRequestTypesInput = (value) => {
+    if (!value) return [];
+    if (Array.isArray(value)) return value;
+    try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed : [parsed];
+    } catch {
+        return String(value).split(",").map((v) => v.trim()).filter(Boolean);
+    }
+};
+
+const uploadDealerDocument = async (file) => {
+    if (!file?.buffer) return null;
+    const ext = (file.originalname || "").toLowerCase();
+    const mime = (file.mimetype || "").toLowerCase();
+    const isPdf = mime === "application/pdf" || ext.endsWith(".pdf");
+    if (isPdf) {
+        return uploadRawToCloudinary(file.buffer, { folder: "dealer_documents" });
+    }
+    return uploadCloudinary(file.buffer, { folder: "dealer_documents", quality: 85 });
+};
+
 /* -------------------------------------------------------------------------- */
 /*                                AUTH SERVICE                                */
 /* -------------------------------------------------------------------------- */
@@ -68,7 +99,29 @@ const AuthService = {
     validatePassword: (password) => password && password.length >= 6,
 
     register: async (req) => {
-        const { name, email, password, role, dealerName, mobileNumber, auctionRequestTypes } = req.body;
+        const {
+            name,
+            email,
+            password,
+            role,
+            dealerName,
+            mobileNumber,
+            whatsappNumber,
+            city,
+            area,
+            vehicleTypes,
+            description,
+            website,
+            establishedYear,
+            employeeCount,
+            facebook,
+            instagram,
+            twitter,
+            linkedin,
+            paymentMethods,
+            services,
+            auctionRequestTypes,
+        } = req.body;
         
         if (!name || !email || !password) throw new Error("Missing name, email or password");
         if (!isValidEmail(email)) throw new Error("Invalid email format");
@@ -94,26 +147,58 @@ const AuthService = {
         };
 
         if (role === "dealer") {
+            const dealerDocFile =
+                req.files?.cnicFile?.[0] ||
+                req.files?.businessLicense?.[0] ||
+                req.files?.businessLicenseFile?.[0];
+            if (!dealerDocFile) {
+                throw new Error("Business license / CNIC is required");
+            }
+
+            let businessLicenseUrl = null;
+            try {
+                businessLicenseUrl = await uploadDealerDocument(dealerDocFile);
+            } catch (uploadError) {
+                Logger.error("Dealer registration document upload failed", uploadError);
+                throw new Error(
+                    "Could not upload your business license / CNIC. Please use a PDF or image under 10MB and try again."
+                );
+            }
+
+            const parsedPaymentMethods = parseArray(paymentMethods);
+            const parsedServices = parseArray(services);
+            const parsedEstablishedYear = establishedYear ? parseInt(String(establishedYear), 10) : null;
+
             userData.dealerInfo = {
                 businessName: dealerName || name,
+                businessLicense: businessLicenseUrl,
                 businessPhone: mobileNumber,
-                verified: false
+                whatsappNumber: whatsappNumber?.trim() || null,
+                city: city?.trim() || null,
+                area: area?.trim() || null,
+                vehicleTypes: vehicleTypes?.trim() || null,
+                description: description?.trim() || null,
+                website: website?.trim() || null,
+                socialMedia: {
+                    facebook: facebook?.trim() || null,
+                    instagram: instagram?.trim() || null,
+                    twitter: twitter?.trim() || null,
+                    linkedin: linkedin?.trim() || null,
+                },
+                paymentMethods: parsedPaymentMethods,
+                services: parsedServices,
+                employeeCount: employeeCount?.trim() || null,
+                establishedYear: Number.isFinite(parsedEstablishedYear)
+                    ? parsedEstablishedYear
+                    : null,
+                specialties: [],
+                languages: [],
+                verified: false,
             };
             userData.phone = mobileNumber;
         }
 
-        const parseRequestTypes = (value) => {
-            if (!value) return [];
-            if (Array.isArray(value)) return value;
-            try {
-                const parsed = JSON.parse(value);
-                return Array.isArray(parsed) ? parsed : [parsed];
-            } catch {
-                return String(value).split(",").map((v) => v.trim()).filter(Boolean);
-            }
-        };
-
-        const requestTypes = parseRequestTypes(auctionRequestTypes).filter((type) =>
+        const requestTypes = parseRequestTypesInput(auctionRequestTypes).filter((type) =>
             AUCTION_REQUEST_TYPES.includes(type)
         );
 
@@ -182,7 +267,25 @@ export const register = async (req, res) => {
         });
     } catch (error) {
         Logger.error("Register Error", error);
-        return res.status(error.message === "User already exists" ? 409 : 400).json({ success: false, message: error.message });
+        const cloudCode = error?.http_code ?? error?.error?.http_code;
+        if (cloudCode) {
+            return res.status(503).json({
+                success: false,
+                message: "File upload service error. Please try again in a moment.",
+            });
+        }
+        if (error?.name === "ValidationError") {
+            const message = Object.values(error.errors || {})
+                .map((entry) => entry.message)
+                .filter(Boolean)
+                .join(" ");
+            return res.status(400).json({
+                success: false,
+                message: message || "Please check the dealer details and try again.",
+            });
+        }
+        const status = error.message === "User already exists" ? 409 : 400;
+        return res.status(status).json({ success: false, message: error.message });
     }
 };
 

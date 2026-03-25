@@ -25,6 +25,9 @@ import { FaPlus, FaTimes } from "react-icons/fa";
 import { Spinner } from "../../ui/Loading";
 import { useCarCategories } from "../../../hooks/useCarCategories";
 
+const DEALER_REQUEST_FALLBACK_MESSAGE =
+  "We could not submit your dealer request right now. Please review your details and try again.";
+
 const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 3;
@@ -365,8 +368,7 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
       onClose();
     } catch (error) {
       toast.error(
-        error?.data?.message ||
-          "Failed to submit dealer request. Please try again.",
+        error?.data?.message || DEALER_REQUEST_FALLBACK_MESSAGE,
       );
     }
   };

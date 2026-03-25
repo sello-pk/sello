@@ -27,6 +27,14 @@ export class AppError extends Error {
 
 const GENERIC_MESSAGE = "Something went wrong. Please try again later.";
 
+const isDealerUploadRoute = (url = "") =>
+  url.includes("/auth/register") ||
+  url.includes("/users/dealer-profile") ||
+  url.includes("/users/auction-access/request") ||
+  url.includes("/users/request-dealer");
+
+const isAuctionSubmitRoute = (url = "") => url.includes("/auctions/submit-car");
+
 /** Global error handler – must never throw so the app never crashes */
 export const errorHandler = (err, req, res, next) => {
   try {
@@ -109,6 +117,10 @@ export const duplicateKeyErrorHandler = (err, req, res, next) => {
  */
 export const multerErrorHandler = (err, req, res, next) => {
   if (!err) return next();
+  const isProd = process.env.NODE_ENV === "production";
+  const url = req?.originalUrl || req?.url || "";
+  const isDealerUpload = isDealerUploadRoute(url);
+  const isAuctionUpload = isAuctionSubmitRoute(url);
 
   const code = err.code;
   const isMulter =
@@ -127,26 +139,59 @@ export const multerErrorHandler = (err, req, res, next) => {
     let statusCode = 400;
 
     if (code === "LIMIT_FILE_SIZE") {
-      message = MSG_IMAGE_FILE_TOO_LARGE;
+      if (isDealerUpload) {
+        message =
+          "Dealer document is too large. Please upload a PDF or image under 10MB.";
+      } else if (isAuctionUpload) {
+        message = MSG_IMAGE_FILE_TOO_LARGE;
+      } else {
+        message =
+          "The uploaded file is too large. Please use a smaller file and try again.";
+      }
     } else if (
       code === "LIMIT_FILE_COUNT" ||
       code === "LIMIT_UNEXPECTED_FILE"
     ) {
-      message = MSG_IMAGE_TOO_MANY;
+      if (isDealerUpload && code === "LIMIT_UNEXPECTED_FILE") {
+        message =
+          "The uploaded dealer document field was not recognized. Please retry from the latest form.";
+      } else if (isDealerUpload) {
+        message =
+          "Too many dealer files were uploaded. Please attach only the required document(s) and try again.";
+      } else {
+        message = MSG_IMAGE_TOO_MANY;
+      }
     } else if (code === "LIMIT_PART_COUNT") {
-      message = isProd 
-        ? `Your upload is too large. You can upload up to ${LISTING_MAX_IMAGES} images with a total size of 35MB. Please try compressing your images or uploading fewer files.`
-        : `Upload request is too large. Allowed: up to ${LISTING_MAX_IMAGES} images, 35MB total. If using a reverse proxy (e.g. nginx), set body limit to at least ${UPLOAD_PROXY_MIN_BODY_MB}MB (client_max_body_size ${UPLOAD_PROXY_MIN_BODY_MB}m) and reload.`;
+      if (isDealerUpload) {
+        message = isProd
+          ? "Dealer upload is too large for the server right now. Please use a smaller file and try again."
+          : `Dealer upload request is too large. If using a reverse proxy (e.g. nginx), set body limit to at least ${UPLOAD_PROXY_MIN_BODY_MB}MB (client_max_body_size ${UPLOAD_PROXY_MIN_BODY_MB}m) and reload.`;
+      } else {
+        message = isProd 
+          ? `Your upload is too large. You can upload up to ${LISTING_MAX_IMAGES} images with a total size of 35MB. Please try compressing your images or uploading fewer files.`
+          : `Upload request is too large. Allowed: up to ${LISTING_MAX_IMAGES} images, 35MB total. If using a reverse proxy (e.g. nginx), set body limit to at least ${UPLOAD_PROXY_MIN_BODY_MB}MB (client_max_body_size ${UPLOAD_PROXY_MIN_BODY_MB}m) and reload.`;
+      }
     } else if (
       err.message &&
       (err.message.includes("Only images") ||
         err.message.includes("Invalid file type"))
     ) {
-      message = err.message;
+      if (isDealerUpload) {
+        message =
+          "Dealer documents must be PDF, JPG, PNG, or WebP files only.";
+      } else {
+        message = err.message;
+      }
     } else {
-      message = isProd
-        ? `Image upload failed. Please use JPG, PNG, or WebP files only. You can upload up to ${LISTING_MAX_IMAGES} images with a total size of 35MB.`
-        : `Image upload failed. Use JPG, PNG, or WebP only — up to ${LISTING_MAX_IMAGES} images and 35MB total per listing. If upload fails after a few images, set proxy body limit to at least ${UPLOAD_PROXY_MIN_BODY_MB}MB (e.g. nginx: client_max_body_size ${UPLOAD_PROXY_MIN_BODY_MB}m).`;
+      if (isDealerUpload) {
+        message = isProd
+          ? "Dealer document upload failed. Please use a valid PDF or image file and try again."
+          : `Dealer document upload failed. Use PDF, JPG, PNG, or WebP. If this still fails in production, set proxy body limit to at least ${UPLOAD_PROXY_MIN_BODY_MB}MB (e.g. nginx: client_max_body_size ${UPLOAD_PROXY_MIN_BODY_MB}m).`;
+      } else {
+        message = isProd
+          ? `Image upload failed. Please use JPG, PNG, or WebP files only. You can upload up to ${LISTING_MAX_IMAGES} images with a total size of 35MB.`
+          : `Image upload failed. Use JPG, PNG, or WebP only — up to ${LISTING_MAX_IMAGES} images and 35MB total per listing. If upload fails after a few images, set proxy body limit to at least ${UPLOAD_PROXY_MIN_BODY_MB}MB (e.g. nginx: client_max_body_size ${UPLOAD_PROXY_MIN_BODY_MB}m).`;
+      }
     }
 
     Logger.warn("Multer upload error", { code, message, url: req?.originalUrl });

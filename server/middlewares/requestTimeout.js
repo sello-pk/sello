@@ -13,6 +13,12 @@ export const requestTimeout = (defaultTimeoutMs = 30000) => {
   return (req, res, next) => {
     // Determine timeout based on request type and method
     let timeoutMs = defaultTimeoutMs;
+    const url = req.originalUrl || req.url || "";
+    const isDealerMultipartRoute =
+      url.includes("/api/auth/register") ||
+      url.includes("/api/users/dealer-profile") ||
+      url.includes("/api/users/request-dealer") ||
+      url.includes("/api/users/auction-access/request");
 
     // Longer timeouts for admin operations and file uploads
     if (req.path.startsWith("/api/admin")) {
@@ -29,6 +35,9 @@ export const requestTimeout = (defaultTimeoutMs = 30000) => {
       req.path.includes("/submit-car")
     ) {
       // Create/update listing with many images + Cloudinary — allow up to 3 minutes
+      timeoutMs = 180000;
+    } else if (isDealerMultipartRoute) {
+      // Dealer verification/profile requests can include PDFs/images + Cloudinary uploads.
       timeoutMs = 180000;
     } else if (req.method === "DELETE" && req.path.includes("/role")) {
       timeoutMs = 75000; // 75 seconds for role deletion (increased from 45s)

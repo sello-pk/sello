@@ -25,6 +25,8 @@ router.post(
   upload.fields([
     { name: "avatar", maxCount: 1 },
     { name: "cnicFile", maxCount: 1 },
+    { name: "businessLicense", maxCount: 1 },
+    { name: "businessLicenseFile", maxCount: 1 },
   ]),
   register
 );

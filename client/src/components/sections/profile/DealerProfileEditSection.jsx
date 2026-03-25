@@ -5,6 +5,9 @@ import { RiVerifiedBadgeFill } from "react-icons/ri";
 import toast from "react-hot-toast";
 import { useCarCategories } from "../../../hooks/useCarCategories";
 
+const DEALER_PROFILE_FALLBACK_MESSAGE =
+  "We could not update your dealer profile right now. Please review your details and try again.";
+
 const DealerProfileEditSection = ({
   user,
   dealerFormData,
@@ -144,7 +147,7 @@ const DealerProfileEditSection = ({
       setIsEditingDealer(false);
       await refetch();
     } catch (error) {
-      toast.error(error?.data?.message || "Failed to update dealer profile");
+      toast.error(error?.data?.message || DEALER_PROFILE_FALLBACK_MESSAGE);
     }
   };
 

@@ -26,6 +26,7 @@ function isMultipartDocumentUpload(args) {
   if (method === "POST" && url.startsWith("/cars") && !/\/cars\//.test(url))
     return true;
   if (method === "PUT" && /\/cars\/[^/?]+/.test(url)) return true;
+  if (url.includes("/auth/register")) return true;
   if (url.includes("submit-car")) return true;
   if (url.includes("/users/auction-access/request")) return true;
   if (url.includes("/users/request-dealer")) return true;
@@ -34,10 +35,36 @@ function isMultipartDocumentUpload(args) {
   return false;
 }
 
-const MSG_FETCH_UPLOAD =
-  "Upload didn't finish — the file may be larger than your API proxy allows (nginx often defaults to 1MB). Ops: set client_max_body_size 40m; on api.sello.pk reload nginx. Listings: up to 15 images, 35MB total.";
-const MSG_413 =
-  "Request body too large (413). Even one photo can fail if nginx client_max_body_size is too small (default 1m). Set client_max_body_size 40m (or higher) for api.sello.pk, reload nginx, retry. App allows up to ~35MB per file.";
+function getUploadFetchMessage(url = "") {
+  if (url.includes("/auctions/submit-car")) {
+    return "Auction files could not be uploaded. Try smaller photos or documents and retry. If this keeps happening in production, the server upload limit may need to be increased.";
+  }
+  if (
+    url.includes("/auth/register") ||
+    url.includes("/users/dealer-profile") ||
+    url.includes("/users/auction-access/request") ||
+    url.includes("/users/request-dealer")
+  ) {
+    return "Dealer documents could not be uploaded. Try a smaller file and retry. If this keeps happening in production, the server upload limit may need to be increased.";
+  }
+  return "Upload could not be completed. Try smaller files and retry. If this keeps happening, the server upload limit may need to be increased.";
+}
+
+function getUpload413Message(url = "") {
+  if (url.includes("/auctions/submit-car")) {
+    return "Your auction upload is too large for the server to accept right now. Try smaller files. If this keeps happening in production, increase the server upload limit.";
+  }
+  if (
+    url.includes("/auth/register") ||
+    url.includes("/users/dealer-profile") ||
+    url.includes("/users/auction-access/request") ||
+    url.includes("/users/request-dealer")
+  ) {
+    return "Your dealer document upload is too large for the server to accept right now. Try a smaller file. If this keeps happening in production, increase the server upload limit.";
+  }
+  return "Your upload is too large for the server to accept right now. Try smaller files and retry.";
+}
+
 const MSG_FETCH_GENERIC =
   "Request couldn't complete. If you were uploading photos, try fewer or smaller images and retry. Otherwise check your connection.";
 
@@ -247,13 +274,14 @@ export const api = createApi({
           baseResult.error.status === 413)
       ) {
         const uploadAttempt = isMultipartDocumentUpload(args);
+        const uploadMessage = getUpload413Message(args?.url || "");
         return {
           error: {
             status: 413,
             data: {
               message: uploadAttempt
-                ? MSG_413
-                : baseResult.error?.data?.message || MSG_413,
+                ? uploadMessage
+                : baseResult.error?.data?.message || uploadMessage,
               code: "REQUEST_TOO_LARGE",
               error: baseResult.error?.data?.error,
             },
@@ -269,7 +297,9 @@ export const api = createApi({
           baseResult.error.error === "TypeError: Failed to fetch")
       ) {
         const uploadAttempt = isMultipartDocumentUpload(args);
-        const message = uploadAttempt ? MSG_FETCH_UPLOAD : MSG_FETCH_GENERIC;
+        const message = uploadAttempt
+          ? getUploadFetchMessage(args?.url || "")
+          : MSG_FETCH_GENERIC;
         if (import.meta.env.DEV && baseResult.error?.error) {
           logger.warn("FETCH_ERROR", {
             url: args?.url,
@@ -296,7 +326,9 @@ export const api = createApi({
         error: {
           status: "FETCH_ERROR",
           data: {
-            message: uploadAttempt ? MSG_FETCH_UPLOAD : MSG_FETCH_GENERIC,
+            message: uploadAttempt
+              ? getUploadFetchMessage(args?.url || "")
+              : MSG_FETCH_GENERIC,
             code: uploadAttempt ? "UPLOAD_TIMEOUT_OR_NETWORK" : "NETWORK",
             error: error?.message || "Failed to fetch",
           },

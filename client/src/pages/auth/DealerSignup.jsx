@@ -15,6 +15,9 @@ import { FiX, FiChevronDown } from "react-icons/fi";
 import { useCarCategories } from "../../hooks/useCarCategories";
 import SEO from "../../components/common/SEO";
 
+const DEALER_SIGNUP_FALLBACK_MESSAGE =
+  "We could not complete dealer registration right now. Please check your details and try again.";
+
 const DealerSignup = ({ onBack }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -335,7 +338,7 @@ const DealerSignup = ({ onBack }) => {
       );
       navigate("/login");
     } catch (err) {
-      toast.error(err?.data?.message || "Registration failed");
+      toast.error(err?.data?.message || DEALER_SIGNUP_FALLBACK_MESSAGE);
     } finally {
       setLoading(false);
     }
