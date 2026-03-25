@@ -118,7 +118,6 @@ const AuthService = {
             twitter,
             linkedin,
             paymentMethods,
-            services,
             auctionRequestTypes,
         } = req.body;
         
@@ -165,7 +164,6 @@ const AuthService = {
             }
 
             const parsedPaymentMethods = parseArray(paymentMethods);
-            const parsedServices = parseArray(services);
             const parsedEstablishedYear = establishedYear ? parseInt(String(establishedYear), 10) : null;
 
             userData.dealerInfo = {
@@ -185,7 +183,7 @@ const AuthService = {
                     linkedin: linkedin?.trim() || null,
                 },
                 paymentMethods: parsedPaymentMethods,
-                services: parsedServices,
+                services: [],
                 employeeCount: employeeCount?.trim() || null,
                 establishedYear: Number.isFinite(parsedEstablishedYear)
                     ? parsedEstablishedYear

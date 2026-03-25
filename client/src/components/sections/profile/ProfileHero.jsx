@@ -137,7 +137,6 @@ const ProfileHero = () => {
     establishedYear: "",
     employeeCount: "",
     paymentMethods: [],
-    services: [],
   });
   const [dealerFiles, setDealerFiles] = useState({
     avatar: null,
@@ -185,7 +184,6 @@ const ProfileHero = () => {
             establishedYear: user.dealerInfo.establishedYear?.toString() || "",
             employeeCount: user.dealerInfo.employeeCount || "",
             paymentMethods: user.dealerInfo.paymentMethods || [],
-            services: user.dealerInfo.services || [],
           });
         }
 

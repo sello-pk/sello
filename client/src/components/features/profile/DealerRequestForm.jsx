@@ -51,7 +51,6 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
     establishedYear: "",
     employeeCount: "",
     paymentMethods: [],
-    services: [],
     facebook: "",
     instagram: "",
     twitter: "",
@@ -118,14 +117,6 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
     "Bank Transfer",
     "Cheque",
     "Financing Available",
-  ];
-  const commonServices = [
-    "Financing",
-    "Trade-in",
-    "Warranty",
-    "Insurance",
-    "Delivery",
-    "Test Drive",
   ];
 
   const removeFromArray = (field, item) => {
@@ -313,8 +304,6 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
           "paymentMethods",
           JSON.stringify(formData.paymentMethods),
         );
-      if (formData.services.length > 0)
-        formDataToSend.append("services", JSON.stringify(formData.services));
       if (formData.facebook)
         formDataToSend.append("facebook", formData.facebook.trim());
       if (formData.instagram)
@@ -354,7 +343,6 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
         establishedYear: "",
         employeeCount: "",
         paymentMethods: [],
-        services: [],
         facebook: "",
         instagram: "",
         twitter: "",
@@ -1000,49 +988,6 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                       className="px-3 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-50"
                     >
                       + {method}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Services */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Services Offered
-                </label>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {formData.services.map((service) => (
-                    <span
-                      key={service}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
-                    >
-                      {service}
-                      <button
-                        type="button"
-                        onClick={() => removeFromArray("services", service)}
-                        className="hover:text-purple-600"
-                      >
-                        <FaTimes size={12} />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {commonServices.map((service) => (
-                    <button
-                      key={service}
-                      type="button"
-                      onClick={() => {
-                        if (!formData.services.includes(service)) {
-                          setFormData((prev) => ({
-                            ...prev,
-                            services: [...prev.services, service],
-                          }));
-                        }
-                      }}
-                      className="px-3 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-50"
-                    >
-                      + {service}
                     </button>
                   ))}
                 </div>

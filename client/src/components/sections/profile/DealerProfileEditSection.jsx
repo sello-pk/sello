@@ -50,14 +50,6 @@ const DealerProfileEditSection = ({
     "Cheque",
     "Financing Available",
   ];
-  const commonServices = [
-    "Financing",
-    "Trade-in",
-    "Warranty",
-    "Insurance",
-    "Delivery",
-    "Test Drive",
-  ];
   const DEALER_FILE_MAX_BYTES = 10 * 1024 * 1024;
 
   const handleInputChange = (e) => {
@@ -115,10 +107,7 @@ const DealerProfileEditSection = ({
 
       // Add all form fields
       Object.keys(dealerFormData).forEach((key) => {
-        if (
-          key === "paymentMethods" ||
-          key === "services"
-        ) {
+        if (key === "paymentMethods") {
           formDataToSend.append(key, JSON.stringify(dealerFormData[key]));
         } else if (
           dealerFormData[key] !== null &&
@@ -195,7 +184,6 @@ const DealerProfileEditSection = ({
                       user.dealerInfo.establishedYear?.toString() || "",
                     employeeCount: user.dealerInfo.employeeCount || "",
                     paymentMethods: user.dealerInfo.paymentMethods || [],
-                    services: user.dealerInfo.services || [],
                   });
                 }
                 setDealerFiles({
@@ -590,55 +578,13 @@ const DealerProfileEditSection = ({
           </div>
         )}
 
-        {/* Services */}
+        {/* Payment Methods */}
         {isEditingDealer && (
           <div className="border-b border-gray-200 pb-6">
             <h4 className="text-lg font-semibold text-gray-900 mb-4">
-              Services
+              Payment Methods
             </h4>
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Services Offered
-                </label>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {dealerFormData.services.map((service) => (
-                    <span
-                      key={service}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
-                    >
-                      {service}
-                      <button
-                        type="button"
-                        onClick={() => removeFromArray("services", service)}
-                        className="hover:text-green-600"
-                      >
-                        <FaTimes size={12} />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {commonServices.map((service) => (
-                    <button
-                      key={service}
-                      type="button"
-                      onClick={() => {
-                        if (!dealerFormData.services.includes(service)) {
-                          setDealerFormData((prev) => ({
-                            ...prev,
-                            services: [...prev.services, service],
-                          }));
-                        }
-                      }}
-                      className="px-3 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50"
-                    >
-                      + {service}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Payment Methods Accepted
@@ -825,21 +771,6 @@ const DealerProfileEditSection = ({
                     <p className="font-semibold text-gray-900">
                       {user.dealerInfo.description}
                     </p>
-                  </div>
-                )}
-                {user?.dealerInfo?.services?.length > 0 && (
-                  <div className="md:col-span-2">
-                    <p className="text-sm text-gray-600 mb-2">Services</p>
-                    <div className="flex flex-wrap gap-2">
-                      {user.dealerInfo.services.map((service, idx) => (
-                        <span
-                          key={idx}
-                          className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
-                        >
-                          {service}
-                        </span>
-                      ))}
-                    </div>
                   </div>
                 )}
               </div>

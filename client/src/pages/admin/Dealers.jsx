@@ -660,36 +660,6 @@ const Dealers = () => {
                       </div>
                     )}
 
-                    {/* Services */}
-                    {dealerDetails.dealerInfo?.services?.length > 0 && (
-                      <div>
-                        <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                          Services
-                        </h4>
-                        <div className="space-y-3">
-                          {dealerDetails.dealerInfo?.services?.length > 0 && (
-                            <div>
-                              <p className="text-sm text-gray-600 dark:text-gray-400">
-                                Services
-                              </p>
-                              <div className="flex flex-wrap gap-2 mt-1">
-                                {dealerDetails.dealerInfo.services.map(
-                                  (service, idx) => (
-                                    <span
-                                      key={idx}
-                                      className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
-                                    >
-                                      {service}
-                                    </span>
-                                  ),
-                                )}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
                     {/* Social Media */}
                     {(dealerDetails.dealerInfo?.socialMedia?.facebook ||
                       dealerDetails.dealerInfo?.socialMedia?.instagram ||
