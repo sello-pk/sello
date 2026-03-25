@@ -6,7 +6,6 @@ import {
   usePlaceBidMutation,
   useGetMeQuery,
   useGetMyTokenPaymentsQuery,
-  useGetMyWalletQuery,
   useGetMyAuctionAccessStatusQuery,
 } from "../../redux/services/api";
 import { useSocket } from "../../contexts/SocketContext";
@@ -26,7 +25,6 @@ export default function AuctionBidBlock({ auctionCarId, className = "" }) {
   const isLoggedIn = !!user;
   const { data: tokenData } = useGetMyTokenPaymentsQuery(undefined, { skip: !isLoggedIn });
   const { data: auctionAccess } = useGetMyAuctionAccessStatusQuery(undefined, { skip: !isLoggedIn });
-  const { data: walletData } = useGetMyWalletQuery(undefined, { skip: !isLoggedIn });
   const hasVerifiedToken = tokenData?.hasVerifiedToken || false;
   const bidderStatus = auctionAccess?.auctionCapabilities?.auctionBidder?.status || "not_requested";
   const dealerStatus = auctionAccess?.auctionCapabilities?.auctionDealer?.status || "not_requested";
@@ -43,9 +41,7 @@ export default function AuctionBidBlock({ auctionCarId, className = "" }) {
   const currentHigh = detail?.currentBid || detail?.startingBid || 0;
   const minIncrement = 50000;
   const minimumBid = currentHigh + minIncrement;
-  const walletBalance = walletData?.wallet?.balance || 0;
-  const hasWalletFundsForBid = walletBalance >= minimumBid;
-  const canPlaceBid = hasVerifiedToken && hasWalletFundsForBid;
+  const canPlaceBid = hasVerifiedToken;
   const isLive = auction?.status === "live";
   const isEnded =
     detail?.status === "sold" ||
@@ -170,20 +166,14 @@ export default function AuctionBidBlock({ auctionCarId, className = "" }) {
                 <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 text-center">
                   {!hasVerifiedToken
                     ? "Your token payment must be admin-verified before bidding."
-                    : "Add enough funds to your wallet before bidding."}
+                    : "Your verified token gives you access to place bids in this auction."}
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-2">
                   <Link
                     to="/auctions/token-payment"
                     className="block w-full py-2.5 rounded-lg bg-primary-500 text-white font-medium text-sm text-center hover:opacity-90"
                   >
                     Token Payment
-                  </Link>
-                  <Link
-                    to="/auctions/transactions"
-                    className="block w-full py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 font-medium text-sm text-center hover:bg-gray-50"
-                  >
-                    Add Wallet Funds
                   </Link>
                 </div>
               </div>

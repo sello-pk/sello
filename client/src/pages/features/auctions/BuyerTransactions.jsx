@@ -204,6 +204,8 @@ export default function BuyerTransactions() {
     bidderStatus === "approved" || dealerStatus === "approved";
 
   const tokenPayments = tokenData?.payments || [];
+  const verifiedTokenAmount = tokenData?.tokenBalance || 0;
+  const hasVerifiedToken = tokenData?.hasVerifiedToken || false;
   const walletTransactions = walletData?.transactions || [];
   const walletSummary = walletData?.summary || {};
 
@@ -781,7 +783,7 @@ export default function BuyerTransactions() {
                   Deposit Funds
                 </h3>
                 <p className="text-sm text-slate-500">
-                  Add money to your wallet to place bids
+                  Add money to your wallet for purchases, escrow payments, and other auction charges
                 </p>
               </div>
               <Button onClick={() => setShowDepositForm(true)}>
@@ -1254,6 +1256,31 @@ export default function BuyerTransactions() {
         {/* ─── Token Payments ─── */}
         {activeTab === "tokens" && (
           <div className="space-y-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
+              Token payments are separate from wallet deposits. Your wallet balance stays `0` until you add funds through the `Deposits` tab or an admin approves a wallet deposit.
+            </div>
+            <div className="grid md:grid-cols-2 gap-3">
+              <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+                <p className="text-xs text-slate-500">Verified Token Deposit</p>
+                <p className="text-2xl font-bold text-slate-900 mt-1">
+                  {formatPrice(verifiedTokenAmount)}
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  {hasVerifiedToken
+                    ? "Verified for auction access"
+                    : "No verified token yet"}
+                </p>
+              </div>
+              <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+                <p className="text-xs text-slate-500">Wallet Balance</p>
+                <p className="text-2xl font-bold text-slate-900 mt-1">
+                  {formatPrice(summaryCards.balance)}
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Use Deposits to add bidding funds to your wallet
+                </p>
+              </div>
+            </div>
             {tokenLoading ? (
               <p className="text-center py-10 text-slate-500">Loading...</p>
             ) : tokenPayments.length === 0 ? (

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import toast from "react-hot-toast";
 import {
   IoChevronBack as ChevronLeft,
@@ -22,6 +22,7 @@ import {
   IoHeartOutline as Heart,
   IoHeartDislikeOutline as HeartOff,
   IoHammerOutline as Gavel,
+  IoRefreshOutline as RefreshCw,
 } from "react-icons/io5";
 import {
   useGetAuctionCarDetailQuery,
@@ -68,7 +69,7 @@ const Button = ({
     "inline-flex items-center justify-center font-medium transition-all duration-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50";
   const v = {
     default:
-      "bg-gradient-to-r from-[#FFA602] to-amber-500 text-white hover:from-amber-500 hover:to-[#FFA602] focus:ring-[#FFA602] shadow-lg shadow-[#FFA602]/30",
+      "bg-primary-500 text-white hover:opacity-90 focus:ring-primary-500 shadow-lg shadow-primary-500/30",
     outline:
       "border-2 border-slate-300 text-slate-700 hover:bg-slate-100 focus:ring-slate-500",
     ghost: "text-slate-700 hover:bg-slate-100 focus:ring-slate-500",
@@ -192,8 +193,7 @@ export default function CarDetail() {
   const totalBidders = detail?.totalBidders ?? 0;
   const buyNowPrice = detail?.buyNowPrice != null ? Number(detail.buyNowPrice) : null;
   const walletBalance = walletData?.wallet?.balance || 0;
-  const hasWalletFundsForBid = walletBalance >= minimumBid;
-  const canPlaceBid = hasVerifiedToken && hasWalletFundsForBid;
+  const canPlaceBid = hasVerifiedToken;
   const isAuctionEnded =
     detail?.status === "sold" ||
     (auction?.endTime && new Date(auction.endTime) <= new Date());
@@ -370,6 +370,18 @@ export default function CarDetail() {
     { label: "Color", value: car.colorExterior, icon: Info },
     { label: "Registration", value: car.registrationCity, icon: FileText },
   ];
+  const conditionLabel =
+    car.condition?.replaceAll("_", " ") ||
+    detail?.condition?.replaceAll("_", " ") ||
+    "Verified Condition";
+  const auctionLocation = auction.location || "Okara Auction Yard";
+  const quickLinks = [
+    { id: "overview", label: "Home" },
+    { id: "bidding", label: "Live Auction" },
+    { id: "specifications", label: "Schedule" },
+    { id: "inspection", label: "Trust & Legal" },
+  ];
+  const reserveMet = detail?.reservePrice ? currentHigh >= detail.reservePrice : false;
 
   if (!detail) {
     return (
@@ -381,25 +393,60 @@ export default function CarDetail() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Back */}
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-30">
-        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <div className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-[1320px] items-center justify-between gap-6 px-4 py-5 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-4">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-500 text-white shadow-lg shadow-primary-500/25">
+              <Gavel className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-3xl font-black tracking-tight text-slate-900">
+                {auctionLocation.split(" ").slice(0, 2).join(" ") || "Okara Auto"}{" "}
+                <span className="text-primary-500">Auction</span>
+              </p>
+              <p className="text-sm text-slate-500">
+                {auction.title || "Premium live bidding"}
+              </p>
+            </div>
+          </div>
+          <div className="hidden items-center gap-8 lg:flex">
+            {quickLinks.map((link) => (
+              <button
+                key={link.id}
+                type="button"
+                onClick={() =>
+                  document.getElementById(link.id)?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  })
+                }
+                className="text-sm font-medium text-slate-600 transition hover:text-slate-900"
+              >
+                {link.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
+        <div className="mx-auto max-w-[1320px] px-4 py-4 sm:px-6 lg:px-8">
           <Link
             to="/auctions/live"
-            className="inline-flex items-center text-slate-600 hover:text-slate-900"
+            className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-slate-900"
           >
-            <ChevronLeft className="w-5 h-5 mr-1" />
+            <ChevronLeft className="h-5 w-5" />
             Back to Auction
           </Link>
         </div>
       </div>
 
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid lg:grid-cols-5 gap-8">
+      <div className="mx-auto max-w-[1320px] px-4 py-8 sm:px-6 lg:px-8">
+        <div className="grid gap-8 xl:grid-cols-[minmax(0,1.55fr)_minmax(360px,0.95fr)]">
           {/* Left */}
-          <div className="lg:col-span-3 space-y-6">
+          <div className="space-y-7">
             {/* Gallery */}
-            <div className="bg-white rounded-2xl overflow-hidden border border-slate-200">
+            <div id="overview" className="bg-white rounded-[28px] overflow-hidden border border-slate-200 shadow-[0_18px_48px_rgba(15,23,42,0.08)]">
               <div className="relative aspect-[16/10] bg-slate-100">
                 {images[currentImageIndex] && (
                   <img
@@ -416,7 +463,7 @@ export default function CarDetail() {
                           p > 0 ? p - 1 : images.length - 1,
                         )
                       }
-                      className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-lg hover:bg-white"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/90 rounded-full flex items-center justify-center shadow-lg hover:bg-white"
                     >
                       <ChevronLeft className="w-6 h-6" />
                     </button>
@@ -426,7 +473,7 @@ export default function CarDetail() {
                           p < images.length - 1 ? p + 1 : 0,
                         )
                       }
-                      className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-lg hover:bg-white"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/90 rounded-full flex items-center justify-center shadow-lg hover:bg-white"
                     >
                       <ChevronRight className="w-6 h-6" />
                     </button>
@@ -434,25 +481,25 @@ export default function CarDetail() {
                 )}
                 <button
                   onClick={() => setShowGallery(true)}
-                  className="absolute right-4 bottom-4 px-4 py-2 bg-white/95 text-slate-900 rounded-lg flex items-center gap-2 text-sm font-medium hover:bg-white border border-slate-200 shadow-sm"
+                  className="absolute right-4 bottom-4 px-5 py-3 bg-white/95 text-slate-900 rounded-2xl flex items-center gap-2 text-sm font-semibold hover:bg-white border border-slate-200 shadow-sm"
                 >
                   <ZoomIn className="w-4 h-4" />
                   View All Photos
                 </button>
                 <div className="absolute left-4 bottom-4">
-                  <Badge className="bg-slate-900/85 text-white border border-white/20 backdrop-blur-sm shadow-lg">
+                  <Badge className="bg-slate-900/85 text-white border border-white/20 backdrop-blur-sm shadow-lg px-3 py-1.5 text-sm">
                     <MapPin className="w-3 h-3 mr-1 text-amber-300" />
                     {auction.location || "Okara Auction Yard"}
                   </Badge>
                 </div>
               </div>
               {images.length > 1 && (
-                <div className="p-4 flex gap-2 overflow-x-auto">
+                <div className="p-5 flex gap-3 overflow-x-auto">
                   {images.map((img, i) => (
                     <button
                       key={i}
                       onClick={() => setCurrentImageIndex(i)}
-                      className={`w-20 h-14 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all ${currentImageIndex === i ? "border-[#FFA602]" : "border-transparent"}`}
+                       className={`w-24 h-16 rounded-2xl overflow-hidden flex-shrink-0 border-2 transition-all ${currentImageIndex === i ? "border-primary-500 shadow-[0_0_0_4px_rgba(245,158,11,0.14)]" : "border-transparent opacity-75 hover:opacity-100"}`}
                     >
                       <img
                         src={img}
@@ -466,11 +513,13 @@ export default function CarDetail() {
             </div>
 
             {/* Title */}
-            <div className="bg-white rounded-2xl p-6 border border-slate-200">
-              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
+            <div className="bg-white rounded-[28px] p-7 border border-slate-200 shadow-[0_18px_48px_rgba(15,23,42,0.08)]">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <h1 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 mb-2">
                 {car.year} {car.make} {car.model}
-              </h1>
-              <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500 mb-4">
+                  </h1>
+                  <div className="flex flex-wrap items-center gap-4 text-base text-slate-500 mb-4">
                 <span className="flex items-center gap-1">
                   <Gauge className="w-4 h-4" />
                   {car.mileage?.toLocaleString()} km
@@ -483,13 +532,18 @@ export default function CarDetail() {
                   <Settings2 className="w-4 h-4" />
                   {car.transmission}
                 </span>
+                  </div>
+                </div>
+                <div className="inline-flex h-fit rounded-2xl bg-emerald-100 px-4 py-2 text-base font-semibold text-emerald-700 shadow-sm">
+                  {conditionLabel}
+                </div>
               </div>
               {detail.reservePrice && (
                 <div
-                  className={`rounded-xl p-4 ${currentHigh >= detail.reservePrice ? "bg-emerald-50 border border-emerald-200" : "bg-amber-50 border border-amber-200"}`}
+                  className={`rounded-2xl p-4 ${reserveMet ? "bg-emerald-50 border border-emerald-200" : "bg-amber-50 border border-amber-200"}`}
                 >
                   <div className="flex items-center gap-2">
-                    {currentHigh >= detail.reservePrice ? (
+                    {reserveMet ? (
                       <>
                         <CheckCircle className="w-5 h-5 text-emerald-600" />
                         <span className="font-medium text-emerald-700">
@@ -509,8 +563,8 @@ export default function CarDetail() {
               )}
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-              <div className="grid grid-cols-3 border-b border-slate-200">
+            <div id="specifications" className="bg-white rounded-[28px] border border-slate-200 overflow-hidden shadow-[0_18px_48px_rgba(15,23,42,0.08)]">
+              <div className="grid grid-cols-3 border-b border-slate-200 bg-slate-50/70">
                 {[
                   { id: "specs", label: "Specifications" },
                   { id: "inspection", label: "Inspection Report" },
@@ -523,7 +577,7 @@ export default function CarDetail() {
                     className={`px-3 py-4 text-sm font-semibold transition ${
                       activeTab === tab.id
                         ? "bg-white text-slate-900"
-                        : "bg-slate-50 text-slate-500 hover:text-slate-700"
+                        : "text-slate-500 hover:text-slate-700"
                     }`}
                   >
                     {tab.label}
@@ -535,10 +589,10 @@ export default function CarDetail() {
                 <div className="p-6">
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {specs.map((spec, i) => (
-                      <div key={i} className="bg-slate-50 rounded-xl p-4">
-                        <spec.icon className="w-5 h-5 text-[#FFA602] mb-2" />
-                        <p className="text-xs text-slate-500 mb-1">{spec.label}</p>
-                        <p className="font-semibold text-slate-900 capitalize">
+                      <div key={i} className="bg-slate-50 rounded-3xl p-5">
+                        <spec.icon className="w-6 h-6 text-primary-500 mb-3" />
+                        <p className="text-sm text-slate-500 mb-1">{spec.label}</p>
+                        <p className="text-lg font-semibold text-slate-900 capitalize">
                           {spec.value || "N/A"}
                         </p>
                       </div>
@@ -548,7 +602,7 @@ export default function CarDetail() {
               )}
 
               {activeTab === "inspection" && (
-                <div className="p-6">
+                <div id="inspection" className="p-6">
                   {detail?.inspectionReportPdfUrl && (
                     <a
                       href={detail.inspectionReportPdfUrl}
@@ -616,7 +670,7 @@ export default function CarDetail() {
 
             {/* Actions */}
             {isLoggedIn && (
-              <div className="bg-white rounded-2xl p-6 border border-slate-200">
+              <div className="bg-white rounded-[28px] p-6 border border-slate-200 shadow-[0_18px_48px_rgba(15,23,42,0.08)]">
                 <div className="grid sm:grid-cols-2 gap-3">
                   {auctionCarId &&
                     (auction?.status === "live" ||
@@ -624,7 +678,7 @@ export default function CarDetail() {
                       detail?.status === "live") && (
                       <Button
                         variant="outline"
-                        className="w-full border-[#FFA602] text-[#FFA602] hover:bg-[#FFA602]/10"
+                        className="w-full border-primary-500 text-primary-500 hover:bg-primary-500/10"
                         onClick={() => setShowInspectionModal(true)}
                       >
                         <Calendar className="w-5 h-5 mr-2" />
@@ -652,41 +706,45 @@ export default function CarDetail() {
               </div>
             )}
 
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-sm text-amber-800">
               <Clock className="w-4 h-4 inline mr-1" />
-              <strong>Important:</strong> Winning bidder must complete payment within 24-48 hours and collect the vehicle from Okara Auction Yard.
+              <strong>Important:</strong> Winning bidder must complete payment within 24-48 hours and collect the vehicle from {auctionLocation}.
             </div>
           </div>
 
           {/* Right - Bid Panel */}
-          <div className="lg:col-span-2">
-            <div className="sticky top-20">
+          <div>
+            <div className="sticky top-24 space-y-4">
               {/* Timer */}
-              <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 mb-6 text-center">
-                <p className="text-slate-400 text-sm mb-3">Auction ends in</p>
+              <div className="bg-slate-900 rounded-[28px] p-7 text-center shadow-[0_20px_48px_rgba(15,23,42,0.22)]">
+                <p className="text-slate-400 text-sm mb-4">Auction ends in</p>
                 <CountdownTimer targetDate={auction.endTime} />
               </div>
 
               {/* Bid Panel */}
-              <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-                <div className="p-6 border-b border-slate-200">
+              <div id="bidding" className="bg-white rounded-[28px] border border-slate-200 overflow-hidden shadow-[0_18px_48px_rgba(15,23,42,0.08)]">
+                <div className="bg-slate-900 p-5">
                   <div className="flex items-center justify-between mb-4 gap-3">
-                    <span className="text-lg font-semibold text-slate-900">
+                    <span className="inline-flex items-center gap-2 text-xl font-semibold text-white">
+                      <Gavel className="h-5 w-5 text-primary-500" />
                       Live Bidding
                     </span>
-                    <Badge className="bg-emerald-100 text-emerald-700">
+                    <span className="inline-flex items-center gap-2 text-sm text-emerald-300">
+                      <RefreshCw className="h-4 w-4" />
                       {auction.status === "live"
                         ? "Auto-updating"
                         : auction.status}
-                    </Badge>
+                    </span>
                   </div>
-                  <div className="bg-slate-100 rounded-xl p-4 mb-3">
-                    <span className="text-sm text-slate-500">Current Highest Bid</span>
-                    <p className="text-3xl font-bold text-slate-900 mt-1">
+                  <div className="bg-white/10 rounded-[20px] p-5 mb-3">
+                    <span className="text-sm text-slate-300">Current Highest Bid</span>
+                    <p className="text-4xl font-black tracking-tight text-white mt-2">
                       {formatPrice(currentHigh)}
                     </p>
                   </div>
-                  <p className="text-sm text-slate-600">
+                </div>
+                <div className="p-5">
+                  <p className="text-base text-slate-600">
                     Minimum bid:{" "}
                     <span className="font-semibold text-slate-900">
                       {formatPrice(minimumBid)}
@@ -704,10 +762,10 @@ export default function CarDetail() {
                   )}
                 </div>
                 <div className="p-6">
-                  <p className="text-sm font-medium text-slate-700 mb-3">
+                  <p className="text-xl font-semibold text-slate-900 mt-6 mb-4">
                     Recent Bids
                   </p>
-                  <div className="space-y-3 max-h-60 overflow-y-auto mb-4">
+                  <div className="space-y-3 max-h-[340px] overflow-y-auto mb-4 pr-1">
                     {bids.length === 0 && (
                       <p className="text-sm text-slate-400 text-center py-4">
                         No bids yet. Be the first!
@@ -716,30 +774,38 @@ export default function CarDetail() {
                     {bids.slice(0, 8).map((bid, i) => (
                       <div
                         key={bid._id || i}
-                        className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0"
+                        className={`flex items-start justify-between gap-3 rounded-2xl border px-4 py-4 ${i === 0 ? "border-primary-200 bg-primary-50" : "border-slate-100 bg-slate-50/70"}`}
                       >
-                        <div>
-                          <p className="font-medium text-slate-900">
-                            {bid.bidderName || bid.bidder?.name || "Anonymous"}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {new Date(bid.createdAt).toLocaleTimeString()}
-                          </p>
+                        <div className="flex items-start gap-3">
+                          <div className={`flex h-10 w-10 items-center justify-center rounded-full ${bid.bidType === "offline" ? "bg-primary-100 text-primary-500" : "bg-slate-100 text-slate-600"}`}>
+                            {bid.bidType === "offline" ? (
+                              <FileText className="h-4 w-4" />
+                            ) : (
+                              <MapPin className="h-4 w-4" />
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-medium text-slate-900">
+                              {bid.bidType === "offline"
+                                ? "Floor Bid"
+                                : bid.bidderName || bid.bidder?.name || "Anonymous"}
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              {new Date(bid.createdAt).toLocaleTimeString()}
+                            </p>
+                          </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-semibold text-[#FFA602]">
+                          <p className="text-2xl font-bold text-primary-500">
                             {formatPrice(bid.amount)}
                           </p>
-                          <Badge
-                            variant="default"
-                            className="text-xs bg-slate-100"
-                          >
+                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                             {bid.bidType === "offline"
-                              ? "Floor"
+                              ? "offline"
                               : bid.isProxy
-                                ? "Auto"
-                                : "Online"}
-                          </Badge>
+                                ? "auto"
+                                : "online"}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -765,7 +831,7 @@ export default function CarDetail() {
                         </Button>
                       ) : !hasAuctionAccess ? (
                         <div className="space-y-2">
-                          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-700 text-center">
+                          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-sm text-amber-700 text-center">
                             Auction access approval is required before bidding
                             (status: {bidderStatus.replaceAll("_", " ")}).
                           </div>
@@ -780,11 +846,11 @@ export default function CarDetail() {
                         </div>
                       ) : !canPlaceBid ? (
                         <div className="space-y-3">
-                          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-700 text-center">
-                            {!hasVerifiedToken
-                              ? "Your token payment must be verified by admin before you can bid."
-                              : "Add enough funds to your wallet before placing a bid."}
-                          </div>
+                            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-sm text-amber-700 text-center">
+                              {!hasVerifiedToken
+                                ? "Your token payment must be verified by admin before you can bid."
+                                : "Your verified token gives you access to place bids in this auction."}
+                            </div>
                           <div className="flex flex-col sm:flex-row gap-2">
                             <Button
                               className="flex-1"
@@ -794,37 +860,30 @@ export default function CarDetail() {
                                 ? "Token Verified"
                                 : "Complete Token Verification"}
                             </Button>
-                            <Button
-                              variant="outline"
-                              className="flex-1"
-                              onClick={() => navigate("/auctions/transactions")}
-                            >
-                              Add to Wallet
-                            </Button>
                           </div>
-                          <p className="text-xs text-slate-500 text-center">
-                            Token verification is mandatory. Wallet funds are also required for bidding and buy now.
-                          </p>
+                            <p className="text-xs text-slate-500 text-center">
+                              Token verification is mandatory for bidding access.
+                            </p>
                         </div>
                       ) : (
                         <>
-                          <div className="grid grid-cols-2 gap-2">
+                          <div className="grid grid-cols-2 gap-3">
                             {quickBidSuggestions.slice(0, 4).map((amount, idx) => (
                               <button
                                 key={`${amount}-${idx}`}
                                 type="button"
                                 onClick={() => setBidAmount(Number(amount))}
-                                className={`rounded-lg border px-3 py-2 text-sm font-semibold transition ${
+                                className={`rounded-2xl border px-3 py-3 text-sm font-semibold transition ${
                                   Number(bidAmount) === Number(amount)
-                                    ? "border-[#FFA602] bg-[#FFF4E0] text-[#B86A00]"
-                                    : "border-slate-200 hover:border-[#FFD89A] text-slate-700"
+                                    ? "border-primary-500 bg-primary-50 text-primary-500"
+                                    : "border-primary-200 hover:border-primary-500 text-slate-700"
                                 }`}
                               >
                                 {formatPrice(Number(amount))}
                               </button>
                             ))}
                           </div>
-                          <div className="flex gap-2">
+                          <div className="flex gap-3">
                             <div className="relative flex-1">
                               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">
                                 PKR
@@ -835,7 +894,7 @@ export default function CarDetail() {
                                 onChange={(e) =>
                                   setBidAmount(Number(e.target.value))
                                 }
-                                className="w-full pl-12 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FFA602]"
+                                className="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                                 step="50000"
                                 min={minimumBid}
                                 placeholder={String(minimumBid)}
@@ -844,7 +903,7 @@ export default function CarDetail() {
                             <Button
                               onClick={handlePlaceBid}
                               disabled={bidding || bidAmount < minimumBid}
-                              className="px-6 bg-gradient-to-r from-primary-500 to-primary-500 hover:opacity-90"
+                              className="px-6 rounded-2xl bg-primary-500 hover:opacity-90 shadow-lg shadow-primary-500/25"
                             >
                               {bidding ? "..." : "Bid Now"}
                             </Button>
@@ -884,7 +943,7 @@ export default function CarDetail() {
                   <div className="mt-4">
                     <Button
                       variant="outline"
-                      className="w-full border-[#FFA602] text-[#FFA602] hover:bg-[#FFA602]/10"
+                      className="w-full border-primary-500 text-primary-500 hover:bg-primary-500/10"
                       onClick={() => setShowProxyBidForm(true)}
                     >
                       Set Proxy Bid (Auto-Bid)
@@ -893,7 +952,7 @@ export default function CarDetail() {
                 )}
 
               {/* AI Valuation */}
-              <div className="mt-6 bg-white rounded-2xl border border-slate-200 p-6">
+              <div className="mt-6 bg-white rounded-[28px] border border-slate-200 p-6 shadow-[0_18px_48px_rgba(15,23,42,0.08)]">
                 <h3 className="text-2xl font-semibold text-slate-900 mb-2">
                   AI Market Valuation
                 </h3>
@@ -982,7 +1041,7 @@ export default function CarDetail() {
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-[#FFA602]" />
+                <Calendar className="w-5 h-5 text-primary-500" />
                 Book Physical Inspection
               </h3>
               <button

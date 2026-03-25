@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import { motion } from "framer-motion";
 import {
   IoShieldCheckmarkOutline as ShieldCheck,
   IoWalletOutline as Wallet,
@@ -214,7 +215,7 @@ export default function TokenPayment() {
           </button>
           <h1 className="text-2xl font-bold">Token Payment</h1>
           <p className="text-slate-300 mt-1 text-sm">
-            Secure your bidding access with a refundable deposit.
+            Secure token verification with a refundable deposit. Bidding funds are added to your wallet separately.
           </p>
         </div>
       </section>
@@ -225,7 +226,7 @@ export default function TokenPayment() {
             <CheckCircle className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
             <h2 className="text-xl font-bold text-emerald-700 mb-1">Token Verified</h2>
             <p className="text-slate-600 mb-4 text-sm">
-              You can place bids now. Available token balance: PKR {Number(walletBalance).toLocaleString()}.
+              Your token is verified. This refundable deposit works as your bidding access pass for live auctions.
             </p>
             <Button onClick={() => navigate("/auctions/live")}>Go to Live Auction</Button>
           </div>

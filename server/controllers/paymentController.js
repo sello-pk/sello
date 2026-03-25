@@ -1,5 +1,5 @@
 import { Wallet, Deposit, RefundRequest, PlatformSettings } from "../models/paymentModel.js";
-import { WalletTransaction, Bid } from "../models/auctionModel.js";
+import { WalletTransaction, Bid, TokenPayment } from "../models/auctionModel.js";
 import Notification from "../models/notificationModel.js";
 import Logger from "../utils/logger.js";
 
@@ -34,12 +34,63 @@ async function getSettings() {
   return settings;
 }
 
+async function syncVerifiedTokenCreditsToWallet(userId) {
+  const verifiedPayments = await TokenPayment.find({
+    user: userId,
+    status: "verified",
+  })
+    .select("_id amount")
+    .lean();
+
+  if (!verifiedPayments.length) return null;
+
+  const creditedTxns = await WalletTransaction.find({
+    user: userId,
+    type: "token_deposit",
+    referenceModel: "TokenPayment",
+    reference: { $in: verifiedPayments.map((payment) => payment._id) },
+    amount: { $gt: 0 },
+  })
+    .select("reference")
+    .lean();
+
+  const creditedRefs = new Set(
+    creditedTxns.map((txn) => txn.reference?.toString()).filter(Boolean),
+  );
+  const missingPayments = verifiedPayments.filter(
+    (payment) => !creditedRefs.has(payment._id.toString()),
+  );
+
+  if (!missingPayments.length) return null;
+
+  const wallet = await getOrCreateWallet(userId);
+
+  for (const payment of missingPayments) {
+    wallet.balance += Number(payment.amount || 0);
+    wallet.totalDeposited += Number(payment.amount || 0);
+    wallet.lastTransactionAt = new Date();
+    await wallet.save();
+
+    await logTransaction({
+      user: userId,
+      type: "token_deposit",
+      amount: Number(payment.amount || 0),
+      reference: payment._id,
+      referenceModel: "TokenPayment",
+      description: "Verified token deposit credited to wallet",
+    });
+  }
+
+  return wallet;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // USER  –  Wallet
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const getMyWallet = async (req, res) => {
   try {
+    await syncVerifiedTokenCreditsToWallet(req.user._id);
     const wallet = await getOrCreateWallet(req.user._id);
 
     const activeBids = await Bid.find({

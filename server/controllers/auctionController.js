@@ -89,6 +89,110 @@ const requireVerifiedBidToken = async (userId) => {
   return !!verifiedToken;
 };
 
+const getOrCreateAuctionWallet = async (userId) => {
+  let wallet = await Wallet.findOne({ user: userId });
+  if (!wallet) {
+    wallet = await Wallet.create({ user: userId });
+  }
+  return wallet;
+};
+
+const syncVerifiedTokenCreditsToWallet = async (userId) => {
+  const verifiedPayments = await TokenPayment.find({
+    user: userId,
+    status: "verified",
+  })
+    .select("_id amount")
+    .lean();
+
+  if (!verifiedPayments.length) return null;
+
+  const creditedTxns = await WalletTransaction.find({
+    user: userId,
+    type: "token_deposit",
+    referenceModel: "TokenPayment",
+    reference: { $in: verifiedPayments.map((payment) => payment._id) },
+    amount: { $gt: 0 },
+  })
+    .select("reference")
+    .lean();
+
+  const creditedRefs = new Set(
+    creditedTxns.map((txn) => txn.reference?.toString()).filter(Boolean),
+  );
+  const missingPayments = verifiedPayments.filter(
+    (payment) => !creditedRefs.has(payment._id.toString()),
+  );
+
+  if (!missingPayments.length) return null;
+
+  const wallet = await getOrCreateAuctionWallet(userId);
+
+  for (const payment of missingPayments) {
+    wallet.balance += Number(payment.amount || 0);
+    wallet.totalDeposited += Number(payment.amount || 0);
+    wallet.lastTransactionAt = new Date();
+    await wallet.save();
+
+    await logWalletTxn({
+      user: userId,
+      type: "token_deposit",
+      amount: Number(payment.amount || 0),
+      reference: payment._id,
+      referenceModel: "TokenPayment",
+      description: "Verified token deposit credited to wallet",
+    });
+  }
+
+  return wallet;
+};
+
+const reverseTokenCreditFromWallet = async (payment) => {
+  const paymentUserId = payment.user?._id || payment.user;
+  const existingRefundTxn = await WalletTransaction.findOne({
+    user: paymentUserId,
+    type: "token_refund",
+    reference: payment._id,
+    referenceModel: "TokenPayment",
+    amount: { $lt: 0 },
+  }).lean();
+
+  if (existingRefundTxn) return null;
+
+  const creditedTxn = await WalletTransaction.findOne({
+    user: paymentUserId,
+    type: "token_deposit",
+    reference: payment._id,
+    referenceModel: "TokenPayment",
+    amount: { $gt: 0 },
+  }).lean();
+
+  if (!creditedTxn) return null;
+
+  const wallet = await getOrCreateAuctionWallet(paymentUserId);
+  if ((wallet.balance || 0) < Number(payment.amount || 0)) {
+    throw new Error(
+      `Wallet balance is too low to refund this token. Current balance: PKR ${Number(wallet.balance || 0).toLocaleString()}.`,
+    );
+  }
+
+  wallet.balance -= Number(payment.amount || 0);
+  wallet.totalWithdrawn += Number(payment.amount || 0);
+  wallet.lastTransactionAt = new Date();
+  await wallet.save();
+
+  await logWalletTxn({
+    user: paymentUserId,
+    type: "token_refund",
+    amount: -Number(payment.amount || 0),
+    reference: payment._id,
+    referenceModel: "TokenPayment",
+    description: "Token deposit refunded from wallet",
+  });
+
+  return wallet;
+};
+
 const collapseAccidentalAuctionDuplicates = (items = []) => {
   const deduped = new Map();
 
@@ -419,6 +523,7 @@ export const placeBid = async (req, res) => {
   try {
     const { auctionCarId, amount } = req.body;
     const userId = req.user._id;
+    await syncVerifiedTokenCreditsToWallet(userId);
 
     const ac = await AuctionCar.findById(auctionCarId).populate("auction");
     if (!ac)
@@ -455,16 +560,8 @@ export const placeBid = async (req, res) => {
       });
     }
     const hasWallet = wallet && wallet.balance >= amount;
-    if (!hasWallet) {
-      return res.status(403).json({
-        success: false,
-        message: wallet
-          ? `Insufficient wallet balance. You need PKR ${amount.toLocaleString()} but have PKR ${wallet.balance.toLocaleString()}.`
-          : "Add funds to your wallet before bidding.",
-      });
-    }
 
-    // Check bid limit based on deposit tier (wallet users only)
+    // Check bid limit based on deposit tier only when the bidder is actually using wallet funds
     if (hasWallet) {
       const settings = await PlatformSettings.findOne();
       if (settings?.depositTiers?.length > 0) {
@@ -650,7 +747,8 @@ export const setProxyBid = async (req, res) => {
   try {
     const { auctionCarId, maxAmount } = req.body;
     const userId = req.user._id;
-
+    await syncVerifiedTokenCreditsToWallet(userId);
+  
     const ac = await AuctionCar.findById(auctionCarId).populate("auction");
     if (!ac || ac.auction.status !== "live")
       return res
@@ -700,7 +798,8 @@ export const buyNow = async (req, res) => {
   try {
     const { auctionCarId } = req.body;
     const userId = req.user._id;
-
+    await syncVerifiedTokenCreditsToWallet(userId);
+  
     const ac = await AuctionCar.findById(auctionCarId)
       .populate("auction")
       .populate("car", "title make model year");
@@ -1092,6 +1191,7 @@ export const submitTokenPayment = async (req, res) => {
 
 export const getMyTokenPayments = async (req, res) => {
   try {
+    await syncVerifiedTokenCreditsToWallet(req.user._id);
     const settings = await getAuctionSettings();
     const payments = await TokenPayment.find({ user: req.user._id })
       .sort({ createdAt: -1 })
@@ -2311,6 +2411,9 @@ export const verifyTokenPayment = async (req, res) => {
       payment.rejectionReason = rejectionReason || "";
     }
     await payment.save();
+    if (action === "verify") {
+      await syncVerifiedTokenCreditsToWallet(payment.user);
+    }
 
     await Notification.create({
       title:
@@ -2772,15 +2875,7 @@ export const adminRefundToken = async (req, res) => {
     payment.status = "refunded";
     payment.refundedAt = new Date();
     await payment.save();
-
-    await logWalletTxn({
-      user: payment.user._id || payment.user,
-      type: "token_refund",
-      amount: payment.amount,
-      reference: payment._id,
-      referenceModel: "TokenPayment",
-      description: "Token deposit refunded",
-    });
+    await reverseTokenCreditFromWallet(payment);
 
     await Notification.create({
       title: "Token Deposit Refunded",
@@ -2861,14 +2956,7 @@ export const adminBulkRefundTokens = async (req, res) => {
       payment.status = "refunded";
       payment.refundedAt = new Date();
       await payment.save();
-      await logWalletTxn({
-        user: payment.user,
-        type: "token_refund",
-        amount: payment.amount,
-        reference: payment._id,
-        referenceModel: "TokenPayment",
-        description: `Bulk refund – auction "${auction.title}" completed`,
-      });
+      await reverseTokenCreditFromWallet(payment);
       await Notification.create({
         title: "Token Deposit Refunded",
         message: `Your token deposit of PKR ${payment.amount.toLocaleString()} has been refunded (auction ended).`,
@@ -2981,6 +3069,7 @@ export const getPaymentStats = async (req, res) => {
 
 export const getMyWalletTransactions = async (req, res) => {
   try {
+    await syncVerifiedTokenCreditsToWallet(req.user._id);
     const { page = 1, limit = 30 } = req.query;
     const skip = (page - 1) * limit;
 
