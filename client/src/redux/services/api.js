@@ -45,7 +45,7 @@ function getUploadFetchMessage(url = "") {
     url.includes("/users/auction-access/request") ||
     url.includes("/users/request-dealer")
   ) {
-    return "Dealer documents could not be uploaded. Try a smaller file and retry. If this keeps happening in production, the server upload limit may need to be increased.";
+    return "Dealer documents could not be uploaded right now. Please try again. If the issue continues in production, the server upload path should be checked.";
   }
   return "Upload could not be completed. Try smaller files and retry. If this keeps happening, the server upload limit may need to be increased.";
 }

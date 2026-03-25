@@ -16,7 +16,7 @@ import { useCarCategories } from "../../hooks/useCarCategories";
 import SEO from "../../components/common/SEO";
 
 const DEALER_SIGNUP_FALLBACK_MESSAGE =
-  "We could not complete dealer registration right now. Please check your details and try again.";
+  "We could not complete dealer registration right now. Please try again.";
 
 const DealerSignup = ({ onBack }) => {
   const [showPassword, setShowPassword] = useState(false);

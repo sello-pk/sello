@@ -61,13 +61,12 @@ const parseRequestTypesInput = (value) => {
 
 const uploadDealerDocument = async (file) => {
     if (!file?.buffer) return null;
-    const ext = (file.originalname || "").toLowerCase();
-    const mime = (file.mimetype || "").toLowerCase();
-    const isPdf = mime === "application/pdf" || ext.endsWith(".pdf");
-    if (isPdf) {
-        return uploadRawToCloudinary(file.buffer, { folder: "dealer_documents" });
-    }
-    return uploadCloudinary(file.buffer, { folder: "dealer_documents", quality: 85 });
+    // Dealer verification files are stored as reference documents only.
+    // Avoid image transformations here because they can slow or fail small PNG uploads in production.
+    return uploadRawToCloudinary(file.buffer, {
+        folder: "dealer_documents",
+        timeout: 120000,
+    });
 };
 
 /* -------------------------------------------------------------------------- */
@@ -161,7 +160,7 @@ const AuthService = {
             } catch (uploadError) {
                 Logger.error("Dealer registration document upload failed", uploadError);
                 throw new Error(
-                    "Could not upload your business license / CNIC. Please use a PDF or image under 10MB and try again."
+                    "We could not upload your business license / CNIC right now. Please try again."
                 );
             }
 
