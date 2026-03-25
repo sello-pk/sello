@@ -25,7 +25,6 @@ import { useCarCategories } from "@hooks/useCarCategories";
 import SearchableSelect from "@components/common/SearchableSelect";
 import LiveAuctionUpdates from "@components/auction/LiveAuctionUpdates";
 import AuctionSavedSearches from "@components/auction/AuctionSavedSearches";
-import AuctionNotificationDropdown from "@components/auction/AuctionNotificationDropdown";
 
 // Shared tiny components
 
@@ -470,7 +469,6 @@ export default function LiveAuction() {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <AuctionNotificationDropdown />
               <Link
                 to="/auctions/transactions"
                 className="text-sm text-white/80 hover:text-white transition-colors"
@@ -731,5 +729,4 @@ export default function LiveAuction() {
     </div>
   );
 }
-
 

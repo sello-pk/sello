@@ -15,6 +15,7 @@ const BottomHeader = () => {
   if (location.pathname === "/listings") return null;
   if (location.pathname === "/about") return null;
   if (location.pathname === "/help/faqs") return null;
+  if (location.pathname === "/auctions/live") return null;
 
   const targetDate =
     liveAuction?.endTime ||
