@@ -134,8 +134,9 @@ export const multerErrorHandler = (err, req, res, next) => {
     ) {
       message = MSG_IMAGE_TOO_MANY;
     } else if (code === "LIMIT_PART_COUNT") {
-      message =
-        `Upload request is too large. Allowed: up to ${LISTING_MAX_IMAGES} images, 35MB total. If using a reverse proxy (e.g. nginx), set body limit to at least ${UPLOAD_PROXY_MIN_BODY_MB}MB (client_max_body_size ${UPLOAD_PROXY_MIN_BODY_MB}m) and reload.`;
+      message = isProd 
+        ? `Your upload is too large. You can upload up to ${LISTING_MAX_IMAGES} images with a total size of 35MB. Please try compressing your images or uploading fewer files.`
+        : `Upload request is too large. Allowed: up to ${LISTING_MAX_IMAGES} images, 35MB total. If using a reverse proxy (e.g. nginx), set body limit to at least ${UPLOAD_PROXY_MIN_BODY_MB}MB (client_max_body_size ${UPLOAD_PROXY_MIN_BODY_MB}m) and reload.`;
     } else if (
       err.message &&
       (err.message.includes("Only images") ||
@@ -143,7 +144,9 @@ export const multerErrorHandler = (err, req, res, next) => {
     ) {
       message = err.message;
     } else {
-      message = `Image upload failed. Use JPG, PNG, or WebP only — up to ${LISTING_MAX_IMAGES} images and 35MB total per listing. If upload fails after a few images, set proxy body limit to at least ${UPLOAD_PROXY_MIN_BODY_MB}MB (e.g. nginx: client_max_body_size ${UPLOAD_PROXY_MIN_BODY_MB}m).`;
+      message = isProd
+        ? `Image upload failed. Please use JPG, PNG, or WebP files only. You can upload up to ${LISTING_MAX_IMAGES} images with a total size of 35MB.`
+        : `Image upload failed. Use JPG, PNG, or WebP only — up to ${LISTING_MAX_IMAGES} images and 35MB total per listing. If upload fails after a few images, set proxy body limit to at least ${UPLOAD_PROXY_MIN_BODY_MB}MB (e.g. nginx: client_max_body_size ${UPLOAD_PROXY_MIN_BODY_MB}m).`;
     }
 
     Logger.warn("Multer upload error", { code, message, url: req?.originalUrl });

@@ -660,35 +660,13 @@ const Dealers = () => {
                       </div>
                     )}
 
-                    {/* Specialties & Services */}
-                    {(dealerDetails.dealerInfo?.specialties?.length > 0 ||
-                      dealerDetails.dealerInfo?.services?.length > 0 ||
-                      dealerDetails.dealerInfo?.languages?.length > 0) && (
+                    {/* Services */}
+                    {dealerDetails.dealerInfo?.services?.length > 0 && (
                       <div>
                         <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                          Specialties & Services
+                          Services
                         </h4>
                         <div className="space-y-3">
-                          {dealerDetails.dealerInfo?.specialties?.length >
-                            0 && (
-                            <div>
-                              <p className="text-sm text-gray-600">
-                                Specialties
-                              </p>
-                              <div className="flex flex-wrap gap-2 mt-1">
-                                {dealerDetails.dealerInfo.specialties.map(
-                                  (specialty, idx) => (
-                                    <span
-                                      key={idx}
-                                      className="px-3 py-1 bg-primary-100 text-primary-500 rounded-full text-sm"
-                                    >
-                                      {specialty}
-                                    </span>
-                                  ),
-                                )}
-                              </div>
-                            </div>
-                          )}
                           {dealerDetails.dealerInfo?.services?.length > 0 && (
                             <div>
                               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -702,25 +680,6 @@ const Dealers = () => {
                                       className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
                                     >
                                       {service}
-                                    </span>
-                                  ),
-                                )}
-                              </div>
-                            </div>
-                          )}
-                          {dealerDetails.dealerInfo?.languages?.length > 0 && (
-                            <div>
-                              <p className="text-sm text-gray-600 dark:text-gray-400">
-                                Languages
-                              </p>
-                              <div className="flex flex-wrap gap-2 mt-1">
-                                {dealerDetails.dealerInfo.languages.map(
-                                  (lang, idx) => (
-                                    <span
-                                      key={idx}
-                                      className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-                                    >
-                                      {lang}
                                     </span>
                                   ),
                                 )}

@@ -136,8 +136,6 @@ const ProfileHero = () => {
     linkedin: "",
     establishedYear: "",
     employeeCount: "",
-    specialties: [],
-    languages: [],
     paymentMethods: [],
     services: [],
   });
@@ -186,8 +184,6 @@ const ProfileHero = () => {
             linkedin: user.dealerInfo.socialMedia?.linkedin || "",
             establishedYear: user.dealerInfo.establishedYear?.toString() || "",
             employeeCount: user.dealerInfo.employeeCount || "",
-            specialties: user.dealerInfo.specialties || [],
-            languages: user.dealerInfo.languages || [],
             paymentMethods: user.dealerInfo.paymentMethods || [],
             services: user.dealerInfo.services || [],
           });

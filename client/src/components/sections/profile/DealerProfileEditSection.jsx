@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { FaUpload, FaTimes, FaPlus } from "react-icons/fa";
 import { FiEdit2, FiSave, FiX } from "react-icons/fi";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
@@ -17,7 +17,6 @@ const DealerProfileEditSection = ({
   isUpdatingDealer,
   refetch,
 }) => {
-  const [specialtyInput, setSpecialtyInput] = useState("");
   const isVerifiedDealer = user?.dealerInfo?.verified === true;
   const { cities: categoryCities } = useCarCategories();
   const cityOptions = useMemo(() => {
@@ -41,23 +40,6 @@ const DealerProfileEditSection = ({
   }, [categoryCities]);
 
   const employeeCountOptions = ["1-10", "11-50", "51-100", "100+"];
-  const commonSpecialties = [
-    "Luxury Cars",
-    "Budget Cars",
-    "Electric Vehicles",
-    "SUVs",
-    "Sports Cars",
-    "Classic Cars",
-    "Commercial Vehicles",
-  ];
-  const commonLanguages = [
-    "English",
-    "Arabic",
-    "Urdu",
-    "Hindi",
-    "French",
-    "Spanish",
-  ];
   const commonPaymentMethods = [
     "Cash",
     "Credit Card",
@@ -117,16 +99,6 @@ const DealerProfileEditSection = ({
     }));
   };
 
-  const addToArray = (field, input, setInput) => {
-    if (input.trim() && !dealerFormData[field].includes(input.trim())) {
-      setDealerFormData((prev) => ({
-        ...prev,
-        [field]: [...prev[field], input.trim()],
-      }));
-      setInput("");
-    }
-  };
-
   const removeFromArray = (field, item) => {
     setDealerFormData((prev) => ({
       ...prev,
@@ -141,8 +113,6 @@ const DealerProfileEditSection = ({
       // Add all form fields
       Object.keys(dealerFormData).forEach((key) => {
         if (
-          key === "specialties" ||
-          key === "languages" ||
           key === "paymentMethods" ||
           key === "services"
         ) {
@@ -221,8 +191,6 @@ const DealerProfileEditSection = ({
                     establishedYear:
                       user.dealerInfo.establishedYear?.toString() || "",
                     employeeCount: user.dealerInfo.employeeCount || "",
-                    specialties: user.dealerInfo.specialties || [],
-                    languages: user.dealerInfo.languages || [],
                     paymentMethods: user.dealerInfo.paymentMethods || [],
                     services: user.dealerInfo.services || [],
                   });
@@ -619,89 +587,13 @@ const DealerProfileEditSection = ({
           </div>
         )}
 
-        {/* Specialties & Services */}
+        {/* Services */}
         {isEditingDealer && (
           <div className="border-b border-gray-200 pb-6">
             <h4 className="text-lg font-semibold text-gray-900 mb-4">
-              Specialties & Services
+              Services
             </h4>
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Specialties
-                </label>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {dealerFormData.specialties.map((specialty) => (
-                    <span
-                      key={specialty}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-primary-100 text-primary-500 rounded-full text-sm"
-                    >
-                      {specialty}
-                      <button
-                        type="button"
-                        onClick={() =>
-                          removeFromArray("specialties", specialty)
-                        }
-                        className="hover:text-primary-500"
-                      >
-                        <FaTimes size={12} />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={specialtyInput}
-                    onChange={(e) => setSpecialtyInput(e.target.value)}
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addToArray(
-                          "specialties",
-                          specialtyInput,
-                          setSpecialtyInput,
-                        );
-                      }
-                    }}
-                    className="flex-1 py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    placeholder="Add specialty"
-                  />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      addToArray(
-                        "specialties",
-                        specialtyInput,
-                        setSpecialtyInput,
-                      )
-                    }
-                    className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90"
-                  >
-                    <FaPlus />
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {commonSpecialties.map((specialty) => (
-                    <button
-                      key={specialty}
-                      type="button"
-                      onClick={() => {
-                        if (!dealerFormData.specialties.includes(specialty)) {
-                          setDealerFormData((prev) => ({
-                            ...prev,
-                            specialties: [...prev.specialties, specialty],
-                          }));
-                        }
-                      }}
-                      className="px-3 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50"
-                    >
-                      + {specialty}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Services Offered
@@ -739,48 +631,6 @@ const DealerProfileEditSection = ({
                       className="px-3 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50"
                     >
                       + {service}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Languages Spoken
-                </label>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {dealerFormData.languages.map((language) => (
-                    <span
-                      key={language}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-primary-50 text-primary-800 rounded-full text-sm"
-                    >
-                      {language}
-                      <button
-                        type="button"
-                        onClick={() => removeFromArray("languages", language)}
-                        className="hover:text-primary-600"
-                      >
-                        <FaTimes size={12} />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {commonLanguages.map((language) => (
-                    <button
-                      key={language}
-                      type="button"
-                      onClick={() => {
-                        if (!dealerFormData.languages.includes(language)) {
-                          setDealerFormData((prev) => ({
-                            ...prev,
-                            languages: [...prev.languages, language],
-                          }));
-                        }
-                      }}
-                      className="px-3 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50"
-                    >
-                      + {language}
                     </button>
                   ))}
                 </div>
@@ -972,21 +822,6 @@ const DealerProfileEditSection = ({
                     <p className="font-semibold text-gray-900">
                       {user.dealerInfo.description}
                     </p>
-                  </div>
-                )}
-                {user?.dealerInfo?.specialties?.length > 0 && (
-                  <div className="md:col-span-2">
-                    <p className="text-sm text-gray-600 mb-2">Specialties</p>
-                    <div className="flex flex-wrap gap-2">
-                      {user.dealerInfo.specialties.map((specialty, idx) => (
-                        <span
-                          key={idx}
-                          className="px-3 py-1 bg-primary-100 text-primary-500 rounded-full text-sm"
-                        >
-                          {specialty}
-                        </span>
-                      ))}
-                    </div>
                   </div>
                 )}
                 {user?.dealerInfo?.services?.length > 0 && (

@@ -276,11 +276,13 @@ function buildDealerInfoPatchFromAccessBody(existingPlain, bodyRest, licenseUrl,
     setTrim(f);
   }
 
-  for (const key of ["specialties", "languages", "paymentMethods", "services"]) {
+  for (const key of ["paymentMethods", "services"]) {
     if (bodyRest[key] !== undefined && bodyRest[key] !== "") {
       dealerPatch[key] = parseMultipartJsonArray(bodyRest[key]);
     }
   }
+  dealerPatch.specialties = [];
+  dealerPatch.languages = [];
 
   if (
     bodyRest.facebook !== undefined ||
@@ -740,11 +742,13 @@ export const updateDealerProfile = async (req, res) => {
       setIfPresent(f);
     }
 
-    for (const key of ["specialties", "languages", "paymentMethods", "services"]) {
+    for (const key of ["paymentMethods", "services"]) {
       if (bodyRest[key] !== undefined) {
         dealerPatch[key] = parseMultipartJsonArray(bodyRest[key]);
       }
     }
+    dealerPatch.specialties = [];
+    dealerPatch.languages = [];
 
     if (
       bodyRest.facebook !== undefined ||

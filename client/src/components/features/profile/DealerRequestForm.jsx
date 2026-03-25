@@ -47,8 +47,6 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
     website: "",
     establishedYear: "",
     employeeCount: "",
-    specialties: [],
-    languages: [],
     paymentMethods: [],
     services: [],
     facebook: "",
@@ -59,8 +57,6 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
 
   const [businessLicenseFile, setBusinessLicenseFile] = useState(null);
   const [errors, setErrors] = useState({});
-  const [specialtyInput, setSpecialtyInput] = useState("");
-  const [languageInput, setLanguageInput] = useState("");
   const [requestDealerAccess, setRequestDealerAccess] = useState(true);
   const [requestAuctionBidder, setRequestAuctionBidder] = useState(false);
 
@@ -113,23 +109,6 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
   }, [formData.state]);
 
   const employeeCountOptions = ["1-10", "11-50", "51-100", "100+"];
-  const commonSpecialties = [
-    "Luxury Cars",
-    "Budget Cars",
-    "Electric Vehicles",
-    "SUVs",
-    "Sports Cars",
-    "Classic Cars",
-    "Commercial Vehicles",
-  ];
-  const commonLanguages = [
-    "English",
-    "Arabic",
-    "Urdu",
-    "Hindi",
-    "French",
-    "Spanish",
-  ];
   const commonPaymentMethods = [
     "Cash",
     "Credit Card",
@@ -145,16 +124,6 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
     "Delivery",
     "Test Drive",
   ];
-
-  const addToArray = (field, input, setInput) => {
-    if (input.trim() && !formData[field].includes(input.trim())) {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: [...prev[field], input.trim()],
-      }));
-      setInput("");
-    }
-  };
 
   const removeFromArray = (field, item) => {
     setFormData((prev) => ({
@@ -336,13 +305,6 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
         formDataToSend.append("establishedYear", formData.establishedYear);
       if (formData.employeeCount)
         formDataToSend.append("employeeCount", formData.employeeCount);
-      if (formData.specialties.length > 0)
-        formDataToSend.append(
-          "specialties",
-          JSON.stringify(formData.specialties),
-        );
-      if (formData.languages.length > 0)
-        formDataToSend.append("languages", JSON.stringify(formData.languages));
       if (formData.paymentMethods.length > 0)
         formDataToSend.append(
           "paymentMethods",
@@ -388,8 +350,6 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
         website: "",
         establishedYear: "",
         employeeCount: "",
-        specialties: [],
-        languages: [],
         paymentMethods: [],
         services: [],
         facebook: "",
@@ -998,155 +958,6 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                 </select>
               </div>
 
-              {/* Specialties */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  <FiTag className="inline mr-2" size={16} />
-                  Specialties
-                </label>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {formData.specialties.map((specialty) => (
-                    <span
-                      key={specialty}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-primary-50 text-primary-500 rounded-full text-sm"
-                    >
-                      {specialty}
-                      <button
-                        type="button"
-                        onClick={() =>
-                          removeFromArray("specialties", specialty)
-                        }
-                        className="hover:text-primary-500"
-                      >
-                        <FaTimes size={12} />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={specialtyInput}
-                    onChange={(e) => setSpecialtyInput(e.target.value)}
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addToArray(
-                          "specialties",
-                          specialtyInput,
-                          setSpecialtyInput,
-                        );
-                      }
-                    }}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                    placeholder="Add specialty"
-                  />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      addToArray(
-                        "specialties",
-                        specialtyInput,
-                        setSpecialtyInput,
-                      )
-                    }
-                    className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90"
-                  >
-                    <FaPlus />
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {commonSpecialties.map((specialty) => (
-                    <button
-                      key={specialty}
-                      type="button"
-                      onClick={() => {
-                        if (!formData.specialties.includes(specialty)) {
-                          setFormData((prev) => ({
-                            ...prev,
-                            specialties: [...prev.specialties, specialty],
-                          }));
-                        }
-                      }}
-                      className="px-3 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-50"
-                    >
-                      + {specialty}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Languages */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Languages Spoken
-                </label>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {formData.languages.map((language) => (
-                    <span
-                      key={language}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-primary-50 text-primary-500 rounded-full text-sm"
-                    >
-                      {language}
-                      <button
-                        type="button"
-                        onClick={() => removeFromArray("languages", language)}
-                        className="hover:text-primary-500"
-                      >
-                        <FaTimes size={12} />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={languageInput}
-                    onChange={(e) => setLanguageInput(e.target.value)}
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addToArray(
-                          "languages",
-                          languageInput,
-                          setLanguageInput,
-                        );
-                      }
-                    }}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                    placeholder="Add language"
-                  />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      addToArray("languages", languageInput, setLanguageInput)
-                    }
-                    className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90"
-                  >
-                    <FaPlus />
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {commonLanguages.map((language) => (
-                    <button
-                      key={language}
-                      type="button"
-                      onClick={() => {
-                        if (!formData.languages.includes(language)) {
-                          setFormData((prev) => ({
-                            ...prev,
-                            languages: [...prev.languages, language],
-                          }));
-                        }
-                      }}
-                      className="px-3 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-50"
-                    >
-                      + {language}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               {/* Payment Methods */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -1342,9 +1153,7 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                   </div>
                 </div>
 
-                {(formData.description ||
-                  formData.website ||
-                  formData.specialties.length > 0) && (
+                {(formData.description || formData.website) && (
                   <div>
                     <h4 className="font-semibold text-gray-800 mb-2">
                       Business Details
@@ -1360,14 +1169,6 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                         <div>
                           <span className="text-gray-600">Website:</span>
                           <p className="font-medium">{formData.website}</p>
-                        </div>
-                      )}
-                      {formData.specialties.length > 0 && (
-                        <div>
-                          <span className="text-gray-600">Specialties:</span>
-                          <p className="font-medium">
-                            {formData.specialties.join(", ")}
-                          </p>
                         </div>
                       )}
                     </div>
