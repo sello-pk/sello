@@ -27,6 +27,7 @@ router.post(
     { name: "cnicFile", maxCount: 1 },
     { name: "businessLicense", maxCount: 1 },
     { name: "businessLicenseFile", maxCount: 1 },
+    { name: "license", maxCount: 1 },
   ]),
   register
 );

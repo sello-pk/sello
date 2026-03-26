@@ -1,5 +1,5 @@
 import express from "express";
-import { upload } from "../middlewares/multer.js";
+import { upload, uploadSingle, uploadDealerProfile, uploadDealerRequest, uploadAuctionAccess, uploadVerification } from "../middlewares/multer.js";
 import { auth, authorize } from "../middlewares/authMiddleware.js";
 import { hasAnyPermission } from "../middlewares/permissionMiddleware.js";
 
@@ -19,17 +19,11 @@ const router = express.Router();
 /* ---------------------------------- USER ---------------------------------- */
 // Profile
 router.get("/users/me", auth, getUserProfile);
-router.put("/users/profile", auth, upload.single("avatar"), updateProfile);
+router.put("/users/profile", auth, uploadSingle.single('avatar'), updateProfile);
 router.put(
   "/users/dealer-profile",
   auth,
-  upload.fields([
-    { name: "avatar", maxCount: 1 },
-    { name: "businessLicense", maxCount: 1 },
-    { name: "businessLicenseFile", maxCount: 1 },
-    { name: "license", maxCount: 1 },
-    { name: "showroomImages", maxCount: 10 },
-  ]),
+  uploadDealerProfile,
   updateDealerProfile,
 );
 
@@ -43,22 +37,13 @@ router.post("/users/request-seller", auth, requestSeller);
 router.post(
   "/users/request-dealer",
   auth,
-  upload.fields([
-    { name: "businessLicense", maxCount: 1 },
-    { name: "businessLicenseFile", maxCount: 1 },
-    { name: "license", maxCount: 1 },
-  ]),
+  uploadDealerRequest,
   requestDealer,
 );
 router.post(
   "/users/auction-access/request",
   auth,
-  upload.fields([
-    { name: "documents", maxCount: 10 },
-    { name: "businessLicense", maxCount: 1 },
-    { name: "businessLicenseFile", maxCount: 1 },
-    { name: "license", maxCount: 1 },
-  ]),
+  uploadAuctionAccess,
   submitAuctionAccessRequest
 );
 router.get("/users/auction-access/status", auth, getMyAuctionAccessStatus);
@@ -92,7 +77,7 @@ router.delete(
 );
 
 /* --------------------------- VERIFICATION --------------------------- */
-router.post("/verification/submit", auth, upload.fields([{ name: "frontDocument", maxCount: 1 }, { name: "backDocument", maxCount: 1 }]), submitVerification);
+router.post("/verification/submit", auth, uploadVerification, submitVerification);
 router.get("/verification/status", auth, getVerificationStatus);
 // Admin
 router.get(

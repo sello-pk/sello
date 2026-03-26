@@ -325,6 +325,17 @@ const DEALER_REQUEST_FALLBACK_MESSAGE =
 const DEALER_PROFILE_FALLBACK_MESSAGE =
   "We could not update your dealer profile right now. Please review your details and try again.";
 
+// Enhanced error messages for better debugging
+const DEALER_SPECIFIC_ERRORS = {
+  VALIDATION_ERROR: "Invalid dealer profile data. Please check all required fields and try again.",
+  CAST_ERROR: "Invalid data format. Please ensure all fields have correct data types.",
+  CLOUDINARY_ERROR: "File upload failed. Please check your images and try again.",
+  MONGO_ERROR: "Database error. Please try again in a few moments.",
+  NETWORK_ERROR: "Network connection issue. Please check your internet and retry.",
+  FILE_TOO_LARGE: "One or more files are too large. Please compress images and try again.",
+  INVALID_FILE_TYPE: "Invalid file type. Please use JPG, PNG, WebP, or PDF files only."
+};
+
 export const submitAuctionAccessRequest = async (req, res) => {
   try {
     const requestTypes = parseRequestTypesInput(req.body.requestTypes).filter((type) =>
@@ -347,6 +358,7 @@ export const submitAuctionAccessRequest = async (req, res) => {
       "businessLicense",
       "businessLicenseFile",
       "license",
+      "cnicFile",
     ]);
     const documentFiles = filesFromField(req.files, "documents");
 
@@ -455,48 +467,92 @@ export const submitAuctionAccessRequest = async (req, res) => {
     });
   } catch (error) {
     Logger.error("submitAuctionAccessRequest error", error);
+    
+    // Enhanced error handling with specific messages
     if (error.name === "ValidationError") {
-      const msg = Object.values(error.errors || {})
-        .map((e) => e.message)
+      const fieldErrors = Object.values(error.errors || {})
+        .map((e) => `${e.path}: ${e.message}`)
         .filter(Boolean)
-        .join(" ");
+        .join(" | ");
       return res.status(400).json({
         success: false,
-        message: msg || "Invalid dealer profile data. Check all fields and try again.",
+        message: DEALER_SPECIFIC_ERRORS.VALIDATION_ERROR,
+        details: fieldErrors,
+        errorType: "validation"
       });
     }
+    
     if (error.name === "CastError") {
+      const field = error.path || "unknown field";
       return res.status(400).json({
         success: false,
-        message: error.message || "Invalid data in the form. Check numbers and text fields.",
+        message: `${field} contains invalid data. Please check the value and try again.`,
+        errorType: "cast",
+        field: field
       });
     }
+    
+    // Cloudinary specific errors
     const cloudCode = error.http_code ?? error.error?.http_code;
     if (cloudCode) {
       return res.status(502).json({
         success: false,
-        message:
-          "File upload service returned an error. Check Cloudinary credentials and try a smaller file.",
+        message: DEALER_SPECIFIC_ERRORS.CLOUDINARY_ERROR,
+        errorType: "cloudinary",
+        details: "File upload service temporarily unavailable"
       });
     }
+    
+    // MongoDB specific errors
     if (error.name === "MongoServerError" || error.name === "MongoBulkWriteError") {
       const code = error.code;
       if (code === 11000) {
         return res.status(400).json({
           success: false,
-          message: "This submission conflicts with existing data. Contact support if it persists.",
+          message: "This information already exists in our system. Please use different data or contact support.",
+          errorType: "duplicate"
         });
       }
       if (code === 121) {
         return res.status(400).json({
           success: false,
-          message: "Some fields failed database validation. Check your details and try again.",
+          message: DEALER_SPECIFIC_ERRORS.VALIDATION_ERROR,
+          errorType: "mongo_validation"
         });
       }
     }
+    
+    // File size related errors
+    if (error.message && error.message.includes("file too large")) {
+      return res.status(400).json({
+        success: false,
+        message: DEALER_SPECIFIC_ERRORS.FILE_TOO_LARGE,
+        errorType: "file_size"
+      });
+    }
+    
+    // File type related errors
+    if (error.message && error.message.includes("file type")) {
+      return res.status(400).json({
+        success: false,
+        message: DEALER_SPECIFIC_ERRORS.INVALID_FILE_TYPE,
+        errorType: "file_type"
+      });
+    }
+    
+    // Log the full error for debugging
+    Logger.error("submitAuctionAccessRequest unhandled error", {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      code: error.code
+    });
+    
     return res.status(500).json({
       success: false,
       message: DEALER_REQUEST_FALLBACK_MESSAGE,
+      errorType: "unknown",
+      requestId: req.id || "unknown"
     });
   }
 };
@@ -801,6 +857,7 @@ export const updateDealerProfile = async (req, res) => {
       "businessLicense",
       "businessLicenseFile",
       "license",
+      "cnicFile",
     ]);
     if (licenseFiles.length > 0) {
       try {
@@ -852,43 +909,178 @@ export const updateDealerProfile = async (req, res) => {
     });
   } catch (error) {
     Logger.error("updateDealerProfile error", error);
+    
+    // Enhanced error handling with specific messages
     if (error.name === "ValidationError") {
-      const msg = Object.values(error.errors || {})
-        .map((e) => e.message)
+      const fieldErrors = Object.values(error.errors || {})
+        .map((e) => `${e.path}: ${e.message}`)
         .filter(Boolean)
-        .join(" ");
+        .join(" | ");
       return res.status(400).json({
         success: false,
-        message: msg || "Invalid dealer profile data. Check all fields and try again.",
+        message: DEALER_SPECIFIC_ERRORS.VALIDATION_ERROR,
+        details: fieldErrors,
+        errorType: "validation"
       });
     }
+    
     if (error.name === "CastError") {
+      const field = error.path || "unknown field";
       return res.status(400).json({
         success: false,
-        message: error.message || "Invalid data in the form.",
+        message: `${field} contains invalid data. Please check the value and try again.`,
+        errorType: "cast",
+        field: field
       });
     }
+    
+    // Cloudinary specific errors
     const cloudCode = error.http_code ?? error.error?.http_code;
     if (cloudCode) {
       return res.status(502).json({
         success: false,
-        message: "File upload service error. Try a smaller file or try again later.",
+        message: DEALER_SPECIFIC_ERRORS.CLOUDINARY_ERROR,
+        errorType: "cloudinary",
+        details: "File upload service temporarily unavailable"
       });
     }
+    
+    // File size related errors
+    if (error.message && error.message.includes("file too large")) {
+      return res.status(400).json({
+        success: false,
+        message: DEALER_SPECIFIC_ERRORS.FILE_TOO_LARGE,
+        errorType: "file_size"
+      });
+    }
+    
+    // File type related errors
+    if (error.message && error.message.includes("file type")) {
+      return res.status(400).json({
+        success: false,
+        message: DEALER_SPECIFIC_ERRORS.INVALID_FILE_TYPE,
+        errorType: "file_type"
+      });
+    }
+    
+    // Log the full error for debugging
+    Logger.error("updateDealerProfile unhandled error", {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      code: error.code
+    });
+    
     return res.status(500).json({
       success: false,
       message: DEALER_PROFILE_FALLBACK_MESSAGE,
+      errorType: "unknown",
+      requestId: req.id || "unknown"
     });
   }
 };
 
 export const requestDealer = async (req, res) => {
-    try {
-        const user = await User.findById(req.user._id);
-        user.dealerInfo = { ...user.dealerInfo, ...req.body };
-        await user.save();
-        return res.status(200).json({ success: true, message: "Dealer request submitted" });
-    } catch (error) { return res.status(500).json({ success: false }); }
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const existing =
+      user.dealerInfo && typeof user.dealerInfo.toObject === "function"
+        ? user.dealerInfo.toObject()
+        : { ...(user.dealerInfo || {}) };
+
+    const licenseFiles = filesFromAnyField(req.files, [
+      "businessLicense",
+      "businessLicenseFile",
+      "license",
+      "cnicFile",
+    ]);
+
+    let licenseUrl = null;
+    if (licenseFiles.length > 0) {
+      try {
+        licenseUrl = await uploadOneCapabilityFile(licenseFiles[0]);
+      } catch (uploadErr) {
+        Logger.error("requestDealer license upload", uploadErr);
+        return res.status(400).json({
+          success: false,
+          message:
+            "Could not upload your dealer document. Use a PDF or image (JPG, PNG, WebP) under 35MB.",
+        });
+      }
+    }
+
+    user.dealerInfo = buildDealerInfoPatchFromAccessBody(
+      existing,
+      req.body || {},
+      licenseUrl,
+      null,
+    );
+
+    if (user.role !== "admin") {
+      user.role = "dealer";
+    }
+
+    await user.save({ validateModifiedOnly: true });
+
+    return res.status(200).json({
+      success: true,
+      message: "Dealer request submitted",
+      data: user.dealerInfo,
+    });
+  } catch (error) {
+    Logger.error("requestDealer error", error);
+    
+    // Enhanced error handling with specific messages
+    if (error.name === "ValidationError") {
+      const fieldErrors = Object.values(error.errors || {})
+        .map((e) => `${e.path}: ${e.message}`)
+        .filter(Boolean)
+        .join(" | ");
+      return res.status(400).json({
+        success: false,
+        message: DEALER_SPECIFIC_ERRORS.VALIDATION_ERROR,
+        details: fieldErrors,
+        errorType: "validation"
+      });
+    }
+    
+    // File size related errors
+    if (error.message && error.message.includes("file too large")) {
+      return res.status(400).json({
+        success: false,
+        message: DEALER_SPECIFIC_ERRORS.FILE_TOO_LARGE,
+        errorType: "file_size"
+      });
+    }
+    
+    // File type related errors
+    if (error.message && error.message.includes("file type")) {
+      return res.status(400).json({
+        success: false,
+        message: DEALER_SPECIFIC_ERRORS.INVALID_FILE_TYPE,
+        errorType: "file_type"
+      });
+    }
+    
+    // Log the full error for debugging
+    Logger.error("requestDealer unhandled error", {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      code: error.code
+    });
+    
+    return res.status(500).json({
+      success: false,
+      message: DEALER_REQUEST_FALLBACK_MESSAGE,
+      errorType: "unknown",
+      requestId: req.id || "unknown"
+    });
+  }
 };
 
 export const getUserReviews = async (req, res) => {

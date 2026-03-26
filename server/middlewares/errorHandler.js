@@ -137,65 +137,97 @@ export const multerErrorHandler = (err, req, res, next) => {
     if (res.headersSent) return next(err);
     let message;
     let statusCode = 400;
+    let errorType = "upload_error";
+    let details = null;
 
     if (code === "LIMIT_FILE_SIZE") {
+      errorType = "file_size";
       if (isDealerUpload) {
         message =
           "Dealer document is too large. Please upload a PDF or image under 10MB.";
+        details = "Maximum file size: 10MB for dealer documents";
       } else if (isAuctionUpload) {
         message = MSG_IMAGE_FILE_TOO_LARGE;
+        details = "Each image can be up to 35MB, but all images together must stay within 35MB total";
       } else {
         message =
           "The uploaded file is too large. Please use a smaller file and try again.";
+        details = "Check file size limits for this upload type";
       }
     } else if (
       code === "LIMIT_FILE_COUNT" ||
       code === "LIMIT_UNEXPECTED_FILE"
     ) {
+      errorType = "file_count";
       if (isDealerUpload && code === "LIMIT_UNEXPECTED_FILE") {
         message =
           "The uploaded dealer document field was not recognized. Please retry from the latest form.";
+        details = "Allowed fields: avatar, businessLicense, showroomImages";
       } else if (isDealerUpload) {
         message =
           "Too many dealer files were uploaded. Please attach only the required document(s) and try again.";
+        details = "Maximum files: 1 avatar, 1 license, 10 showroom images";
       } else {
         message = MSG_IMAGE_TOO_MANY;
+        details = `Maximum ${LISTING_MAX_IMAGES} images per listing`;
       }
     } else if (code === "LIMIT_PART_COUNT") {
+      errorType = "request_size";
       if (isDealerUpload) {
         message = isProd
           ? "Dealer upload is too large for the server right now. Please use a smaller file and try again."
           : `Dealer upload request is too large. If using a reverse proxy (e.g. nginx), set body limit to at least ${UPLOAD_PROXY_MIN_BODY_MB}MB (client_max_body_size ${UPLOAD_PROXY_MIN_BODY_MB}m) and reload.`;
+        details = `Required minimum: ${UPLOAD_PROXY_MIN_BODY_MB}MB body size`;
       } else {
         message = isProd 
           ? `Your upload is too large. You can upload up to ${LISTING_MAX_IMAGES} images with a total size of 35MB. Please try compressing your images or uploading fewer files.`
           : `Upload request is too large. Allowed: up to ${LISTING_MAX_IMAGES} images, 35MB total. If using a reverse proxy (e.g. nginx), set body limit to at least ${UPLOAD_PROXY_MIN_BODY_MB}MB (client_max_body_size ${UPLOAD_PROXY_MIN_BODY_MB}m) and reload.`;
+        details = `Allowed: ${LISTING_MAX_IMAGES} images, 35MB total`;
       }
     } else if (
       err.message &&
       (err.message.includes("Only images") ||
         err.message.includes("Invalid file type"))
     ) {
+      errorType = "file_type";
       if (isDealerUpload) {
         message =
           "Dealer documents must be PDF, JPG, PNG, or WebP files only.";
+        details = "Allowed types: PDF, JPG, PNG, WebP";
       } else {
         message = err.message;
+        details = "Allowed types: JPG, PNG, WebP";
       }
     } else {
+      errorType = "unknown_upload";
       if (isDealerUpload) {
         message = isProd
           ? "Dealer document upload failed. Please use a valid PDF or image file and try again."
           : `Dealer document upload failed. Use PDF, JPG, PNG, or WebP. If this still fails in production, set proxy body limit to at least ${UPLOAD_PROXY_MIN_BODY_MB}MB (e.g. nginx: client_max_body_size ${UPLOAD_PROXY_MIN_BODY_MB}m).`;
+        details = "Check file format and size requirements";
       } else {
         message = isProd
           ? `Image upload failed. Please use JPG, PNG, or WebP files only. You can upload up to ${LISTING_MAX_IMAGES} images with a total size of 35MB.`
           : `Image upload failed. Use JPG, PNG, or WebP only — up to ${LISTING_MAX_IMAGES} images and 35MB total per listing. If upload fails after a few images, set proxy body limit to at least ${UPLOAD_PROXY_MIN_BODY_MB}MB (e.g. nginx: client_max_body_size ${UPLOAD_PROXY_MIN_BODY_MB}m).`;
+        details = `Requirements: JPG/PNG/WebP, ${LISTING_MAX_IMAGES} images max, 35MB total`;
       }
     }
 
-    Logger.warn("Multer upload error", { code, message, url: req?.originalUrl });
-    return res.status(statusCode).json({ success: false, message });
+    Logger.warn("Multer upload error", { 
+      code, 
+      message, 
+      url: req?.originalUrl,
+      errorType,
+      details
+    });
+    
+    return res.status(statusCode).json({ 
+      success: false, 
+      message,
+      errorType,
+      details,
+      ...(isProd ? {} : { multerCode: code })
+    });
   }
 
   next(err);
