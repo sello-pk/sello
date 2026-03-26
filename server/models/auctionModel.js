@@ -195,6 +195,30 @@ const tokenPaymentSchema = new mongoose.Schema(
       default: null,
     },
     walletCreditError: { type: String, default: "" },
+    auctionSettlements: [
+      {
+        auction: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Auction",
+          required: true,
+        },
+        outcome: {
+          type: String,
+          enum: ["winner", "loser"],
+          required: true,
+        },
+        tokenAmount: { type: Number, default: 0 },
+        feeAmount: { type: Number, default: 0 },
+        refundAmount: { type: Number, default: 0 },
+        processedAt: { type: Date, default: null },
+        feeTransactionId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "WalletTransaction",
+          default: null,
+        },
+        note: { type: String, default: "" },
+      },
+    ],
     rejectionReason: { type: String, default: "" },
     refundedAt: { type: Date, default: null },
   },
@@ -277,7 +301,7 @@ const walletTransactionSchema = new mongoose.Schema(
     amount: { type: Number, required: true },
     balance: { type: Number, required: true },
     reference: { type: mongoose.Schema.Types.ObjectId, refPath: "referenceModel" },
-    referenceModel: { type: String, enum: ["TokenPayment", "Escrow", "AuctionCar", "Deposit", "RefundRequest", "Wallet", "Bid"] },
+    referenceModel: { type: String, enum: ["TokenPayment", "Escrow", "Auction", "AuctionCar", "Deposit", "RefundRequest", "Wallet", "Bid"] },
     description: { type: String, default: "" },
     status: {
       type: String,

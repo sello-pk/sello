@@ -83,7 +83,7 @@ const txnTypeLabels = {
   escrow_payment: "Escrow Payment",
   escrow_release: "Escrow Released",
   escrow_refund: "Escrow Refund",
-  platform_fee: "Platform Fee",
+  platform_fee: "Participation Fee",
   deposit: "Deposit",
   bid_hold: "Bid Hold",
   bid_refund: "Bid Refund",
@@ -114,6 +114,19 @@ const depositMethods = [
   { id: "stripe", label: "Stripe", account: "Card / Online", color: "bg-indigo-50 border-indigo-200" },
   { id: "cash_office", label: "Cash at Office", account: "Okara Auction Yard, Punjab", color: "bg-amber-50 border-amber-200" },
 ];
+
+const getLatestAuctionSettlement = (payment) => {
+  const settlements = Array.isArray(payment?.auctionSettlements)
+    ? [...payment.auctionSettlements]
+    : [];
+  if (!settlements.length) return null;
+  settlements.sort(
+    (a, b) =>
+      new Date(b?.processedAt || b?.createdAt || 0).getTime() -
+      new Date(a?.processedAt || a?.createdAt || 0).getTime(),
+  );
+  return settlements[0];
+};
 
 const refundTypes = [
   {
@@ -1269,7 +1282,7 @@ export default function BuyerTransactions() {
         {activeTab === "tokens" && (
           <div className="space-y-4">
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
-              Verified token payments are credited to your auction wallet after admin approval. You can still use the Deposits tab to add extra bidding funds on top of your token amount.
+              Verified token payments are credited to your auction wallet after admin approval. Once an auction ends, losing bidders keep the refundable token balance in their wallet and only the participation fee is deducted automatically.
             </div>
             <div className="grid md:grid-cols-2 gap-3">
               <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
@@ -1309,13 +1322,16 @@ export default function BuyerTransactions() {
                 </Link>
               </div>
             ) : (
-              tokenPayments.map((p) => (
+              tokenPayments.map((p) => {
+                const latestSettlement = getLatestAuctionSettlement(p);
+                return (
                 <motion.div
                   key={p._id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-xl border border-slate-200 p-4 shadow-md flex justify-between items-center"
+                  className="bg-white rounded-xl border border-slate-200 p-4 shadow-md space-y-3"
                 >
+                  <div className="flex justify-between items-center">
                   <div>
                     <p className="font-semibold text-slate-900">
                       {formatPrice(p.amount)}
@@ -1328,8 +1344,20 @@ export default function BuyerTransactions() {
                     </p>
                   </div>
                   <Badge className={statusBadge(p.status)}>{p.status}</Badge>
+                  </div>
+                  {latestSettlement?.outcome === "loser" && (
+                    <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-3 text-sm text-emerald-800">
+                      Auction ended. {formatPrice(latestSettlement.refundAmount)} remains in your wallet after a {formatPrice(latestSettlement.feeAmount)} participation fee.
+                    </div>
+                  )}
+                  {latestSettlement?.outcome === "winner" && (
+                    <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-sm text-amber-800">
+                      Congratulations! You won the auction. Please proceed with the next payment steps.
+                    </div>
+                  )}
                 </motion.div>
-              ))
+                );
+              })
             )}
           </div>
         )}

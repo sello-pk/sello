@@ -9,8 +9,10 @@ import {
   AuctionCar,
   Bid,
   ProxyBid,
+  TokenPayment,
   Escrow,
   AuctionSettings,
+  WalletTransaction,
 } from "../models/auctionModel.js";
 import { Wallet } from "../models/paymentModel.js";
 import User from "../models/userModel.js";
@@ -32,6 +34,7 @@ const SETTINGS_DEFAULTS = {
 let settingsCache = null;
 let settingsCacheAt = 0;
 const SETTINGS_CACHE_MS = 60 * 1000;
+const LOSER_PARTICIPATION_FEE = 500;
 
 /** Get merged auction settings (DB overrides + config defaults). Cached briefly. */
 export async function getAuctionSettings() {
@@ -338,6 +341,312 @@ export async function finalizeAuctionCar(auctionCar, topBid, deps) {
   return escrow;
 }
 
+async function ensureVerifiedTokenPaymentWalletCredit(payment) {
+  if (!payment || payment.status !== "verified") {
+    return Wallet.findOne({ user: payment?.user }).lean();
+  }
+
+  if (payment.walletCreditedAt) {
+    return Wallet.findOne({ user: payment.user }).lean();
+  }
+
+  const existingCreditTxn = await WalletTransaction.findOne({
+    user: payment.user,
+    type: "token_deposit",
+    reference: payment._id,
+    referenceModel: "TokenPayment",
+    amount: { $gt: 0 },
+  })
+    .sort({ createdAt: -1 })
+    .lean();
+
+  if (existingCreditTxn) {
+    await TokenPayment.updateOne(
+      { _id: payment._id, walletCreditedAt: null },
+      {
+        $set: {
+          walletCreditedAt: existingCreditTxn.createdAt || new Date(),
+          walletTransactionId: existingCreditTxn._id,
+          walletCreditError: "",
+        },
+      },
+    );
+    return Wallet.findOne({ user: payment.user }).lean();
+  }
+
+  const claimedAt = new Date();
+  const claimedPayment = await TokenPayment.findOneAndUpdate(
+    {
+      _id: payment._id,
+      user: payment.user,
+      status: "verified",
+      walletCreditedAt: null,
+    },
+    {
+      $set: {
+        walletCreditedAt: claimedAt,
+        walletCreditError: "",
+      },
+    },
+    { new: true },
+  );
+
+  if (!claimedPayment) {
+    return Wallet.findOne({ user: payment.user }).lean();
+  }
+
+  const amount = Number(claimedPayment.amount || 0);
+  const wallet = await Wallet.findOneAndUpdate(
+    { user: claimedPayment.user },
+    {
+      $setOnInsert: { user: claimedPayment.user },
+      $inc: {
+        balance: amount,
+        totalDeposited: amount,
+      },
+      $set: { lastTransactionAt: claimedAt },
+    },
+    {
+      upsert: true,
+      new: true,
+      setDefaultsOnInsert: true,
+    },
+  );
+
+  try {
+    const txn = await WalletTransaction.create({
+      user: claimedPayment.user,
+      type: "token_deposit",
+      amount,
+      balance: wallet.balance || 0,
+      reference: claimedPayment._id,
+      referenceModel: "TokenPayment",
+      description: "Verified token deposit credited to wallet",
+      status: "completed",
+    });
+
+    await TokenPayment.updateOne(
+      { _id: claimedPayment._id },
+      {
+        $set: {
+          walletTransactionId: txn._id,
+          walletCreditError: "",
+        },
+      },
+    );
+
+    return wallet;
+  } catch (error) {
+    await Wallet.updateOne(
+      { user: claimedPayment.user },
+      {
+        $inc: {
+          balance: -amount,
+          totalDeposited: -amount,
+        },
+        $set: { lastTransactionAt: new Date() },
+      },
+    );
+    await TokenPayment.updateOne(
+      { _id: claimedPayment._id },
+      {
+        $set: {
+          walletCreditedAt: null,
+          walletTransactionId: null,
+          walletCreditError: error?.message || "Wallet ledger write failed",
+        },
+      },
+    );
+    throw error;
+  }
+}
+
+/**
+ * After an auction completes, charge the participation fee once for each losing bidder.
+ * The verified token amount is already credited to the wallet earlier in the flow, so the
+ * settlement here only deducts the non-refundable PKR 500 fee and records the remaining
+ * token amount as the bidder's refunded/retained amount for UI visibility.
+ * @param {Object} auction
+ * @param {{ logWalletTxn: Function }} deps
+ * @returns {Promise<{ settled: number, skipped: number, failed: number }>}
+ */
+export async function settleAuctionParticipantTokens(auction, deps) {
+  const { logWalletTxn } = deps || {};
+  if (!auction?._id || !logWalletTxn) {
+    return { settled: 0, skipped: 0, failed: 0 };
+  }
+
+  const auctionCars = await AuctionCar.find({ auction: auction._id })
+    .select("_id winner status")
+    .lean();
+
+  if (!auctionCars.length) {
+    return { settled: 0, skipped: 0, failed: 0 };
+  }
+
+  const auctionCarIds = auctionCars.map((row) => row._id);
+  const winnerIds = new Set(
+    auctionCars
+      .filter((row) => row.status === "sold" && row.winner)
+      .map((row) => String(row.winner)),
+  );
+  const participantIds = await Bid.distinct("bidder", {
+    auctionCar: { $in: auctionCarIds },
+    bidder: { $exists: true, $ne: null },
+  });
+
+  let settled = 0;
+  let skipped = 0;
+  let failed = 0;
+
+  for (const bidderId of participantIds.map((id) => String(id))) {
+    if (winnerIds.has(bidderId)) {
+      skipped++;
+      continue;
+    }
+
+    try {
+      let payment = await TokenPayment.findOne({
+        user: bidderId,
+        status: "verified",
+      }).sort({ verifiedAt: -1, createdAt: -1 });
+
+      if (!payment) {
+        Logger.warn("No verified token payment found for losing bidder", {
+          auctionId: String(auction._id),
+          userId: bidderId,
+        });
+        skipped++;
+        continue;
+      }
+
+      const settlementExists = (payment.auctionSettlements || []).some(
+        (entry) =>
+          String(entry?.auction) === String(auction._id) &&
+          entry?.outcome === "loser" &&
+          entry?.processedAt,
+      );
+
+      if (settlementExists) {
+        skipped++;
+        continue;
+      }
+
+      const existingFeeTxn = await WalletTransaction.findOne({
+        user: bidderId,
+        type: "platform_fee",
+        reference: auction._id,
+        referenceModel: "Auction",
+      })
+        .sort({ createdAt: -1 })
+        .lean();
+
+      if (existingFeeTxn) {
+        payment.auctionSettlements = [
+          ...(payment.auctionSettlements || []),
+          {
+            auction: auction._id,
+            outcome: "loser",
+            tokenAmount: Number(payment.amount || 0),
+            feeAmount: LOSER_PARTICIPATION_FEE,
+            refundAmount: Math.max(
+              Number(payment.amount || 0) - LOSER_PARTICIPATION_FEE,
+              0,
+            ),
+            processedAt: existingFeeTxn.createdAt || new Date(),
+            feeTransactionId: existingFeeTxn._id,
+            note: "Recovered from existing settlement ledger entry",
+          },
+        ];
+        await payment.save();
+        skipped++;
+        continue;
+      }
+
+      if (!payment.walletCreditedAt) {
+        await ensureVerifiedTokenPaymentWalletCredit(payment);
+        payment = await TokenPayment.findById(payment._id);
+      }
+
+      const now = new Date();
+      const wallet = await Wallet.findOneAndUpdate(
+        {
+          user: bidderId,
+          balance: { $gte: LOSER_PARTICIPATION_FEE },
+        },
+        {
+          $inc: {
+            balance: -LOSER_PARTICIPATION_FEE,
+            totalWithdrawn: LOSER_PARTICIPATION_FEE,
+          },
+          $set: { lastTransactionAt: now },
+        },
+        { new: true },
+      );
+
+      if (!wallet) {
+        throw new Error(
+          `Wallet balance is too low to deduct PKR ${LOSER_PARTICIPATION_FEE}.`,
+        );
+      }
+
+      const feeTxn = await logWalletTxn({
+        user: bidderId,
+        type: "platform_fee",
+        amount: -LOSER_PARTICIPATION_FEE,
+        reference: auction._id,
+        referenceModel: "Auction",
+        description: `Participation fee retained after auction "${auction.title || "Auction"}" ended`,
+      });
+
+      payment.auctionSettlements = [
+        ...(payment.auctionSettlements || []),
+        {
+          auction: auction._id,
+          outcome: "loser",
+          tokenAmount: Number(payment.amount || 0),
+          feeAmount: LOSER_PARTICIPATION_FEE,
+          refundAmount: Math.max(
+            Number(payment.amount || 0) - LOSER_PARTICIPATION_FEE,
+            0,
+          ),
+          processedAt: now,
+          feeTransactionId: feeTxn?._id || null,
+          note: "Auto-settled after auction completion",
+        },
+      ];
+      await payment.save();
+
+      try {
+        await Notification.create({
+          title: "Auction Token Settled",
+          message: `Auction ended. PKR ${Math.max(Number(payment.amount || 0) - LOSER_PARTICIPATION_FEE, 0).toLocaleString()} remains in your wallet after a PKR ${LOSER_PARTICIPATION_FEE.toLocaleString()} participation fee.`,
+          type: "info",
+          recipient: bidderId,
+          actionUrl: "/auctions/transactions",
+        });
+      } catch (notifyError) {
+        Logger.error("settleAuctionParticipantTokens notification error", {
+          auctionId: String(auction._id),
+          bidderId,
+          error: notifyError?.message || notifyError,
+        });
+      }
+
+      settled++;
+    } catch (error) {
+      failed++;
+      Logger.error("settleAuctionParticipantTokens error", {
+        auctionId: String(auction._id),
+        bidderId,
+        error: error?.message || error,
+      });
+    }
+  }
+
+  return { settled, skipped, failed };
+}
+
 /**
  * Refund unsold lot: mark car unsold, refund winning bidder's held amount.
  * @param {Object} auctionCar - AuctionCar doc
@@ -411,8 +720,12 @@ export async function processExpiredAuctions(deps) {
 
     auction.totalSold = auctionSold;
     await auction.save();
+    const settlement = await settleAuctionParticipantTokens(auction, deps);
     allSold += auctionSold;
-    Logger.info(`Auction ${auction._id} auto-completed. ${auctionSold} cars sold.`);
+    Logger.info(
+      `Auction ${auction._id} auto-completed. ${auctionSold} cars sold. ` +
+        `Loser settlements: ${settlement.settled} settled, ${settlement.skipped} skipped, ${settlement.failed} failed.`,
+    );
   }
 
   return { ended: toEnd.length, sold: allSold };

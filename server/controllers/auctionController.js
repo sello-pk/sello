@@ -37,6 +37,7 @@ import {
   processExpiredAuctions as engineProcessExpiredAuctions,
   processExpiredEscrows as engineProcessExpiredEscrows,
   getActiveBidderCount as engineGetActiveBidderCount,
+  settleAuctionParticipantTokens,
 } from "../services/auctionEngine.js";
 import * as auctionEmailService from "../services/auctionEmailService.js";
 import {
@@ -1311,17 +1312,19 @@ export const submitTokenPayment = async (req, res) => {
 
 export const getMyTokenPayments = async (req, res) => {
   try {
-    await syncVerifiedTokenCreditsToWallet(req.user._id);
+    const syncedWallet = await syncVerifiedTokenCreditsToWallet(req.user._id);
     const settings = await getAuctionSettings();
     const payments = await TokenPayment.find({ user: req.user._id })
       .sort({ createdAt: -1 })
       .lean();
     const verified = payments.find((p) => p.status === "verified");
+    const wallet =
+      syncedWallet || (await Wallet.findOne({ user: req.user._id }).lean());
     res.json({
       success: true,
       data: {
         payments,
-        tokenBalance: verified ? verified.amount : 0,
+        tokenBalance: Number(wallet?.balance || 0),
         hasVerifiedToken: !!verified,
         tokenDepositAmount: Number(settings?.tokenDeposit || 10000),
         paymentWindowHours: Number(settings?.paymentWindowHours || 48),
@@ -2391,6 +2394,9 @@ export const endAuction = async (req, res) => {
 
     auction.totalSold = totalSold;
     await auction.save();
+    const settlement = await settleAuctionParticipantTokens(auction, {
+      logWalletTxn,
+    });
 
     const io = req.app.get("io");
     if (io) {
@@ -2408,7 +2414,7 @@ export const endAuction = async (req, res) => {
     res.json({
       success: true,
       data: auction,
-      message: `Auction ended. ${totalSold} cars sold.`,
+      message: `Auction ended. ${totalSold} cars sold. ${settlement.settled} losing bidder settlements processed.`,
     });
   } catch (error) {
     Logger.error("endAuction error", error);
@@ -3087,62 +3093,14 @@ export const adminBulkRefundTokens = async (req, res) => {
       });
     }
 
-    const winnerIds = (
-      await AuctionCar.find({ auction: auctionId, status: "sold" })
-        .select("winner")
-        .lean()
-    )
-      .map((ac) => ac.winner?.toString())
-      .filter(Boolean);
-
-    const auctionCarIds = (
-      await AuctionCar.find({ auction: auctionId }).select("_id").lean()
-    ).map((row) => row._id);
-
-    const bidderIds = (
-      await Bid.find({
-        auctionCar: { $in: auctionCarIds },
-        bidder: { $ne: null },
-      })
-        .select("bidder")
-        .lean()
-    )
-      .map((b) => b.bidder?.toString())
-      .filter(Boolean);
-
-    const participants = [...new Set(bidderIds)];
-    const winners = new Set(winnerIds);
-    const refundableUserIds = participants.filter((id) => !winners.has(id));
-
-    if (refundableUserIds.length === 0) {
-      return res.json({
-        success: true,
-        message: "0 token deposits refunded",
-      });
-    }
-
-    const toRefund = await TokenPayment.find({
-      status: "verified",
-      user: { $in: refundableUserIds },
+    const settlement = await settleAuctionParticipantTokens(auction, {
+      logWalletTxn,
     });
 
-    let refunded = 0;
-    for (const payment of toRefund) {
-      payment.status = "refunded";
-      payment.refundedAt = new Date();
-      await payment.save();
-      await reverseTokenCreditFromWallet(payment);
-      await Notification.create({
-        title: "Token Deposit Refunded",
-        message: `Your token deposit of PKR ${payment.amount.toLocaleString()} has been refunded (auction ended).`,
-        type: "success",
-        recipient: payment.user,
-        actionUrl: "/auctions/transactions",
-      });
-      refunded++;
-    }
-
-    res.json({ success: true, message: `${refunded} token deposits refunded` });
+    res.json({
+      success: true,
+      message: `${settlement.settled} losing bidder settlements processed, ${settlement.skipped} already settled, ${settlement.failed} failed`,
+    });
   } catch (error) {
     Logger.error("adminBulkRefundTokens error", error);
     res

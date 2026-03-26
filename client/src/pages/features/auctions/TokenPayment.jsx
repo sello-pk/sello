@@ -65,6 +65,19 @@ const iconByMethod = {
   bank_transfer: Bank,
 };
 
+const getLatestAuctionSettlement = (payment) => {
+  const settlements = Array.isArray(payment?.auctionSettlements)
+    ? [...payment.auctionSettlements]
+    : [];
+  if (!settlements.length) return null;
+  settlements.sort(
+    (a, b) =>
+      new Date(b?.processedAt || b?.createdAt || 0).getTime() -
+      new Date(a?.processedAt || a?.createdAt || 0).getTime(),
+  );
+  return settlements[0];
+};
+
 export default function TokenPayment() {
   const navigate = useNavigate();
   const [selectedMethod, setSelectedMethod] = useState("");
@@ -221,7 +234,7 @@ export default function TokenPayment() {
           </button>
           <h1 className="text-2xl font-bold">Token Payment</h1>
           <p className="text-slate-300 mt-1 text-sm">
-            Secure token verification with a refundable deposit. Once approved, the token amount is credited to your auction wallet and unlocks bidding access.
+            Secure token verification with a refundable deposit. Once approved, the token amount is credited to your auction wallet, unlocks bidding access, and any loser settlement is shown here after the auction ends.
           </p>
         </div>
       </section>
@@ -419,9 +432,9 @@ export default function TokenPayment() {
                 <div className="p-4">
                   <h4 className="font-semibold text-slate-900 text-sm mb-1.5">Refund Policy</h4>
                   <ul className="space-y-1 text-xs text-slate-600">
-                    <li className="flex items-start gap-2"><CheckCircle className="w-3.5 h-3.5 text-emerald-500 mt-0.5" /> Full refund if you don't win any auction</li>
-                    <li className="flex items-start gap-2"><CheckCircle className="w-3.5 h-3.5 text-emerald-500 mt-0.5" /> Token deducted from winning amount</li>
-                    <li className="flex items-start gap-2"><Info className="w-3.5 h-3.5 text-primary mt-0.5" /> Refunds processed within 5-7 business days</li>
+                    <li className="flex items-start gap-2"><CheckCircle className="w-3.5 h-3.5 text-emerald-500 mt-0.5" /> Losing bidders keep the refundable balance after a PKR 500 participation fee</li>
+                    <li className="flex items-start gap-2"><CheckCircle className="w-3.5 h-3.5 text-emerald-500 mt-0.5" /> Winner token is handled separately as part of the winning payment flow</li>
+                    <li className="flex items-start gap-2"><Info className="w-3.5 h-3.5 text-primary mt-0.5" /> Wallet and token history update automatically after settlement</li>
                     <li className="flex items-start gap-2"><Info className="w-3.5 h-3.5 text-primary mt-0.5" /> Winner pays remaining amount within {paymentWindowHours} hours</li>
                   </ul>
                 </div>
@@ -434,26 +447,41 @@ export default function TokenPayment() {
           <div className="mt-6 bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
             <h3 className="text-base font-semibold text-slate-900 mb-3">Payment History</h3>
             <div className="space-y-2.5">
-              {payments.map((payment) => (
-                <div key={payment._id} className="border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-4">
-                  <div>
-                    <p className="font-semibold text-slate-900">PKR {Number(payment.amount || 0).toLocaleString()}</p>
-                    <p className="text-xs text-slate-500">{payment.paymentMethod} - {payment.transactionId}</p>
-                    {payment.receiptUrl && (
-                      <a
-                        href={payment.receiptUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-xs text-primary hover:underline"
-                      >
-                        View receipt proof
-                      </a>
+              {payments.map((payment) => {
+                const latestSettlement = getLatestAuctionSettlement(payment);
+                return (
+                  <div key={payment._id} className="border border-slate-200 rounded-xl p-3 space-y-3">
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="font-semibold text-slate-900">PKR {Number(payment.amount || 0).toLocaleString()}</p>
+                        <p className="text-xs text-slate-500">{payment.paymentMethod} - {payment.transactionId}</p>
+                        {payment.receiptUrl && (
+                          <a
+                            href={payment.receiptUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-xs text-primary hover:underline"
+                          >
+                            View receipt proof
+                          </a>
+                        )}
+                        <p className="text-[11px] text-slate-400">{new Date(payment.createdAt).toLocaleString()}</p>
+                      </div>
+                      <StatusBadge status={payment.status} />
+                    </div>
+                    {latestSettlement?.outcome === "loser" && (
+                      <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+                        Auction ended. PKR {Number(latestSettlement.refundAmount || 0).toLocaleString()} remains in your wallet after a PKR {Number(latestSettlement.feeAmount || 0).toLocaleString()} participation fee.
+                      </div>
                     )}
-                    <p className="text-[11px] text-slate-400">{new Date(payment.createdAt).toLocaleString()}</p>
+                    {latestSettlement?.outcome === "winner" && (
+                      <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                        Congratulations! You won the auction. Please proceed with the next payment steps.
+                      </div>
+                    )}
                   </div>
-                  <StatusBadge status={payment.status} />
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
