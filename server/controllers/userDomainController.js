@@ -266,6 +266,8 @@ function buildDealerInfoPatchFromAccessBody(existingPlain, bodyRest, licenseUrl,
     "businessAddress",
     "businessPhone",
     "whatsappNumber",
+    "country",
+    "state",
     "city",
     "area",
     "vehicleTypes",
@@ -323,7 +325,7 @@ function buildDealerInfoPatchFromAccessBody(existingPlain, bodyRest, licenseUrl,
 const DEALER_REQUEST_FALLBACK_MESSAGE =
   "We could not submit your dealer request right now. Please review your details and try again.";
 const DEALER_PROFILE_FALLBACK_MESSAGE =
-  "We could not update your dealer profile right now. Please review your details and try again.";
+  "Update failed. Please check your inputs and try again.";
 
 // Enhanced error messages for better debugging
 const DEALER_SPECIFIC_ERRORS = {
@@ -793,6 +795,8 @@ export const updateDealerProfile = async (req, res) => {
       "businessAddress",
       "businessPhone",
       "whatsappNumber",
+      "country",
+      "state",
       "city",
       "area",
       "vehicleTypes",

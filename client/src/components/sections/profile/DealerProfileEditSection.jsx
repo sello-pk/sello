@@ -1,12 +1,18 @@
-import React, { useMemo } from "react";
-import { FaUpload, FaTimes, FaPlus } from "react-icons/fa";
+import React from "react";
+import { FaTimes, FaUpload } from "react-icons/fa";
 import { FiEdit2, FiSave, FiX } from "react-icons/fi";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
 import toast from "react-hot-toast";
+import DealerForm from "../../features/profile/DealerForm";
+import {
+  DEALER_DOC_MAX_BYTES,
+  buildDealerPayloadFromForm,
+  mapUserToDealerForm,
+} from "../../features/profile/dealerFormUtils";
 import { useCarCategories } from "../../../hooks/useCarCategories";
 
 const DEALER_PROFILE_FALLBACK_MESSAGE =
-  "We could not update your dealer profile right now. Please review your details and try again.";
+  "Update failed. Please check your inputs and try again.";
 
 const DealerProfileEditSection = ({
   user,
@@ -21,111 +27,95 @@ const DealerProfileEditSection = ({
   refetch,
 }) => {
   const isVerifiedDealer = user?.dealerInfo?.verified === true;
-  const { cities: categoryCities } = useCarCategories();
-  const cityOptions = useMemo(() => {
-    const fromDb = (categoryCities || [])
-      .map((city) => city?.name)
-      .filter(Boolean);
-    const uniqueDb = [...new Set(fromDb)];
-    if (uniqueDb.length > 0) return uniqueDb;
-    // Fallback to preserve UX if categories are not loaded yet.
-    return [
-      "Lahore",
-      "Karachi",
-      "Islamabad",
-      "Rawalpindi",
-      "Faisalabad",
-      "Multan",
-      "Peshawar",
-      "Quetta",
-      "Sialkot",
-    ];
-  }, [categoryCities]);
+  const { countries, states, cities } = useCarCategories();
 
-  const employeeCountOptions = ["1-10", "11-50", "51-100", "100+"];
-  const commonPaymentMethods = [
-    "Cash",
-    "Credit Card",
-    "Bank Transfer",
-    "Cheque",
-    "Financing Available",
-  ];
-  const DEALER_FILE_MAX_BYTES = 10 * 1024 * 1024;
+  const countryLabel =
+    countries.find((item) => item._id === user?.dealerInfo?.country)?.name ||
+    user?.dealerInfo?.country ||
+    "Not set";
+  const stateLabel =
+    states.find((item) => item._id === user?.dealerInfo?.state)?.name ||
+    user?.dealerInfo?.state ||
+    "Not set";
+  const cityLabel =
+    cities.find((item) => item._id === user?.dealerInfo?.city)?.name ||
+    user?.dealerInfo?.city ||
+    "Not set";
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setDealerFormData((prev) => ({ ...prev, [name]: value }));
+  const resetDealerEditor = () => {
+    setDealerFormData(mapUserToDealerForm(user));
+    setDealerFiles({
+      avatar: null,
+      businessLicense: null,
+      showroomImages: [],
+    });
   };
 
   const handleFileChange = (e, type) => {
     const files = e.target.files;
-    if (files && files.length > 0) {
-      if (type === "avatar") {
-        setDealerFiles((prev) => ({ ...prev, avatar: files[0] }));
-      } else if (type === "businessLicense") {
-        if (files[0].size > DEALER_FILE_MAX_BYTES) {
-          toast.error("License file size must be less than 10MB");
-          return;
-        }
-        setDealerFiles((prev) => ({ ...prev, businessLicense: files[0] }));
-      } else if (type === "showroomImages") {
-        const oversized = Array.from(files).find(
-          (file) => file.size > DEALER_FILE_MAX_BYTES,
-        );
-        if (oversized) {
-          toast.error("Each showroom image must be less than 10MB");
-          return;
-        }
-        setDealerFiles((prev) => ({
-          ...prev,
-          showroomImages: [
-            ...(prev.showroomImages || []),
-            ...Array.from(files),
-          ],
-        }));
+    if (!files?.length) return;
+
+    if (type === "avatar") {
+      setDealerFiles((prev) => ({ ...prev, avatar: files[0] }));
+      return;
+    }
+
+    if (type === "businessLicense") {
+      if (files[0].size > DEALER_DOC_MAX_BYTES) {
+        toast.error("License file size must be less than 10MB");
+        return;
       }
+      setDealerFiles((prev) => ({ ...prev, businessLicense: files[0] }));
+      return;
+    }
+
+    if (type === "showroomImages") {
+      const oversized = Array.from(files).find(
+        (file) => file.size > DEALER_DOC_MAX_BYTES,
+      );
+      if (oversized) {
+        toast.error("Each showroom image must be less than 10MB");
+        return;
+      }
+      setDealerFiles((prev) => ({
+        ...prev,
+        showroomImages: [
+          ...(prev.showroomImages || []),
+          ...Array.from(files),
+        ].slice(0, 10),
+      }));
     }
   };
 
   const removeShowroomImage = (index) => {
     setDealerFiles((prev) => ({
       ...prev,
-      showroomImages: prev.showroomImages.filter((_, i) => i !== index),
-    }));
-  };
-
-  const removeFromArray = (field, item) => {
-    setDealerFormData((prev) => ({
-      ...prev,
-      [field]: prev[field].filter((i) => i !== item),
+      showroomImages: prev.showroomImages.filter((_, current) => current !== index),
     }));
   };
 
   const handleSave = async () => {
     try {
+      const payload = buildDealerPayloadFromForm(dealerFormData);
       const formDataToSend = new FormData();
 
-      // Add all form fields
-      Object.keys(dealerFormData).forEach((key) => {
-        if (key === "paymentMethods") {
-          formDataToSend.append(key, JSON.stringify(dealerFormData[key]));
-        } else if (
-          dealerFormData[key] !== null &&
-          dealerFormData[key] !== undefined &&
-          dealerFormData[key] !== ""
-        ) {
-          formDataToSend.append(key, dealerFormData[key]);
+      Object.entries(payload).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          formDataToSend.append(key, JSON.stringify(value));
+          return;
+        }
+        if (value !== "") {
+          formDataToSend.append(key, value);
         }
       });
 
-      // Add files
       if (dealerFiles.avatar) {
         formDataToSend.append("avatar", dealerFiles.avatar);
       }
       if (dealerFiles.businessLicense) {
         formDataToSend.append("businessLicense", dealerFiles.businessLicense);
       }
-      if (dealerFiles.showroomImages && dealerFiles.showroomImages.length > 0) {
+      if (dealerFiles.showroomImages?.length) {
         dealerFiles.showroomImages.forEach((file) => {
           formDataToSend.append("showroomImages", file);
         });
@@ -164,33 +154,7 @@ const DealerProfileEditSection = ({
             <button
               onClick={() => {
                 setIsEditingDealer(false);
-                // Reset form data
-                if (user?.dealerInfo) {
-                  setDealerFormData({
-                    businessName: user.dealerInfo.businessName || "",
-                    businessAddress: user.dealerInfo.businessAddress || "",
-                    businessPhone: user.dealerInfo.businessPhone || "",
-                    whatsappNumber: user.dealerInfo.whatsappNumber || "",
-                    city: user.dealerInfo.city || "",
-                    area: user.dealerInfo.area || "",
-                    vehicleTypes: user.dealerInfo.vehicleTypes || "",
-                    description: user.dealerInfo.description || "",
-                    website: user.dealerInfo.website || "",
-                    facebook: user.dealerInfo.socialMedia?.facebook || "",
-                    instagram: user.dealerInfo.socialMedia?.instagram || "",
-                    twitter: user.dealerInfo.socialMedia?.twitter || "",
-                    linkedin: user.dealerInfo.socialMedia?.linkedin || "",
-                    establishedYear:
-                      user.dealerInfo.establishedYear?.toString() || "",
-                    employeeCount: user.dealerInfo.employeeCount || "",
-                    paymentMethods: user.dealerInfo.paymentMethods || [],
-                  });
-                }
-                setDealerFiles({
-                  avatar: null,
-                  businessLicense: null,
-                  showroomImages: [],
-                });
+                resetDealerEditor();
               }}
               className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
@@ -209,9 +173,8 @@ const DealerProfileEditSection = ({
         )}
       </div>
 
-      <div className="space-y-6">
-        {/* Profile Image Upload */}
-        {isEditingDealer && (
+      {isEditingDealer ? (
+        <div className="space-y-6">
           <div className="border-b border-gray-200 pb-6">
             <h4 className="text-lg font-semibold text-gray-900 mb-4">
               Profile Image
@@ -223,635 +186,195 @@ const DealerProfileEditSection = ({
                     dealerFiles.avatar
                       ? URL.createObjectURL(dealerFiles.avatar)
                       : user?.avatar ||
-                        `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "User")}`
+                        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                          user?.name || "User",
+                        )}`
                   }
                   alt="Profile"
                   className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
                 />
-                {isEditingDealer && (
-                  <label className="absolute bottom-0 right-0 bg-primary-500 text-white rounded-full p-2 cursor-pointer hover:opacity-90 transition-colors">
-                    <FaUpload size={14} />
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleFileChange(e, "avatar")}
-                      className="hidden"
-                    />
-                  </label>
-                )}
-              </div>
-              <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Upload Profile Image
-                </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-primary-500 transition-colors">
+                <label className="absolute bottom-0 right-0 bg-primary-500 text-white rounded-full p-2 cursor-pointer hover:opacity-90 transition-colors">
+                  <FaUpload size={14} />
                   <input
                     type="file"
                     accept="image/*"
                     onChange={(e) => handleFileChange(e, "avatar")}
                     className="hidden"
-                    id="avatar-upload"
                   />
-                  <label
-                    htmlFor="avatar-upload"
-                    className="flex flex-col items-center justify-center cursor-pointer"
-                  >
-                    <FaUpload className="text-gray-400 mb-2" size={20} />
-                    <span className="text-sm text-gray-600">
-                      {dealerFiles.avatar
-                        ? dealerFiles.avatar.name
-                        : user?.avatar
-                          ? "Click to change profile image"
-                          : "Click to upload profile image"}
-                    </span>
-                    <span className="text-xs text-gray-500 mt-1">
-                      JPG, PNG (Max 10MB)
-                    </span>
-                  </label>
-                </div>
+                </label>
               </div>
             </div>
           </div>
-        )}
 
-        {/* Basic Information */}
-        <div className="border-b border-gray-200 pb-6">
-          <h4 className="text-lg font-semibold text-gray-900 mb-4">
-            Basic Information
-          </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Business Name *
-              </label>
+          <div className="border-b border-gray-200 pb-6">
+            <DealerForm
+              mode="update"
+              step={1}
+              formData={dealerFormData}
+              setFormData={setDealerFormData}
+              errors={{}}
+              setErrors={() => {}}
+              files={dealerFiles}
+              onFileChange={handleFileChange}
+              accountName={user?.name || ""}
+              accountEmail={user?.email || ""}
+            />
+          </div>
+
+          <div className="border-b border-gray-200 pb-6">
+            <DealerForm
+              mode="update"
+              step={2}
+              formData={dealerFormData}
+              setFormData={setDealerFormData}
+              errors={{}}
+              setErrors={() => {}}
+              files={dealerFiles}
+              onFileChange={handleFileChange}
+              accountName={user?.name || ""}
+              accountEmail={user?.email || ""}
+            />
+          </div>
+
+          <div className="border-b border-gray-200 pb-6">
+            <h4 className="text-lg font-semibold text-gray-900 mb-4">
+              Showroom Images
+            </h4>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-primary-500 transition-colors">
               <input
-                type="text"
-                name="businessName"
-                value={dealerFormData.businessName}
-                onChange={handleInputChange}
-                disabled={!isEditingDealer}
-                className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50"
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => handleFileChange(e, "showroomImages")}
+                className="hidden"
+                id="showroom-upload"
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Contact Person
-              </label>
-              <input
-                type="text"
-                value={user?.name || ""}
-                disabled
-                className="w-full py-2 px-3 border border-gray-300 rounded-lg bg-gray-50"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Business Phone *
-              </label>
-              <input
-                type="tel"
-                name="businessPhone"
-                value={dealerFormData.businessPhone}
-                onChange={handleInputChange}
-                disabled={!isEditingDealer}
-                className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50"
-                placeholder="+923 XX XXX XXXX"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                WhatsApp Number *
-              </label>
-              <input
-                type="tel"
-                name="whatsappNumber"
-                value={dealerFormData.whatsappNumber}
-                onChange={handleInputChange}
-                disabled={!isEditingDealer}
-                className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50"
-                placeholder="+923 XX XXX XXXX"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                City *
-              </label>
-              <select
-                name="city"
-                value={dealerFormData.city}
-                onChange={handleInputChange}
-                disabled={!isEditingDealer}
-                className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50"
+              <label
+                htmlFor="showroom-upload"
+                className="flex flex-col items-center justify-center cursor-pointer"
               >
-                <option value="">Select City</option>
-                {cityOptions.map((city) => (
-                  <option key={city} value={city}>
-                    {city}
-                  </option>
+                <FaUpload className="text-gray-400 mb-2" size={24} />
+                <span className="text-sm text-gray-600">
+                  Click to upload showroom images
+                </span>
+                <span className="text-xs text-gray-500 mt-1">
+                  JPG, PNG (Max 10MB each, up to 10 images)
+                </span>
+              </label>
+            </div>
+            {(dealerFiles.showroomImages.length > 0 ||
+              user?.dealerInfo?.showroomImages?.length > 0) && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                {user?.dealerInfo?.showroomImages?.map((img, idx) => (
+                  <div key={idx} className="relative">
+                    <img
+                      src={img}
+                      alt={`Showroom ${idx + 1}`}
+                      className="w-full h-32 object-cover rounded-lg"
+                    />
+                  </div>
                 ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Area *
-              </label>
-              <input
-                type="text"
-                name="area"
-                value={dealerFormData.area}
-                onChange={handleInputChange}
-                disabled={!isEditingDealer}
-                className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Business Details */}
-        <div className="border-b border-gray-200 pb-6">
-          <h4 className="text-lg font-semibold text-gray-900 mb-4">
-            Business Details
-          </h4>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Business Description
-              </label>
-              <textarea
-                name="description"
-                value={dealerFormData.description}
-                onChange={handleInputChange}
-                disabled={!isEditingDealer}
-                rows={4}
-                className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50"
-                placeholder="Tell us about your business..."
-              />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Website
-                </label>
-                <input
-                  type="url"
-                  name="website"
-                  value={dealerFormData.website}
-                  onChange={handleInputChange}
-                  disabled={!isEditingDealer}
-                  className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50"
-                  placeholder="https://www.example.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Established Year
-                </label>
-                <input
-                  type="number"
-                  name="establishedYear"
-                  value={dealerFormData.establishedYear}
-                  onChange={handleInputChange}
-                  disabled={!isEditingDealer}
-                  min="1900"
-                  max={new Date().getFullYear()}
-                  className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Employee Count
-                </label>
-                <select
-                  name="employeeCount"
-                  value={dealerFormData.employeeCount}
-                  onChange={handleInputChange}
-                  disabled={!isEditingDealer}
-                  className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50"
-                >
-                  <option value="">Select</option>
-                  {employeeCountOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Vehicle Types
-                </label>
-                <input
-                  type="text"
-                  name="vehicleTypes"
-                  value={dealerFormData.vehicleTypes}
-                  onChange={handleInputChange}
-                  disabled={!isEditingDealer}
-                  className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50"
-                  placeholder="New, Used, Bikes, SUVs, etc."
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Documents */}
-        {isEditingDealer && (
-          <div className="border-b border-gray-200 pb-6">
-            <h4 className="text-lg font-semibold text-gray-900 mb-4">
-              Documents
-            </h4>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Business License / CNIC
-                </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-primary-500 transition-colors">
-                  <input
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    onChange={(e) => handleFileChange(e, "businessLicense")}
-                    className="hidden"
-                    id="license-upload"
-                  />
-                  <label
-                    htmlFor="license-upload"
-                    className="flex flex-col items-center justify-center cursor-pointer"
-                  >
-                    <FaUpload className="text-gray-400 mb-2" size={24} />
-                    <span className="text-sm text-gray-600">
-                      {dealerFiles.businessLicense
-                        ? dealerFiles.businessLicense.name
-                        : user?.dealerInfo?.businessLicense
-                          ? "Current: " +
-                            (user.dealerInfo.businessLicense.split("/").pop() ||
-                              "Uploaded")
-                          : "Click to upload or drag and drop"}
-                    </span>
-                    <span className="text-xs text-gray-500 mt-1">
-                      PDF, JPG, PNG (Max 10MB)
-                    </span>
-                  </label>
-                </div>
-                {user?.dealerInfo?.businessLicense &&
-                  !dealerFiles.businessLicense && (
-                    <a
-                      href={user.dealerInfo.businessLicense}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-primary-500 hover:underline mt-2 inline-block"
-                    >
-                      View Current License
-                    </a>
-                  )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Showroom Images
-                </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-primary-500 transition-colors">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={(e) => handleFileChange(e, "showroomImages")}
-                    className="hidden"
-                    id="showroom-upload"
-                  />
-                  <label
-                    htmlFor="showroom-upload"
-                    className="flex flex-col items-center justify-center cursor-pointer"
-                  >
-                    <FaUpload className="text-gray-400 mb-2" size={24} />
-                    <span className="text-sm text-gray-600">
-                      Click to upload showroom images
-                    </span>
-                    <span className="text-xs text-gray-500 mt-1">
-                      JPG, PNG (Max 10MB each, up to 10 images)
-                    </span>
-                  </label>
-                </div>
-                {(dealerFiles.showroomImages.length > 0 ||
-                  user?.dealerInfo?.showroomImages?.length > 0) && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                    {user?.dealerInfo?.showroomImages?.map((img, idx) => (
-                      <div key={idx} className="relative">
-                        <img
-                          src={img}
-                          alt={`Showroom ${idx + 1}`}
-                          className="w-full h-32 object-cover rounded-lg"
-                        />
-                        {isEditingDealer && (
-                          <button
-                            onClick={() => {
-                              // Remove from existing images (would need backend support)
-                              toast.info(
-                                "Remove existing images from profile edit",
-                              );
-                            }}
-                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
-                          >
-                            <FaTimes size={12} />
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                    {dealerFiles.showroomImages.map((file, idx) => (
-                      <div key={`new-${idx}`} className="relative">
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt={`New ${idx + 1}`}
-                          className="w-full h-32 object-cover rounded-lg"
-                        />
-                        <button
-                          onClick={() => removeShowroomImage(idx)}
-                          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
-                        >
-                          <FaTimes size={12} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Payment Methods */}
-        {isEditingDealer && (
-          <div className="border-b border-gray-200 pb-6">
-            <h4 className="text-lg font-semibold text-gray-900 mb-4">
-              Payment Methods
-            </h4>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Payment Methods Accepted
-                </label>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {dealerFormData.paymentMethods.map((method) => (
-                    <span
-                      key={method}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
-                    >
-                      {method}
-                      <button
-                        type="button"
-                        onClick={() =>
-                          removeFromArray("paymentMethods", method)
-                        }
-                        className="hover:text-purple-600"
-                      >
-                        <FaTimes size={12} />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {commonPaymentMethods.map((method) => (
+                {dealerFiles.showroomImages.map((file, idx) => (
+                  <div key={`new-${idx}`} className="relative">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={`New ${idx + 1}`}
+                      className="w-full h-32 object-cover rounded-lg"
+                    />
                     <button
-                      key={method}
-                      type="button"
-                      onClick={() => {
-                        if (!dealerFormData.paymentMethods.includes(method)) {
-                          setDealerFormData((prev) => ({
-                            ...prev,
-                            paymentMethods: [...prev.paymentMethods, method],
-                          }));
-                        }
-                      }}
-                      className="px-3 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50"
+                      onClick={() => removeShowroomImage(idx)}
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
                     >
-                      + {method}
+                      <FaTimes size={12} />
                     </button>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
-            </div>
+            )}
           </div>
-        )}
-
-        {/* Social Media */}
-        {isEditingDealer && (
-          <div className="border-b border-gray-200 pb-6">
+        </div>
+      ) : (
+        <div className="space-y-6">
+          <div>
             <h4 className="text-lg font-semibold text-gray-900 mb-4">
-              Social Media
+              Current Information
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Facebook URL
-                </label>
-                <input
-                  type="url"
-                  name="facebook"
-                  value={dealerFormData.facebook}
-                  onChange={handleInputChange}
-                  className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="https://facebook.com/..."
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Instagram URL
-                </label>
-                <input
-                  type="url"
-                  name="instagram"
-                  value={dealerFormData.instagram}
-                  onChange={handleInputChange}
-                  className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="https://instagram.com/..."
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Twitter URL
-                </label>
-                <input
-                  type="url"
-                  name="twitter"
-                  value={dealerFormData.twitter}
-                  onChange={handleInputChange}
-                  className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="https://twitter.com/..."
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  LinkedIn URL
-                </label>
-                <input
-                  type="url"
-                  name="linkedin"
-                  value={dealerFormData.linkedin}
-                  onChange={handleInputChange}
-                  className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="https://linkedin.com/..."
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* View Mode - Display Current Info */}
-        {!isEditingDealer && (
-          <div className="space-y-4">
-            {/* Profile Image Display */}
-            <div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-4">
-                Profile Image
-              </h4>
-              <div className="flex items-center gap-4">
-                <img
-                  src={
-                    user?.avatar ||
-                    `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "User")}`
-                  }
-                  alt="Profile"
-                  className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
-                />
-                <div>
-                  <p className="text-sm text-gray-600">Current profile image</p>
-                  <p className="text-xs text-gray-500">
-                    Click "Edit Profile" to change
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-4">
-                Current Information
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-600">Business Name</p>
-                  <p className="font-semibold text-gray-900 inline-flex items-center gap-2">
-                    {user?.dealerInfo?.businessName || "Not set"}
-                    {isVerifiedDealer && (
-                      <span
-                        className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary-500 text-white shadow-sm"
-                        title="Verified dealer"
-                        aria-label="Verified dealer"
-                      >
-                        <RiVerifiedBadgeFill size={11} />
-                      </span>
-                    )}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">City</p>
-                  <p className="font-semibold text-gray-900">
-                    {user?.dealerInfo?.city || "Not set"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Area</p>
-                  <p className="font-semibold text-gray-900">
-                    {user?.dealerInfo?.area || "Not set"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Phone</p>
-                  <p className="font-semibold text-gray-900">
-                    {user?.dealerInfo?.businessPhone || "Not set"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">WhatsApp</p>
-                  <p className="font-semibold text-gray-900">
-                    {user?.dealerInfo?.whatsappNumber || "Not set"}
-                  </p>
-                </div>
-                {user?.dealerInfo?.description && (
-                  <div className="md:col-span-2">
-                    <p className="text-sm text-gray-600">Description</p>
-                    <p className="font-semibold text-gray-900">
-                      {user.dealerInfo.description}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Documents Display */}
-            <div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-4">
-                Documents
-              </h4>
-              <div className="space-y-4">
-                {user?.dealerInfo?.businessLicense && (
-                  <div>
-                    <p className="text-sm text-gray-600 mb-2">
-                      Business License / CNIC
-                    </p>
-                    <a
-                      href={user.dealerInfo.businessLicense}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-primary-500 hover:text-primary-500 font-medium"
+                <p className="text-sm text-gray-600">Business Name</p>
+                <p className="font-semibold text-gray-900 inline-flex items-center gap-2">
+                  {user?.dealerInfo?.businessName || "Not set"}
+                  {isVerifiedDealer ? (
+                    <span
+                      className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary-500 text-white shadow-sm"
+                      title="Verified dealer"
+                      aria-label="Verified dealer"
                     >
-                      <span>View License Document</span>
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                        />
-                      </svg>
-                    </a>
-                  </div>
-                )}
-                {user?.dealerInfo?.showroomImages?.length > 0 && (
-                  <div>
-                    <p className="text-sm text-gray-600 mb-2">
-                      Showroom Images ({user.dealerInfo.showroomImages.length})
-                    </p>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {user.dealerInfo.showroomImages.map((img, idx) => (
-                        <a
-                          key={idx}
-                          href={img}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="relative group"
-                        >
-                          <img
-                            src={img}
-                            alt={`Showroom ${idx + 1}`}
-                            className="w-full h-32 object-cover rounded-lg border border-gray-200 group-hover:border-primary-500 transition-colors"
-                          />
-                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all rounded-lg flex items-center justify-center">
-                            <span className="text-white opacity-0 group-hover:opacity-100 text-sm font-medium">
-                              View Full
-                            </span>
-                          </div>
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {!user?.dealerInfo?.businessLicense &&
-                  (!user?.dealerInfo?.showroomImages ||
-                    user.dealerInfo.showroomImages.length === 0) && (
-                    <p className="text-sm text-gray-500">
-                      No documents uploaded. Click "Edit Profile" to upload
-                      documents.
-                    </p>
-                  )}
+                      <RiVerifiedBadgeFill size={11} />
+                    </span>
+                  ) : null}
+                </p>
               </div>
+              <div>
+                <p className="text-sm text-gray-600">Owner Full Name</p>
+                <p className="font-semibold text-gray-900">
+                  {user?.name || "Not set"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Email</p>
+                <p className="font-semibold text-gray-900">
+                  {user?.email || "Not set"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Mobile</p>
+                <p className="font-semibold text-gray-900">
+                  {user?.dealerInfo?.businessPhone || "Not set"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">WhatsApp</p>
+                <p className="font-semibold text-gray-900">
+                  {user?.dealerInfo?.whatsappNumber || "Not set"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Country</p>
+                <p className="font-semibold text-gray-900">{countryLabel}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">State</p>
+                <p className="font-semibold text-gray-900">{stateLabel}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">City</p>
+                <p className="font-semibold text-gray-900">{cityLabel}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Area</p>
+                <p className="font-semibold text-gray-900">
+                  {user?.dealerInfo?.area || "Not set"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Vehicle Types</p>
+                <p className="font-semibold text-gray-900">
+                  {user?.dealerInfo?.vehicleTypes || "Not set"}
+                </p>
+              </div>
+              {user?.dealerInfo?.description ? (
+                <div className="md:col-span-2">
+                  <p className="text-sm text-gray-600">Description</p>
+                  <p className="font-semibold text-gray-900">
+                    {user.dealerInfo.description}
+                  </p>
+                </div>
+              ) : null}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

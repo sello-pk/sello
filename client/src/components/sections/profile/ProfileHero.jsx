@@ -50,6 +50,10 @@ import DealerRequestForm from "../../features/profile/DealerRequestForm";
 import SubscriptionManagement from "../../subscriptions/SubscriptionManagement";
 import DealerProfileEditSection from "./DealerProfileEditSection";
 import AccountDeletionRequest from "../../features/profile/AccountDeletionRequest";
+import {
+  createDealerFormState,
+  mapUserToDealerForm,
+} from "../../features/profile/dealerFormUtils";
 
 const ProfileHero = () => {
   const navigate = useNavigate();
@@ -120,24 +124,7 @@ const ProfileHero = () => {
     useUpdateDealerProfileMutation();
 
   // Dealer profile form state
-  const [dealerFormData, setDealerFormData] = useState({
-    businessName: "",
-    businessAddress: "",
-    businessPhone: "",
-    whatsappNumber: "",
-    city: "",
-    area: "",
-    vehicleTypes: "",
-    description: "",
-    website: "",
-    facebook: "",
-    instagram: "",
-    twitter: "",
-    linkedin: "",
-    establishedYear: "",
-    employeeCount: "",
-    paymentMethods: [],
-  });
+  const [dealerFormData, setDealerFormData] = useState(createDealerFormState());
   const [dealerFiles, setDealerFiles] = useState({
     avatar: null,
     businessLicense: null,
@@ -167,24 +154,7 @@ const ProfileHero = () => {
 
         // Set dealer form data if user is a dealer
         if (user?.role === "dealer" && user?.dealerInfo) {
-          setDealerFormData({
-            businessName: user.dealerInfo.businessName || "",
-            businessAddress: user.dealerInfo.businessAddress || "",
-            businessPhone: user.dealerInfo.businessPhone || "",
-            whatsappNumber: user.dealerInfo.whatsappNumber || "",
-            city: user.dealerInfo.city || "",
-            area: user.dealerInfo.area || "",
-            vehicleTypes: user.dealerInfo.vehicleTypes || "",
-            description: user.dealerInfo.description || "",
-            website: user.dealerInfo.website || "",
-            facebook: user.dealerInfo.socialMedia?.facebook || "",
-            instagram: user.dealerInfo.socialMedia?.instagram || "",
-            twitter: user.dealerInfo.socialMedia?.twitter || "",
-            linkedin: user.dealerInfo.socialMedia?.linkedin || "",
-            establishedYear: user.dealerInfo.establishedYear?.toString() || "",
-            employeeCount: user.dealerInfo.employeeCount || "",
-            paymentMethods: user.dealerInfo.paymentMethods || [],
-          });
+          setDealerFormData(mapUserToDealerForm(user));
         }
 
         const posts = user?.carsPosted?.length || 0;

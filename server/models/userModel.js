@@ -197,6 +197,8 @@ const userSchema = new mongoose.Schema(
       businessAddress: { type: String, default: null },
       businessPhone: { type: String, default: null },
       whatsappNumber: { type: String, default: null },
+      country: { type: String, default: null },
+      state: { type: String, default: null },
       city: { type: String, default: null },
       area: { type: String, default: null },
       vehicleTypes: { type: String, default: null },

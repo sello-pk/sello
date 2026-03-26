@@ -104,8 +104,12 @@ const AuthService = {
             password,
             role,
             dealerName,
+            businessName,
             mobileNumber,
+            businessPhone,
             whatsappNumber,
+            country,
+            state,
             city,
             area,
             vehicleTypes,
@@ -167,10 +171,12 @@ const AuthService = {
             const parsedEstablishedYear = establishedYear ? parseInt(String(establishedYear), 10) : null;
 
             userData.dealerInfo = {
-                businessName: dealerName || name,
+                businessName: businessName || dealerName || name,
                 businessLicense: businessLicenseUrl,
-                businessPhone: mobileNumber,
+                businessPhone: businessPhone || mobileNumber,
                 whatsappNumber: whatsappNumber?.trim() || null,
+                country: country?.trim() || null,
+                state: state?.trim() || null,
                 city: city?.trim() || null,
                 area: area?.trim() || null,
                 vehicleTypes: vehicleTypes?.trim() || null,
@@ -192,7 +198,7 @@ const AuthService = {
                 languages: [],
                 verified: false,
             };
-            userData.phone = mobileNumber;
+            userData.phone = businessPhone || mobileNumber;
         }
 
         const requestTypes = parseRequestTypesInput(auctionRequestTypes).filter((type) =>
