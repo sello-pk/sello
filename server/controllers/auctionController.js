@@ -1708,7 +1708,8 @@ export const submitCarToAuction = async (req, res) => {
     // Hybrid model: inspection report PDF is mandatory for every auction submission
     const inspectionReportFile =
       req.files?.inspectionReport?.[0] ||
-      req.files?.inspectionReportFile?.[0];
+      req.files?.inspectionReportFile?.[0] ||
+      req.files?.inspection_report?.[0];
     if (!inspectionReportFile || !inspectionReportFile.buffer) {
       return res.status(400).json({
         success: false,
@@ -1758,7 +1759,12 @@ export const submitCarToAuction = async (req, res) => {
       }
 
       // Handle image uploads — parallel + total size cap (same as listing uploads)
-      const images = req.files?.images || [];
+      const images = [
+        ...(req.files?.images || []),
+        ...(req.files?.image || []),
+        ...(req.files?.photos || []),
+        ...(req.files?.photo || []),
+      ];
       const totalBytes = images.reduce(
         (sum, img) => sum + (img.buffer?.length || 0),
         0,
@@ -1921,7 +1927,10 @@ export const submitCarToAuction = async (req, res) => {
         message: "Failed to upload inspection report. Try again.",
       });
     }
-    const damageFiles = req.files?.damageImages || [];
+    const damageFiles = [
+      ...(req.files?.damageImages || []),
+      ...(req.files?.damageImage || []),
+    ];
     if (damageFiles.length > 0) {
       try {
         damageImageUrls = await uploadListingImagesToCloudinary(damageFiles, {
@@ -1935,7 +1944,10 @@ export const submitCarToAuction = async (req, res) => {
         });
       }
     }
-    const docFiles = req.files?.documents || [];
+    const docFiles = [
+      ...(req.files?.documents || []),
+      ...(req.files?.document || []),
+    ];
     if (docFiles.length > 0) {
       try {
         documentUrls = await Promise.all(

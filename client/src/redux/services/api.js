@@ -37,7 +37,7 @@ function isMultipartDocumentUpload(args) {
 
 function getUploadFetchMessage(url = "") {
   if (url.includes("/auctions/submit-car")) {
-    return "Auction files could not be uploaded. Try smaller photos or documents and retry. If this keeps happening in production, the server upload limit may need to be increased.";
+    return "Network error or server rejected the auction upload. Please try again.";
   }
   if (
     url.includes("/auth/register") ||
@@ -45,9 +45,9 @@ function getUploadFetchMessage(url = "") {
     url.includes("/users/auction-access/request") ||
     url.includes("/users/request-dealer")
   ) {
-    return "Dealer documents could not be uploaded right now. Please try again. If the issue continues in production, the server upload path should be checked.";
+    return "Network error or server rejected the dealer upload. Please try again.";
   }
-  return "Upload could not be completed. Try smaller files and retry. If this keeps happening, the server upload limit may need to be increased.";
+  return "Network error or server rejected the upload. Please try again.";
 }
 
 function getUpload413Message(url = "") {
@@ -67,6 +67,40 @@ function getUpload413Message(url = "") {
 
 const MSG_FETCH_GENERIC =
   "Request couldn't complete. If you were uploading photos, try fewer or smaller images and retry. Otherwise check your connection.";
+
+function logApiErrorSafely(kind, error, args) {
+  const payload = {
+    kind,
+    url: args?.url || "",
+    method: (args?.method || "GET").toUpperCase(),
+    status: error?.status,
+    originalStatus: error?.originalStatus,
+    code: error?.data?.code,
+    message:
+      error?.data?.message ||
+      (typeof error?.error === "string" ? error.error : undefined) ||
+      undefined,
+  };
+
+  if (import.meta.env.PROD) {
+    console.warn("[api-error]", payload);
+    return;
+  }
+
+  logger.warn("API baseQuery error", payload);
+}
+
+function getBestErrorMessage(error, fallbackMessage) {
+  const serverMessage =
+    typeof error?.data?.message === "string" ? error.data.message.trim() : "";
+  if (serverMessage) return serverMessage;
+
+  const transportMessage =
+    typeof error?.error === "string" ? error.error.trim() : "";
+  if (transportMessage) return transportMessage;
+
+  return fallbackMessage;
+}
 
 const CLIENT_UPLOAD_MAX_IMAGE_EDGE = 1920;
 const CLIENT_UPLOAD_IMAGE_QUALITY = 0.78;
@@ -273,15 +307,14 @@ export const api = createApi({
         (baseResult.error.originalStatus === 413 ||
           baseResult.error.status === 413)
       ) {
+        logApiErrorSafely("http_413", baseResult.error, args);
         const uploadAttempt = isMultipartDocumentUpload(args);
         const uploadMessage = getUpload413Message(args?.url || "");
         return {
           error: {
             status: 413,
             data: {
-              message: uploadAttempt
-                ? uploadMessage
-                : baseResult.error?.data?.message || uploadMessage,
+              message: getBestErrorMessage(baseResult.error, uploadMessage),
               code: "REQUEST_TOO_LARGE",
               error: baseResult.error?.data?.error,
             },
@@ -296,16 +329,14 @@ export const api = createApi({
         (baseResult.error.status === "FETCH_ERROR" ||
           baseResult.error.error === "TypeError: Failed to fetch")
       ) {
+        logApiErrorSafely("fetch_error", baseResult.error, args);
         const uploadAttempt = isMultipartDocumentUpload(args);
-        const message = uploadAttempt
-          ? getUploadFetchMessage(args?.url || "")
-          : MSG_FETCH_GENERIC;
-        if (import.meta.env.DEV && baseResult.error?.error) {
-          logger.warn("FETCH_ERROR", {
-            url: args?.url,
-            error: baseResult.error.error,
-          });
-        }
+        const message = getBestErrorMessage(
+          baseResult.error,
+          uploadAttempt
+            ? getUploadFetchMessage(args?.url || "")
+            : "Network error or server rejected the request. Please try again.",
+        );
         return {
           error: {
             status: "FETCH_ERROR",
@@ -322,13 +353,21 @@ export const api = createApi({
       return baseResult;
     } catch (error) {
       const uploadAttempt = isMultipartDocumentUpload(args);
+      logApiErrorSafely(
+        "base_query_exception",
+        {
+          status: "FETCH_ERROR",
+          error: error?.message || "Failed to fetch",
+        },
+        args,
+      );
       return {
         error: {
           status: "FETCH_ERROR",
           data: {
             message: uploadAttempt
               ? getUploadFetchMessage(args?.url || "")
-              : MSG_FETCH_GENERIC,
+              : "Network error or server rejected the request. Please try again.",
             code: uploadAttempt ? "UPLOAD_TIMEOUT_OR_NETWORK" : "NETWORK",
             error: error?.message || "Failed to fetch",
           },

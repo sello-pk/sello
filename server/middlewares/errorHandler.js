@@ -42,6 +42,34 @@ export const errorHandler = (err, req, res, next) => {
       Logger.error("Error Handler - Response already sent", err, { method: req?.method, url: req?.originalUrl || req?.url });
       return;
     }
+
+    if (
+      err?.type === "entity.too.large" ||
+      err?.status === 413 ||
+      err?.statusCode === 413
+    ) {
+      Logger.warn("Payload too large", {
+        method: req?.method,
+        url: req?.originalUrl || req?.url,
+      });
+      return res.status(413).json({
+        success: false,
+        message: "Upload is too large for the server to accept right now.",
+      });
+    }
+
+    if (err?.code === "ECONNRESET" || err?.code === "ETIMEDOUT") {
+      Logger.error("Upstream connection error", {
+        code: err.code,
+        method: req?.method,
+        url: req?.originalUrl || req?.url,
+      });
+      return res.status(503).json({
+        success: false,
+        message: "Upload service is temporarily unavailable. Please try again.",
+      });
+    }
+
     const statusCode = err?.statusCode || 500;
     const isOperational = err?.isOperational !== false;
     if (statusCode >= 500) {
@@ -163,6 +191,12 @@ export const multerErrorHandler = (err, req, res, next) => {
         message =
           "The uploaded dealer document field was not recognized. Please retry from the latest form.";
         details = "Allowed fields: avatar, businessLicense, showroomImages";
+      } else if (isAuctionUpload && code === "LIMIT_UNEXPECTED_FILE") {
+        const badField = typeof err.field === "string" ? err.field : "unknown";
+        errorType = "unexpected_field";
+        message = `Unexpected upload field: ${badField}.`;
+        details =
+          "Allowed auction upload fields: images, inspectionReport, inspectionReportFile, damageImages, documents";
       } else if (isDealerUpload) {
         message =
           "Too many dealer files were uploaded. Please attach only the required document(s) and try again.";

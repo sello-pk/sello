@@ -248,10 +248,16 @@ router.post(
   auth,
   auctionSubmitCarUpload.fields([
     { name: "images", maxCount: 15 },
+    { name: "image", maxCount: 15 },
+    { name: "photos", maxCount: 15 },
+    { name: "photo", maxCount: 15 },
     { name: "inspectionReport", maxCount: 1 },
     { name: "inspectionReportFile", maxCount: 1 },
+    { name: "inspection_report", maxCount: 1 },
     { name: "damageImages", maxCount: 5 },
+    { name: "damageImage", maxCount: 5 },
     { name: "documents", maxCount: 5 },
+    { name: "document", maxCount: 5 },
   ]),
   submitCarToAuction
 );
