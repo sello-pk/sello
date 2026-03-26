@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { motion } from "framer-motion";
 import {
   IoShieldCheckmarkOutline as ShieldCheck,
   IoWalletOutline as Wallet,

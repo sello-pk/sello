@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import {
   IoSearch as Search,
   IoGridOutline as Grid3X3,
@@ -295,7 +295,7 @@ export default function LiveAuction() {
   const endedAuctions = Array.isArray(endedList) ? endedList : endedList?.data || [];
 
   // Live auction is car-only, so request only car categories.
-  const { makes, isLoading: categoriesLoading } = useCarCategories("Car");
+  const { makes } = useCarCategories("Car");
   const carMakes = useMemo(
     () =>
       (Array.isArray(makes) ? makes : []).filter(
@@ -364,7 +364,7 @@ export default function LiveAuction() {
   };
 
   const activeFiltersCount = Object.entries(filters).filter(
-    ([k, v]) => v && v !== "all" && v !== "ending_soon",
+    ([, v]) => v && v !== "all" && v !== "ending_soon",
   ).length;
 
   if (auctionLoading) {

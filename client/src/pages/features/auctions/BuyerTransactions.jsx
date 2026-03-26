@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import {
   IoWalletOutline as WalletIcon,
@@ -232,13 +231,12 @@ export default function BuyerTransactions() {
   const verifiedTokenAmount = tokenData?.tokenBalance || 0;
   const hasVerifiedToken = tokenData?.hasVerifiedToken || false;
   const walletTransactions = walletData?.transactions || [];
-  const walletSummary = walletData?.summary || {};
-
   const availableBalance = wallet?.availableBalance ?? (wallet ? Math.max(0, (wallet.balance || 0) - (wallet.totalBidHeld || 0)) : 0);
   const lockedTokens = wallet?.lockedTokens ?? wallet?.totalBidHeld ?? 0;
   const isFrozen = walletInfo?.isFrozen === true;
 
   const summaryCards = useMemo(() => {
+    const walletSummary = walletData?.summary || {};
     const balance = wallet?.balance || 0;
     const activeEscrowCount = walletData?.activeEscrows || 0;
     const totalDeposited = wallet?.totalDeposited || 0;
@@ -248,7 +246,7 @@ export default function BuyerTransactions() {
         (walletSummary.bid_lock?.total || 0),
     );
     return { balance, availableBalance, lockedTokens, activeEscrowCount, totalDeposited, totalSpent };
-  }, [wallet, walletData, walletSummary, availableBalance, lockedTokens]);
+  }, [wallet, walletData, availableBalance, lockedTokens]);
 
   const handleSubmitDeposit = async () => {
     if (!depositData.amount || !depositData.method) {
