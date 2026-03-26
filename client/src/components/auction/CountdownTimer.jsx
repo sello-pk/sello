@@ -8,7 +8,14 @@ import React, { useState, useEffect } from "react";
  * @param {'boxes'|'hms'} format - 'boxes' = separate boxes, 'hms' = "00 h : 00 m : 00 s" (for dark bar)
  * @param {() => void} onComplete - Called when countdown reaches zero
  */
-export default function CountdownTimer({ targetDate, size = "default", showLabel = true, format = "boxes", onComplete }) {
+export default function CountdownTimer({
+  targetDate,
+  size = "default",
+  showLabel = true,
+  format = "boxes",
+  onComplete,
+  variant = "default",
+}) {
   const end = targetDate ? new Date(targetDate).getTime() : 0;
   const [diff, setDiff] = useState(() => (end ? Math.max(0, end - Date.now()) : 0));
   const [done, setDone] = useState(false);
@@ -46,12 +53,30 @@ export default function CountdownTimer({ targetDate, size = "default", showLabel
     default: "px-3 py-1",
     large: "px-4 py-2",
   };
-  const digitClasses = "text-gray-900 dark:text-white";
+  const variantClasses = {
+    default: {
+      label: "text-slate-500",
+      digits: "text-gray-900 dark:text-white",
+      box: "bg-slate-200 dark:bg-slate-700",
+      separator: "bg-slate-200 dark:bg-slate-700",
+    },
+    glassDark: {
+      label: "text-white/70",
+      digits: "text-white",
+      box: "bg-white/12 border border-white/15 backdrop-blur-md shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]",
+      separator: "bg-white/8 border border-white/10 backdrop-blur-md text-white/80",
+    },
+  };
+  const currentVariant = variantClasses[variant] || variantClasses.default;
 
   if (isPast || (end && diff === 0)) {
     return (
-      <span className={`font-mono ${sizeClasses[size]}`}>
-        {showLabel && <span className="text-slate-500 mr-1">Ended</span>}
+      <span
+        className={`font-mono ${sizeClasses[size]} ${currentVariant.digits}`}
+      >
+        {showLabel && (
+          <span className={`${currentVariant.label} mr-1`}>Ended</span>
+        )}
         {format === "hms" ? "00 h : 00 m : 00 s" : "00:00:00"}
       </span>
     );
@@ -60,7 +85,9 @@ export default function CountdownTimer({ targetDate, size = "default", showLabel
   if (format === "hms") {
     const totalHours = days * 24 + hours;
     return (
-      <span className={`font-mono font-semibold ${sizeClasses[size]} text-white`}>
+      <span
+        className={`font-mono font-semibold ${sizeClasses[size]} ${currentVariant.digits}`}
+      >
         {pad(totalHours)} h : {pad(minutes)} m : {pad(seconds)} s
       </span>
     );
@@ -69,26 +96,44 @@ export default function CountdownTimer({ targetDate, size = "default", showLabel
   return (
     <div className="inline-flex flex-col">
       {showLabel && (
-        <span className="text-slate-500 text-xs mb-0.5">
+        <span className={`${currentVariant.label} text-xs mb-0.5`}>
           {days > 0 ? `${days}d ` : ""}
           {pad(hours)}:{pad(minutes)}:{pad(seconds)} left
         </span>
       )}
-      <div className={`flex gap-1 font-mono font-semibold ${sizeClasses[size]} ${digitClasses}`}>
+      <div
+        className={`flex gap-1 font-mono font-semibold ${sizeClasses[size]} ${currentVariant.digits}`}
+      >
         {days > 0 && (
-          <span className={`bg-slate-200 dark:bg-slate-700 rounded ${boxClasses[size]} ${digitClasses}`}>
+          <span
+            className={`${currentVariant.box} rounded ${boxClasses[size]} ${currentVariant.digits}`}
+          >
             {pad(days)}d
           </span>
         )}
-        <span className={`bg-slate-200 dark:bg-slate-700 rounded ${boxClasses[size]} ${digitClasses}`}>
+        <span
+          className={`${currentVariant.box} rounded ${boxClasses[size]} ${currentVariant.digits}`}
+        >
           {pad(hours)}
         </span>
-        <span className={`bg-slate-200 dark:bg-slate-700 rounded ${boxClasses[size]} ${digitClasses}`}>:</span>
-        <span className={`bg-slate-200 dark:bg-slate-700 rounded ${boxClasses[size]} ${digitClasses}`}>
+        <span
+          className={`${currentVariant.separator} rounded ${boxClasses[size]} ${currentVariant.digits}`}
+        >
+          :
+        </span>
+        <span
+          className={`${currentVariant.box} rounded ${boxClasses[size]} ${currentVariant.digits}`}
+        >
           {pad(minutes)}
         </span>
-        <span className={`bg-slate-200 dark:bg-slate-700 rounded ${boxClasses[size]} ${digitClasses}`}>:</span>
-        <span className={`bg-slate-200 dark:bg-slate-700 rounded ${boxClasses[size]} ${digitClasses}`}>
+        <span
+          className={`${currentVariant.separator} rounded ${boxClasses[size]} ${currentVariant.digits}`}
+        >
+          :
+        </span>
+        <span
+          className={`${currentVariant.box} rounded ${boxClasses[size]} ${currentVariant.digits}`}
+        >
           {pad(seconds)}
         </span>
       </div>

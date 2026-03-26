@@ -5,6 +5,7 @@ import CountdownTimer from "./auction/CountdownTimer";
 import { FiZap } from "react-icons/fi";
 import { FaLocationDot } from "react-icons/fa6";
 import { FaRegHeart } from "react-icons/fa";
+import { IoRefreshOutline as RefreshCw } from "react-icons/io5";
 
 const BottomHeader = () => {
   const location = useLocation();
@@ -54,14 +55,24 @@ const BottomHeader = () => {
         )}
       </div>
 
-      <div className="flex items-center gap-6 md:gap-10 flex-shrink-0 ml-auto">
-        {/* <span className="text-white text-xs whitespace-nowrap">Ends in</span> */}
-        <CountdownTimer
-          targetDate={targetDate}
-          size="small"
-          showLabel={false}
-        />
+      <div className="flex items-center gap-4 md:gap-6 flex-shrink-0 ml-auto">
+        <div className="flex items-center gap-3 rounded-2xl bg-white/10 px-3 py-2 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_10px_30px_rgba(5,11,32,0.28)]">
+          <span className="text-white/70 text-xs uppercase tracking-[0.18em] whitespace-nowrap">
+            Ends In
+          </span>
+          <CountdownTimer
+            targetDate={targetDate}
+            size="small"
+            showLabel={false}
+            variant="glassDark"
+          />
+        </div>
         <div className="flex items-center gap-5 md:gap-6">
+          {showAuction && (
+            <span className="inline-flex items-center gap-2 text-white/80 text-sm whitespace-nowrap">
+              <RefreshCw className="w-4 h-4 animate-spin text-primary-500" />
+            </span>
+          )}
           <Link to="/saved-cars">
             <FaRegHeart className="w-5 h-5 hover:text-primary ease text-white shrink-0" />
           </Link>

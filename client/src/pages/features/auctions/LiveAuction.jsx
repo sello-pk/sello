@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
@@ -294,8 +294,15 @@ export default function LiveAuction() {
   const upcomingAuctions = Array.isArray(upcomingList) ? upcomingList : upcomingList?.data || [];
   const endedAuctions = Array.isArray(endedList) ? endedList : endedList?.data || [];
 
-  // Get dynamic categories for makes
-  const { makes, isLoading: categoriesLoading } = useCarCategories();
+  // Live auction is car-only, so request only car categories.
+  const { makes, isLoading: categoriesLoading } = useCarCategories("Car");
+  const carMakes = useMemo(
+    () =>
+      (Array.isArray(makes) ? makes : []).filter(
+        (make) => !make?.vehicleType || make.vehicleType === "Car",
+      ),
+    [makes],
+  );
 
   // Real-time bid updates via socket
   const { socket, addEventListener, removeEventListener } = useSocket();
@@ -540,7 +547,7 @@ export default function LiveAuction() {
                 }
               >
                 <option value="all">All Makes</option>
-                {makes.map((make) => (
+                {carMakes.map((make) => (
                   <option key={make._id} value={make.name}>
                     {make.name}
                   </option>
@@ -729,4 +736,3 @@ export default function LiveAuction() {
     </div>
   );
 }
-
