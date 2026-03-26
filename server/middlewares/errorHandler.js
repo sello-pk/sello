@@ -196,7 +196,7 @@ export const multerErrorHandler = (err, req, res, next) => {
         errorType = "unexpected_field";
         message = `Unexpected upload field: ${badField}.`;
         details =
-          "Allowed auction upload fields: images, inspectionReport, inspectionReportFile, damageImages, documents";
+          "Allowed auction upload fields: images, images[], inspectionReport, inspectionReport[], inspectionReportFile, damageImages, damageImages[], documents, documents[]";
       } else if (isDealerUpload) {
         message =
           "Too many dealer files were uploaded. Please attach only the required document(s) and try again.";

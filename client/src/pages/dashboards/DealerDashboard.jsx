@@ -50,6 +50,30 @@ import toast from "react-hot-toast";
 import { Image as LazyImage } from "../../components/ui/Image";
 import { images } from "../../assets/assets";
 import AccountDeletionRequest from "../../components/features/profile/AccountDeletionRequest";
+import SearchableSelect from "../../components/common/SearchableSelect";
+import { useCarCategories } from "../../hooks/useCarCategories";
+
+const createEmptyAuctionForm = () => ({
+  make: "",
+  model: "",
+  year: "",
+  mileage: "",
+  condition: "Used",
+  fuelType: "",
+  transmission: "",
+  colorExterior: "",
+  country: "",
+  state: "",
+  city: "",
+  location: "",
+  startingBid: "",
+  reservePrice: "",
+  buyNowPrice: "",
+  auctionId: "",
+  carId: "",
+  images: [],
+  inspectionReportFile: null,
+});
 
 const DealerDashboard = () => {
   const navigate = useNavigate();
@@ -57,54 +81,86 @@ const DealerDashboard = () => {
   const [activeSection, setActiveSection] = useState("");
   const [showAddCar, setShowAddCar] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  const [newCar, setNewCar] = useState({
-    make: "",
-    model: "",
-    year: "",
-    mileage: "",
-    condition: "",
-    engine_type: "",
-    transmission: "",
-    color: "",
-    registration_city: "",
-    starting_bid: "",
-    reserve_price: "",
-    buy_now_price: "",
-    auctionId: "",
-    carId: "",
-    images: [],
-    inspectionReportFile: null,
-    inspection_report: {},
-  });
+  const [newCar, setNewCar] = useState(createEmptyAuctionForm);
   const photoInputRef = useRef(null);
   const [submitCarToAuction, { isLoading: isSubmittingAuctionCar }] =
     useSubmitCarToAuctionMutation();
   const { data: tokenData } = useGetMyTokenPaymentsQuery();
+  const {
+    makes,
+    years,
+    countries,
+    states,
+    cities,
+    getModelsByMake,
+    getStatesByCountry,
+    getCitiesByCountry,
+    getCitiesByState,
+    isLoading: auctionCategoryLoading,
+  } = useCarCategories("Car");
+
+  const selectedMake = useMemo(
+    () => makes.find((item) => item.name === newCar.make),
+    [makes, newCar.make],
+  );
+  const availableAuctionModels = useMemo(() => {
+    if (!selectedMake?._id) return [];
+    return getModelsByMake?.[selectedMake._id] || [];
+  }, [getModelsByMake, selectedMake]);
+  const selectedCountry = useMemo(
+    () => countries.find((item) => item.name === newCar.country),
+    [countries, newCar.country],
+  );
+  const selectedState = useMemo(
+    () => states.find((item) => item.name === newCar.state),
+    [states, newCar.state],
+  );
+  const availableAuctionStates = useMemo(() => {
+    if (!selectedCountry?._id) return states;
+    return getStatesByCountry?.[selectedCountry._id] || [];
+  }, [getStatesByCountry, selectedCountry, states]);
+  const availableAuctionCities = useMemo(() => {
+    if (selectedState?._id) {
+      return getCitiesByState?.[selectedState._id] || [];
+    }
+    if (selectedCountry?._id) {
+      return getCitiesByCountry?.[selectedCountry._id] || [];
+    }
+    return cities;
+  }, [
+    cities,
+    getCitiesByCountry,
+    getCitiesByState,
+    selectedCountry,
+    selectedState,
+  ]);
+
+  const updateAuctionForm = useCallback((field, value) => {
+    setNewCar((prev) => {
+      const next = { ...prev, [field]: value };
+      if (field === "make") {
+        next.model = "";
+      }
+      if (field === "country") {
+        next.state = "";
+        next.city = "";
+      }
+      if (field === "state") {
+        next.city = "";
+      }
+      if (field === "city" && !prev.location) {
+        next.location = value;
+      }
+      return next;
+    });
+  }, []);
 
   const closeAuctionModal = useCallback(() => {
     setNewCar((prev) => {
       (prev.images || []).forEach((item) => {
         if (item?.preview) URL.revokeObjectURL(item.preview);
       });
-      return {
-        make: "",
-        model: "",
-        year: "",
-        mileage: "",
-        condition: "",
-        engine_type: "",
-        transmission: "",
-        color: "",
-        registration_city: "",
-        starting_bid: "",
-        reserve_price: "",
-        buy_now_price: "",
-        auctionId: "",
-        carId: "",
-        images: [],
-        inspectionReportFile: null,
-        inspection_report: {},
-      };
+      return createEmptyAuctionForm();
     });
     setShowAddCar(false);
     setCurrentStep(1);
@@ -374,7 +430,7 @@ const DealerDashboard = () => {
     const hasNewCarDetails = newCar.make && newCar.model && newCar.year;
     const hasExistingCar = newCar.carId;
 
-    if (!newCar.auctionId || !newCar.starting_bid) {
+    if (!newCar.auctionId || !newCar.startingBid) {
       toast.error("Select auction and starting bid");
       return;
     }
@@ -403,12 +459,12 @@ const DealerDashboard = () => {
     try {
       const submissionData = {
         auctionId: newCar.auctionId,
-        startingBid: Number(newCar.starting_bid),
-        reservePrice: newCar.reserve_price
-          ? Number(newCar.reserve_price)
+        startingBid: Number(newCar.startingBid),
+        reservePrice: newCar.reservePrice
+          ? Number(newCar.reservePrice)
           : undefined,
-        buyNowPrice: newCar.buy_now_price
-          ? Number(newCar.buy_now_price)
+        buyNowPrice: newCar.buyNowPrice
+          ? Number(newCar.buyNowPrice)
           : undefined,
         inspectionReportFile: newCar.inspectionReportFile,
       };
@@ -418,54 +474,52 @@ const DealerDashboard = () => {
         submissionData.carId = newCar.carId;
       } else {
         // Include new car details if creating a new listing
-        const carDetails = newCar.newCarDetails || {
+        const carDetails = {
           make: newCar.make,
           model: newCar.model,
           year: newCar.year,
           mileage: newCar.mileage,
           condition: newCar.condition,
-          engine_type: newCar.engine_type,
+          fuelType: newCar.fuelType,
           transmission: newCar.transmission,
-          color: newCar.color,
-          registration_city: newCar.registration_city,
+          colorExterior: newCar.colorExterior,
+          country: newCar.country,
+          city: newCar.city,
+          location: newCar.location,
           images: newCar.images || [],
         };
 
-        // Add required fields that might be missing
         Object.assign(submissionData, {
           ...carDetails,
           title: `${newCar.year} ${newCar.make} ${newCar.model}`,
           description: `Vehicle submitted for auction: ${newCar.year} ${newCar.make} ${newCar.model}`,
-          price: Number(newCar.starting_bid),
+          price: Number(newCar.startingBid),
           vehicleType: "Car",
-          vehicleTypeCategory: undefined, // Remove this field entirely since it's optional
-          city: carDetails.registration_city || "Not specified",
-          country: "Pakistan",
+          city: carDetails.city || "Not specified",
+          country: carDetails.country || "Pakistan",
           features: [],
-          fuelType:
-            newCar.engine_type === "petrol"
-              ? "Petrol"
-              : newCar.engine_type === "diesel"
-                ? "Diesel"
-                : "Petrol",
-          colorExterior: carDetails.color || "Not specified",
-          condition: "Used", // Always use "Used" as it's the only valid enum for auction cars
-          transmission:
-            newCar.transmission === "automatic" ? "Automatic" : "Manual",
-          contactNumber: user?.phone || "+923000000000", // Get from user or provide default
+          fuelType: carDetails.fuelType || "Petrol",
+          colorExterior: carDetails.colorExterior || "N/A",
+          condition: carDetails.condition || "Used",
+          transmission: carDetails.transmission || "Manual",
+          contactNumber:
+            user?.phone ||
+            user?.dealerInfo?.businessPhone ||
+            user?.dealerInfo?.whatsappNumber ||
+            "+923000000000",
           warranty: "Doesn't Apply",
           ownerType: "Dealer",
           geoLocation: {
             type: "Point",
-            coordinates: [67.0011, 24.8607], // Default Pakistan coordinates
+            coordinates: [67.0011, 24.8607],
           },
           location:
-            user.dealerInfo?.city ||
-            carDetails.registration_city ||
-            "Not specified", // Use actual location
+            carDetails.location ||
+            carDetails.city ||
+            user?.dealerInfo?.city ||
+            "Not specified",
         });
 
-        // Convert images array to File objects for FormData
         if (carDetails.images && carDetails.images.length > 0) {
           submissionData.images = carDetails.images.map(
             (img) => img.file || img,
@@ -482,25 +536,7 @@ const DealerDashboard = () => {
         (prev.images || []).forEach((item) => {
           if (item?.preview) URL.revokeObjectURL(item.preview);
         });
-        return {
-          make: "",
-          model: "",
-          year: "",
-          mileage: "",
-          condition: "",
-          engine_type: "",
-          transmission: "",
-          color: "",
-          registration_city: "",
-          starting_bid: "",
-          reserve_price: "",
-          buy_now_price: "",
-          auctionId: "",
-          carId: "",
-          images: [],
-          inspectionReportFile: null,
-          inspection_report: {},
-        };
+        return createEmptyAuctionForm();
       });
       setShowAddCar(false);
       setCurrentStep(1);
@@ -775,25 +811,7 @@ const DealerDashboard = () => {
                 // Always start the auction submission wizard from step 1.
                 // The previous code forced step 4, which feels like "going to Pricing by default".
                 setCurrentStep(1);
-                setNewCar({
-                  make: "",
-                  model: "",
-                  year: "",
-                  mileage: "",
-                  condition: "",
-                  engine_type: "",
-                  transmission: "",
-                  color: "",
-                  registration_city: "",
-                  starting_bid: "",
-                  reserve_price: "",
-                  buy_now_price: "",
-                  auctionId: "",
-                  carId: "",
-                  images: [],
-                  inspectionReportFile: null,
-                  inspection_report: {},
-                });
+                setNewCar(createEmptyAuctionForm());
                 setShowAddCar(true);
               }}
               className="bg-gradient-to-r from-primary-500 to-primary-500 hover:from-primary-500 hover:to-primary-500 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-all hover:shadow-lg"
@@ -1780,48 +1798,49 @@ const DealerDashboard = () => {
                 {/* Step 1: Basic Info */}
                 {currentStep === 1 && (
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Make *
-                      </label>
-                      <input
-                        type="text"
-                        value={newCar.make}
-                        onChange={(e) =>
-                          setNewCar({ ...newCar, make: e.target.value })
-                        }
-                        placeholder="e.g. Toyota"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Model *
-                      </label>
-                      <input
-                        type="text"
-                        value={newCar.model}
-                        onChange={(e) =>
-                          setNewCar({ ...newCar, model: e.target.value })
-                        }
-                        placeholder="e.g. Corolla"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Year *
-                      </label>
-                      <input
-                        type="number"
-                        value={newCar.year}
-                        onChange={(e) =>
-                          setNewCar({ ...newCar, year: e.target.value })
-                        }
-                        placeholder="e.g. 2022"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
-                      />
-                    </div>
+                    <SearchableSelect
+                      label="Make"
+                      value={newCar.make}
+                      onChange={(value) => updateAuctionForm("make", value)}
+                      options={makes.map((make) => ({
+                        value: make.name,
+                        label: make.name,
+                      }))}
+                      placeholder={
+                        auctionCategoryLoading ? "Loading makes..." : "Select make"
+                      }
+                      isLoading={auctionCategoryLoading}
+                      required
+                    />
+                    <SearchableSelect
+                      label="Model"
+                      value={newCar.model}
+                      onChange={(value) => updateAuctionForm("model", value)}
+                      options={availableAuctionModels.map((model) => ({
+                        value: model.name,
+                        label: model.name,
+                      }))}
+                      placeholder={
+                        newCar.make ? "Select model" : "Select make first"
+                      }
+                      disabled={!newCar.make}
+                      isLoading={auctionCategoryLoading}
+                      required
+                    />
+                    <SearchableSelect
+                      label="Year"
+                      value={newCar.year}
+                      onChange={(value) => updateAuctionForm("year", value)}
+                      options={years.map((year) => ({
+                        value: year.name,
+                        label: year.name,
+                      }))}
+                      placeholder={
+                        auctionCategoryLoading ? "Loading years..." : "Select year"
+                      }
+                      isLoading={auctionCategoryLoading}
+                      required
+                    />
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Mileage (km) *
@@ -1842,34 +1861,27 @@ const DealerDashboard = () => {
                       </label>
                       <select
                         value={newCar.condition}
-                        onChange={(e) =>
-                          setNewCar({ ...newCar, condition: e.target.value })
-                        }
+                        onChange={(e) => updateAuctionForm("condition", e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                       >
-                        <option value="">Select condition</option>
-                        <option value="excellent">Excellent</option>
-                        <option value="good">Good</option>
-                        <option value="fair">Fair</option>
-                        <option value="needs_repair">Needs Repair</option>
+                        <option value="Used">Used</option>
+                        <option value="New">New</option>
                       </select>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Engine Type
+                        Fuel Type
                       </label>
                       <select
-                        value={newCar.engine_type}
-                        onChange={(e) =>
-                          setNewCar({ ...newCar, engine_type: e.target.value })
-                        }
+                        value={newCar.fuelType}
+                        onChange={(e) => updateAuctionForm("fuelType", e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                       >
-                        <option value="">Select engine</option>
-                        <option value="petrol">Petrol</option>
-                        <option value="diesel">Diesel</option>
-                        <option value="hybrid">Hybrid</option>
-                        <option value="cng">CNG</option>
+                        <option value="">Select fuel type</option>
+                        <option value="Petrol">Petrol</option>
+                        <option value="Diesel">Diesel</option>
+                        <option value="Hybrid">Hybrid</option>
+                        <option value="Electric">Electric</option>
                       </select>
                     </div>
                     <div>
@@ -1879,43 +1891,83 @@ const DealerDashboard = () => {
                       <select
                         value={newCar.transmission}
                         onChange={(e) =>
-                          setNewCar({ ...newCar, transmission: e.target.value })
+                          updateAuctionForm("transmission", e.target.value)
                         }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                       >
                         <option value="">Select transmission</option>
-                        <option value="automatic">Automatic</option>
-                        <option value="manual">Manual</option>
+                        <option value="Automatic">Automatic</option>
+                        <option value="Manual">Manual</option>
                       </select>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Color
+                        Exterior Color
                       </label>
                       <input
                         type="text"
-                        value={newCar.color}
+                        value={newCar.colorExterior}
                         onChange={(e) =>
-                          setNewCar({ ...newCar, color: e.target.value })
+                          updateAuctionForm("colorExterior", e.target.value)
                         }
                         placeholder="e.g. White"
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                       />
                     </div>
-                    <div className="col-span-2">
+                    <SearchableSelect
+                      label="Country"
+                      value={newCar.country}
+                      onChange={(value) => updateAuctionForm("country", value)}
+                      options={countries.map((country) => ({
+                        value: country.name,
+                        label: country.name,
+                      }))}
+                      placeholder={
+                        auctionCategoryLoading
+                          ? "Loading countries..."
+                          : "Select country"
+                      }
+                      isLoading={auctionCategoryLoading}
+                    />
+                    <SearchableSelect
+                      label="State"
+                      value={newCar.state}
+                      onChange={(value) => updateAuctionForm("state", value)}
+                      options={availableAuctionStates.map((state) => ({
+                        value: state.name,
+                        label: state.name,
+                      }))}
+                      placeholder={
+                        newCar.country ? "Select state" : "Select country first"
+                      }
+                      disabled={!newCar.country}
+                      isLoading={auctionCategoryLoading}
+                    />
+                    <SearchableSelect
+                      label="City"
+                      value={newCar.city}
+                      onChange={(value) => updateAuctionForm("city", value)}
+                      options={availableAuctionCities.map((city) => ({
+                        value: city.name,
+                        label: city.name,
+                      }))}
+                      placeholder={
+                        newCar.country ? "Select city" : "Select country first"
+                      }
+                      disabled={!newCar.country}
+                      isLoading={auctionCategoryLoading}
+                    />
+                    <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Registration City
+                        Location
                       </label>
                       <input
                         type="text"
-                        value={newCar.registration_city}
+                        value={newCar.location}
                         onChange={(e) =>
-                          setNewCar({
-                            ...newCar,
-                            registration_city: e.target.value,
-                          })
+                          updateAuctionForm("location", e.target.value)
                         }
-                        placeholder="e.g. Lahore"
+                        placeholder="Area, showroom, or auction pickup point"
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                       />
                     </div>
@@ -2087,8 +2139,8 @@ const DealerDashboard = () => {
                             return {
                               ...prev,
                               carId: e.target.value,
-                              starting_bid: prev.starting_bid
-                                ? String(prev.starting_bid)
+                              startingBid: prev.startingBid
+                                ? String(prev.startingBid)
                                 : selectedCar?.price
                                   ? String(selectedCar.price)
                                   : "",
@@ -2118,9 +2170,9 @@ const DealerDashboard = () => {
                       </label>
                       <input
                         type="number"
-                        value={newCar.starting_bid}
+                        value={newCar.startingBid}
                         onChange={(e) =>
-                          setNewCar({ ...newCar, starting_bid: e.target.value })
+                          updateAuctionForm("startingBid", e.target.value)
                         }
                         placeholder="e.g. 3000000"
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none text-lg"
@@ -2136,12 +2188,9 @@ const DealerDashboard = () => {
                       </label>
                       <input
                         type="number"
-                        value={newCar.reserve_price}
+                        value={newCar.reservePrice}
                         onChange={(e) =>
-                          setNewCar({
-                            ...newCar,
-                            reserve_price: e.target.value,
-                          })
+                          updateAuctionForm("reservePrice", e.target.value)
                         }
                         placeholder="Minimum price you'll accept"
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
@@ -2160,12 +2209,9 @@ const DealerDashboard = () => {
                       </div>
                       <input
                         type="number"
-                        value={newCar.buy_now_price}
+                        value={newCar.buyNowPrice}
                         onChange={(e) =>
-                          setNewCar({
-                            ...newCar,
-                            buy_now_price: e.target.value,
-                          })
+                          updateAuctionForm("buyNowPrice", e.target.value)
                         }
                         placeholder="Instant purchase price"
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
@@ -2232,7 +2278,7 @@ const DealerDashboard = () => {
                           <p className="font-medium">
                             PKR{" "}
                             {parseInt(
-                              newCar.starting_bid || 0,
+                              newCar.startingBid || 0,
                             ).toLocaleString()}
                           </p>
                         </div>
@@ -2289,7 +2335,7 @@ const DealerDashboard = () => {
                       isSubmittingAuctionCar ||
                       auctionOptions.length === 0 ||
                       !newCar.inspectionReportFile ||
-                      !newCar.starting_bid ||
+                      !newCar.startingBid ||
                       !newCar.auctionId ||
                       (!newCar.carId &&
                         !(newCar.make && newCar.model && newCar.year))

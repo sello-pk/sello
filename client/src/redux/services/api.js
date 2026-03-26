@@ -102,6 +102,28 @@ function getBestErrorMessage(error, fallbackMessage) {
   return fallbackMessage;
 }
 
+function logFormDataKeysSafely(label, formData) {
+  if (!(formData instanceof FormData)) return;
+  const payload = Array.from(formData.entries()).map(([key, value]) => ({
+    key,
+    isFile: value instanceof File,
+    ...(value instanceof File
+      ? {
+          name: value.name,
+          size: value.size,
+          type: value.type,
+        }
+      : {}),
+  }));
+
+  if (import.meta.env.PROD) {
+    console.info(`[${label}]`, payload);
+    return;
+  }
+
+  logger.info(label, payload);
+}
+
 const CLIENT_UPLOAD_MAX_IMAGE_EDGE = 1920;
 const CLIENT_UPLOAD_IMAGE_QUALITY = 0.78;
 const CLIENT_UPLOAD_SKIP_BYTES = 450 * 1024;
@@ -1586,6 +1608,7 @@ export const api = createApi({
             "images",
             "damageImages",
           ]);
+          logFormDataKeysSafely("auction-submit-formdata", optimizedForm);
           const result = await fetchWithBQ({
             url: "/auctions/submit-car",
             method: "POST",

@@ -1708,6 +1708,7 @@ export const submitCarToAuction = async (req, res) => {
     // Hybrid model: inspection report PDF is mandatory for every auction submission
     const inspectionReportFile =
       req.files?.inspectionReport?.[0] ||
+      req.files?.["inspectionReport[]"]?.[0] ||
       req.files?.inspectionReportFile?.[0] ||
       req.files?.inspection_report?.[0];
     if (!inspectionReportFile || !inspectionReportFile.buffer) {
@@ -1761,6 +1762,7 @@ export const submitCarToAuction = async (req, res) => {
       // Handle image uploads — parallel + total size cap (same as listing uploads)
       const images = [
         ...(req.files?.images || []),
+        ...(req.files?.["images[]"] || []),
         ...(req.files?.image || []),
         ...(req.files?.photos || []),
         ...(req.files?.photo || []),
@@ -1800,6 +1802,28 @@ export const submitCarToAuction = async (req, res) => {
       } catch {
         parsedFeatures = [];
       }
+
+      const normalizeAuctionCondition = (value) => {
+        const normalized = String(value || "")
+          .trim()
+          .toLowerCase();
+        return normalized === "new" ? "New" : "Used";
+      };
+      const normalizeAuctionFuelType = (value) => {
+        const normalized = String(value || "")
+          .trim()
+          .toLowerCase();
+        if (normalized === "diesel") return "Diesel";
+        if (normalized === "hybrid") return "Hybrid";
+        if (normalized === "electric") return "Electric";
+        return "Petrol";
+      };
+      const normalizeAuctionTransmission = (value) => {
+        const normalized = String(value || "")
+          .trim()
+          .toLowerCase();
+        return normalized === "automatic" ? "Automatic" : "Manual";
+      };
 
       const normalizedAuctionTitle = String(
         title || `${make} ${model} ${year}`,
@@ -1857,13 +1881,13 @@ export const submitCarToAuction = async (req, res) => {
         make,
         model,
         year,
-        condition: condition || "Used",
+        condition: normalizeAuctionCondition(condition),
         price: startingBid || price || 0,
         colorExterior: colorExterior || color || "Not specified",
         colorInterior: colorInterior || "Not specified",
-        fuelType: fuelType || engine_type || "Petrol",
+        fuelType: normalizeAuctionFuelType(fuelType || engine_type),
         engineCapacity,
-        transmission: transmission || "Manual",
+        transmission: normalizeAuctionTransmission(transmission),
         mileage: mileage || 0,
         features: parsedFeatures,
         regionalSpec,
@@ -1929,6 +1953,7 @@ export const submitCarToAuction = async (req, res) => {
     }
     const damageFiles = [
       ...(req.files?.damageImages || []),
+      ...(req.files?.["damageImages[]"] || []),
       ...(req.files?.damageImage || []),
     ];
     if (damageFiles.length > 0) {
@@ -1946,6 +1971,7 @@ export const submitCarToAuction = async (req, res) => {
     }
     const docFiles = [
       ...(req.files?.documents || []),
+      ...(req.files?.["documents[]"] || []),
       ...(req.files?.document || []),
     ];
     if (docFiles.length > 0) {
