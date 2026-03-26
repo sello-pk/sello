@@ -7,6 +7,7 @@ import DealerForm from "../../features/profile/DealerForm";
 import {
   DEALER_DOC_MAX_BYTES,
   buildDealerPayloadFromForm,
+  getSafeDealerErrorMessage,
   mapUserToDealerForm,
 } from "../../features/profile/dealerFormUtils";
 import { useCarCategories } from "../../../hooks/useCarCategories";
@@ -126,7 +127,9 @@ const DealerProfileEditSection = ({
       setIsEditingDealer(false);
       await refetch();
     } catch (error) {
-      toast.error(error?.data?.message || DEALER_PROFILE_FALLBACK_MESSAGE);
+      toast.error(
+        getSafeDealerErrorMessage(error, DEALER_PROFILE_FALLBACK_MESSAGE),
+      );
     }
   };
 

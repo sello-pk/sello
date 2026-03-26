@@ -578,7 +578,11 @@ export const getMyAuctionAccessStatus = async (req, res) => {
     });
   } catch (error) {
     Logger.error("getMyAuctionAccessStatus error", error);
-    return res.status(500).json({ success: false, message: "Server error" });
+    return res.status(500).json({
+      success: false,
+      message:
+        "Could not load your dealer approval status right now. Please refresh and try again.",
+    });
   }
 };
 

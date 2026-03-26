@@ -13,6 +13,7 @@ import {
   buildDealerPayloadFromForm,
   createDealerFormState,
   getFirstDealerErrorMessage,
+  getSafeDealerErrorMessage,
   validateDealerStepOne,
 } from "./dealerFormUtils";
 
@@ -157,7 +158,9 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
       onSuccess?.();
       onClose();
     } catch (error) {
-      toast.error(error?.data?.message || DEALER_REQUEST_FALLBACK_MESSAGE);
+      toast.error(
+        getSafeDealerErrorMessage(error, DEALER_REQUEST_FALLBACK_MESSAGE),
+      );
     }
   };
 

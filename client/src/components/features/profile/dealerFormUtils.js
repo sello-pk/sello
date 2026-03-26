@@ -152,3 +152,17 @@ export const getFirstDealerErrorMessage = (errors) => {
   const moreCount = fields.length - 1;
   return `${firstMessage} (${moreCount} more field${moreCount > 1 ? "s" : ""} need attention)`;
 };
+
+export const getSafeDealerErrorMessage = (error, fallbackMessage) => {
+  const serverMessage = error?.data?.message;
+  if (
+    typeof serverMessage === "string" &&
+    serverMessage.trim() &&
+    !["server error", "internal server error"].includes(
+      serverMessage.trim().toLowerCase(),
+    )
+  ) {
+    return serverMessage;
+  }
+  return fallbackMessage;
+};

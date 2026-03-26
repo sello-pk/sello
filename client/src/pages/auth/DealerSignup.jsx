@@ -12,6 +12,7 @@ import {
   buildDealerPayloadFromForm,
   createDealerFormState,
   getFirstDealerErrorMessage,
+  getSafeDealerErrorMessage,
   validateDealerStepOne,
 } from "../../components/features/profile/dealerFormUtils";
 
@@ -132,7 +133,7 @@ const DealerSignup = ({ onBack }) => {
       );
       navigate("/login");
     } catch (err) {
-      toast.error(err?.data?.message || DEALER_SIGNUP_FALLBACK_MESSAGE);
+      toast.error(getSafeDealerErrorMessage(err, DEALER_SIGNUP_FALLBACK_MESSAGE));
     } finally {
       setLoading(false);
     }
