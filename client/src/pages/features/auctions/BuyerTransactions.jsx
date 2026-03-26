@@ -170,10 +170,22 @@ export default function BuyerTransactions() {
   const [raiseEscrowDispute, { isLoading: raisingDispute }] =
     useRaiseEscrowDisputeMutation();
   const { data: tokenData, isLoading: tokenLoading } =
-    useGetMyTokenPaymentsQuery();
+    useGetMyTokenPaymentsQuery(undefined, {
+      pollingInterval: 15000,
+      refetchOnMountOrArgChange: true,
+    });
   const { data: walletData, isLoading: walletLoading } =
-    useGetMyWalletTransactionsQuery({});
-  const { data: walletInfo } = useGetMyWalletQuery();
+    useGetMyWalletTransactionsQuery(
+      {},
+      {
+        pollingInterval: 15000,
+        refetchOnMountOrArgChange: true,
+      },
+    );
+  const { data: walletInfo } = useGetMyWalletQuery(undefined, {
+    pollingInterval: 15000,
+    refetchOnMountOrArgChange: true,
+  });
   const {
     data: myDeposits = [],
     isLoading: depositsLoading,
@@ -1257,7 +1269,7 @@ export default function BuyerTransactions() {
         {activeTab === "tokens" && (
           <div className="space-y-4">
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
-              Token payments are separate from wallet deposits. Your wallet balance stays `0` until you add funds through the `Deposits` tab or an admin approves a wallet deposit.
+              Verified token payments are credited to your auction wallet after admin approval. You can still use the Deposits tab to add extra bidding funds on top of your token amount.
             </div>
             <div className="grid md:grid-cols-2 gap-3">
               <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
@@ -1267,7 +1279,7 @@ export default function BuyerTransactions() {
                 </p>
                 <p className="text-xs text-slate-500 mt-1">
                   {hasVerifiedToken
-                    ? "Verified for auction access"
+                    ? "Verified and credited to wallet"
                     : "No verified token yet"}
                 </p>
               </div>
@@ -1277,7 +1289,7 @@ export default function BuyerTransactions() {
                   {formatPrice(summaryCards.balance)}
                 </p>
                 <p className="text-xs text-slate-500 mt-1">
-                  Use Deposits to add bidding funds to your wallet
+                  Includes verified token credits and any approved deposits
                 </p>
               </div>
             </div>

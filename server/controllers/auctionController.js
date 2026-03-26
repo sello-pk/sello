@@ -97,58 +97,168 @@ const getOrCreateAuctionWallet = async (userId) => {
   return wallet;
 };
 
+const creditVerifiedTokenPaymentToWallet = async (paymentId, userId) => {
+  const existingCreditTxn = await WalletTransaction.findOne({
+    user: userId,
+    type: "token_deposit",
+    reference: paymentId,
+    referenceModel: "TokenPayment",
+    amount: { $gt: 0 },
+  })
+    .sort({ createdAt: -1 })
+    .lean();
+
+  if (existingCreditTxn) {
+    await TokenPayment.updateOne(
+      { _id: paymentId, walletCreditedAt: null },
+      {
+        $set: {
+          walletCreditedAt: existingCreditTxn.createdAt || new Date(),
+          walletTransactionId: existingCreditTxn._id,
+          walletCreditError: "",
+        },
+      },
+    );
+    Logger.info("Token payment already had wallet credit ledger entry", {
+      paymentId: String(paymentId),
+      userId: String(userId),
+      walletTransactionId: existingCreditTxn._id,
+    });
+    return Wallet.findOne({ user: userId }).lean();
+  }
+
+  const claimedAt = new Date();
+  const payment = await TokenPayment.findOneAndUpdate(
+    {
+      _id: paymentId,
+      user: userId,
+      status: "verified",
+      walletCreditedAt: null,
+    },
+    {
+      $set: {
+        walletCreditedAt: claimedAt,
+        walletCreditError: "",
+      },
+    },
+    { new: true },
+  );
+
+  if (!payment) {
+    return Wallet.findOne({ user: userId }).lean();
+  }
+
+  const amount = Number(payment.amount || 0);
+  Logger.info("Crediting verified token payment to wallet", {
+    paymentId: payment._id,
+    userId: String(userId),
+    amount,
+  });
+
+  const wallet = await Wallet.findOneAndUpdate(
+    { user: userId },
+    {
+      $setOnInsert: { user: userId },
+      $inc: {
+        balance: amount,
+        totalDeposited: amount,
+      },
+      $set: { lastTransactionAt: claimedAt },
+    },
+    {
+      upsert: true,
+      new: true,
+      setDefaultsOnInsert: true,
+    },
+  );
+
+  try {
+    const txn = await WalletTransaction.create({
+      user: userId,
+      type: "token_deposit",
+      amount,
+      balance: wallet.balance || 0,
+      reference: payment._id,
+      referenceModel: "TokenPayment",
+      description: "Verified token deposit credited to wallet",
+      status: "completed",
+    });
+
+    await TokenPayment.updateOne(
+      { _id: payment._id },
+      {
+        $set: {
+          walletTransactionId: txn._id,
+          walletCreditError: "",
+        },
+      },
+    );
+
+    Logger.info("Verified token payment credited successfully", {
+      paymentId: payment._id,
+      walletId: wallet._id,
+      walletBalance: wallet.balance || 0,
+      walletTransactionId: txn._id,
+    });
+    return wallet;
+  } catch (error) {
+    await Wallet.updateOne(
+      { user: userId },
+      {
+        $inc: {
+          balance: -amount,
+          totalDeposited: -amount,
+        },
+        $set: { lastTransactionAt: new Date() },
+      },
+    );
+    await TokenPayment.updateOne(
+      { _id: payment._id },
+      {
+        $set: {
+          walletCreditedAt: null,
+          walletTransactionId: null,
+          walletCreditError: error?.message || "Wallet ledger write failed",
+        },
+      },
+    );
+    Logger.error("Failed to log wallet credit for verified token payment", {
+      paymentId: payment._id,
+      userId: String(userId),
+      error: error?.message || error,
+    });
+    throw new Error("Wallet credit failed after payment verification");
+  }
+};
+
 const syncVerifiedTokenCreditsToWallet = async (userId) => {
   const verifiedPayments = await TokenPayment.find({
     user: userId,
     status: "verified",
+    walletCreditedAt: null,
   })
-    .select("_id amount")
+    .select("_id user")
+    .sort({ createdAt: 1 })
     .lean();
 
-  if (!verifiedPayments.length) return null;
-
-  const creditedTxns = await WalletTransaction.find({
-    user: userId,
-    type: "token_deposit",
-    referenceModel: "TokenPayment",
-    reference: { $in: verifiedPayments.map((payment) => payment._id) },
-    amount: { $gt: 0 },
-  })
-    .select("reference")
-    .lean();
-
-  const creditedRefs = new Set(
-    creditedTxns.map((txn) => txn.reference?.toString()).filter(Boolean),
-  );
-  const missingPayments = verifiedPayments.filter(
-    (payment) => !creditedRefs.has(payment._id.toString()),
-  );
-
-  if (!missingPayments.length) return null;
-
-  const wallet = await getOrCreateAuctionWallet(userId);
-
-  for (const payment of missingPayments) {
-    wallet.balance += Number(payment.amount || 0);
-    wallet.totalDeposited += Number(payment.amount || 0);
-    wallet.lastTransactionAt = new Date();
-    await wallet.save();
-
-    await logWalletTxn({
-      user: userId,
-      type: "token_deposit",
-      amount: Number(payment.amount || 0),
-      reference: payment._id,
-      referenceModel: "TokenPayment",
-      description: "Verified token deposit credited to wallet",
-    });
+  if (!verifiedPayments.length) {
+    return Wallet.findOne({ user: userId }).lean();
   }
 
-  return wallet;
+  let lastWallet = null;
+  for (const payment of verifiedPayments) {
+    lastWallet = await creditVerifiedTokenPaymentToWallet(
+      payment._id,
+      payment.user || userId,
+    );
+  }
+
+  return lastWallet;
 };
 
 const reverseTokenCreditFromWallet = async (payment) => {
   const paymentUserId = payment.user?._id || payment.user;
+  if (!payment?.walletCreditedAt) return null;
   const existingRefundTxn = await WalletTransaction.findOne({
     user: paymentUserId,
     type: "token_refund",
@@ -189,6 +299,16 @@ const reverseTokenCreditFromWallet = async (payment) => {
     referenceModel: "TokenPayment",
     description: "Token deposit refunded from wallet",
   });
+
+  await TokenPayment.updateOne(
+    { _id: payment._id },
+    {
+      $set: {
+        walletCreditedAt: null,
+        walletTransactionId: null,
+      },
+    },
+  );
 
   return wallet;
 };
@@ -2439,6 +2559,12 @@ export const verifyTokenPayment = async (req, res) => {
     }
 
     if (action === "verify") {
+      Logger.info("Admin verifying token payment", {
+        paymentId: payment._id,
+        userId: String(payment.user),
+        amount: Number(payment.amount || 0),
+        adminId: String(req.user._id),
+      });
       payment.status = "verified";
       payment.verifiedBy = req.user._id;
       payment.verifiedAt = new Date();
@@ -2449,8 +2575,16 @@ export const verifyTokenPayment = async (req, res) => {
       payment.rejectionReason = rejectionReason || "";
     }
     await payment.save();
+    let walletAfterCredit = null;
     if (action === "verify") {
-      await syncVerifiedTokenCreditsToWallet(payment.user);
+      walletAfterCredit = await syncVerifiedTokenCreditsToWallet(payment.user);
+      Logger.info("Token payment verification wallet sync completed", {
+        paymentId: payment._id,
+        userId: String(payment.user),
+        walletBalance: Number(walletAfterCredit?.balance || 0),
+        walletCreditedAt:
+          payment.walletCreditedAt || payment.verifiedAt || new Date(),
+      });
     }
 
     await Notification.create({
@@ -2470,7 +2604,10 @@ export const verifyTokenPayment = async (req, res) => {
     res.json({
       success: true,
       data: payment,
-      message: `Payment ${action === "verify" ? "verified" : "rejected"}`,
+      message:
+        action === "verify"
+          ? "Payment verified and wallet updated successfully"
+          : "Payment rejected",
     });
   } catch (error) {
     Logger.error("verifyTokenPayment error", error);

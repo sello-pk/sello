@@ -188,6 +188,13 @@ const tokenPaymentSchema = new mongoose.Schema(
       default: null,
     },
     verifiedAt: { type: Date, default: null },
+    walletCreditedAt: { type: Date, default: null, index: true },
+    walletTransactionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "WalletTransaction",
+      default: null,
+    },
+    walletCreditError: { type: String, default: "" },
     rejectionReason: { type: String, default: "" },
     refundedAt: { type: Date, default: null },
   },

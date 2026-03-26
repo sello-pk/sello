@@ -73,7 +73,13 @@ export default function TokenPayment() {
   const [receiptUrl, setReceiptUrl] = useState("");
   const [receiptName, setReceiptName] = useState("");
 
-  const { data: tokenData, isLoading } = useGetMyTokenPaymentsQuery();
+  const { data: tokenData, isLoading } = useGetMyTokenPaymentsQuery(
+    undefined,
+    {
+      pollingInterval: 15000,
+      refetchOnMountOrArgChange: true,
+    },
+  );
   const { data: auctionAccess } = useGetMyAuctionAccessStatusQuery();
   const { data: tokenMeta } = useGetTokenPaymentMetaQuery();
   const [submitPayment, { isLoading: submitting }] = useSubmitTokenPaymentMutation();
@@ -215,7 +221,7 @@ export default function TokenPayment() {
           </button>
           <h1 className="text-2xl font-bold">Token Payment</h1>
           <p className="text-slate-300 mt-1 text-sm">
-            Secure token verification with a refundable deposit. Bidding funds are added to your wallet separately.
+            Secure token verification with a refundable deposit. Once approved, the token amount is credited to your auction wallet and unlocks bidding access.
           </p>
         </div>
       </section>
@@ -226,7 +232,7 @@ export default function TokenPayment() {
             <CheckCircle className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
             <h2 className="text-xl font-bold text-emerald-700 mb-1">Token Verified</h2>
             <p className="text-slate-600 mb-4 text-sm">
-              Your token is verified. This refundable deposit works as your bidding access pass for live auctions.
+              Your token is verified. This refundable deposit is now credited to your auction wallet and works as your bidding access pass for live auctions.
             </p>
             <Button onClick={() => navigate("/auctions/live")}>Go to Live Auction</Button>
           </div>
