@@ -335,6 +335,10 @@ const ProfileHero = () => {
   const bidderStatus = auctionAccess?.auctionCapabilities?.auctionBidder?.status || "not_requested";
   const dealerAccessStatus = auctionAccess?.auctionCapabilities?.auctionDealer?.status || "not_requested";
   const canBidAuctions = bidderStatus === "approved" || dealerAccessStatus === "approved";
+  const isVerifiedDealer = user?.role === "dealer" && user?.dealerInfo?.verified === true;
+  const hasPendingDealerRequest =
+    dealerAccessStatus === "pending" ||
+    (!!user?.dealerInfo?.businessName && !user?.dealerInfo?.verified);
 
   const menuItems = [
     {
@@ -375,7 +379,7 @@ const ProfileHero = () => {
       onClick: () => navigate("/my-chats"),
     },
     // For dealers: Show appropriate dashboard based on verification status
-    ...(user?.role === "dealer" && user?.dealerInfo?.verified
+    ...(isVerifiedDealer
       ? [
           {
             id: "dealer-dashboard",
@@ -401,7 +405,7 @@ const ProfileHero = () => {
     ...(user?.role === "individual"
       ? [] // Individual users don't have a dashboard
       : []),
-    ...(user?.role === "dealer"
+    ...(isVerifiedDealer
       ? [
           {
             id: "dealer-profile",
@@ -412,16 +416,14 @@ const ProfileHero = () => {
           },
         ]
       : []),
-    ...(user?.role !== "dealer"
+    ...(!isVerifiedDealer
       ? [
           {
             id: "become-dealer",
             label: "Dealer / Bidder Request",
             icon: FiStar,
             onClick: () => setShowDealerForm(true),
-            highlight: !(
-              user?.role === "dealer" && !user?.dealerInfo?.verified
-            ),
+            highlight: !hasPendingDealerRequest,
           },
         ]
       : []),
@@ -1241,7 +1243,7 @@ const ProfileHero = () => {
               </div>
             )}
 
-            {activeSection === "dealer-profile" && user?.role === "dealer" && (
+            {activeSection === "dealer-profile" && isVerifiedDealer && (
               <DealerProfileEditSection
                 user={user}
                 dealerFormData={dealerFormData}

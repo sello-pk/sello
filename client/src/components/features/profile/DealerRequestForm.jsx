@@ -170,6 +170,12 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
   const isVerifiedDealer = user?.dealerInfo?.verified === true;
   const bidderStatus =
     auctionAccessStatus?.auctionCapabilities?.auctionBidder?.status;
+  const dealerStatus =
+    auctionAccessStatus?.auctionCapabilities?.auctionDealer?.status;
+
+  const hasPendingDealerRequest =
+    dealerStatus === "pending" ||
+    (!!user?.dealerInfo?.businessName && !isVerifiedDealer);
 
   if (isDealer && isVerifiedDealer && bidderStatus === "approved") {
     return (
@@ -216,7 +222,7 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
     );
   }
 
-  if (isDealer && !isVerifiedDealer && bidderStatus !== "approved") {
+  if (hasPendingDealerRequest && bidderStatus !== "approved") {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4">
         <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
@@ -233,13 +239,12 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
             <div className="mx-auto w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
               <FiAlertCircle className="text-yellow-600" size={32} />
             </div>
-            <h4 className="text-lg font-semibold text-gray-900 mb-2">
-              Pending Verification
-            </h4>
-            <p className="text-gray-600 mb-4">
-              Your dealer request is pending admin verification. You will be
-              notified once your account is verified.
-            </p>
+              <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                Pending Verification
+              </h4>
+              <p className="text-gray-600 mb-4">
+                Your dealer request is pending admin verification. Dealer access will unlock only after admin approval.
+              </p>
             <button
               onClick={onClose}
               className="w-full mt-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90 transition-colors font-medium"

@@ -684,6 +684,39 @@ export const reviewAuctionAccessRequest = async (req, res) => {
         .status(404)
         .json({ success: false, message: "User not found" });
 
+    if (!user.auctionCapabilities) {
+      user.auctionCapabilities = {
+        auctionBidder: {
+          status: "not_requested",
+          documents: [],
+          rejectionReason: "",
+        },
+        auctionDealer: {
+          status: "not_requested",
+          documents: [],
+          rejectionReason: "",
+        },
+        graceUntil: null,
+      };
+    }
+    if (!user.auctionCapabilities.auctionBidder) {
+      user.auctionCapabilities.auctionBidder = {
+        status: "not_requested",
+        documents: [],
+        rejectionReason: "",
+      };
+    }
+    if (!user.auctionCapabilities.auctionDealer) {
+      user.auctionCapabilities.auctionDealer = {
+        status: "not_requested",
+        documents: [],
+        rejectionReason: "",
+      };
+    }
+    if (!user.dealerInfo) {
+      user.dealerInfo = {};
+    }
+
     const reviewedAt = new Date();
     const updateCapability = (key) => {
       user.auctionCapabilities[key].status =
@@ -710,10 +743,15 @@ export const reviewAuctionAccessRequest = async (req, res) => {
         user.dealerInfo.verifiedAt = reviewedAt;
       } else if (action === "reject" || action === "revoke") {
         user.dealerInfo.verified = false;
+        if (action === "revoke" && user.role === "dealer") {
+          user.role = "individual";
+        }
       }
     }
 
-    await user.save();
+    user.markModified("auctionCapabilities");
+    user.markModified("dealerInfo");
+    await user.save({ validateModifiedOnly: true });
 
     await createAuditLog(
       req.user,

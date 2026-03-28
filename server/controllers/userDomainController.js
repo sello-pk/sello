@@ -1027,10 +1027,24 @@ export const requestDealer = async (req, res) => {
       licenseUrl,
       null,
     );
-
-    if (user.role !== "admin") {
-      user.role = "dealer";
-    }
+    ensureAuctionCapabilityShell(user);
+    user.auctionCapabilities.auctionDealer = {
+      ...(user.auctionCapabilities?.auctionDealer || {}),
+      status: "pending",
+      requestedAt: new Date(),
+      reviewedAt: null,
+      rejectionReason: "",
+      documents: licenseUrl
+        ? [
+            {
+              name: licenseFiles[0]?.originalname || "business-license",
+              url: licenseUrl,
+              kind: "business_license",
+            },
+          ]
+        : (user.auctionCapabilities?.auctionDealer?.documents || []),
+    };
+    user.markModified("auctionCapabilities");
 
     await user.save({ validateModifiedOnly: true });
 
