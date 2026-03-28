@@ -57,6 +57,39 @@ export function invalidateAuctionSettingsCache() {
   settingsCacheAt = 0;
 }
 
+async function getHeldAmountForBid(bidId, fallbackWallet = null, maxAmount = 0) {
+  if (!bidId) return 0;
+
+  const holdAgg = await WalletTransaction.aggregate([
+    {
+      $match: {
+        reference: bidId,
+        referenceModel: "Bid",
+        type: "bid_hold",
+        status: "completed",
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalHeld: { $sum: { $abs: "$amount" } },
+      },
+    },
+  ]);
+
+  const ledgerHeld = Number(holdAgg[0]?.totalHeld || 0);
+  if (ledgerHeld > 0) {
+    return Math.min(ledgerHeld, Number(maxAmount || 0));
+  }
+
+  const walletHeld = Number(fallbackWallet?.totalBidHeld || 0);
+  if (walletHeld > 0) {
+    return Math.min(walletHeld, Number(maxAmount || 0));
+  }
+
+  return 0;
+}
+
 /**
  * Resolve bid increment for a lot: per-lot bidIncrement > settings > config default.
  */
@@ -222,21 +255,6 @@ export async function applyProxyBids(auctionCarId, currentAmount, excludeUserId,
 
     await Bid.updateMany({ auctionCar: auctionCarId, isWinning: true }, { isWinning: false });
 
-    if (proxyWallet && logWalletTxn) {
-      proxyWallet.balance -= proxyAmount;
-      proxyWallet.totalBidHeld += proxyAmount;
-      proxyWallet.lastTransactionAt = new Date();
-      await proxyWallet.save();
-      await logWalletTxn({
-        user: top.bidder,
-        type: "bid_hold",
-        amount: -proxyAmount,
-        reference: null,
-        referenceModel: "Bid",
-        description: `Proxy bid – PKR ${proxyAmount.toLocaleString()}`,
-      });
-    }
-
     const bid = await Bid.create({
       auction: auctionId,
       auctionCar: auctionCarId,
@@ -247,6 +265,21 @@ export async function applyProxyBids(auctionCarId, currentAmount, excludeUserId,
       isProxy: true,
       isWinning: true,
     });
+
+    if (proxyWallet && logWalletTxn) {
+      proxyWallet.balance -= proxyAmount;
+      proxyWallet.totalBidHeld += proxyAmount;
+      proxyWallet.lastTransactionAt = new Date();
+      await proxyWallet.save();
+      await logWalletTxn({
+        user: top.bidder,
+        type: "bid_hold",
+        amount: -proxyAmount,
+        reference: bid._id,
+        referenceModel: "Bid",
+        description: `Proxy bid – PKR ${proxyAmount.toLocaleString()}`,
+      });
+    }
 
     await AuctionCar.findByIdAndUpdate(auctionCarId, {
       currentBid: proxyAmount,
@@ -292,7 +325,11 @@ export async function finalizeAuctionCar(auctionCar, topBid, deps) {
   await auctionCar.save();
 
   const winnerWallet = await Wallet.findOne({ user: topBid.bidder });
-  const walletDeduction = winnerWallet ? topBid.amount : 10000;
+  const walletDeduction = await getHeldAmountForBid(
+    topBid._id,
+    winnerWallet,
+    topBid.amount,
+  );
   const amountDue = Math.max(0, topBid.amount - walletDeduction);
   const escrow = await createEscrowForWinner(
     auctionCar._id,

@@ -98,6 +98,39 @@ const getOrCreateAuctionWallet = async (userId) => {
   return wallet;
 };
 
+const getHeldAmountForBid = async (bidId, fallbackWallet = null, maxAmount = 0) => {
+  if (!bidId) return 0;
+
+  const holdAgg = await WalletTransaction.aggregate([
+    {
+      $match: {
+        reference: bidId,
+        referenceModel: "Bid",
+        type: "bid_hold",
+        status: "completed",
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalHeld: { $sum: { $abs: "$amount" } },
+      },
+    },
+  ]);
+
+  const ledgerHeld = Number(holdAgg[0]?.totalHeld || 0);
+  if (ledgerHeld > 0) {
+    return Math.min(ledgerHeld, Number(maxAmount || 0));
+  }
+
+  const walletHeld = Number(fallbackWallet?.totalBidHeld || 0);
+  if (walletHeld > 0) {
+    return Math.min(walletHeld, Number(maxAmount || 0));
+  }
+
+  return 0;
+};
+
 const creditVerifiedTokenPaymentToWallet = async (paymentId, userId) => {
   const existingCreditTxn = await WalletTransaction.findOne({
     user: userId,
@@ -462,8 +495,6 @@ export const getAuctionCars = async (req, res) => {
         select:
           "title make model year condition mileage fuelType transmission images colorExterior registrationCity vehicleType price",
       })
-      .skip((page - 1) * limit)
-      .limit(Number(limit))
       .lean();
 
     // Client-side-friendly filtering (car fields are nested)
@@ -515,7 +546,9 @@ export const getAuctionCars = async (req, res) => {
     if (sortFns[sortBy]) result.sort(sortFns[sortBy]);
 
     const total = result.length;
-    const safeResult = result.map((item) => ({
+    const startIndex = Math.max(0, (Number(page) - 1) * Number(limit));
+    const paginatedResult = result.slice(startIndex, startIndex + Number(limit));
+    const safeResult = paginatedResult.map((item) => ({
       ...item,
       currentBidder: null,
     }));
@@ -751,21 +784,6 @@ export const placeBid = async (req, res) => {
       { isWinning: false },
     );
 
-    if (hasWallet) {
-      wallet.balance -= amount;
-      wallet.totalBidHeld += amount;
-      wallet.lastTransactionAt = new Date();
-      await wallet.save();
-      await logWalletTxn({
-        user: userId,
-        type: "bid_hold",
-        amount: -amount,
-        reference: null,
-        referenceModel: "Bid",
-        description: `Bid placed – PKR ${amount.toLocaleString()}`,
-      });
-    }
-
     const bid = await Bid.create({
       auction: ac.auction._id,
       auctionCar: auctionCarId,
@@ -775,6 +793,21 @@ export const placeBid = async (req, res) => {
       bidType: "online",
       isWinning: true,
     });
+
+    if (hasWallet) {
+      wallet.balance -= amount;
+      wallet.totalBidHeld += amount;
+      wallet.lastTransactionAt = new Date();
+      await wallet.save();
+      await logWalletTxn({
+        user: userId,
+        type: "bid_hold",
+        amount: -amount,
+        reference: bid._id,
+        referenceModel: "Bid",
+        description: `Bid placed – PKR ${amount.toLocaleString()}`,
+      });
+    }
 
     ac.currentBid = amount;
     ac.currentBidder = userId;
@@ -993,21 +1026,6 @@ export const buyNow = async (req, res) => {
       { isWinning: false },
     );
 
-    if (hasWallet) {
-      wallet.balance -= buyNowPrice;
-      wallet.totalBidHeld += buyNowPrice;
-      wallet.lastTransactionAt = new Date();
-      await wallet.save();
-      await logWalletTxn({
-        user: userId,
-        type: "bid_hold",
-        amount: -buyNowPrice,
-        reference: null,
-        referenceModel: "Bid",
-        description: `Buy now – PKR ${buyNowPrice.toLocaleString()}`,
-      });
-    }
-
     const bid = await Bid.create({
       auction: ac.auction._id,
       auctionCar: auctionCarId,
@@ -1017,6 +1035,21 @@ export const buyNow = async (req, res) => {
       bidType: "online",
       isWinning: true,
     });
+
+    if (hasWallet) {
+      wallet.balance -= buyNowPrice;
+      wallet.totalBidHeld += buyNowPrice;
+      wallet.lastTransactionAt = new Date();
+      await wallet.save();
+      await logWalletTxn({
+        user: userId,
+        type: "bid_hold",
+        amount: -buyNowPrice,
+        reference: bid._id,
+        referenceModel: "Bid",
+        description: `Buy now – PKR ${buyNowPrice.toLocaleString()}`,
+      });
+    }
 
     ac.status = "sold";
     ac.winner = userId;
@@ -1032,7 +1065,11 @@ export const buyNow = async (req, res) => {
     );
 
     const winnerWallet = await Wallet.findOne({ user: userId });
-    const walletDeduction = winnerWallet ? buyNowPrice : 10000;
+    const walletDeduction = await getHeldAmountForBid(
+      bid._id,
+      winnerWallet,
+      buyNowPrice,
+    );
     const amountDue = Math.max(0, buyNowPrice - walletDeduction);
     const escrow = await createEscrowForWinner(
       auctionCarId,
@@ -2307,7 +2344,11 @@ export const endAuction = async (req, res) => {
 
         // Winner's held bid converts to escrow – no balance change (already deducted)
         const winnerWallet = await Wallet.findOne({ user: topBid.bidder });
-        const walletDeduction = winnerWallet ? topBid.amount : 10000;
+        const walletDeduction = await getHeldAmountForBid(
+          topBid._id,
+          winnerWallet,
+          topBid.amount,
+        );
         const escrow = await Escrow.create({
           auctionCar: ac._id,
           buyer: topBid.bidder,
@@ -2914,49 +2955,45 @@ export const adminUpdateEscrowStatus = async (req, res) => {
       const sellerId = ac?.car?.postedBy;
 
       if (dealerId && (inspectionFee > 0 || dealerCommission > 0)) {
-        const dealerWallet = await Wallet.findOne({ user: dealerId });
-        if (dealerWallet) {
-          const total = inspectionFee + dealerCommission;
-          dealerWallet.balance += total;
-          dealerWallet.lastTransactionAt = new Date();
-          await dealerWallet.save();
-          if (inspectionFee > 0) {
-            await logWalletTxn({
-              user: dealerId,
-              type: "inspection_fee",
-              amount: inspectionFee,
-              reference: escrow._id,
-              referenceModel: "Escrow",
-              description: "Inspection fee (auction sale)",
-            });
-          }
-          if (dealerCommission > 0) {
-            await logWalletTxn({
-              user: dealerId,
-              type: "dealer_commission",
-              amount: dealerCommission,
-              reference: escrow._id,
-              referenceModel: "Escrow",
-              description: "Dealer commission (auction sale)",
-            });
-          }
+        const dealerWallet = await getOrCreateAuctionWallet(dealerId);
+        const total = inspectionFee + dealerCommission;
+        dealerWallet.balance += total;
+        dealerWallet.lastTransactionAt = new Date();
+        await dealerWallet.save();
+        if (inspectionFee > 0) {
+          await logWalletTxn({
+            user: dealerId,
+            type: "inspection_fee",
+            amount: inspectionFee,
+            reference: escrow._id,
+            referenceModel: "Escrow",
+            description: "Inspection fee (auction sale)",
+          });
+        }
+        if (dealerCommission > 0) {
+          await logWalletTxn({
+            user: dealerId,
+            type: "dealer_commission",
+            amount: dealerCommission,
+            reference: escrow._id,
+            referenceModel: "Escrow",
+            description: "Dealer commission (auction sale)",
+          });
         }
       }
       if (sellerId && sellerAmount > 0) {
-        const sellerWallet = await Wallet.findOne({ user: sellerId });
-        if (sellerWallet) {
-          sellerWallet.balance += sellerAmount;
-          sellerWallet.lastTransactionAt = new Date();
-          await sellerWallet.save();
-          await logWalletTxn({
-            user: sellerId,
-            type: "seller_payout",
-            amount: sellerAmount,
-            reference: escrow._id,
-            referenceModel: "Escrow",
-            description: "Seller payout (auction sale)",
-          });
-        }
+        const sellerWallet = await getOrCreateAuctionWallet(sellerId);
+        sellerWallet.balance += sellerAmount;
+        sellerWallet.lastTransactionAt = new Date();
+        await sellerWallet.save();
+        await logWalletTxn({
+          user: sellerId,
+          type: "seller_payout",
+          amount: sellerAmount,
+          reference: escrow._id,
+          referenceModel: "Escrow",
+          description: "Seller payout (auction sale)",
+        });
       }
     } else if (newStatus === "refunded") {
       await logWalletTxn({
