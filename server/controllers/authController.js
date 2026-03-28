@@ -59,6 +59,14 @@ const parseRequestTypesInput = (value) => {
     }
 };
 
+const normalizeMultipartScalar = (value) => {
+    if (Array.isArray(value)) {
+        const candidate = value.find((item) => item !== undefined && item !== null && String(item).trim() !== "");
+        return candidate === undefined ? "" : String(candidate).trim();
+    }
+    return value == null ? "" : String(value).trim();
+};
+
 const uploadDealerDocument = async (file) => {
     if (!file?.buffer) return null;
     // Dealer verification files are stored as reference documents only.
@@ -124,31 +132,38 @@ const AuthService = {
             paymentMethods,
             auctionRequestTypes,
         } = req.body;
-        
-        if (!name || !email || !password) throw new Error("Missing name, email or password");
-        if (!isValidEmail(email)) throw new Error("Invalid email format");
-        if (!AuthService.validatePassword(password)) throw new Error("Password too short");
 
-        const existing = await User.findOne({ email: email.toLowerCase() });
+        const normalizedName = normalizeMultipartScalar(name);
+        const normalizedEmail = normalizeMultipartScalar(email).toLowerCase();
+        const normalizedPassword = normalizeMultipartScalar(password);
+        const normalizedRole = normalizeMultipartScalar(role) || "individual";
+
+        if (!normalizedName || !normalizedEmail || !normalizedPassword) {
+            throw new Error("Missing name, email or password");
+        }
+        if (!isValidEmail(normalizedEmail)) throw new Error("Invalid email format");
+        if (!AuthService.validatePassword(normalizedPassword)) throw new Error("Password too short");
+
+        const existing = await User.findOne({ email: normalizedEmail });
         if (existing) throw new Error("User already exists");
 
         const avatarFile = req.file || (req.files && req.files.avatar && req.files.avatar[0]);
         if (!avatarFile) throw new Error("Avatar is required");
 
         const avatarUrl = await uploadCloudinary(avatarFile.buffer, { folder: "avatars" });
-        const hashedPassword = await bcrypt.hash(password, 12);
+        const hashedPassword = await bcrypt.hash(normalizedPassword, 12);
 
         const userData = {
-            name: name.trim(),
-            email: email.toLowerCase().trim(),
+            name: normalizedName,
+            email: normalizedEmail,
             avatar: avatarUrl,
             password: hashedPassword,
-            role: role || "individual",
+            role: normalizedRole,
             status: "active",
             isEmailVerified: false
         };
 
-        if (role === "dealer") {
+        if (normalizedRole === "dealer") {
             const dealerDocFile =
                 req.files?.cnicFile?.[0] ||
                 req.files?.businessLicense?.[0] ||

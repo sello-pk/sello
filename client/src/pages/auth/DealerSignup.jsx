@@ -102,6 +102,9 @@ const DealerSignup = ({ onBack }) => {
     registrationData.append("businessLicense", dealerFiles.businessLicense);
 
     Object.entries(dealerPayload).forEach(([key, value]) => {
+      if (key === "email") {
+        return;
+      }
       if (Array.isArray(value)) {
         if (value.length > 0) {
           registrationData.append(key, JSON.stringify(value));
