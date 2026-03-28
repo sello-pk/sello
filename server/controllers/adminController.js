@@ -299,22 +299,65 @@ export const getDashboardStats = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
   try {
-    const { page = 1, limit = 20, role, search } = req.query;
+    const {
+      page = 1,
+      limit = 20,
+      role,
+      search,
+      status,
+      dateFrom,
+      dateTo,
+      boostCreditsMin,
+      boostCreditsMax,
+      emailVerified,
+    } = req.query;
     const allowedRoles = ["individual", "dealer"];
     const query = { role: { $ne: "admin" } };
+    const parsedPage = Math.max(parseInt(page, 10) || 1, 1);
+    const parsedLimit = Math.max(parseInt(limit, 10) || 20, 1);
+
     if (role && allowedRoles.includes(role)) query.role = role;
+    if (status) query.status = status;
     if (search)
       query.$or = [
         { name: new RegExp(search, "i") },
         { email: new RegExp(search, "i") },
       ];
+    if (dateFrom || dateTo) {
+      query.createdAt = {};
+      if (dateFrom) query.createdAt.$gte = new Date(dateFrom);
+      if (dateTo) query.createdAt.$lte = new Date(dateTo);
+    }
+    if (boostCreditsMin || boostCreditsMax) {
+      query.boostCredits = {};
+      if (boostCreditsMin) query.boostCredits.$gte = Number(boostCreditsMin);
+      if (boostCreditsMax) query.boostCredits.$lte = Number(boostCreditsMax);
+    }
+    if (emailVerified !== undefined) {
+      query.isEmailVerified =
+        emailVerified === "true" ||
+        emailVerified === true ||
+        emailVerified === "yes";
+    }
 
     const users = await User.find(query)
-      .skip((page - 1) * limit)
-      .limit(limit)
+      .skip((parsedPage - 1) * parsedLimit)
+      .limit(parsedLimit)
       .sort({ createdAt: -1 });
     const total = await User.countDocuments(query);
-    return res.status(200).json({ success: true, data: { users, total } });
+    return res.status(200).json({
+      success: true,
+      data: {
+        users,
+        total,
+        pagination: {
+          total,
+          page: parsedPage,
+          pages: Math.max(Math.ceil(total / parsedLimit), 1),
+          limit: parsedLimit,
+        },
+      },
+    });
   } catch (error) {
     return res.status(500).json({ success: false });
   }

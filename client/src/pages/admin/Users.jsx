@@ -75,6 +75,9 @@ const Users = () => {
 
     const users = data?.users || [];
     const pagination = data?.pagination || {};
+    const totalItems = pagination.total ?? data?.total ?? users.length;
+    const totalPages =
+        pagination.pages || Math.max(Math.ceil(totalItems / 20), 1);
 
     const handleToggleStatus = useCallback((userId, currentStatus) => {
         const status = currentStatus === 'suspended' ? 'active' : 'suspended';
@@ -426,10 +429,10 @@ const Users = () => {
                 {/* Pagination */}
                 <Pagination
                     currentPage={page}
-                    totalPages={pagination.pages || 1}
+                    totalPages={totalPages}
                     onPageChange={setPage}
                     itemsPerPage={20}
-                    totalItems={pagination.total || 0}
+                    totalItems={totalItems}
                 />
 
                 {/* Status Change Confirmation Modal */}

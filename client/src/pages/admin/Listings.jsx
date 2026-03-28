@@ -102,6 +102,9 @@ const Listings = () => {
 
   const cars = data?.cars || [];
   const pagination = data?.pagination || {};
+  const totalItems = pagination.total ?? data?.total ?? cars.length;
+  const totalPages =
+    pagination.pages || Math.max(Math.ceil(totalItems / 20), 1);
 
   // Extract brands from response
   useEffect(() => {
@@ -800,10 +803,10 @@ const Listings = () => {
         {/* Pagination */}
         <Pagination
           currentPage={page}
-          totalPages={pagination.pages || 1}
+          totalPages={totalPages}
           onPageChange={setPage}
           itemsPerPage={20}
-          totalItems={pagination.total || 0}
+          totalItems={totalItems}
         />
 
         {/* Delete Confirmation Modal */}
