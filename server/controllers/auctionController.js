@@ -3173,6 +3173,52 @@ export const adminAddCarToAuction = async (req, res) => {
   }
 };
 
+export const adminUpdateAuctionCar = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { startingBid, reservePrice, buyNowPrice, bidIncrement, status } = req.body;
+
+    const ac = await AuctionCar.findById(id);
+    if (!ac) {
+      return res.status(404).json({ success: false, message: "Auction car not found" });
+    }
+
+    if (startingBid !== undefined) ac.startingBid = startingBid;
+    if (reservePrice !== undefined) ac.reservePrice = reservePrice;
+    if (buyNowPrice !== undefined) ac.buyNowPrice = buyNowPrice;
+    if (bidIncrement !== undefined) ac.bidIncrement = bidIncrement;
+    if (status !== undefined) ac.status = status;
+
+    await ac.save();
+
+    res.json({ success: true, data: ac, message: "Auction car updated successfully" });
+  } catch (error) {
+    Logger.error("adminUpdateAuctionCar error", error);
+    res.status(500).json({ success: false, message: "Failed to update auction car" });
+  }
+};
+
+export const adminDeleteAuctionCar = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const ac = await AuctionCar.findById(id);
+    if (!ac) {
+      return res.status(404).json({ success: false, message: "Auction car not found" });
+    }
+
+    const { auction: auctionId } = ac;
+    await AuctionCar.findByIdAndDelete(id);
+
+    // Decrement totalCars in the auction
+    await Auction.findByIdAndUpdate(auctionId, { $inc: { totalCars: -1 } });
+
+    res.json({ success: true, message: "Car removed from auction" });
+  } catch (error) {
+    Logger.error("adminDeleteAuctionCar error", error);
+    res.status(500).json({ success: false, message: "Failed to remove car from auction" });
+  }
+};
+
 // ═══════════════════════════════════════════════════════════════════════════
 // Helpers – Wallet Ledger
 // ═══════════════════════════════════════════════════════════════════════════

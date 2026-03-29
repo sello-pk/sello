@@ -45,6 +45,8 @@ import {
   getAllAuctionCars,
   getMyBids,
   adminAddCarToAuction,
+  adminUpdateAuctionCar,
+  adminDeleteAuctionCar,
   adminUpdateEscrowStatus,
   adminGetAllEscrows,
   adminRefundToken,
@@ -136,6 +138,20 @@ router.post(
   authorize("admin"),
   hasAnyPermission("manageAuctions", "manageListings"),
   adminAddCarToAuction,
+);
+router.put(
+  "/admin/car/:id",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("manageAuctions", "editListings"),
+  adminUpdateAuctionCar,
+);
+router.delete(
+  "/admin/car/:id",
+  auth,
+  authorize("admin"),
+  hasAnyPermission("manageAuctions", "manageListings"),
+  adminDeleteAuctionCar,
 );
 router.get(
   "/admin/escrows",

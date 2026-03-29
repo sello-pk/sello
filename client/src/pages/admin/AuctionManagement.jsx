@@ -14,7 +14,8 @@ import {
   IoTrendingUpOutline as TrendingUp,
   IoWalletOutline as Wallet,
   IoTimeOutline as Clock,
-  IoTrashOutline as Ban,
+  IoTrashOutline as Trash,
+  IoPencilOutline as Edit,
   IoReturnDownBackOutline as Undo,
   IoShieldCheckmarkOutline as ShieldCheck,
   IoWarningOutline as AlertTriangle,
@@ -23,6 +24,7 @@ import {
   IoExtensionPuzzleOutline as ExtensionPuzzle,
   IoShieldOutline as ShieldAlert,
   IoSettingsOutline as SettingsIcon,
+  IoTrashOutline as Ban,
 } from "react-icons/io5";
 import { GiGavel as Gavel } from "react-icons/gi";
 import {
@@ -38,6 +40,8 @@ import {
   useAdminGetAllTokenPaymentsQuery,
   useAdminVerifyTokenPaymentMutation,
   useAdminGetAllAuctionCarsQuery,
+  useAdminUpdateAuctionCarMutation,
+  useAdminDeleteAuctionCarMutation,
   useAdminAddCarToAuctionMutation,
   useAdminGetAllEscrowsQuery,
   useAdminUpdateEscrowStatusMutation,
@@ -96,8 +100,17 @@ export default function AuctionManagement() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showOfflineBidModal, setShowOfflineBidModal] = useState(false);
   const [showAddCarModal, setShowAddCarModal] = useState(false);
+  const [showEditCarModal, setShowEditCarModal] = useState(false);
   const [selectedAuctionCar, setSelectedAuctionCar] = useState(null);
+  const [editingAuctionCar, setEditingAuctionCar] = useState(null);
   const [offlineBidAmount, setOfflineBidAmount] = useState("");
+  const [editFormData, setEditFormData] = useState({
+    startingBid: "",
+    reservePrice: "",
+    buyNowPrice: "",
+    bidIncrement: "",
+    status: "",
+  });
   const [offlineBidderName, setOfflineBidderName] = useState("Floor Bid");
   const [addCarData, setAddCarData] = useState({ auctionId: "", carId: "", startingBid: "", bidIncrement: "" });
   const [carSearch, setCarSearch] = useState("");
@@ -191,6 +204,9 @@ export default function AuctionManagement() {
     catch (err) { toast.error(err?.data?.message || "Failed"); }
   };
 
+  const [adminUpdateAuctionCar] = useAdminUpdateAuctionCarMutation();
+  const [adminDeleteAuctionCar] = useAdminDeleteAuctionCarMutation();
+
   const handleApproveCar = async (id) => {
     try { await approveCar(id).unwrap(); toast.success("Car approved"); refetchCars(); }
     catch (err) { toast.error(err?.data?.message || "Failed"); }
@@ -220,6 +236,46 @@ export default function AuctionManagement() {
       refetchCars();
       refetchDash();
     } catch (err) { toast.error(err?.data?.message || "Failed to add car"); }
+  };
+
+  const handleDeleteAuctionCar = async (id) => {
+    if (!window.confirm("Are you sure you want to remove this car from the auction? The car listing itself will remain in the marketplace.")) return;
+    try {
+      await adminDeleteAuctionCar(id).unwrap();
+      toast.success("Car removed from auction");
+      refetchCars();
+      refetchDash();
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to remove car");
+    }
+  };
+
+  const handleEditAuctionCar = (ac) => {
+    setEditingAuctionCar(ac);
+    setEditFormData({
+      startingBid: ac.startingBid || "",
+      reservePrice: ac.reservePrice || "",
+      buyNowPrice: ac.buyNowPrice || "",
+      bidIncrement: ac.bidIncrement || "",
+      status: ac.status || "",
+    });
+    setShowEditCarModal(true);
+  };
+
+  const handleUpdateAuctionCar = async (e) => {
+    e.preventDefault();
+    try {
+      await adminUpdateAuctionCar({
+        id: editingAuctionCar._id,
+        ...editFormData,
+      }).unwrap();
+      toast.success("Auction details updated");
+      setShowEditCarModal(false);
+      refetchCars();
+      refetchDash();
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to update details");
+    }
   };
 
   const handleEscrowAction = async (id, status) => {
@@ -447,8 +503,18 @@ export default function AuctionManagement() {
                       <div className="flex gap-1">
                         {ac.status === "pending" && (
                           <>
-                            <Button variant="success" className="px-2 py-1 text-xs" onClick={() => handleApproveCar(ac._id)}><Check className="w-3 h-3" /></Button>
-                            <Button variant="danger" className="px-2 py-1 text-xs" onClick={() => handleRejectCar(ac._id)}><X className="w-3 h-3" /></Button>
+                            <Button variant="success" className="px-2 py-1 text-xs" onClick={() => handleApproveCar(ac._id)} title="Approve"><Check className="w-3 h-3" /></Button>
+                            <Button variant="danger" className="px-2 py-1 text-xs" onClick={() => handleRejectCar(ac._id)} title="Reject"><X className="w-3 h-3" /></Button>
+                          </>
+                        )}
+                        {["approved", "live", "unsold"].includes(ac.status) && (
+                          <>
+                            <Button variant="outline" className="px-2 py-1 text-xs" onClick={() => handleEditAuctionCar(ac)} title="Edit Auction Details">
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                            <Button variant="danger" className="px-2 py-1 text-xs" onClick={() => handleDeleteAuctionCar(ac._id)} title="Remove from Auction">
+                              <Trash className="w-3 h-3" />
+                            </Button>
                           </>
                         )}
                         {["approved", "live"].includes(ac.status) && ac.auction?.status === "live" && (
@@ -812,6 +878,60 @@ export default function AuctionManagement() {
                   <Car className="w-4 h-4 mr-2" />{addingCar ? "Adding..." : "Add Car to Auction"}
                 </Button>
               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Edit Auction Car Modal */}
+      <AnimatePresence>
+        {showEditCarModal && editingAuctionCar && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700 shadow-xl">
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">Edit Auction Details</h3>
+                  <p className="text-sm text-slate-500">{editingAuctionCar.car?.make} {editingAuctionCar.car?.model} ({editingAuctionCar.car?.year})</p>
+                </div>
+                <button onClick={() => setShowEditCarModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-300"><X className="w-5 h-5" /></button>
+              </div>
+              <form onSubmit={handleUpdateAuctionCar} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Starting Bid (PKR)</label>
+                    <input type="number" className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={editFormData.startingBid} onChange={(e) => setEditFormData({ ...editFormData, startingBid: e.target.value })} required />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Bid Increment (PKR)</label>
+                    <input type="number" className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={editFormData.bidIncrement} onChange={(e) => setEditFormData({ ...editFormData, bidIncrement: e.target.value })} placeholder="Leave blank for global default" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Reserve Price (PKR)</label>
+                    <input type="number" className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={editFormData.reservePrice} onChange={(e) => setEditFormData({ ...editFormData, reservePrice: e.target.value })} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Buy Now Price (PKR)</label>
+                    <input type="number" className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={editFormData.buyNowPrice} onChange={(e) => setEditFormData({ ...editFormData, buyNowPrice: e.target.value })} />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Status</label>
+                  <select className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={editFormData.status} onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value })}>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="live">Live</option>
+                    <option value="sold">Sold</option>
+                    <option value="unsold">Unsold</option>
+                    <option value="withdrawn">Withdrawn</option>
+                  </select>
+                </div>
+                <div className="flex gap-3 pt-4">
+                  <Button type="button" variant="outline" className="flex-1" onClick={() => setShowEditCarModal(false)}>Cancel</Button>
+                  <Button type="submit" className="flex-1">Save Changes</Button>
+                </div>
+              </form>
             </motion.div>
           </div>
         )}

@@ -1202,6 +1202,21 @@ export const adminApi = createApi({
       }),
       invalidatesTags: ["Auctions"],
     }),
+    adminUpdateAuctionCar: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/auctions/admin/car/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
+    adminDeleteAuctionCar: builder.mutation({
+      query: (id) => ({
+        url: `/auctions/admin/car/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Auctions"],
+    }),
     adminGetAllEscrows: builder.query({
       query: (params = {}) => {
         const searchParams = new URLSearchParams();
@@ -1491,6 +1506,8 @@ export const {
   useAdminGetAllTokenPaymentsQuery,
   useAdminVerifyTokenPaymentMutation,
   useAdminGetAllAuctionCarsQuery,
+  useAdminUpdateAuctionCarMutation,
+  useAdminDeleteAuctionCarMutation,
   useAdminUpdateInspectionMutation,
   useAdminAddCarToAuctionMutation,
   useAdminGetAllEscrowsQuery,
