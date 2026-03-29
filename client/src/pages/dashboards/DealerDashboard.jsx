@@ -75,6 +75,8 @@ const createEmptyAuctionForm = () => ({
   inspectionReportFile: null,
 });
 
+const MAX_AUCTION_INSPECTION_REPORT_BYTES = 4 * 1024 * 1024;
+
 const DealerDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -447,6 +449,14 @@ const DealerDashboard = () => {
     ) {
       toast.error(
         "Inspection report (PDF) is required. Please upload the vehicle inspection report.",
+      );
+      return;
+    }
+    if (
+      newCar.inspectionReportFile.size > MAX_AUCTION_INSPECTION_REPORT_BYTES
+    ) {
+      toast.error(
+        "Inspection report is too large for the live server. Use a smaller PDF and keep it under 4MB.",
       );
       return;
     }
@@ -2235,6 +2245,16 @@ const DealerDashboard = () => {
                         accept=".pdf,application/pdf"
                         onChange={(e) => {
                           const file = e.target.files?.[0];
+                          if (
+                            file &&
+                            file.size > MAX_AUCTION_INSPECTION_REPORT_BYTES
+                          ) {
+                            toast.error(
+                              "Inspection report is too large for the live server. Use a smaller PDF and keep it under 4MB.",
+                            );
+                            e.target.value = "";
+                            return;
+                          }
                           setNewCar((prev) => ({
                             ...prev,
                             inspectionReportFile: file || null,
@@ -2247,6 +2267,10 @@ const DealerDashboard = () => {
                           Selected: {newCar.inspectionReportFile.name}
                         </p>
                       )}
+                      <p className="text-xs text-gray-500 mt-2">
+                        PDF only. Keep the inspection report under 4MB for live
+                        upload.
+                      </p>
                     </div>
 
                     {/* Summary */}

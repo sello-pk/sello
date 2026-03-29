@@ -671,10 +671,52 @@ export const createReport = async (req, res) => {
 
 export const createDeletionRequest = async (req, res) => {
   try {
-    const request = await AccountDeletionRequest.create({ user: req.user._id, ...req.body });
+    const existingPendingRequest = await AccountDeletionRequest.findOne({
+      user: req.user._id,
+      status: "pending",
+    }).sort({ createdAt: -1 });
+
+    if (existingPendingRequest) {
+      return res.status(409).json({
+        success: false,
+        message: "You already have a pending account deletion request.",
+        data: existingPendingRequest,
+      });
+    }
+
+    const forwardedFor = req.headers["x-forwarded-for"];
+    const ipAddress = Array.isArray(forwardedFor)
+      ? forwardedFor[0]
+      : String(forwardedFor || req.ip || req.socket?.remoteAddress || "")
+          .split(",")[0]
+          .trim();
+
+    const userAgent = req.get("user-agent") || "unknown";
+
+    const request = await AccountDeletionRequest.create({
+      user: req.user._id,
+      reason: req.body?.reason,
+      additionalComments: req.body?.additionalComments || null,
+      ipAddress: ipAddress || "unknown",
+      userAgent,
+    });
     return res.status(201).json({ success: true, data: request });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    if (error?.name === "ValidationError") {
+      const message = Object.values(error.errors || {})
+        .map((entry) => entry.message)
+        .filter(Boolean)
+        .join(" ");
+      return res.status(400).json({
+        success: false,
+        message: message || "Invalid account deletion request.",
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to submit account deletion request.",
+    });
   }
 };
 
@@ -730,16 +772,77 @@ export const reviewVerification = async (req, res) => {
 
 export const getAllDeletionRequests = async (req, res) => {
     try {
-        const requests = await AccountDeletionRequest.find().populate('user', 'name email role').sort({ createdAt: -1 });
-        return res.status(200).json({ success: true, data: requests });
-    } catch (error) { return res.status(500).json({ success: false }); }
+        const { page = 1, limit = 20, status, search } = req.query;
+        const parsedPage = Math.max(parseInt(page, 10) || 1, 1);
+        const parsedLimit = Math.max(parseInt(limit, 10) || 20, 1);
+        const query = {};
+        if (status && status !== "all") {
+          query.status = status;
+        }
+
+        const requests = await AccountDeletionRequest.find(query)
+          .populate("user", "name email role")
+          .populate("reviewedBy", "name email")
+          .sort({ createdAt: -1 });
+
+        const normalizedSearch = String(search || "").trim().toLowerCase();
+        const filteredRequests = normalizedSearch
+          ? requests.filter((request) => {
+              const haystack = [
+                request?.user?.name,
+                request?.user?.email,
+                request?.user?.role,
+                request?.reason,
+                request?.additionalComments,
+                request?.reviewNotes,
+              ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+              return haystack.includes(normalizedSearch);
+            })
+          : requests;
+
+        const total = filteredRequests.length;
+        const startIndex = (parsedPage - 1) * parsedLimit;
+        const paginatedRequests = filteredRequests.slice(
+          startIndex,
+          startIndex + parsedLimit,
+        );
+
+        return res.status(200).json({
+          success: true,
+          data: {
+            requests: paginatedRequests,
+            pagination: {
+              total,
+              page: parsedPage,
+              pages: Math.max(Math.ceil(total / parsedLimit), 1),
+              limit: parsedLimit,
+            },
+          },
+        });
+    } catch (error) { return res.status(500).json({ success: false, message: "Failed to load account deletion requests." }); }
 };
 
 export const getDeletionRequestStats = async (req, res) => {
     try {
         const stats = await AccountDeletionRequest.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }]);
-        return res.status(200).json({ success: true, data: stats });
-    } catch (error) { return res.status(500).json({ success: false }); }
+        const normalizedStats = {
+          pending: 0,
+          approved: 0,
+          rejected: 0,
+          completed: 0,
+        };
+
+        stats.forEach((entry) => {
+          if (entry?._id && Object.prototype.hasOwnProperty.call(normalizedStats, entry._id)) {
+            normalizedStats[entry._id] = entry.count || 0;
+          }
+        });
+
+        return res.status(200).json({ success: true, data: { stats: normalizedStats } });
+    } catch (error) { return res.status(500).json({ success: false, message: "Failed to load account deletion stats." }); }
 };
 
 export const reviewReview = async (req, res) => {
@@ -1136,11 +1239,35 @@ export const getAllReviews = async (req, res) => {
 
 export const reviewDeletionRequest = async (req, res) => {
     try {
-        const { status } = req.body;
-        const request = await AccountDeletionRequest.findByIdAndUpdate(req.params.requestId, { status, reviewedBy: req.user._id, reviewedAt: new Date() }, { new: true });
-        if (status === 'approved') await User.findByIdAndDelete(request.user);
-        return res.status(200).json({ success: true, data: request });
-    } catch (error) { return res.status(500).json({ success: false }); }
+        const { status, reviewNotes } = req.body;
+        const request = await AccountDeletionRequest.findById(req.params.requestId);
+
+        if (!request) {
+          return res.status(404).json({
+            success: false,
+            message: "Deletion request not found.",
+          });
+        }
+
+        request.status = status;
+        request.reviewNotes = reviewNotes || null;
+        request.reviewedBy = req.user._id;
+        request.reviewedAt = new Date();
+        if (status === "approved") {
+          request.processedAt = new Date();
+        }
+        await request.save();
+
+        if (status === 'approved') {
+          await User.findByIdAndDelete(request.user);
+        }
+
+        const populatedRequest = await AccountDeletionRequest.findById(request._id)
+          .populate("user", "name email role")
+          .populate("reviewedBy", "name email");
+
+        return res.status(200).json({ success: true, data: populatedRequest });
+    } catch (error) { return res.status(500).json({ success: false, message: "Failed to review account deletion request." }); }
 };
 
 export const getSavedSearch = async (req, res) => {

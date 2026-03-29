@@ -129,6 +129,8 @@ const CLIENT_UPLOAD_IMAGE_QUALITY = 0.72;
 const CLIENT_UPLOAD_SKIP_BYTES = 450 * 1024;
 const CLIENT_UPLOAD_MIN_TOTAL_BYTES = 2 * 1024 * 1024;
 const CLIENT_LISTING_UPLOAD_SAFE_TOTAL_BYTES = 8 * 1024 * 1024;
+const CLIENT_AUCTION_UPLOAD_SAFE_TOTAL_BYTES = 10 * 1024 * 1024;
+const CLIENT_AUCTION_INSPECTION_REPORT_MAX_BYTES = 4 * 1024 * 1024;
 
 function isOptimizableImage(file) {
   return (
@@ -157,6 +159,12 @@ function getFormDataFileBytes(formData) {
     if (value instanceof File) total += value.size || 0;
   }
   return total;
+}
+
+function getFirstFormDataFile(formData, fieldName) {
+  if (!(formData instanceof FormData)) return null;
+  const value = formData.get(fieldName);
+  return value instanceof File ? value : null;
 }
 
 async function toOptimizedWebpFile(file) {
@@ -1632,6 +1640,40 @@ export const api = createApi({
             "images",
             "damageImages",
           ]);
+          const inspectionReport = getFirstFormDataFile(
+            optimizedForm,
+            "inspectionReport",
+          );
+          if (
+            inspectionReport &&
+            inspectionReport.size > CLIENT_AUCTION_INSPECTION_REPORT_MAX_BYTES
+          ) {
+            return {
+              error: {
+                status: 413,
+                originalStatus: 413,
+                data: {
+                  code: "REQUEST_TOO_LARGE",
+                  message:
+                    "Inspection report is too large for the live server. Use a smaller PDF and keep it under 4MB.",
+                },
+              },
+            };
+          }
+          const optimizedBytes = getFormDataFileBytes(optimizedForm);
+          if (optimizedBytes > CLIENT_AUCTION_UPLOAD_SAFE_TOTAL_BYTES) {
+            return {
+              error: {
+                status: 413,
+                originalStatus: 413,
+                data: {
+                  code: "REQUEST_TOO_LARGE",
+                  message:
+                    "Auction submission files are too large for the live server. Keep the inspection report small and keep the total upload under 10MB.",
+                },
+              },
+            };
+          }
           logFormDataKeysSafely("auction-submit-formdata", optimizedForm);
           const result = await fetchWithBQ({
             url: "/auctions/submit-car",
