@@ -39,7 +39,7 @@ export default function AuctionBidBlock({ auctionCarId, className = "" }) {
   const auction = detail?.auction || {};
   const bids = detail?.bids || [];
   const currentHigh = detail?.currentBid || detail?.startingBid || 0;
-  const minIncrement = 50000;
+  const minIncrement = detail?.bidIncrement || 50000;
   const minimumBid = currentHigh + minIncrement;
   const canPlaceBid = hasVerifiedToken;
   const isLive = auction?.status === "live";

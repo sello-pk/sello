@@ -3147,6 +3147,10 @@ export const adminAddCarToAuction = async (req, res) => {
         .json({ success: false, message: "Car already in this auction" });
 
     const status = auction.status === "live" ? "live" : "approved";
+    
+    // Fetch global auction settings for the fallback bid increment
+    const settings = await AuctionSettings.findOne();
+    const defaultBidIncrement = settings?.minBidIncrement || 50000;
 
     const auctionCar = await AuctionCar.create({
       auction: auctionId,
@@ -3155,7 +3159,7 @@ export const adminAddCarToAuction = async (req, res) => {
       startingBid: startingBid || car.price || 500000,
       reservePrice: reservePrice || 0,
       buyNowPrice: buyNowPrice || 0,
-      bidIncrement: bidIncrement || null,
+      bidIncrement: bidIncrement || defaultBidIncrement,
       currentBid: 0,
       bidCount: 0,
       status,

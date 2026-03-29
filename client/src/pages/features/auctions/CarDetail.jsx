@@ -186,10 +186,11 @@ export default function CarDetail() {
   const auction = detail?.auction || {};
   const bids = detail?.bids || [];
   const currentHigh = detail?.currentBid || detail?.startingBid || 0;
-  const minimumBid = detail?.minimumNextBid ?? currentHigh + 50000;
+  const minIncrement = detail?.bidIncrement || 50000;
+  const minimumBid = detail?.minimumNextBid ?? currentHigh + minIncrement;
   const quickBidSuggestions = Array.isArray(detail?.quickBidSuggestions)
     ? detail.quickBidSuggestions
-    : [minimumBid, minimumBid + 10000, minimumBid + 25000, minimumBid + 50000];
+    : [minimumBid, minimumBid + minIncrement, minimumBid + (minIncrement * 2), minimumBid + (minIncrement * 3)];
   const totalBidders = detail?.totalBidders ?? 0;
   const buyNowPrice = detail?.buyNowPrice != null ? Number(detail.buyNowPrice) : null;
   const walletBalance = walletData?.wallet?.balance || 0;
@@ -206,8 +207,8 @@ export default function CarDetail() {
     walletBalance >= buyNowPrice;
 
   useEffect(() => {
-    setBidAmount(currentHigh + 50000);
-  }, [currentHigh]);
+    setBidAmount(currentHigh + minIncrement);
+  }, [currentHigh, minIncrement]);
   useEffect(() => {
     setProxyMax(currentHigh + 200000);
   }, [currentHigh]);
