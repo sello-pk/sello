@@ -1093,7 +1093,7 @@ export const updateDealerProfile = async (req, res) => {
 
 export const requestDealer = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user?._id);
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }

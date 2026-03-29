@@ -2,6 +2,7 @@ import express from "express";
 import { upload, uploadSingle, uploadDealerProfile, uploadDealerRequest, uploadAuctionAccess, uploadVerification } from "../middlewares/multer.js";
 import { auth, authorize } from "../middlewares/authMiddleware.js";
 import { hasAnyPermission } from "../middlewares/permissionMiddleware.js";
+import { asyncHandler } from "../middlewares/errorHandler.js";
 
 // Controllers
 import {
@@ -18,153 +19,153 @@ const router = express.Router();
 
 /* ---------------------------------- USER ---------------------------------- */
 // Profile
-router.get("/users/me", auth, getUserProfile);
-router.put("/users/profile", auth, uploadSingle.single('avatar'), updateProfile);
+router.get("/users/me", auth, asyncHandler(getUserProfile));
+router.put("/users/profile", auth, uploadSingle.single('avatar'), asyncHandler(updateProfile));
 router.put(
   "/users/dealer-profile",
   auth,
   uploadDealerProfile,
-  updateDealerProfile,
+  asyncHandler(updateDealerProfile),
 );
 
 // Wishlist
-router.post("/users/wishlist/:carId", auth, saveCar);
-router.delete("/users/wishlist/:carId", auth, unsaveCar);
-router.get("/users/wishlist", auth, getSavedCars);
+router.post("/users/wishlist/:carId", auth, asyncHandler(saveCar));
+router.delete("/users/wishlist/:carId", auth, asyncHandler(unsaveCar));
+router.get("/users/wishlist", auth, asyncHandler(getSavedCars));
 
 // Roles/Requests
-router.post("/users/request-seller", auth, requestSeller);
+router.post("/users/request-seller", auth, asyncHandler(requestSeller));
 router.post(
   "/users/request-dealer",
   auth,
   uploadDealerRequest,
-  requestDealer,
+  asyncHandler(requestDealer),
 );
 router.post(
   "/users/auction-access/request",
   auth,
   uploadAuctionAccess,
-  submitAuctionAccessRequest
+  asyncHandler(submitAuctionAccessRequest)
 );
-router.get("/users/auction-access/status", auth, getMyAuctionAccessStatus);
+router.get("/users/auction-access/status", auth, asyncHandler(getMyAuctionAccessStatus));
 
 /* --------------------------- NOTIFICATIONS --------------------------- */
-router.get("/notifications", auth, getUserNotifications);
-router.get("/notifications/me", auth, getUserNotifications); // Alias for frontend
-router.put("/notifications/:notificationId/read", auth, markAsRead);
-router.put("/notifications/read-all", auth, markAllAsRead);
+router.get("/notifications", auth, asyncHandler(getUserNotifications));
+router.get("/notifications/me", auth, asyncHandler(getUserNotifications)); // Alias for frontend
+router.put("/notifications/:notificationId/read", auth, asyncHandler(markAsRead));
+router.put("/notifications/read-all", auth, asyncHandler(markAllAsRead));
 // Admin
 router.get(
   "/notifications/admin",
   auth,
   authorize("admin"),
   hasAnyPermission("viewNotifications", "manageUsers"),
-  getAllNotifications,
+  asyncHandler(getAllNotifications),
 );
 router.post(
   "/notifications",
   auth,
   authorize("admin"),
   hasAnyPermission("createNotifications", "sendPushNotifications"),
-  createNotification,
+  asyncHandler(createNotification),
 );
 router.delete(
   "/notifications/:notificationId",
   auth,
   authorize("admin"),
   hasAnyPermission("deleteNotifications", "manageUsers"),
-  deleteNotification,
+  asyncHandler(deleteNotification),
 );
 
 /* --------------------------- VERIFICATION --------------------------- */
-router.post("/verification/submit", auth, uploadVerification, submitVerification);
-router.get("/verification/status", auth, getVerificationStatus);
+router.post("/verification/submit", auth, uploadVerification, asyncHandler(submitVerification));
+router.get("/verification/status", auth, asyncHandler(getVerificationStatus));
 // Admin
 router.get(
   "/verification/admin/all",
   auth,
   authorize("admin"),
   hasAnyPermission("viewDealers", "manageUsers"),
-  getAllVerifications,
+  asyncHandler(getAllVerifications),
 );
 router.put(
   "/verification/admin/review/:verificationId",
   auth,
   authorize("admin"),
   hasAnyPermission("approveDealers", "manageUsers"),
-  reviewVerification,
+  asyncHandler(reviewVerification),
 );
 
 /* --------------------------- ACCOUNT DELETION --------------------------- */
-router.post("/account-deletion/request", auth, createDeletionRequest);
-router.get("/account-deletion/status", auth, getDeletionRequestStatus);
+router.post("/account-deletion/request", auth, asyncHandler(createDeletionRequest));
+router.get("/account-deletion/status", auth, asyncHandler(getDeletionRequestStatus));
 // Admin
 router.get(
   "/account-deletion/admin/all",
   auth,
   authorize("admin"),
   hasAnyPermission("viewUserProfiles", "viewFullUserProfiles"),
-  getAllDeletionRequests,
+  asyncHandler(getAllDeletionRequests),
 );
 router.get(
   "/account-deletion/admin/stats",
   auth,
   authorize("admin"),
   hasAnyPermission("viewUserProfiles", "viewFullUserProfiles"),
-  getDeletionRequestStats,
+  asyncHandler(getDeletionRequestStats),
 );
 router.put(
   "/account-deletion/admin/review/:requestId",
   auth,
   authorize("admin"),
   hasAnyPermission("manageUsers", "accessSensitiveAreas"),
-  reviewDeletionRequest,
+  asyncHandler(reviewDeletionRequest),
 );
 
 /* --------------------------- SAVED SEARCHES --------------------------- */
-router.get("/saved-searches", auth, getSavedSearches);
-router.post("/saved-searches", auth, createSavedSearch);
-router.get("/saved-searches/:searchId", auth, getSavedSearch);
-router.put("/saved-searches/:searchId", auth, updateSavedSearch);
-router.delete("/saved-searches/:searchId", auth, deleteSavedSearch);
-router.get("/saved-searches/:searchId/execute", auth, executeSavedSearch);
+router.get("/saved-searches", auth, asyncHandler(getSavedSearches));
+router.post("/saved-searches", auth, asyncHandler(createSavedSearch));
+router.get("/saved-searches/:searchId", auth, asyncHandler(getSavedSearch));
+router.put("/saved-searches/:searchId", auth, asyncHandler(updateSavedSearch));
+router.delete("/saved-searches/:searchId", auth, asyncHandler(deleteSavedSearch));
+router.get("/saved-searches/:searchId/execute", auth, asyncHandler(executeSavedSearch));
 
 /* ------------------------------- REVIEWS ------------------------------- */
-router.post("/reviews", auth, addReview);
-router.get("/reviews/user/:userId", auth, getUserReviews);
+router.post("/reviews", auth, asyncHandler(addReview));
+router.get("/reviews/user/:userId", auth, asyncHandler(getUserReviews));
 // Admin
 router.get(
   "/reviews/admin/all",
   auth,
   authorize("admin"),
   hasAnyPermission("viewTestimonials", "manageTestimonials", "moderateComments"),
-  getAllReviews,
+  asyncHandler(getAllReviews),
 );
 router.put(
   "/reviews/admin/moderate/:reviewId",
   auth,
   authorize("admin"),
   hasAnyPermission("manageTestimonials", "moderateComments"),
-  moderateReview,
+  asyncHandler(moderateReview),
 );
-router.post("/reviews/:reviewId/report", auth, reportReview);
+router.post("/reviews/:reviewId/report", auth, asyncHandler(reportReview));
 
 /* ------------------------------- REPORTS ------------------------------- */
-router.post("/reports", auth, createReport);
+router.post("/reports", auth, asyncHandler(createReport));
 // Admin
 router.get(
   "/reports/admin/all",
   auth,
   authorize("admin"),
   hasAnyPermission("viewAnalytics", "createReports", "viewInquiries"),
-  getReports,
+  asyncHandler(getReports),
 );
 router.put(
   "/reports/admin/:reportId/status",
   auth,
   authorize("admin"),
   hasAnyPermission("manageUsers", "editReports", "deleteReports"),
-  updateReportStatus,
+  asyncHandler(updateReportStatus),
 );
 
 export default router;
