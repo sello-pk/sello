@@ -33,10 +33,12 @@ const ImagesUpload = ({ onImagesChange }) => {
     e.preventDefault();
     setIsDragging(true);
   };
+
   const handleDragLeave = (e) => {
     e.preventDefault();
     setIsDragging(false);
   };
+
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
@@ -79,7 +81,7 @@ const ImagesUpload = ({ onImagesChange }) => {
       }
     }
 
-    // Compress before adding — faster upload + stays under 35MB total
+    // Compress before adding so the live API is less likely to reject the payload size.
     setIsCompressing(true);
     let processedFiles;
     try {
@@ -94,7 +96,6 @@ const ImagesUpload = ({ onImagesChange }) => {
     const totalNew = processedFiles.reduce((s, f) => s + (f.size || 0), 0);
     if (totalExisting + totalNew > MAX_TOTAL_BYTES) {
       toast.error(msgTotalExceeded());
-      // Try to fit as many as possible under cap
       let acc = totalExisting;
       const fitted = [];
       for (const f of processedFiles) {
@@ -129,7 +130,6 @@ const ImagesUpload = ({ onImagesChange }) => {
     newUploads.forEach((upload) => simulateUpload(upload));
   };
 
-  // Short progress animation (actual upload happens on submit)
   const simulateUpload = (upload) => {
     const startTime = Date.now();
     const duration = 800;
@@ -201,7 +201,6 @@ const ImagesUpload = ({ onImagesChange }) => {
           id="imagesFileInput"
         />
 
-        {/* Drop zone - dashed border, white background */}
         <div
           role="button"
           tabIndex={0}
@@ -241,7 +240,6 @@ const ImagesUpload = ({ onImagesChange }) => {
             </>
           ) : (
             <div className="flex flex-col items-center justify-center gap-4 py-8 px-4">
-              {/* Image icon - two overlapping squares, primary 3n light primary 3ounded square */}
               <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-primary-500">
                 <svg
                   className="w-8 h-8 text-white"
@@ -279,7 +277,7 @@ const ImagesUpload = ({ onImagesChange }) => {
           <div className="px-4 py-3 space-y-2 border-t border-gray-100">
             {isCompressing && (
               <p className="text-sm text-gray-600">
-                Optimizing images for faster upload…
+                Optimizing images for faster upload...
               </p>
             )}
             {uploads
@@ -307,8 +305,9 @@ const ImagesUpload = ({ onImagesChange }) => {
 
         <div className="px-4 py-3 border-t border-gray-100 bg-gray-50/50">
           <p className="text-xs text-gray-500 text-center">
-            Up to {MAX_FILES} photos • {LISTING_MAX_TOTAL_MB}MB total • JPG,
-            PNG, WebP. Tip: Use 5–8 photos and smaller images to avoid upload errors.
+            Up to {MAX_FILES} photos, {LISTING_MAX_TOTAL_MB}MB total, JPG, PNG,
+            WebP. Tip: Use 4-6 photos and smaller images to avoid upload
+            errors.
           </p>
         </div>
 

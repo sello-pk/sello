@@ -492,7 +492,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
     // Early validation - check images first (most common issue)
     if (!formData.images || formData.images.length === 0) {
       toast.error(
-        "Add at least one listing photo. You can upload up to 15 images (35MB total)."
+        "Add at least one listing photo. You can upload up to 15 images (8MB total)."
       );
       return;
     }

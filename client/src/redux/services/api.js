@@ -124,10 +124,11 @@ function logFormDataKeysSafely(label, formData) {
   logger.info(label, payload);
 }
 
-const CLIENT_UPLOAD_MAX_IMAGE_EDGE = 1920;
-const CLIENT_UPLOAD_IMAGE_QUALITY = 0.78;
+const CLIENT_UPLOAD_MAX_IMAGE_EDGE = 1600;
+const CLIENT_UPLOAD_IMAGE_QUALITY = 0.72;
 const CLIENT_UPLOAD_SKIP_BYTES = 450 * 1024;
 const CLIENT_UPLOAD_MIN_TOTAL_BYTES = 2 * 1024 * 1024;
+const CLIENT_LISTING_UPLOAD_SAFE_TOTAL_BYTES = 8 * 1024 * 1024;
 
 function isOptimizableImage(file) {
   return (
@@ -147,6 +148,15 @@ function shouldOptimizeImage(file, totalImageBytes) {
 
 function fileNameToWebp(name = "image.jpg") {
   return name.replace(/\.[^.]+$/, "") + ".webp";
+}
+
+function getFormDataFileBytes(formData) {
+  if (!(formData instanceof FormData)) return 0;
+  let total = 0;
+  for (const [, value] of formData.entries()) {
+    if (value instanceof File) total += value.size || 0;
+  }
+  return total;
 }
 
 async function toOptimizedWebpFile(file) {
@@ -768,6 +778,20 @@ export const api = createApi({
         const optimizedFormData = await optimizeUploadFormData(formData, [
           "images",
         ]);
+        const optimizedBytes = getFormDataFileBytes(optimizedFormData);
+        if (optimizedBytes > CLIENT_LISTING_UPLOAD_SAFE_TOTAL_BYTES) {
+          return {
+            error: {
+              status: 413,
+              originalStatus: 413,
+              data: {
+                code: "REQUEST_TOO_LARGE",
+                message:
+                  "Listing photos are still too large for the live server. Use fewer or smaller photos and keep the total under 8MB.",
+              },
+            },
+          };
+        }
 
         const queryParams = new URLSearchParams();
         Object.entries(params).forEach(([key, value]) => {

@@ -13,22 +13,18 @@ import { notifyError } from "./notifications";
 export const getErrorMessage = (error) => {
   if (!error) return "An unexpected error occurred";
 
-  // RTK Query error format
   if (error?.data?.message) {
     return error.data.message;
   }
 
-  // Standard error object
   if (error?.message) {
     return error.message;
   }
 
-  // String error
   if (typeof error === "string") {
     return error;
   }
 
-  // Network / failed fetch (often upload timeout or proxy reset — not always "no internet")
   if (
     error?.status === "FETCH_ERROR" ||
     error?.error === "TypeError: Failed to fetch"
@@ -37,51 +33,35 @@ export const getErrorMessage = (error) => {
     return "Request couldn't complete. If you were uploading photos, try fewer or smaller images and retry.";
   }
 
-  // 401 Unauthorized
   if (error?.status === 401) {
     return "Your session has expired. Please sign in again.";
   }
 
-  // 403 Forbidden
   if (error?.status === 403) {
     return "You don't have permission to do this.";
   }
 
-  // 404 Not Found
   if (error?.status === 404) {
     return "We couldn't find what you're looking for.";
   }
 
-  // 413 Request Entity Too Large (upload too big — proxy or server)
   if (error?.status === 413 || error?.originalStatus === 413) {
-    return "Images are too large. Use 5–8 photos and smaller file sizes, then try again.";
+    return "Images are too large for the live server. Use 4-6 smaller photos and keep the total under 8MB, then try again.";
   }
 
-  // 502/503 Service unavailable (e.g. image upload backend busy)
   if (error?.status === 502 || error?.status === 503) {
     const msg = error?.data?.message;
     if (msg && typeof msg === "string") return msg;
     return "Service temporarily unavailable. Please try again in a moment or upload fewer images.";
   }
 
-  // 500 Server Error
   if (error?.status === 500) {
     return "Something went wrong on our end. Please try again in a moment.";
   }
 
-  // Default fallback
   return "Something went wrong. Please try again.";
 };
 
-/**
- * Handle API errors consistently
- * @param {Error|Object} error - Error from API call
- * @param {Object} options - Options for error handling
- * @param {Function} options.onError - Custom error handler
- * @param {boolean} options.showNotification - Whether to show toast notification (default: true)
- * @param {string} options.defaultMessage - Default error message if none found
- * @returns {string} Error message
- */
 export const handleApiError = (error, options = {}) => {
   const {
     onError,
@@ -93,17 +73,14 @@ export const handleApiError = (error, options = {}) => {
 
   const errorMessage = getErrorMessage(error) || defaultMessage;
 
-  // Call custom error handler if provided
   if (onError && typeof onError === "function") {
     onError(error, errorMessage);
   }
 
-  // Show notification if enabled
   if (showNotification) {
     notifyError(errorMessage);
   }
 
-  // Log error to console (only in development)
   if (import.meta.env.DEV) {
     // API Error logged for development
   }
@@ -111,11 +88,6 @@ export const handleApiError = (error, options = {}) => {
   return errorMessage;
 };
 
-/**
- * Handle form validation errors
- * @param {Object} errors - Validation errors object
- * @param {Function} setFieldError - Function to set field errors
- */
 export const handleValidationErrors = (errors, setFieldError) => {
   if (!errors || typeof errors !== "object") return;
 
@@ -130,12 +102,6 @@ export const handleValidationErrors = (errors, setFieldError) => {
   });
 };
 
-/**
- * Create error boundary error object
- * @param {Error} error - Caught error
- * @param {ErrorInfo} errorInfo - React error info
- * @returns {Object} Formatted error object
- */
 export const formatErrorBoundaryError = (error, errorInfo) => {
   return {
     message: error?.message || "An unexpected error occurred",
@@ -145,11 +111,6 @@ export const formatErrorBoundaryError = (error, errorInfo) => {
   };
 };
 
-/**
- * Check if error is a network error
- * @param {Error|Object} error - Error to check
- * @returns {boolean} True if network error
- */
 export const isNetworkError = (error) => {
   return (
     error?.status === "FETCH_ERROR" ||
@@ -159,22 +120,10 @@ export const isNetworkError = (error) => {
   );
 };
 
-/**
- * Check if error is an authentication error
- * @param {Error|Object} error - Error to check
- * @returns {boolean} True if auth error
- */
 export const isAuthError = (error) => {
   return error?.status === 401 || error?.status === 403;
 };
 
-/**
- * Retry handler for failed API calls
- * @param {Function} fn - Function to retry
- * @param {number} maxRetries - Maximum number of retries
- * @param {number} delay - Delay between retries in ms
- * @returns {Promise} Promise that resolves or rejects
- */
 export const retryApiCall = async (fn, maxRetries = 3, delay = 1000) => {
   let lastError;
 
@@ -184,12 +133,10 @@ export const retryApiCall = async (fn, maxRetries = 3, delay = 1000) => {
     } catch (error) {
       lastError = error;
 
-      // Don't retry on auth errors or client errors (4xx)
       if (isAuthError(error) || (error?.status >= 400 && error?.status < 500)) {
         throw error;
       }
 
-      // Wait before retrying
       if (i < maxRetries - 1) {
         await new Promise((resolve) => setTimeout(resolve, delay * (i + 1)));
       }
@@ -199,7 +146,6 @@ export const retryApiCall = async (fn, maxRetries = 3, delay = 1000) => {
   throw lastError;
 };
 
-// Default export for backward compatibility
 export default {
   getErrorMessage,
   isNetworkError,

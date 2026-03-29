@@ -4,8 +4,8 @@
  * - Center-crop to 4:3 so listing grids can use object-cover without
  *   portrait letterboxing or inconsistent landscape crops.
  */
-const MAX_EDGE = 1920;
-const JPEG_QUALITY = 0.82;
+const MAX_EDGE = 1600;
+const JPEG_QUALITY = 0.72;
 /**
  * Center-crop canvas to target aspect (w/h). Returns new canvas.
  */
