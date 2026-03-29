@@ -3,7 +3,11 @@ import User from "../../models/userModel.js";
 import { uploadListingImagesToCloudinary } from "../../utils/cloudinary.js";
 import Logger from "../../utils/logger.js";
 import mongoose from "mongoose";
-import { validateRequiredFields } from "../../utils/vehicleFieldConfig.js";
+import { 
+  validateRequiredFields, 
+  getRequiredFields, 
+  getOptionalFields 
+} from "../../utils/vehicleFieldConfig.js";
 import {
   LISTING_MAX_TOTAL_BYTES,
   MSG_IMAGE_TOTAL_EXCEEDED,
@@ -107,6 +111,47 @@ const parseGeoLocation = (rawGeoLocation) => {
   return { type: "Point", coordinates: [lng, lat] };
 };
 
+/**
+ * Filter data based on vehicle type configuration to only keep relevant fields.
+ */
+const scrubVehicleData = (vehicleType, data) => {
+  const vn = vehicleType || "Car";
+  const required = getRequiredFields(vn);
+  const optional = getOptionalFields(vn);
+  const allowed = new Set([
+    ...required, 
+    ...optional, 
+    "vehicleType", 
+    "vehicleTypeCategory", 
+    "postedBy", 
+    "images", 
+    "status", 
+    "listingType", 
+    "geoLocation", 
+    "isApproved",
+    "isSold",
+    "soldAt",
+    "soldDate",
+    "autoDeleteDate",
+    "expiryDate",
+    "actualSalePrice",
+    "views",
+    "featured"
+  ]);
+
+  const scrubbed = {};
+  Object.keys(data).forEach((key) => {
+    if (allowed.has(key)) {
+      scrubbed[key] = data[key];
+    }
+  });
+
+  // Ensure mandatory schema internal fields are maintained
+  scrubbed.vehicleType = vn;
+  
+  return scrubbed;
+};
+
 export const createCar = async (req, res) => {
   try {
     if (!req.user) return res.status(401).json({ success: false, message: "Unauthorized" });
@@ -142,6 +187,9 @@ export const createCar = async (req, res) => {
     }
     if (req.body.regionalSpec !== undefined && req.body.regionalSpec !== "") carData.regionalSpec = req.body.regionalSpec;
 
+    // Apply scrubbing based on vehicle type
+    const scrubbedData = scrubVehicleData(req.body.vehicleType || "Car", carData);
+
     // Idempotency guard: prevent accidental duplicate posts caused by retries/double-clicks.
     const duplicateWindowMinutes = Math.max(
       1,
@@ -174,7 +222,7 @@ export const createCar = async (req, res) => {
       });
     }
 
-    const car = await Car.create(carData);
+    const car = await Car.create(scrubbedData);
     await User.findByIdAndUpdate(req.user._id, { $push: { carsPosted: car._id } });
 
     Logger.info("Create car completed", {
@@ -258,7 +306,13 @@ export const editCar = async (req, res) => {
     delete updateData._id;
     delete updateData.__v;
 
-    const updated = await Car.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
+    // Apply scrubbing based on vehicle type
+    const finalUpdateData = scrubVehicleData(
+      req.body.vehicleType || car.vehicleType || "Car", 
+      updateData
+    );
+
+    const updated = await Car.findByIdAndUpdate(id, finalUpdateData, { new: true, runValidators: true });
     return res.status(200).json({ success: true, data: updated });
   } catch (error) {
     Logger.error("Edit Car Error", error);

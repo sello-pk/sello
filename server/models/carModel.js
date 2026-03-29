@@ -26,7 +26,7 @@ const carSchema = new mongoose.Schema(
     colorInterior: { type: String, default: "N/A" },
     fuelType: {
       type: String,
-      required: true,
+      required: false, // Handled dynamically in controller
       enum: ["Petrol", "Diesel", "Hybrid", "Electric"],
     },
     engineCapacity: {
@@ -36,7 +36,7 @@ const carSchema = new mongoose.Schema(
     },
     transmission: {
       type: String,
-      required: true,
+      required: false, // Handled dynamically in controller
       enum: ["Manual", "Automatic"],
     },
     mileage: { type: Number, default: 0 },
@@ -188,13 +188,13 @@ const carSchema = new mongoose.Schema(
     },
     warranty: {
       type: String,
-      required: true,
+      required: false, // Handled dynamically in controller
       enum: ["Yes", "No", "Doesn't Apply"],
     },
     numberOfCylinders: { type: Number, default: 4, max: 16 },
     ownerType: {
       type: String,
-      required: true,
+      required: false, // Handled dynamically in controller
       enum: ["Owner", "Dealer", "Dealership"],
     },
     // E-bike specific fields
