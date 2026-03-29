@@ -1,4 +1,5 @@
 import Car from "../../models/carModel.js";
+import { AuctionCar, Auction } from "../../models/auctionModel.js";
 import { buildCarQuery } from "../../utils/parseArray.js";
 import Logger from "../../utils/logger.js";
 import mongoose from "mongoose";
@@ -59,13 +60,39 @@ export const getAllCars = async (req, res) => {
       // Continue with base query if filter building fails (or return error if strict)
     }
 
-    const cars = await Car.find(query)
-      .select("title make model year price images city location status featured condition fuelType transmission mileage postedBy createdAt viewsgeoLocation vehicleType features carDoors horsepower engineCapacity contactNumber whatsappNumber isSold")
+    const carsDocuments = await Car.find(query)
+      .select("title make model year price images city location status featured condition fuelType transmission mileage postedBy createdAt viewsgeoLocation vehicleType features carDoors horsepower engineCapacity contactNumber whatsappNumber isSold listingType")
       .skip(skip)
       .limit(limit)
       .populate("postedBy", "name email role sellerRating isVerified dealerInfo")
       .sort({ featured: -1, status: 1, createdAt: -1 })
       .lean();
+
+    // Enrichment: For auction-flagged items, join minimal auction data (timer/bid)
+    const cars = await Promise.all(
+      carsDocuments.map(async (c) => {
+        if (c.listingType === "auction") {
+          try {
+            const ac = await AuctionCar.findOne({ car: c._id, status: { $ne: "withdrawn" } })
+              .populate("auction", "endTime status")
+              .lean();
+            if (ac && ac.auction) {
+              return {
+                ...c,
+                currentBid: ac.currentBid || 0,
+                startingBid: ac.startingBid || 0,
+                auctionEndTime: ac.auction.endTime,
+                auctionStatus: ac.auction.status,
+                lotStatus: ac.status
+              };
+            }
+          } catch (err) {
+            Logger.warn("Failed to enrich marketplace car with auction data", { carId: c._id });
+          }
+        }
+        return c;
+      })
+    );
 
     const total = await Car.countDocuments(query);
 
@@ -105,10 +132,30 @@ export const getSingleCar = async (req, res) => {
     car.views = (car.views || 0) + 1;
     await car.save();
 
+    const carData = car.toObject();
+
+    // Enrichment: For auction-flagged items, join minimal auction data (timer/bid)
+    if (carData.listingType === "auction") {
+      try {
+        const ac = await AuctionCar.findOne({ car: carData._id, status: { $ne: "withdrawn" } })
+          .populate("auction", "endTime status")
+          .lean();
+        if (ac && ac.auction) {
+          carData.currentBid = ac.currentBid || 0;
+          carData.startingBid = ac.startingBid || 0;
+          carData.auctionEndTime = ac.auction.endTime;
+          carData.auctionStatus = ac.auction.status;
+          carData.lotStatus = ac.status;
+        }
+      } catch (err) {
+        Logger.warn("Failed to enrich marketplace detail with auction data", { carId: carData._id });
+      }
+    }
+
     return res.status(200).json({ 
       success: true, 
       data: {
-        ...car.toObject(),
+        ...carData,
         priceAnalysis
       }
     });

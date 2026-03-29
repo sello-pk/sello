@@ -77,7 +77,8 @@ const CarCard = ({
   const id = car?._id;
   const rawTitle = car && `${car.make || ""} ${car.model || ""} ${car.year || ""}`.trim();
   const displayTitle = (rawTitle && rawTitle !== "undefined") ? rawTitle : (car?.title || "Car Listing");
-  const displayPrice = car?.price;
+  const isAuction = car?.listingType === "auction";
+  const displayPrice = isAuction ? (car?.currentBid || car?.price) : car?.price;
   const priceFormatted =
     typeof displayPrice === "number"
       ? displayPrice.toLocaleString()
@@ -87,7 +88,6 @@ const CarCard = ({
   const displayMileage = car?.mileage ?? "—";
   const displayFuel = car?.fuelType ?? "—";
   const displayTransmission = car?.transmission ?? "—";
-  const isAuction = car?.listingType === "auction";
   const displayTag = car?.isSold ? "sold" : isAuction ? "auction" : car?.featured ? "featured" : "for_sale";
   const displayRef = car?._id?.slice(-6)?.toUpperCase() || "";
   const isSaved = id ? savedCars.includes(id) : false;
@@ -166,7 +166,9 @@ const CarCard = ({
     for_sale: "bg-[#111827]/80 text-white",
   };
 
-  const priceLabel = isAuction ? "Starting Bid" : "Starting from";
+  const priceLabel = isAuction 
+    ? (car?.currentBid > 0 ? "Current Bid" : "Starting Bid") 
+    : "Starting from";
 
   const mileageText =
     displayMileage === "—" || displayMileage == null
