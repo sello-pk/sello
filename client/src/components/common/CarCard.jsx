@@ -4,7 +4,7 @@ import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { IoIosArrowRoundUp } from "react-icons/io";
 import { FaPhone, FaWhatsapp } from "react-icons/fa";
 import { Image as LazyImage } from "../ui/Image";
-import {
+import { IoFlashOutline as Zap } from "react-icons/io5";import {
   useSaveCarMutation,
   useUnsaveCarMutation,
   useGetSavedCarsQuery,
@@ -14,6 +14,35 @@ import { images } from "../../assets/assets";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "../../utils/errorHandler";
 
+const CountdownTimer = ({ targetDate }) => {
+  const [time, setTime] = React.useState({ d: 0, h: 0, m: 0, s: 0 });
+  React.useEffect(() => {
+    if (!targetDate) return;
+    const tick = () => {
+      const diff = Math.max(0, new Date(targetDate) - Date.now());
+      setTime({
+        d: Math.floor(diff / 86400000),
+        h: Math.floor((diff % 86400000) / 3600000),
+        m: Math.floor((diff % 3600000) / 60000),
+        s: Math.floor((diff % 60000) / 1000),
+      });
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [targetDate]);
+
+  if (!targetDate) return null;
+  const pad = (n) => String(n).padStart(2, "0");
+  const isEndingSoon = time.d === 0 && time.h === 0 && time.m < 15;
+
+  return (
+    <span className={`inline-flex items-center gap-1 text-xs font-bold ml-2 ${isEndingSoon ? "text-red-500 animate-pulse" : "text-amber-600"}`}>
+      <Zap className="w-3.5 h-3.5" />
+      {time.d > 0 && `${time.d}d `}{pad(time.h)}:{pad(time.m)}:{pad(time.s)}
+    </span>
+  );
+};
 /**
  * Car listing card used across listing pages. Supports grid (default) and list layout.
  * @param {Object} props.car - Car object
@@ -58,7 +87,8 @@ const CarCard = ({
   const displayMileage = car?.mileage ?? "—";
   const displayFuel = car?.fuelType ?? "—";
   const displayTransmission = car?.transmission ?? "—";
-  const displayTag = car?.isSold ? "sold" : car?.featured ? "featured" : "for_sale";
+  const isAuction = car?.listingType === "auction";
+  const displayTag = car?.isSold ? "sold" : isAuction ? "auction" : car?.featured ? "featured" : "for_sale";
   const displayRef = car?._id?.slice(-6)?.toUpperCase() || "";
   const isSaved = id ? savedCars.includes(id) : false;
 
@@ -120,18 +150,23 @@ const CarCard = ({
   const tagLabel =
     displayTag === "sold"
       ? "SOLD"
-      : displayTag === "featured"
-        ? "Featured"
-        : displayTag === "verified"
-          ? "Verified"
-          : "For Sale";
+      : displayTag === "auction"
+        ? "Auction"
+        : displayTag === "featured"
+          ? "Featured"
+          : displayTag === "verified"
+            ? "Verified"
+            : "For Sale";
 
   const tagStyles = {
     sold: "bg-[#111827] text-white",
+    auction: "bg-[#FFA602] text-white",
     featured: "bg-primary-500 text-white",
     verified: "bg-[#16a34a] text-white",
     for_sale: "bg-[#111827]/80 text-white",
   };
+
+  const priceLabel = isAuction ? "Starting Bid" : "Starting from";
 
   const mileageText =
     displayMileage === "—" || displayMileage == null
@@ -228,7 +263,10 @@ const CarCard = ({
           </div>
           <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3 mt-3 pt-3 border-t border-[#e5e7eb]">
             <div className="min-w-0">
-              <p className="text-xs text-gray-500">Starting from</p>
+              <div className="flex items-center gap-2">
+                <p className="text-xs text-gray-500">{priceLabel}</p>
+                {isAuction && <CountdownTimer targetDate={car?.auctionEndTime} />}
+              </div>
               <p className="text-lg font-bold text-primary-500 truncate">PKR {priceFormatted}</p>
             </div>
             <div className="flex items-center justify-between gap-2 flex-wrap min-w-0">
@@ -314,8 +352,9 @@ const CarCard = ({
           }}
         />
         <div className="absolute bottom-0 left-0 right-0 px-3 py-2 flex items-end justify-between">
-          <p className="text-white font-bold text-lg sm:text-xl tracking-tight drop-shadow-lg">
+          <p className="text-white font-bold text-lg sm:text-xl tracking-tight drop-shadow-lg flex items-center gap-2">
             PKR {priceFormatted}
+            {isAuction && <CountdownTimer targetDate={car?.auctionEndTime} />}
           </p>
         </div>
         <span
@@ -341,9 +380,12 @@ const CarCard = ({
       </div>
 
       <div className="p-4 flex flex-col flex-1">
-        <h3 className="text-[#111827] font-bold text-base leading-tight line-clamp-2">
-          {displayTitle}
-        </h3>
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="text-[#111827] font-bold text-base leading-tight line-clamp-2">
+            {displayTitle}
+          </h3>
+          <p className="text-xs text-gray-500 shrink-0">{priceLabel}</p>
+        </div>
         <div className="flex items-center gap-1.5 mt-1.5 text-[#6b7280] text-xs">
           {images.location && (
             <img

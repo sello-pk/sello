@@ -234,10 +234,6 @@ const EditCarForm = () => {
           activeAuction?.reservePrice !== null && activeAuction?.reservePrice !== undefined
             ? String(activeAuction.reservePrice)
             : "",
-        buyNowPrice:
-          activeAuction?.buyNowPrice !== null && activeAuction?.buyNowPrice !== undefined
-            ? String(activeAuction.buyNowPrice)
-            : "",
         existingDamageImageUrls: Array.isArray(activeAuction?.damageImageUrls)
           ? activeAuction.damageImageUrls.filter(Boolean)
           : [],
@@ -412,7 +408,7 @@ const EditCarForm = () => {
       ["condition", formData.condition],
       ["startingBid", formData.startingBid],
       ["reservePrice", formData.reservePrice],
-      ["buyNowPrice", formData.buyNowPrice],
+      ["price", formData.price],
       ["mileage", formData.mileage],
       ["fuelType", formData.fuelType],
       ["transmission", formData.transmission],
@@ -520,12 +516,10 @@ const EditCarForm = () => {
             <Input inputType="text" value={formData.title} onChange={(e) => handleChange("title", e.target.value)} placeholder="Title" required />
           </div>
           
-          {!isAuction && (
-            <div className="mt-5">
-              <label className="block mb-1">Price (PKR)</label>
-              <Input inputType="number" value={formData.price} onChange={(e) => handleChange("price", e.target.value)} placeholder="Enter price" required />
-            </div>
-          )}
+          <div>
+            <label className="block mb-1">{isAuction ? "Price / Buy Now Value (PKR)" : "Price (PKR)"}</label>
+            <Input inputType="number" value={formData.price} onChange={(e) => handleChange("price", e.target.value)} placeholder="Enter price" required />
+          </div>
 
           {isAuction && (
             <>
@@ -536,10 +530,6 @@ const EditCarForm = () => {
               <div>
                 <label className="block mb-1">Reserve Price (PKR)</label>
                 <Input inputType="number" value={formData.reservePrice} onChange={(e) => handleChange("reservePrice", e.target.value)} />
-              </div>
-              <div>
-                <label className="block mb-1">Buy Now Price (PKR)</label>
-                <Input inputType="number" value={formData.buyNowPrice} onChange={(e) => handleChange("buyNowPrice", e.target.value)} />
               </div>
             </>
           )}

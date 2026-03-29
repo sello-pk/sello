@@ -3123,7 +3123,7 @@ export const getAllAuctionCars = async (req, res) => {
 
 export const adminAddCarToAuction = async (req, res) => {
   try {
-    const { auctionId, carId, startingBid, reservePrice, buyNowPrice } =
+    const { auctionId, carId, startingBid, reservePrice, buyNowPrice, bidIncrement } =
       req.body;
 
     const auction = await Auction.findById(auctionId);
@@ -3155,6 +3155,7 @@ export const adminAddCarToAuction = async (req, res) => {
       startingBid: startingBid || car.price || 500000,
       reservePrice: reservePrice || 0,
       buyNowPrice: buyNowPrice || 0,
+      bidIncrement: bidIncrement || null,
       currentBid: 0,
       bidCount: 0,
       status,

@@ -99,7 +99,7 @@ export default function AuctionManagement() {
   const [selectedAuctionCar, setSelectedAuctionCar] = useState(null);
   const [offlineBidAmount, setOfflineBidAmount] = useState("");
   const [offlineBidderName, setOfflineBidderName] = useState("Floor Bid");
-  const [addCarData, setAddCarData] = useState({ auctionId: "", carId: "", startingBid: "" });
+  const [addCarData, setAddCarData] = useState({ auctionId: "", carId: "", startingBid: "", bidIncrement: "" });
   const [carSearch, setCarSearch] = useState("");
   const [auctionStatusFilter, setAuctionStatusFilter] = useState("all");
   const [paymentStatusFilter, setPaymentStatusFilter] = useState("all");
@@ -209,10 +209,14 @@ export default function AuctionManagement() {
   const handleAddCar = async () => {
     if (!addCarData.auctionId || !addCarData.carId) return toast.error("Select auction and car");
     try {
-      await addCarToAuction({ ...addCarData, startingBid: Number(addCarData.startingBid) || 500000 }).unwrap();
+      await addCarToAuction({ 
+        ...addCarData, 
+        startingBid: Number(addCarData.startingBid) || 500000,
+        bidIncrement: Number(addCarData.bidIncrement) || undefined,
+      }).unwrap();
       toast.success("Car added to auction!");
       setShowAddCarModal(false);
-      setAddCarData({ auctionId: "", carId: "", startingBid: "" });
+      setAddCarData({ auctionId: "", carId: "", startingBid: "", bidIncrement: "" });
       refetchCars();
       refetchDash();
     } catch (err) { toast.error(err?.data?.message || "Failed to add car"); }
@@ -794,9 +798,15 @@ export default function AuctionManagement() {
                     ))}
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Starting Bid (PKR)</label>
-                  <input type="number" className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={addCarData.startingBid} onChange={(e) => setAddCarData({ ...addCarData, startingBid: e.target.value })} placeholder="500000" step="50000" />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Starting Bid (PKR)</label>
+                    <input type="number" className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={addCarData.startingBid} onChange={(e) => setAddCarData({ ...addCarData, startingBid: e.target.value })} placeholder="500000" step="50000" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Bid Increment Override</label>
+                    <input type="number" className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={addCarData.bidIncrement} onChange={(e) => setAddCarData({ ...addCarData, bidIncrement: e.target.value })} placeholder="Default logic" step="10000" />
+                  </div>
                 </div>
                 <Button className="w-full" onClick={handleAddCar} disabled={addingCar}>
                   <Car className="w-4 h-4 mr-2" />{addingCar ? "Adding..." : "Add Car to Auction"}
