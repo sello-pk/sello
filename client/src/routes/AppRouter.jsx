@@ -209,6 +209,7 @@ const AppRouter = () => {
         <Route element={<ProtectedRoute />}>
           <Route path="/create-post" element={<CreatePost />} />
           <Route path="/edit-car/:id" element={<EditCar />} />
+          <Route path="/edit-auction-car/:id" element={<EditCar />} />
           <Route path="/my-listings" element={<UserListingPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/saved-cars" element={<SavedCars />} />

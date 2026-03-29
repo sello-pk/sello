@@ -1642,7 +1642,13 @@ const DealerDashboard = () => {
                       </p>
                       <div className="flex items-center gap-2 mt-3">
                         <button
-                          onClick={() => navigate(`/edit-car/${car._id}`)}
+                          onClick={() =>
+                            navigate(
+                              car?.listingType === "auction"
+                                ? `/edit-auction-car/${car._id}`
+                                : `/edit-car/${car._id}`,
+                            )
+                          }
                           className="flex-1 px-3 py-2 bg-primary-500 text-white rounded text-sm hover:opacity-90"
                         >
                           <FiEdit className="inline mr-1" size={14} />

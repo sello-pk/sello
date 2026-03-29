@@ -1568,6 +1568,11 @@ export const api = createApi({
       providesTags: ["Auction"],
       transformResponse: (response) => response?.data || response,
     }),
+    getMyAuctionSubmissionByCar: builder.query({
+      query: (carId) => `/auctions/my/submissions/by-car/${carId}`,
+      providesTags: ["Auction", "Cars"],
+      transformResponse: (response) => response?.data || response,
+    }),
     getMyWalletTransactions: builder.query({
       query: (params = {}) => {
         const searchParams = new URLSearchParams();
@@ -1693,6 +1698,57 @@ export const api = createApi({
         return { data: result.data };
       },
       invalidatesTags: ["Auction"],
+    }),
+    updateMyAuctionSubmissionByCar: builder.mutation({
+      queryFn: async ({ carId, formData }, _api, _extra, fetchWithBQ) => {
+        const optimizedForm = await optimizeUploadFormData(formData, [
+          "images",
+          "damageImages",
+        ]);
+        const inspectionReport = getFirstFormDataFile(
+          optimizedForm,
+          "inspectionReport",
+        );
+        if (
+          inspectionReport &&
+          inspectionReport.size > CLIENT_AUCTION_INSPECTION_REPORT_MAX_BYTES
+        ) {
+          return {
+            error: {
+              status: 413,
+              originalStatus: 413,
+              data: {
+                code: "REQUEST_TOO_LARGE",
+                message:
+                  "Inspection report is too large for the live server. Use a smaller PDF and keep it under 4MB.",
+              },
+            },
+          };
+        }
+        const optimizedBytes = getFormDataFileBytes(optimizedForm);
+        if (optimizedBytes > CLIENT_AUCTION_UPLOAD_SAFE_TOTAL_BYTES) {
+          return {
+            error: {
+              status: 413,
+              originalStatus: 413,
+              data: {
+                code: "REQUEST_TOO_LARGE",
+                message:
+                  "Auction submission files are too large for the live server. Keep the inspection report small and keep the total upload under 10MB.",
+              },
+            },
+          };
+        }
+
+        const result = await fetchWithBQ({
+          url: `/auctions/my/submissions/by-car/${carId}`,
+          method: "PUT",
+          body: optimizedForm,
+        });
+        if (result.error) return { error: result.error };
+        return { data: result.data };
+      },
+      invalidatesTags: ["Auction", "Cars", "User"],
     }),
     getAuctionStats: builder.query({
       query: (auctionId) => `/auctions/${auctionId}/stats`,
@@ -1870,8 +1926,10 @@ export const {
   usePayEscrowMutation,
   useRaiseEscrowDisputeMutation,
   useGetMyAuctionResultQuery,
+  useGetMyAuctionSubmissionByCarQuery,
   useGetMyWalletTransactionsQuery,
   useSubmitCarToAuctionMutation,
+  useUpdateMyAuctionSubmissionByCarMutation,
   useGetAuctionStatsQuery,
   useExtendAuctionMutation,
   useGetMyAuctionAnalyticsQuery,

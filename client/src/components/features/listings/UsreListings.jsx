@@ -142,7 +142,13 @@ const UserListings = () => {
                   <div className="flex gap-2">
                     <button
                       type="button"
-                      onClick={() => navigate(`/edit-car/${car._id}`)}
+                      onClick={() =>
+                        navigate(
+                          car?.listingType === "auction"
+                            ? `/edit-auction-car/${car._id}`
+                            : `/edit-car/${car._id}`,
+                        )
+                      }
                       disabled={car?.isSold}
                       className={`flex-1 px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors ${
                         car?.isSold

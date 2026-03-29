@@ -389,6 +389,137 @@ const collapseAccidentalAuctionDuplicates = (items = []) => {
   return Array.from(deduped.values());
 };
 
+const getAuctionSubmissionFiles = (files = {}) => ({
+  inspectionReportFile:
+    files?.inspectionReport?.[0] ||
+    files?.["inspectionReport[]"]?.[0] ||
+    files?.inspectionReportFile?.[0] ||
+    files?.inspection_report?.[0] ||
+    null,
+  imageFiles: [
+    ...(files?.images || []),
+    ...(files?.["images[]"] || []),
+    ...(files?.image || []),
+    ...(files?.photos || []),
+    ...(files?.photo || []),
+  ],
+  damageFiles: [
+    ...(files?.damageImages || []),
+    ...(files?.["damageImages[]"] || []),
+    ...(files?.damageImage || []),
+  ],
+  documentFiles: [
+    ...(files?.documents || []),
+    ...(files?.["documents[]"] || []),
+    ...(files?.document || []),
+  ],
+});
+
+const normalizeAuctionGeoLocation = (geoLocation) => {
+  let parsedGeoLocation = geoLocation;
+  if (typeof geoLocation === "string") {
+    try {
+      parsedGeoLocation = JSON.parse(geoLocation);
+    } catch (e) {
+      console.error("Failed to parse geoLocation:", e);
+      parsedGeoLocation = {
+        type: "Point",
+        coordinates: [67.0011, 24.8607],
+      };
+    }
+  }
+
+  if (!parsedGeoLocation || !Array.isArray(parsedGeoLocation?.coordinates)) {
+    return {
+      type: "Point",
+      coordinates: [67.0011, 24.8607],
+    };
+  }
+
+  return parsedGeoLocation;
+};
+
+const normalizeAuctionCondition = (value) => {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
+  return normalized === "new" ? "New" : "Used";
+};
+
+const normalizeAuctionFuelType = (value) => {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
+  if (normalized === "diesel") return "Diesel";
+  if (normalized === "hybrid") return "Hybrid";
+  if (normalized === "electric") return "Electric";
+  return "Petrol";
+};
+
+const normalizeAuctionTransmission = (value) => {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
+  return normalized === "automatic" ? "Automatic" : "Manual";
+};
+
+const parseStringArrayField = (rawValue) => {
+  if (rawValue === undefined || rawValue === null) return [];
+  if (Array.isArray(rawValue)) {
+    return rawValue
+      .flatMap((item) => parseStringArrayField(item))
+      .filter(Boolean);
+  }
+  if (typeof rawValue !== "string") {
+    return [String(rawValue)].filter(Boolean);
+  }
+
+  const trimmed = rawValue.trim();
+  if (!trimmed) return [];
+  if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
+    try {
+      return parseArray(trimmed).filter(Boolean);
+    } catch {
+      return [trimmed];
+    }
+  }
+  return [trimmed];
+};
+
+const getEditableAuctionSubmission = async (carId, user) => {
+  const car = await Car.findById(carId);
+  if (!car) {
+    const error = new Error("Car not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const ownsCar =
+    car.postedBy?.toString() === user?._id?.toString() || user?.role === "admin";
+  if (!ownsCar) {
+    const error = new Error("You can only manage your own auction submissions");
+    error.statusCode = 403;
+    throw error;
+  }
+
+  const query = { car: carId };
+  if (user?.role !== "admin") {
+    query.submittedBy = user._id;
+  }
+
+  const auctionCar = await AuctionCar.findOne(query)
+    .populate("auction", "title status startTime endTime")
+    .sort({ createdAt: -1 });
+
+  if (!auctionCar) {
+    const error = new Error("Auction submission not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return { car, auctionCar };
+};
+
 // ═══════════════════════════════════════════════════════════════════════════
 // PUBLIC  –  Auctions
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1778,6 +1909,29 @@ export const getMyAuctionResult = async (req, res) => {
 // AUTH  –  Submit Car to Auction
 // ═══════════════════════════════════════════════════════════════════════════
 
+export const getMyAuctionSubmissionByCar = async (req, res) => {
+  try {
+    const { car, auctionCar } = await getEditableAuctionSubmission(
+      req.params.carId,
+      req.user,
+    );
+
+    return res.json({
+      success: true,
+      data: {
+        auctionCar,
+        car,
+      },
+    });
+  } catch (error) {
+    Logger.error("getMyAuctionSubmissionByCar error", error);
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Failed to fetch auction submission",
+    });
+  }
+};
+
 export const submitCarToAuction = async (req, res) => {
   try {
     if (!hasAuctionDealerSubmissionAccess(req.user)) {
@@ -1845,32 +1999,11 @@ export const submitCarToAuction = async (req, res) => {
       });
     }
 
-    // Parse geoLocation from JSON string if it's a string (from FormData)
-    let parsedGeoLocation = geoLocation;
-    if (typeof geoLocation === "string") {
-      try {
-        parsedGeoLocation = JSON.parse(geoLocation);
-      } catch (e) {
-        console.error("Failed to parse geoLocation:", e);
-        parsedGeoLocation = {
-          type: "Point",
-          coordinates: [67.0011, 24.8607], // Default coordinates
-        };
-      }
-    }
-    if (!parsedGeoLocation || !Array.isArray(parsedGeoLocation?.coordinates)) {
-      parsedGeoLocation = {
-        type: "Point",
-        coordinates: [67.0011, 24.8607],
-      };
-    }
+    const parsedGeoLocation = normalizeAuctionGeoLocation(geoLocation);
+    const { inspectionReportFile, imageFiles, damageFiles, documentFiles } =
+      getAuctionSubmissionFiles(req.files);
 
     // Hybrid model: inspection report PDF is mandatory for every auction submission
-    const inspectionReportFile =
-      req.files?.inspectionReport?.[0] ||
-      req.files?.["inspectionReport[]"]?.[0] ||
-      req.files?.inspectionReportFile?.[0] ||
-      req.files?.inspection_report?.[0];
     if (!inspectionReportFile || !inspectionReportFile.buffer) {
       return res.status(400).json({
         success: false,
@@ -1920,14 +2053,7 @@ export const submitCarToAuction = async (req, res) => {
       }
 
       // Handle image uploads — parallel + total size cap (same as listing uploads)
-      const images = [
-        ...(req.files?.images || []),
-        ...(req.files?.["images[]"] || []),
-        ...(req.files?.image || []),
-        ...(req.files?.photos || []),
-        ...(req.files?.photo || []),
-      ];
-      const totalBytes = images.reduce(
+      const totalBytes = imageFiles.reduce(
         (sum, img) => sum + (img.buffer?.length || 0),
         0,
       );
@@ -1938,9 +2064,9 @@ export const submitCarToAuction = async (req, res) => {
         });
       }
       let imageUrls = [];
-      if (images.length > 0) {
+      if (imageFiles.length > 0) {
         try {
-          imageUrls = await uploadListingImagesToCloudinary(images, {
+          imageUrls = await uploadListingImagesToCloudinary(imageFiles, {
             folder: "auction_cars",
           });
         } catch (error) {
@@ -1962,28 +2088,6 @@ export const submitCarToAuction = async (req, res) => {
       } catch {
         parsedFeatures = [];
       }
-
-      const normalizeAuctionCondition = (value) => {
-        const normalized = String(value || "")
-          .trim()
-          .toLowerCase();
-        return normalized === "new" ? "New" : "Used";
-      };
-      const normalizeAuctionFuelType = (value) => {
-        const normalized = String(value || "")
-          .trim()
-          .toLowerCase();
-        if (normalized === "diesel") return "Diesel";
-        if (normalized === "hybrid") return "Hybrid";
-        if (normalized === "electric") return "Electric";
-        return "Petrol";
-      };
-      const normalizeAuctionTransmission = (value) => {
-        const normalized = String(value || "")
-          .trim()
-          .toLowerCase();
-        return normalized === "automatic" ? "Automatic" : "Manual";
-      };
 
       const normalizedAuctionTitle = String(
         title || `${make} ${model} ${year}`,
@@ -2111,11 +2215,6 @@ export const submitCarToAuction = async (req, res) => {
         message: "Failed to upload inspection report. Try again.",
       });
     }
-    const damageFiles = [
-      ...(req.files?.damageImages || []),
-      ...(req.files?.["damageImages[]"] || []),
-      ...(req.files?.damageImage || []),
-    ];
     if (damageFiles.length > 0) {
       try {
         damageImageUrls = await uploadListingImagesToCloudinary(damageFiles, {
@@ -2129,15 +2228,10 @@ export const submitCarToAuction = async (req, res) => {
         });
       }
     }
-    const docFiles = [
-      ...(req.files?.documents || []),
-      ...(req.files?.["documents[]"] || []),
-      ...(req.files?.document || []),
-    ];
-    if (docFiles.length > 0) {
+    if (documentFiles.length > 0) {
       try {
         documentUrls = await Promise.all(
-          docFiles.map((f) =>
+          documentFiles.map((f) =>
             uploadRawToCloudinaryWithRetry(f.buffer, {
               folder: "auction_documents",
             }),
@@ -2222,6 +2316,244 @@ export const submitCarToAuction = async (req, res) => {
 // ═══════════════════════════════════════════════════════════════════════════
 // ADMIN  –  Auction CRUD
 // ═══════════════════════════════════════════════════════════════════════════
+
+export const updateMyAuctionSubmissionByCar = async (req, res) => {
+  try {
+    if (!hasAuctionDealerSubmissionAccess(req.user)) {
+      return res.status(403).json({
+        success: false,
+        message: "Only approved auction dealers can update auction submissions",
+      });
+    }
+
+    const { car, auctionCar } = await getEditableAuctionSubmission(
+      req.params.carId,
+      req.user,
+    );
+
+    if (["live", "sold", "unsold", "withdrawn"].includes(auctionCar.status)) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "This auction listing can no longer be edited because it is already live or closed.",
+      });
+    }
+
+    const {
+      title,
+      description,
+      make,
+      model,
+      year,
+      condition,
+      colorExterior,
+      colorInterior,
+      fuelType,
+      engineCapacity,
+      transmission,
+      mileage,
+      features,
+      regionalSpec,
+      bodyType,
+      city,
+      location,
+      contactNumber,
+      whatsappNumber,
+      geoLocation,
+      warranty,
+      ownerType,
+      startingBid,
+      reservePrice,
+      buyNowPrice,
+      videoUrls,
+    } = req.body;
+
+    const { inspectionReportFile, imageFiles, damageFiles, documentFiles } =
+      getAuctionSubmissionFiles(req.files);
+
+    const totalBytes = imageFiles.reduce(
+      (sum, img) => sum + (img.buffer?.length || 0),
+      0,
+    );
+    if (totalBytes > LISTING_MAX_TOTAL_BYTES) {
+      return res.status(400).json({
+        success: false,
+        message: MSG_IMAGE_TOTAL_EXCEEDED,
+      });
+    }
+
+    let newImageUrls = [];
+    if (imageFiles.length > 0) {
+      try {
+        newImageUrls = await uploadListingImagesToCloudinary(imageFiles, {
+          folder: "auction_cars",
+        });
+      } catch (error) {
+        Logger.error("Auction edit image upload failed", error);
+        return res.status(503).json({
+          success: false,
+          message: "Failed to upload updated photos. Try fewer or smaller files.",
+        });
+      }
+    }
+
+    const existingImages = parseStringArrayField(
+      req.body["existingImages[]"] ?? req.body.existingImages,
+    );
+    const images = [...existingImages, ...newImageUrls].filter(Boolean);
+
+    let inspectionReportPdfUrl = auctionCar.inspectionReportPdfUrl || null;
+    if (inspectionReportFile?.buffer) {
+      try {
+        inspectionReportPdfUrl = await uploadRawToCloudinaryWithRetry(
+          inspectionReportFile.buffer,
+          { folder: "auction_inspection" },
+        );
+      } catch (error) {
+        Logger.error("Auction edit inspection report upload failed", error);
+        return res.status(503).json({
+          success: false,
+          message: "Failed to upload updated inspection report. Try again.",
+        });
+      }
+    }
+
+    let damageImageUrls = parseStringArrayField(
+      req.body["existingDamageImageUrls[]"] ?? req.body.existingDamageImageUrls,
+    );
+    if (damageFiles.length > 0) {
+      try {
+        const uploadedDamageUrls = await uploadListingImagesToCloudinary(
+          damageFiles,
+          {
+            folder: "auction_damage",
+          },
+        );
+        damageImageUrls = [...damageImageUrls, ...uploadedDamageUrls];
+      } catch (error) {
+        Logger.error("Auction edit damage image upload failed", error);
+        return res.status(503).json({
+          success: false,
+          message: "Failed to upload updated damage images. Try again.",
+        });
+      }
+    }
+
+    let documentUrls = parseStringArrayField(
+      req.body["existingDocumentUrls[]"] ?? req.body.existingDocumentUrls,
+    );
+    if (documentFiles.length > 0) {
+      try {
+        const uploadedDocuments = await Promise.all(
+          documentFiles.map((file) =>
+            uploadRawToCloudinaryWithRetry(file.buffer, {
+              folder: "auction_documents",
+            }),
+          ),
+        );
+        documentUrls = [...documentUrls, ...uploadedDocuments];
+      } catch (error) {
+        Logger.error("Auction edit document upload failed", error);
+        return res.status(503).json({
+          success: false,
+          message: "Failed to upload updated documents. Please retry.",
+        });
+      }
+    }
+
+    let parsedFeatures = car.features || [];
+    if (features !== undefined) {
+      try {
+        parsedFeatures = parseArray(features);
+      } catch {
+        parsedFeatures = [];
+      }
+    }
+
+    const normalizedGeoLocation =
+      geoLocation !== undefined
+        ? normalizeAuctionGeoLocation(geoLocation)
+        : car.geoLocation;
+
+    car.title = title || car.title;
+    car.description = description ?? car.description;
+    car.make = make || car.make;
+    car.model = model || car.model;
+    car.year = year ? Number(year) : car.year;
+    car.condition = condition
+      ? normalizeAuctionCondition(condition)
+      : car.condition;
+    car.price =
+      startingBid !== undefined && startingBid !== ""
+        ? Number(startingBid)
+        : car.price;
+    car.colorExterior = colorExterior ?? car.colorExterior;
+    car.colorInterior = colorInterior ?? car.colorInterior;
+    car.fuelType = fuelType ? normalizeAuctionFuelType(fuelType) : car.fuelType;
+    car.transmission = transmission
+      ? normalizeAuctionTransmission(transmission)
+      : car.transmission;
+    car.mileage =
+      mileage !== undefined && mileage !== "" ? Number(mileage) : car.mileage;
+    car.bodyType = bodyType ?? car.bodyType;
+    car.city = city || car.city;
+    car.location = location ?? car.location;
+    car.contactNumber = contactNumber || car.contactNumber;
+    car.whatsappNumber =
+      whatsappNumber !== undefined ? whatsappNumber : car.whatsappNumber;
+    car.geoLocation = normalizedGeoLocation;
+    car.warranty = warranty || car.warranty;
+    car.ownerType = ownerType || car.ownerType;
+    car.images = images.length > 0 ? images : car.images;
+    car.features = parsedFeatures;
+    if (regionalSpec !== undefined) {
+      car.regionalSpec = regionalSpec || null;
+    }
+    if (engineCapacity !== undefined) {
+      car.engineCapacity =
+        engineCapacity === "" ? undefined : Number(engineCapacity);
+    }
+    await car.save();
+
+    if (startingBid !== undefined && startingBid !== "") {
+      auctionCar.startingBid = Number(startingBid);
+    }
+    if (reservePrice !== undefined) {
+      auctionCar.reservePrice =
+        reservePrice === "" ? null : Number(reservePrice);
+    }
+    if (buyNowPrice !== undefined) {
+      auctionCar.buyNowPrice =
+        buyNowPrice === "" ? null : Number(buyNowPrice);
+    }
+    auctionCar.inspectionReportPdfUrl = inspectionReportPdfUrl;
+    auctionCar.damageImageUrls = damageImageUrls;
+    auctionCar.documentUrls = documentUrls;
+    if (videoUrls !== undefined) {
+      auctionCar.videoUrls = parseArray(videoUrls).filter(Boolean);
+    }
+    await auctionCar.save();
+
+    const refreshed = await AuctionCar.findById(auctionCar._id)
+      .populate("auction", "title status startTime endTime")
+      .populate("car");
+
+    return res.json({
+      success: true,
+      data: {
+        auctionCar: refreshed,
+        car: refreshed?.car,
+      },
+      message: "Auction listing updated successfully",
+    });
+  } catch (error) {
+    Logger.error("updateMyAuctionSubmissionByCar error", error);
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Failed to update auction submission",
+    });
+  }
+};
 
 export const createAuction = async (req, res) => {
   try {
