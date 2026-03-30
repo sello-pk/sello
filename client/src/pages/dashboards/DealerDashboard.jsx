@@ -427,6 +427,16 @@ const DealerDashboard = () => {
     if (files?.length) processPhotoFiles(files);
   };
 
+  const handleSetCover = (index) => {
+    setNewCar((prev) => {
+      const images = [...(prev.images || [])];
+      if (index <= 0 || index >= images.length) return prev;
+      const target = images.splice(index, 1)[0];
+      images.unshift(target);
+      return { ...prev, images };
+    });
+  };
+
   const handleSubmitAuctionCar = async () => {
     // Validate that either an existing car is selected OR new car details are provided
     const hasNewCarDetails = newCar.make && newCar.model && newCar.year;
@@ -2061,6 +2071,23 @@ const DealerDashboard = () => {
                               >
                                 <FiTrash2 size={14} />
                               </button>
+
+                              {index === 0 ? (
+                                <div className="absolute bottom-0 left-0 right-0 bg-primary-500/90 text-white text-[10px] font-bold py-1 text-center backdrop-blur-sm">
+                                  COVER IMAGE
+                                </div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleSetCover(index);
+                                  }}
+                                  className="absolute bottom-0 left-0 right-0 bg-black/40 hover:bg-black/60 text-white text-[10px] font-medium py-1 text-center backdrop-blur-sm transition-colors opacity-0 group-hover:opacity-100"
+                                >
+                                  SET AS COVER
+                                </button>
+                              )}
                             </div>
                           ))}
                         </div>

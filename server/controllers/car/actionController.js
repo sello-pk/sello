@@ -275,7 +275,8 @@ export const editCar = async (req, res) => {
     if (req.files && req.files.length > 0) {
       newImageUrls = await uploadCarImagesToCloudinary(req.files);
     }
-    const images = [...existingImages, ...newImageUrls];
+    const newImagesFirst = req.body.newImagesFirst === "true";
+    const images = newImagesFirst ? [...newImageUrls, ...existingImages] : [...existingImages, ...newImageUrls];
 
     const normalizedHorsepower = parseNumericField(req.body.horsepower);
     const normalizedGeoLocation = parseGeoLocation(req.body.geoLocation);

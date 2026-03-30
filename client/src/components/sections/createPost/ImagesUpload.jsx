@@ -17,6 +17,7 @@ const MAX_SINGLE_BYTES = LISTING_MAX_FILE_MB * 1024 * 1024;
 
 const ImagesUpload = ({ onImagesChange }) => {
   const [uploads, setUploads] = useState([]);
+  const [coverId, setCoverId] = useState(null);
   const [activeIndex, setActiveIndex] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isCompressing, setIsCompressing] = useState(false);
@@ -111,18 +112,31 @@ const ImagesUpload = ({ onImagesChange }) => {
       }
     }
 
-    const newUploads = processedFiles.map((file) => ({
-      id: Date.now() + Math.random(),
-      file,
-      preview: URL.createObjectURL(file),
-      progress: 0,
-      status: "uploading",
-    }));
+    const newUploads = processedFiles.map((file, idx) => {
+      const id = Date.now() + Math.random() + idx;
+      return {
+        id,
+        file,
+        preview: URL.createObjectURL(file),
+        progress: 0,
+        status: "uploading",
+      };
+    });
 
     setUploads((prev) => {
       const updated = [...prev, ...newUploads];
+      
+      // If no cover is set, use the very first image in the entire list
+      if (!coverId && updated.length > 0) {
+        setCoverId(updated[0].id);
+      }
+      
       if (onImagesChange) {
-        onImagesChange(updated.map((u) => u.file));
+        // Reorder for the form: cover goes first
+        const currentCover = updated.find(u => u.id === (coverId || (updated[0]?.id)));
+        const others = updated.filter(u => u.id !== currentCover?.id);
+        const ordered = currentCover ? [currentCover.file, ...others.map(o => o.file)] : updated.map(u => u.file);
+        onImagesChange(ordered);
       }
       return updated;
     });
@@ -169,8 +183,17 @@ const ImagesUpload = ({ onImagesChange }) => {
       URL.revokeObjectURL(prev[indexToRemove].preview);
       const newUploads = prev.filter((u) => u.id !== id);
 
+      let nextCoverId = coverId;
+      if (coverId === id) {
+        nextCoverId = newUploads.length > 0 ? newUploads[0].id : null;
+        setCoverId(nextCoverId);
+      }
+
       if (onImagesChange) {
-        onImagesChange(newUploads.map((u) => u.file));
+        const currentCover = newUploads.find(u => u.id === nextCoverId);
+        const others = newUploads.filter(u => u.id !== nextCoverId);
+        const ordered = currentCover ? [currentCover.file, ...others.map(o => o.file)] : newUploads.map(u => u.file);
+        onImagesChange(ordered);
       }
 
       if (newUploads.length === 0) {
@@ -183,6 +206,19 @@ const ImagesUpload = ({ onImagesChange }) => {
 
       return newUploads;
     });
+  };
+
+  const setAsCover = (id) => {
+    setCoverId(id);
+    const item = uploads.find(u => u.id === id);
+    if (!item) return;
+
+    if (onImagesChange) {
+      const currentCover = item;
+      const others = uploads.filter(u => u.id !== id);
+      const ordered = [currentCover.file, ...others.map(o => o.file)];
+      onImagesChange(ordered);
+    }
   };
 
   const completedUploads = uploads.filter((u) => u.status === "done");
@@ -227,6 +263,25 @@ const ImagesUpload = ({ onImagesChange }) => {
                 alt="preview"
                 className="w-full h-full min-h-[200px] object-contain transition-transform duration-500 group-hover:scale-105"
               />
+              {uploads[activeIndex]?.id === coverId ? (
+                <div className="absolute top-3 left-3 bg-primary-500 text-white text-xs px-2 py-1 rounded-full shadow-lg flex items-center gap-1 font-bold z-10 transition-transform scale-110">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  COVER
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setAsCover(uploads[activeIndex].id);
+                  }}
+                  className="absolute top-3 left-3 bg-white/90 text-slate-700 text-[10px] uppercase tracking-wider px-2 py-1 rounded hover:bg-white shadow group font-bold border border-slate-200"
+                >
+                  Set as Cover
+                </button>
+              )}
               <button
                 type="button"
                 onClick={(e) => {
@@ -319,12 +374,16 @@ const ImagesUpload = ({ onImagesChange }) => {
                     type="button"
                     key={upload.id}
                     onClick={() => setActiveIndex(idx)}
-                    className={`w-3 h-3 rounded-full transition-colors ${
+                    className={`w-3 h-3 rounded-full transition-colors relative ${
                       activeIndex === idx
                         ? "bg-primary-300 ring-2 ring-primary-300 ring-offset-1"
                         : "bg-gray-300 hover:bg-gray-400"
                     }`}
-                  />
+                  >
+                    {upload.id === coverId && (
+                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary-500 rounded-full border border-white" />
+                    )}
+                  </button>
                 ),
             )}
           </div>

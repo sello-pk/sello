@@ -97,6 +97,7 @@ const EditCarForm = () => {
     auctionTitle: "",
     auctionStatus: "",
     submissionStatus: "",
+    isNewImageCover: false,
   });
 
   // Load car data correctly depending on mode
@@ -364,6 +365,8 @@ const EditCarForm = () => {
       data.append(key, defaults[key] !== undefined ? defaults[key] : formData[key]);
     });
 
+    data.append("newImagesFirst", formData.isNewImageCover ? "true" : "false");
+
     try {
       await editCar({ carId: extractedCarId, formData: data }).unwrap();
       toast.success("Car updated successfully!");
@@ -389,6 +392,8 @@ const EditCarForm = () => {
     }
 
     const payload = new FormData();
+    payload.append("newImagesFirst", formData.isNewImageCover ? "true" : "false");
+    
     formData.existingImages.forEach((url) => payload.append("existingImages[]", url));
     formData.images.forEach((file) => { if (file instanceof File) payload.append("images", file); });
     formData.existingDamageImageUrls.forEach((url) => payload.append("existingDamageImageUrls[]", url));
@@ -495,6 +500,24 @@ const EditCarForm = () => {
               {formData.existingImages.map((imgUrl, idx) => (
                 <div key={idx} className="relative">
                   <img src={imgUrl} alt={`Existing ${idx + 1}`} className="w-24 h-24 object-cover rounded border" />
+                  {idx === 0 && !formData.isNewImageCover ? (
+                    <div className="absolute top-0 left-0 bg-primary-500 text-white text-[8px] px-1 rounded-br font-bold">
+                      COVER
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const next = [...formData.existingImages];
+                        const target = next.splice(idx, 1)[0];
+                        next.unshift(target);
+                        setFormData(prev => ({ ...prev, existingImages: next, isNewImageCover: false }));
+                      }}
+                      className="absolute top-0 left-0 bg-black/40 text-white text-[8px] px-1 rounded-br hover:bg-black/60 transition-colors"
+                    >
+                      Cover
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={() => handleChange("existingImages", formData.existingImages.filter((_, i) => i !== idx))}
@@ -504,9 +527,33 @@ const EditCarForm = () => {
                   </button>
                 </div>
               ))}
+
             </div>
           )}
-          <ImagesUpload onImagesChange={(files) => handleChange("images", files)} />
+          <ImagesUpload 
+            onImagesChange={(files) => {
+              handleChange("images", files);
+              // If there's a new file and it's the only image or we want to allow it as cover
+              // Logic: ImagesUpload reorders so files[0] is the cover of NEW images.
+              // We'll let the user explicitly decide if NEW is cover vs OLD.
+              // Actually, if they haven't set an OLD one as cover explicitly, we can default to OLD[0].
+            }} 
+            // We can add a way to tell ImagesUpload to be the ABSOLUTE cover
+          />
+          {formData.images.length > 0 && (
+            <div className="mt-2 flex items-center gap-2">
+              <input 
+                type="checkbox" 
+                id="isNewImageCover" 
+                checked={formData.isNewImageCover}
+                onChange={(e) => handleChange("isNewImageCover", e.target.checked)}
+                className="w-4 h-4 text-primary-500 rounded border-gray-300"
+              />
+              <label htmlFor="isNewImageCover" className="text-sm text-gray-700 font-medium">
+                Set newly uploaded photo as cover image
+              </label>
+            </div>
+          )}
         </div>
 
         {/* BASIC FIELDS */}
