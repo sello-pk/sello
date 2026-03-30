@@ -24,7 +24,7 @@ import {
   getRequiredFields,
 } from "../../../utils/vehicleFieldConfig";
 
-const MAX_AUCTION_INSPECTION_REPORT_BYTES = 4 * 1024 * 1024;
+const MAX_AUCTION_INSPECTION_REPORT_BYTES = 10 * 1024 * 1024; // 10MB
 
 const splitList = (value) =>
   String(value || "")
@@ -384,7 +384,7 @@ const EditCarForm = () => {
       return false;
     }
     if (formData.inspectionReportFile && formData.inspectionReportFile.size > MAX_AUCTION_INSPECTION_REPORT_BYTES) {
-      toast.error("Inspection report is too large for the live server. Keep it under 4MB.");
+      toast.error("Inspection report is too large. Keep it under 10MB.");
       return false;
     }
 

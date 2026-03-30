@@ -30,7 +30,7 @@ export const getErrorMessage = (error) => {
     error?.error === "TypeError: Failed to fetch"
   ) {
     if (error?.data?.message) return error.data.message;
-    return "Request couldn't complete. If you were uploading photos, try fewer or smaller images and retry.";
+    return "Request couldn't complete. This usually happens if the upload is too large or your connection is unstable. Try fewer or smaller images.";
   }
 
   if (error?.status === 401) {
@@ -46,7 +46,7 @@ export const getErrorMessage = (error) => {
   }
 
   if (error?.status === 413 || error?.originalStatus === 413) {
-    return "Images are too large for the live server. Use 4-6 smaller photos and keep the total under 8MB, then try again.";
+    return "Images are too large for the server. Use fewer or smaller photos and keep the total under 40MB, then try again.";
   }
 
   if (error?.status === 502 || error?.status === 503) {

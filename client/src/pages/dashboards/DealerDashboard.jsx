@@ -75,7 +75,7 @@ const createEmptyAuctionForm = () => ({
   inspectionReportFile: null,
 });
 
-const MAX_AUCTION_INSPECTION_REPORT_BYTES = 4 * 1024 * 1024;
+const MAX_AUCTION_INSPECTION_REPORT_BYTES = 10 * 1024 * 1024; // 10MB
 
 const DealerDashboard = () => {
   const navigate = useNavigate();
@@ -308,9 +308,9 @@ const DealerDashboard = () => {
     }
   };
 
-  const MAX_PHOTOS = 10;
+  const MAX_PHOTOS = 15;
   const MIN_PHOTOS = 3;
-  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+  const MAX_FILE_SIZE = 40 * 1024 * 1024; // 40MB total (per file check updated below)
   const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png"];
 
   // Compress image before upload
@@ -370,8 +370,8 @@ const DealerDashboard = () => {
     const valid = [];
 
     for (const file of list) {
-      if (file.size > MAX_FILE_SIZE) {
-        toast.error(`${file.name} is over 10MB. Max 10MB per image.`);
+      if (file.size > 15 * 1024 * 1024) {
+        toast.error(`${file.name} is too large. Max 15MB per individual image, 40MB total.`);
         continue;
       }
 
@@ -456,7 +456,7 @@ const DealerDashboard = () => {
       newCar.inspectionReportFile.size > MAX_AUCTION_INSPECTION_REPORT_BYTES
     ) {
       toast.error(
-        "Inspection report is too large for the live server. Use a smaller PDF and keep it under 4MB.",
+        "Inspection report is too large. Use a smaller PDF and keep it under 10MB.",
       );
       return;
     }
@@ -553,11 +553,13 @@ const DealerDashboard = () => {
     } catch (error) {
       // Dismiss progress toast and show error
       toast.dismiss(progressToast);
-      toast.error(
-        error?.data?.message?.includes("Auction not accepting submissions")
-          ? "Selected auction is not open for submissions. Please choose a draft, scheduled, or live auction."
-          : error?.data?.message || "Failed to submit vehicle for auction",
-      );
+      
+      const errorMessage = getErrorMessage(error);
+      if (errorMessage.includes("Auction not accepting submissions")) {
+        toast.error("Selected auction is not open for submissions. Please choose a draft, scheduled, or live auction.");
+      } else {
+        toast.error(errorMessage);
+      }
     }
   };
 

@@ -306,8 +306,7 @@ const ImagesUpload = ({ onImagesChange }) => {
         <div className="px-4 py-3 border-t border-gray-100 bg-gray-50/50">
           <p className="text-xs text-gray-500 text-center">
             Up to {MAX_FILES} photos, {LISTING_MAX_TOTAL_MB}MB total, JPG, PNG,
-            WebP. Tip: Use 4-6 photos and smaller images to avoid upload
-            errors.
+            WebP. Use high-quality images to attract more buyers.
           </p>
         </div>
 

@@ -2,11 +2,11 @@
  * Listing image limits — keep in sync with server constants/listingUpload.js
  */
 export const LISTING_MAX_IMAGES = 15;
-export const LISTING_MAX_TOTAL_MB = 8;
-export const LISTING_MAX_FILE_MB = 8;
+export const LISTING_MAX_TOTAL_MB = 40;
+export const LISTING_MAX_FILE_MB = 40;
 
 export const MSG_NO_IMAGES =
-  "Add at least one photo. Up to 15 images, 8MB total per listing.";
+  "Add at least one photo. Up to 15 images, 40MB total per listing.";
 
 export const MSG_INVALID_TYPE =
   "Only JPG, PNG, and WebP are allowed for listing photos.";
@@ -27,4 +27,4 @@ export function msgTotalExceeded() {
 }
 
 export const MSG_FITTED_PARTIAL =
-  "Some photos were skipped so the total stays under 8MB.";
+  "Some photos were skipped so the total stays under 40MB.";

@@ -37,7 +37,7 @@ function isMultipartDocumentUpload(args) {
 
 function getUploadFetchMessage(url = "") {
   if (url.includes("/auctions/submit-car")) {
-    return "Network error or server rejected the auction upload. Please try again.";
+    return "Network error or server rejected the auction upload. This usually happens with large files on slow connections. Try fewer or smaller images.";
   }
   if (
     url.includes("/auth/register") ||
@@ -45,9 +45,9 @@ function getUploadFetchMessage(url = "") {
     url.includes("/users/auction-access/request") ||
     url.includes("/users/request-dealer")
   ) {
-    return "Network error or server rejected the dealer upload. Please try again.";
+    return "Network error or server rejected the dealer upload. Try compressing your documents and retry.";
   }
-  return "Network error or server rejected the upload. Please try again.";
+  return "Network error or server rejected the upload. Try fewer or smaller images and ensure your connection is stable.";
 }
 
 function getUpload413Message(url = "") {
@@ -128,8 +128,8 @@ const CLIENT_UPLOAD_MAX_IMAGE_EDGE = 1600;
 const CLIENT_UPLOAD_IMAGE_QUALITY = 0.72;
 const CLIENT_UPLOAD_SKIP_BYTES = 450 * 1024;
 const CLIENT_UPLOAD_MIN_TOTAL_BYTES = 2 * 1024 * 1024;
-const CLIENT_LISTING_UPLOAD_SAFE_TOTAL_BYTES = 8 * 1024 * 1024;
-const CLIENT_AUCTION_UPLOAD_SAFE_TOTAL_BYTES = 10 * 1024 * 1024;
+const CLIENT_LISTING_UPLOAD_SAFE_TOTAL_BYTES = 40 * 1024 * 1024;
+const CLIENT_AUCTION_UPLOAD_SAFE_TOTAL_BYTES = 40 * 1024 * 1024;
 const CLIENT_AUCTION_INSPECTION_REPORT_MAX_BYTES = 4 * 1024 * 1024;
 
 function isOptimizableImage(file) {
@@ -795,7 +795,7 @@ export const api = createApi({
               data: {
                 code: "REQUEST_TOO_LARGE",
                 message:
-                  "Listing photos are still too large for the live server. Use fewer or smaller photos and keep the total under 8MB.",
+                  "Listing photos are still too large for the live server. Use fewer or smaller photos and keep the total under 40MB.",
               },
             },
           };

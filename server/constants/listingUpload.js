@@ -9,9 +9,9 @@
  */
 export const LISTING_MAX_IMAGES = 15;
 /** Total size of all images in one request (bytes) */
-export const LISTING_MAX_TOTAL_BYTES = 35 * 1024 * 1024; // 35MB
+export const LISTING_MAX_TOTAL_BYTES = 40 * 1024 * 1024; // 40MB
 /** Per-file ceiling for multer (single huge file still capped) */
-export const LISTING_MAX_FILE_BYTES = 35 * 1024 * 1024; // 35MB
+export const LISTING_MAX_FILE_BYTES = 40 * 1024 * 1024; // 40MB
 /** Min request body size for proxy (for docs / error messages) */
 export const UPLOAD_PROXY_MIN_BODY_MB = 40;
 
