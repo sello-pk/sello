@@ -1,13 +1,37 @@
 User-agent: *
+
+# Admin & API
 Disallow: /admin/
 Disallow: /api/
+
+# Auth صفحات
 Disallow: /login
+Disallow: /login/
 Disallow: /sign-up
 Disallow: /forgot-password
 Disallow: /reset-password
 Disallow: /verify-otp
 
-Allow: /
+# User dashboards
+Disallow: /profile
+Disallow: /my-listings
+Disallow: /saved-cars
+Disallow: /my-chats
+Disallow: /dealer/dashboard
+Disallow: /seller/dashboard
+
+# Auction private pages
+Disallow: /auctions/token-payment
+Disallow: /auctions/transactions
+Disallow: /auctions/watchlist
+Disallow: /auctions/buyer-dashboard
+Disallow: /auctions/seller-dashboard
+Disallow: /auctions/wallet
+
+# Filters (SEO fix)
+Disallow: /filter
+Disallow: /search-results
+
 # Sitemap
 Sitemap: https://sello.pk/sitemap.xml
 
