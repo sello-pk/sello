@@ -84,10 +84,15 @@ const ImagesUpload = ({ onImagesChange }) => {
 
     // Compress before adding so the live API is less likely to reject the payload size.
     setIsCompressing(true);
+    toast.loading('Optimizing images for faster upload...');
     let processedFiles;
     try {
       processedFiles = await compressImageFiles(validFiles);
-    } catch {
+      toast.dismiss();
+      toast.success(`Optimized ${processedFiles.length} image(s) successfully!`);
+    } catch (err) {
+      toast.dismiss();
+      toast.error('Image optimization failed. Proceeding with original files.');
       processedFiles = validFiles;
     } finally {
       setIsCompressing(false);

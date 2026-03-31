@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import Logger from "@/utils/logger";
 import {
   IoShieldCheckmarkOutline as ShieldCheck,
   IoWalletOutline as Wallet,
@@ -194,15 +196,32 @@ export default function TokenPayment() {
     if (!file) return;
     const maxMb = 6;
     if (file.size > maxMb * 1024 * 1024) {
-      toast.error(`Receipt image must be smaller than ${maxMb}MB`);
+      toast.error(`Receipt image must be smaller than ${maxMb}MB. Please compress or use a smaller screenshot.`);
       return;
     }
+    
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'];
+    if (!validTypes.includes(file.type)) {
+      toast.error('Receipt must be JPG, PNG, WebP, or PDF format only.');
+      return;
+    }
+    
     const reader = new FileReader();
     reader.onload = () => {
-      setReceiptUrl(String(reader.result || ""));
+      const result = String(reader.result || "");
+      // Additional size check after base64 encoding
+      if (result.length > 8 * 1024 * 1024) {
+        toast.error('Receipt image is too large after encoding. Please use a smaller image.');
+        return;
+      }
+      setReceiptUrl(result);
       setReceiptName(file.name);
     };
-    reader.onerror = () => toast.error("Failed to read receipt file");
+    reader.onerror = () => {
+      Logger.error('Failed to read receipt file');
+      toast.error("Failed to read receipt file. Please try again.");
+    };
     reader.readAsDataURL(file);
   };
 

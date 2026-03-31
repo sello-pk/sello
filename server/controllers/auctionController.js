@@ -1414,22 +1414,34 @@ export const submitTokenPayment = async (req, res) => {
         message: "Transaction ID must be between 4 and 64 characters",
       });
     }
+    
+    // Validate receipt URL - support both data URLs and HTTP URLs
     const isDataUrl = receiptUrl.startsWith("data:");
     const isHttpUrl =
       receiptUrl.startsWith("http://") || receiptUrl.startsWith("https://");
-    const maxDataUrlLength = 12 * 1024 * 1024; // allow base64 receipt uploads (~12MB text)
-    const maxHttpUrlLength = 2048;
+    
+    // Allow larger data URLs in production (~15MB)
+    const maxDataUrlLength = 15 * 1024 * 1024;
+    const maxHttpUrlLength = 4096;
+    
     const looksValidReceipt =
       (isDataUrl && receiptUrl.length >= 32 && receiptUrl.length <= maxDataUrlLength) ||
       (isHttpUrl && receiptUrl.length >= 8 && receiptUrl.length <= maxHttpUrlLength);
 
     if (!looksValidReceipt) {
+      Logger.warn("Invalid receipt format", {
+        isDataUrl,
+        isHttpUrl,
+        length: receiptUrl.length,
+        userId: req.user._id,
+      });
       return res.status(400).json({
         success: false,
-        message: "Receipt proof looks invalid. Please upload again.",
+        message: "Receipt proof looks invalid. Please upload a valid image or PDF.",
       });
     }
-
+    
+    // Check for duplicate pending/verified payments
     const existing = await TokenPayment.findOne({
       user: req.user._id,
       status: { $in: ["pending", "verified"] },
@@ -1443,6 +1455,8 @@ export const submitTokenPayment = async (req, res) => {
             : "Your previous payment is still pending verification",
       });
     }
+    
+    // Check for duplicate transaction ID
     const existingTx = await TokenPayment.findOne({
       user: req.user._id,
       transactionId,
@@ -1465,6 +1479,15 @@ export const submitTokenPayment = async (req, res) => {
       receiptUrl,
     });
 
+    Logger.info("Token payment submitted", {
+      paymentId: payment._id,
+      userId: req.user._id,
+      paymentMethod,
+      transactionId,
+      receiptType: isDataUrl ? "base64" : "url",
+      receiptLength: receiptUrl.length,
+    });
+
     res.status(201).json({
       success: true,
       data: payment,
@@ -1472,9 +1495,18 @@ export const submitTokenPayment = async (req, res) => {
     });
   } catch (error) {
     Logger.error("submitTokenPayment error", error);
+    
+    // Handle request entity too large errors
+    if (error.type === 'entity.too.large' || error.status === 413) {
+      return res.status(413).json({
+        success: false,
+        message: "Receipt image is too large. Please use a smaller image or take a screenshot with lower resolution.",
+      });
+    }
+    
     res
       .status(500)
-      .json({ success: false, message: "Failed to submit payment" });
+      .json({ success: false, message: "Failed to submit payment. Please try again." });
   }
 };
 

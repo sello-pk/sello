@@ -783,10 +783,14 @@ export const api = createApi({
       queryFn: async (arg, _api, _extra, fetchWithBQ) => {
         const formData = arg instanceof FormData ? arg : arg?.formData;
         const params = arg instanceof FormData ? {} : arg?.params || {};
+        
+        // Optimize images before upload
         const optimizedFormData = await optimizeUploadFormData(formData, [
           "images",
         ]);
         const optimizedBytes = getFormDataFileBytes(optimizedFormData);
+        
+        // Client-side size check
         if (optimizedBytes > CLIENT_LISTING_UPLOAD_SAFE_TOTAL_BYTES) {
           return {
             error: {
@@ -795,7 +799,7 @@ export const api = createApi({
               data: {
                 code: "REQUEST_TOO_LARGE",
                 message:
-                  "Listing photos are still too large for the live server. Use fewer or smaller photos and keep the total under 40MB.",
+                  `Total image size is ${Math.round(optimizedBytes / (1024 * 1024))}MB. Please keep all images under 40MB total. Use fewer or smaller photos.`,
               },
             },
           };
@@ -809,18 +813,68 @@ export const api = createApi({
         });
         const queryString = queryParams.toString();
 
-        const result = await fetchWithBQ({
-          url: `/cars${queryString ? `?${queryString}` : ""}`,
-          method: "POST",
-          body: optimizedFormData,
-        });
-        if (result.error) return { error: result.error };
-        return { data: result.data };
+        try {
+          const result = await fetchWithBQ({
+            url: `/cars${queryString ? `?${queryString}` : ""}`,
+            method: "POST",
+            body: optimizedFormData,
+            // Increase timeout for large uploads
+            timeout: 120000, // 2 minutes for uploads
+          });
+          
+          if (result.error) {
+            // Handle specific error cases
+            if (result.error.status === 413) {
+              return {
+                error: {
+                  ...result.error,
+                  data: {
+                    message: "Upload is too large. Images must be under 40MB total. Try compressing or using fewer images.",
+                    code: "PAYLOAD_TOO_LARGE",
+                  },
+                },
+              };
+            }
+            if (result.error.status === "FETCH_ERROR" || result.error.status === "PARSING_ERROR") {
+              return {
+                error: {
+                  ...result.error,
+                  data: {
+                    message: "Network error during upload. Please check your connection and try again. If this persists, use fewer or smaller images.",
+                    code: "NETWORK_ERROR",
+                  },
+                },
+              };
+            }
+            if (result.error.status === "TIMEOUT_ERROR") {
+              return {
+                error: {
+                  ...result.error,
+                  data: {
+                    message: "Upload timed out. Please use fewer images or smaller file sizes.",
+                    code: "TIMEOUT_ERROR",
+                  },
+                },
+              };
+            }
+            return { error: result.error };
+          }
+          return { data: result.data };
+        } catch (err) {
+          // Catch any unexpected errors
+          return {
+            error: {
+              status: 500,
+              data: {
+                message: "Upload failed. Please try again with fewer or smaller images.",
+                code: "UPLOAD_FAILED",
+              },
+            },
+          };
+        }
       },
       invalidatesTags: ["Cars"],
-      // Add error handling
       transformErrorResponse: (response) => {
-        // Car creation failed
         return response.data;
       },
     }),
@@ -1674,19 +1728,69 @@ export const api = createApi({
                 data: {
                   code: "REQUEST_TOO_LARGE",
                   message:
-                    "Auction submission files are too large for the live server. Keep the inspection report small and keep the total upload under 10MB.",
+                    `Total upload size is ${Math.round(optimizedBytes / (1024 * 1024))}MB. Auction submissions must be under 10MB total. Use smaller images or fewer files.`,
                 },
               },
             };
           }
           logFormDataKeysSafely("auction-submit-formdata", optimizedForm);
-          const result = await fetchWithBQ({
-            url: "/auctions/submit-car",
-            method: "POST",
-            body: optimizedForm,
-          });
-          if (result.error) return { error: result.error };
-          return { data: result.data };
+          
+          try {
+            const result = await fetchWithBQ({
+              url: "/auctions/submit-car",
+              method: "POST",
+              body: optimizedForm,
+              timeout: 180000, // 3 minutes for auction uploads (more files)
+            });
+            
+            if (result.error) {
+              if (result.error.status === 413) {
+                return {
+                  error: {
+                    ...result.error,
+                    data: {
+                      message: "Auction submission is too large. Keep total under 10MB. Use fewer/smaller images.",
+                      code: "PAYLOAD_TOO_LARGE",
+                    },
+                  },
+                };
+              }
+              if (result.error.status === "FETCH_ERROR" || result.error.status === "PARSING_ERROR") {
+                return {
+                  error: {
+                    ...result.error,
+                    data: {
+                      message: "Network error during auction upload. Check connection and file sizes (max 10MB).",
+                      code: "NETWORK_ERROR",
+                    },
+                  },
+                };
+              }
+              if (result.error.status === "TIMEOUT_ERROR") {
+                return {
+                  error: {
+                    ...result.error,
+                    data: {
+                      message: "Auction upload timed out. Use fewer or smaller files.",
+                      code: "TIMEOUT_ERROR",
+                    },
+                  },
+                };
+              }
+              return { error: result.error };
+            }
+            return { data: result.data };
+          } catch (err) {
+            return {
+              error: {
+                status: 500,
+                data: {
+                  message: "Auction submission failed. Try again with fewer/smaller files.",
+                  code: "UPLOAD_FAILED",
+                },
+              },
+            };
+          }
         }
 
         const result = await fetchWithBQ({

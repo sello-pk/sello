@@ -625,6 +625,38 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         return;
       }
 
+      // Handle "Failed to fetch" / network errors
+      if (err?.status === "FETCH_ERROR" || err?.status === "PARSING_ERROR") {
+        toast.error(
+          "Network error during upload. This usually happens when images are too large. Please use fewer images (max 15) or compress them to under 40MB total.",
+        );
+        return;
+      }
+
+      // Handle timeout errors
+      if (err?.status === "TIMEOUT_ERROR") {
+        toast.error(
+          "Upload timed out. Please use fewer images or smaller file sizes (max 40MB total).",
+        );
+        return;
+      }
+
+      // Handle payload too large
+      if (err?.status === 413 || err?.data?.code === "PAYLOAD_TOO_LARGE") {
+        toast.error(
+          "Total image size exceeds 40MB limit. Please remove some images or use smaller/compressed files.",
+        );
+        return;
+      }
+
+      // Generic fallback with helpful context
+      if (err?.error === "Failed to fetch") {
+        toast.error(
+          "Upload failed. This is usually due to large image files. Limit: 15 images, 40MB total. Try compressing images or uploading fewer at once.",
+        );
+        return;
+      }
+
       toast.error(errorMessage);
     } finally {
       submitLockRef.current = false;

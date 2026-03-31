@@ -31,13 +31,16 @@ app.use(
     crossOriginEmbedderPolicy: { policy: "unsafe-none" },
     contentSecurityPolicy: {
       directives: {
-        defaultSrc: ["'self'"],
+        defaultSrc: ["'self'", "https:", "http:", "data:", "blob:", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
         imgSrc: ["'self'", "data:", "https:", "http:"],
         scriptSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com"],
         connectSrc: [
           "'self'",
+          "https://api.sello.pk",
+          "https://www.sello.pk",
+          "https://sello.pk",
           "https://accounts.google.com",
           "https://www.googleapis.com",
         ],
