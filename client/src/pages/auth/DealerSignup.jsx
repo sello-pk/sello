@@ -314,7 +314,7 @@ const DealerSignup = ({ onBack }) => {
                       </Link>{" "}
                       and{" "}
                       <Link
-                        to="/terms-conditon"
+                        to="/terms-condition"
                         className="text-primary-500 hover:underline font-medium"
                       >
                         Terms & Conditions

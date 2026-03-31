@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { buildCarUrl } from "../../utils/urlBuilders";
+import { getErrorMessage } from "../../utils/errorHandler";
 import {
   FiHome,
   FiPlus,
@@ -565,10 +566,14 @@ const DealerDashboard = () => {
       toast.dismiss(progressToast);
       
       const errorMessage = getErrorMessage(error);
-      if (errorMessage.includes("Auction not accepting submissions")) {
+      
+      // Ensure we always have a meaningful error message
+      const displayMessage = errorMessage || "Failed to submit vehicle to auction. Please try again.";
+      
+      if (displayMessage.includes("Auction not accepting submissions")) {
         toast.error("Selected auction is not open for submissions. Please choose a draft, scheduled, or live auction.");
       } else {
-        toast.error(errorMessage);
+        toast.error(displayMessage);
       }
     }
   };

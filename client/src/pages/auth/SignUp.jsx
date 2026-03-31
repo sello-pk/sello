@@ -287,7 +287,7 @@ const SignUp = () => {
                     </Link>{" "}
                     and{" "}
                     <Link
-                      to="/terms-conditon"
+                      to="/terms-condition"
                       className="text-primary-500 hover:underline font-medium"
                     >
                       Terms
@@ -336,6 +336,7 @@ const SignUp = () => {
                 <div className="googleBtn">
                   <GoogleLogin
                     onSuccess={handleGoogleSuccess}
+                    disabled={googleLoading}
                     onError={(error) => {
                       // Handle configuration errors gracefully - don't show errors for unconfigured OAuth
                       if (!hasGoogleClientId) {
