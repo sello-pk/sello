@@ -1,8 +1,18 @@
 import React from "react";
+import SEO from "../../components/common/SEO";
 
 const OurPrivacyPolicy = () => {
   return (
-    <div className="bg-gradient-to-b from-gray-50 to-white min-h-screen py-12">
+    <>
+      <SEO
+        title="Privacy Policy - Your Data Protection Rights | Sello.pk"
+        description="Sello.pk privacy policy explains how we collect, use, and protect your personal information when you buy or sell cars on our platform."
+        keywords="privacy policy, data protection, personal information, user privacy, car marketplace"
+        canonical="https://sello.pk/privacy-policy"
+      />
+      {/* Hidden H1 for SEO */}
+      <h1 className="sr-only">Privacy Policy - Sello.pk</h1>
+      <div className="bg-gradient-to-b from-gray-50 to-white min-h-screen py-12">
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 text-gray-800">
         <h1 className="text-4xl font-extrabold mb-8 text-center text-gray-900">
           Privacy Policy – Sello.pk
@@ -148,6 +158,7 @@ const OurPrivacyPolicy = () => {
         </p>
       </div>
     </div>
+    </>
   );
 };
 

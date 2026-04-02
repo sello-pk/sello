@@ -264,6 +264,7 @@ const Login = () => {
             <h1 className="text-3xl md:text-4xl font-bold text-center mb-2">
               Welcome Back
             </h1>
+            <p className="text-slate-600 text-center mb-8">Sign in to continue to your account</p>
             <p className="text-gray-500 text-center mb-6">
               Please enter your details.
             </p>

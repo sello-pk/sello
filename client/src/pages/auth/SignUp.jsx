@@ -12,6 +12,7 @@ import {
 } from "../../redux/services/api";
 import { Spinner } from "../../components/ui/Loading";
 import DealerSignup from "./DealerSignup";
+import SEO from "../../components/common/SEO";
 // Check if Google OAuth is configured
 const hasGoogleClientId = !!import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -163,6 +164,14 @@ const SignUp = () => {
 
   return (
     <>
+      <SEO
+        title="Sign Up - Create Your Free Sello Account"
+        description="Create your free Sello account to buy and sell cars in Pakistan. Get access to listings, auctions, and exclusive features."
+        keywords="sign up, register, create account, car marketplace signup"
+        canonical="https://sello.pk/sign-up"
+      />
+      {/* Hidden H1 for SEO */}
+      <h1 className="sr-only">Sign Up - Create Your Sello Account</h1>
       <div className="flex md:flex-row flex-col min-h-screen">
         {/* Orange Header */}
         <HeaderLogo />

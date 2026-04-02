@@ -1,8 +1,18 @@
 import React from "react";
+import SEO from "../../components/common/SEO";
 
 const TermsCondition = () => {
   return (
-    <div className="bg-gradient-to-b from-gray-50 to-white min-h-screen py-12">
+    <>
+      <SEO
+        title="Terms & Conditions - Sello.pk Marketplace Rules"
+        description="Read Sello.pk's terms and conditions for buying and selling cars. Understand your rights, responsibilities, and platform rules."
+        keywords="terms and conditions, marketplace rules, car buying terms, selling conditions, user agreement"
+        canonical="https://sello.pk/terms-conditions"
+      />
+      {/* Hidden H1 for SEO */}
+      <h1 className="sr-only">Terms and Conditions - Sello.pk</h1>
+      <div className="bg-gradient-to-b from-gray-50 to-white min-h-screen py-12">
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 text-gray-800">
         <h1 className="text-4xl font-extrabold mb-8 text-center text-gray-900">
           Terms & Conditions – Sello.pk
@@ -198,6 +208,7 @@ const TermsCondition = () => {
         </p>
       </div>
     </div>
+    </>
   );
 };
 

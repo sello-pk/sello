@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SEO from "../../components/common/SEO";
 import {
   FiChevronDown,
   FiChevronUp,
@@ -80,9 +81,18 @@ const FAQs = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Main Content */}
-      <main className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <>
+      <SEO
+        title="FAQs - Common Questions About Buying & Selling Cars | Sello.pk"
+        description="Find answers to frequently asked questions about buying cars, selling vehicles, auctions, payments, and account management on Sello.pk."
+        keywords="FAQs, car buying questions, selling cars help, auction FAQs, payment questions"
+        canonical="https://sello.pk/help/faqs"
+      />
+      <div className="min-h-screen bg-gray-50">
+        {/* H1 for SEO */}
+        <h1 className="sr-only">Frequently Asked Questions - Sello.pk Help Center</h1>
+        {/* Main Content */}
+        <main className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 md:p-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
             Frequently Asked Questions
@@ -152,6 +162,7 @@ const FAQs = () => {
         </div>
       </main>
     </div>
+    </>
   );
 };
 

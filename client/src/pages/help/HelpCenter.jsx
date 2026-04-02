@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { images } from "../../assets/assets";
+import SEO from "../../components/common/SEO";
 import {
   FiSearch,
   FiUser,
@@ -183,25 +184,32 @@ const HelpCenter = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            {/* Logo */}
-            <div
-              onClick={() => navigate("/")}
-              className="cursor-pointer flex items-center gap-3"
-            >
-              <img
-                src={images.logo}
-                alt="Sello Logo"
-                className="h-12 md:h-16"
-              />
-              <span className="text-2xl font-bold text-primary-500 hidden md:block">
-                Help Center
-              </span>
-            </div>
+    <>
+      <SEO
+        title="Help Center - 24/7 Support for Buying & Selling Cars | Sello.pk"
+        description="Get help with buying, selling, payments, account settings, and more. Browse FAQs or contact our support team anytime."
+        keywords="help center, car buying help, car selling support, payment assistance, account login help"
+        canonical="https://sello.pk/help-center"
+      />
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center justify-between">
+              {/* Logo */}
+              <div
+                onClick={() => navigate("/")}
+                className="cursor-pointer flex items-center gap-3"
+              >
+                <img
+                  src={images.logo}
+                  alt="Sello Logo"
+                  className="h-12 md:h-16"
+                />
+                <span className="text-2xl font-bold text-primary-500 hidden md:block">
+                  Help Center
+                </span>
+              </div>
 
             {/* Search Bar */}
             <div className="flex-1 max-w-2xl mx-4 md:mx-8">
@@ -247,9 +255,7 @@ const HelpCenter = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Popular Topics Section */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-            Popular Topics
-          </h2>
+          <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">Popular Topics</h1>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
             {popularTopics.map((topic) => {
               const IconComponent = topic.icon;
@@ -275,9 +281,7 @@ const HelpCenter = () => {
 
         {/* Browse by Categories */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-            Browse by Categories
-          </h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Browse by Categories</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {categories.map((category) => {
               const IconComponent = category.icon;
@@ -311,9 +315,7 @@ const HelpCenter = () => {
         {/* Contact Support Section */}
         <section className="mb-12">
           <div className="bg-gradient-to-r from-primary-500 to-primary-500 rounded-2xl shadow-xl p-8 md:p-12 text-center text-white">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Still Need Help?
-            </h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Still Need Help?</h2>
             <p className="text-lg md:text-xl mb-8 text-primary-100">
               Our support team is here to assist you 24/7
             </p>
@@ -354,6 +356,7 @@ const HelpCenter = () => {
         </section>
       </main>
     </div>
+    </>
   );
 };
 

@@ -195,6 +195,8 @@ const DealerSignup = ({ onBack }) => {
         description="Register as a car dealer on Sello.pk. Start selling cars to thousands of buyers across Pakistan with our trusted platform."
         canonical="https://sello.pk/dealer-signup"
       />
+      {/* Hidden H1 for SEO */}
+      <h1 className="sr-only">Dealer Registration - Join Sello.pk</h1>
       <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4 overflow-y-auto">
         <div className="bg-white rounded-lg shadow-2xl w-full max-w-5xl my-8">
           <div className="flex items-center justify-between p-6 border-b border-gray-200">

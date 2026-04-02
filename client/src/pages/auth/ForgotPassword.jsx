@@ -7,6 +7,7 @@ import { useForgotPasswordMutation } from "../../redux/services/api";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { Spinner } from "../../components/ui/Loading";
+import SEO from "../../components/common/SEO";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -40,6 +41,14 @@ const ForgotPassword = () => {
 
   return (
     <>
+      <SEO
+        title="Forgot Password - Reset Your Account Password | Sello.pk"
+        description="Reset your Sello account password. Enter your email to receive OTP and create a new password securely."
+        keywords="forgot password, reset password, password recovery, account login"
+        canonical="https://sello.pk/forgot-password"
+      />
+      {/* Hidden H1 for SEO */}
+      <h1 className="sr-only">Forgot Password - Reset Your Account</h1>
       <div className="flex flex-col h-screen bg-gray-50">
         {/* Orange Header */}
         <HeaderLogo />

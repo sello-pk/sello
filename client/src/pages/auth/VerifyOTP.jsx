@@ -10,6 +10,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { Spinner } from "../../components/ui/Loading";
+import SEO from "../../components/common/SEO";
 
 const VerifyOTP = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -138,6 +139,14 @@ const VerifyOTP = () => {
 
   return (
     <>
+      <SEO
+        title="Verify OTP - Confirm Your Identity | Sello.pk"
+        description="Enter the OTP sent to your email to verify your identity and reset your Sello account password securely."
+        keywords="verify OTP, OTP confirmation, two-factor authentication, account security"
+        canonical="https://sello.pk/verify-otp"
+      />
+      {/* Hidden H1 for SEO */}
+      <h1 className="sr-only">Verify OTP - Confirm Your Identity</h1>
       <div className="flex flex-col h-screen bg-gray-50">
         {/* Orange Header */}
         <HeaderLogo />

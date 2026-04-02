@@ -17,6 +17,8 @@ const CarListings = () => {
         keywords="buy and sell cars, buy and sell cars in Pakistan"
         canonical="https://sello.pk/cars"
       />
+      {/* Hidden H1 for SEO */}
+      <h1 className="sr-only">Buy and Sell Cars in Pakistan - Trusted Brands & Best Prices</h1>
       <ListingHeroSection />
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0">
         <BrowsByTypeSection />

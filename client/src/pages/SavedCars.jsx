@@ -11,6 +11,7 @@ import { images } from "../assets/assets";
 import toast from "react-hot-toast";
 import { buildCarUrl } from "../utils/urlBuilders";
 import { getErrorMessage } from "../utils/errorHandler";
+import SEO from "../components/common/SEO";
 
 const SavedCars = () => {
   const navigate = useNavigate();
@@ -31,11 +32,16 @@ const SavedCars = () => {
   const cars = savedCars || [];
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5] px-4 sm:px-6 lg:px-8 py-12">
-      <div className="max-w-8xl mx-auto">
-        <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-8">
-          Saved Cars
-        </h1>
+    <>
+      <SEO
+        title="My Saved Cars - Track Your Favorite Listings | Sello.pk"
+        description="View and manage all your saved cars. Compare prices, track favorites, and never miss a deal on Sello.pk."
+        keywords="saved cars, favorite cars, car watchlist, compare cars, used cars Pakistan"
+        canonical="https://sello.pk/saved-cars"
+      />
+      <div className="min-h-screen bg-[#F5F5F5] px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-8xl mx-auto">
+          <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-8">Saved Cars</h1>
 
         {isLoading ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
@@ -208,6 +214,7 @@ const SavedCars = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 
