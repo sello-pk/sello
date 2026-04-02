@@ -178,8 +178,10 @@ export default function CarDetail() {
   const [buyNowMut, { isLoading: buying }] = useBuyNowMutation();
   const [addWatch] = useAddToAuctionWatchlistMutation();
   const [removeWatch] = useRemoveFromAuctionWatchlistMutation();
-  const [bookInspectionMut, { isLoading: bookingInspection }] = useBookInspectionMutation();
-  const [createValuationMut, { isLoading: valuating }] = useCreateValuationMutation();
+  const [bookInspectionMut, { isLoading: bookingInspection }] =
+    useBookInspectionMutation();
+  const [createValuationMut, { isLoading: valuating }] =
+    useCreateValuationMutation();
   const { data: timeSlots = [] } = useGetInspectionTimeSlotsQuery();
 
   const car = detail?.car || {};
@@ -190,9 +192,15 @@ export default function CarDetail() {
   const minimumBid = detail?.minimumNextBid ?? currentHigh + minIncrement;
   const quickBidSuggestions = Array.isArray(detail?.quickBidSuggestions)
     ? detail.quickBidSuggestions
-    : [minimumBid, minimumBid + minIncrement, minimumBid + (minIncrement * 2), minimumBid + (minIncrement * 3)];
+    : [
+        minimumBid,
+        minimumBid + minIncrement,
+        minimumBid + minIncrement * 2,
+        minimumBid + minIncrement * 3,
+      ];
   const totalBidders = detail?.totalBidders ?? 0;
-  const buyNowPrice = detail?.buyNowPrice != null ? Number(detail.buyNowPrice) : null;
+  const buyNowPrice =
+    detail?.buyNowPrice != null ? Number(detail.buyNowPrice) : null;
   const walletBalance = walletData?.wallet?.balance || 0;
   const canPlaceBid = hasVerifiedToken;
   const isAuctionEnded =
@@ -276,7 +284,13 @@ export default function CarDetail() {
       removeEventListener("auction:outbid", handleOutbid);
       removeEventListener("auction:won", handleWon);
     };
-  }, [addEventListener, removeEventListener, handleAuctionExtended, handleOutbid, handleWon]);
+  }, [
+    addEventListener,
+    removeEventListener,
+    handleAuctionExtended,
+    handleOutbid,
+    handleWon,
+  ]);
 
   const handleBuyNow = async () => {
     try {
@@ -382,7 +396,9 @@ export default function CarDetail() {
     { id: "specifications", label: "Schedule" },
     { id: "inspection", label: "Trust & Legal" },
   ];
-  const reserveMet = detail?.reservePrice ? currentHigh >= detail.reservePrice : false;
+  const reserveMet = detail?.reservePrice
+    ? currentHigh >= detail.reservePrice
+    : false;
 
   if (!detail) {
     return (
@@ -402,7 +418,8 @@ export default function CarDetail() {
             </div>
             <div>
               <p className="text-3xl font-black tracking-tight text-slate-900">
-                {auctionLocation.split(" ").slice(0, 2).join(" ") || "Okara Auto"}{" "}
+                {auctionLocation.split(" ").slice(0, 2).join(" ") ||
+                  "Okara Auto"}{" "}
                 <span className="text-primary-500">Auction</span>
               </p>
               <p className="text-sm text-slate-500">
@@ -447,7 +464,10 @@ export default function CarDetail() {
           {/* Left */}
           <div className="space-y-7">
             {/* Gallery */}
-            <div id="overview" className="bg-white rounded-[28px] overflow-hidden border border-slate-200 shadow-[0_18px_48px_rgba(15,23,42,0.08)]">
+            <div
+              id="overview"
+              className="bg-white rounded-[28px] overflow-hidden border border-slate-200 shadow-[0_18px_48px_rgba(15,23,42,0.08)]"
+            >
               <div className="relative aspect-[16/10] bg-slate-100">
                 {images[currentImageIndex] && (
                   <img
@@ -500,7 +520,7 @@ export default function CarDetail() {
                     <button
                       key={i}
                       onClick={() => setCurrentImageIndex(i)}
-                       className={`w-24 h-16 rounded-2xl overflow-hidden flex-shrink-0 border-2 transition-all ${currentImageIndex === i ? "border-primary-500 shadow-[0_0_0_4px_rgba(245,158,11,0.14)]" : "border-transparent opacity-75 hover:opacity-100"}`}
+                      className={`w-24 h-16 rounded-2xl overflow-hidden flex-shrink-0 border-2 transition-all ${currentImageIndex === i ? "border-primary-500 shadow-[0_0_0_4px_rgba(245,158,11,0.14)]" : "border-transparent opacity-75 hover:opacity-100"}`}
                     >
                       <img
                         src={img}
@@ -518,21 +538,21 @@ export default function CarDetail() {
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <h1 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 mb-2">
-                {car.year} {car.make} {car.model}
+                    {car.year} {car.make} {car.model}
                   </h1>
                   <div className="flex flex-wrap items-center gap-4 text-base text-slate-500 mb-4">
-                <span className="flex items-center gap-1">
-                  <Gauge className="w-4 h-4" />
-                  {car.mileage?.toLocaleString()} km
-                </span>
-                <span className="flex items-center gap-1">
-                  <Fuel className="w-4 h-4" />
-                  {car.fuelType}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Settings2 className="w-4 h-4" />
-                  {car.transmission}
-                </span>
+                    <span className="flex items-center gap-1">
+                      <Gauge className="w-4 h-4" />
+                      {car.mileage?.toLocaleString()} km
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Fuel className="w-4 h-4" />
+                      {car.fuelType}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Settings2 className="w-4 h-4" />
+                      {car.transmission}
+                    </span>
                   </div>
                 </div>
                 <div className="inline-flex h-fit rounded-2xl bg-emerald-100 px-4 py-2 text-base font-semibold text-emerald-700 shadow-sm">
@@ -564,7 +584,10 @@ export default function CarDetail() {
               )}
             </div>
 
-            <div id="specifications" className="bg-white rounded-[28px] border border-slate-200 overflow-hidden shadow-[0_18px_48px_rgba(15,23,42,0.08)]">
+            <div
+              id="specifications"
+              className="bg-white rounded-[28px] border border-slate-200 overflow-hidden shadow-[0_18px_48px_rgba(15,23,42,0.08)]"
+            >
               <div className="grid grid-cols-3 border-b border-slate-200 bg-slate-50/70">
                 {[
                   { id: "specs", label: "Specifications" },
@@ -592,7 +615,9 @@ export default function CarDetail() {
                     {specs.map((spec, i) => (
                       <div key={i} className="bg-slate-50 rounded-3xl p-5">
                         <spec.icon className="w-6 h-6 text-primary-500 mb-3" />
-                        <p className="text-sm text-slate-500 mb-1">{spec.label}</p>
+                        <p className="text-sm text-slate-500 mb-1">
+                          {spec.label}
+                        </p>
                         <p className="text-lg font-semibold text-slate-900 capitalize">
                           {spec.value || "N/A"}
                         </p>
@@ -615,7 +640,9 @@ export default function CarDetail() {
                       Download inspection report (PDF)
                     </a>
                   )}
-                  {Object.keys(inspection).some((k) => k !== "notes" && inspection[k]) ? (
+                  {Object.keys(inspection).some(
+                    (k) => k !== "notes" && inspection[k],
+                  ) ? (
                     <>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                         {Object.entries(inspection)
@@ -624,13 +651,17 @@ export default function CarDetail() {
                             ([key, val]) =>
                               val && (
                                 <div key={key} className="text-center">
-                                  <div className={`rounded-xl p-4 border ${inspColors[val] || ""}`}>
+                                  <div
+                                    className={`rounded-xl p-4 border ${inspColors[val] || ""}`}
+                                  >
                                     {val === "pass" ? (
                                       <CheckCircle className="w-8 h-8 mx-auto mb-2" />
                                     ) : (
                                       <AlertTriangle className="w-8 h-8 mx-auto mb-2" />
                                     )}
-                                    <p className="text-xs uppercase tracking-wide mb-1">{key}</p>
+                                    <p className="text-xs uppercase tracking-wide mb-1">
+                                      {key}
+                                    </p>
                                     <p className="font-semibold capitalize">
                                       {val.replace("_", " ")}
                                     </p>
@@ -647,7 +678,9 @@ export default function CarDetail() {
                       )}
                     </>
                   ) : (
-                    <div className="text-sm text-slate-500">Inspection report not available.</div>
+                    <div className="text-sm text-slate-500">
+                      Inspection report not available.
+                    </div>
                   )}
                 </div>
               )}
@@ -656,7 +689,8 @@ export default function CarDetail() {
                 <div className="p-6">
                   <BidPriceChart
                     bids={
-                      Array.isArray(detail?.priceChart) && detail.priceChart.length > 0
+                      Array.isArray(detail?.priceChart) &&
+                      detail.priceChart.length > 0
                         ? detail.priceChart.map((p) => ({
                             amount: p.amount,
                             createdAt: p.at || p.createdAt,
@@ -709,64 +743,89 @@ export default function CarDetail() {
 
             <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-sm text-amber-800">
               <Clock className="w-4 h-4 inline mr-1" />
-              <strong>Important:</strong> Winning bidder must complete payment within 24-48 hours and collect the vehicle from {auctionLocation}.
+              <strong>Important:</strong> Winning bidder must complete payment
+              within 24-48 hours and collect the vehicle from {auctionLocation}.
             </div>
           </div>
 
-          {/* Right - Bid Panel */}
+          {/* Right - Merged Bid Panel */}
           <div>
             <div className="sticky top-24 space-y-4">
-              {/* Timer */}
-              <div className="bg-slate-900 rounded-[28px] p-7 text-center shadow-[0_20px_48px_rgba(15,23,42,0.22)]">
-                <p className="text-slate-400 text-sm mb-4">Auction ends in</p>
-                <CountdownTimer targetDate={auction.endTime} />
-              </div>
-
-              {/* Bid Panel */}
-              <div id="bidding" className="bg-white rounded-[28px] border border-slate-200 overflow-hidden shadow-[0_18px_48px_rgba(15,23,42,0.08)]">
+              {/* ✅ Merged Timer + Bid Panel */}
+              <div
+                id="bidding"
+                className="bg-white rounded-[28px] border border-slate-200 overflow-hidden shadow-[0_18px_48px_rgba(15,23,42,0.08)]"
+              >
+                {/* Dark Header: Timer + Live Bidding + Current Bid + Meta */}
                 <div className="bg-slate-900 p-5">
-                  <div className="flex items-center justify-between mb-4 gap-3">
-                    <span className="inline-flex items-center gap-2 text-xl font-semibold text-white">
-                      <Gavel className="h-5 w-5 text-primary-500" />
+                  {/* Timer Row */}
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-slate-400 text-xs uppercase tracking-widest">
+                      Ends in
+                    </p>
+                    <CountdownTimer targetDate={auction.endTime} />
+                  </div>
+
+                  {/* Divider */}
+                  <div className="border-t border-slate-700 mb-4" />
+
+                  {/* Live Bidding Label + Status */}
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="inline-flex items-center gap-2 text-base font-semibold text-white">
+                      <Gavel className="h-4 w-4 text-primary-500" />
                       Live Bidding
                     </span>
-                    <span className="inline-flex items-center gap-2 text-sm text-emerald-300">
-                      <RefreshCw className="h-4 w-4" />
+                    <span className="inline-flex items-center gap-2 text-xs text-emerald-300">
+                      <RefreshCw className="h-3 w-3" />
                       {auction.status === "live"
                         ? "Auto-updating"
                         : auction.status}
                     </span>
                   </div>
-                  <div className="bg-white/10 rounded-[20px] p-5 mb-3">
-                    <span className="text-sm text-slate-300">Current Highest Bid</span>
-                    <p className="text-4xl font-black tracking-tight text-white mt-2">
-                      {formatPrice(currentHigh)}
+
+                  {/* Current Highest Bid */}
+                  <div className="bg-white/10 rounded-[16px] p-4 flex items-center justify-between">
+                    <div>
+                      <span className="text-xs text-slate-400 uppercase tracking-wider">
+                        Current Highest Bid
+                      </span>
+                      <p className="text-3xl font-black tracking-tight text-white mt-1">
+                        {formatPrice(currentHigh)}
+                      </p>
+                    </div>
+                    {totalBidders > 0 && (
+                      <span className="text-xs text-slate-400 bg-white/10 rounded-full px-3 py-1">
+                        {totalBidders} bidder{totalBidders !== 1 ? "s" : ""}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Meta Row */}
+                  <div className="flex items-center gap-4 mt-3">
+                    <p className="text-xs text-slate-400">
+                      Min:{" "}
+                      <span className="font-semibold text-slate-200">
+                        {formatPrice(minimumBid)}
+                      </span>
                     </p>
+                    {detail.reservePrice && (
+                      <p className="text-xs text-slate-400">
+                        Reserve:{" "}
+                        <span className="font-semibold text-slate-200">
+                          {formatPrice(detail.reservePrice)}
+                        </span>
+                      </p>
+                    )}
                   </div>
                 </div>
+
+                {/* White Body: Recent Bids + Bidding Controls */}
                 <div className="p-5">
-                  <p className="text-base text-slate-600">
-                    Minimum bid:{" "}
-                    <span className="font-semibold text-slate-900">
-                      {formatPrice(minimumBid)}
-                    </span>
-                  </p>
-                  {detail.reservePrice && (
-                    <p className="text-sm text-slate-500">
-                      Reserve: {formatPrice(detail.reservePrice)}
-                    </p>
-                  )}
-                  {totalBidders > 0 && (
-                    <p className="text-sm text-slate-500 mt-1">
-                      {totalBidders} bidder{totalBidders !== 1 ? "s" : ""}
-                    </p>
-                  )}
-                </div>
-                <div className="p-6">
-                  <p className="text-xl font-semibold text-slate-900 mt-6 mb-4">
+                  <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">
                     Recent Bids
                   </p>
-                  <div className="space-y-3 max-h-[340px] overflow-y-auto mb-4 pr-1">
+
+                  <div className="space-y-2 max-h-[200px] overflow-y-auto mb-4 pr-1">
                     {bids.length === 0 && (
                       <p className="text-sm text-slate-400 text-center py-4">
                         No bids yet. Be the first!
@@ -775,32 +834,36 @@ export default function CarDetail() {
                     {bids.slice(0, 8).map((bid, i) => (
                       <div
                         key={bid._id || i}
-                        className={`flex items-start justify-between gap-3 rounded-2xl border px-4 py-4 ${i === 0 ? "border-primary-200 bg-primary-50" : "border-slate-100 bg-slate-50/70"}`}
+                        className={`flex items-center justify-between gap-3 rounded-2xl border px-3 py-3 ${i === 0 ? "border-primary-200 bg-primary-50" : "border-slate-100 bg-slate-50/70"}`}
                       >
-                        <div className="flex items-start gap-3">
-                          <div className={`flex h-10 w-10 items-center justify-center rounded-full ${bid.bidType === "offline" ? "bg-primary-100 text-primary-500" : "bg-slate-100 text-slate-600"}`}>
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`flex h-8 w-8 items-center justify-center rounded-full ${bid.bidType === "offline" ? "bg-primary-100 text-primary-500" : "bg-slate-100 text-slate-600"}`}
+                          >
                             {bid.bidType === "offline" ? (
-                              <FileText className="h-4 w-4" />
+                              <FileText className="h-3 w-3" />
                             ) : (
-                              <MapPin className="h-4 w-4" />
+                              <MapPin className="h-3 w-3" />
                             )}
                           </div>
                           <div>
-                            <p className="font-medium text-slate-900">
+                            <p className="text-sm font-medium text-slate-900 leading-tight">
                               {bid.bidType === "offline"
                                 ? "Floor Bid"
-                                : bid.bidderName || bid.bidder?.name || "Anonymous"}
+                                : bid.bidderName ||
+                                  bid.bidder?.name ||
+                                  "Anonymous"}
                             </p>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-slate-400">
                               {new Date(bid.createdAt).toLocaleTimeString()}
                             </p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-2xl font-bold text-primary-500">
+                          <p className="text-base font-bold text-primary-500">
                             {formatPrice(bid.amount)}
                           </p>
-                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                             {bid.bidType === "offline"
                               ? "offline"
                               : bid.isProxy
@@ -812,6 +875,7 @@ export default function CarDetail() {
                     ))}
                   </div>
 
+                  {/* Auction Ended */}
                   {isAuctionEnded && (
                     <div className="bg-slate-100 border border-slate-200 rounded-lg p-4 text-center">
                       <p className="font-medium text-slate-700">
@@ -821,6 +885,8 @@ export default function CarDetail() {
                       </p>
                     </div>
                   )}
+
+                  {/* Active Bidding Controls */}
                   {auction.status === "live" && !isAuctionEnded && (
                     <div className="space-y-3">
                       {!isLoggedIn ? (
@@ -833,8 +899,8 @@ export default function CarDetail() {
                       ) : !hasAuctionAccess ? (
                         <div className="space-y-2">
                           <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-sm text-amber-700 text-center">
-                            Auction access approval is required before bidding
-                            (status: {bidderStatus.replaceAll("_", " ")}).
+                            Auction access approval required (status:{" "}
+                            {bidderStatus.replaceAll("_", " ")}).
                           </div>
                           <Button
                             className="w-full"
@@ -847,46 +913,46 @@ export default function CarDetail() {
                         </div>
                       ) : !canPlaceBid ? (
                         <div className="space-y-3">
-                            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-sm text-amber-700 text-center">
-                              {!hasVerifiedToken
-                                ? "Your token payment must be verified by admin before you can bid."
-                                : "Your verified token gives you access to place bids in this auction."}
-                            </div>
-                          <div className="flex flex-col sm:flex-row gap-2">
-                            <Button
-                              className="flex-1"
-                              onClick={() => navigate("/auctions/token-payment")}
-                            >
-                              {hasVerifiedToken
-                                ? "Token Verified"
-                                : "Complete Token Verification"}
-                            </Button>
+                          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-sm text-amber-700 text-center">
+                            {!hasVerifiedToken
+                              ? "Your token payment must be verified by admin before you can bid."
+                              : "Your verified token gives you access to place bids in this auction."}
                           </div>
-                            <p className="text-xs text-slate-500 text-center">
-                              Token verification is mandatory for bidding access.
-                            </p>
+                          <Button
+                            className="w-full"
+                            onClick={() => navigate("/auctions/token-payment")}
+                          >
+                            {hasVerifiedToken
+                              ? "Token Verified"
+                              : "Complete Token Verification"}
+                          </Button>
+                          <p className="text-xs text-slate-500 text-center">
+                            Token verification is mandatory for bidding access.
+                          </p>
                         </div>
                       ) : (
                         <>
-                          <div className="grid grid-cols-2 gap-3">
-                            {quickBidSuggestions.slice(0, 4).map((amount, idx) => (
-                              <button
-                                key={`${amount}-${idx}`}
-                                type="button"
-                                onClick={() => setBidAmount(Number(amount))}
-                                className={`rounded-2xl border px-3 py-3 text-sm font-semibold transition ${
-                                  Number(bidAmount) === Number(amount)
-                                    ? "border-primary-500 bg-primary-50 text-primary-500"
-                                    : "border-primary-200 hover:border-primary-500 text-slate-700"
-                                }`}
-                              >
-                                {formatPrice(Number(amount))}
-                              </button>
-                            ))}
+                          <div className="grid grid-cols-2 gap-2">
+                            {quickBidSuggestions
+                              .slice(0, 4)
+                              .map((amount, idx) => (
+                                <button
+                                  key={`${amount}-${idx}`}
+                                  type="button"
+                                  onClick={() => setBidAmount(Number(amount))}
+                                  className={`rounded-2xl border px-3 py-2.5 text-sm font-semibold transition ${
+                                    Number(bidAmount) === Number(amount)
+                                      ? "border-primary-500 bg-primary-50 text-primary-500"
+                                      : "border-slate-200 hover:border-primary-500 text-slate-700"
+                                  }`}
+                                >
+                                  {formatPrice(Number(amount))}
+                                </button>
+                              ))}
                           </div>
-                          <div className="flex gap-3">
+                          <div className="flex gap-2">
                             <div className="relative flex-1">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-semibold">
                                 PKR
                               </span>
                               <input
@@ -895,7 +961,7 @@ export default function CarDetail() {
                                 onChange={(e) =>
                                   setBidAmount(Number(e.target.value))
                                 }
-                                className="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                className="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
                                 step="50000"
                                 min={minimumBid}
                                 placeholder={String(minimumBid)}
@@ -904,7 +970,7 @@ export default function CarDetail() {
                             <Button
                               onClick={handlePlaceBid}
                               disabled={bidding || bidAmount < minimumBid}
-                              className="px-6 rounded-2xl bg-primary-500 hover:opacity-90 shadow-lg shadow-primary-500/25"
+                              className="px-5 rounded-2xl bg-primary-500 hover:opacity-90 shadow-lg shadow-primary-500/25"
                             >
                               {bidding ? "..." : "Bid Now"}
                             </Button>
@@ -918,6 +984,7 @@ export default function CarDetail() {
                   )}
                 </div>
               </div>
+              {/* ✅ End Merged Panel */}
 
               {/* Buy Now */}
               {canBuyNow && (
@@ -927,7 +994,9 @@ export default function CarDetail() {
                     onClick={handleBuyNow}
                     disabled={buying}
                   >
-                    {buying ? "Processing..." : `Buy Now - ${formatPrice(buyNowPrice)}`}
+                    {buying
+                      ? "Processing..."
+                      : `Buy Now - ${formatPrice(buyNowPrice)}`}
                   </Button>
                   <p className="text-xs text-slate-500 text-center mt-2">
                     Purchase this lot immediately at the buy-now price
@@ -1057,7 +1126,9 @@ export default function CarDetail() {
             </p>
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-slate-700 mb-1 block">Date *</label>
+                <label className="text-sm font-medium text-slate-700 mb-1 block">
+                  Date *
+                </label>
                 <input
                   type="date"
                   className="w-full px-4 py-2 border border-slate-200 rounded-lg"
@@ -1067,20 +1138,38 @@ export default function CarDetail() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-700 mb-1 block">Time slot *</label>
+                <label className="text-sm font-medium text-slate-700 mb-1 block">
+                  Time slot *
+                </label>
                 <select
                   className="w-full px-4 py-2 border border-slate-200 rounded-lg"
                   value={inspectionTimeSlot}
                   onChange={(e) => setInspectionTimeSlot(e.target.value)}
                 >
                   <option value="">Select time</option>
-                  {(Array.isArray(timeSlots) ? timeSlots : ["09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM"]).map((slot) => (
-                    <option key={slot} value={slot}>{slot}</option>
+                  {(Array.isArray(timeSlots)
+                    ? timeSlots
+                    : [
+                        "09:00 AM",
+                        "10:00 AM",
+                        "11:00 AM",
+                        "12:00 PM",
+                        "02:00 PM",
+                        "03:00 PM",
+                        "04:00 PM",
+                        "05:00 PM",
+                      ]
+                  ).map((slot) => (
+                    <option key={slot} value={slot}>
+                      {slot}
+                    </option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-700 mb-1 block">Notes (optional)</label>
+                <label className="text-sm font-medium text-slate-700 mb-1 block">
+                  Notes (optional)
+                </label>
                 <textarea
                   className="w-full px-4 py-2 border border-slate-200 rounded-lg resize-none"
                   rows={2}
@@ -1095,7 +1184,9 @@ export default function CarDetail() {
               </p>
               <Button
                 className="w-full"
-                disabled={!inspectionDate || !inspectionTimeSlot || bookingInspection}
+                disabled={
+                  !inspectionDate || !inspectionTimeSlot || bookingInspection
+                }
                 onClick={async () => {
                   try {
                     await bookInspectionMut({
@@ -1110,7 +1201,9 @@ export default function CarDetail() {
                     setInspectionTimeSlot("");
                     setInspectionNotes("");
                   } catch (e) {
-                    toast.error(e?.data?.message || "Failed to book inspection");
+                    toast.error(
+                      e?.data?.message || "Failed to book inspection",
+                    );
                   }
                 }}
               >
