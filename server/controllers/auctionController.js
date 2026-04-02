@@ -2204,7 +2204,7 @@ export const submitCarToAuction = async (req, res) => {
         postedBy: req.user._id,
         status: "active", // Changed from "pending" to "active" as that's the valid enum
         listingType: "auction",
-        isApproved: false,
+        isApproved: true,
       });
     }
 
