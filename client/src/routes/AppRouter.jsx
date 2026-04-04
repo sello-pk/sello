@@ -89,6 +89,7 @@ const CategoryPage = lazy(() => import("../pages/categories/CategoryPage.jsx"));
 // Protected User (Lazy)
 const CreatePost = lazy(() => import("../pages/posts/CreatePost.jsx"));
 const EditCar = lazy(() => import("../pages/posts/EditCar.jsx"));
+const EditAuctionCar = lazy(() => import("../pages/posts/EditAuctionCar.jsx"));
 const UserListingPage = lazy(
   () => import("../pages/userListings/UserListingPage.jsx"),
 );
@@ -209,7 +210,7 @@ const AppRouter = () => {
         <Route element={<ProtectedRoute />}>
           <Route path="/create-post" element={<CreatePost />} />
           <Route path="/edit-car/:id" element={<EditCar />} />
-          <Route path="/edit-auction-car/:id" element={<EditCar />} />
+          <Route path="/edit-auction-car/:id" element={<EditAuctionCar />} />
           <Route path="/my-listings" element={<UserListingPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/saved-cars" element={<SavedCars />} />

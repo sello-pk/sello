@@ -25,6 +25,8 @@ import {
 } from "../../../utils/vehicleFieldConfig";
 
 const MAX_AUCTION_INSPECTION_REPORT_BYTES = 10 * 1024 * 1024; // 10MB
+const AUCTION_DOCUMENT_ACCEPT =
+  ".pdf,.doc,.docx,.xls,.xlsx,.txt,image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/plain";
 
 const splitList = (value) =>
   String(value || "")
@@ -413,6 +415,7 @@ const EditCarForm = () => {
       ["condition", formData.condition],
       ["startingBid", formData.startingBid],
       ["reservePrice", formData.reservePrice],
+      ["buyNowPrice", formData.buyNowPrice],
       ["price", formData.price],
       ["mileage", formData.mileage],
       ["fuelType", formData.fuelType],
@@ -711,7 +714,7 @@ const EditCarForm = () => {
 
             <div className="rounded-lg border border-gray-200 p-4 space-y-4">
               <div>
-                <label className="block mb-2">Inspection Report (PDF)</label>
+                <label className="block mb-2">Inspection Report *</label>
                 {formData.existingInspectionReportPdfUrl && (
                   <a href={formData.existingInspectionReportPdfUrl} target="_blank" rel="noreferrer" className="text-primary-500 underline text-sm">
                     View current inspection report
@@ -719,11 +722,11 @@ const EditCarForm = () => {
                 )}
                 <input
                   type="file"
-                  accept=".pdf,application/pdf"
+                  accept={AUCTION_DOCUMENT_ACCEPT}
                   onChange={(e) => {
                     const file = e.target.files?.[0] || null;
                     if (file && file.size > MAX_AUCTION_INSPECTION_REPORT_BYTES) {
-                      toast.error("Inspection report is too large for the live server. Keep it under 4MB.");
+                      toast.error("Inspection report is too large. Keep it under 10MB.");
                       e.target.value = "";
                       return;
                     }
@@ -760,7 +763,7 @@ const EditCarForm = () => {
                     ))}
                   </div>
                 )}
-                <input type="file" multiple accept=".pdf,image/*" onChange={(e) => handleChange("documents", Array.from(e.target.files || []))} className="w-full text-sm" />
+                <input type="file" multiple accept={AUCTION_DOCUMENT_ACCEPT} onChange={(e) => handleChange("documents", Array.from(e.target.files || []))} className="w-full text-sm" />
               </div>
             </div>
           </>

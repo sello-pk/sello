@@ -9,11 +9,24 @@ const storage = multer.memoryStorage(); // ✅ Store file in memory
 
 const fileFilter = (req, file, cb) => {
   const ext = path.extname(file.originalname).toLowerCase();
-  const allowedTypes = [".jpg", ".jpeg", ".png", ".webp", ".pdf"];
+  const allowedTypes = [
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".webp",
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".xls",
+    ".xlsx",
+    ".txt",
+  ];
 
   if (!allowedTypes.includes(ext)) {
     return cb(
-      new Error("Only images (jpg, jpeg, png, webp) and PDF files are allowed"),
+      new Error(
+        "Only images and common document files (pdf, doc, docx, xls, xlsx, txt) are allowed",
+      ),
       false
     );
   }
@@ -25,10 +38,17 @@ const fileFilter = (req, file, cb) => {
     "image/png",
     "image/webp",
     "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "text/plain",
   ];
   if (!allowedMimeTypes.includes(file.mimetype)) {
     return cb(
-      new Error("Invalid file type. Only images and PDF files are allowed"),
+      new Error(
+        "Invalid file type. Only images and common document files are allowed",
+      ),
       false
     );
   }

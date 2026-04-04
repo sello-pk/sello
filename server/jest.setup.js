@@ -3,6 +3,8 @@
  * This fixes NODE_OPTIONS issues by configuring Jest properly
  */
 
+import { jest } from "@jest/globals";
+
 // Set test environment variables
 process.env.NODE_ENV = "test";
 

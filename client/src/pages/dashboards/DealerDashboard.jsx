@@ -77,6 +77,8 @@ const createEmptyAuctionForm = () => ({
 });
 
 const MAX_AUCTION_INSPECTION_REPORT_BYTES = 10 * 1024 * 1024; // 10MB
+const AUCTION_DOCUMENT_ACCEPT =
+  ".pdf,.doc,.docx,.xls,.xlsx,.txt,image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/plain";
 
 const DealerDashboard = () => {
   const navigate = useNavigate();
@@ -459,7 +461,7 @@ const DealerDashboard = () => {
       !(newCar.inspectionReportFile instanceof File)
     ) {
       toast.error(
-        "Inspection report (PDF) is required. Please upload the vehicle inspection report.",
+        "Inspection report is required. Please upload the vehicle inspection file.",
       );
       return;
     }
@@ -467,7 +469,7 @@ const DealerDashboard = () => {
       newCar.inspectionReportFile.size > MAX_AUCTION_INSPECTION_REPORT_BYTES
     ) {
       toast.error(
-        "Inspection report is too large. Use a smaller PDF and keep it under 10MB.",
+        "Inspection report is too large. Use a smaller file and keep it under 10MB.",
       );
       return;
     }
@@ -2274,7 +2276,7 @@ const DealerDashboard = () => {
 
                     <div className="bg-primary-50 border border-primary-200 rounded-xl p-4">
                       <label className="block text-sm font-medium text-primary-500 mb-2">
-                        Inspection Report (PDF) *
+                        Inspection Report *
                       </label>
                       <p className="text-xs text-primary-500 mb-2">
                         Upload the vehicle inspection report. Required for every
@@ -2282,7 +2284,7 @@ const DealerDashboard = () => {
                       </p>
                       <input
                         type="file"
-                        accept=".pdf,application/pdf"
+                        accept={AUCTION_DOCUMENT_ACCEPT}
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (
@@ -2290,7 +2292,7 @@ const DealerDashboard = () => {
                             file.size > MAX_AUCTION_INSPECTION_REPORT_BYTES
                           ) {
                             toast.error(
-                              "Inspection report is too large for the live server. Use a smaller PDF and keep it under 4MB.",
+                              "Inspection report is too large. Use a smaller file and keep it under 10MB.",
                             );
                             e.target.value = "";
                             return;
@@ -2308,8 +2310,8 @@ const DealerDashboard = () => {
                         </p>
                       )}
                       <p className="text-xs text-gray-500 mt-2">
-                        PDF only. Keep the inspection report under 4MB for live
-                        upload.
+                        Images and common document files are allowed. Keep the
+                        inspection report under 10MB.
                       </p>
                     </div>
 

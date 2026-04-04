@@ -2040,7 +2040,7 @@ export const submitCarToAuction = async (req, res) => {
       return res.status(400).json({
         success: false,
         message:
-          "Inspection report (PDF) is required. Please upload the vehicle inspection report.",
+          "Inspection report is required. Please upload the vehicle inspection file.",
       });
     }
 
@@ -2241,7 +2241,7 @@ export const submitCarToAuction = async (req, res) => {
         { folder: "auction_inspection" },
       );
     } catch (err) {
-      Logger.error("Inspection report PDF upload failed", err);
+      Logger.error("Inspection report upload failed", err);
       return res.status(503).json({
         success: false,
         message: "Failed to upload inspection report. Try again.",
@@ -2432,7 +2432,12 @@ export const updateMyAuctionSubmissionByCar = async (req, res) => {
     const existingImages = parseStringArrayField(
       req.body["existingImages[]"] ?? req.body.existingImages,
     );
-    const images = [...existingImages, ...newImageUrls].filter(Boolean);
+    const newImagesFirst = req.body.newImagesFirst === "true";
+    const images = (
+      newImagesFirst
+        ? [...newImageUrls, ...existingImages]
+        : [...existingImages, ...newImageUrls]
+    ).filter(Boolean);
 
     let inspectionReportPdfUrl = auctionCar.inspectionReportPdfUrl || null;
     if (inspectionReportFile?.buffer) {

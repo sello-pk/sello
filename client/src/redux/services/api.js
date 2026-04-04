@@ -130,7 +130,7 @@ const CLIENT_UPLOAD_SKIP_BYTES = 450 * 1024;
 const CLIENT_UPLOAD_MIN_TOTAL_BYTES = 2 * 1024 * 1024;
 const CLIENT_LISTING_UPLOAD_SAFE_TOTAL_BYTES = 40 * 1024 * 1024;
 const CLIENT_AUCTION_UPLOAD_SAFE_TOTAL_BYTES = 40 * 1024 * 1024;
-const CLIENT_AUCTION_INSPECTION_REPORT_MAX_BYTES = 4 * 1024 * 1024;
+const CLIENT_AUCTION_INSPECTION_REPORT_MAX_BYTES = 10 * 1024 * 1024;
 
 function isOptimizableImage(file) {
   return (
@@ -1714,7 +1714,7 @@ export const api = createApi({
                 data: {
                   code: "REQUEST_TOO_LARGE",
                   message:
-                    "Inspection report is too large for the live server. Use a smaller PDF and keep it under 4MB.",
+                    "Inspection report is too large for the live server. Use a smaller file and keep it under 10MB.",
                 },
               },
             };
@@ -1728,7 +1728,7 @@ export const api = createApi({
                 data: {
                   code: "REQUEST_TOO_LARGE",
                   message:
-                    `Total upload size is ${Math.round(optimizedBytes / (1024 * 1024))}MB. Auction submissions must be under 10MB total. Use smaller images or fewer files.`,
+                    `Total upload size is ${Math.round(optimizedBytes / (1024 * 1024))}MB. Auction submissions must be under 40MB total. Use smaller images or fewer files.`,
                 },
               },
             };
@@ -1749,7 +1749,7 @@ export const api = createApi({
                   error: {
                     ...result.error,
                     data: {
-                      message: "Auction submission is too large. Keep total under 10MB. Use fewer/smaller images.",
+                      message: "Auction submission is too large. Keep total under 40MB. Use fewer or smaller files.",
                       code: "PAYLOAD_TOO_LARGE",
                     },
                   },
@@ -1824,7 +1824,7 @@ export const api = createApi({
               data: {
                 code: "REQUEST_TOO_LARGE",
                 message:
-                  "Inspection report is too large for the live server. Use a smaller PDF and keep it under 4MB.",
+                  "Inspection report is too large for the live server. Use a smaller file and keep it under 10MB.",
               },
             },
           };
@@ -1838,7 +1838,7 @@ export const api = createApi({
               data: {
                 code: "REQUEST_TOO_LARGE",
                 message:
-                  "Auction submission files are too large for the live server. Keep the inspection report small and keep the total upload under 10MB.",
+                  "Auction submission files are too large for the live server. Keep the inspection report file under 10MB and keep the total upload under 40MB.",
               },
             },
           };
