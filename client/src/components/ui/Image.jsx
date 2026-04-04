@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { optimizeCloudinaryUrl } from "../../utils/imageUtils";
 
 /**
  * Unified Image Component
- * Includes lazy loading and error handling
+ * Includes lazy loading, error handling, and Cloudinary optimization
  */
 const Image = ({
   src,
@@ -13,6 +14,8 @@ const Image = ({
   onError,
   lazy = false,
   placeholder = null,
+  optimizeCloudinary = true,
+  cloudinaryOptions = {},
   ...props
 }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -26,9 +29,14 @@ const Image = ({
       return;
     }
 
+    // Optimize Cloudinary URLs if enabled
+    const optimizedSrc = optimizeCloudinary && src?.includes('cloudinary.com')
+      ? optimizeCloudinaryUrl(src, cloudinaryOptions)
+      : src;
+
     setIsLoading(true);
     setHasError(false);
-    setImgSrc(src);
+    setImgSrc(optimizedSrc);
 
     const loadImage = () => {
       const img = new window.Image();
@@ -41,7 +49,7 @@ const Image = ({
         setIsLoading(false);
         if (onError) onError();
       };
-      img.src = src;
+      img.src = optimizedSrc;
     };
 
     if (lazy) {
@@ -68,7 +76,7 @@ const Image = ({
     } else {
       loadImage();
     }
-  }, [src, lazy, onError]);
+  }, [src, lazy, onError, optimizeCloudinary, cloudinaryOptions]);
 
   // Show placeholder while loading
   if (isLoading && placeholder) {
@@ -105,7 +113,10 @@ const Image = ({
       src={imgSrc}
       alt={alt}
       className={className}
-      style={{ width, height }}
+      width={width}
+      height={height}
+      loading={lazy ? "lazy" : "eager"}
+      decoding="async"
       onLoad={() => setIsLoading(false)}
       onError={() => {
         setHasError(true);

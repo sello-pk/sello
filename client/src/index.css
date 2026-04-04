@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -7,14 +6,14 @@
 /* Professional App Loader - Clean and Minimal */
 
 * {
-  font-family: "Outfit", sans-serif;
+  font-family: sans-serif;  
   font-optical-sizing: auto;
   font-style: normal;
 }
 
 /* Generic hide scrollbar helper */
 .hideScrollbar::-webkit-scrollbar,
-.scrollbar-hide::-webkit-scrollbar {
+  .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
 
@@ -45,8 +44,8 @@
   scrollbar-width: none;
 }
 
-#blog::-webkit-scrollbar, 
-#blogr::-webkit-scrollbar {
+#blog::-webkit-scrollbar,
+  #blogr::-webkit-scrollbar {
   display: none;
 }
 
@@ -62,7 +61,7 @@
     transform: scale(1);
     opacity: 0.7;
   }
-
+  
   50% {
     transform: scale(1.5);
     opacity: 0.3;
@@ -75,13 +74,13 @@
     opacity: 0.8;
     box-shadow: 0 0 0 0 rgba(5, 11, 32, 0.7);
   }
-
+  
   50% {
     transform: scale(1.2);
     opacity: 0.4;
     box-shadow: 0 0 0 10px rgba(5, 11, 32, 0);
   }
-
+  
   100% {
     transform: scale(1.5);
     opacity: 0;
@@ -112,7 +111,7 @@
   100% {
     box-shadow: 0 0 0 0 rgba(5, 11, 32, 0.7);
   }
-
+  
   50% {
     box-shadow: 0 0 0 15px rgba(5, 11, 32, 0);
   }
@@ -128,7 +127,7 @@
     opacity: 0;
     transform: translateY(4px);
   }
-
+  
   to {
     opacity: 1;
     transform: translateY(0);

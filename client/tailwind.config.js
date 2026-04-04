@@ -1,11 +1,12 @@
 /** @type {import('tailwindcss').Config} */
+import typography from "@tailwindcss/typography";
 export default {
-  darkMode: 'class', // Enable class-based dark mode
-  content: ['./src/**/*.{html,js,ts,jsx,tsx}'], // Adjust based on your project structure
+  darkMode: "class", // Enable class-based dark mode
+  content: ["./src/**/*.{html,js,ts,jsx,tsx}"], // Adjust based on your project structure
   theme: {
     extend: {
       maxWidth: {
-        '8xl': '90rem',
+        "8xl": "90rem",
       },
       animation: {
         spin: "spin 1.2s ease-in-out infinite",
@@ -19,22 +20,22 @@ export default {
       },
       colors: {
         primary: {
-          DEFAULT: '#FFA602', // Base color
-          50: '#FFF8E6', // Very light
-          100: '#FFECB3',
-          200: '#FFDF80',
-          300: '#FFD24D',
-          400: '#FFC51A',
-          500: '#FFA602', // Matches your base color
-          600: '#CC8502',
-          700: '#996402',
-          800: '#664301',
-          900: '#332201', // Very dark
+          DEFAULT: "#FFA602", // Base color
+          50: "#FFF8E6", // Very light
+          100: "#FFECB3",
+          200: "#FFDF80",
+          300: "#FFD24D",
+          400: "#FFC51A",
+          500: "#FFA602", // Matches your base color
+          600: "#CC8502",
+          700: "#996402",
+          800: "#664301",
+          900: "#332201", // Very dark
         },
       },
     },
   },
   plugins: [
-    require('@tailwindcss/typography'),
+    typography, // Add the typography plugin
   ],
 };

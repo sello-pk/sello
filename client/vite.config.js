@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { viteStaticCopy } from "vite-plugin-static-copy";
+import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -16,6 +17,31 @@ export default defineConfig({
     // Copy _redirects for Netlify/Vercel
     viteStaticCopy({
       targets: [{ src: "public/_redirects", dest: "." }],
+    }),
+
+    // Fast image optimization - minimal build time impact
+    ViteImageOptimizer({
+      webp: {
+        quality: 75, // Higher quality = faster processing
+        method: 1, // Fastest method
+      },
+      jpg: {
+        quality: 75,
+        progressive: true,
+      },
+      png: {
+        quality: 75,
+        compressionLevel: 3, // Even faster compression
+      },
+      svg: {
+        // Disable SVG optimization for speed (SVGs are already small)
+        plugins: [],
+      },
+      cache: true,
+      cacheLocation: "node_modules/.cache/vite-plugin-image-optimizer",
+      include: /\.(webp|jpg|jpeg)$/i, // Exclude SVGs for speed
+      exclude: /node_modules/,
+      generateAVIF: false,
     }),
   ],
 
@@ -45,55 +71,36 @@ export default defineConfig({
   },
 
   build: {
+    cssCodeSplit: true,
     target: "es2015",
     minify: "terser",
-    sourcemap: true,
-    chunkSizeWarningLimit: 800,
+    sourcemap: false, // Disable sourcemaps for faster builds
+    chunkSizeWarningLimit: 600, // Increase to reduce warnings
 
     // Manual chunk splitting for better performance
     rollupOptions: {
       output: {
         manualChunks: {
-          // Vendor chunks
+          // Core vendor chunks
           "react-vendor": ["react", "react-dom", "react-is"],
           "react-router": ["react-router-dom"],
           redux: ["@reduxjs/toolkit", "react-redux"],
-          "ui-libs": ["react-hot-toast", "react-icons"],
+          "ui-libs": ["react-hot-toast", "react-icons", "lucide-react"],
 
-          // Maps and location
+          // Heavy libraries - lazy loaded and split
           maps: ["leaflet", "react-leaflet", "@react-google-maps/api"],
-
-          // Rich text and editors
-          editors: [
-            "@tiptap/react",
-            "@tiptap/starter-kit",
-            "@tiptap/extension-image",
-            "@tiptap/extension-link",
-            "@tiptap/extension-text-align",
-            "@tiptap/extension-underline",
-            "@tinymce/tinymce-react",
-          ],
-
-          // Charts and data visualization
+          editors: ["@tiptap/react", "@tiptap/starter-kit", "@tinymce/tinymce-react"],
           charts: ["recharts"],
-
-          // PDF and document generation
           documents: ["jspdf", "jspdf-autotable", "xlsx"],
-
-          // Utils and helpers
-          utils: [
-            "date-fns",
-            "query-string",
-            "js-cookie",
-            "isomorphic-dompurify",
-            "gsap",
-          ],
-
-          // Authentication
+          animation: ["gsap"],
           auth: ["@react-oauth/google"],
-
-          // Styling
-          styling: ["styled-components"],
+          forms: ["react-select"],
+          
+          // Split heavy utilities
+          "html2canvas": ["html2canvas"],
+          "dompurify": ["isomorphic-dompurify"],
+          "date-utils": ["date-fns"],
+          "query-string": ["query-string"],
         },
       },
     },

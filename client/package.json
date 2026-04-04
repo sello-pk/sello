@@ -67,9 +67,13 @@
     "globals": "^16.0.0",
     "jsdom": "^25.0.1",
     "postcss": "^8.5.6",
+    "sharp": "^0.34.5",
+    "svgo": "^4.0.1",
     "tailwindcss": "^3.4.17",
     "terser": "^5.44.1",
     "vite": "^6.3.5",
+    "vite-plugin-image-optimizer": "^2.0.3",
+    "vite-plugin-imagemin": "^0.6.1",
     "vite-plugin-static-copy": "^3.1.1",
     "vitest": "^4.0.16"
   },

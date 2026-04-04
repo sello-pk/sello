@@ -250,11 +250,15 @@ async function optimizeUploadFormData(
 
 export const api = createApi({
   reducerPath: "api",
-  // Optimize caching configuration
-  keepUnusedDataFor: 5, // Reduced cache time for better navigation responsiveness
-  refetchOnMountOrArgChange: true, // Refetch on mount or arg change for proper navigation
+  // Optimize caching configuration for better performance
+  keepUnusedDataFor: 60, // Increased cache time to reduce API calls (60 seconds)
+  refetchOnMountOrArgChange: false, // Don't refetch on mount - use cached data
   refetchOnFocus: false, // Don't refetch on window focus
   refetchOnReconnect: true, // Refetch on reconnect
+  // Add tags for better cache invalidation
+  tagTypes: [
+    'Car', 'Category', 'User', 'Blog', 'Auction', 'Listing', 'SavedCar'
+  ],
   baseQuery: async (args, api, extraOptions) => {
     try {
       const baseResult = await fetchBaseQuery({

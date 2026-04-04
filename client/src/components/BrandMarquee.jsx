@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCarCategories } from "../hooks/useCarCategories";
-import { fixImageUrl } from "../utils/imageUtils";
+import { fixImageUrl, optimizeCloudinaryUrl } from "../utils/imageUtils";
 import {
   MdOutlineKeyboardArrowLeft,
   MdOutlineKeyboardArrowRight,
@@ -37,7 +37,14 @@ function injectMarqueeKeyframes() {
 function BrandTile({ brand, onSelect }) {
   const brandName = brand.name || brand.brandName || "Brand";
   const [imgFailed, setImgFailed] = useState(false);
-  const fixedImage = fixImageUrl(brand.image || brand.img);
+  const originalImage = fixImageUrl(brand.image || brand.img);
+  const optimizedImage = optimizeCloudinaryUrl(originalImage, {
+    width: 64,
+    height: 64,
+    crop: 'fill',
+    quality: 'auto',
+    format: 'auto'
+  });
 
   return (
     <button
@@ -46,13 +53,14 @@ function BrandTile({ brand, onSelect }) {
       className="bg-white rounded-2xl p-2.5 sm:p-3 flex flex-col items-center justify-center w-[5.25rem] h-28 sm:w-24 sm:h-28 md:w-28 md:h-32 shadow-sm shrink-0 cursor-pointer border border-gray-100 hover:border-primary-300 hover:shadow-md transition-shadow text-left"
     >
       <div className="flex-1 w-full min-h-0 rounded-xl bg-gray-50 flex items-center justify-center mb-1 p-1.5 sm:p-2 overflow-hidden">
-        {!imgFailed && fixedImage ? (
+        {!imgFailed && optimizedImage ? (
           <img
-            src={fixedImage}
+            src={optimizedImage}
             alt=""
-            width={112}
+            width={64}
             height={64}
             decoding="async"
+            loading="lazy"
             draggable={false}
             className="object-contain max-w-full max-h-12 sm:max-h-14 md:max-h-16 w-auto h-auto pointer-events-none"
             onError={() => setImgFailed(true)}
@@ -116,66 +124,89 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
     const el = trackRef.current;
     if (!el || row.length < 2 || reducedMotion) return;
 
+    let rafId;
     const update = () => {
-      const w = el.scrollWidth;
-      if (w < 16) return;
-      const half = w / 2;
-      const sec = Math.max(
-        MIN_LOOP_SEC,
-        Math.min(MAX_LOOP_SEC, half / PX_PER_SEC),
-      );
-      setDurationSec(sec);
+      // Batch DOM reads and writes to prevent forced reflows
+      rafId = requestAnimationFrame(() => {
+        const w = el.scrollWidth;
+        if (w < 16) return;
+        const half = w / 2;
+        const sec = Math.max(
+          MIN_LOOP_SEC,
+          Math.min(MAX_LOOP_SEC, half / PX_PER_SEC),
+        );
+        
+        // Batch the state update
+        rafId = requestAnimationFrame(() => {
+          setDurationSec(sec);
+        });
+      });
     };
 
-    const ro = new ResizeObserver(() => requestAnimationFrame(update));
+    const ro = new ResizeObserver(update);
     ro.observe(el);
+    
+    // Initial update
     update();
-    const t = window.setTimeout(update, 0);
-    return () => ro.disconnect();
+    
+    return () => {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+      ro.disconnect();
+    };
   }, [brandsKey, row.length, reducedMotion]);
 
   const nudgeAnimation = useCallback(
     (dir) => {
       const el = trackRef.current;
       if (!el || reducedMotion) return;
-      setNavBoost(true);
-      const anims = el.getAnimations?.() || [];
-      const anim =
-        anims.find((a) => a.animationName === "brandMarqueeKF") || anims[0];
-      if (!anim) {
-        window.setTimeout(() => setNavBoost(false), 500);
-        return;
-      }
-      const forward = dir === "right";
-      try {
-        if (anim.playState === "paused") anim.play();
-        anim.playbackRate = forward ? 6 : -5;
-        window.setTimeout(() => {
-          try {
-            anim.playbackRate = 1;
-          } catch {
-            /* ignore */
+      
+      // Batch state updates to prevent reflows
+      requestAnimationFrame(() => {
+        setNavBoost(true);
+        
+        requestAnimationFrame(() => {
+          const anims = el.getAnimations?.() || [];
+          const anim =
+            anims.find((a) => a.animationName === "brandMarqueeKF") || anims[0];
+          if (!anim) {
+            window.setTimeout(() => setNavBoost(false), 500);
+            return;
           }
-          setNavBoost(false);
-        }, 450);
-      } catch {
-        try {
-          const timing = anim.effect?.getComputedTiming?.();
-          const end =
-            typeof timing?.endTime === "number" && Number.isFinite(timing.endTime)
-              ? timing.endTime
-              : durationSec * 1000;
-          const step = Math.min(end * 0.04, 4000);
-          const ct = Number(anim.currentTime) || 0;
-          const next = forward
-            ? (ct + step) % Math.max(end, 1)
-            : (ct - step + Math.max(end, 1)) % Math.max(end, 1);
-          anim.currentTime = next;
-        } catch {
-          /* ignore */
-        }
-        window.setTimeout(() => setNavBoost(false), 500);
-      }
+          const forward = dir === "right";
+          try {
+            if (anim.playState === "paused") anim.play();
+            anim.playbackRate = forward ? 6 : -5;
+            window.setTimeout(() => {
+              try {
+                anim.playbackRate = 1;
+              } catch {
+                /* ignore */
+              }
+              setNavBoost(false);
+            }, 450);
+          } catch {
+            try {
+              const timing = anim.effect?.getComputedTiming?.();
+              const end =
+                typeof timing?.endTime === "number" &&
+                Number.isFinite(timing.endTime)
+                  ? timing.endTime
+                  : durationSec * 1000;
+              const step = Math.min(end * 0.04, 4000);
+              const ct = Number(anim.currentTime) || 0;
+              const next = forward
+                ? (ct + step) % Math.max(end, 1)
+                : (ct - step + Math.max(end, 1)) % Math.max(end, 1);
+              anim.currentTime = next;
+            } catch {
+              /* ignore */
+            }
+            window.setTimeout(() => setNavBoost(false), 500);
+          }
+        });
+      });
     },
     [reducedMotion, durationSec],
   );
@@ -194,8 +225,7 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
   const showNav =
     brands.length >= 1 && !isCarCategoriesLoading && row.length >= 2;
 
-  const playPaused =
-    !navBoost && (hoverPause || focusPause) && !reducedMotion;
+  const playPaused = !navBoost && (hoverPause || focusPause) && !reducedMotion;
 
   return (
     <div className="w-full py-3 sm:py-4">
@@ -207,12 +237,16 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
             className="hidden md:flex shrink-0 z-20 h-11 w-11 items-center justify-center rounded-full bg-white text-gray-700 shadow-md border border-gray-200 hover:bg-primary-500 hover:text-white hover:border-primary-500 transition-all duration-200"
             aria-label="Previous brands"
           >
-            <MdOutlineKeyboardArrowLeft size={22} className="shrink-0" aria-hidden />
+            <MdOutlineKeyboardArrowLeft
+              size={22}
+              className="shrink-0"
+              aria-hidden
+            />
           </button>
         )}
 
         <div
-          className={`min-w-0 flex-1 overflow-hidden px-1 md:px-2 ${!reducedMotion ? "" : "overflow-x-auto scrollbar-hide"}`}
+          className={`min-w-7xl flex-1 overflow-hidden px-1 md:px-2 ${!reducedMotion ? "" : "overflow-x-auto scrollbar-hide"}`}
           onMouseEnter={() => setHoverPause(true)}
           onMouseLeave={() => setHoverPause(false)}
           onFocusCapture={() => setFocusPause(true)}
@@ -270,7 +304,11 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
             className="hidden md:flex shrink-0 z-20 h-11 w-11 items-center justify-center rounded-full bg-white text-gray-700 shadow-md border border-gray-200 hover:bg-primary-500 hover:text-white hover:border-primary-500 transition-all duration-200"
             aria-label="Next brands"
           >
-            <MdOutlineKeyboardArrowRight size={22} className="shrink-0" aria-hidden />
+            <MdOutlineKeyboardArrowRight
+              size={22}
+              className="shrink-0"
+              aria-hidden
+            />
           </button>
         )}
       </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { slides, mdSlides } from "../../assets/banners/banner";
+import { Image } from "../ui/Image";
 
 const BannerCarousal = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -141,20 +142,22 @@ const BannerCarousal = () => {
                     src={slide.image}
                     alt={slide.title || `Banner ${index + 1}`}
                     className="hidden sm:block absolute inset-0 w-full h-full object-cover object-center"
-                    loading="eager"
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                    }}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    fetchpriority={index === 0 ? "high" : "auto"}
+                    decoding="async"
+                    width="1400"
+                    height="400"
                   />
                   {/* Mobile Image - Visible only on Mobile devices */}
                   <img
                     src={slide.mobileImage || slide.image}
                     alt={slide.title || `Banner ${index + 1}`}
                     className="sm:hidden absolute inset-0 w-full h-full object-contain object-center"
-                    loading="eager"
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                    }}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    fetchpriority={index === 0 ? "high" : "auto"}
+                    decoding="async"
+                    width="768"
+                    height="400"
                   />
                 </>
               ) : (

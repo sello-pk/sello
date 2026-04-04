@@ -7,24 +7,22 @@ import { useGetAllCategoriesQuery } from "../redux/services/adminApi";
  */
 export const useCarCategories = (vehicleType = null) => {
   // Build query params
-  const queryParams = {
+  const carQueryParams = {
     type: "car",
     isActive: "true",
   };
   if (vehicleType) {
-    queryParams.vehicleType = vehicleType;
+    carQueryParams.vehicleType = vehicleType;
   }
 
-  // Use skip to prevent duplicate queries - RTK Query will cache based on query params
+  // Execute all queries in parallel for better performance
   const {
     data: allCarCategories,
     isLoading: carLoading,
-  } = useGetAllCategoriesQuery(queryParams, {
-    // Refetch on mount to ensure fresh data
+  } = useGetAllCategoriesQuery(carQueryParams, {
     refetchOnMountOrArgChange: true,
   });
 
-  // Separate query for years - years are common for all vehicle types, so never filter by vehicleType
   const {
     data: yearCategories,
     isLoading: yearLoading,
@@ -132,7 +130,7 @@ export const useCarCategories = (vehicleType = null) => {
         const yearB = parseInt(b.name) || 0;
         return yearB - yearA;
       });
-  }, [yearCategoriesArray]);
+  }, [yearCategoriesArray]); // Removed 'years' dependency as it's derived from yearCategoriesArray
 
   const countries = useMemo(() => {
     return locationCategories
@@ -183,7 +181,7 @@ export const useCarCategories = (vehicleType = null) => {
   const getYearsByModel = useMemo(() => {
     // Years are now independent - return empty map since years don't belong to models
     return {};
-  }, [years]);
+  }, []); // No dependencies needed - returns empty object
 
   const getStatesByCountry = useMemo(() => {
     const map = {};

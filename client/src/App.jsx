@@ -97,9 +97,7 @@ const App = () => {
       <main
         id="main-content"
         className={`min-w-0 overflow-x-hidden ${
-          shouldShowNavbarFooter
-            ? "pb-24 sm:pb-20"
-            : "h-screen overflow-hidden pb-0"
+          shouldShowNavbarFooter ? "pb-0" : "h-screen overflow-hidden pb-0"
         }`}
       >
         <AppRouter />

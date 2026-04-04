@@ -34,7 +34,7 @@ const NewsLatter = () => {
   };
 
   return (
-    <div className="bg-[#050B20] flex md:flex-row flex-col items-center justify-between px-3 sm:px-4 md:px-6 lg:px-8 pt-10 sm:pt-12 pb-0">
+    <div className="bg-[#050B20] flex md:flex-row flex-col items-center justify-between px-3 sm:px-4 md:px-6 lg:px-8 pt-10 sm:pt-12 pb-0 mb-0">
       <div className="text-white md:pt-4 md:pb-2 py-4">
         <h2 className="md:text-4xl text-3xl py-2 md:py-3">Join Sello</h2>
         <p className="">

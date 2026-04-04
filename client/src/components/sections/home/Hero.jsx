@@ -8,6 +8,11 @@ const Hero = () => {
         src={hero}
         alt="hero image"
         className="absolute inset-0 h-full w-full object-cover"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        width="1920"
+        height="600"
       />
       <div className="bg-slate-900/70 absolute inset-0" />
       <div className="relative z-10 flex min-h-[48vh] md:h-[48vh] flex-col items-center justify-center px-2 py-6 sm:py-8 md:py-10">

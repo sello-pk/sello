@@ -277,6 +277,8 @@ const Navbar = () => {
               <img
                 className="h-9 sm:h-10 md:h-11 lg:h-12 w-auto"
                 src={isListingsTheme ? images.blackLogo : images.logo}
+                width="120"
+                height="48"
                 alt="logo"
               />
             </Link>
