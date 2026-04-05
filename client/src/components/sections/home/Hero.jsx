@@ -1,5 +1,5 @@
 import HeroFilter from "../../utils/HeroFilter";
-import hero from "../../../assets/images/hero.png";
+import hero from "../../../assets/images/hero.webp";
 
 const Hero = () => {
   return (

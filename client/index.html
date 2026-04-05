@@ -6,16 +6,19 @@
 
     <link rel="icon" href="/favicon.png" />
     <link rel="manifest" href="/manifest.json" />
-    
+
     <!-- Preconnect hints for performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://api.sello.pk">
-    <link rel="preconnect" href="https://maps.googleapis.com">
-    <link rel="preconnect" href="https://cdn.tiny.cloud">
-    
+    <link rel="preconnect" href="https://api.sello.pk" />
+    <link rel="preconnect" href="https://maps.googleapis.com" />
+    <link rel="preconnect" href="https://cdn.tiny.cloud" />
+
     <!-- Preload critical hero image for LCP -->
-    <link rel="preload" as="image" href="/src/assets/banners/banner1.webp" fetchpriority="high">
+    <link
+      rel="preload"
+      as="image"
+      href="/src/assets/banners/banner1.webp"
+      fetchpriority="high"
+    />
 
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#3B82F6" />
@@ -74,13 +77,11 @@
           https://cdn.tiny.cloud
           https://*.tiny.cloud
           https://accounts.google.com
-          https://fonts.googleapis.com;
+          
 
         font-src
           'self'
-          data:
-          https://fonts.gstatic.com
-          https://cdn.tiny.cloud
+          data:https://cdn.tiny.cloud
           https://*.tiny.cloud;
 
         img-src
