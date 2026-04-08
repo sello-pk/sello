@@ -170,8 +170,8 @@ export default function AuctionsActions() {
   return (
     <>
       <SEO
-        title="Car Auctions in Pakistan | Live & Upcoming Auto Auctions - Sello.pk"
-        description="Explore live and upcoming car auctions in Pakistan on Sello.pk. Bid online on verified auction cars, review schedules, and join trusted auto auctions with confidence."
+        title="Online Auctions in Pakistan | Bid & Win Deals – Sello.pk"
+        description="Explore online auctions on Sello.pk. Bid on cars, electronics & more. Get the best deals with secure bidding and verified listings across Pakistan."
         canonical="https://sello.pk/auctions"
       />
       <div className="min-h-screen w-full bg-slate-50">

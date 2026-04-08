@@ -458,8 +458,8 @@ export default function LiveAuction() {
   return (
     <>
       <SEO
-        title="Live Car Auctions in Pakistan | Bid Online - Sello.pk"
-        description="Join live car auctions in Pakistan on Sello.pk. View active bids, compare auction vehicles, and bid online on verified used cars in real time."
+        title="Live Auctions in Pakistan | Bid in Real-Time – Sello.pk"
+        description="Join live auctions on Sello.pk and bid in real-time on cars, electronics & more. Secure platform, fast bidding, and exciting deals across Pakistan."
         canonical="https://sello.pk/auctions/live"
       />
       <div className="min-h-screen bg-slate-50">

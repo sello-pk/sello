@@ -233,8 +233,8 @@ By participating in our auctions, you acknowledge and accept these limitations.`
   return (
     <>
       <SEO
-        title="Auction Terms, Trust & Legal Information | Sello.pk"
-        description="Read auction terms, buyer guidelines, legal disclaimers, refunds, payment rules, and support information for Sello.pk car auctions in Pakistan."
+        title="Trust & Legal | Secure Auctions & Policies – Sello.pk"
+        description="Learn about Sello.pk trust, legal policies, and secure auction practices. Transparent terms, buyer protection, and safe bidding across Pakistan"
         canonical="https://sello.pk/auctions/trust-legal"
       />
       <div className="min-h-screen bg-slate-50">
