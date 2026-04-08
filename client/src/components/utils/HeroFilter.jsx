@@ -222,7 +222,7 @@ const HeroFilter = () => {
       <div className="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-sm p-4 sm:p-5 md:p-6">
         <form onSubmit={handleSearch} className="flex flex-col gap-4 sm:gap-5">
           <h2 className="text-white font-medium text-lg md:text-left sm:text-left lg:text-left text-center">
-            Find the Best Vehicles for Sale in Pakistan
+            Find the Best Cars for Sale in Pakistan with Verified Listings & Great Deals
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-3 items-center">
             <div className="relative min-w-0">
