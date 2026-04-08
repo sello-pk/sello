@@ -389,6 +389,9 @@ export const trackEvent = async (event, userId = null, metadata = {}) => {
 
 export const buildCarQuery = (query) => {
   const filter = {};
+  
+  // Debug: Log incoming query
+  console.log('🔍 buildCarQuery - Input query:', query);
 
   // 1. Keyword search (Across title, make, model, description)
   if (query.search) {
@@ -396,15 +399,13 @@ export const buildCarQuery = (query) => {
     filter.$or = [
       { title: regex },
       { make: regex },
-      { model: regex },
       { description: regex },
     ];
   }
 
-  // 2. Exact match fields
+  // 2. Exact match fields (make needs exact match for brand filtering)
   const exactMatchFields = [
     "make",
-    "model",
     "variant",
     "condition",
     "transmission",
@@ -422,6 +423,13 @@ export const buildCarQuery = (query) => {
       filter[field] = { $regex: new RegExp(`^${query[field]}$`, "i") };
     }
   });
+
+  // 2b. Partial match fields (model should be more flexible)
+  if (query.model) {
+    // Use case-insensitive partial match for model to allow "City" to match "Civic", etc.
+    filter.model = { $regex: new RegExp(query.model, "i") };
+    console.log('🔍 buildCarQuery - Model filter applied:', filter.model);
+  }
 
   // 3. Numeric range fields
   const rangeFields = [
@@ -444,6 +452,10 @@ export const buildCarQuery = (query) => {
   if (query.featured === "true") filter.featured = true;
   if (query.isApproved === "true") filter.isApproved = true;
 
+  
+  // Debug: Log final filter
+  console.log('🔍 buildCarQuery - Final filter:', JSON.stringify(filter, null, 2));
+  
   return { filter };
 };
 

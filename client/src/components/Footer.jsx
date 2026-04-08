@@ -18,6 +18,13 @@ const Footer = () => {
     return path;
   };
 
+  // Debug function to log footer navigation
+  const handleFooterLinkClick = (path, linkName) => {
+    const resolvedPath = resolveFooterPath(path);
+    console.log('Footer link clicked:', { linkName, originalPath: path, resolvedPath });
+    return resolvedPath;
+  };
+
   return (
     <footer className="bg-[#050B20] text-white -mt-24 sm:-mt-20 relative z-10">
       <div className="px-3 sm:px-4 md:px-6 lg:px-8 mx-auto pt-6 sm:pt-8 pb-16">
@@ -37,7 +44,7 @@ const Footer = () => {
                   section.links.map((link, i) => (
                     <li key={i}>
                       {link.path ? (() => {
-                        const resolvedPath = resolveFooterPath(link.path);
+                        const resolvedPath = handleFooterLinkClick(link.path, link.name);
                         return (
                         <Link
                           to={resolvedPath}
