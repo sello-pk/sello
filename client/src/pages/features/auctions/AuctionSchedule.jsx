@@ -12,6 +12,7 @@ import {
 } from "react-icons/io5";
 import { useGetAuctionsQuery } from "@redux/services/api";
 import { images } from "../../../assets/assets";
+import SEO from "../../../components/common/SEO";
 
 const Badge = ({ children, className = "", ...props }) => (
   <span
@@ -168,7 +169,13 @@ export default function AuctionSchedule() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <>
+      <SEO
+        title="Auction Schedule | Upcoming Car Auctions in Pakistan - Sello.pk"
+        description="Check the latest car auction schedule on Sello.pk. Browse upcoming, live, and completed auctions in Pakistan with dates, locations, and vehicle counts."
+        canonical="https://sello.pk/auctions/schedule"
+      />
+      <div className="min-h-screen bg-slate-50">
       <header className="relative w-full overflow-hidden">
         <div className="relative flex min-h-[200px] h-[28vh] sm:min-h-[240px] sm:h-[32vh] md:h-[34vh] lg:h-[38vh] max-h-[420px] md:max-h-none items-center justify-center">
           <img
@@ -232,6 +239,7 @@ export default function AuctionSchedule() {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }

@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useGetAuctionCarDetailQuery } from "@redux/services/api";
+import SEO from "../../../components/common/SEO";
 
 function CompareCard({ id }) {
   const { data, isLoading } = useGetAuctionCarDetailQuery(id, { skip: !id });
@@ -34,8 +35,14 @@ export default function CompareVehicles() {
     .slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+    <>
+      <SEO
+        title="Compare Auction Cars in Pakistan | Sello.pk"
+        description="Compare auction cars side by side on Sello.pk. Review pricing, mileage, fuel type, transmission, and other key details before bidding."
+        canonical={`https://sello.pk/auctions/compare${params.toString() ? `?${params.toString()}` : ""}`}
+      />
+      <div className="min-h-screen bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold text-slate-900">Compare auction vehicles</h1>
         <p className="text-slate-500 text-sm mt-1">
           Pass ids in query: <code>?ids=carA,carB</code>
@@ -51,7 +58,8 @@ export default function CompareVehicles() {
             ))}
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

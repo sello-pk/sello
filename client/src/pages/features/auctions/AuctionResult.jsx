@@ -11,6 +11,7 @@ import {
   IoArrowForward as ArrowRight,
 } from "react-icons/io5";
 import { useGetMyAuctionResultQuery } from "@redux/services/api";
+import SEO from "../../../components/common/SEO";
 
 const formatPrice = (p) => `PKR ${p?.toLocaleString() || 0}`;
 
@@ -54,54 +55,84 @@ export default function AuctionResult() {
   } = useGetMyAuctionResultQuery(carId, {
     skip: !carId,
   });
+  const car = result?.car || {};
+  const pageTitle =
+    result?.status === "sold" && car?.make && car?.model
+      ? `Auction Result for ${car.year || ""} ${car.make} ${car.model} | Sello.pk`
+      : "Auction Result | Sello.pk";
+  const pageDescription =
+    result?.status === "sold"
+      ? "View your auction result, winning bid summary, payment breakdown, and pickup instructions for your purchased vehicle on Sello.pk."
+      : "View your auction result and transaction status for Sello.pk car auctions.";
+  const canonicalUrl = `https://sello.pk${location.pathname}${location.search}`;
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <p>Loading...</p>
-      </div>
+      <>
+        <SEO
+          title={pageTitle}
+          description={pageDescription}
+          canonical={canonicalUrl}
+        />
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+          <p>Loading...</p>
+        </div>
+      </>
     );
   }
 
   if (isError || !result) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-center">
-          <Car className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-slate-700 mb-2">
-            Access Restricted
-          </h2>
-          <p className="text-slate-500 mb-6">
-            You can only view results for auctions you have won.
-          </p>
-          <Link to="/auctions/transactions">
-            <Button>Go to My Transactions</Button>
-          </Link>
+      <>
+        <SEO
+          title={pageTitle}
+          description={pageDescription}
+          canonical={canonicalUrl}
+        />
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+          <div className="text-center">
+            <Car className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-slate-700 mb-2">
+              Access Restricted
+            </h2>
+            <p className="text-slate-500 mb-6">
+              You can only view results for auctions you have won.
+            </p>
+            <Link to="/auctions/transactions">
+              <Button>Go to My Transactions</Button>
+            </Link>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (result.status !== "sold") {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-center">
-          <Car className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-slate-700 mb-2">
-            No Results Found
-          </h2>
-          <p className="text-slate-500 mb-6">
-            This car doesn't have auction results yet.
-          </p>
-          <Link to="/auctions">
-            <Button>Back to Auctions</Button>
-          </Link>
+      <>
+        <SEO
+          title={pageTitle}
+          description={pageDescription}
+          canonical={canonicalUrl}
+        />
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+          <div className="text-center">
+            <Car className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-slate-700 mb-2">
+              No Results Found
+            </h2>
+            <p className="text-slate-500 mb-6">
+              This car doesn't have auction results yet.
+            </p>
+            <Link to="/auctions">
+              <Button>Back to Auctions</Button>
+            </Link>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
-  const car = result.car || {};
   const escrowRecord = result.escrow || null;
   const tokenDeduction =
     escrowRecord?.tokenDeduction ?? Math.min(10000, result.finalPrice || 0);
@@ -111,8 +142,14 @@ export default function AuctionResult() {
   const img = Array.isArray(car.images) ? car.images[0] : car.images;
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <>
+      <SEO
+        title={pageTitle.replace(/\s+/g, " ").trim()}
+        description={pageDescription}
+        canonical={canonicalUrl}
+      />
+      <div className="min-h-screen bg-slate-50">
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -229,7 +266,8 @@ export default function AuctionResult() {
             </Link>
           </div>
         </motion.div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

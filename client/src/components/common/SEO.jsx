@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { FRONTEND_CONFIG } from "../../config";
 
 /**
  * SEO Component for dynamic meta tags
@@ -14,12 +15,27 @@ const SEO = ({
   author = "Sello",
   url,
   canonical,
+  robots = "index, follow",
 }) => {
   const location = useLocation();
-  const currentUrl = url || `${window.location.origin}${location.pathname}`;
-  const canonicalUrl = canonical || currentUrl;
+  const siteUrl = (FRONTEND_CONFIG.SITE_URL || "https://sello.pk").replace(
+    /\/+$/,
+    "",
+  );
+
+  const toAbsoluteUrl = (value) => {
+    if (!value) return value;
+    if (/^https?:\/\//i.test(value)) return value;
+    const normalizedPath = value.startsWith("/") ? value : `/${value}`;
+    return `${siteUrl}${normalizedPath}`;
+  };
+
+  const canonicalUrl = toAbsoluteUrl(
+    canonical || url || `${location.pathname}${location.search || ""}`,
+  );
   const siteName = "Sello";
   const fullTitle = title.includes("Sello") ? title : `${title} | Sello`;
+  const imageUrl = toAbsoluteUrl(image);
 
   useEffect(() => {
     // Update document title
@@ -45,12 +61,8 @@ const SEO = ({
     // Open Graph tags
     updateMetaTag("og:title", fullTitle, "property");
     updateMetaTag("og:description", description, "property");
-    updateMetaTag(
-      "og:image",
-      image.startsWith("http") ? image : `${window.location.origin}${image}`,
-      "property",
-    );
-    updateMetaTag("og:url", currentUrl, "property");
+    updateMetaTag("og:image", imageUrl, "property");
+    updateMetaTag("og:url", canonicalUrl, "property");
     updateMetaTag("og:type", type, "property");
     updateMetaTag("og:site_name", siteName, "property");
 
@@ -58,14 +70,12 @@ const SEO = ({
     updateMetaTag("twitter:card", "summary_large_image");
     updateMetaTag("twitter:title", fullTitle);
     updateMetaTag("twitter:description", description);
-    updateMetaTag(
-      "twitter:image",
-      image.startsWith("http") ? image : `${window.location.origin}${image}`,
-    );
+    updateMetaTag("twitter:image", imageUrl);
+    updateMetaTag("twitter:url", canonicalUrl);
 
     // Additional tags
     updateMetaTag("theme-color", "#3B82F6"); // Primary color
-    updateMetaTag("robots", "index, follow");
+    updateMetaTag("robots", robots);
 
     // Canonical URL
     let canonicalLink = document.querySelector('link[rel="canonical"]');
@@ -78,13 +88,13 @@ const SEO = ({
   }, [
     title,
     description,
-    image,
+    imageUrl,
     type,
     keywords,
     author,
-    currentUrl,
     canonicalUrl,
     fullTitle,
+    robots,
   ]);
 
   return null; // This component doesn't render anything

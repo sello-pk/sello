@@ -1,19 +1,25 @@
 import React from "react";
 import { footerData } from "../assets/assets";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { apple, android, facebook, instagram } from "../assets/assets";
 import { FaYoutube } from "react-icons/fa";
 import { FaTiktok } from "react-icons/fa6";
 
 const Footer = () => {
-  const navigate = useNavigate();
-
-  const handleFilterClick = (path) => {
-    navigate(path);
+  const resolveFooterPath = (path) => {
+    if (!path) return path;
+    if (path.startsWith("/filter?")) {
+      return path.replace("/filter?", "/search-results?");
+    }
+    if (path === "/help/buying-cars") return "/help-center";
+    if (path === "/help/selling-cars") return "/help/faqs";
+    if (path === "/loan-plans") return "/contact";
+    if (path === "/terms-condition") return "/terms-conditions";
+    return path;
   };
 
   return (
-    <footer className="bg-[#050B20] text-white mt-0 relative z-10">
+    <footer className="bg-[#050B20] text-white -mt-24 sm:-mt-20 relative z-10">
       <div className="px-3 sm:px-4 md:px-6 lg:px-8 mx-auto pt-6 sm:pt-8 pb-16">
         {/* Main Footer Content */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10 lg:gap-12 mb-16">
@@ -30,18 +36,17 @@ const Footer = () => {
                 {section.links &&
                   section.links.map((link, i) => (
                     <li key={i}>
-                      {link.path ? (
+                      {link.path ? (() => {
+                        const resolvedPath = resolveFooterPath(link.path);
+                        return (
                         <Link
-                          to={link.path}
-                          onClick={() =>
-                            link.path.startsWith("/filter") &&
-                            handleFilterClick(link.path)
-                          }
+                          to={resolvedPath}
                           className="text-sm text-gray-300 hover:text-white transition-colors duration-200 inline-block"
                         >
                           {link.name}
                         </Link>
-                      ) : (
+                        );
+                      })() : (
                         <span className="text-sm text-gray-300">
                           {link.name}
                         </span>
@@ -221,7 +226,7 @@ const Footer = () => {
           </p>
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-sm">
             <Link
-              to="/terms-condition"
+              to="/terms-conditions"
               className="text-gray-400 hover:text-white transition-colors duration-200"
             >
               Terms & Conditions

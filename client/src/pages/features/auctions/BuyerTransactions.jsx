@@ -34,6 +34,7 @@ import {
   useGetMyRefundRequestsQuery,
   useGetMyAuctionAccessStatusQuery,
 } from "@redux/services/api";
+import SEO from "../../../components/common/SEO";
 
 const Badge = ({ children, className = "" }) => (
   <span
@@ -301,7 +302,13 @@ export default function BuyerTransactions() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <>
+      <SEO
+        title="Auction Transactions & Payments | Sello.pk"
+        description="Manage your auction bids, won vehicles, escrow payments, deposits, refunds, and token transactions in one place on Sello.pk."
+        canonical="https://sello.pk/auctions/transactions"
+      />
+      <div className="min-h-screen bg-slate-50">
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center gap-3 mb-6">
           <WalletIcon className="w-8 h-8 text-[#FFA602]" />
@@ -1436,6 +1443,7 @@ export default function BuyerTransactions() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

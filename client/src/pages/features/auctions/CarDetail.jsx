@@ -41,6 +41,7 @@ import {
 } from "@redux/services/api";
 import { useSocket } from "@contexts/SocketContext";
 import BidPriceChart from "@components/auction/BidPriceChart";
+import SEO from "../../../components/common/SEO";
 
 const Badge = ({ children, variant = "default", className = "", ...props }) => {
   const variants = {
@@ -213,6 +214,15 @@ export default function CarDetail() {
     hasAuctionAccess &&
     hasVerifiedToken &&
     walletBalance >= buyNowPrice;
+  const pageTitle =
+    car?.make && car?.model
+      ? `${car.year || ""} ${car.make} ${car.model} Auction Details | Sello.pk`
+      : "Auction Car Details | Sello.pk";
+  const pageDescription =
+    car?.make && car?.model
+      ? `View auction details for the ${car.year || ""} ${car.make} ${car.model} on Sello.pk. Check bidding activity, inspection info, pricing, and vehicle specifications before you bid.`
+      : "View auction car details on Sello.pk including current bid, inspection information, pricing, and vehicle specifications before placing your bid.";
+  const canonicalUrl = `https://sello.pk${location.pathname}${location.search}`;
 
   useEffect(() => {
     setBidAmount(currentHigh + minIncrement);
@@ -409,7 +419,13 @@ export default function CarDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <>
+      <SEO
+        title={pageTitle.replace(/\s+/g, " ").trim()}
+        description={pageDescription.replace(/\s+/g, " ").trim()}
+        canonical={canonicalUrl}
+      />
+      <div className="min-h-screen bg-slate-50">
       <div className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-[1320px] items-center justify-between gap-6 px-4 py-5 sm:px-6 lg:px-8">
           <div className="flex items-center gap-4">
@@ -1263,6 +1279,7 @@ export default function CarDetail() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+      </div>
+    </>
   );
 }

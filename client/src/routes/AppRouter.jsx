@@ -278,6 +278,7 @@ const AppRouter = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/privacy-policy" element={<OurPrivacyPolicy />} />
         <Route path="/terms-condition" element={<TermsCondition />} />
+        <Route path="/terms-conditions" element={<TermsCondition />} />
 
         <Route path="/help-center" element={<HelpCenter />} />
         <Route path="/help/faqs" element={<FAQs />} />

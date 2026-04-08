@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import CarEstimatorForm from "./CarEstimatorForm";
 import CarEstimatorResult from "./CarEstimatorResult";
-import SEO from "../../common/SEO";
 import estimatorHero from "../../../assets/images/estimatorHero.png";
 import EstimatorBlogsSection from "./EstimatorBlogsSection";
 
@@ -27,7 +26,6 @@ const CarEstimatorPage = () => {
   const MotionDiv = motion.div;
 
   useEffect(() => {
-    document.title = "AI Car Price Estimator - Sello";
     // Load saved valuations from localStorage
     const saved = localStorage.getItem("carValuations");
     if (saved) {
@@ -95,11 +93,6 @@ const CarEstimatorPage = () => {
 
   return (
     <>
-      <SEO
-        title="AI Car Price Estimator | Sello.pk"
-        description="Get accurate car price estimates with our AI-powered tool. Analyze market data, compare prices, and make informed decisions when buying or selling cars in Pakistan."
-        canonical="https://sello.pk/car-estimator"
-      />
       <div className="min-h-screen bg-gray-50">
         {/* Hero Header */}
         <section className="relative w-full overflow-hidden min-h-[48vh] md:h-[48vh]">

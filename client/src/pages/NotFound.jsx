@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaHome, FaSearch, FaArrowLeft } from "react-icons/fa";
+import SEO from "../components/common/SEO";
 
 const NotFound = () => {
   const navigate = useNavigate();
@@ -14,8 +15,13 @@ const NotFound = () => {
     }
   };
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">
-      <div className="max-w-lg w-full text-center">
+    <>
+      <SEO
+        title="Page Not Found | Sello.pk"
+        description="The page you are looking for could not be found on Sello.pk. Explore listings, auctions, and support pages from here."
+      />
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div className="max-w-lg w-full text-center">
         {/* 404 Illustration */}
         <div className="mb-8">
           <div className="relative inline-block">
@@ -132,8 +138,9 @@ const NotFound = () => {
             support@sello.pk
           </a>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

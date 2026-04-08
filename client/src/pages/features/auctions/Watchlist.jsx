@@ -12,6 +12,7 @@ import {
   useGetMyAuctionWatchlistQuery,
   useRemoveFromAuctionWatchlistMutation,
 } from "@redux/services/api";
+import SEO from "../../../components/common/SEO";
 
 const Badge = ({ children, className = "" }) => (
   <span
@@ -63,14 +64,27 @@ export default function Watchlist() {
 
   if (isLoading)
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <p>Loading...</p>
-      </div>
+      <>
+        <SEO
+          title="Auction Watchlist | Saved Cars - Sello.pk"
+          description="Track saved auction cars on Sello.pk. View your watchlist, follow bidding activity, and jump back into live car auctions in Pakistan."
+          canonical="https://sello.pk/auctions/watchlist"
+        />
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+          <p>Loading...</p>
+        </div>
+      </>
     );
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <>
+      <SEO
+        title="Auction Watchlist | Saved Cars - Sello.pk"
+        description="Track saved auction cars on Sello.pk. View your watchlist, follow bidding activity, and jump back into live car auctions in Pakistan."
+        canonical="https://sello.pk/auctions/watchlist"
+      />
+      <div className="min-h-screen bg-slate-50">
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center gap-3 mb-8">
           <Heart className="w-8 h-8 text-[#FFA602]" />
           <div>
@@ -172,7 +186,8 @@ export default function Watchlist() {
             })}
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

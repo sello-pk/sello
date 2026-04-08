@@ -22,6 +22,7 @@ import {
   useGetMyAuctionAccessStatusQuery,
   useGetTokenPaymentMetaQuery,
 } from "@redux/services/api";
+import SEO from "../../../components/common/SEO";
 
 const Button = ({
   children,
@@ -227,9 +228,16 @@ export default function TokenPayment() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <p className="text-slate-600">Loading token payment...</p>
-      </div>
+      <>
+        <SEO
+          title="Auction Token Payment | Secure Bid Access - Sello.pk"
+          description="Pay your auction token on Sello.pk to unlock bidding access for verified car auctions in Pakistan. Review payment methods, status, and approval details."
+          canonical="https://sello.pk/auctions/token-payment"
+        />
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+          <p className="text-slate-600">Loading token payment...</p>
+        </div>
+      </>
     );
   }
 
@@ -241,7 +249,13 @@ export default function TokenPayment() {
   const hasAuctionAccess = bidderStatus === "approved" || dealerStatus === "approved";
 
   return (
-    <div className="min-h-screen bg-slate-100 pb-8">
+    <>
+      <SEO
+        title="Auction Token Payment | Secure Bid Access - Sello.pk"
+        description="Pay your auction token on Sello.pk to unlock bidding access for verified car auctions in Pakistan. Review payment methods, status, and approval details."
+        canonical="https://sello.pk/auctions/token-payment"
+      />
+      <div className="min-h-screen bg-slate-100 pb-8">
       <section className="bg-gradient-to-r from-slate-900 to-slate-800 text-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <button
@@ -556,6 +570,7 @@ export default function TokenPayment() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }

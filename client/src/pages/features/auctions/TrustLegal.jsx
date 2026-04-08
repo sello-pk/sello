@@ -14,6 +14,7 @@ import {
   Building2,
 } from "lucide-react";
 import { images } from "../../../assets/assets";
+import SEO from "../../../components/common/SEO";
 
 // ==================== CUSTOM COMPONENTS ====================
 
@@ -230,7 +231,13 @@ By participating in our auctions, you acknowledge and accept these limitations.`
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <>
+      <SEO
+        title="Auction Terms, Trust & Legal Information | Sello.pk"
+        description="Read auction terms, buyer guidelines, legal disclaimers, refunds, payment rules, and support information for Sello.pk car auctions in Pakistan."
+        canonical="https://sello.pk/auctions/trust-legal"
+      />
+      <div className="min-h-screen bg-slate-50">
       {/* Hero header — responsive height, type scale, safe padding */}
       <header className="relative w-full overflow-hidden">
         <div className="relative flex min-h-[200px] h-[28vh] sm:min-h-[240px] sm:h-[32vh] md:h-[34vh] lg:h-[38vh] max-h-[420px] md:max-h-none items-center justify-center">
@@ -376,6 +383,7 @@ By participating in our auctions, you acknowledge and accept these limitations.`
           </div>
         </motion.div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

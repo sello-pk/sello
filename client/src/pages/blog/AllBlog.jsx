@@ -50,9 +50,9 @@ const AllBlog = () => {
   return (
     <div>
       <SEO
-        title="All Blog Posts | Sello"
-        description="Browse all our blog posts about cars, automotive news, buying guides, and more."
-        canonical="https://sello.pk/blog"
+        title="All Blog Posts | Car News & Buying Guides – Sello.pk"
+        description="Browse all blog articles on Sello.pk covering car buying, selling, auctions, maintenance, and automotive trends in Pakistan."
+        canonical="https://sello.pk/blog/all"
         keywords="blog posts, car articles, automotive news Pakistan, buy sell cars, car guides, Sello"
       />
       <BlogsHeroSection />

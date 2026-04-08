@@ -23,6 +23,7 @@ import {
 } from "@redux/services/api";
 import HowAuctionsWork from "../../../components/auction/HowAuctionsWork";
 import AuctionBlogsSection from "../../../components/features/auctions/AuctionBlogsSection";
+import SEO from "../../../components/common/SEO";
 
 const CountdownTimer = ({ targetDate }) => {
   const [time, setTime] = React.useState({ d: 0, h: 0, m: 0, s: 0 });
@@ -167,7 +168,13 @@ export default function AuctionsActions() {
   ];
 
   return (
-    <div className="min-h-screen w-full bg-slate-50">
+    <>
+      <SEO
+        title="Car Auctions in Pakistan | Live & Upcoming Auto Auctions - Sello.pk"
+        description="Explore live and upcoming car auctions in Pakistan on Sello.pk. Bid online on verified auction cars, review schedules, and join trusted auto auctions with confidence."
+        canonical="https://sello.pk/auctions"
+      />
+      <div className="min-h-screen w-full bg-slate-50">
       {/* Hero */}
       <section className="relative h-[68vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
@@ -371,6 +378,7 @@ export default function AuctionsActions() {
           </div>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 }

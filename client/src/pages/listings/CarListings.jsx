@@ -12,10 +12,10 @@ const CarListings = () => {
   return (
     <div className="min-h-screen min-w-0 overflow-x-hidden">
       <SEO
-        title="Buy and Sell cars in Pakistan | Trusted Brands - Sello.pk"
-        description="Buy and sell cars in Pakistan with Confidence. Explore premium brands, buy used cars, compare models and sell your car through trusted sellers on sello.pk"
+        title="Buy and Sell Cars in Pakistan | Trusted Brands – Sello.pk"
+        description="Buy and sell cars in Pakistan with confidence. Explore premium brands, compare models, and connect with trusted sellers on Sello.pk."
         keywords="buy and sell cars, buy and sell cars in Pakistan"
-        canonical="https://sello.pk/cars"
+        canonical="https://sello.pk/listings"
       />
       {/* Hidden H1 for SEO */}
       <h1 className="sr-only">Buy and Sell Cars in Pakistan - Trusted Brands & Best Prices</h1>

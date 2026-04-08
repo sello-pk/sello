@@ -25,6 +25,7 @@ import { useCarCategories } from "@hooks/useCarCategories";
 import SearchableSelect from "@components/common/SearchableSelect";
 import LiveAuctionUpdates from "@components/auction/LiveAuctionUpdates";
 import AuctionSavedSearches from "@components/auction/AuctionSavedSearches";
+import SEO from "../../../components/common/SEO";
 
 // Shared tiny components
 
@@ -455,7 +456,13 @@ export default function LiveAuction() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <>
+      <SEO
+        title="Live Car Auctions in Pakistan | Bid Online - Sello.pk"
+        description="Join live car auctions in Pakistan on Sello.pk. View active bids, compare auction vehicles, and bid online on verified used cars in real time."
+        canonical="https://sello.pk/auctions/live"
+      />
+      <div className="min-h-screen bg-slate-50">
       {/* Live Header */}
       <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 sticky top-0 z-40 border-b border-slate-700">
         <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -733,6 +740,7 @@ export default function LiveAuction() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
