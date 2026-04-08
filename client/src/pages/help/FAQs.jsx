@@ -14,20 +14,87 @@ const FAQs = () => {
   const [openIndex, setOpenIndex] = useState(null);
 
   const faqs = [
+    // Account & Registration
     {
       question: "How to create a login for Sello?",
       answer:
         "To get started sign up by clicking the Register button at the top right of the home page, put in your email or mobile number, and we'll walk you through the verification process. Upon verification you will have access to all of the Sello features which include auctions, listings, and AI tools.",
     },
     {
+      question: "Do I have to have an account to place an order?",
+      answer:
+        "Now you can check out as a guest, we also find that creating an account is better for tracking your orders and managing details.",
+    },
+    {
+      question: "How do I reset my password?",
+      answer:
+        "Go to 'Forgot Password' on the login page and follow the instructions.",
+    },
+    {
+      question: "Is my personal information secure?",
+      answer:
+        "We do have strict privacy policies in place and do not share your data with third parties.",
+    },
+    
+    // Service & Availability
+    {
+      question: "Is Sello.pk available all over Pakistan?",
+      answer:
+        "Yes, Sello.pk serves most cities in Pakistan. May not have delivery in some remote areas.",
+    },
+    {
+      question: "How can I contact customer support?",
+      answer:
+        "We have support teams for email, WhatsApp, and our website.",
+    },
+    {
+      question: "Are all products on Sello.pk authentic?",
+      answer:
+        "We can assure you that every product on Sello.pk is real.",
+    },
+    
+    // Ordering & Payment
+    {
+      question: "Can I place orders through WhatsApp or by phone?",
+      answer:
+        "Presently, we only accept online orders for accuracy and tracking.",
+    },
+    {
+      question: "What happens after I place an order?",
+      answer:
+        "You will get an email or SMS with your order info.",
+    },
+    {
+      question: "Can I change my order after you place it?",
+      answer:
+        "Before an order ships out you can request changes by reaching out to support.",
+    },
+    {
+      question: "Why was my order cancelled?",
+      answer:
+        "Orders will be canceled for several reasons which may include out of stock products, inaccurate info, or verification issues.",
+    },
+    {
+      question: "What payment methods are accepted?",
+      answer:
+        "We accept cash in advance at the time of delivery, bank transfer, and also online payment.",
+    },
+    {
+      question: "Is it safe to use Sello.pk for online payment?",
+      answer:
+        "We do use secure payment gateways to protect your data.",
+    },
+    {
+      question: "Can I pay for some of it online and some on delivery?",
+      answer:
+        "Currently, partial payments are not supported.",
+    },
+    
+    // Car Selling & Listings
+    {
       question: "Do I have to pay to list my car on Sello?",
       answer:
         "Sure! Put up your free car on Sello by going into the proper listing section, upload the car info and photos, and hit submit for your car to be looked at. Once your listing is approved your car will go live for buyers in Pakistan.",
-    },
-    {
-      question: "How do I get involved in an auction?",
-      answer:
-        "To enter an auction you must go through identity verification using your CNIC and also pay the refundable token deposit. Once in the system you may place bids in live auctions which may be online or offline. The highest bid at auction end stands if it meets the reserve price.",
     },
     {
       question: "May I edit my live listing?",
@@ -39,16 +106,18 @@ const FAQs = () => {
       answer:
         "Once a car sale is confirmed and all paperwork is completed payment processing usually takes 3-7 business days which may vary by payout method and verification status.",
     },
+    
+    // Auctions
+    {
+      question: "How do I get involved in an auction?",
+      answer:
+        "To enter an auction you must go through identity verification using your CNIC and also pay the refundable token deposit. Once in the system you may place bids in live auctions which may be online or offline. The highest bid at auction end stands if it meets the reserve price.",
+    },
     {
       question:
         "If I don't win the auction, will my token deposit be returned?",
       answer:
         "Yes. If you do not win a vehicle in an auction your token deposit will be returned to you. We'll get back to you within 5-7 business days which also will be through the original means of payment.",
-    },
-    {
-      question: "What does the Sello AI Car Price Estimator do?",
-      answer:
-        "AI Car Price Estimate we put together which is based on what you input like make, model, year, mileage, and condition. The price we present is a foray which may change with inspection, documentation, and market demand.",
     },
     {
       question:
@@ -77,6 +146,52 @@ const FAQs = () => {
       question: "Is your deposit safe and refundable?",
       answer:
         "Yes. Your funds are secure and we will return them in full if you do not win any auctions. For those that do win, the deposit will go towards your total due. We process refunds within 5-7 business days back to the same payment method you used.",
+    },
+    
+    // Tools & Features
+    {
+      question: "What does the Sello AI Car Price Estimator do?",
+      answer:
+        "AI Car Price Estimate we put together which is based on what you input like make, model, year, mileage, and condition. The price we present is a foray which may change with inspection, documentation, and market demand.",
+    },
+    
+    // Delivery & Tracking
+    {
+      question: "How long does delivery take?",
+      answer:
+        "Delivery time is 2 to 5 business days by location.",
+    },
+    {
+      question: "Do you offer same-day delivery?",
+      answer:
+        "At present same day delivery is not available.",
+    },
+    {
+      question: "How can I track my order?",
+      answer:
+        "Once your package has shipped you will find the tracking info at the bottom of your shipping confirmation email.",
+    },
+    {
+      question: "What if my order is delayed?",
+      answer:
+        "Delays will be experienced at times due to weather and logistics which is beyond our control. Please check in with us for the latest info.",
+    },
+    
+    // Returns & Refunds
+    {
+      question: "May I return a product that I don't like?",
+      answer:
+        "Yes, we accept returns during the policy time frame if the product is as is presented.",
+    },
+    {
+      question: "How do I request a refund?",
+      answer:
+        "You may file a request for refund from your account or contact support.",
+    },
+    {
+      question: "How long do you wait for a refund?",
+      answer:
+        "Refunds are issued within 5 to 10 workdays after approval.",
     },
   ];
 
