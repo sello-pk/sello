@@ -21,12 +21,16 @@ const Footer = () => {
   // Debug function to log footer navigation
   const handleFooterLinkClick = (path, linkName) => {
     const resolvedPath = resolveFooterPath(path);
-    console.log('Footer link clicked:', { linkName, originalPath: path, resolvedPath });
+    console.log("Footer link clicked:", {
+      linkName,
+      originalPath: path,
+      resolvedPath,
+    });
     return resolvedPath;
   };
 
   return (
-    <footer className="bg-[#050B20] text-white -mt-24 sm:-mt-20 relative z-10">
+    <footer className="bg-[#050B20] text-white relative z-10">
       <div className="px-3 sm:px-4 md:px-6 lg:px-8 mx-auto pt-6 sm:pt-8 pb-16">
         {/* Main Footer Content */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10 lg:gap-12 mb-16">
@@ -43,17 +47,22 @@ const Footer = () => {
                 {section.links &&
                   section.links.map((link, i) => (
                     <li key={i}>
-                      {link.path ? (() => {
-                        const resolvedPath = handleFooterLinkClick(link.path, link.name);
-                        return (
-                        <Link
-                          to={resolvedPath}
-                          className="text-sm text-gray-300 hover:text-white transition-colors duration-200 inline-block"
-                        >
-                          {link.name}
-                        </Link>
-                        );
-                      })() : (
+                      {link.path ? (
+                        (() => {
+                          const resolvedPath = handleFooterLinkClick(
+                            link.path,
+                            link.name,
+                          );
+                          return (
+                            <Link
+                              to={resolvedPath}
+                              className="text-sm text-gray-300 hover:text-white transition-colors duration-200 inline-block"
+                            >
+                              {link.name}
+                            </Link>
+                          );
+                        })()
+                      ) : (
                         <span className="text-sm text-gray-300">
                           {link.name}
                         </span>
