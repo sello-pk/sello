@@ -111,29 +111,29 @@ import mianMotors from "./images/mianMotors.png";
 import selloVideo from "./selloVideo.gif";
 
 // Category Images
-import carCat from "./categories/carCat.svg";
-import busCat from "./categories/busCat.svg";
-import vanCat from "./categories/vanCat.svg";
-import farmCat from "./categories/farmCat.svg";
-import bikeCat from "./categories/bikeCat.svg";
-import ebikeCat from "./categories/ebikeCat.svg";
-import truckCat from "./categories/truckCat.svg";
+import carCat from "./categories/carCat.webp";
+import busCat from "./categories/busCat.webp";
+import vanCat from "./categories/vanCat.webp";
+import farmCat from "./categories/farmCat.webp";
+import bikeCat from "./categories/bikeCat.webp";
+import ebikeCat from "./categories/ebikeCat.webp";
+import truckCat from "./categories/truckCat.webp";
 
 // Categories Blogs Images
-import bikeCatBlog from "./categories/catBlogs/bikeCatBlog.svg";
-import bikeCatBlog2 from "./categories/catBlogs/bikeCatBlog2.svg";
-import busCatBlog from "./categories/catBlogs/busCatBlog.svg";
-import busCatBlog2 from "./categories/catBlogs/busCatBlog2.svg";
-import carCatBlog from "./categories/catBlogs/carCatBlog.svg";
-import carCatBlog2 from "./categories/catBlogs/carCatBlog2.svg";
-import ebikeCatBlog from "./categories/catBlogs/ebikeCatBlog.svg";
-import ebikeCatBlog2 from "./categories/catBlogs/ebikeCatBlog2.svg";
-import farmCatBlog from "./categories/catBlogs/farmCatBlog.svg";
-import farmCatBlog2 from "./categories/catBlogs/farmCatBlog2.svg";
-import truckCatBlog from "./categories/catBlogs/tuckCatBlog.svg";
-import truckCatBlog2 from "./categories/catBlogs/truckCatBlog2.svg";
-import vanCatBlog from "./categories/catBlogs/vanCatBlog.svg";
-import vanCatBlog2 from "./categories/catBlogs/vanCatBlog2.svg";
+import bikeCatBlog from "./categories/catBlogs/bikeCatBlog.webp";
+import bikeCatBlog2 from "./categories/catBlogs/bikeCatBlog2.webp";
+import busCatBlog from "./categories/catBlogs/busCatBlog.webp";
+import busCatBlog2 from "./categories/catBlogs/busCatBlog2.webp";
+import carCatBlog from "./categories/catBlogs/carCatBlog.webp";
+import carCatBlog2 from "./categories/catBlogs/carCatBlog2.webp";
+import ebikeCatBlog from "./categories/catBlogs/ebikeCatBlog.webp";
+import ebikeCatBlog2 from "./categories/catBlogs/ebikeCatBlog2.webp";
+import farmCatBlog from "./categories/catBlogs/farmCatBlog.webp";
+import farmCatBlog2 from "./categories/catBlogs/farmCatBlog2.webp";
+import truckCatBlog from "./categories/catBlogs/truckCatBlog.webp";
+import truckCatBlog2 from "./categories/catBlogs/truckCatBlog2.webp";
+import vanCatBlog from "./categories/catBlogs/vanCatBlog.webp";
+import vanCatBlog2 from "./categories/catBlogs/vanCatBlog2.webp";
 
 import trustLegal from "./images/trustLegal.png";
 import auctionSchedule from "./images/auctionSchedule.png";

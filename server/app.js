@@ -5,6 +5,7 @@ import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
 import mongoose from "mongoose";
+import path from "path"; // Added for safe path resolving
 
 import Logger from "./utils/logger.js";
 import { performanceMonitor } from "./middlewares/performanceMiddleware.js";
@@ -20,6 +21,13 @@ import {
   multerErrorHandler,
 } from "./middlewares/errorHandler.js";
 
+// Routes
+import apiRoutes from "./routes/index.js";
+import requestIdMiddleware from "./middlewares/requestIdMiddleware.js";
+import { requestTimeout } from "./middlewares/requestTimeout.js";
+import { sanitizeInput } from "./middlewares/sanitizeMiddleware.js";
+import { apiLimiter } from "./middlewares/securityMiddleware.js";
+
 dotenv.config();
 
 export const app = express();
@@ -31,11 +39,23 @@ app.use(
     crossOriginEmbedderPolicy: { policy: "unsafe-none" },
     contentSecurityPolicy: {
       directives: {
-        defaultSrc: ["'self'", "https:", "http:", "data:", "blob:", "'unsafe-inline'"],
+        defaultSrc: [
+          "'self'",
+          "https:",
+          "http:",
+          "data:",
+          "blob:",
+          "'unsafe-inline'",
+        ],
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
         imgSrc: ["'self'", "data:", "https:", "http:"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://accounts.google.com",
+          "https://apis.google.com",
+        ],
         connectSrc: [
           "'self'",
           "https://api.sello.pk",
@@ -43,14 +63,20 @@ app.use(
           "https://sello.pk",
           "https://accounts.google.com",
           "https://www.googleapis.com",
+          "https://*.gstatic.com", // Added for Google Auth/Maps stability
         ],
       },
     },
   }),
 );
 
-/* -------------------------------- COMPRESSION -------------------------------- */
+/* -------------------------------- CORE MIDDLEWARE ---------------------------- */
 app.use(compression());
+app.use(requestIdMiddleware);
+app.use(requestTimeout(60000)); // 60s
+app.use(cookieParser());
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 /* ------------------------------------ CORS ----------------------------------- */
 const allowedOrigins = SERVER_CONFIG.getAllowedOrigins();
@@ -83,19 +109,20 @@ app.use(
 
 app.options("*", cors());
 
-/* ---------------------------- BODY PARSERS --------------------------- */
-// Match multer/proxy expectations: dealer & auction-access multipart can exceed 10mb total
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ extended: true, limit: "50mb" }));
-app.use(cookieParser());
+/* ---------------------------- STATIC ASSETS --------------------------- */
+// This serves as a backup to NGINX.
+// Ensure the path correctly points to your build folder.
+app.use(
+  "/assets",
+  express.static(path.join(process.cwd(), "build/assets"), {
+    maxAge: "1y",
+    immutable: true,
+    index: false,
+  }),
+);
 
-/* ---------------------------- MIDDLEWARES --------------------------- */
-import requestIdMiddleware from "./middlewares/requestIdMiddleware.js";
-app.use(requestIdMiddleware);
+/* ---------------------------- BUSINESS LOGIC --------------------------- */
 app.use(performanceMonitor);
-import { requestTimeout } from "./middlewares/requestTimeout.js";
-app.use(requestTimeout(60000)); // 60s timeout
-import { sanitizeInput } from "./middlewares/sanitizeMiddleware.js";
 app.use(
   sanitizeInput([
     "password",
@@ -107,51 +134,27 @@ app.use(
     "content",
   ]),
 );
-
-/* ---------------------- MAINTENANCE MODE ---------------------- */
 app.use(checkMaintenanceMode);
 
-/* ---------------------- RATE LIMITING ---------------------- */
-import { apiLimiter } from "./middlewares/securityMiddleware.js";
-app.use("/api", apiLimiter);
-
 /* ----------------------------- ROUTES ----------------------------- */
-/* ----------------------------- ROUTES ----------------------------- */
-import apiRoutes from "./routes/index.js";
+app.use("/api", apiLimiter, apiRoutes);
 
-// API Routes
-app.use("/api", apiRoutes);
-
-/* ---------------------- HEALTH CHECK ---------------------- */
+/* ---------------------- HEALTH & INFO ---------------------- */
 app.get("/api/health", (req, res) => {
-  const health = {
+  res.status(200).json({
     status: "OK",
     timestamp: new Date().toISOString(),
-    environment: SERVER_CONFIG.NODE_ENV,
     database:
       mongoose.connection.readyState === 1 ? "Connected" : "Disconnected",
-    memory: process.memoryUsage(),
     uptime: process.uptime(),
-  };
-
-  Logger.info("Health check accessed", { health });
-  res.status(200).json(health);
+  });
 });
 
-/* ---------------------- SERVER INFO ---------------------- */
 app.get("/", (req, res) => {
   res.json({
     message: `🚀 ${SITE_CONFIG.NAME} API Server`,
     version: "2.0.0",
     environment: SERVER_CONFIG.NODE_ENV,
-    documentation: `${req.protocol}://${req.get("host")}/api/health`,
-    endpoints: {
-      health: "/api/health",
-      auth: "/api/auth",
-      cars: "/api/cars",
-      users: "/api/users",
-      admin: "/api/admin",
-    },
   });
 });
 
