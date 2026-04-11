@@ -145,10 +145,11 @@ const AllBrands = () => {
               const brandImage = brand.image;
 
               return (
-                <div
+                <button
                   key={brand._id || brand.slug}
                   onClick={() => handleBrandClick(brand)}
-                  className="flex flex-col items-center justify-center cursor-pointer group transition-all hover:scale-105"
+                  className="flex flex-col items-center justify-center cursor-pointer group transition-all hover:scale-105 bg-transparent border-0 p-0 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-lg"
+                  aria-label={`View ${brandName} cars`}
                 >
                   <div className="relative bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow w-full h-24 md:h-28 flex items-center justify-center mb-2">
                     {brandImage ? (
@@ -184,7 +185,7 @@ const AllBrands = () => {
                       </p>
                     ) : null}
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>

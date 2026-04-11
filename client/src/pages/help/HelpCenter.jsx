@@ -197,9 +197,10 @@ const HelpCenter = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
               {/* Logo */}
-              <div
+              <button
                 onClick={() => navigate("/")}
-                className="cursor-pointer flex items-center gap-3"
+                className="cursor-pointer flex items-center gap-3 bg-transparent border-0 p-0 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-lg"
+                aria-label="Go to homepage"
               >
                 <img
                   src={images.logo}
@@ -228,9 +229,10 @@ const HelpCenter = () => {
             </div>
 
             {/* User Profile */}
-            <div
+            <button
               onClick={() => navigate("/profile")}
-              className="cursor-pointer flex items-center gap-2"
+              className="cursor-pointer flex items-center gap-2 bg-transparent border-0 p-0 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-lg"
+              aria-label="Go to profile"
             >
               {currentUser?.avatar ? (
                 <img
@@ -260,10 +262,11 @@ const HelpCenter = () => {
             {popularTopics.map((topic) => {
               const IconComponent = topic.icon;
               return (
-                <div
+                <button
                   key={topic.id}
                   onClick={() => navigate(topic.link)}
-                  className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-6 cursor-pointer transform hover:-translate-y-1 group"
+                  className="w-full bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-6 cursor-pointer transform hover:-translate-y-1 group text-left focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                  aria-label={`Learn about ${topic.title}`}
                 >
                   <div
                     className={`${topic.color} w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}
@@ -286,10 +289,11 @@ const HelpCenter = () => {
             {categories.map((category) => {
               const IconComponent = category.icon;
               return (
-                <div
+                <button
                   key={category.id}
                   onClick={() => navigate(category.link)}
-                  className="bg-white rounded-lg shadow-sm hover:shadow-md border border-gray-200 hover:border-primary-300 p-6 cursor-pointer transition-all duration-200 group"
+                  className="w-full bg-white rounded-lg shadow-sm hover:shadow-md border border-gray-200 hover:border-primary-300 p-6 cursor-pointer transition-all duration-200 group text-left focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                  aria-label={`Browse ${category.title} help`}
                 >
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0">
@@ -306,7 +310,7 @@ const HelpCenter = () => {
                       </p>
                     </div>
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
