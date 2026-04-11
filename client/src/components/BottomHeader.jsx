@@ -21,6 +21,7 @@ const BottomHeader = () => {
   const targetDate =
     liveAuction?.endTime ||
     (liveAuction ? new Date(Date.now() + 86400000 * 2) : null);
+
   const showAuction = !isLoading && liveAuction && targetDate;
   const auctionVenue = liveAuction?.location?.trim() || "Okara Auction Yard";
   const auctionName = liveAuction?.title?.trim() || "Live Auction";
@@ -33,17 +34,23 @@ const BottomHeader = () => {
       <div className="flex min-w-0 items-center gap-3 md:gap-4 flex-shrink overflow-visible">
         {showAuction && (
           <>
+            {/* Live Badge */}
             <Link
               to="/auctions/live"
+              aria-label="Go to live auction"
+              title="Go to live auction"
               className="inline-flex items-center px-3 py-1 gap-2 animate-pulse duration-500 ease rounded-full text-xs font-medium bg-white text-red-400 border border-white whitespace-nowrap flex-shrink-0"
             >
               <FiZap className="w-4 h-4 shrink-0" />
-              Live
+              <span>Live</span>
             </Link>
+
+            {/* Auction Info */}
             <Link
               to="/auctions/live"
-              className="min-w-0 inline-flex items-center gap-2 text-white hover:text-primary transition-colors"
+              aria-label={`${auctionVenue} - ${auctionName}`}
               title={`${auctionVenue} - ${auctionName}`}
+              className="min-w-0 inline-flex items-center gap-2 text-white hover:text-primary transition-colors"
             >
               <FaLocationDot className="w-4 h-4 shrink-0" />
               <div className="min-w-0 leading-tight">
@@ -56,6 +63,7 @@ const BottomHeader = () => {
       </div>
 
       <div className="flex items-center gap-4 md:gap-6 flex-shrink-0 ml-auto">
+        {/* Countdown */}
         <div className="flex items-center gap-3 rounded-2xl bg-white/10 px-3 py-2 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_10px_30px_rgba(5,11,32,0.28)]">
           <span className="text-white/70 text-xs uppercase tracking-[0.18em] whitespace-nowrap">
             Ends In
@@ -67,16 +75,34 @@ const BottomHeader = () => {
             variant="glassDark"
           />
         </div>
+
         <div className="flex items-center gap-5 md:gap-6">
           {showAuction && (
-            <span className="inline-flex items-center gap-2 text-white/80 text-sm whitespace-nowrap">
+            <span
+              className="inline-flex items-center gap-2 text-white/80 text-sm whitespace-nowrap"
+              aria-label="Live updating auction"
+            >
               <RefreshCw className="w-4 h-4 animate-spin text-primary-500" />
             </span>
           )}
-          <Link to="/saved-cars">
-            <FaRegHeart className="w-5 h-5 hover:text-primary ease text-white shrink-0" />
+
+          {/* Saved Cars (FIXED) */}
+          <Link
+            to="/saved-cars"
+            aria-label="View saved cars"
+            title="Saved Cars"
+            className="inline-flex items-center justify-center"
+          >
+            <FaRegHeart className="w-5 h-5 hover:text-primary text-white shrink-0" />
           </Link>
-          <Link to="/filter" className="text-white">
+
+          {/* Filter (FIXED - already had text but improved) */}
+          <Link
+            to="/filter"
+            aria-label="Open filters"
+            title="Filter cars"
+            className="text-white"
+          >
             Filter
           </Link>
         </div>
