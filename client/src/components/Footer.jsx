@@ -37,9 +37,9 @@ const Footer = () => {
           {footerData.map((section, index) => (
             <div key={index}>
               {section.title && (
-                <h4 className="text-sm font-semibold text-white mb-5 tracking-wide">
+                <div className="text-sm font-semibold text-white mb-5 tracking-wide">
                   {section.title}
-                </h4>
+                </div>
               )}
 
               {/* Links */}
@@ -85,9 +85,9 @@ const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {/* Contact Information */}
             <div>
-              <h4 className="text-sm font-semibold text-white mb-5 tracking-wide">
+              <div className="text-sm font-semibold text-white mb-5 tracking-wide">
                 Contact Us
-              </h4>
+              </div>
               <div className="space-y-3 text-sm text-gray-300">
                 <p>
                   <span className="font-medium text-white">Address:</span>{" "}
@@ -116,9 +116,9 @@ const Footer = () => {
 
             {/* Mobile App Downloads */}
             <div>
-              <h4 className="text-sm font-semibold text-white mb-5 tracking-wide">
+              <div className="text-sm font-semibold text-white mb-5 tracking-wide">
                 Download Our App
-              </h4>
+              </div>
               <div className="space-y-3">
                 {/* App Store Button */}
                 <a
@@ -172,9 +172,9 @@ const Footer = () => {
 
             {/* Social Media */}
             <div>
-              <h4 className="text-sm font-semibold text-white mb-5 tracking-wide">
+              <div className="text-sm font-semibold text-white mb-5 tracking-wide">
                 Follow Us
-              </h4>
+              </div>
               <div className="flex items-center gap-3">
                 <a
                   href="https://web.facebook.com/profile.php?id=61584930269294&mibextid=wwXIfr&rdid=6QUy9q5xMtmsDjOi&share_url=https%3A%2F%2Fweb.facebook.com%2Fshare%2F19jao3GFzS%2F%3Fmibextid%3DwwXIfr%26_rdc%3D1%26_rdr"

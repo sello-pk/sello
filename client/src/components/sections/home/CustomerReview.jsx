@@ -226,9 +226,9 @@ const CustomerReview = () => {
                         </div>
                       </div>
                       <div>
-                        <h4 className="text-base font-bold text-slate-900 group-hover:text-primary-700 transition-colors duration-300">
+                        <div className="text-base font-bold text-slate-900 group-hover:text-primary-700 transition-colors duration-300">
                           {review.name}
-                        </h4>
+                        </div>
                         <div className="flex items-center gap-1">
                           <svg
                             className="w-3 h-3 text-slate-400"
@@ -338,9 +338,9 @@ const CustomerReview = () => {
                           </span>
                         </div>
                         <div>
-                          <h4 className="text-lg font-semibold text-slate-900">
+                          <div className="text-lg font-semibold text-slate-900">
                             {review.name}
-                          </h4>
+                          </div>
                           <p className="text-sm text-slate-600">
                             {review.location}
                           </p>
