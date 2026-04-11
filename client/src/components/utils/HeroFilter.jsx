@@ -10,10 +10,9 @@ import { VscChevronDown } from "react-icons/vsc";
 
 const HeroFilter = () => {
   const navigate = useNavigate();
-  const [vehicleType] = useState("Car"); // Defaulting for search context
+  const [vehicleType] = useState("Car");
 
-  const { makes, models, cities, getModelsByMake } =
-    useCarCategories(vehicleType);
+  const { makes, models, cities } = useCarCategories(vehicleType);
 
   const [filters, setFilters] = useState({
     make: "",
@@ -34,11 +33,9 @@ const HeroFilter = () => {
 
   const cityOptions = useMemo(() => {
     if (!Array.isArray(cities)) return [];
-
     const uniqueCities = Array.from(
       new Map(cities.map((city) => [city.name, city])).values(),
     );
-
     return uniqueCities.sort((a, b) =>
       (a.name || "").localeCompare(b.name || ""),
     );
@@ -46,7 +43,6 @@ const HeroFilter = () => {
 
   const modelOptions = useMemo(() => {
     if (!Array.isArray(models) || models.length === 0) return [];
-    // Models only available after make is selected; show only models for selected make.
     if (!filters.make) return [];
 
     const selectedMakeName = String(filters.make).trim().toLowerCase();
@@ -67,6 +63,7 @@ const HeroFilter = () => {
         model?.parentCategory !== null
           ? model.parentCategory._id
           : model?.parentCategory;
+
       return matchedMakeIds.includes(String(parent || ""));
     });
   }, [models, makes, filters.make]);
@@ -140,8 +137,6 @@ const HeroFilter = () => {
     menuList: (base) => ({
       ...base,
       maxHeight: "260px",
-      paddingTop: 0,
-      paddingBottom: 0,
     }),
     option: (base, state) => ({
       ...base,
@@ -166,6 +161,7 @@ const HeroFilter = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
+
     if (
       !filters.make &&
       !filters.model &&
@@ -221,18 +217,25 @@ const HeroFilter = () => {
     <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
       <div className="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-sm p-4 sm:p-5 md:p-6">
         <form onSubmit={handleSearch} className="flex flex-col gap-4 sm:gap-5">
-          <h2 className="text-white font-medium text-lg md:text-left sm:text-left lg:text-left text-center">
-            Find the Best Cars for Sale in Pakistan with Verified Listings & Great Deals
+          <h2 className="text-white font-medium text-lg text-center sm:text-left">
+            Find the Best Cars for Sale in Pakistan with Verified Listings &
+            Great Deals
           </h2>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-3 items-center">
-            <div className="relative min-w-0">
+            {/* Make */}
+            <div>
+              <label htmlFor="make-select" className="sr-only">
+                Make
+              </label>
               <Select
+                inputId="make-select"
+                aria-label="Select Make"
                 value={
-                  makeSelectOptions.find(
-                    (option) => option.value === filters.make,
-                  ) || null
+                  makeSelectOptions.find((o) => o.value === filters.make) ||
+                  null
                 }
-                onChange={(option) => handleChange("make", option?.value || "")}
+                onChange={(o) => handleChange("make", o?.value || "")}
                 options={makeSelectOptions}
                 placeholder="Make"
                 isClearable
@@ -244,20 +247,21 @@ const HeroFilter = () => {
               />
             </div>
 
-            <div className="relative min-w-0">
+            {/* Model */}
+            <div>
+              <label htmlFor="model-select" className="sr-only">
+                Model
+              </label>
               <Select
+                inputId="model-select"
+                aria-label="Select Model"
                 value={
-                  modelSelectOptions.find(
-                    (option) => option.value === filters.model,
-                  ) || null
+                  modelSelectOptions.find((o) => o.value === filters.model) ||
+                  null
                 }
-                onChange={(option) =>
-                  handleChange("model", option?.value || "")
-                }
+                onChange={(o) => handleChange("model", o?.value || "")}
                 options={modelSelectOptions}
                 placeholder="Model"
-                isClearable={!!filters.make}
-                isSearchable={!!filters.make}
                 isDisabled={!filters.make}
                 styles={searchableSelectStyles}
                 components={{ DropdownIndicator }}
@@ -266,18 +270,21 @@ const HeroFilter = () => {
               />
             </div>
 
-            <div className="relative min-w-0">
+            {/* City */}
+            <div>
+              <label htmlFor="city-select" className="sr-only">
+                City
+              </label>
               <Select
+                inputId="city-select"
+                aria-label="Select City"
                 value={
-                  citySelectOptions.find(
-                    (option) => option.value === filters.city,
-                  ) || null
+                  citySelectOptions.find((o) => o.value === filters.city) ||
+                  null
                 }
-                onChange={(option) => handleChange("city", option?.value || "")}
+                onChange={(o) => handleChange("city", o?.value || "")}
                 options={citySelectOptions}
                 placeholder="City"
-                isClearable={!!filters.model}
-                isSearchable={!!filters.model}
                 isDisabled={!filters.model}
                 styles={searchableSelectStyles}
                 components={{ DropdownIndicator }}
@@ -286,56 +293,71 @@ const HeroFilter = () => {
               />
             </div>
 
-            <div className="min-w-0">
+            {/* Min Price */}
+            <div>
+              <label htmlFor="min-price" className="sr-only">
+                Minimum Price
+              </label>
               <input
+                id="min-price"
                 type="number"
                 min="0"
                 placeholder="Min Price"
-                className="h-12 w-full bg-gray-50 border-none rounded-xl px-4 text-gray-500 focus:ring-2 focus:ring-primary placeholder:text-gray-300"
+                aria-label="Minimum Price"
+                className="h-12 w-full bg-gray-50 rounded-xl px-4"
                 value={filters.minPrice}
                 onChange={(e) => handleChange("minPrice", e.target.value)}
               />
             </div>
 
-            <div className="min-w-0">
+            {/* Max Price */}
+            <div>
+              <label htmlFor="max-price" className="sr-only">
+                Maximum Price
+              </label>
               <input
+                id="max-price"
                 type="number"
                 min="0"
                 placeholder="Max Price"
-                className="h-12 w-full bg-gray-50 border-none rounded-xl px-4 text-gray-500 focus:ring-2 focus:ring-primary placeholder:text-gray-300"
+                aria-label="Maximum Price"
+                className="h-12 w-full bg-gray-50 rounded-xl px-4"
                 value={filters.maxPrice}
                 onChange={(e) => handleChange("maxPrice", e.target.value)}
               />
             </div>
 
+            {/* Search */}
             <button
               type="submit"
-              className="h-12 w-full bg-primary-500 hover:opacity-90 text-white px-8 rounded-xl flex items-center justify-center gap-2 font-medium transition-colors"
+              aria-label="Search Cars"
+              className="h-12 w-full bg-primary-500 hover:opacity-90 text-white px-8 rounded-xl flex items-center justify-center gap-2 font-medium"
             >
-              <FiSearch className="text-lg" />
+              <FiSearch />
               Search
             </button>
           </div>
 
-          <div className="mt-1 flex flex-wrap items-center justify-start gap-3">
+          {/* Secondary Buttons */}
+          <div className="mt-1 flex flex-wrap gap-3">
             <button
               type="button"
               onClick={() => navigate("/listings")}
-              className="h-12 w-full sm:w-auto border border-primary   text-primary px-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors min-w-[200px]"
+              className="h-12 w-full sm:w-auto border border-primary text-primary px-4 rounded-lg font-semibold"
             >
               Browse Listings
             </button>
             <button
               type="button"
               onClick={() => navigate("/create-post")}
-              className="h-12 w-full sm:w-auto border border-primary   text-primary px-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors min-w-[200px]"
+              className="h-12 w-full sm:w-auto border border-primary text-primary px-4 rounded-lg font-semibold"
             >
               Sell Your Car
             </button>
             <button
               type="button"
               onClick={() => navigate("/auctions/live")}
-              className="h-12 w-full sm:w-auto border border-primary   text-primary px-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors min-w-[200px]"
+              className="h-12 w-full sm:w-auto border border-primary text-primary px-4 rounded-lg font-semibold"
             >
               Live Auction
             </button>
