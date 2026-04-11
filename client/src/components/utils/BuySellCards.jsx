@@ -22,8 +22,9 @@ const BuySellCards = () => {
                 <Link
                   to={post.redirect}
                   className="inline-flex h-11 items-center gap-2 rounded-lg bg-primary-500 px-5 text-white font-semibold hover:opacity-90 transition-colors"
+                  aria-label={`Get started ${post.title.toLowerCase().includes('looking') ? 'buying a car' : 'selling a car'}`}
                 >
-                  Get Started
+                  {post.title.toLowerCase().includes('looking') ? 'Browse Cars' : 'Sell Your Car'}
                   <IoIosArrowRoundUp className="text-xl rotate-[43deg]" />
                 </Link>
                 <img
