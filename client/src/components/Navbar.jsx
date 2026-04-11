@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { images, menuLinks } from "../assets/assets";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import SearchBar from "./utils/SearchBar";
@@ -51,17 +51,6 @@ const Navbar = () => {
 
   // Update token state when localStorage changes (after login)
   useEffect(() => {
-    const checkToken = () => {
-      const currentToken = localStorage.getItem("token");
-      if (currentToken !== token) {
-        setToken(currentToken);
-      }
-    };
-
-    // Check immediately
-    checkToken();
-
-    // Listen for storage events (from other tabs)
     const handleStorageChange = (e) => {
       if (e.key === "token") {
         setToken(e.newValue);
@@ -70,65 +59,46 @@ const Navbar = () => {
 
     window.addEventListener("storage", handleStorageChange);
 
-    // Also check periodically for same-tab changes (localStorage.setItem doesn't trigger storage event)
-    const interval = setInterval(checkToken, 500);
-
     return () => {
       window.removeEventListener("storage", handleStorageChange);
-      clearInterval(interval);
     };
-  }, [token]);
+  }, []);
+
+  const handleClickOutside = useCallback((event) => {
+    // Close search panel
+    if (
+      showHeaderSearch &&
+      searchPanelRef.current &&
+      !searchPanelRef.current.contains(event.target)
+    ) {
+      setShowHeaderSearch(false);
+    }
+
+    // Close company dropdown
+    if (
+      openCompanyDropdown &&
+      companyDropdownRef.current &&
+      !companyDropdownRef.current.contains(event.target)
+    ) {
+      setOpenCompanyDropdown(false);
+    }
+
+    // Close auctions dropdown
+    if (
+      openAuctionsDropdown &&
+      auctionsDropdownRef.current &&
+      !auctionsDropdownRef.current.contains(event.target)
+    ) {
+      setOpenAuctionsDropdown(false);
+    }
+  }, [showHeaderSearch, openCompanyDropdown, openAuctionsDropdown]);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        showHeaderSearch &&
-        searchPanelRef.current &&
-        !searchPanelRef.current.contains(event.target)
-      ) {
-        setShowHeaderSearch(false);
-      }
-    };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showHeaderSearch]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        openCompanyDropdown &&
-        companyDropdownRef.current &&
-        !companyDropdownRef.current.contains(event.target)
-      ) {
-        setOpenCompanyDropdown(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [openCompanyDropdown]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        openAuctionsDropdown &&
-        auctionsDropdownRef.current &&
-        !auctionsDropdownRef.current.contains(event.target)
-      ) {
-        setOpenAuctionsDropdown(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [openAuctionsDropdown]);
+  }, [handleClickOutside]);
 
   const isPathMatch = (path) =>
     path === "/"
@@ -215,14 +185,14 @@ const Navbar = () => {
     });
   };
 
-  const avatarFallback = () => {
+  const avatarFallback = useMemo(() => {
     if (!user) return images.avatarIcon;
     if (user.avatar) return user.avatar;
     const name = user.name || user.email || "User";
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(
       name.charAt(0),
     )}`;
-  };
+  }, [user]);
 
   // Use the listings header style site-wide for visual consistency.
   const isListingsTheme = true;
@@ -314,6 +284,8 @@ const Navbar = () => {
                 <button
                   type="button"
                   onClick={() => setOpenAuctionsDropdown((prev) => !prev)}
+                  aria-expanded={openAuctionsDropdown}
+                  aria-haspopup="true"
                   className={`px-2 py-1 rounded-md transition-all whitespace-nowrap inline-flex items-center gap-2 ${
                     isAuctionsActive
                       ? "text-primary-500 font-semibold bg-primary-50"
@@ -326,17 +298,22 @@ const Navbar = () => {
                     className={`transition-transform duration-200 ${
                       openAuctionsDropdown ? "rotate-180" : ""
                     }`}
+                    aria-hidden="true"
                   />
                 </button>
 
                 {openAuctionsDropdown && (
-                  <div className="absolute top-full left-0 pt-2 z-[100]">
+                  <div 
+                    className="absolute top-full left-0 pt-2 z-[100]"
+                    role="menu"
+                  >
                     <div className="w-64 rounded-xl border border-gray-200 bg-white shadow-lg text-gray-700 py-2">
                       {publicAuctionLinks.map((link) => (
                         <Link
                           key={link.path}
                           to={link.path}
                           onClick={() => setOpenAuctionsDropdown(false)}
+                          role="menuitem"
                           className={`block px-5 py-2.5 text-base transition-colors ${
                             isPathMatch(link.path)
                               ? "text-primary-500 font-semibold bg-primary-50"
@@ -354,6 +331,7 @@ const Navbar = () => {
                               key={link.path}
                               to={link.path}
                               onClick={() => setOpenAuctionsDropdown(false)}
+                              role="menuitem"
                               className={`block px-5 py-2.5 text-base transition-colors ${
                                 isPathMatch(link.path)
                                   ? "text-primary-500 font-semibold bg-primary-50"
@@ -379,6 +357,8 @@ const Navbar = () => {
                 <button
                   type="button"
                   onClick={() => setOpenCompanyDropdown((prev) => !prev)}
+                  aria-expanded={openCompanyDropdown}
+                  aria-haspopup="true"
                   className={`px-2 py-1 rounded-md transition-all whitespace-nowrap inline-flex items-center gap-2 ${
                     isCompanyActive
                       ? "text-primary-500 font-semibold bg-primary-50"
@@ -391,17 +371,22 @@ const Navbar = () => {
                     className={`transition-transform duration-200 ${
                       openCompanyDropdown ? "rotate-180" : ""
                     }`}
+                    aria-hidden="true"
                   />
                 </button>
 
                 {openCompanyDropdown && (
-                  <div className="absolute top-full left-0 pt-2 z-[100]">
+                  <div 
+                    className="absolute top-full left-0 pt-2 z-[100]"
+                    role="menu"
+                  >
                     <div className="w-56 rounded-xl border border-gray-200 bg-white shadow-lg text-gray-700 py-2">
                       {companyLinks.slice(0, 3).map((link) => (
                         <Link
                           key={link.path}
                           to={link.path}
                           onClick={() => setOpenCompanyDropdown(false)}
+                          role="menuitem"
                           className={`block px-5 py-2.5 text-base transition-colors ${
                             isPathMatch(link.path)
                               ? "text-primary-500 font-semibold bg-primary-50"
@@ -415,6 +400,7 @@ const Navbar = () => {
                       <Link
                         to={companyLinks[3].path}
                         onClick={() => setOpenCompanyDropdown(false)}
+                        role="menuitem"
                         className={`block px-5 py-2.5 text-base transition-colors ${
                           isPathMatch(companyLinks[3].path)
                             ? "text-primary-500 font-semibold bg-primary-50"
@@ -486,8 +472,8 @@ const Navbar = () => {
                   title="Profile"
                 >
                   <img
-                    src={avatarFallback()}
-                    alt="Avatar"
+                    src={avatarFallback}
+                    alt="User Avatar"
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -495,9 +481,8 @@ const Navbar = () => {
             ) : (
               <div className="flex items-center gap-3">
                 <button
-                  type="submit"
-                  aria-label="Submit search"
-                  className="focus:outline-none flex items-center justify-center w-6 h-6"
+                  onClick={() => navigate("/login")}
+                  className="px-3 py-1.5 sm:px-3.5 sm:py-2 md:px-4 md:py-2 bg-primary-500 rounded-lg text-white text-xs sm:text-sm font-medium hover:bg-primary-600 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
                 >
                   Login
                 </button>
@@ -508,6 +493,7 @@ const Navbar = () => {
             <button
               onClick={openDrawer}
               title="Menu"
+              aria-label="Open navigation menu"
               className={`lg:hidden w-9 h-9 rounded-full border flex items-center justify-center ${
                 isListingsTheme
                   ? "text-gray-600 border-gray-300 bg-white"
@@ -535,7 +521,11 @@ const Navbar = () => {
           >
             {/* Close Button */}
             <div className="flex justify-end text-2xl sm:text-3xl mb-4 sm:mb-6">
-              <button onClick={closeDrawer}>
+              <button 
+                onClick={closeDrawer}
+                aria-label="Close navigation menu"
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
                 <FaXmark />
               </button>
             </div>
@@ -567,7 +557,9 @@ const Navbar = () => {
                 <button
                   type="button"
                   onClick={() => setOpenMobileAuctions((prev) => !prev)}
-                  className="w-full flex items-center justify-between"
+                  aria-expanded={openMobileAuctions}
+                  aria-haspopup="true"
+                  className="w-full flex items-center justify-between py-2"
                 >
                   <span>Live Auctions</span>
                   <FaChevronDown
@@ -575,6 +567,7 @@ const Navbar = () => {
                     className={`transition-transform duration-200 ${
                       openMobileAuctions ? "rotate-180" : ""
                     }`}
+                    aria-hidden="true"
                   />
                 </button>
                 {openMobileAuctions && (
