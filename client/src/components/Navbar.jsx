@@ -495,8 +495,9 @@ const Navbar = () => {
             ) : (
               <div className="flex items-center gap-3">
                 <button
-                  onClick={() => navigate("/login")}
-                  className="px-3 py-1.5 sm:px-3.5 sm:py-2 md:px-4 md:py-2 bg-primary-500 rounded-lg text-xs sm:text-sm lg:text-base text-white hover:opacity-90 transition-colors shadow-sm"
+                  type="submit"
+                  aria-label="Submit search"
+                  className="focus:outline-none flex items-center justify-center w-6 h-6"
                 >
                   Login
                 </button>
