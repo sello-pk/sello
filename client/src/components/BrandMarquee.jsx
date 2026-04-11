@@ -37,26 +37,30 @@ function injectMarqueeKeyframes() {
 function BrandTile({ brand, onSelect }) {
   const brandName = brand.name || brand.brandName || "Brand";
   const [imgFailed, setImgFailed] = useState(false);
-  const originalImage = fixImageUrl(brand.image || brand.img);
-  const optimizedImage = optimizeCloudinaryUrl(originalImage, {
-    width: 64,
-    height: 64,
-    crop: 'fill',
-    quality: 'auto',
-    format: 'auto'
-  });
+  
+  const optimizedImage = useMemo(() => {
+    const originalImage = fixImageUrl(brand.image || brand.img);
+    return optimizeCloudinaryUrl(originalImage, {
+      width: 64,
+      height: 64,
+      crop: 'fill',
+      quality: 'auto',
+      format: 'auto'
+    });
+  }, [brand.image, brand.img]);
 
   return (
     <button
       type="button"
       onClick={() => onSelect(brandName)}
-      className="bg-white rounded-2xl p-2.5 sm:p-3 flex flex-col items-center justify-center w-[5.25rem] h-28 sm:w-24 sm:h-28 md:w-28 md:h-32 shadow-sm shrink-0 cursor-pointer border border-gray-100 hover:border-primary-300 hover:shadow-md transition-shadow text-left"
+      className="bg-white rounded-2xl p-2.5 sm:p-3 flex flex-col items-center justify-center w-[5.25rem] h-28 sm:w-24 sm:h-28 md:w-28 md:h-32 shadow-sm shrink-0 cursor-pointer border border-gray-100 hover:border-primary-300 hover:shadow-md transition-shadow text-left focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+      aria-label={`View ${brandName} cars`}
     >
       <div className="flex-1 w-full min-h-0 rounded-xl bg-gray-50 flex items-center justify-center mb-1 p-1.5 sm:p-2 overflow-hidden">
         {!imgFailed && optimizedImage ? (
           <img
             src={optimizedImage}
-            alt=""
+            alt={`${brandName} logo`}
             width={64}
             height={64}
             decoding="async"
@@ -68,13 +72,13 @@ function BrandTile({ brand, onSelect }) {
         ) : (
           <span
             className="text-xl font-semibold text-gray-400 select-none"
-            aria-hidden
+            aria-label={`${brandName} - no logo available`}
           >
             {brandName.charAt(0).toUpperCase()}
           </span>
         )}
       </div>
-      <p className="text-[11px] sm:text-xs md:text-sm font-semibold text-gray-700 text-center w-full truncate mt-0.5">
+      <p className="text-[11px] sm:text-xs md:text-sm font-semibold text-gray-700 text-center w-full truncate mt-0.5" aria-hidden="true">
         {brandName}
       </p>
     </button>
@@ -118,6 +122,16 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
 
   useEffect(() => {
     injectMarqueeKeyframes();
+  }, []);
+
+  // Cleanup animation styles on unmount
+  useEffect(() => {
+    return () => {
+      const style = document.getElementById(KF_ID);
+      if (style && document.head.contains(style)) {
+        document.head.removeChild(style);
+      }
+    };
   }, []);
 
   useLayoutEffect(() => {
@@ -249,8 +263,11 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
           className={`min-w-7xl flex-1 overflow-hidden px-1 md:px-2 ${!reducedMotion ? "" : "overflow-x-auto scrollbar-hide"}`}
           onMouseEnter={() => setHoverPause(true)}
           onMouseLeave={() => setHoverPause(false)}
-          onFocusCapture={() => setFocusPause(true)}
-          onBlurCapture={() => setFocusPause(false)}
+          onFocus={() => setFocusPause(true)}
+          onBlur={() => setFocusPause(false)}
+          role="region"
+          aria-label="Brands carousel"
+          tabIndex={0}
         >
           <div
             ref={trackRef}
