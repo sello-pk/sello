@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useGetBlogsQuery } from "../../../../redux/services/api";
 
@@ -22,30 +22,32 @@ const BlogPosts = ({ search = "", category = "", sortBy = "newest" }) => {
   const pagination = data?.pagination || {};
 
   // Client-side sorting (since backend doesn't support sort parameter yet)
-  blogs = [...blogs].sort((a, b) => {
-    switch (sortBy) {
-      case "newest":
-        return (
-          new Date(b.publishedAt || b.createdAt) -
-          new Date(a.publishedAt || a.createdAt)
-        );
-      case "oldest":
-        return (
-          new Date(a.publishedAt || a.createdAt) -
-          new Date(b.publishedAt || b.createdAt)
-        );
-      case "mostViewed":
-        return (b.views || 0) - (a.views || 0);
-      case "titleAsc":
-        return (a.title || "").localeCompare(b.title || "");
-      case "titleDesc":
-        return (b.title || "").localeCompare(a.title || "");
-      default:
-        return 0;
-    }
-  });
+  const sortedBlogs = useMemo(() => {
+    return [...blogs].sort((a, b) => {
+      switch (sortBy) {
+        case "newest":
+          return (
+            new Date(b.publishedAt || b.createdAt) -
+            new Date(a.publishedAt || a.createdAt)
+          );
+        case "oldest":
+          return (
+            new Date(a.publishedAt || a.createdAt) -
+            new Date(b.publishedAt || b.createdAt)
+          );
+        case "mostViewed":
+          return (b.views || 0) - (a.views || 0);
+        case "titleAsc":
+          return (a.title || "").localeCompare(b.title || "");
+        case "titleDesc":
+          return (b.title || "").localeCompare(b.title || "");
+        default:
+          return 0;
+      }
+    });
+  }, [blogs, sortBy]);
 
-  const formatDate = (dateString) => {
+  const formatDate = useCallback((dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -53,7 +55,7 @@ const BlogPosts = ({ search = "", category = "", sortBy = "newest" }) => {
       month: "short",
       day: "numeric",
     });
-  };
+  }, []);
 
   // Show skeleton while loading
   if (isLoading) {
@@ -102,86 +104,94 @@ const BlogPosts = ({ search = "", category = "", sortBy = "newest" }) => {
       </div>
 
       {/* All Posts Grid */}
-      {blogs.length === 0 ? (
+      {sortedBlogs.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-gray-500 text-lg">No blog posts available yet.</p>
         </div>
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {blogs.map((blog) => (
-              <Link
+            {sortedBlogs.map((blog) => (
+              <article
                 key={blog._id}
-                to={`/blog/${blog.slug || blog._id}`}
                 className="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col border border-gray-100"
               >
+                <Link
+                  to={`/blog/${blog.slug || blog._id}`}
+                  className="block h-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-xl p-6"
+                  aria-label={`Read blog post: ${blog.title}`}
+                >
                 {/* Blog Image - fit inside box like categories (no crop) */}
-                <div className="relative w-full h-48 md:h-56 overflow-hidden rounded-t-xl bg-gray-100 group flex items-center justify-center">
-                  <img
-                    src={
-                      blog.featuredImage ||
-                      "https://via.placeholder.com/600x400?text=No+Image"
-                    }
-                    alt={blog.title}
-                    className="max-h-full max-w-full w-auto h-auto object-contain object-center transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = "https://via.placeholder.com/600x400?text=Blog";
-                    }}
-                  />
-                </div>
+                  <div className="relative w-full h-48 md:h-56 overflow-hidden rounded-t-xl bg-gray-100 group flex items-center justify-center">
+                    <img
+                      src={
+                        blog.featuredImage ||
+                        "https://via.placeholder.com/600x400?text=No+Image"
+                      }
+                      alt={`${blog.title} - featured image`}
+                      className="max-h-full max-w-full w-auto h-auto object-contain object-center transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                      decoding="async"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "https://via.placeholder.com/600x400?text=Blog";
+                      }}
+                    />
+                  </div>
 
                 {/* Blog Content */}
-                <div className="p-6 flex-1 flex flex-col min-w-0">
+                  <div className="p-6 flex-1 flex flex-col min-w-0">
                   {/* Category - inline, won't clip */}
                   {blog.category && (
-                    <span className="inline-block w-fit px-3 py-1 text-xs font-semibold text-primary-600 mb-4 uppercase tracking-wide bg-primary-50 rounded-full flex-shrink-0">
+                    <span className="inline-block w-fit px-3 py-1 text-xs font-semibold text-primary-600 mb-4 uppercase tracking-wide bg-primary-50 rounded-full flex-shrink-0" aria-hidden="true">
                       {blog.category.name}
                     </span>
                   )}
 
                   {/* Title */}
-                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 line-clamp-2 group-hover:text-primary-600 transition-colors leading-tight">
-                    {blog.title}
-                  </h3>
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 line-clamp-2 group-hover:text-primary-600 transition-colors leading-tight">
+                      {blog.title}
+                    </h3>
 
                   {/* Description */}
-                  <p className="text-gray-600 text-sm md:text-base leading-relaxed mb-6 line-clamp-4 flex-1">
-                    {blog.excerpt ||
-                      blog.content?.replace(/<[^>]*>/g, "").substring(0, 150) +
+                    <p className="text-gray-600 text-sm md:text-base leading-relaxed mb-6 line-clamp-4 flex-1" aria-hidden="true">
+                      {blog.excerpt ||
+                        blog.content?.replace(/<[^>]*>/g, "").substring(0, 150) +
                         "..."}
-                  </p>
+                    </p>
 
                   {/* Author and Date Info */}
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <div className="flex items-center gap-3">
-                      {blog.author?.avatar ? (
-                        <img
-                          src={blog.author.avatar}
-                          alt={blog.author.name || "Author"}
-                          className="w-8 h-8 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white text-xs font-semibold">
-                          {(blog.author?.name || "A")[0].toUpperCase()}
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                      <div className="flex items-center gap-3">
+                        {blog.author?.avatar ? (
+                          <img
+                            src={blog.author.avatar}
+                            alt={`${blog.author?.name || 'Author'} avatar`}
+                            className="w-8 h-8 rounded-full object-cover"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white text-xs font-semibold" aria-hidden="true">
+                            {(blog.author?.name || "A")[0].toUpperCase()}
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-sm font-medium text-gray-900" aria-hidden="true">
+                            {blog.author?.name || "Admin"}
+                          </p>
+                          <p className="text-xs text-gray-500" aria-hidden="true">
+                            {formatDate(blog.publishedAt || blog.createdAt)}
+                          </p>
                         </div>
-                      )}
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">
-                          {blog.author?.name || "Admin"}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {formatDate(blog.publishedAt || blog.createdAt)}
-                        </p>
                       </div>
+                      <span className="text-xs text-gray-500" aria-hidden="true">
+                        {blog.readTime || 5} min
+                      </span>
                     </div>
-                    <span className="text-xs text-gray-500">
-                      {blog.readTime || 5} min
-                    </span>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </article>
             ))}
           </div>
 
@@ -191,7 +201,8 @@ const BlogPosts = ({ search = "", category = "", sortBy = "newest" }) => {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-6 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 hover:border-primary-500 transition-colors font-medium"
+                className="px-6 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 hover:border-primary-500 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                aria-label="Go to previous page"
               >
                 Previous
               </button>
@@ -208,11 +219,13 @@ const BlogPosts = ({ search = "", category = "", sortBy = "newest" }) => {
                       <button
                         key={pageNum}
                         onClick={() => setPage(pageNum)}
-                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                        className={`px-4 py-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${
                           page === pageNum
                             ? "bg-primary-500 text-white"
                             : "border border-gray-300 hover:bg-gray-50 hover:border-primary-500"
                         }`}
+                        aria-label={`Go to page ${pageNum}`}
+                        aria-current={page === pageNum ? "page" : undefined}
                       >
                         {pageNum}
                       </button>
@@ -235,7 +248,8 @@ const BlogPosts = ({ search = "", category = "", sortBy = "newest" }) => {
                   setPage((p) => Math.min(pagination.pages, p + 1))
                 }
                 disabled={page >= pagination.pages}
-                className="px-6 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 hover:border-primary-500 transition-colors font-medium"
+                className="px-6 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 hover:border-primary-500 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                aria-label="Go to next page"
               >
                 Next
               </button>

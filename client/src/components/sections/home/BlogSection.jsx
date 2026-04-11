@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useGetBlogsQuery } from "../../../redux/services/api";
 import { MdArrowRightAlt } from "react-icons/md";
@@ -29,7 +29,7 @@ const BlogSection = () => {
   const isLoading =
     featuredLoading || (featuredBlogs.length === 0 && allLoading);
 
-  const formatDate = (dateString) => {
+  const formatDate = useCallback((dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -37,7 +37,7 @@ const BlogSection = () => {
       month: "short",
       day: "numeric",
     });
-  };
+  }, []);
 
   return (
     <div className="py-12  max-w-8xl mx-auto">
@@ -50,10 +50,11 @@ const BlogSection = () => {
           {blogs.length > 0 && (
             <Link
               to="/blog/all"
-              className="text-primary-500 font-medium flex items-center gap-1 hover:gap-2 transition-all"
+              className="text-primary-500 font-medium flex items-center gap-1 hover:gap-2 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded px-2 py-1"
+              aria-label="View all blog posts"
             >
               View All
-              <MdArrowRightAlt className="text-xl" />
+              <MdArrowRightAlt className="text-xl" aria-hidden="true" />
             </Link>
           )}
         </div>
@@ -80,13 +81,14 @@ const BlogSection = () => {
           </div>
         ) : (
           <>
-            <p className="text-sm text-gray-500 mb-3 flex items-center gap-2">
+            <div className="text-sm text-gray-500 mb-3 flex items-center gap-2" role="status" aria-live="polite">
               <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1">
                 <svg
                   className="w-4 h-4 text-gray-500"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"
@@ -97,26 +99,35 @@ const BlogSection = () => {
                 </svg>
                 Swipe or scroll for more
               </span>
-            </p>
+            </div>
             <div
               id="blog"
               className="flex gap-6 md:gap-8 overflow-x-auto scrollbar-hide pb-8 scroll-smooth"
               style={{ scrollbarWidth: "thin" }}
+              role="region"
+              aria-label="Latest blog posts carousel"
+              tabIndex={0}
             >
               {blogs.map((blog) => (
-                <Link
+                <article
                   key={blog._id}
-                  to={`/blog/${blog.slug || blog._id}`}
                   className="md:w-[390px] w-full min-w-[85vw] md:min-w-[390px] bg-white rounded-lg px-6 py-6 flex-shrink-0 overflow-hidden shadow-md hover:shadow-lg transition-shadow"
                 >
-                  <div className="w-full h-70  rounded-lg mb-5 overflow-hidden bg-red-100 flex-shrink-0 flex items-center justify-center">
+                  <Link
+                    to={`/blog/${blog.slug || blog._id}`}
+                    className="block h-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-lg"
+                    aria-label={`Read blog post: ${blog.title}`}
+                  >
+                  <div className="w-full h-70 rounded-lg mb-5 overflow-hidden bg-gray-100 flex-shrink-0 flex items-center justify-center">
                     <img
                       src={
                         blog.featuredImage ||
                         "https://via.placeholder.com/600x400?text=No+Image"
                       }
-                      alt={blog.title}
+                      alt={`${blog.title} - featured image`}
                       className="max-h-full max-w-full w-full h-full object-cover object-center"
+                      loading="lazy"
+                      decoding="async"
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src =
@@ -127,41 +138,44 @@ const BlogSection = () => {
                   <div className="mb-3 flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2 min-w-0">
                       <div className="relative w-8 h-8 flex-shrink-0 rounded-full overflow-hidden">
-                        <div className="absolute inset-0 flex items-center justify-center rounded-full bg-primary-500 text-white text-xs font-semibold">
+                        <div className="absolute inset-0 flex items-center justify-center rounded-full bg-primary-500 text-white text-xs font-semibold" aria-hidden="true">
                           {(blog.author?.name || "A")[0].toUpperCase()}
                         </div>
                         {blog.author?.avatar && (
                           <img
                             src={blog.author.avatar}
-                            alt=""
+                            alt={`${blog.author?.name || 'Author'} avatar`}
                             className="absolute inset-0 w-full h-full object-cover rounded-full"
+                            loading="lazy"
+                            decoding="async"
                             onError={(e) => {
                               e.target.style.display = "none";
                             }}
                           />
                         )}
                       </div>
-                      <h5 className="text-sm text-gray-500 font-medium truncate">
+                      <h5 className="text-sm text-gray-500 font-medium truncate" aria-hidden="true">
                         By {blog.author?.name || "Admin"}
                       </h5>
                     </div>
-                    <p className="text-xs text-gray-400 flex-shrink-0">
+                    <p className="text-xs text-gray-400 flex-shrink-0" aria-hidden="true">
                       {formatDate(blog.publishedAt || blog.createdAt)}
                     </p>
                   </div>
                   <h4 className="text-lg font-bold text-gray-900 leading-snug line-clamp-2">
                     {blog.title}
                   </h4>
-                  <p className="mt-3 text-gray-600 line-clamp-2">
+                  <p className="mt-3 text-gray-600 line-clamp-2" aria-hidden="true">
                     {blog.excerpt ||
                       blog.content?.replace(/<[^>]*>/g, "").substring(0, 150) +
                         "..."}
                   </p>
-                  <button className="mt-4 text-primary-500 font-medium flex items-center gap-1 hover:gap-2 transition-all">
+                  <div className="mt-4 text-primary-500 font-medium flex items-center gap-1 hover:gap-2 transition-all">
                     Read more
-                    <MdArrowRightAlt className="text-xl" />
-                  </button>
-                </Link>
+                    <MdArrowRightAlt className="text-xl" aria-hidden="true" />
+                  </div>
+                  </Link>
+                </article>
               ))}
             </div>
           </>
