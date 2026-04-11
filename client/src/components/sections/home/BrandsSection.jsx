@@ -104,9 +104,9 @@ const BrandsSection = () => {
                   disabled={!meta?.slug}
                 >
                   <img
-                    className={`h-20 w-20 md:h-24 md:w-24 ${isLastItem && isOddNumberOfItems ? "md:w-32 w-28 md:h-28" : ""}`}
+                    className={`h-20 w-auto object-contain ${isLastItem && isOddNumberOfItems ? "md:h-28 md:w-32" : "md:h-24 md:w-24"}`}
                     src={brand.image}
-                    alt="brand"
+                    alt={`${brand.title} brand logo`}
                     loading="lazy"
                   />
                   <span className="pb-1 text-lg md:text-xl font-semibold text-gray-800">
