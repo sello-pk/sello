@@ -210,7 +210,7 @@ const HelpCenter = () => {
                 <span className="text-2xl font-bold text-primary-500 hidden md:block">
                   Help Center
                 </span>
-              </div>
+              </button>
 
             {/* Search Bar */}
             <div className="flex-1 max-w-2xl mx-4 md:mx-8">
@@ -248,7 +248,7 @@ const HelpCenter = () => {
               <span className="hidden md:block text-gray-700 font-medium">
                 {currentUser?.name || "Guest"}
               </span>
-            </div>
+            </button>
           </div>
         </div>
       </header>
@@ -276,7 +276,7 @@ const HelpCenter = () => {
                   <h3 className="text-center font-semibold text-gray-900 group-hover:text-primary-500 transition-colors">
                     {topic.title}
                   </h3>
-                </div>
+                </button>
               );
             })}
           </div>
