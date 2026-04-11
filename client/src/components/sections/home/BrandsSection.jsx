@@ -104,7 +104,7 @@ const BrandsSection = () => {
                   disabled={!meta?.slug}
                 >
                   <img
-                    className={`h-20 w-20 md:h-24 md:w-24 ${isLastItem && isOddNumberOfItems ? "md:w-32 w-28" : ""}`}
+                    className={`h-20 w-20 md:h-24 md:w-24 ${isLastItem && isOddNumberOfItems ? "md:w-32 w-28 md:h-28" : ""}`}
                     src={brand.image}
                     alt="brand"
                     loading="lazy"
