@@ -1,20 +1,11 @@
 import searchIcon from "./images/searchIcon.png";
-import illustration from "./images/illustration.png";
-import car1 from "./images/car1.png";
 import userIcon from "./images/userIcon.png";
 import google from "./images/google.webp";
 import verified from "./images/verified.png";
 import logo from "./images/logo.svg";
 import headerLogo from "./images/headerLogo.svg";
 import bell from "./images/bell.svg";
-import car from "./images/car.jpg";
-import carPlaceholder from "./images/car.jpg";
-import car2 from "./images/car2.jpg";
-import car3 from "./images/car3.jpg";
-import car4 from "./images/car4.jpg";
-import car5 from "./images/car5.jpg";
-import car6 from "./images/car6.jpg";
-import car7 from "./images/car7.jpg";
+
 import br1 from "./images/br1.webp";
 import br2 from "./images/br2.webp";
 import br3 from "./images/br3.webp";
@@ -23,7 +14,6 @@ import br5 from "./images/br5.webp";
 import br6 from "./images/br6.webp";
 import br7 from "./images/br7.webp";
 
-import satisficationSectionImage from "./images/satisficationSectionImage.png";
 import why1 from "./images/why1.svg";
 import why2 from "./images/why2.svg";
 import why3 from "./images/why3.svg";
@@ -31,17 +21,6 @@ import why4 from "./images/why4.svg";
 import transmissionIcon from "./images/transmissionIcon.svg";
 import fuelTypeIcon from "./images/fuelTypeIcon.svg";
 import milesIcon from "./images/milesIcon.svg";
-import audiA4 from "./images/audiA4.png";
-import audiA5 from "./images/audiA5.png";
-import mercedesBenz from "./images/mercedesBenz.jpg";
-import ford from "./images/ford.jpg";
-import aliTufan from "./images/aliTufan.png";
-import blogImg from "./images/blogImg.jpg";
-import blogImg2 from "./images/blogImg2.jpg";
-import blogImg3 from "./images/blogImg3.jpg";
-import blogImg4 from "./images/blogImg4.jpg";
-import blogImg5 from "./images/blogImg5.jpg";
-import blogImg6 from "./images/blogImg6.jpg";
 import electricSvg from "./images/electricSvg.svg";
 import electricSvg2 from "./images/electricSvg2.svg";
 import android from "./images/android.svg";
@@ -52,7 +31,6 @@ import instagram from "./images/instagram.svg";
 import linkedin from "./images/linkedin.svg";
 import avatarIcon from "./images/avatarIcon.png";
 import blackLogo from "./images/blackLogo.svg";
-import whiteCar from "./images/whiteCar.png";
 import cabriolet from "./images/carDetails/types/cabriolet.svg";
 import convertible from "./images/carDetails/types/convertible.svg";
 import coupe from "./images/carDetails/types/coupe.svg";
@@ -69,14 +47,6 @@ import station from "./images/carDetails/types/station.svg";
 import van from "./images/carDetails/types/van.svg";
 import targa from "./images/carDetails/types/targa.svg";
 import truck from "./images/carDetails/types/truck.svg";
-import boxCar from "./images/boxCar.png";
-import boxCar2 from "./images/boxCar2.png";
-import boxCar3 from "./images/boxCar3.png";
-import team1 from "./images/team1.png";
-import team2 from "./images/team2.png";
-import team3 from "./images/team3.png";
-import team4 from "./images/team4.png";
-import team5 from "./images/team5.png";
 import mutlipleBrandsLogo from "./images/mutlipleBrandsLogo.gif";
 import callIcon from "./images/carDetails/callIcon.svg";
 import chatIcon from "./images/carDetails/chatIcon.svg";
@@ -92,7 +62,6 @@ import cc from "./images/carDetails/specs/cc.svg";
 import location from "./images/carDetails/specs/location.svg";
 import wheel from "./images/carDetails/specs/wheel.svg";
 import loan from "./images/loan.png";
-import app from "./images/app.png";
 import findOutMore from "./images/findOutMore.jpg";
 import userHeroSectionImg from "./images/userHeroSectionImg.png";
 import searchSvg from "./images/searchSvg.svg";
@@ -102,7 +71,6 @@ import mailbox from "./images/mailbox.svg";
 import electricSvg3 from "./images/electricSvg3.png";
 
 // Partener Logos
-import servicoLogo from "./images/servico.png";
 import amingarageLogo from "./images/amingarage.png";
 import wbDigitalLogo from "./images/wbDigital.svg";
 import mianMotors from "./images/mianMotors.png";
@@ -139,27 +107,19 @@ import trustLegal from "./images/trustLegal.png";
 import auctionSchedule from "./images/auctionSchedule.png";
 
 export const images = {
-  car1,
   searchIcon,
-  illustration,
   userIcon,
   google,
   verified,
   headerLogo,
   logo,
   bell,
-  car,
-  carPlaceholder,
-  car5,
-  car6,
-  car7,
+
   transmissionIcon,
   fuelTypeIcon,
   milesIcon,
-  aliTufan,
   avatarIcon,
   blackLogo,
-  whiteCar,
   mutlipleBrandsLogo,
   fuelIcon,
   hybrid,
@@ -177,7 +137,6 @@ export const images = {
   // Car Types
   sedan,
   loan,
-  app,
   findOutMore,
   userHeroSectionImg,
   searchSvg,
@@ -187,7 +146,6 @@ export const images = {
   selloVideo,
   electricSvg3,
   // Partener Logos
-  servicoLogo,
   amingarageLogo,
   wbDigitalLogo,
   mianMotors,
@@ -609,14 +567,6 @@ export const footerData = [
   },
 ];
 
-// Hero Slides
-export const heroSlides = [
-  { image: car },
-  { image: car2 },
-  { image: car3 },
-  { image: car4 },
-];
-
 // Main Brands Icons
 export const brandsCategory = [
   {
@@ -651,7 +601,7 @@ export const brandsCategory = [
 
 // Clients or Satisfication
 export const whyUs = {
-  image: satisficationSectionImage,
+  image: "satisficationSectionImage",
   title: "Get A Fair Price For Your Car Sell To Us Today",
   description:
     "We are committed to providing our customers with exceptional service, competitive pricing, and wide range of.",
@@ -705,55 +655,6 @@ export const whyUs = {
     },
   ],
 };
-
-// Dummy Data for Popular Makes
-export const popularMakes = [
-  {
-    image: audiA4,
-    brand: "Audi",
-    model: "A4",
-    year: 2022,
-    description: "2.0 D5 PowerPlus Momemtum 5dr AWD...",
-    moved: 150,
-    fuelType: "Diesel",
-    transmission: "CVT",
-    price: 120000,
-  },
-  {
-    image: audiA5,
-    brand: "Audi",
-    model: "A5",
-    year: 2023,
-    description: "2.0 D5 PowerPlus Momemtum 5dr sedan...",
-    moved: 550,
-    fuelType: "Petrol",
-    transmission: "Automatic",
-    price: 450000,
-  },
-  {
-    image: mercedesBenz,
-    brand: "Mercedes-Benz",
-    model: "C-Class",
-    year: 2023,
-    description: "C 300 AMG Line with cutting-edge tech and refined interior.",
-    moved: 95,
-    fuelType: "Petrol",
-    transmission: "Automatic",
-    price: 145000,
-  },
-  {
-    image: ford,
-    brand: "Ford",
-    model: "Mustang",
-    year: 2021,
-    description:
-      "5.0L V8 GT Fastback — classic muscle with modern performance.",
-    moved: 200,
-    fuelType: "Petrol",
-    transmission: "Manual",
-    price: 110000,
-  },
-];
 
 // ShopBoxCar Dummy Data
 export const carBrandCategories = [
@@ -861,52 +762,6 @@ export const carBrandsByCategory = {
     "Audi Cars",
   ],
 };
-
-// Blogs Posts Dummy Data
-export const blogPosts = [
-  {
-    flag: "Sound",
-    image: blogImg,
-    author: "Admin",
-    title: "2024 BMW alpina xb7 with exclusive details extraordinary",
-    createdAt: "June 20, 2022",
-  },
-  {
-    flag: "Sound",
-    image: blogImg2,
-    author: "Admin",
-    title: "2022 Honda civic si review, pricing, and specs",
-    createdAt: "June 18, 2022",
-  },
-  {
-    flag: "Sound",
-    image: blogImg3,
-    author: "Admin",
-    title: "2024 Kia telluride suv with exclusive details extraordinary",
-    createdAt: "June 15, 2022",
-  },
-  {
-    flag: "Sound",
-    image: blogImg4,
-    author: "Admin",
-    title: "2023 Toyota tundra with exclusive details extraordinary",
-    createdAt: "June 12, 2022",
-  },
-  {
-    flag: "Sound",
-    image: blogImg5,
-    author: "Admin",
-    title: "2022 Ford f-150 review, pricing, and specs",
-    createdAt: "June 10, 2022",
-  },
-  {
-    flag: "Sound",
-    image: blogImg6,
-    author: "Admin",
-    title: "2024 Chevrolet silverado with exclusive details extraordinary",
-    createdAt: "June 8, 2022",
-  },
-];
 
 // Go them buy or sell
 export const goThemBuyOrSell = [
@@ -1166,48 +1021,6 @@ export const dummyCars = [
   },
 ];
 
-// BoxCars , Review images
-export const boxCarsReviewImages = [
-  {
-    image: boxCar,
-  },
-  {
-    image: boxCar2,
-  },
-  {
-    image: boxCar3,
-  },
-];
-
-// Our Teams Data
-export const ourTeams = [
-  {
-    name: "Courtney Henry",
-    role: "Development Manager",
-    image: team1,
-  },
-  {
-    name: "Jerome Bell",
-    role: "Software Developer",
-    image: team2,
-  },
-  {
-    name: "John Doe",
-    role: "Team Lead",
-    image: team3,
-  },
-  {
-    name: "Arlene McCoy",
-    role: "Development Manager",
-    image: team4,
-  },
-  {
-    name: "Jenny Wilson",
-    role: "UI/UX Designer",
-    image: team5,
-  },
-];
-
 // Three button like => share , chat , call
 export const threeBtns = [
   {
@@ -1224,31 +1037,6 @@ export const threeBtns = [
     id: 3,
     name: "share",
     image: shareIcon,
-  },
-];
-
-// Reviews
-export const reviews = [
-  {
-    name: "Ali Tufan",
-    role: "Designer",
-    review:
-      " I'd suggest Macklin Motors Nissan Glasgow South to a friend because I had great service from my salesman Patrick and all of the team.",
-    image: team1,
-  },
-  {
-    name: "Jhon Doe",
-    role: "Developer",
-    review:
-      "I was very happy with the service I received from the team at Macklin Motors Nissan Glasgow South. My salesman James was very helpful and made the whole process very easy.",
-    image: team3,
-  },
-  {
-    name: "Jane Doe",
-    role: "UX Designer",
-    review:
-      " I was very impressed with the service I received from the team at Macklin Motors Nissan Glasgow South. My salesman was very helpful and made the whole process very easy.",
-    image: team4,
   },
 ];
 
