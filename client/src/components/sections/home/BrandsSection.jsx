@@ -1,7 +1,9 @@
-import React, { memo, useMemo } from "react";
-import BrandMarquee from "../../BrandMarquee";
+import React, { memo, useMemo, Suspense } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { brandsCategory } from "../../../assets/assets";
+
+// Lazy load BrandMarquee as it's not critical for initial paint
+const BrandMarquee = React.lazy(() => import("../../BrandMarquee"));
 
 const BrandsSection = () => {
   const navigate = useNavigate();
@@ -81,7 +83,9 @@ const BrandsSection = () => {
 
         {/* Marquee */}
         <div className="min-h-[100px]">
-          <BrandMarquee />
+          <Suspense fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}>
+            <BrandMarquee />
+          </Suspense>
         </div>
 
         {/* Grid */}

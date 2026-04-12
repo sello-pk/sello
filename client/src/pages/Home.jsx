@@ -1,18 +1,20 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense } from "react";
 import { useLocation } from "react-router-dom";
 import Hero from "../components/sections/home/Hero";
 import HowAuctionsWork from "../components/auction/HowAuctionsWork";
 import BrandsSection from "../components/sections/home/BrandsSection";
 import FeaturedCarsCarousel from "../components/sections/home/FeaturedCarsCarousel";
-import CustomerReview from "../components/sections/home/CustomerReview";
-import BlogSection from "../components/sections/home/BlogSection";
 import NewsLatter from "../components/utils/NewsLatter";
 import BuySellCards from "../components/utils/BuySellCards";
 import BannerCarousal from "../components/utils/BannerCarousal";
 import SEO from "../components/common/SEO";
 import StructuredData from "../components/common/StructuredData";
-import Video from "../components/sections/home/Video";
 import RecentlyViewedCars from "../components/sections/home/RecentlyViewedCars";
+
+// Lazy load non-critical components
+const CustomerReview = React.lazy(() => import("../components/sections/home/CustomerReview"));
+const BlogSection = React.lazy(() => import("../components/sections/home/BlogSection"));
+const Video = React.lazy(() => import("../components/sections/home/Video"));
 
 const Home = () => {
   const location = useLocation();
@@ -36,12 +38,18 @@ const Home = () => {
       <div className="">
         <Hero />
         <BrandsSection />
-        <Video />
+        <Suspense fallback={<div style={{height: "400px"}} className="bg-gray-100 animate-pulse rounded-lg" />}>
+          <Video />
+        </Suspense>
         <BannerCarousal />
         <FeaturedCarsCarousel />
         <HowAuctionsWork />
-        <CustomerReview key="customer-review" />
-        <BlogSection />
+        <Suspense fallback={<div style={{height: "400px"}} className="bg-gray-100 animate-pulse rounded-lg" />}>
+          <CustomerReview key="customer-review" />
+        </Suspense>
+        <Suspense fallback={<div style={{height: "500px"}} className="bg-gray-100 animate-pulse rounded-lg" />}>
+          <BlogSection />
+        </Suspense>
         <BuySellCards />
         <RecentlyViewedCars />
         <NewsLatter />
