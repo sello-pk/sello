@@ -204,8 +204,15 @@ const CarCard = ({
               src={displayImage}
               alt={displayTitle}
               className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
-              width="100%"
-              height="100%"
+              width="400"
+              height="267"
+              cloudinaryOptions={{
+                width: 400,
+                height: 267,
+                quality: 85,
+                crop: 'fill',
+                format: 'auto'
+              }}
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center bg-[#e5e7eb] text-[#6b7280] text-sm">
@@ -338,8 +345,15 @@ const CarCard = ({
             src={displayImage}
             alt={displayTitle}
             className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
-            width="100%"
-            height="100%"
+            width="400"
+            height="267"
+            cloudinaryOptions={{
+              width: 400,
+              height: 267,
+              quality: 85,
+              crop: 'fill',
+              format: 'auto'
+            }}
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center bg-[#e5e7eb] text-[#6b7280] text-sm">

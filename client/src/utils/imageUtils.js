@@ -53,10 +53,10 @@ export const optimizeCloudinaryUrl = (url, options = {}) => {
   }
 
   const {
-    width = 64,
-    height = 64,
+    width = 400,
+    height = 267,
     crop = 'fill',
-    quality = 'auto',
+    quality = 85,
     format = 'auto'
   } = options;
 
@@ -73,7 +73,8 @@ export const optimizeCloudinaryUrl = (url, options = {}) => {
     `q_${quality}`,
     `c_${crop}`,
     `w_${width}`,
-    `h_${height}`
+    `h_${height}`,
+    `e_sharpen` // Add sharpening filter for better clarity
   ];
 
   return `${baseUrl}${transformations.join(',')}/${publicIdWithFolder}`;
