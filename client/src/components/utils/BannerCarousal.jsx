@@ -66,6 +66,13 @@ const BannerCarousal = () => {
       title: "Trusted Sellers",
       linkUrl: "/cars",
     },
+    {
+      id: "slide9",
+      image: slides.banner9,
+      mobileImage: mdSlides.mbBanner9,
+      title: "Trusted Sellers",
+      linkUrl: "/cars",
+    },
   ];
 
   // Auto-play functionality with pause on hover
