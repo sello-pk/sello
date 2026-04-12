@@ -8,7 +8,7 @@ const Hero = () => {
         src={hero}
         alt="hero image"
         className="absolute inset-0 h-full w-full object-cover"
-        loading="eager"
+        loading="lazy"
         fetchpriority="high"
         decoding="async"
         width="1200"
