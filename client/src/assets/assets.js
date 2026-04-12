@@ -106,6 +106,12 @@ import vanCatBlog2 from "./categories/catBlogs/vanCatBlog2.webp";
 import trustLegal from "./images/trustLegal.png";
 import auctionSchedule from "./images/auctionSchedule.png";
 
+// Review images for CustomerReviews component - using existing avatar images
+import review1 from "./images/g1.png";
+import review2 from "./images/g2.png";
+import review3 from "./images/g3.png";
+import review4 from "./images/g4.png";
+
 export const images = {
   searchIcon,
   userIcon,
@@ -1068,6 +1074,34 @@ export const categoriesBlogsImages = {
   bikeCatBlog,
   bikeCatBlog2,
 };
+
+// Customer reviews data
+export const reviews = [
+  {
+    name: "Ahmed Hassan",
+    role: "Car Dealer",
+    review: "Sello.pk has revolutionized our car dealership business. The platform is user-friendly and connects us with serious buyers across Pakistan. Highly recommended!",
+    image: review1
+  },
+  {
+    name: "Sara Khan",
+    role: "Individual Seller",
+    review: "I sold my car within 3 days of listing on Sello.pk. The process was smooth and the support team was very helpful throughout the transaction.",
+    image: review2
+  },
+  {
+    name: "Muhammad Ali",
+    role: "Car Buyer",
+    review: "Found my dream car at a great price through Sello.pk. The verified listings and detailed information made the buying process secure and transparent.",
+    image: review3
+  },
+  {
+    name: "Fatima Sheikh",
+    role: "Regular Customer",
+    review: "As someone who buys and sells cars frequently, Sello.pk is my go-to platform. The AI car estimator feature is incredibly accurate and helpful.",
+    image: review4
+  }
+];
 
 // Individual blog image exports for direct import
 export {
