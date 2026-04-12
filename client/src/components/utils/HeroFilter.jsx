@@ -11,15 +11,8 @@ import { VscChevronDown } from "react-icons/vsc";
 const HeroFilter = () => {
   const navigate = useNavigate();
   const [vehicleType] = useState("Car");
-  const [loadData, setLoadData] = useState(false);
 
-  // Defer API calls to prevent blocking initial render
-  useEffect(() => {
-    const timer = setTimeout(() => setLoadData(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const { makes, models, cities } = useCarCategories(loadData ? vehicleType : null);
+  const { makes, models, cities } = useCarCategories(vehicleType);
 
   const [filters, setFilters] = useState({
     make: "",
@@ -33,15 +26,11 @@ const HeroFilter = () => {
 
   const { data: filteredCars, error: searchError } = useGetFilteredCarsQuery(
     queryParams,
-    {
-      skip: !queryParams,
-    },
+    { skip: !queryParams },
   );
 
-  // ✅ Prevent SSR / hydration issues
   const menuPortalTarget = typeof window !== "undefined" ? document.body : null;
 
-  // ✅ Memoized Dropdown Icon
   const DropdownIndicator = useCallback(
     (props) => (
       <components.DropdownIndicator {...props}>
@@ -51,7 +40,6 @@ const HeroFilter = () => {
     [],
   );
 
-  // ✅ Stable select styles (no re-creation)
   const searchableSelectStyles = useMemo(
     () => ({
       control: (base, state) => ({
@@ -63,18 +51,9 @@ const HeroFilter = () => {
         boxShadow: state.isFocused ? "0 0 0 2px rgba(6, 78, 59, 0.2)" : "none",
         backgroundColor: "#f9fafb",
       }),
-      valueContainer: (base) => ({
-        ...base,
-        padding: "0 14px",
-      }),
-      placeholder: (base) => ({
-        ...base,
-        color: "#6b7280",
-      }),
-      singleValue: (base) => ({
-        ...base,
-        color: "#374151",
-      }),
+      valueContainer: (base) => ({ ...base, padding: "0 14px" }),
+      placeholder: (base) => ({ ...base, color: "#6b7280" }),
+      singleValue: (base) => ({ ...base, color: "#374151" }),
       indicatorSeparator: () => ({ display: "none" }),
       menu: (base) => ({
         ...base,
@@ -83,31 +62,21 @@ const HeroFilter = () => {
         overflow: "hidden",
         zIndex: 60,
       }),
-      menuList: (base) => ({
-        ...base,
-        maxHeight: "260px",
-      }),
+      menuList: (base) => ({ ...base, maxHeight: "260px" }),
       option: (base, state) => ({
         ...base,
         backgroundColor: state.isFocused ? "#f3f4f6" : "#fff",
         color: "#374151",
       }),
-      menuPortal: (base) => ({
-        ...base,
-        zIndex: 9999,
-      }),
+      menuPortal: (base) => ({ ...base, zIndex: 9999 }),
     }),
     [],
   );
 
-  // ✅ Options
   const cityOptions = useMemo(() => {
     if (!Array.isArray(cities)) return [];
-    const uniqueCities = Array.from(
-      new Map(cities.map((city) => [city.name, city])).values(),
-    );
-    return uniqueCities.sort((a, b) =>
-      (a.name || "").localeCompare(b.name || ""),
+    return Array.from(new Map(cities.map((c) => [c.name, c])).values()).sort(
+      (a, b) => (a.name || "").localeCompare(b.name || ""),
     );
   }, [cities]);
 
@@ -212,7 +181,6 @@ const HeroFilter = () => {
 
   return (
     <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6 min-h-[240px]">
-      {/* ✅ Prevent CLS */}
       <div className="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-sm p-4 sm:p-5 md:p-6">
         <form onSubmit={handleSearch} className="flex flex-col gap-4 sm:gap-5">
           <h2 className="text-white font-medium text-lg text-center sm:text-left">
@@ -221,60 +189,48 @@ const HeroFilter = () => {
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-3">
-            {!loadData || !makes.length ? (
-              <div className="h-12 bg-gray-100 animate-pulse rounded-xl" />
-            ) : (
-              <Select
-                inputId="make-select"
-                value={
-                  makeSelectOptions.find((o) => o.value === filters.make) || null
-                }
-                onChange={(o) => handleChange("make", o?.value || "")}
-                options={makeSelectOptions}
-                placeholder="Make"
-                isClearable
-                styles={searchableSelectStyles}
-                components={{ DropdownIndicator }}
-                menuPortalTarget={menuPortalTarget}
-              />
-            )}
+            <Select
+              inputId="make-select"
+              value={
+                makeSelectOptions.find((o) => o.value === filters.make) || null
+              }
+              onChange={(o) => handleChange("make", o?.value || "")}
+              options={makeSelectOptions}
+              placeholder="Make"
+              isClearable
+              styles={searchableSelectStyles}
+              components={{ DropdownIndicator }}
+              menuPortalTarget={menuPortalTarget}
+            />
 
-            {!loadData || !models.length ? (
-              <div className="h-12 bg-gray-100 animate-pulse rounded-xl" />
-            ) : (
-              <Select
-                inputId="model-select"
-                value={
-                  modelSelectOptions.find((o) => o.value === filters.model) ||
-                  null
-                }
-                onChange={(o) => handleChange("model", o?.value || "")}
-                options={modelSelectOptions}
-                placeholder="Model"
-                isDisabled={!filters.make}
-                styles={searchableSelectStyles}
-                components={{ DropdownIndicator }}
-                menuPortalTarget={menuPortalTarget}
-              />
-            )}
+            <Select
+              inputId="model-select"
+              value={
+                modelSelectOptions.find((o) => o.value === filters.model) ||
+                null
+              }
+              onChange={(o) => handleChange("model", o?.value || "")}
+              options={modelSelectOptions}
+              placeholder="Model"
+              isDisabled={!filters.make}
+              styles={searchableSelectStyles}
+              components={{ DropdownIndicator }}
+              menuPortalTarget={menuPortalTarget}
+            />
 
-            {!loadData || !cities.length ? (
-              <div className="h-12 bg-gray-100 animate-pulse rounded-xl" />
-            ) : (
-              <Select
-                inputId="city-select"
-                value={
-                  citySelectOptions.find((o) => o.value === filters.city) || null
-                }
-                onChange={(o) => handleChange("city", o?.value || "")}
-                options={citySelectOptions}
-                placeholder="City"
-                isDisabled={!filters.model}
-                styles={searchableSelectStyles}
-                components={{ DropdownIndicator }}
-                menuPortalTarget={menuPortalTarget}
-              />
-            )}
+            <Select
+              inputId="city-select"
+              value={
+                citySelectOptions.find((o) => o.value === filters.city) || null
+              }
+              onChange={(o) => handleChange("city", o?.value || "")}
+              options={citySelectOptions}
+              placeholder="City"
+              isDisabled={!filters.model}
+              styles={searchableSelectStyles}
+              components={{ DropdownIndicator }}
+              menuPortalTarget={menuPortalTarget}
+            />
 
             <input
               type="number"
