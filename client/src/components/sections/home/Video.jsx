@@ -7,11 +7,18 @@ const Video = () => {
     <div className="max-w-8xl mx-auto py-8 md:py-16">
       <div className="px-3 sm:px-4 md:px-6 lg:px-8 mx-auto flex items-center flex-col sm:flex-col md:flex-col lg:flex-row gap-10 h-full">
         <div className="video h-full lg:w-1/2 md:w-full border-2 border-primary/70 rounded overflow-hidden">
-          <img
-            src={images.selloVideo}
-            alt="Sello"
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="none"
             className="w-full h-full rounded object-cover"
-          />
+          >
+            <source src="/assets/selloVideo.webm" type="video/webm" />
+            <source src="/assets/selloVideo.mp4" type="video/mp4" />
+            Fallback content for browsers that don't support video tag
+          </video>
         </div>
         <div className="content">
           <h2 className="md:text-4xl text-3xl font-semibold max-w-4xl pb-5">

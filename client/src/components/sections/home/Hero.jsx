@@ -13,6 +13,12 @@ const Hero = () => {
         decoding="async"
         width="1200"
         height="600"
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
+        srcSet={`
+          ${hero}?w=768 768w,
+          ${hero}?w=1024 1024w,
+          ${hero}?w=1200 1200w
+        `}
       />
       <div className="bg-slate-900/70 absolute inset-0" />
       <div className="relative z-10 flex min-h-[48vh] md:h-[48vh] flex-col items-center justify-center px-2 py-6 sm:py-8 md:py-10">

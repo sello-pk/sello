@@ -22,15 +22,15 @@ export default defineConfig({
     // Fast image optimization - minimal build time impact
     ViteImageOptimizer({
       webp: {
-        quality: 75, // Higher quality = faster processing
+        quality: 60, // Reduced quality for smaller files
         method: 1, // Fastest method
       },
       jpg: {
-        quality: 75,
+        quality: 60, // Reduced quality for better compression
         progressive: true,
       },
       png: {
-        quality: 75,
+        quality: 60, // Reduced quality for better compression
         compressionLevel: 3, // Even faster compression
       },
       svg: {
@@ -42,6 +42,8 @@ export default defineConfig({
       include: /\.(webp|jpg|jpeg)$/i, // Exclude SVGs for speed
       exclude: /node_modules/,
       generateAVIF: false,
+      // Add max file size limit to prevent overly large images
+      maxSize: 1024 * 1024, // 1MB limit
     }),
   ],
 
