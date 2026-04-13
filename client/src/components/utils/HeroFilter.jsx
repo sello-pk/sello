@@ -180,7 +180,7 @@ const HeroFilter = () => {
   }, [searchError]);
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6 min-h-[240px]">
+    <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
       <div className="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-sm p-4 sm:p-5 md:p-6">
         <form onSubmit={handleSearch} className="flex flex-col gap-4 sm:gap-5">
           <h2 className="text-white font-medium text-lg text-center sm:text-left">
