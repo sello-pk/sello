@@ -29,7 +29,7 @@ const BottomHeader = () => {
   return (
     <div
       style={{ zIndex: 1000 }}
-      className="bg-[#1a1f3a] border-y border-gray-200/80 w-full flex flex-wrap items-center justify-between gap-4 md:gap-6 px-4 md:px-20 py-2 md:py-3 text-sm md:text-base text-gray-100"
+      className="bg-[#050B20] border-y border-gray-200/80 w-full flex flex-wrap items-center justify-between gap-4 md:gap-6 px-4 md:px-20 py-2 md:py-3 text-sm md:text-base text-gray-100"
     >
       <div className="flex min-w-0 items-center gap-3 md:gap-4 flex-shrink overflow-visible">
         {showAuction && (
