@@ -66,7 +66,7 @@ const BrandsSection = () => {
   };
 
   return (
-    <section className="bg-[#F5F5F5] w-full md:py-8 md:rounded-tl-[80px]">
+    <section className="bg-[#EEEEEE] w-full md:py-8 md:rounded-tl-[80px]">
       <div className="max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -75,7 +75,7 @@ const BrandsSection = () => {
           </h2>
           <Link
             to={"/view-all-brands"}
-            className="text-primary-500 text-sm md:text-md hover:underline"
+            className="text-primary-600 text-sm md:text-md hover:underline hover:text-primary-700"
           >
             Show All Brands
           </Link>

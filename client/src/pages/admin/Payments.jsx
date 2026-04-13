@@ -313,11 +313,11 @@ const Payments = () => {
                   <div className="space-y-4">
                     <div className="flex gap-2 mb-2">
                       <button onClick={() => setWalletAction({ ...walletAction, type: "credit" })}
-                        className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${walletAction.type === "credit" ? "bg-emerald-500 text-white" : "bg-gray-100 text-gray-600"}`}>
+                        className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${walletAction.type === "credit" ? "bg-emerald-500 text-white" : "bg-gray-200 text-gray-700"}`}>
                         <FiArrowUp className="inline mr-1" />Credit
                       </button>
                       <button onClick={() => setWalletAction({ ...walletAction, type: "debit" })}
-                        className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${walletAction.type === "debit" ? "bg-red-500 text-white" : "bg-gray-100 text-gray-600"}`}>
+                        className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${walletAction.type === "debit" ? "bg-red-500 text-white" : "bg-gray-200 text-gray-700"}`}>
                         <FiArrowDown className="inline mr-1" />Debit
                       </button>
                     </div>
@@ -356,7 +356,7 @@ const Payments = () => {
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Filter:</label>
               {["all", "pending", "approved", "rejected"].map((s) => (
                 <button key={s} onClick={() => setDepositFilter(s)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${depositFilter === s ? "bg-primary-500 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200"}`}>
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${depositFilter === s ? "bg-primary-500 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300"}`}>
                   {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
                 </button>
               ))}
@@ -430,7 +430,7 @@ const Payments = () => {
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Filter:</label>
               {["all", "pending", "approved", "rejected", "processed"].map((s) => (
                 <button key={s} onClick={() => setRefundFilter(s)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${refundFilter === s ? "bg-primary-500 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200"}`}>
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${refundFilter === s ? "bg-primary-500 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300"}`}>
                   {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
                 </button>
               ))}

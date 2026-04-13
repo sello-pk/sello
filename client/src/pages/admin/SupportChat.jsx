@@ -933,6 +933,7 @@ const SupportChat = () => {
                                         onClick={handleSendMessage}
                                         disabled={!message.trim()}
                                         className="p-2 bg-primary-500 text-white rounded-full hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        aria-label="Send message"
                                     >
                                         <FiSend size={20} />
                                     </button>

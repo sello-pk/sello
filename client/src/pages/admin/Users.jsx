@@ -556,6 +556,7 @@ const EditUserModal = ({ user, onClose, onUpdate }) => {
                         <button
                             onClick={onClose}
                             className="text-gray-400 hover:text-gray-600"
+                            aria-label="Close user edit modal"
                         >
                             <FiX size={20} />
                         </button>

@@ -411,7 +411,9 @@ const SellerChats = () => {
                               >
                                 {isEditing ? (
                                   <div className="space-y-2">
+                                    <label htmlFor="edit-message" className="sr-only">Edit message</label>
                                     <input
+                                      id="edit-message"
                                       type="text"
                                       value={editMessageText}
                                       onChange={(e) =>
@@ -519,23 +521,26 @@ const SellerChats = () => {
                   {/* Message Input */}
                   <div className="p-4 border-t border-gray-200 bg-white">
                     <div className="flex items-center gap-2">
+                      <label htmlFor="message-input" className="sr-only">Type a message</label>
                       <input
+                        id="message-input"
                         type="text"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
+                        placeholder="Type a message..."
+                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                         onKeyPress={(e) => {
                           if (e.key === "Enter" && !e.shiftKey) {
                             e.preventDefault();
                             handleSendMessage();
                           }
                         }}
-                        placeholder="Type a message..."
-                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                       />
                       <button
                         onClick={handleSendMessage}
                         disabled={!message.trim()}
                         className="p-2 bg-primary-500 text-white rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        aria-label="Send message"
                       >
                         <FiSend size={20} />
                       </button>

@@ -29,7 +29,7 @@ const BottomHeader = () => {
   return (
     <div
       style={{ zIndex: 1000 }}
-      className="bg-[#050B20] border-y border-gray-200/80 w-full flex flex-wrap items-center justify-between gap-4 md:gap-6 px-4 md:px-20 py-2 md:py-3 text-sm md:text-base text-gray-700"
+      className="bg-[#1a1f3a] border-y border-gray-200/80 w-full flex flex-wrap items-center justify-between gap-4 md:gap-6 px-4 md:px-20 py-2 md:py-3 text-sm md:text-base text-gray-100"
     >
       <div className="flex min-w-0 items-center gap-3 md:gap-4 flex-shrink overflow-visible">
         {showAuction && (
@@ -39,7 +39,7 @@ const BottomHeader = () => {
               to="/auctions/live"
               aria-label="Go to live auction"
               title="Go to live auction"
-              className="inline-flex items-center px-3 py-1 gap-2 animate-pulse duration-500 ease rounded-full text-xs font-medium bg-white text-red-400 border border-white whitespace-nowrap flex-shrink-0"
+              className="inline-flex items-center px-3 py-1 gap-2 animate-pulse duration-500 ease rounded-full text-xs font-medium bg-red-600 text-white border border-red-600 whitespace-nowrap flex-shrink-0"
             >
               <FiZap className="w-4 h-4 shrink-0" />
               <span>Live</span>
@@ -80,9 +80,11 @@ const BottomHeader = () => {
           {showAuction && (
             <span
               className="inline-flex items-center gap-2 text-white/80 text-sm whitespace-nowrap"
-              aria-label="Live updating auction"
+              role="status"
+              aria-live="polite"
             >
               <RefreshCw className="w-4 h-4 animate-spin text-primary-500" />
+              Live auction updating
             </span>
           )}
 

@@ -215,10 +215,12 @@ const HelpCenter = () => {
             {/* Search Bar */}
             <div className="flex-1 max-w-2xl mx-4 md:mx-8">
               <form onSubmit={handleSearch} className="relative">
+                <label htmlFor="help-search" className="sr-only">Search help topics</label>
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <FiSearch className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
+                  id="help-search"
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -266,7 +268,6 @@ const HelpCenter = () => {
                   key={topic.id}
                   onClick={() => navigate(topic.link)}
                   className="w-full bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-6 cursor-pointer transform hover:-translate-y-1 group text-left focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-                  aria-label={`Learn about ${topic.title}`}
                 >
                   <div
                     className={`${topic.color} w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}
@@ -293,7 +294,6 @@ const HelpCenter = () => {
                   key={category.id}
                   onClick={() => navigate(category.link)}
                   className="w-full bg-white rounded-lg shadow-sm hover:shadow-md border border-gray-200 hover:border-primary-300 p-6 cursor-pointer transition-all duration-200 group text-left focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-                  aria-label={`Browse ${category.title} help`}
                 >
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0">

@@ -212,6 +212,7 @@ const DealerSignup = ({ onBack }) => {
               <button
                 onClick={onBack}
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                aria-label="Close and go back"
               >
                 <FiX size={24} />
               </button>

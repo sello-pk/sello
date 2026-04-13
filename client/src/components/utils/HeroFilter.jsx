@@ -270,7 +270,7 @@ const HeroFilter = () => {
 
             <button
               type="submit"
-              className="h-12 bg-primary-500 text-white rounded-xl flex items-center justify-center gap-2 font-medium"
+              className="h-12 bg-primary-600 text-white rounded-xl flex items-center justify-center gap-2 font-medium"
             >
               <FiSearch />
               Search
