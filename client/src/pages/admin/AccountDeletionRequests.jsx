@@ -246,6 +246,7 @@ const AccountDeletionRequests = () => {
             <button
               onClick={() => handleViewDetails(request)}
               className="p-1.5 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+              aria-label="View account deletion request details"
             >
               <FiEye size={14} />
             </button>
@@ -257,6 +258,7 @@ const AccountDeletionRequests = () => {
                 <button
                   onClick={() => handleReviewRequest(request, "approved")}
                   className="p-1.5 text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
+                  aria-label="Approve and delete account"
                 >
                   <FiCheck size={14} />
                 </button>
@@ -265,6 +267,7 @@ const AccountDeletionRequests = () => {
                 <button
                   onClick={() => handleReviewRequest(request, "rejected")}
                   className="p-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                  aria-label="Reject account deletion request"
                 >
                   <FiX size={14} />
                 </button>

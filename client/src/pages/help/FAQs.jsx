@@ -224,6 +224,8 @@ const FAQs = () => {
                     setOpenIndex(openIndex === index ? null : index)
                   }
                   className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+                  aria-expanded={openIndex === index}
+                  aria-controls={`faq-answer-${index}`}
                 >
                   <span className="font-semibold text-gray-900 pr-4">
                     {faq.question}
@@ -235,7 +237,10 @@ const FAQs = () => {
                   )}
                 </button>
                 {openIndex === index && (
-                  <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                  <div
+                    id={`faq-answer-${index}`}
+                    className="px-6 py-4 bg-gray-50 border-t border-gray-200"
+                  >
                     <p className="text-gray-700 whitespace-pre-line">
                       {faq.answer}
                     </p>

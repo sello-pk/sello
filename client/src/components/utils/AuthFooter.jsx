@@ -21,7 +21,7 @@ const AuthFooter = ({ text }) => {
           </div>
         </div>
         <div className="flex gap-3">
-          <button className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 border border-white/30">
+          <button className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 border border-white/30" aria-label="Share on social media">
             <svg
               className="w-4 h-4"
               fill="currentColor"
@@ -30,7 +30,7 @@ const AuthFooter = ({ text }) => {
               <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
             </svg>
           </button>
-          <button className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 border border-white/30">
+          <button className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 border border-white/30" aria-label="Like or favorite">
             <svg
               className="w-4 h-4"
               fill="currentColor"

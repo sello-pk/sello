@@ -313,6 +313,8 @@ export default function CarEstimatorForm({ onEstimate }) {
                       Make <span className="text-red-500">*</span>
                     </label>
                     <Select
+                      inputId="make-select"
+                      aria-label="Select car make"
                       value={
                         makes.find((make) => make._id === formData.make)
                           ? {
@@ -345,6 +347,8 @@ export default function CarEstimatorForm({ onEstimate }) {
                       Model <span className="text-red-500">*</span>
                     </label>
                     <Select
+                      inputId="model-select"
+                      aria-label="Select car model"
                       value={
                         availableModels.find(
                           (model) => model._id === formData.model,
@@ -383,11 +387,13 @@ export default function CarEstimatorForm({ onEstimate }) {
                       Variant / Trim
                     </label>
                     <input
+                      id="variant-input"
                       type="text"
                       value={formData.variant}
                       onChange={(e) => setField("variant", e.target.value)}
                       placeholder="e.g., VTi Oriel"
                       className="h-12 w-full rounded-xl border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500"
+                      aria-label="Car variant or trim"
                     />
                   </div>
 
@@ -396,6 +402,8 @@ export default function CarEstimatorForm({ onEstimate }) {
                       Year <span className="text-red-500">*</span>
                     </label>
                     <Select
+                      inputId="year-select"
+                      aria-label="Select car year"
                       value={
                         years.find((year) => year.name === formData.year)
                           ? { value: formData.year, label: formData.year }
@@ -435,6 +443,8 @@ export default function CarEstimatorForm({ onEstimate }) {
                       Mileage <span className="text-red-500">*</span>
                     </label>
                     <Select
+                      inputId="mileage-select"
+                      aria-label="Select mileage range"
                       value={
                         mileageOptions.find(
                           (option) => option.value === formData.mileage,
@@ -458,6 +468,8 @@ export default function CarEstimatorForm({ onEstimate }) {
                       Registration City
                     </label>
                     <Select
+                      inputId="city-select"
+                      aria-label="Select registration city"
                       value={
                         cities.find(
                           (city) => city._id === formData.registrationCity,
@@ -493,6 +505,8 @@ export default function CarEstimatorForm({ onEstimate }) {
                       Engine / Fuel Type
                     </label>
                     <Select
+                      inputId="engine-type-select"
+                      aria-label="Select engine or fuel type"
                       value={
                         engineTypes.find(
                           (t) => t.value === formData.engineType,
@@ -541,6 +555,8 @@ export default function CarEstimatorForm({ onEstimate }) {
                         Engine Condition
                       </label>
                       <Select
+                        inputId="engine-condition-select"
+                        aria-label="Select engine condition"
                         value={
                           conditionSelectOptions.find(
                             (o) => o.value === formData.engineCondition,
@@ -564,6 +580,8 @@ export default function CarEstimatorForm({ onEstimate }) {
                         Body Condition
                       </label>
                       <Select
+                        inputId="body-condition-select"
+                        aria-label="Select body condition"
                         value={
                           conditionSelectOptions.find(
                             (o) => o.value === formData.bodyCondition,
@@ -587,6 +605,8 @@ export default function CarEstimatorForm({ onEstimate }) {
                         Interior Condition
                       </label>
                       <Select
+                        inputId="interior-condition-select"
+                        aria-label="Select interior condition"
                         value={
                           conditionSelectOptions.find(
                             (o) => o.value === formData.interiorCondition,
@@ -610,6 +630,8 @@ export default function CarEstimatorForm({ onEstimate }) {
                         Suspension Condition
                       </label>
                       <Select
+                        inputId="suspension-condition-select"
+                        aria-label="Select suspension condition"
                         value={
                           conditionSelectOptions.find(
                             (o) => o.value === formData.suspensionCondition,
@@ -633,6 +655,8 @@ export default function CarEstimatorForm({ onEstimate }) {
                         Tire Condition
                       </label>
                       <Select
+                        inputId="tire-condition-select"
+                        aria-label="Select tire condition"
                         value={
                           tireConditionOptions.find(
                             (o) => o.value === formData.tireCondition,
@@ -656,6 +680,8 @@ export default function CarEstimatorForm({ onEstimate }) {
                         Paint Status
                       </label>
                       <Select
+                        inputId="paint-status-select"
+                        aria-label="Select paint status"
                         value={
                           paintStatusOptions.find(
                             (o) => o.value === formData.paintStatus,
@@ -679,6 +705,8 @@ export default function CarEstimatorForm({ onEstimate }) {
                         Accident History
                       </label>
                       <Select
+                        inputId="accident-history-select"
+                        aria-label="Select accident history"
                         value={
                           accidentHistoryOptions.find(
                             (o) => o.value === formData.accidentHistory,
@@ -707,11 +735,13 @@ export default function CarEstimatorForm({ onEstimate }) {
                   Additional Notes
                 </label>
                 <textarea
+                  id="additional-notes"
                   rows={4}
                   value={formData.additionalNotes}
                   onChange={(e) => setField("additionalNotes", e.target.value)}
                   placeholder="Any details that may affect valuation..."
                   className="w-full rounded-xl border border-gray-300 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500"
+                  aria-label="Additional notes for valuation"
                 />
               </div>
             )}
