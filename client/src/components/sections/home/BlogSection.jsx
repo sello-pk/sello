@@ -82,9 +82,9 @@ const BlogSection = () => {
         ) : (
           <>
             <div className="text-sm text-gray-500 mb-3 flex items-center gap-2" role="status" aria-live="polite">
-              <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1">
+              <span className="inline-flex items-center gap-1 rounded-full bg-gray-200 px-2.5 py-1">
                 <svg
-                  className="w-4 h-4 text-gray-500"
+                  className="w-4 h-4 text-gray-700"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -154,18 +154,18 @@ const BlogSection = () => {
                           />
                         )}
                       </div>
-                      <h5 className="text-sm text-gray-500 font-medium truncate" aria-hidden="true">
+                      <h5 className="text-sm text-gray-600 font-medium truncate">
                         By {blog.author?.name || "Admin"}
                       </h5>
                     </div>
-                    <p className="text-xs text-gray-400 flex-shrink-0" aria-hidden="true">
+                    <p className="text-xs text-gray-600 flex-shrink-0">
                       {formatDate(blog.publishedAt || blog.createdAt)}
                     </p>
                   </div>
                   <h4 className="text-lg font-bold text-gray-900 leading-snug line-clamp-2">
                     {blog.title}
                   </h4>
-                  <p className="mt-3 text-gray-600 line-clamp-2" aria-hidden="true">
+                  <p className="mt-3 text-gray-600 line-clamp-2">
                     {blog.excerpt ||
                       blog.content?.replace(/<[^>]*>/g, "").substring(0, 150) +
                         "..."}

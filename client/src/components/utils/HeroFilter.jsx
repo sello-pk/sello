@@ -180,7 +180,7 @@ const HeroFilter = () => {
   }, [searchError]);
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+    <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6 min-h-[240px]">
       <div className="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-sm p-4 sm:p-5 md:p-6">
         <form onSubmit={handleSearch} className="flex flex-col gap-4 sm:gap-5">
           <h2 className="text-white font-medium text-lg text-center sm:text-left">
@@ -189,88 +189,68 @@ const HeroFilter = () => {
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-3">
-            <div>
-              <label htmlFor="make-select" className="sr-only">Car Make</label>
-              <Select
-                inputId="make-select"
-                aria-label="Select car make"
-                value={
-                  makeSelectOptions.find((o) => o.value === filters.make) || null
-                }
-                onChange={(o) => handleChange("make", o?.value || "")}
-                options={makeSelectOptions}
-                placeholder="Make"
-                isClearable
-                styles={searchableSelectStyles}
-                components={{ DropdownIndicator }}
-                menuPortalTarget={menuPortalTarget}
-              />
-            </div>
+            <Select
+              inputId="make-select"
+              value={
+                makeSelectOptions.find((o) => o.value === filters.make) || null
+              }
+              onChange={(o) => handleChange("make", o?.value || "")}
+              options={makeSelectOptions}
+              placeholder="Make"
+              isClearable
+              styles={searchableSelectStyles}
+              components={{ DropdownIndicator }}
+              menuPortalTarget={menuPortalTarget}
+            />
 
-            <div>
-              <label htmlFor="model-select" className="sr-only">Car Model</label>
-              <Select
-                inputId="model-select"
-                aria-label="Select car model"
-                value={
-                  modelSelectOptions.find((o) => o.value === filters.model) ||
-                  null
-                }
-                onChange={(o) => handleChange("model", o?.value || "")}
-                options={modelSelectOptions}
-                placeholder="Model"
-                isDisabled={!filters.make}
-                styles={searchableSelectStyles}
-                components={{ DropdownIndicator }}
-                menuPortalTarget={menuPortalTarget}
-              />
-            </div>
+            <Select
+              inputId="model-select"
+              value={
+                modelSelectOptions.find((o) => o.value === filters.model) ||
+                null
+              }
+              onChange={(o) => handleChange("model", o?.value || "")}
+              options={modelSelectOptions}
+              placeholder="Model"
+              isDisabled={!filters.make}
+              styles={searchableSelectStyles}
+              components={{ DropdownIndicator }}
+              menuPortalTarget={menuPortalTarget}
+            />
 
-            <div>
-              <label htmlFor="city-select" className="sr-only">City</label>
-              <Select
-                inputId="city-select"
-                aria-label="Select city"
-                value={
-                  citySelectOptions.find((o) => o.value === filters.city) || null
-                }
-                onChange={(o) => handleChange("city", o?.value || "")}
-                options={citySelectOptions}
-                placeholder="City"
-                isDisabled={!filters.model}
-                styles={searchableSelectStyles}
-                components={{ DropdownIndicator }}
-                menuPortalTarget={menuPortalTarget}
-              />
-            </div>
+            <Select
+              inputId="city-select"
+              value={
+                citySelectOptions.find((o) => o.value === filters.city) || null
+              }
+              onChange={(o) => handleChange("city", o?.value || "")}
+              options={citySelectOptions}
+              placeholder="City"
+              isDisabled={!filters.model}
+              styles={searchableSelectStyles}
+              components={{ DropdownIndicator }}
+              menuPortalTarget={menuPortalTarget}
+            />
 
-            <div>
-              <label htmlFor="min-price" className="sr-only">Min Price</label>
-              <input
-                id="min-price"
-                type="number"
-                placeholder="Min Price"
-                className="h-12 bg-gray-50 rounded-xl px-4"
-                value={filters.minPrice}
-                onChange={(e) => handleChange("minPrice", e.target.value)}
-              />
-            </div>
+            <input
+              type="number"
+              placeholder="Min Price"
+              className="h-12 bg-gray-50 rounded-xl px-4"
+              value={filters.minPrice}
+              onChange={(e) => handleChange("minPrice", e.target.value)}
+            />
 
-            <div>
-              <label htmlFor="max-price" className="sr-only">Max Price</label>
-              <input
-                id="max-price"
-                type="number"
-                placeholder="Max Price"
-                className="h-12 bg-gray-50 rounded-xl px-4"
-                value={filters.maxPrice}
-                onChange={(e) => handleChange("maxPrice", e.target.value)}
-              />
-            </div>
+            <input
+              type="number"
+              placeholder="Max Price"
+              className="h-12 bg-gray-50 rounded-xl px-4"
+              value={filters.maxPrice}
+              onChange={(e) => handleChange("maxPrice", e.target.value)}
+            />
 
             <button
               type="submit"
-              className="h-12 bg-primary-600 text-white rounded-xl flex items-center justify-center gap-2 font-medium"
+              className="h-12 bg-primary-500 text-white rounded-xl flex items-center justify-center gap-2 font-medium"
             >
               <FiSearch />
               Search

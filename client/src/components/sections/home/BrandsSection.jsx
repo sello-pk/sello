@@ -75,7 +75,7 @@ const BrandsSection = () => {
           </h2>
           <Link
             to={"/view-all-brands"}
-            className="text-primary-600 text-sm md:text-md hover:underline hover:text-primary-700"
+            className="text-primary-500 text-sm md:text-md hover:underline"
           >
             Show All Brands
           </Link>
