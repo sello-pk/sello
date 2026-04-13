@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, lazy, Suspense } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   useGetSingleCarQuery,
   useGetMeQuery,
   useMarkCarAsSoldMutation,
 } from "../../../redux/services/api";
-import MapView from "./MapLocation";
 import CarChatWidget from "../../carChat/CarChatWidget";
+
+// Lazy load MapLocation only when needed
+const MapLocation = lazy(() => import("./MapLocation"));
 import toast from "react-hot-toast";
 import {
   FaCheckCircle,
@@ -204,10 +206,12 @@ const CarDetailsEtc = () => {
                 className="rounded-lg overflow-hidden border border-gray-200 relative"
                 style={{ zIndex: 1 }}
               >
-                <MapView
-                  coordinates={coordinates}
-                  carLocation={car.geoLocation}
-                />
+                <Suspense fallback={<div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">Loading map...</div>}>
+                  <MapLocation
+                    coordinates={coordinates}
+                    carLocation={car.geoLocation}
+                  />
+                </Suspense>
               </div>
               {car.location && (
                 <p className="mt-4 text-sm text-gray-600 flex items-center gap-2">

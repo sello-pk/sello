@@ -1,17 +1,21 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
 import { Provider } from "react-redux";
 import { store } from "./redux/store.js";
 import { BrowserRouter } from "react-router-dom";
-import { GoogleOAuthProvider } from "@react-oauth/google";
 import { SupportChatProvider } from "./contexts/SupportChatContext.jsx";
 import { SocketProvider } from "./contexts/SocketContext.jsx";
 import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
 import AppRoot from "./AppRoot.jsx";
 import "leaflet/dist/leaflet.css";
 import { logger } from "./utils/logger.js";
+
+// Lazy load Google OAuth only when needed
+const GoogleOAuthProvider = lazy(() => 
+  import('@react-oauth/google').then(module => ({ default: module.GoogleOAuthProvider }))
+);
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -27,19 +31,38 @@ if (!googleClientId) {
   }
 }
 
+// Check if we're on auth pages
+const isAuthPage = typeof window !== 'undefined' && 
+  (window.location.pathname === '/login' || window.location.pathname === '/signup');
+
+// Conditional OAuth provider wrapper
+const OAuthWrapper = ({ children }) => {
+  if (!isAuthPage) {
+    return <>{children}</>; // No OAuth for non-auth pages
+  }
+  
+  return (
+    <Suspense fallback={children}>
+      <GoogleOAuthProvider clientId={googleClientId}>
+        {children}
+      </GoogleOAuthProvider>
+    </Suspense>
+  );
+};
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <AppRoot>
       <Provider store={store}>
         <BrowserRouter>
           <ErrorBoundary>
-            <GoogleOAuthProvider clientId={googleClientId}>
+            <OAuthWrapper>
               <SocketProvider>
                 <SupportChatProvider>
                   <App />
                 </SupportChatProvider>
               </SocketProvider>
-            </GoogleOAuthProvider>
+            </OAuthWrapper>
           </ErrorBoundary>
         </BrowserRouter>
       </Provider>

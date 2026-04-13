@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, lazy, Suspense } from "react";
 import { images } from "../../../assets/assets";
-import LocationPickerModal from "../../utils/filter/LocationPickerModal";
 import toast from "react-hot-toast";
+
+// Lazy load LocationPickerModal only when needed
+const LocationPickerModal = lazy(() => import("./LocationPickerModal"));
 
 const LocationButton = ({ onChange, value = null }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -90,12 +92,14 @@ const LocationButton = ({ onChange, value = null }) => {
         <p className="text-xs text-gray-500 mt-1 pl-2">✓ Location set</p>
       )}
 
-      <LocationPickerModal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        onSelect={handleSelect}
-        initialLocation={location ? [location.lng, location.lat] : null}
-      />
+      <Suspense fallback={<div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">Loading map...</div>}>
+        <LocationPickerModal
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          onSelect={handleSelect}
+          initialLocation={location ? [location.lng, location.lat] : null}
+        />
+      </Suspense>
     </div>
   );
 };

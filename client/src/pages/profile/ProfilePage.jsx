@@ -1,4 +1,3 @@
-import React from "react";
 import ProfileHero from "../../components/sections/profile/ProfileHero";
 import SEO from "../../components/common/SEO";
 

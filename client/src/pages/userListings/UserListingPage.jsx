@@ -1,4 +1,3 @@
-import React from "react";
 import UserListingHero from "../../components/features/listings/UserListingHero";
 import BrandMarquee from "../../components/BrandMarquee";
 import { Link } from "react-router-dom";

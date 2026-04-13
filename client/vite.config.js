@@ -86,19 +86,19 @@ export default defineConfig({
           // Core vendor chunks - critical for initial load
           "react-vendor": ["react", "react-dom", "react-is"],
           "react-router": ["react-router-dom"],
-          redux: ["@reduxjs/toolkit", "react-redux"],
+          "redux": ["@reduxjs/toolkit", "react-redux"],
           
           // UI libraries - commonly used
           "ui-libs": ["react-hot-toast", "react-icons", "lucide-react"],
           "forms": ["react-select"],
           
           // Heavy libraries - split and lazy loaded
-          maps: ["leaflet", "react-leaflet", "@react-google-maps/api"],
-          editors: ["@tiptap/react", "@tiptap/starter-kit", "@tinymce/tinymce-react"],
-          charts: ["recharts"],
-          documents: ["jspdf", "jspdf-autotable", "xlsx"],
-          animation: ["gsap"],
-          auth: ["@react-oauth/google"],
+          "maps": ["leaflet", "react-leaflet", "@react-google-maps/api"],
+          "editors": ["@tiptap/react", "@tiptap/starter-kit", "@tinymce/tinymce-react"],
+          "charts": ["recharts"],
+          "documents": ["jspdf", "jspdf-autotable", "xlsx"],
+          "animation": ["gsap"],
+          "auth": ["@react-oauth/google"],
           
           // Split heavy utilities
           "html2canvas": ["html2canvas"],
@@ -107,6 +107,9 @@ export default defineConfig({
           "query-string": ["query-string"],
           "socket": ["socket.io-client"],
           "axios": ["axios"],
+          
+          // Additional optimization chunks
+          "framer-motion": ["framer-motion"],
         },
       },
     },

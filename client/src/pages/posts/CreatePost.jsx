@@ -1,4 +1,3 @@
-import React from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import CreatePostForm from "../../components/sections/createPost/CreatePostForm";
 import WhyChooseUsUtility from "../../components/utils/WhyChooseUsUtility";
