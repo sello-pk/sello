@@ -35,10 +35,10 @@ if (!googleClientId) {
 const isAuthPage = typeof window !== 'undefined' && 
   (window.location.pathname === '/login' || window.location.pathname === '/signup');
 
-// Conditional OAuth provider wrapper
+// Always wrap with OAuth provider when configured
 const OAuthWrapper = ({ children }) => {
-  if (!isAuthPage) {
-    return <>{children}</>; // No OAuth for non-auth pages
+  if (!googleClientId) {
+    return <>{children}</>; // No OAuth if not configured
   }
   
   return (
