@@ -214,3 +214,180 @@ export const deleteValuation = async (req, res) => {
     res.status(500).json({ success: false, message: "Delete error" });
   }
 };
+
+/**
+ * Calculate maintenance cost
+ */
+export const calculateMaintenanceCost = async (req, res) => {
+  try {
+    const { make, year, mileage } = req.body;
+
+    // Base maintenance costs for Pakistani market (PKR)
+    const baseCosts = {
+      toyota: { base: 80000, ageMultiplier: 5000, mileageMultiplier: 0.1 },
+      honda: { base: 90000, ageMultiplier: 5500, mileageMultiplier: 0.12 },
+      suzuki: { base: 65000, ageMultiplier: 4000, mileageMultiplier: 0.08 },
+      kia: { base: 95000, ageMultiplier: 6000, mileageMultiplier: 0.15 },
+      mg: { base: 100000, ageMultiplier: 6500, mileageMultiplier: 0.18 },
+    };
+
+    const carData = baseCosts[make?.toLowerCase()] || baseCosts.toyota;
+    const currentYear = new Date().getFullYear();
+    const age = currentYear - year;
+    
+    const yearly = Math.round(
+      carData.base + 
+      (age * carData.ageMultiplier) + 
+      (mileage * carData.mileageMultiplier)
+    );
+
+    const breakdown = {
+      yearly,
+      oilChange: 8000 * 4,
+      brakes: 25000 + (age * 2000),
+      tires: 40000 + (age * 3000),
+      parts: age * 3000,
+      misc: Math.round(yearly * 0.15),
+    };
+
+    res.status(200).json({
+      success: true,
+      data: breakdown,
+    });
+  } catch (error) {
+    Logger.error("calculateMaintenanceCost Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * Calculate fuel cost
+ */
+export const calculateFuelCost = async (req, res) => {
+  try {
+    const { monthlyKms, mileage, fuelPrice } = req.body;
+
+    const monthlyFuelLiters = monthlyKms / mileage;
+    const monthlyCost = Math.round(monthlyFuelLiters * fuelPrice);
+    const yearlyCost = monthlyCost * 12;
+    
+    const cngSavings = Math.round(monthlyCost * 0.4);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        monthlyCost,
+        yearlyCost,
+        monthlyFuelLiters: Math.round(monthlyFuelLiters),
+        cngSavings,
+      },
+    });
+  } catch (error) {
+    Logger.error("calculateFuelCost Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * Calculate resale value
+ */
+export const calculateResaleValue = async (req, res) => {
+  try {
+    const { currentValue, years, make, model } = req.body;
+
+    // Brand-specific depreciation rates for Pakistani market
+    const depreciationRates = {
+      toyota: 0.10,      // 10% per year
+      honda: 0.11,       // 11% per year
+      suzuki: 0.12,      // 12% per year
+      kia: 0.14,        // 14% per year
+      mg: 0.15,          // 15% per year
+      default: 0.12,     // 12% default
+    };
+
+    const depRate = depreciationRates[make?.toLowerCase()] || depreciationRates.default;
+    
+    const yearData = Array.from({ length: years + 1 }, (_, i) => ({
+      year: i,
+      value: Math.round(currentValue * Math.pow(1 - depRate, i)),
+      depreciation: i === 0 ? 0 : Math.round((1 - Math.pow(1 - depRate, i)) * 100),
+    }));
+
+    const finalValue = yearData[years].value;
+    const totalLoss = currentValue - finalValue;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        currentValue,
+        years,
+        finalValue,
+        totalLoss,
+        depreciationRate: depRate * 100,
+        yearData,
+      },
+    });
+  } catch (error) {
+    Logger.error("calculateResaleValue Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * Calculate ownership cost
+ */
+export const calculateOwnershipCost = async (req, res) => {
+  try {
+    const { make, model, year, currentValue } = req.body;
+
+    // Pakistani market average costs
+    const costs = {
+      insurance: 40000,
+      registration: 8000,
+      maintenance: 80000,
+      fuel: 180000,
+    };
+
+    // Adjust based on car value for insurance
+    if (currentValue > 2000000) {
+      costs.insurance = 60000;
+    } else if (currentValue > 5000000) {
+      costs.insurance = 80000;
+    }
+
+    const totalYearly = Object.values(costs).reduce((sum, cost) => sum + cost, 0);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        costs,
+        totalYearly,
+        breakdown: [
+          { category: 'Insurance', cost: costs.insurance, percentage: (costs.insurance / totalYearly * 100).toFixed(1) },
+          { category: 'Registration', cost: costs.registration, percentage: (costs.registration / totalYearly * 100).toFixed(1) },
+          { category: 'Maintenance', cost: costs.maintenance, percentage: (costs.maintenance / totalYearly * 100).toFixed(1) },
+          { category: 'Fuel', cost: costs.fuel, percentage: (costs.fuel / totalYearly * 100).toFixed(1) },
+        ],
+      },
+    });
+  } catch (error) {
+    Logger.error("calculateOwnershipCost Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};

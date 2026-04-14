@@ -187,7 +187,7 @@ const AppRouter = () => {
           path="/car-estimator/guide/:blogId"
           element={<EstimatorGuideDetail />}
         />
-        <Route path="/auctions" element={<AuctionsActions />} />
+                <Route path="/auctions" element={<AuctionsActions />} />
         <Route path="/auctions/guide/:blogId" element={<AuctionGuideDetail />} />
         <Route path="/auctions/live" element={<LiveAuction />} />
         <Route path="/auctions/betting" element={<LiveAuction />} />

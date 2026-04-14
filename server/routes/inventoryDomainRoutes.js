@@ -3,7 +3,7 @@ import {
   createCar, deleteCar, editCar, getAllCars, getFilteredCars, getMyCars, getSingleCar, markCarAsSold, relistCar, getCarCountsByMake
 } from "../controllers/carController.js";
 import {
-  createValuation, getUserValuationHistory, getAllValuationsAdmin, getValuationById, deleteValuation
+  createValuation, getUserValuationHistory, getAllValuationsAdmin, getValuationById, deleteValuation, calculateMaintenanceCost, calculateFuelCost, calculateResaleValue, calculateOwnershipCost
 } from "../controllers/valuationController.js";
 import {
   getVehicleTypes, getFieldsForType
@@ -90,5 +90,11 @@ router.get("/recommendations/similar/:carId", getSimilarListings);
 router.post("/recommendations/viewed/:carId", auth, trackRecentlyViewed);
 router.get("/recommendations/viewed", auth, getRecentlyViewed);
 router.get("/recommendations/recommended", auth, getRecommendedListings);
+
+/* --------------------------- WEB TOOLS --------------------------- */
+router.post("/tools/maintenance", calculateMaintenanceCost);
+router.post("/tools/fuel", calculateFuelCost);
+router.post("/tools/resale", calculateResaleValue);
+router.post("/tools/ownership", calculateOwnershipCost);
 
 export default router;

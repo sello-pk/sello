@@ -1257,6 +1257,40 @@ export const api = createApi({
       transformResponse: (response) => response?.data || response,
     }),
 
+    // WebTools API endpoints
+    calculateMaintenanceCost: builder.mutation({
+      query: (data) => ({
+        url: "/inventory/tools/maintenance",
+        method: "POST",
+        body: data,
+      }),
+      transformResponse: (response) => response?.data || response,
+    }),
+    calculateFuelCost: builder.mutation({
+      query: (data) => ({
+        url: "/inventory/tools/fuel",
+        method: "POST",
+        body: data,
+      }),
+      transformResponse: (response) => response?.data || response,
+    }),
+    calculateResaleValue: builder.mutation({
+      query: (data) => ({
+        url: "/inventory/tools/resale",
+        method: "POST",
+        body: data,
+      }),
+      transformResponse: (response) => response?.data || response,
+    }),
+    calculateOwnershipCost: builder.mutation({
+      query: (data) => ({
+        url: "/inventory/tools/ownership",
+        method: "POST",
+        body: data,
+      }),
+      transformResponse: (response) => response?.data || response,
+    }),
+
     // Recommendations & Similar Listings
     getSimilarListings: builder.query({
       query: (carId) => ({
@@ -2047,6 +2081,10 @@ export const {
   useGetMyWalletQuery,
   useCreateDepositMutation,
   useGetMyDepositsQuery,
+  useCalculateMaintenanceMutation,
+  useCalculateFuelMutation,
+  useCalculateResaleMutation,
+  useCalculateOwnershipMutation,
   useCreateRefundRequestMutation,
   useGetMyRefundRequestsQuery,
 } = api;
