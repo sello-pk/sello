@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
@@ -17,25 +17,110 @@ import {
   TrendingDown,
   DollarSign,
   Settings,
+  BarChart3,
+  Shield,
 } from "lucide-react";
 import CarEstimatorForm from "./CarEstimatorForm";
 import CarEstimatorResult from "./CarEstimatorResult";
 import estimatorHero from "../../../assets/images/estimatorHero.png";
 import EstimatorBlogsSection from "./EstimatorBlogsSection";
+import { API_CONFIG } from "../../../config/index.js";
 
 const fmt = (n) => `PKR ${Math.round(n).toLocaleString()}`;
+const API_BASE = API_CONFIG.BASE_URL;
+
+// Custom hook to fetch car makes from database
+function useMakes() {
+  const [makes, setMakes] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMakes = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/cars/stats/counts-by-make`);
+        const data = await response.json();
+        if (data.success && data.data) {
+          // Extract make names from the response
+          const makeList = data.data.map(item => item.make || item._id).filter(Boolean);
+          setMakes(makeList.length > 0 ? makeList : ['Toyota', 'Honda', 'Suzuki', 'Kia', 'MG']);
+        } else {
+          setMakes(['Toyota', 'Honda', 'Suzuki', 'Kia', 'MG']);
+        }
+      } catch (error) {
+        console.error('Failed to fetch makes:', error);
+        setMakes(['Toyota', 'Honda', 'Suzuki', 'Kia', 'MG']);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMakes();
+  }, []);
+
+  return { makes, loading };
+}
+
+// Custom hook to fetch models for a specific make
+function useModels(make) {
+  const [models, setModels] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!make) {
+      setModels([]);
+      return;
+    }
+
+    const fetchModels = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`${API_BASE}/vehicle-attributes/makes/${encodeURIComponent(make)}/models`);
+        const data = await response.json();
+        if (data.success && data.data) {
+          setModels(data.data.length > 0 ? data.data : ['Corolla', 'Civic', 'Other']);
+        } else {
+          setModels(['Corolla', 'Civic', 'Other']);
+        }
+      } catch (error) {
+        console.error('Failed to fetch models:', error);
+        setModels(['Corolla', 'Civic', 'Other']);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchModels();
+  }, [make]);
+
+  return { models, loading };
+}
 
 // Maintenance Tool Component
 function MaintenanceTool() {
-  const [make, setMake] = useState('Toyota');
+  const { makes, loading: makesLoading } = useMakes();
+  const [make, setMake] = useState('');
+  const { models, loading: modelsLoading } = useModels(make);
+  const [model, setModel] = useState('');
   const [year, setYear] = useState(2020);
   const [result, setResult] = useState(null);
   const [isCalculating, setIsCalculating] = useState(false);
 
+  // Set default make when makes load
+  useEffect(() => {
+    if (makes.length > 0 && !make) {
+      setMake(makes[0]);
+    }
+  }, [makes, make]);
+
+  // Set default model when models load or make changes
+  useEffect(() => {
+    if (models.length > 0) {
+      setModel(models[0]);
+    }
+  }, [models]);
+
   const calculate = async () => {
     setIsCalculating(true);
     try {
-      const response = await fetch('/api/inventory/tools/maintenance', {
+      const response = await fetch(`${API_BASE}/tools/maintenance`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -66,12 +151,47 @@ function MaintenanceTool() {
         <div className="space-y-5">
           <div>
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">Car Make</label>
-            <div className="flex gap-2 flex-wrap">
-              {['Toyota', 'Honda', 'Suzuki', 'Kia', 'MG'].map(m => (
-                <button key={m} onClick={() => setMake(m)}
-                  className={`px-3.5 py-2 rounded-xl text-sm font-semibold border transition-colors ${make === m ? 'bg-primary-500 text-white border-primary-500' : 'border-gray-200 text-gray-600 hover:border-primary-400'}`}>{m}</button>
-              ))}
-            </div>
+            {makesLoading ? (
+              <div className="flex gap-2 flex-wrap">
+                <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
+                <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
+                <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
+              </div>
+            ) : (
+              <div className="flex gap-2 flex-wrap">
+                {makes.map(m => (
+                  <button key={m} onClick={() => setMake(m)}
+                    className={`px-3.5 py-2 rounded-xl text-sm font-semibold border transition-colors ${make === m ? 'bg-primary-500 text-white border-primary-500' : 'border-gray-200 text-gray-600 hover:border-primary-400'}`}>{m}</button>
+                ))}
+              </div>
+            )}
+          </div>
+          <div>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">Model</label>
+            {modelsLoading ? (
+              <div className="flex gap-2 flex-wrap">
+                <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
+                <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
+              </div>
+            ) : models.length > 0 ? (
+              <select 
+                value={model} 
+                onChange={e => setModel(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:border-primary-500 focus:outline-none"
+              >
+                {models.map(m => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+            ) : (
+              <input 
+                type="text" 
+                value={model} 
+                onChange={e => setModel(e.target.value)}
+                placeholder="Enter model"
+                className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:border-primary-500 focus:outline-none"
+              />
+            )}
           </div>
           <div>
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">Year: {year}</label>
@@ -216,30 +336,140 @@ function FuelTool() {
 
 // Resale Tool Component
 function ResaleTool() {
+  const { makes, loading: makesLoading } = useMakes();
+  const [make, setMake] = useState('');
+  const { models, loading: modelsLoading } = useModels(make);
+  const [model, setModel] = useState('');
   const [value, setValue] = useState(6000000);
   const [years, setYears] = useState(5);
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  // Set default make when makes load
+  useEffect(() => {
+    if (makes.length > 0 && !make) {
+      setMake(makes[0]);
+    }
+  }, [makes, make]);
+
+  // Set default model when models load or make changes
+  useEffect(() => {
+    if (models.length > 0) {
+      setModel(models[0]);
+    }
+  }, [models]);
   
-  const getDepRate = (val) => {
-    if (val > 5000000) return 0.10;
-    if (val > 2000000) return 0.11;
-    return 0.12;
+  const calculate = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_BASE}/tools/resale`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentValue: value, years, make, model }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setResult(data.data);
+      } else {
+        toast.error(data.message || 'Failed to calculate resale value');
+      }
+    } catch (error) {
+      console.error('Resale calculation error:', error);
+      toast.error('Network error: Could not connect to server');
+    } finally {
+      setLoading(false);
+    }
   };
-  
-  const dep = getDepRate(value);
-  const yearData = Array.from({ length: years + 1 }, (_, i) => ({ 
-    yr: i, 
-    val: Math.round(value * Math.pow(1 - dep, i)),
-    depreciation: i === 0 ? 0 : Math.round((1 - Math.pow(1 - dep, i)) * 100)
-  }));
-  const finalVal = yearData[years].val;
-  const loss = value - finalVal;
-  const depreciationRate = (dep * 100).toFixed(1);
+
+  // Auto-calculate on first load (silent - no error toast)
+  useEffect(() => {
+    const silentCalculate = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`${API_BASE}/tools/resale`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ currentValue: value, years, make, model }),
+        });
+        const data = await response.json();
+        if (data.success) {
+          setResult(data.data);
+        }
+      } catch (error) {
+        console.error('Initial resale calculation error:', error);
+        // Silent fail on auto-load - don't show toast
+      } finally {
+        setLoading(false);
+      }
+    };
+    silentCalculate();
+  }, []);
+
+  const yearData = result?.yearData || [];
+  const finalVal = result?.finalValue || 0;
+  const loss = result?.totalLoss || 0;
+  const depreciationRate = result?.depreciationRate?.toFixed(1) || '12.0';
+
+  // Calculate bar heights relative to the range for better visualization
+  const minVal = Math.min(...yearData.map(d => d.value));
+  const maxVal = Math.max(...yearData.map(d => d.value));
+  const valRange = maxVal - minVal || 1;
+  const getBarHeight = (val) => {
+    // Minimum 15% height so bars don't disappear, scale the rest
+    const minHeight = 15;
+    const scaleHeight = ((val - minVal) / valRange) * 70; // 70% is the scalable portion
+    return Math.max(minHeight, minHeight + scaleHeight);
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <h3 className="font-bold text-gray-800 mb-5 text-sm">Car Value Inputs</h3>
-        <div className="space-y-5">
+        <div className="space-y-4">
+          <div>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">Car Make</label>
+            {makesLoading ? (
+              <div className="flex gap-2 flex-wrap">
+                <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
+                <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
+                <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
+              </div>
+            ) : (
+              <div className="flex gap-2 flex-wrap">
+                {makes.map(m => (
+                  <button key={m} onClick={() => setMake(m)}
+                    className={`px-3 py-2 rounded-xl text-sm font-semibold border transition-colors ${make === m ? 'bg-primary-500 text-white border-primary-500' : 'border-gray-200 text-gray-600 hover:border-primary-400'}`}>{m}</button>
+                ))}
+              </div>
+            )}
+          </div>
+          <div>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">Model</label>
+            {modelsLoading ? (
+              <div className="flex gap-2 flex-wrap">
+                <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
+                <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
+              </div>
+            ) : models.length > 0 ? (
+              <select 
+                value={model} 
+                onChange={e => setModel(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:border-primary-500 focus:outline-none"
+              >
+                {models.map(m => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+            ) : (
+              <input 
+                type="text" 
+                value={model} 
+                onChange={e => setModel(e.target.value)}
+                placeholder="Enter model"
+                className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:border-primary-500 focus:outline-none"
+              />
+            )}
+          </div>
           <div>
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">Current Value: {fmt(value)}</label>
             <input type="range" min="500000" max="30000000" step="100000" value={value} onChange={e => setValue(+e.target.value)} className="w-full accent-primary-500" />
@@ -250,133 +480,327 @@ function ResaleTool() {
             <input type="range" min="1" max="10" value={years} onChange={e => setYears(+e.target.value)} className="w-full accent-primary-500" />
             <div className="flex justify-between text-xs text-gray-400 mt-1"><span>1</span><span>10</span></div>
           </div>
+          <button 
+            onClick={calculate} 
+            disabled={loading}
+            className="w-full bg-primary-500 text-white py-3 rounded-xl font-bold hover:bg-primary-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Calculating...</>
+            ) : (
+              <><BarChart3 className="w-4 h-4" /> Calculate Resale Value</>
+            )}
+          </button>
         </div>
-        <div className="grid grid-cols-2 gap-3 mt-6">
-          <div className="bg-gradient-to-r from-primary-50 to-primary-100 rounded-xl p-4 text-center border border-primary-200">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <TrendingDown className="w-4 h-4 text-primary-500" />
-              <p className="text-xs text-primary-600 font-medium uppercase tracking-wide">Future Value</p>
+        
+        {result && (
+          <div className="grid grid-cols-2 gap-3 mt-6">
+            <div className="bg-gradient-to-r from-primary-50 to-primary-100 rounded-xl p-4 text-center border border-primary-200">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <TrendingDown className="w-4 h-4 text-primary-500" />
+                <p className="text-xs text-primary-600 font-medium uppercase tracking-wide">Future Value</p>
+              </div>
+              <p className="font-black text-primary-500 text-xl">{fmt(finalVal)}</p>
+              <p className="text-xs text-gray-500">In {years} years</p>
             </div>
-            <p className="font-black text-primary-500 text-xl">{fmt(finalVal)}</p>
-            <p className="text-xs text-gray-500">In {years} years</p>
+            
+            <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-4 text-center border border-red-200">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <TrendingDown className="w-4 h-4 text-red-500" />
+                <p className="text-xs text-red-600 font-medium uppercase tracking-wide">Total Loss</p>
+              </div>
+              <p className="font-black text-red-600 text-xl">{fmt(loss)}</p>
+              <p className="text-xs text-gray-500">{depreciationRate}% per year</p>
+            </div>
+          </div>
+        )}
+      </div>
+      
+      {result && (
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="font-bold text-gray-800 text-sm">Year-by-Year Value</h3>
+            <div className="flex items-center gap-1 bg-gradient-to-r from-purple-100 to-blue-100 px-2 py-1 rounded-full">
+              <span className="text-xs font-medium text-purple-700">AI Powered</span>
+            </div>
           </div>
           
-          <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-4 text-center border border-red-200">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <BarChart3 className="w-4 h-4 text-red-500" />
-              <p className="text-xs text-red-600 font-medium uppercase tracking-wide">Total Depreciation</p>
-            </div>
-            <p className="font-black text-red-600 text-xl">{fmt(loss)}</p>
-            <p className="text-xs text-gray-500">{depreciationRate}% per year</p>
-          </div>
-        </div>
-      </div>
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <div className="flex items-center justify-between mb-5">
-          <h3 className="font-bold text-gray-800 text-sm">Year-by-Year Value</h3>
-          <div className="flex items-center gap-1 bg-gradient-to-r from-purple-100 to-blue-100 px-2 py-1 rounded-full">
-            <span className="text-xs font-medium text-purple-700">AI Powered</span>
-          </div>
-        </div>
-        
-        <div className="flex items-end gap-2 h-36 mb-6">
-          {yearData.map((d, i) => (
-            <div key={i} className="flex-1 flex flex-col items-center gap-2">
-              <div 
-                className={`w-full rounded-t-lg transition-colors ${
-                  i === 0 ? 'bg-primary-500' : 
-                  i === years ? 'bg-red-400' : 
-                  'bg-primary-300'
-                }`} 
-                style={{ height: `${(d.val / value) * 100}%`, minHeight: 6 }}
-              />
-              <div>
-                <span className="text-xs text-gray-600 font-medium">Y{d.yr}</span>
-                {d.depreciation > 0 && (
-                  <span className="text-xs text-red-500 block">-{d.depreciation}%</span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-        
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4">
-          <p className="text-xs text-gray-600 font-medium mb-3">Depreciation Timeline</p>
-          <div className="space-y-2 max-h-32 overflow-y-auto">
-            {yearData.map((d, index) => (
-              <div key={d.yr} className="flex justify-between text-xs py-2 border-b border-gray-200 last:border-b-0">
-                <span className="text-gray-600 font-medium">Year {d.yr}</span>
-                <div className="text-right">
-                  <span className="font-bold text-gray-800">{fmt(d.val)}</span>
-                  {d.depreciation > 0 && (
-                    <span className="text-red-500 ml-2">-{d.depreciation}%</span>
-                  )}
+          {/* Improved Bar Chart with better visualization */}
+          <div className="flex items-end gap-2 h-40 mb-6 px-2">
+            {yearData.map((d, i) => {
+              const barHeight = getBarHeight(d.value);
+              const isLast = i === yearData.length - 1;
+              return (
+                <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                  <div className="w-full relative group">
+                    <div 
+                      className={`w-full rounded-t-lg transition-all duration-500 ${
+                        i === 0 ? 'bg-primary-500' : 
+                        isLast ? 'bg-gradient-to-t from-red-500 to-red-400' : 
+                        'bg-gradient-to-t from-primary-400 to-primary-300'
+                      }`} 
+                      style={{ height: `${barHeight}%`, minHeight: 20 }}
+                    />
+                    {/* Tooltip */}
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10">
+                      {fmt(d.value)}
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <span className="text-xs text-gray-600 font-medium block">Y{d.year}</span>
+                    {d.depreciation > 0 && (
+                      <span className="text-xs text-red-500 font-medium">-{d.depreciation}%</span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
+          </div>
+          
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4">
+            <p className="text-xs text-gray-600 font-medium mb-3">Depreciation Timeline</p>
+            <div className="space-y-2 max-h-40 overflow-y-auto">
+              {yearData.map((d) => (
+                <div key={d.year} className="flex justify-between text-xs py-2 border-b border-gray-200 last:border-b-0">
+                  <span className="text-gray-600 font-medium">Year {d.year}</span>
+                  <div className="text-right">
+                    <span className="font-bold text-gray-800">{fmt(d.value)}</span>
+                    {d.depreciation > 0 && (
+                      <span className="text-red-500 ml-2 font-medium">-{d.depreciation}%</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
 
 // Ownership Tool Component
 function OwnershipTool() {
-  const costs = [
-    { category: 'Insurance', cost: 40000, icon: Shield, color: 'from-blue-50 to-blue-100', textColor: 'text-blue-600' },
-    { category: 'Registration', cost: 8000, icon: Settings, color: 'from-gray-50 to-gray-100', textColor: 'text-gray-600' },
-    { category: 'Maintenance', cost: 80000, icon: Settings, color: 'from-primary-50 to-primary-100', textColor: 'text-primary-600' },
-    { category: 'Fuel', cost: 180000, icon: Zap, color: 'from-orange-50 to-orange-100', textColor: 'text-orange-600' },
-  ];
-  const totalYearly = costs.reduce((sum, item) => sum + item.cost, 0);
+  const { makes, loading: makesLoading } = useMakes();
+  const [make, setMake] = useState('');
+  const { models, loading: modelsLoading } = useModels(make);
+  const [model, setModel] = useState('');
+  const [year, setYear] = useState(2020);
+  const [currentValue, setCurrentValue] = useState(3000000);
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  // Set default make when makes load
+  useEffect(() => {
+    if (makes.length > 0 && !make) {
+      setMake(makes[0]);
+    }
+  }, [makes, make]);
+
+  // Set default model when models load or make changes
+  useEffect(() => {
+    if (models.length > 0) {
+      setModel(models[0]);
+    }
+  }, [models]);
+
+  const calculate = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_BASE}/tools/ownership`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ make, model, year, currentValue }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setResult(data.data);
+      } else {
+        toast.error(data.message || 'Failed to calculate ownership cost');
+      }
+    } catch (error) {
+      console.error('Ownership calculation error:', error);
+      toast.error('Network error: Could not connect to server');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Auto-calculate on first load (silent - no error toast)
+  useEffect(() => {
+    const silentCalculate = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`${API_BASE}/tools/ownership`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ make, model, year, currentValue }),
+        });
+        const data = await response.json();
+        if (data.success) {
+          setResult(data.data);
+        }
+      } catch (error) {
+        console.error('Initial ownership calculation error:', error);
+        // Silent fail on auto-load - don't show toast
+      } finally {
+        setLoading(false);
+      }
+    };
+    silentCalculate();
+  }, []);
+
+  const costs = result?.breakdown || [];
+  const totalYearly = result?.totalYearly || 0;
+
+  const getIcon = (category) => {
+    switch(category.toLowerCase()) {
+      case 'insurance': return Shield;
+      case 'registration': return Settings;
+      case 'maintenance': return Calculator;
+      case 'fuel': return Zap;
+      default: return DollarSign;
+    }
+  };
+
+  const getColors = (category) => {
+    switch(category.toLowerCase()) {
+      case 'insurance': return { color: 'from-blue-50 to-blue-100', textColor: 'text-blue-600', barColor: 'bg-blue-500' };
+      case 'registration': return { color: 'from-gray-50 to-gray-100', textColor: 'text-gray-600', barColor: 'bg-gray-500' };
+      case 'maintenance': return { color: 'from-primary-50 to-primary-100', textColor: 'text-primary-600', barColor: 'bg-primary-500' };
+      case 'fuel': return { color: 'from-orange-50 to-orange-100', textColor: 'text-orange-600', barColor: 'bg-orange-500' };
+      default: return { color: 'from-gray-50 to-gray-100', textColor: 'text-gray-600', barColor: 'bg-gray-500' };
+    }
+  };
 
   return (
-    <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-      <div className="text-center mb-8">
-        <div className="w-16 h-16 bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <DollarSign className="w-8 h-8 text-white" />
-        </div>
-        <h3 className="font-bold text-gray-800 text-2xl mb-2">Complete Ownership Cost</h3>
-        <p className="text-gray-500 text-sm">Annual cost breakdown for Pakistani car owners</p>
-      </div>
-
-      <div className="bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl p-6 text-center mb-8 border border-primary-200">
-        <p className="text-xs text-primary-600 font-medium uppercase tracking-wide mb-2">Total Yearly Cost</p>
-        <p className="text-4xl font-black text-primary-500">{fmt(totalYearly)}</p>
-        <p className="text-xs text-gray-500 mt-2">All expenses combined</p>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {costs.map((item, index) => {
-          const Icon = item.icon;
-          const percentage = ((item.cost / totalYearly) * 100).toFixed(1);
-          
-          return (
-            <div key={item.category} className={`bg-gradient-to-r ${item.color} rounded-xl p-4 text-center border border-gray-200`}>
-              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mx-auto mb-3">
-                <Icon className={`w-5 h-5 ${item.textColor}`} />
-              </div>
-              <p className={`text-xs font-bold ${item.textColor} mb-1`}>{item.category}</p>
-              <p className="text-sm font-black text-gray-800">{fmt(item.cost)}</p>
-              <p className="text-xs text-gray-500 mt-1">{percentage}%</p>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="mt-8 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4">
-        <div className="flex items-center justify-between">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h3 className="font-bold text-gray-800 mb-5 text-sm">Car Details</h3>
+        <div className="space-y-4">
           <div>
-            <p className="text-xs text-gray-600 font-medium">Monthly Average</p>
-            <p className="text-lg font-black text-gray-800">{fmt(Math.round(totalYearly / 12))}</p>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">Car Make</label>
+            {makesLoading ? (
+              <div className="flex gap-2 flex-wrap">
+                <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
+                <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
+                <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
+              </div>
+            ) : (
+              <div className="flex gap-2 flex-wrap">
+                {makes.map(m => (
+                  <button key={m} onClick={() => setMake(m)}
+                    className={`px-3 py-2 rounded-xl text-sm font-semibold border transition-colors ${make === m ? 'bg-primary-500 text-white border-primary-500' : 'border-gray-200 text-gray-600 hover:border-primary-400'}`}>{m}</button>
+                ))}
+              </div>
+            )}
           </div>
-          <div className="text-right">
-            <p className="text-xs text-gray-600 font-medium">5-Year Total</p>
-            <p className="text-lg font-black text-gray-800">{fmt(totalYearly * 5)}</p>
+          <div>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">Model</label>
+            {modelsLoading ? (
+              <div className="flex gap-2 flex-wrap">
+                <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
+                <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
+              </div>
+            ) : models.length > 0 ? (
+              <select 
+                value={model} 
+                onChange={e => setModel(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:border-primary-500 focus:outline-none"
+              >
+                {models.map(m => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+            ) : (
+              <input 
+                type="text" 
+                value={model} 
+                onChange={e => setModel(e.target.value)}
+                placeholder="Enter model"
+                className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:border-primary-500 focus:outline-none"
+              />
+            )}
           </div>
+          <div>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">Year: {year}</label>
+            <input type="range" min="2010" max="2024" value={year} onChange={e => setYear(+e.target.value)} className="w-full accent-primary-500" />
+            <div className="flex justify-between text-xs text-gray-400 mt-1"><span>2010</span><span>2024</span></div>
+          </div>
+          <div>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">Current Value: {fmt(currentValue)}</label>
+            <input type="range" min="500000" max="30000000" step="100000" value={currentValue} onChange={e => setCurrentValue(+e.target.value)} className="w-full accent-primary-500" />
+            <div className="flex justify-between text-xs text-gray-400 mt-1"><span>5L</span><span>3Cr</span></div>
+          </div>
+          <button 
+            onClick={calculate} 
+            disabled={loading}
+            className="w-full bg-primary-500 text-white py-3 rounded-xl font-bold hover:bg-primary-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Calculating...</>
+            ) : (
+              <><DollarSign className="w-4 h-4" /> Calculate Ownership Cost</>
+            )}
+          </button>
         </div>
       </div>
+
+      {result && (
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div className="text-center mb-6">
+            <div className="w-14 h-14 bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-3">
+              <DollarSign className="w-7 h-7 text-white" />
+            </div>
+            <h3 className="font-bold text-gray-800 text-xl mb-1">Complete Ownership Cost</h3>
+            <p className="text-gray-500 text-sm">Annual cost breakdown for Pakistani car owners</p>
+          </div>
+
+          <div className="bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl p-5 text-center mb-6 border border-primary-200">
+            <p className="text-xs text-primary-600 font-medium uppercase tracking-wide mb-2">Total Yearly Cost</p>
+            <p className="text-3xl font-black text-primary-500">{fmt(totalYearly)}</p>
+            <p className="text-xs text-gray-500 mt-1">All expenses combined</p>
+          </div>
+
+          {/* Cost Breakdown with Progress Bars */}
+          <div className="space-y-3 mb-6">
+            {costs.map((item) => {
+              const Icon = getIcon(item.category);
+              const colors = getColors(item.category);
+              return (
+                <div key={item.category} className="bg-gray-50 rounded-xl p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${colors.color} flex items-center justify-center`}>
+                        <Icon className={`w-4 h-4 ${colors.textColor}`} />
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">{item.category}</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-sm font-bold text-gray-800">{fmt(item.cost)}</span>
+                      <span className="text-xs text-gray-500 ml-1">({item.percentage}%)</span>
+                    </div>
+                  </div>
+                  <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div className={`h-full ${colors.barColor} rounded-full`} style={{ width: `${item.percentage}%` }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 text-center">
+              <p className="text-xs text-gray-500 mb-1">Monthly Average</p>
+              <p className="text-lg font-black text-gray-800">{fmt(Math.round(totalYearly / 12))}</p>
+            </div>
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 text-center">
+              <p className="text-xs text-gray-500 mb-1">5-Year Total</p>
+              <p className="text-lg font-black text-gray-800">{fmt(totalYearly * 5)}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

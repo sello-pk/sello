@@ -3,6 +3,9 @@ import {
   createCar, deleteCar, editCar, getAllCars, getFilteredCars, getMyCars, getSingleCar, markCarAsSold, relistCar, getCarCountsByMake
 } from "../controllers/carController.js";
 import {
+  getModelsByMake
+} from "../controllers/car/queryController.js";
+import {
   createValuation, getUserValuationHistory, getAllValuationsAdmin, getValuationById, deleteValuation, calculateMaintenanceCost, calculateFuelCost, calculateResaleValue, calculateOwnershipCost
 } from "../controllers/valuationController.js";
 import {
@@ -84,6 +87,7 @@ router.delete(
 /* --------------------------- VEHICLE ATTRIBUTES --------------------------- */
 router.get("/vehicle-attributes/types", getVehicleTypes);
 router.get("/vehicle-attributes/types/:id/fields", getFieldsForType);
+router.get("/vehicle-attributes/makes/:make/models", getModelsByMake);
 
 /* ---------------------------- RECOMMENDATIONS ----------------------------- */
 router.get("/recommendations/similar/:carId", getSimilarListings);

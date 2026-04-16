@@ -215,6 +215,44 @@ export const getCarCountsByMake = async (req, res) => {
   }
 };
 
+export const getModelsByMake = async (req, res) => {
+  try {
+    const { make } = req.params;
+    if (!make) {
+      return res.status(400).json({ success: false, message: "Make is required" });
+    }
+    
+    const match = {
+      status: { $nin: ["deleted", "expired"] },
+      $or: [{ isApproved: true }, { isApproved: { $exists: false } }],
+      make: { $regex: new RegExp(`^${make}$`, 'i') } // case-insensitive match
+    };
+    
+    const models = await Car.aggregate([
+      { $match: match },
+      {
+        $group: {
+          _id: { $toLower: { $trim: { input: "$model" } } },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { count: -1 } }
+    ]);
+    
+    // Return just the model names
+    const modelNames = models.map(m => m._id).filter(Boolean);
+    
+    return res.status(200).json({ 
+      success: true, 
+      data: modelNames,
+      make: make
+    });
+  } catch (error) {
+    Logger.error("Get Models By Make Error", error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 export const getMyCars = async (req, res) => {
   try {
     if (!req.user) return res.status(401).json({ success: false, message: "Unauthorized" });
