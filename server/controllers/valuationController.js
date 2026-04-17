@@ -391,3 +391,88 @@ export const calculateOwnershipCost = async (req, res) => {
     });
   }
 };
+
+// Get price trends for a specific make/model/year
+export const getPriceTrends = async (req, res) => {
+  try {
+    const { make, model, year } = req.query;
+    
+    if (!make || !model || !year) {
+      return res.status(400).json({
+        success: false,
+        message: "Make, model, and year are required",
+      });
+    }
+
+    // Query valuations for this make/model/year (±2 years range)
+    const yearNum = parseInt(year);
+    const valuations = await Valuation.find({
+      make: { $regex: new RegExp(make, 'i') },
+      model: { $regex: new RegExp(model, 'i') },
+      year: { $gte: yearNum - 2, $lte: yearNum + 2 },
+      status: { $nin: ["deleted", "expired"] },
+    }).sort({ createdAt: 1 }).limit(20);
+
+    if (valuations.length < 3) {
+      return res.status(200).json({
+        success: false,
+        message: "Not enough data for this car",
+        data: null,
+      });
+    }
+
+    // Calculate trend from actual valuation data
+    const prices = valuations.map(v => v.estimatedPrice?.average || (v.estimatedPrice?.min + v.estimatedPrice?.max) / 2 || 0).filter(p => p > 0);
+    const months = valuations.map(v => v.createdAt.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }));
+    
+    if (prices.length < 3) {
+      return res.status(200).json({
+        success: false,
+        message: "Not enough price data",
+        data: null,
+      });
+    }
+
+    const startPrice = prices[0];
+    const currentPrice = prices[prices.length - 1];
+    const change = ((currentPrice - startPrice) / startPrice) * 100;
+    const isPositive = change >= 0;
+
+    // Generate 6 data points for the chart
+    const chartData = [];
+    const chartMonths = [];
+    const step = Math.floor(prices.length / 6);
+    
+    for (let i = 0; i < 6; i++) {
+      const idx = Math.min(i * step, prices.length - 1);
+      chartData.push(Math.round(prices[idx]));
+      chartMonths.push(months[idx]);
+    }
+
+    const trendData = {
+      make,
+      model,
+      year: yearNum,
+      percentage: isPositive ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`,
+      isPositive,
+      prices: chartData,
+      months: chartMonths,
+      currentPrice: Math.round(currentPrice),
+      startPrice: Math.round(startPrice),
+      dataPoints: valuations.length,
+      summary: `Based on ${valuations.length} actual valuations for ${yearNum} ${make} ${model}, prices have ${isPositive ? 'increased' : 'decreased'} by ${Math.abs(change).toFixed(1)}% over the recorded period. This trend reflects real market conditions including depreciation, demand fluctuations, fuel prices, and economic factors in Pakistan.`,
+    };
+
+    return res.status(200).json({
+      success: true,
+      data: trendData,
+    });
+  } catch (error) {
+    Logger.error("getPriceTrends Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};

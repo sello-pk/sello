@@ -13,7 +13,7 @@
 
 /* Generic hide scrollbar helper */
 .hideScrollbar::-webkit-scrollbar,
-  .scrollbar-hide::-webkit-scrollbar {
+.scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
 
@@ -45,7 +45,7 @@
 }
 
 #blog::-webkit-scrollbar,
-  #blogr::-webkit-scrollbar {
+#blogr::-webkit-scrollbar {
   display: none;
 }
 
