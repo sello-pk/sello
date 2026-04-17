@@ -6,7 +6,7 @@ import {
   getModelsByMake
 } from "../controllers/car/queryController.js";
 import {
-  createValuation, getUserValuationHistory, getAllValuationsAdmin, getValuationById, deleteValuation, calculateMaintenanceCost, calculateFuelCost, calculateResaleValue, calculateOwnershipCost
+  createValuation, getUserValuationHistory, getAllValuationsAdmin, getValuationById, deleteValuation, calculateResaleValue
 } from "../controllers/valuationController.js";
 import {
   getVehicleTypes, getFieldsForType
@@ -96,9 +96,6 @@ router.get("/recommendations/viewed", auth, getRecentlyViewed);
 router.get("/recommendations/recommended", auth, getRecommendedListings);
 
 /* --------------------------- WEB TOOLS --------------------------- */
-router.post("/tools/maintenance", calculateMaintenanceCost);
-router.post("/tools/fuel", calculateFuelCost);
 router.post("/tools/resale", calculateResaleValue);
-router.post("/tools/ownership", calculateOwnershipCost);
 
 export default router;
