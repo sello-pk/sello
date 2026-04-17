@@ -893,7 +893,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
                   inputType="tel"
                   value={formData.contactNumber}
                   onChange={(e) => handleChange("contactNumber", e.target.value)}
-                  placeholder="e.g., +923134211023"
+                  placeholder="e.g., +923122221474"
                   required
                 />
               </div>
@@ -912,7 +912,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
                   inputType="tel"
                   value={formData.whatsappNumber}
                   onChange={(e) => handleChange("whatsappNumber", e.target.value)}
-                  placeholder="Optional, e.g., +923134211023"
+                  placeholder="Optional, e.g., +923122221474"
                 />
               </div>
               <div>
@@ -950,7 +950,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
                   onChange={(e) =>
                     handleChange("contactNumber", e.target.value)
                   }
-                  placeholder="e.g., +923134211023"
+                  placeholder="e.g., +923122221474"
                   required
                 />
               </div>
@@ -971,7 +971,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
                   onChange={(e) =>
                     handleChange("whatsappNumber", e.target.value)
                   }
-                  placeholder="Optional, e.g., +923134211023"
+                  placeholder="Optional, e.g., +923122221474"
                 />
               </div>
               <div>

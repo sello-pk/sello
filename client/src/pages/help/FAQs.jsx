@@ -264,11 +264,11 @@ const FAQs = () => {
                 Contact Support
               </button>
               <a
-                href="tel:+923134211023"
+                href="tel:+923122221474"
                 className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <FiPhone className="text-xl" />
-                +923 134 211 023
+                +923 122 221 474
               </a>
               <a
                 href="mailto:info@sello.pk"

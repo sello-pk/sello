@@ -332,11 +332,11 @@ const HelpCenter = () => {
                 Contact Support
               </button>
               <a
-                href="tel:+923134211023"
+                href="tel:+923122221474"
                 className="flex items-center gap-2 text-white hover:text-primary-100 transition-colors"
               >
                 <FiPhone className="text-xl" />
-                <span className="text-lg font-medium">+923 134 211 023</span>
+                <span className="text-lg font-medium">+923 122 221 474</span>
               </a>
               <a
                 href={`mailto:${import.meta.env.VITE_SUPPORT_EMAIL || "support@example.com"}`}

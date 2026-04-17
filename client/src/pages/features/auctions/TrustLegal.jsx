@@ -367,11 +367,11 @@ By participating in our auctions, you acknowledge and accept these limitations.`
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="tel:+923134211023"
+              href="tel:+923122221474"
               className="flex items-center justify-center gap-2 px-6 py-3 bg-primary rounded-xl text-white hover:bg-opacity-80 transition-colors"
             >
               <Phone className="w-5 h-5" />
-              +923134211023
+              +923122221474
             </a>
             <a
               href="mailto:info@sello.pk"

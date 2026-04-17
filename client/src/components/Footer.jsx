@@ -96,10 +96,10 @@ const Footer = () => {
                 <p>
                   <span className="font-medium text-white">Phone:</span>{" "}
                   <a
-                    href="tel:+923134211023"
+                    href="tel:+923122221474"
                     className="hover:text-white transition-colors duration-200"
                   >
-                    +923134211023
+                    +923122221474
                   </a>
                 </p>
                 <p>

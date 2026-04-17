@@ -32,13 +32,13 @@ const ContactInformation = () => {
       items: [
         {
           label: "Main Office",
-          value: "+923134211023",
-          link: "tel:+923134211023",
+          value: "+923122221474",
+          link: "tel:+923122221474",
         },
         {
           label: "Support Line",
-          value: "+923134211023",
-          link: "tel:+923134211023",
+          value: "+923122221474",
+          link: "tel:+923122221474",
         },
       ],
       color: "bg-green-50 text-green-600",
@@ -135,11 +135,11 @@ const ContactInformation = () => {
           Get support as soon as you need it.
         </p>
         <a
-          href="tel:+923134211023"
+          href="tel:+923122221474"
           className="inline-flex items-center gap-2 bg-white text-primary-500 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
         >
           <FiPhone size={20} />
-          Call Now: +923134211023
+          Call Now: +923122221474
         </a>
       </div>
     </div>

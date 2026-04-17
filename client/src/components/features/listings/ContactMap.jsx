@@ -52,7 +52,7 @@ const ContactMap = () => {
   const contact = {
     title: "Visit Our Office",
     subtitle: "Sello Head Office",
-    phone: "+923134211023",
+    phone: "+923122221474",
     email: "info@sello.pk",
     address: "RFJW+4XR Okara, Pakistan",
     hours: [
