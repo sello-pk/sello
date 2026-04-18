@@ -301,3 +301,37 @@ export const getMyCars = async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+// Get distinct years from cars (dynamic based on available inventory)
+export const getYears = async (req, res) => {
+  try {
+    const { make, model } = req.query;
+    
+    const query = {
+      status: { $nin: ["deleted", "expired"] },
+      year: { $exists: true, $ne: null }
+    };
+    
+    if (make) {
+      query.make = { $regex: new RegExp(make, 'i') };
+    }
+    if (model) {
+      query.model = { $regex: new RegExp(model, 'i') };
+    }
+
+    const years = await Car.distinct('year', query);
+    
+    // Sort years descending (newest first)
+    const sortedYears = years
+      .filter(y => y && y >= 1990 && y <= new Date().getFullYear() + 1)
+      .sort((a, b) => b - a);
+
+    return res.status(200).json({
+      success: true,
+      data: sortedYears
+    });
+  } catch (error) {
+    Logger.error("Get Years Error", error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};

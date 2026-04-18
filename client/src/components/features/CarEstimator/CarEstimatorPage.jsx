@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
@@ -89,54 +89,103 @@ function useModels(make) {
   return { models, loading };
 }
 
+// Custom hook to fetch years from database (optionally filtered by make/model)
+function useYears(make, model) {
+  const [years, setYears] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchYears = async () => {
+      setLoading(true);
+      try {
+        let url = `${API_BASE}/vehicle-attributes/years`;
+        const params = new URLSearchParams();
+        if (make) params.append('make', make);
+        if (model) params.append('model', model);
+        if (params.toString()) url += `?${params.toString()}`;
+        
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data.success && data.data && data.data.length > 0) {
+          setYears(data.data);
+        } else {
+          // Fallback: generate last 15 years
+          const currentYear = new Date().getFullYear();
+          setYears(Array.from({ length: 15 }, (_, i) => currentYear - i));
+        }
+      } catch (error) {
+        console.error('Failed to fetch years:', error);
+        // Fallback: generate last 15 years
+        const currentYear = new Date().getFullYear();
+        setYears(Array.from({ length: 15 }, (_, i) => currentYear - i));
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchYears();
+  }, [make, model]);
+
+  return { years, loading };
+}
+
 // Trends Tool Component
 function TrendsTool({ savedValuations, currentResult, currentFormData }) {
   const { makes, loading: makesLoading } = useMakes();
   const [make, setMake] = useState('');
   const { models, loading: modelsLoading } = useModels(make);
   const [model, setModel] = useState('');
-  const [year, setYear] = useState(2022);
+  const { years, loading: yearsLoading } = useYears(make, model);
+  const [year, setYear] = useState(new Date().getFullYear());
   const [trendData, setTrendData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const debounceRef = useRef(null);
 
-  // Set default from current estimation result if available
+  // Update year when years list changes and current year is not in the list
+  useEffect(() => {
+    if (years.length > 0 && !years.includes(year)) {
+      setYear(years[0]); // Set to most recent available year
+    }
+  }, [years, year]);
+
+  // Set default from current estimation result ONLY if explicitly provided
   useEffect(() => {
     if (currentFormData?.make && currentFormData?.model) {
       setMake(currentFormData.make);
       setModel(currentFormData.model);
-      setYear(currentFormData.year || 2022);
-    } else if (makes.length > 0 && !make) {
-      setMake(makes[0]);
+      setYear(currentFormData.year || new Date().getFullYear());
     }
-  }, [currentFormData, makes]);
+    // Otherwise, don't auto-select - let user choose manually
+  }, [currentFormData]);
 
-  // Set default model when models load
-  useEffect(() => {
-    if (models.length > 0 && !model) {
-      setModel(models[0]);
-    }
-  }, [models]);
-
-  // Fetch real trend data from backend when selections change
+  // Fetch real trend data from backend when selections change (debounced)
   useEffect(() => {
     if (!make || !model) return;
-    
-    const fetchTrendData = async () => {
+
+    // Clear previous debounce timer
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    // Set new debounced fetch
+    debounceRef.current = setTimeout(async () => {
       setLoading(true);
-      
+
       try {
         // Call backend API for real trend data
         const response = await fetch(
           `${API_BASE}/tools/trends?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&year=${year}`
         );
         const data = await response.json();
-        
+
         if (data.success && data.data) {
           setTrendData(data.data);
         } else {
           // Fallback: Calculate from saved valuations of same make/model/year
+          // Use case-insensitive comparison to match backend behavior
           const relevantValuations = savedValuations.filter(
-            v => v.make === make && v.model === model && Math.abs(v.year - year) <= 2
+            v => v.make?.toLowerCase() === make?.toLowerCase() &&
+                 v.model?.toLowerCase() === model?.toLowerCase() &&
+                 Math.abs(v.year - year) <= 2
           );
           
           if (relevantValuations.length >= 3) {
@@ -183,46 +232,45 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
       } finally {
         setLoading(false);
       }
+    }, 400); // 400ms debounce
+
+    // Cleanup timer on unmount or dependency change
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
     };
-    
-    fetchTrendData();
   }, [make, model, year, savedValuations]);
 
   // Quick select from saved valuations
   const handleQuickSelect = (valuation) => {
     setMake(valuation.make);
     setModel(valuation.model);
-    setYear(valuation.year || 2022);
-  };
-  
-  // Quick select from current result
-  const handleSelectCurrent = () => {
-    if (currentFormData?.make && currentFormData?.model) {
-      setMake(currentFormData.make);
-      setModel(currentFormData.model);
-      setYear(currentFormData.year || 2022);
-    }
+    setYear(valuation.year || new Date().getFullYear());
   };
 
   const maxPrice = trendData ? Math.max(...trendData.prices) : 0;
   const minPrice = trendData ? Math.min(...trendData.prices) : 0;
+  const priceRange = maxPrice - minPrice;
+
+  // Safe Y coordinate calculation (handles division by zero)
+  const getY = (p) => {
+    if (priceRange === 0) return 75; // Center when all prices equal
+    return 150 - ((p - minPrice) / priceRange) * 120 - 15;
+  };
 
   return (
     <div className="space-y-6">
-      {/* Header - Dynamic based on selection */}
-      <div className="text-center mb-6">
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
-          {make && model ? `${make} ${model} Trends` : 'Price Trends'}
-        </h2>
+      {/* Header */}
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">Price Trends</h2>
         <p className="text-gray-500">
-          {make && model 
-            ? `Historical price data for ${year} ${make} ${model} based on actual valuations.`
-            : 'Select a car to view real market price trends.'}
+          View historical price trends for specific car models in Pakistan.
         </p>
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Main Content Grid - CSS variable for primary color used by SVG */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" style={{ '--color-primary': 'var(--primary-500, #3b82f6)' }}>
         {/* Left Card - Select a Car */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <h3 className="font-semibold text-gray-800 mb-5">
@@ -274,15 +322,24 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
             {/* Year */}
             <div>
               <label className="text-sm font-medium text-gray-600 mb-2 block">Year</label>
-              <select
-                value={year}
-                onChange={(e) => setYear(parseInt(e.target.value))}
-                className="w-full h-11 rounded-xl border border-gray-200 bg-gray-50 px-4 text-gray-800 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100 transition-all"
-              >
-                {Array.from({ length: 15 }, (_, i) => new Date().getFullYear() - i).map(y => (
-                  <option key={y} value={y}>{y}</option>
-                ))}
-              </select>
+              {yearsLoading ? (
+                <div className="h-11 bg-gray-100 rounded-xl animate-pulse" />
+              ) : (
+                <select
+                  value={year}
+                  onChange={(e) => setYear(parseInt(e.target.value))}
+                  disabled={years.length === 0}
+                  className="w-full h-11 rounded-xl border border-gray-200 bg-gray-50 px-4 text-gray-800 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {years.length === 0 ? (
+                    <option value="">Select make & model first</option>
+                  ) : (
+                    years.map(y => (
+                      <option key={y} value={y}>{y}</option>
+                    ))
+                  )}
+                </select>
+              )}
             </div>
           </div>
         </div>
@@ -305,7 +362,7 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
                 </div>
                 <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
                   trendData.isPositive 
-                    ? 'bg-emerald-50 text-emerald-600' 
+                    ? 'bg-primary-50 text-primary-600' 
                     : 'bg-red-50 text-red-600'
                 }`}>
                   <TrendingUp className="w-4 h-4" />
@@ -316,11 +373,11 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
               {/* Line Chart SVG */}
               <div className="h-48 mb-4 relative">
                 <svg viewBox="0 0 300 150" className="w-full h-full">
-                  {/* Gradient definition */}
+                  {/* Gradient definition using CSS variables */}
                   <defs>
                     <linearGradient id="trendGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor={trendData.isPositive ? "#10b981" : "#ef4444"} stopOpacity="0.2" />
-                      <stop offset="100%" stopColor={trendData.isPositive ? "#10b981" : "#ef4444"} stopOpacity="0" />
+                      <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.2" />
+                      <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
                     </linearGradient>
                   </defs>
                   
@@ -329,7 +386,7 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
                     fill="url(#trendGradient)"
                     points={`0,150 ${trendData.prices.map((p, i) => {
                       const x = (i / (trendData.prices.length - 1)) * 300;
-                      const y = 150 - ((p - minPrice) / (maxPrice - minPrice)) * 120 - 15;
+                      const y = getY(p);
                       return `${x},${y}`;
                     }).join(' ')} 300,150`}
                   />
@@ -337,13 +394,13 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
                   {/* Line */}
                   <polyline
                     fill="none"
-                    stroke={trendData.isPositive ? "#10b981" : "#ef4444"}
+                    className="stroke-primary-500"
                     strokeWidth="3"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     points={trendData.prices.map((p, i) => {
                       const x = (i / (trendData.prices.length - 1)) * 300;
-                      const y = 150 - ((p - minPrice) / (maxPrice - minPrice)) * 120 - 15;
+                      const y = getY(p);
                       return `${x},${y}`;
                     }).join(' ')}
                   />
@@ -351,7 +408,7 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
                   {/* Data points */}
                   {trendData.prices.map((p, i) => {
                     const x = (i / (trendData.prices.length - 1)) * 300;
-                    const y = 150 - ((p - minPrice) / (maxPrice - minPrice)) * 120 - 15;
+                    const y = getY(p);
                     return (
                       <circle
                         key={i}
@@ -359,7 +416,7 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
                         cy={y}
                         r="4"
                         fill="white"
-                        stroke={trendData.isPositive ? "#10b981" : "#ef4444"}
+                        className="stroke-primary-500"
                         strokeWidth="2"
                       />
                     );
@@ -403,31 +460,16 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
         </div>
       </div>
 
-      {/* Quick Access - Current Result + Saved Valuations */}
-      {(currentFormData?.make || savedValuations.length > 0) && (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-          <h3 className="font-semibold text-gray-800 mb-4">Quick Access</h3>
+      {/* Quick Access - Your Cars */}
+      {savedValuations.length > 0 && (
+        <div className="mt-8">
+          <h3 className="font-semibold text-gray-800 mb-4">Quick Access - Your Cars</h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {/* Current Estimation Result */}
-            {currentFormData?.make && currentFormData?.model && (
+            {savedValuations.slice(0, 4).map((v) => (
               <button
-                onClick={handleSelectCurrent}
-                className="p-3 bg-primary-50 rounded-xl border-2 border-primary-300 hover:border-primary-500 hover:shadow-md transition-all text-left"
-              >
-                <p className="font-medium text-primary-700 text-sm flex items-center gap-1">
-                  <Zap className="w-3 h-3" />
-                  Current
-                </p>
-                <p className="font-medium text-gray-800 text-sm">{currentFormData.make} {currentFormData.model}</p>
-                <p className="text-xs text-gray-500">{currentFormData.year}</p>
-              </button>
-            )}
-            {/* Saved Valuations */}
-            {savedValuations.slice(0, 3).map((v) => (
-              <button
-                key={v._id}
+                key={v.id || v._id}
                 onClick={() => handleQuickSelect(v)}
-                className="p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all text-left"
+                className="p-3 bg-white rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all text-left"
               >
                 <p className="font-medium text-gray-800 text-sm">{v.make} {v.model}</p>
                 <p className="text-xs text-gray-500">{v.year}</p>

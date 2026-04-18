@@ -3,7 +3,7 @@ import {
   createCar, deleteCar, editCar, getAllCars, getFilteredCars, getMyCars, getSingleCar, markCarAsSold, relistCar, getCarCountsByMake
 } from "../controllers/carController.js";
 import {
-  getModelsByMake
+  getModelsByMake, getYears
 } from "../controllers/car/queryController.js";
 import {
   createValuation, getUserValuationHistory, getAllValuationsAdmin, getValuationById, deleteValuation, calculateResaleValue, getPriceTrends
@@ -88,6 +88,7 @@ router.delete(
 router.get("/vehicle-attributes/types", getVehicleTypes);
 router.get("/vehicle-attributes/types/:id/fields", getFieldsForType);
 router.get("/vehicle-attributes/makes/:make/models", getModelsByMake);
+router.get("/vehicle-attributes/years", cache(600, (req) => `cache:years:${req.query?.make || 'all'}:${req.query?.model || 'all'}`), getYears);
 
 /* ---------------------------- RECOMMENDATIONS ----------------------------- */
 router.get("/recommendations/similar/:carId", getSimilarListings);

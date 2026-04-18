@@ -406,12 +406,18 @@ export const getPriceTrends = async (req, res) => {
 
     // Query valuations for this make/model/year (±2 years range)
     const yearNum = parseInt(year);
-    const valuations = await Valuation.find({
-      make: { $regex: new RegExp(make, 'i') },
-      model: { $regex: new RegExp(model, 'i') },
-      year: { $gte: yearNum - 2, $lte: yearNum + 2 },
-      status: { $nin: ["deleted", "expired"] },
-    }).sort({ createdAt: 1 }).limit(20);
+
+    const query = {
+      "vehicleData.make": { $regex: new RegExp(make, 'i') },
+      "vehicleData.model": { $regex: new RegExp(model, 'i') },
+      "vehicleData.year": { $gte: yearNum - 2, $lte: yearNum + 2 },
+      status: "active",
+    };
+
+    const valuations = await Valuation.find(query)
+      .sort({ createdAt: 1 })
+      .limit(20)
+      .lean();
 
     if (valuations.length < 3) {
       return res.status(200).json({
@@ -422,7 +428,7 @@ export const getPriceTrends = async (req, res) => {
     }
 
     // Calculate trend from actual valuation data
-    const prices = valuations.map(v => v.estimatedPrice?.average || (v.estimatedPrice?.min + v.estimatedPrice?.max) / 2 || 0).filter(p => p > 0);
+    const prices = valuations.map(v => v.estimation?.averagePrice || ((v.estimation?.minPrice + v.estimation?.maxPrice) / 2) || 0).filter(p => p > 0);
     const months = valuations.map(v => v.createdAt.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }));
     
     if (prices.length < 3) {

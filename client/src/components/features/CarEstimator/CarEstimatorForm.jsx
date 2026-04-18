@@ -72,10 +72,10 @@ const customTheme = (theme) => ({
   ...theme,
   colors: {
     ...theme.colors,
-    primary: "#f59e0b",
-    primary75: "rgba(245, 158, 11, 0.75)",
-    primary50: "rgba(245, 158, 11, 0.5)",
-    primary25: "rgba(245, 158, 11, 0.2)",
+    primary: "var(--primary-500, #3b82f6)",
+    primary75: "var(--primary-500-75, rgba(59, 130, 246, 0.75))",
+    primary50: "var(--primary-500-50, rgba(59, 130, 246, 0.5))",
+    primary25: "var(--primary-500-25, rgba(59, 130, 246, 0.25))",
   },
 });
 
@@ -85,9 +85,9 @@ const selectStyles = {
     minHeight: "48px",
     height: "48px",
     borderRadius: "12px",
-    borderColor: state.isFocused ? "#f59e0b" : "#d1d5db",
-    boxShadow: state.isFocused ? "0 0 0 2px rgba(245,158,11,0.25)" : "none",
-    "&:hover": { borderColor: "#f59e0b" },
+    borderColor: state.isFocused ? "var(--primary-500, #3b82f6)" : "#d1d5db",
+    boxShadow: state.isFocused ? "0 0 0 2px var(--primary-500-25, rgba(59,130,246,0.25))" : "none",
+    "&:hover": { borderColor: "var(--primary-500, #3b82f6)" },
   }),
   menu: (baseStyles) => ({ ...baseStyles, zIndex: 9999 }),
   menuPortal: (baseStyles) => ({ ...baseStyles, zIndex: 9999 }),
