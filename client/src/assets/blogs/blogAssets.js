@@ -93,49 +93,65 @@ export const customerReviews = [
   {
     id: 1,
     review:
-      "Great platform to find reliable cars easily. I was able to explore multiple options, compare prices, and finally purchase a car without any hassle. Truly impressed with the seamless process.",
-    name: "Ahmed Khan",
-    country: "Pakistan",
+      "Great platform for buying cars in Pakistan. The listings are detailed and prices are close to the market rate. I found a good car within my budget easily.",
+    name: "Ali Raza",
+    country: "Lahore",
     image: "https://randomuser.me/api/portraits/men/32.jpg",
   },
   {
     id: 2,
     review:
-      "The buying process was smooth and transparent from start to finish. I could clearly see all details, documents, and history of the car. Definitely one of the best online car platforms.",
-    name: "Fatima Ali",
+      "Very easy to use website. You can compare different cars while sitting at home. It saves time and gives plenty of options.",
+    name: "Hassan Ahmed",
     country: "UAE",
     image: "https://randomuser.me/api/portraits/women/44.jpg",
   },
   {
     id: 3,
     review:
-      "Excellent customer support, highly recommend! The team responded quickly to my queries and guided me step by step. It really gave me confidence in making such an important purchase online.",
-    name: "Usman Raza",
-    country: "USA",
+      "Overall a good experience. Direct contact with sellers is helpful, but you still need to inspect the car before finalizing the deal.",
+    name: "Usman Tariq",
+    country: "Islamabad",
     image: "https://randomuser.me/api/portraits/men/12.jpg",
   },
   {
     id: 4,
     review:
-      "Loved the variety of cars available here. From budget-friendly models to luxury vehicles, everything was listed properly. The detailed descriptions and photos made it super easy to make my decision.",
-    name: "Hira Sheikh",
-    country: "Canada",
+      "It was my first time searching for a car online, and Sello.pk made it very simple. The filters and search options are really useful",
+    name: "Zainab Fatima",
+    country: "Rawalpindi",
     image: "https://randomuser.me/api/portraits/women/21.jpg",
   },
   {
     id: 5,
     review:
-      "Easy to navigate and very user-friendly website. I quickly filtered cars by my preferences and found exactly what I was looking for. The design and functionality of the site are excellent.",
-    name: "Bilal Ahmad",
-    country: "UK",
+      "A good platform for used cars in Pakistan. Just make sure to verify documents and details before making any payment.",
+    name: "Bilal Khan",
+    country: "Faisalabad",
     image: "https://randomuser.me/api/portraits/men/51.jpg",
   },
   {
     id: 6,
     review:
-      "I sold my car quickly, hassle-free experience. The platform connected me with genuine buyers and I received a fair price. Highly recommend this service to anyone looking to sell easily.",
-    name: "Sara Malik",
-    country: "Australia",
+      "I found a genuine seller through this platform. The car matched the description perfectly. Highly recommended for buyers.",
+    name: "Ahmed Raza",
+    country: "Multan",
+    image: "https://randomuser.me/api/portraits/women/65.jpg",
+  },
+  {
+    id: 7,
+    review:
+      "I found a genuine seller through this platform. The car matched the description perfectly. Highly recommended for buyers.",
+    name: "Sana Noor",
+    country: "Lahore",
+    image: "https://randomuser.me/api/portraits/women/65.jpg",
+  },
+  {
+    id: 6,
+    review:
+      "Sello.pk is becoming a strong platform for online car buying in Pakistan. It feels more reliable compared to random social media sellers.",
+    name: "Imran Shah",
+    country: "Peshawar",
     image: "https://randomuser.me/api/portraits/women/65.jpg",
   },
 ];
