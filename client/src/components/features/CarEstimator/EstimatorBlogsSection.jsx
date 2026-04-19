@@ -1127,9 +1127,21 @@ Whether you are a buyer or a seller you deserve clarity which is what we provide
 
 export default function EstimatorBlogsSection() {
   const handleCtaClick = () => {
+    // Find the CarEstimatorPage component and switch to Estimate tab
     const target = document.getElementById("estimator-tabs");
-    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
-    else window.scrollTo({ top: 0, behavior: "smooth" });
+    if (target) {
+      // Find the Estimate tab button and click it to switch tabs
+      const estimateTabButton = target.querySelector('button[data-tab-id="estimate"]');
+      
+      if (estimateTabButton) {
+        estimateTabButton.click();
+      }
+      
+      // Scroll to tabs section
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   return (

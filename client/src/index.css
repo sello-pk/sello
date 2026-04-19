@@ -23,6 +23,59 @@
   scrollbar-width: none;
 }
 
+
+/* Fix React Select blue outline issue - aggressive override */
+[class*="css-"][class*="control"],
+div[class*="control"],
+[class*="control"] {
+  border-color: #d1d5db !important;
+}
+
+[class*="css-"][class*="control"]:focus,
+[class*="css-"][class*="control"]:focus-visible,
+[class*="css-"][class*="control"]:active,
+[class*="css-"][class*="control"]:focus-within,
+div[class*="control"]:focus,
+div[class*="control"]:focus-visible,
+div[class*="control"]:active,
+div[class*="control"]:focus-within,
+[class*="control"]:focus,
+[class*="control"]:focus-visible,
+[class*="control"]:active,
+[class*="control"]:focus-within {
+  border-color: #FFA602 !important;
+  box-shadow: 0 0 0 2px rgba(255, 166, 2, 0.25) !important;
+  outline: none !important;
+}
+
+/* Override any focus styles for React Select */
+[class*="css-"][class*="control"]:hover,
+div[class*="control"]:hover,
+[class*="control"]:hover {
+  border-color: #FFA602 !important;
+}
+
+/* Force primary color for all React Select instances - most aggressive */
+.react-select-container [class*="control"]:focus,
+.react-select-container [class*="control"]:focus-visible,
+.react-select-container [class*="control"]:active,
+.react-select-container [class*="control"]:focus-within,
+* [class*="control"]:focus,
+* [class*="control"]:focus-visible,
+* [class*="control"]:active,
+* [class*="control"]:focus-within {
+  border-color: #FFA602 !important;
+  box-shadow: 0 0 0 2px rgba(255, 166, 2, 0.25) !important;
+  outline: none !important;
+}
+
+/* Override any inline styles or external styles */
+div[style*="border-color"]:focus,
+div[style*="border"]:focus {
+  border-color: #FFA602 !important;
+  box-shadow: 0 0 0 2px rgba(255, 166, 2, 0.25) !important;
+}
+
 /* Horizontal sliders (popular makes, blog, etc.) */
 #popularMakesSlider {
   scroll-behavior: smooth;

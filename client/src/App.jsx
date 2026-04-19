@@ -532,7 +532,7 @@ const App = () => {
 
       <main
         id="main-content"
-        className={`min-w-0 overflow-x-hidden ${
+        className={`min-w-0 ${
           shouldShowNavbarFooter ? "pb-0" : "h-screen overflow-hidden pb-0"
         }`}
       >

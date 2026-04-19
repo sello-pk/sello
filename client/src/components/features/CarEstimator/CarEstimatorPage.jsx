@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
+import Select from "react-select";
 import {
   Car,
   Trash2,
@@ -21,129 +22,60 @@ import CarEstimatorResult from "./CarEstimatorResult";
 import estimatorHero from "../../../assets/images/estimatorHero.png";
 import EstimatorBlogsSection from "./EstimatorBlogsSection";
 import { API_CONFIG } from "../../../config/index.js";
+import { useCarCategories } from "../../../hooks/useCarCategories";
+import { capitalize } from "../../../utils/formatters";
 
 const fmt = (n) => `PKR ${Math.round(n).toLocaleString()}`;
 const API_BASE = API_CONFIG.BASE_URL;
 
-// Custom hook to fetch car makes from database
-function useMakes() {
-  const [makes, setMakes] = useState([]);
-  const [loading, setLoading] = useState(true);
+// React Select theme and styles (matching CarEstimatorForm)
+const customTheme = (theme) => ({
+  ...theme,
+  colors: {
+    ...theme.colors,
+    primary: "var(--primary-500, #FFA602)",
+    primary75: "var(--primary-500-75, rgba(255, 166, 2, 0.75))",
+    primary50: "var(--primary-500-50, rgba(255, 166, 2, 0.5))",
+    primary25: "var(--primary-500-25, rgba(255, 166, 2, 0.25))",
+  },
+});
 
-  useEffect(() => {
-    const fetchMakes = async () => {
-      try {
-        const response = await fetch(`${API_BASE}/cars/stats/counts-by-make`);
-        const data = await response.json();
-        if (data.success && data.data) {
-          // Extract make names from the response
-          const makeList = data.data.map(item => item.make || item._id).filter(Boolean);
-          setMakes(makeList.length > 0 ? makeList : ['Toyota', 'Honda', 'Suzuki', 'Kia', 'MG']);
-        } else {
-          setMakes(['Toyota', 'Honda', 'Suzuki', 'Kia', 'MG']);
-        }
-      } catch (error) {
-        console.error('Failed to fetch makes:', error);
-        setMakes(['Toyota', 'Honda', 'Suzuki', 'Kia', 'MG']);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchMakes();
-  }, []);
-
-  return { makes, loading };
-}
-
-// Custom hook to fetch models for a specific make
-function useModels(make) {
-  const [models, setModels] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!make) {
-      setModels([]);
-      return;
-    }
-
-    const fetchModels = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(`${API_BASE}/vehicle-attributes/makes/${encodeURIComponent(make)}/models`);
-        const data = await response.json();
-        if (data.success && data.data) {
-          setModels(data.data.length > 0 ? data.data : ['Corolla', 'Civic', 'Other']);
-        } else {
-          setModels(['Corolla', 'Civic', 'Other']);
-        }
-      } catch (error) {
-        console.error('Failed to fetch models:', error);
-        setModels(['Corolla', 'Civic', 'Other']);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchModels();
-  }, [make]);
-
-  return { models, loading };
-}
-
-// Custom hook to fetch years from database (optionally filtered by make/model)
-function useYears(make, model) {
-  const [years, setYears] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchYears = async () => {
-      setLoading(true);
-      try {
-        let url = `${API_BASE}/vehicle-attributes/years`;
-        const params = new URLSearchParams();
-        if (make) params.append('make', make);
-        if (model) params.append('model', model);
-        if (params.toString()) url += `?${params.toString()}`;
-        
-        const response = await fetch(url);
-        const data = await response.json();
-        if (data.success && data.data && data.data.length > 0) {
-          setYears(data.data);
-        } else {
-          // Fallback: generate last 15 years
-          const currentYear = new Date().getFullYear();
-          setYears(Array.from({ length: 15 }, (_, i) => currentYear - i));
-        }
-      } catch (error) {
-        console.error('Failed to fetch years:', error);
-        // Fallback: generate last 15 years
-        const currentYear = new Date().getFullYear();
-        setYears(Array.from({ length: 15 }, (_, i) => currentYear - i));
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchYears();
-  }, [make, model]);
-
-  return { years, loading };
-}
+const selectStyles = {
+  control: (baseStyles, state) => ({
+    ...baseStyles,
+    minHeight: "48px",
+    height: "48px",
+    borderRadius: "12px",
+    borderColor: state.isFocused ? "var(--primary-500, #FFA602)" : "#d1d5db",
+    boxShadow: state.isFocused ? "0 0 0 2px var(--primary-500-25, rgba(255, 166, 2, 0.25))" : "none",
+    "&:hover": { borderColor: "var(--primary-500, #FFA602)" },
+  }),
+  menu: (baseStyles) => ({ ...baseStyles, zIndex: 9999 }),
+  menuPortal: (baseStyles) => ({ ...baseStyles, zIndex: 9999 }),
+  option: (baseStyles, state) => ({
+    ...baseStyles,
+    backgroundColor: state.isFocused ? "var(--primary-500-25, rgba(255, 166, 2, 0.25))" : "transparent",
+    color: state.isFocused ? "var(--primary-500, #FFA602)" : "#374151",
+    "&:active": {
+      backgroundColor: "var(--primary-500-50, rgba(255, 166, 2, 0.5))",
+    },
+  }),
+};
 
 // Trends Tool Component
 function TrendsTool({ savedValuations, currentResult, currentFormData }) {
-  const { makes, loading: makesLoading } = useMakes();
+  const { makes, models, years, getModelsByMake } = useCarCategories("Car");
   const [make, setMake] = useState('');
-  const { models, loading: modelsLoading } = useModels(make);
   const [model, setModel] = useState('');
-  const { years, loading: yearsLoading } = useYears(make, model);
-  const [year, setYear] = useState(new Date().getFullYear());
+  const [year, setYear] = useState('');
   const [trendData, setTrendData] = useState(null);
   const [loading, setLoading] = useState(false);
   const debounceRef = useRef(null);
 
   // Update year when years list changes and current year is not in the list
   useEffect(() => {
-    if (years.length > 0 && !years.includes(year)) {
-      setYear(years[0]); // Set to most recent available year
+    if (years.length > 0 && !year) {
+      setYear(years[0].name); // Set to most recent available year
     }
   }, [years, year]);
 
@@ -152,14 +84,24 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
     if (currentFormData?.make && currentFormData?.model) {
       setMake(currentFormData.make);
       setModel(currentFormData.model);
-      setYear(currentFormData.year || new Date().getFullYear());
+      if (currentFormData.year) {
+        setYear(currentFormData.year.toString());
+      }
     }
     // Otherwise, don't auto-select - let user choose manually
   }, [currentFormData]);
 
+  // Reset model when make changes
+  useEffect(() => {
+    if (make) {
+      setModel('');
+      setYear('');
+    }
+  }, [make]);
+
   // Fetch real trend data from backend when selections change (debounced)
   useEffect(() => {
-    if (!make || !model) return;
+    if (!make || !model || !year) return;
 
     // Clear previous debounce timer
     if (debounceRef.current) {
@@ -173,7 +115,7 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
       try {
         // Call backend API for real trend data
         const response = await fetch(
-          `${API_BASE}/tools/trends?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&year=${year}`
+          `${API_BASE}/tools/trends?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&year=${encodeURIComponent(year)}`
         );
         const data = await response.json();
 
@@ -185,7 +127,7 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
           const relevantValuations = savedValuations.filter(
             v => v.make?.toLowerCase() === make?.toLowerCase() &&
                  v.model?.toLowerCase() === model?.toLowerCase() &&
-                 Math.abs(v.year - year) <= 2
+                 Math.abs(parseInt(v.year) - parseInt(year)) <= 2
           );
           
           if (relevantValuations.length >= 3) {
@@ -242,11 +184,19 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
     };
   }, [make, model, year, savedValuations]);
 
+  // Helper to get available models for selected make
+  const availableModels = useMemo(() => {
+    if (!make) return [];
+    const selectedMake = makes.find(m => m.name === make);
+    if (!selectedMake) return [];
+    return getModelsByMake[selectedMake._id] || [];
+  }, [make, makes, getModelsByMake]);
+
   // Quick select from saved valuations
   const handleQuickSelect = (valuation) => {
     setMake(valuation.make);
     setModel(valuation.model);
-    setYear(valuation.year || new Date().getFullYear());
+    setYear(valuation.year?.toString() || '');
   };
 
   const maxPrice = trendData ? Math.max(...trendData.prices) : 0;
@@ -274,72 +224,76 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
         {/* Left Card - Select a Car */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <h3 className="font-semibold text-gray-800 mb-5">
-            {make && model ? `${make} ${model} ${year}` : 'Select a Car'}
+            {make && model && year ? `${capitalize(make)} ${capitalize(model)} ${year}` : 'Select a Car'}
           </h3>
           <div className="space-y-4">
             {/* Make */}
             <div>
               <label className="text-sm font-medium text-gray-600 mb-2 block">Make</label>
-              {makesLoading ? (
-                <div className="h-11 bg-gray-100 rounded-xl animate-pulse" />
-              ) : (
-                <select
-                  value={make}
-                  onChange={(e) => {
-                    setMake(e.target.value);
-                    setModel('');
-                  }}
-                  className="w-full h-11 rounded-xl border border-gray-200 bg-gray-50 px-4 text-gray-800 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100 transition-all"
-                >
-                  <option value="">Select make</option>
-                  {makes.map(m => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
-                </select>
-              )}
+              <Select
+                value={make ? makes.find(m => m.name === make) ? { value: make, label: capitalize(make) } : null : null}
+                onChange={(option) => {
+                  setMake(option?.value || '');
+                  setModel('');
+                  setYear('');
+                }}
+                options={makes.map(m => ({
+                  value: m.name,
+                  label: capitalize(m.name),
+                }))}
+                placeholder="Select make"
+                isClearable
+                isSearchable
+                theme={customTheme}
+                styles={selectStyles}
+                menuPortalTarget={document.body}
+                isLoading={!makes}
+              />
             </div>
 
             {/* Model */}
             <div>
               <label className="text-sm font-medium text-gray-600 mb-2 block">Model</label>
-              {modelsLoading ? (
-                <div className="h-11 bg-gray-100 rounded-xl animate-pulse" />
-              ) : (
-                <select
-                  value={model}
-                  onChange={(e) => setModel(e.target.value)}
-                  disabled={!make}
-                  className="w-full h-11 rounded-xl border border-gray-200 bg-gray-50 px-4 text-gray-800 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <option value="">Select model</option>
-                  {models.map(m => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
-                </select>
-              )}
+              <Select
+                value={model ? availableModels.find(m => m.name === model) ? { value: model, label: capitalize(model) } : null : null}
+                onChange={(option) => {
+                  setModel(option?.value || '');
+                  setYear('');
+                }}
+                options={availableModels.map(m => ({
+                  value: m.name,
+                  label: capitalize(m.name),
+                }))}
+                placeholder={make ? "Select model" : "Select make first"}
+                isDisabled={!make}
+                isClearable
+                isSearchable
+                theme={customTheme}
+                styles={selectStyles}
+                menuPortalTarget={document.body}
+                isLoading={!make}
+              />
             </div>
 
             {/* Year */}
             <div>
               <label className="text-sm font-medium text-gray-600 mb-2 block">Year</label>
-              {yearsLoading ? (
-                <div className="h-11 bg-gray-100 rounded-xl animate-pulse" />
-              ) : (
-                <select
-                  value={year}
-                  onChange={(e) => setYear(parseInt(e.target.value))}
-                  disabled={years.length === 0}
-                  className="w-full h-11 rounded-xl border border-gray-200 bg-gray-50 px-4 text-gray-800 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {years.length === 0 ? (
-                    <option value="">Select make & model first</option>
-                  ) : (
-                    years.map(y => (
-                      <option key={y} value={y}>{y}</option>
-                    ))
-                  )}
-                </select>
-              )}
+              <Select
+                value={year ? years.find(y => y.name === year) ? { value: year, label: year } : null : null}
+                onChange={(option) => setYear(option?.value || '')}
+                options={years.map(y => ({
+                  value: y.name,
+                  label: y.name,
+                }))}
+                placeholder={make && model ? "Select year" : "Select make & model first"}
+                isDisabled={!make || !model}
+                isClearable
+                isSearchable
+                theme={customTheme}
+                styles={selectStyles}
+                menuPortalTarget={document.body}
+                isLoading={!years}
+              />
             </div>
           </div>
         </div>
@@ -484,28 +438,35 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
 
 // Resale Tool Component
 function ResaleTool() {
-  const { makes, loading: makesLoading } = useMakes();
+  const { makes, models, years: availableYears, getModelsByMake, isLoading } = useCarCategories("Car");
   const [make, setMake] = useState('');
-  const { models, loading: modelsLoading } = useModels(make);
   const [model, setModel] = useState('');
   const [value, setValue] = useState(6000000);
   const [years, setYears] = useState(5);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // Helper to get available models for selected make
+  const availableModels = useMemo(() => {
+    if (!make) return [];
+    const selectedMake = makes.find(m => m.name === make);
+    if (!selectedMake) return [];
+    return getModelsByMake[selectedMake._id] || [];
+  }, [make, makes, getModelsByMake]);
+
   // Set default make when makes load
   useEffect(() => {
     if (makes.length > 0 && !make) {
-      setMake(makes[0]);
+      setMake(makes[0].name);
     }
   }, [makes, make]);
 
-  // Set default model when models load or make changes
+  // Set default model when make changes
   useEffect(() => {
-    if (models.length > 0) {
-      setModel(models[0]);
+    if (availableModels.length > 0 && !model) {
+      setModel(availableModels[0].name);
     }
-  }, [models]);
+  }, [availableModels, model]);
   
   const calculate = async () => {
     setLoading(true);
@@ -576,38 +537,60 @@ function ResaleTool() {
         <div className="space-y-4">
           <div>
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">Car Make</label>
-            {makesLoading ? (
+            {isLoading ? (
               <div className="flex gap-2 flex-wrap">
                 <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
                 <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
                 <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
               </div>
             ) : (
-              <div className="flex gap-2 flex-wrap">
-                {makes.map(m => (
-                  <button key={m} onClick={() => setMake(m)}
-                    className={`px-3 py-2 rounded-xl text-sm font-semibold border transition-colors ${make === m ? 'bg-primary-500 text-white border-primary-500' : 'border-gray-200 text-gray-600 hover:border-primary-400'}`}>{m}</button>
-                ))}
+              <div className="react-select-container">
+                <Select
+                  value={make ? makes.find(m => m.name === make) ? { value: make, label: capitalize(make) } : null : null}
+                  onChange={(option) => {
+                    setMake(option?.value || '');
+                    setModel(''); // Reset model when make changes
+                  }}
+                  options={makes.map(m => ({
+                    value: m.name,
+                    label: capitalize(m.name),
+                  }))}
+                  placeholder="Select make"
+                  isClearable
+                  isSearchable
+                  theme={customTheme}
+                  styles={selectStyles}
+                  menuPortalTarget={document.body}
+                  isLoading={!makes}
+                />
               </div>
             )}
           </div>
           <div>
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">Model</label>
-            {modelsLoading ? (
+            {isLoading ? (
               <div className="flex gap-2 flex-wrap">
                 <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
                 <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
               </div>
-            ) : models.length > 0 ? (
-              <select 
-                value={model} 
-                onChange={e => setModel(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:border-primary-500 focus:outline-none"
-              >
-                {models.map(m => (
-                  <option key={m} value={m}>{m}</option>
-                ))}
-              </select>
+            ) : availableModels.length > 0 ? (
+              <div className="react-select-container">
+                <Select
+                  value={model ? availableModels.find(m => m.name === model) ? { value: model, label: capitalize(model) } : null : null}
+                  onChange={(option) => setModel(option?.value || '')}
+                  options={availableModels.map(m => ({
+                    value: m.name,
+                    label: capitalize(m.name),
+                  }))}
+                  placeholder="Select model"
+                  isClearable
+                  isSearchable
+                  theme={customTheme}
+                  styles={selectStyles}
+                  menuPortalTarget={document.body}
+                  isLoading={!make}
+                />
+              </div>
             ) : (
               <input 
                 type="text" 
@@ -802,7 +785,7 @@ const CarEstimatorPage = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50">
+      <div className="bg-gray-50">
         {/* Hero Header */}
         <section className="relative w-full overflow-hidden min-h-[48vh] md:h-[48vh]">
           <img
@@ -870,8 +853,8 @@ const CarEstimatorPage = () => {
 
         {/* Tabs */}
         <div id="estimator-tabs" className="max-w-8xl mx-auto w-full px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8 scroll-mt-4">
-          <div className="border-b border-gray-200 overflow-x-auto">
-            <nav className="-mb-px flex space-x-2 sm:space-x-8 min-w-max">
+          <div className="border-b border-gray-200">
+            <nav className="-mb-px flex flex-wrap sm:flex-nowrap space-x-2 sm:space-x-8">
               {[
                 { id: "estimate", label: "Estimate", icon: Car },
                 {
@@ -891,7 +874,19 @@ const CarEstimatorPage = () => {
               ].map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  data-tab-id={tab.id}
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    // Scroll to top of tabs when clicking Estimate tab (with slight delay to ensure tab switch)
+                    if (tab.id === "estimate") {
+                      setTimeout(() => {
+                        const tabsElement = document.getElementById("estimator-tabs");
+                        if (tabsElement) {
+                          tabsElement.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }
+                      }, 100);
+                    }
+                  }}
                   disabled={tab.disabled}
                   className={`group relative py-2 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap ${
                     tab.disabled
