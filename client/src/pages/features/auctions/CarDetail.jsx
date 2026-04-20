@@ -333,6 +333,13 @@ export default function CarDetail() {
   };
 
   const handleGetValuation = async () => {
+    // Check if user is logged in
+    if (!isLoggedIn) {
+      toast.error("Please login to get car valuation");
+      navigate("/login");
+      return;
+    }
+
     try {
       const payload = {
         make: car.make,
