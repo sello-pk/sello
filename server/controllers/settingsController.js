@@ -34,7 +34,7 @@ export const getAllSettings = async (req, res) => {
         },
         {
           key: "contactEmail",
-          value: "admin@sello.pk",
+          value: "info@sello.pk",
           type: "string",
           category: "general",
           description: "Contact email",

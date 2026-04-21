@@ -1,6 +1,6 @@
 import React from "react";
 import { MdEmail, MdLocationOn } from "react-icons/md";
-import { FaPhoneAlt, FaClock } from "react-icons/fa";
+import { FaPhoneAlt, FaClock, FaWhatsapp } from "react-icons/fa";
 import { FiMail, FiPhone, FiMapPin, FiClock } from "react-icons/fi";
 
 const ContactInformation = () => {
@@ -11,17 +11,13 @@ const ContactInformation = () => {
       items: [
         {
           label: "General Inquiries",
-          value: import.meta.env.VITE_SUPPORT_EMAIL || "info@sello.pk",
-          link: `mailto:${
-            import.meta.env.VITE_SUPPORT_EMAIL || "info@sello.pk"
-          }`,
+          value: "info@sello.pk",
+          link: "mailto:info@sello.pk",
         },
         {
           label: "Support",
-          value: import.meta.env.VITE_SUPPORT_EMAIL || "info@sello.pk",
-          link: `mailto:${
-            import.meta.env.VITE_SUPPORT_EMAIL || "info@sello.pk"
-          }`,
+          value: "support@sello.pk",
+          link: "mailto:support@sello.pk",
         },
       ],
       color: "bg-primary-50 text-primary-600",
@@ -31,14 +27,14 @@ const ContactInformation = () => {
       title: "Phone Number",
       items: [
         {
-          label: "Main Office",
+          label: "Support Line",
           value: "+923122221474",
           link: "tel:+923122221474",
         },
         {
-          label: "Support Line",
-          value: "+923122221474",
-          link: "tel:+923122221474",
+          label: "WhatsApp",
+          value: "+92 313 4211023",
+          link: "https://wa.me/923134211023",
         },
       ],
       color: "bg-green-50 text-green-600",
@@ -101,11 +97,16 @@ const ContactInformation = () => {
                             <a
                               href={item.link}
                               className="block text-gray-700 hover:text-primary-500 transition-colors"
+                              target={item.label === "WhatsApp" ? "_blank" : "_self"}
+                              rel={item.label === "WhatsApp" ? "noopener noreferrer" : ""}
                             >
                               <span className="text-sm font-medium text-gray-500 block mb-1">
                                 {item.label}:
                               </span>
-                              <span className="text-base">{item.value}</span>
+                              <span className="text-base inline-flex items-center gap-2">
+                                {item.value}
+                                {item.label === "WhatsApp" && <FaWhatsapp size={16} />}
+                              </span>
                             </a>
                           ) : (
                             <div>
@@ -134,13 +135,24 @@ const ContactInformation = () => {
         <p className="text-primary-100 mb-4">
           Get support as soon as you need it.
         </p>
-        <a
-          href="tel:+923122221474"
-          className="inline-flex items-center gap-2 bg-white text-primary-500 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-        >
-          <FiPhone size={20} />
-          Call Now: +923122221474
-        </a>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <a
+            href="tel:+923122221474"
+            className="inline-flex items-center gap-2 bg-white text-primary-500 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+          >
+            <FiPhone size={20} />
+            Call Now: +923122221474
+          </a>
+          <a
+            href="https://wa.me/923134211023"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors"
+          >
+            <FaWhatsapp size={20} />
+            WhatsApp: +92 313 4211023
+          </a>
+        </div>
       </div>
     </div>
   );

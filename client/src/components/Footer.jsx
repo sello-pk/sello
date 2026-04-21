@@ -2,7 +2,7 @@ import React from "react";
 import { footerData } from "../assets/assets";
 import { Link } from "react-router-dom";
 import { apple, android, facebook, instagram } from "../assets/assets";
-import { FaYoutube } from "react-icons/fa";
+import { FaYoutube, FaWhatsapp } from "react-icons/fa";
 import { FaTiktok } from "react-icons/fa6";
 
 const Footer = () => {
@@ -108,7 +108,19 @@ const Footer = () => {
                     href="mailto:info@sello.pk"
                     className="hover:text-white transition-colors duration-200"
                   >
-                    {import.meta.env.VITE_SUPPORT_EMAIL || "info@sello.pk"}
+                    info@sello.pk
+                  </a>
+                </p>
+                <p>
+                  <span className="font-medium text-white">WhatsApp:</span>{" "}
+                  <a
+                    href="https://wa.me/923134211023"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition-colors duration-200 inline-flex items-center gap-2"
+                  >
+                    <FaWhatsapp size={16} />
+                    +92 313 4211023
                   </a>
                 </p>
               </div>
