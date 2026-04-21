@@ -533,24 +533,7 @@ export const footerData = [
       },
     ],
   },
-  {
-    title: "CAR GUIDES",
-    links: [
-      {
-        name: "Car Buying Guide",
-        path: "/help/buying-cars",
-      },
-      {
-        name: "Car Selling Guide",
-        path: "/help/selling-cars",
-      },
-      {
-        name: "Car Financing",
-        path: "/loan-plans",
-      },
-    ],
-  },
-  {
+    {
     title: "COMPANY",
     links: [
       {
