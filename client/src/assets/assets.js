@@ -569,6 +569,22 @@ export const footerData = [
         name: "Help Center",
         path: "/help-center",
       },
+      {
+        name: "FAQs",
+        path: "/help/faqs",
+      },
+      {
+        name: "Terms & Conditions",
+        path: "/terms-and-conditions",
+      },
+      {
+        name: "Privacy Policy",
+        path: "/privacy-policy",
+      },
+      {
+        name: "Careers",
+        path: "/careers",
+      },
     ],
   },
 ];
