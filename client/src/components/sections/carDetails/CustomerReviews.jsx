@@ -74,20 +74,37 @@ const CustomerReviews = () => {
           </p>
         </div>
 
-        {/* Image Thumbnails */}
-        <div className="images flex items-center gap-4 mt-5 overflow-x-auto">
+        {/* Avatar Thumbnails */}
+        <div className="avatars flex items-center gap-4 mt-5 overflow-x-auto">
           {reviews.map((review, index) => (
-            <div key={index} className="w-14 h-14 flex-shrink-0">
-              <img
-                src={review.image}
-                alt={review.name}
+            <div key={index} className="flex flex-col items-center gap-1 flex-shrink-0">
+              <div
                 onClick={() => setSelectedIndex(index)}
-                className={`rounded-full h-full w-full object-cover border-2 cursor-pointer transition duration-300 ${
+                className={`w-14 h-14 rounded-full overflow-hidden cursor-pointer transition duration-300 border-2 ${
                   selectedIndex === index
-                    ? "opacity-100 border-green-500"
-                    : "opacity-40 border-gray-300"
+                    ? "opacity-100 border-green-500 ring-2 ring-green-200"
+                    : "opacity-60 border-gray-300 hover:opacity-80 hover:border-gray-400"
                 }`}
-              />
+              >
+                <img
+                  src={review.image}
+                  alt={review.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // Fallback to text-based avatar if image fails
+                    const parent = e.target.parentElement;
+                    const initials = review.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                    parent.innerHTML = `<div class="w-full h-full flex items-center justify-center text-white font-semibold text-sm bg-gray-400">${initials}</div>`;
+                  }}
+                />
+              </div>
+              <span className={`text-xs font-medium transition duration-300 max-w-[60px] text-center truncate ${
+                selectedIndex === index
+                  ? "text-primary-600"
+                  : "text-gray-600"
+              }`}>
+                {review.name.split(' ')[0]}
+              </span>
             </div>
           ))}
         </div>
