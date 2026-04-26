@@ -533,7 +533,7 @@ export const footerData = [
       },
     ],
   },
-    {
+  {
     title: "COMPANY",
     links: [
       {
@@ -563,10 +563,6 @@ export const footerData = [
       {
         name: "Privacy Policy",
         path: "/privacy-policy",
-      },
-      {
-        name: "Careers",
-        path: "/careers",
       },
     ],
   },
@@ -1079,27 +1075,31 @@ export const reviews = [
   {
     name: "Ahmed Hassan",
     role: "Car Dealer",
-    review: "Sello.pk has revolutionized our car dealership business. The platform is user-friendly and connects us with serious buyers across Pakistan. Highly recommended!",
-    image: review1
+    review:
+      "Sello.pk has revolutionized our car dealership business. The platform is user-friendly and connects us with serious buyers across Pakistan. Highly recommended!",
+    image: review1,
   },
   {
     name: "Sara Khan",
     role: "Individual Seller",
-    review: "I sold my car within 3 days of listing on Sello.pk. The process was smooth and the support team was very helpful throughout the transaction.",
-    image: review2
+    review:
+      "I sold my car within 3 days of listing on Sello.pk. The process was smooth and the support team was very helpful throughout the transaction.",
+    image: review2,
   },
   {
     name: "Muhammad Ali",
     role: "Car Buyer",
-    review: "Found my dream car at a great price through Sello.pk. The verified listings and detailed information made the buying process secure and transparent.",
-    image: review3
+    review:
+      "Found my dream car at a great price through Sello.pk. The verified listings and detailed information made the buying process secure and transparent.",
+    image: review3,
   },
   {
     name: "Fatima Sheikh",
     role: "Regular Customer",
-    review: "As someone who buys and sells cars frequently, Sello.pk is my go-to platform. The AI car estimator feature is incredibly accurate and helpful.",
-    image: review4
-  }
+    review:
+      "As someone who buys and sells cars frequently, Sello.pk is my go-to platform. The AI car estimator feature is incredibly accurate and helpful.",
+    image: review4,
+  },
 ];
 
 // Individual blog image exports for direct import
