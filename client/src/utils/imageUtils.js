@@ -70,7 +70,7 @@ export const optimizeCloudinaryUrl = (url, options = {}) => {
   // Build transformation parameters
   const transformations = [
     `f_${format}`,
-    `q_auto:eco,f_${quality}`, // Use eco mode for better compression
+    `q_auto:eco`, // Use eco mode for better compression
     `c_${crop}`,
     `w_${width}`,
     `h_${height}`,

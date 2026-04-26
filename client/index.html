@@ -75,12 +75,12 @@
           'unsafe-inline'
           https://cdn.tiny.cloud
           https://*.tiny.cloud
-          https://accounts.google.com
-          
+          https://accounts.google.com;
 
         font-src
           'self'
-          data:https://cdn.tiny.cloud
+          data:
+          https://cdn.tiny.cloud
           https://*.tiny.cloud;
 
         img-src
@@ -88,7 +88,8 @@
           https:
           http:
           data:
-          blob:;
+          blob:
+          https://api.sello.pk;
 
         worker-src
           'self'
@@ -259,3 +260,4 @@
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
+  
