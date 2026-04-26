@@ -76,11 +76,11 @@ const Pagination = ({
         {showFirstLast && currentPage > 1 && (
           <button
             onClick={() => onPageChange(1)}
-            className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-md"
             title="First page"
             aria-label="Go to first page"
           >
-            <FiChevronsLeft size={18} aria-hidden="true" />
+            <FiChevronsLeft size={16} aria-hidden="true" />
           </button>
         )}
 
@@ -88,10 +88,10 @@ const Pagination = ({
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+          className="px-4 py-2 bg-primary-500 text-white border border-primary-500 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-primary-600 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500 disabled:hover:shadow-md flex items-center gap-2"
           aria-label="Go to previous page"
         >
-          <FiChevronLeft size={18} aria-hidden="true" />
+          <FiChevronLeft size={16} aria-hidden="true" />
           Previous
         </button>
 
@@ -102,14 +102,14 @@ const Pagination = ({
               <>
                 <button
                   onClick={() => onPageChange(1)}
-                  className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 hover:shadow-md"
                   aria-label="Go to page 1"
                 >
                   1
                 </button>
                 {pageNumbers[0] > 2 && (
                   <span
-                    className="px-2 text-gray-600 dark:text-gray-400"
+                    className="px-2 text-gray-500 dark:text-gray-400"
                     aria-hidden="true"
                   >
                     ...
@@ -122,10 +122,10 @@ const Pagination = ({
               <button
                 key={pageNum}
                 onClick={() => onPageChange(pageNum)}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   pageNum === currentPage
-                    ? "bg-primary-500 text-white border border-primary-500"
-                    : "bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    ? "bg-primary-500 text-white border-2 border-primary-500 shadow-lg transform scale-105"
+                    : "bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md hover:scale-105"
                 }`}
               >
                 {pageNum}
@@ -136,7 +136,7 @@ const Pagination = ({
               <>
                 {pageNumbers[pageNumbers.length - 1] < totalPages - 1 && (
                   <span
-                    className="px-2 text-gray-600 dark:text-gray-400"
+                    className="px-2 text-gray-500 dark:text-gray-400"
                     aria-hidden="true"
                   >
                     ...
@@ -144,7 +144,7 @@ const Pagination = ({
                 )}
                 <button
                   onClick={() => onPageChange(totalPages)}
-                  className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 hover:shadow-md"
                   aria-label={`Go to page ${totalPages}`}
                 >
                   {totalPages}
@@ -158,22 +158,22 @@ const Pagination = ({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= totalPages}
-          className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+          className="px-4 py-2 bg-primary-500 text-white border border-primary-500 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-primary-600 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500 disabled:hover:shadow-md flex items-center gap-2"
           aria-label="Go to next page"
         >
           Next
-          <FiChevronRight size={18} aria-hidden="true" />
+          <FiChevronRight size={16} aria-hidden="true" />
         </button>
 
         {/* Last Page Button */}
         {showFirstLast && currentPage < totalPages && (
           <button
             onClick={() => onPageChange(totalPages)}
-            className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 hover:shadow-md"
             title="Last page"
             aria-label="Go to last page"
           >
-            <FiChevronsRight size={18} aria-hidden="true" />
+            <FiChevronsRight size={16} aria-hidden="true" />
           </button>
         )}
       </div>

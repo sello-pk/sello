@@ -409,7 +409,7 @@ const GetAllCarsSection = () => {
             <button
               onClick={handleLoadMore}
               disabled={isLoadingMore}
-              className="px-8 py-3 bg-[#ff8a00] text-white rounded-xl font-semibold transition-all duration-200 shadow-md hover:shadow-lg hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-8 py-3 bg-primary-500 text-white rounded-xl font-semibold transition-all duration-200 shadow-md hover:shadow-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {isLoadingMore ? (
                 <>

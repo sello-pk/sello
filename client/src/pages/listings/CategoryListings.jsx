@@ -339,18 +339,21 @@ const CategoryListings = () => {
                     <button
                       onClick={() => handlePageChange(page - 1)}
                       disabled={page === 1}
-                      className="px-4 py-2 bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition"
+                      className="px-4 py-2 bg-primary-500 text-white border border-primary-500 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-primary-600 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500 disabled:hover:shadow-md flex items-center gap-2"
                     >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
                       Previous
                     </button>
                     {Array.from({ length: pages }, (_, i) => i + 1).map((p) => (
                       <button
                         key={p}
                         onClick={() => handlePageChange(p)}
-                        className={`px-4 py-2 rounded-lg transition ${
+                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                           page === p
-                            ? "bg-primary-500 text-white"
-                            : "bg-white border border-gray-300 hover:bg-gray-50"
+                            ? "bg-primary-500 text-white border-2 border-primary-500 shadow-lg transform scale-105"
+                            : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:shadow-md hover:scale-105"
                         }`}
                       >
                         {p}
@@ -359,9 +362,12 @@ const CategoryListings = () => {
                     <button
                       onClick={() => handlePageChange(page + 1)}
                       disabled={page === pages}
-                      className="px-4 py-2 bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition"
+                      className="px-4 py-2 bg-primary-500 text-white border border-primary-500 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-primary-600 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500 disabled:hover:shadow-md flex items-center gap-2"
                     >
                       Next
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
                     </button>
                   </div>
                 )}
