@@ -18,14 +18,9 @@ const Footer = () => {
     return path;
   };
 
-  // Debug function to log footer navigation
+  // Handle footer navigation
   const handleFooterLinkClick = (path, linkName) => {
     const resolvedPath = resolveFooterPath(path);
-    console.log("Footer link clicked:", {
-      linkName,
-      originalPath: path,
-      resolvedPath,
-    });
     return resolvedPath;
   };
 
