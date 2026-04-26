@@ -31,7 +31,8 @@ const DealerRequestForm = ({ isOpen, onClose, onSuccess }) => {
   const [requestAuctionBidder, setRequestAuctionBidder] = useState(false);
   const [requestAuctionAccess, { isLoading }] =
     useRequestAuctionAccessMutation();
-  const { data: user, refetch } = useGetMeQuery();
+  const token = localStorage.getItem("token");
+  const { data: user, refetch } = useGetMeQuery(undefined, { skip: !token });
   const { data: auctionAccessStatus } = useGetMyAuctionAccessStatusQuery(
     undefined,
     { skip: !isOpen },

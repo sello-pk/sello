@@ -58,7 +58,8 @@ const EditCarForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isAuction = location.pathname.includes("edit-auction-car");
-  const { data: currentUser } = useGetMeQuery();
+  const token = localStorage.getItem("token");
+  const { data: currentUser } = useGetMeQuery(undefined, { skip: !token });
 
   const [formData, setFormData] = useState({
     title: "",

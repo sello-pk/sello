@@ -79,7 +79,8 @@ const SupportChat = () => {
     const [sendResponse] = useSendAdminResponseMutation();
     const [updateStatus] = useUpdateSupportChatStatusMutation();
 
-    const { data: adminUser } = useGetMeQuery();
+    const token = localStorage.getItem("token");
+    const { data: adminUser } = useGetMeQuery(undefined, { skip: !token });
     const adminId = adminUser?._id;
 
     // Get chats from response - be extremely defensive

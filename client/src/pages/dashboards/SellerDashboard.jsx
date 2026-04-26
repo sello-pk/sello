@@ -62,7 +62,8 @@ const SellerDashboard = () => {
     images: [],
     inspection_report: {},
   });
-  const { data: user, isLoading: userLoading } = useGetMeQuery();
+  const token = localStorage.getItem("token");
+  const { data: user, isLoading: userLoading } = useGetMeQuery(undefined, { skip: !token });
   const { data: carsData, isLoading: carsLoading } = useGetMyCarsQuery();
   const [logout] = useLogoutMutation();
   const { data: tokenData } = useGetMyTokenPaymentsQuery();

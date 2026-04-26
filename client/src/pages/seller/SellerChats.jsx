@@ -33,7 +33,8 @@ const SellerChats = () => {
   const shouldAutoScrollRef = useRef(true);
   const { socket, socketConnected, joinChat, sendMessage } = useSocket();
 
-  const { data: currentUser } = useGetMeQuery();
+  const token = localStorage.getItem("token");
+  const { data: currentUser } = useGetMeQuery(undefined, { skip: !token });
   const {
     data: chats = [],
     isLoading: chatsLoading,

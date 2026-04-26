@@ -37,9 +37,10 @@ const AdminLayout = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toggleTheme, isDark } = useTheme();
+  const token = localStorage.getItem("token");
   const {
     data: user,
-  } = useGetMeQuery();
+  } = useGetMeQuery(undefined, { skip: !token });
   const [logout] = useLogoutMutation();
   const sidebarNavRef = useRef(null);
   const mainContentRef = useRef(null);

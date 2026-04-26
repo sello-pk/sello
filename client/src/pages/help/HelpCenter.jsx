@@ -27,7 +27,8 @@ import { useGetMeQuery } from "../../redux/services/api";
 const HelpCenter = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const { data: currentUser } = useGetMeQuery();
+  const token = localStorage.getItem("token");
+  const { data: currentUser } = useGetMeQuery(undefined, { skip: !token });
 
   const popularTopics = [
     {

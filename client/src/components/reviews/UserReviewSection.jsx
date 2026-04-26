@@ -19,7 +19,8 @@ const UserReviewSection = ({ userId, carId, sellerName }) => {
   } = useGetUserReviewsQuery(userId, {
     skip: !userId,
   });
-  const { data: currentUser } = useGetMeQuery();
+  const token = localStorage.getItem("token");
+  const { data: currentUser } = useGetMeQuery(undefined, { skip: !token });
   const [addReview, { isLoading: isSubmitting }] = useAddUserReviewMutation();
 
   const averageRating =

@@ -103,7 +103,8 @@ const Button = ({
 export default function AuctionsActions() {
   const { data: liveAuction } = useGetLiveAuctionQuery();
   const { data: recentAuctions } = useGetAuctionsQuery({ limit: 6 });
-  const { data: user } = useGetMeQuery();
+  const token = localStorage.getItem("token");
+  const { data: user } = useGetMeQuery(undefined, { skip: !token });
   const { data: auctionAccess } = useGetMyAuctionAccessStatusQuery(undefined, {
     skip: !user,
   });

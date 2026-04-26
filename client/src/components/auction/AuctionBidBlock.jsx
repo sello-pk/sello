@@ -21,7 +21,8 @@ export default function AuctionBidBlock({ auctionCarId, className = "" }) {
   const navigate = useNavigate();
   const [bidAmount, setBidAmount] = useState(0);
 
-  const { data: user } = useGetMeQuery();
+  const token = localStorage.getItem("token");
+  const { data: user } = useGetMeQuery(undefined, { skip: !token });
   const isLoggedIn = !!user;
   const { data: tokenData } = useGetMyTokenPaymentsQuery(undefined, { skip: !isLoggedIn });
   const { data: auctionAccess } = useGetMyAuctionAccessStatusQuery(undefined, { skip: !isLoggedIn });

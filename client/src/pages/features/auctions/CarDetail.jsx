@@ -150,7 +150,8 @@ export default function CarDetail() {
   const navigate = useNavigate();
   const auctionCarId = new URLSearchParams(location.search).get("id");
 
-  const { data: user } = useGetMeQuery();
+  const token = localStorage.getItem("token");
+  const { data: user } = useGetMeQuery(undefined, { skip: !token });
   const isLoggedIn = !!user;
   const { data: tokenData } = useGetMyTokenPaymentsQuery(undefined, {
     skip: !isLoggedIn,

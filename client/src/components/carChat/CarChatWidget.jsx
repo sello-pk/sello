@@ -19,8 +19,8 @@ const CarChatWidget = ({ carId, carTitle, onClose }) => {
   const [chatId, setChatId] = useState(null);
   const messagesEndRef = useRef(null);
 
-  const { data: currentUser } = useGetMeQuery();
   const token = localStorage.getItem("token");
+  const { data: currentUser } = useGetMeQuery(undefined, { skip: !token });
 
   // Get car chat messages
   const {
