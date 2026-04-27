@@ -64,6 +64,10 @@ app.use(
           "https://accounts.google.com",
           "https://www.googleapis.com",
           "https://*.gstatic.com", // Added for Google Auth/Maps stability
+          "http://localhost:4002",
+          "https://localhost:4002",
+          "ws://localhost:4002",
+          "wss://localhost:4002",
         ],
       },
     },
