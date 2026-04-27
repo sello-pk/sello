@@ -32,7 +32,7 @@ export const DB_CONFIG = {
  * Server Configuration
  */
 export const SERVER_CONFIG = {
-  PORT: parseInt(process.env.PORT || "4000"),
+  PORT: parseInt(process.env.PORT || "4002"),
   NODE_ENV: process.env.NODE_ENV || "development",
 
   // Single frontend URL configuration

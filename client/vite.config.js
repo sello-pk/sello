@@ -66,10 +66,8 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     cors: true,
-    headers: {
-      "Cross-Origin-Opener-Policy": "unsafe-none",
-      "Cross-Origin-Embedder-Policy": "unsafe-none",
-    },
+    // Remove COOP/COEP headers to allow Google OAuth popup to work properly
+    headers: {},
   },
 
   build: {

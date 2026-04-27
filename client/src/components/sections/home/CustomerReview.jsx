@@ -658,8 +658,8 @@ const CustomerReview = () => {
         </div>
       )}
 
-      {/* Custom styles for blob animation */}
-      <style jsx>{`
+      {/* Custom styles for blob animation - using inline styles instead */}
+      <style>{`
         @keyframes blob {
           0% {
             transform: translate(0px, 0px) scale(1);
