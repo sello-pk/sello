@@ -789,7 +789,7 @@ const CustomerRequests = () => {
       {showResponseModal && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg transform transition-all duration-300 scale-100">
-            <div className="flex justify-between items-center mb-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-5">
               <h3 className="text-2xl font-bold text-gray-900">Add Response</h3>
               <button
                 onClick={() => {
@@ -815,7 +815,7 @@ const CustomerRequests = () => {
                   placeholder="Enter your detailed response to the customer..."
                 />
               </div>
-              <div className="flex gap-3 justify-end pt-2">
+              <div className="flex flex-col-reverse sm:flex-row gap-3 justify-end pt-2">
                 <button
                   onClick={() => {
                     setShowResponseModal(false);
@@ -853,7 +853,7 @@ const CustomerRequests = () => {
       {showDetailsModal && selectedRequest && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100">
-            <div className="flex justify-between items-center mb-5 pb-3 border-b border-gray-200">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-5 pb-3 border-b border-gray-200">
               <h3 className="text-2xl font-bold text-gray-900">
                 Request Details
               </h3>

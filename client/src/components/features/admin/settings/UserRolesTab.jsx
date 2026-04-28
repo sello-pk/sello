@@ -767,11 +767,11 @@ const UserRolesTab = () => {
               {invites.length > 0 && (
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                   <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
-                    <div className="flex justify-between items-center">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <h3 className="font-bold text-gray-800">
                         All Invitations
                       </h3>
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
                         <button
                           onClick={() => setInviteFilter("all")}
                           className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors ${
@@ -1167,8 +1167,8 @@ const UserRolesTab = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-200 dark:border-gray-700">
             {/* Header */}
-            <div className="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
-              <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+            <div className="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100">
                 Assign Role to {userToAssignRole.name}
               </h3>
               <button

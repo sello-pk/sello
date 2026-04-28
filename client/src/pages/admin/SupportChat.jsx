@@ -562,7 +562,7 @@ const SupportChat = () => {
                                                             {formatTime(chat.lastMessageAt || chat.createdAt)}
                                                         </span>
                                                     </div>
-                                                    <div className="flex justify-between items-center">
+                                                    <div className="flex items-center justify-between gap-2">
                                                         <p className="text-xs text-gray-500 dark:text-gray-400 truncate pr-2">
                                                             {chat.lastMessage || chat.subject || 'No messages'}
                                                         </p>
@@ -614,7 +614,7 @@ const SupportChat = () => {
                     ) : (
                         <>
                             {/* Chat Header */}
-                            <div className="bg-primary-500 text-white p-4 flex justify-between items-center">
+                            <div className="bg-primary-500 text-white p-4 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
                                 <div className="flex items-center gap-3">
                                     <button
                                         type="button"
@@ -645,11 +645,11 @@ const SupportChat = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 w-full sm:w-auto">
                                     <select
                                         value={selectedChatData?.status || 'open'}
                                         onChange={(e) => handleStatusChange(e.target.value)}
-                                        className="px-2 sm:px-3 py-1.5 bg-white/20 text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white/50"
+                                        className="w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-white/20 text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white/50"
                                     >
                                         <option value="open">Open</option>
                                         <option value="resolved">Resolved</option>
@@ -705,7 +705,7 @@ const SupportChat = () => {
                                                 key={msg._id}
                                                 className={`flex ${isCurrentAdmin ? 'justify-end' : 'justify-start'} group`}
                                             >
-                                                <div className={`flex items-end gap-2 max-w-[70%] ${isCurrentAdmin ? 'flex-row-reverse' : ''}`}>
+                                                <div className={`flex items-end gap-2 max-w-[88%] sm:max-w-[70%] ${isCurrentAdmin ? 'flex-row-reverse' : ''}`}>
                                                     {/* Avatar for user messages (left side) */}
                                                     {!isCurrentAdmin && !isBot && (
                                                         <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 overflow-hidden">
@@ -881,7 +881,7 @@ const SupportChat = () => {
                             <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 relative">
                                 {showQuickReplies && quickReplies.length > 0 && (
                                     <div className="absolute bottom-full left-4 mb-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-10 max-h-48 overflow-y-auto">
-                                        <div className="p-2 border-b border-gray-100 dark:border-gray-700 font-semibold text-xs flex justify-between items-center">
+                                        <div className="p-2 border-b border-gray-100 dark:border-gray-700 font-semibold text-xs flex items-center justify-between gap-2">
                                             <span>Quick Replies</span>
                                             <FiZap size={14} className="text-yellow-500" />
                                         </div>

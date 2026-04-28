@@ -167,7 +167,7 @@ const ChatMonitoring = () => {
                 {showChatModal && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                         <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
-                            <div className="p-4 border-b flex justify-between items-center">
+                            <div className="p-4 border-b flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                 <h3 className="font-bold text-lg">
                                     Chat with {selectedChat.user?.name || selectedChat.customerName || 'User'}
                                 </h3>
@@ -182,7 +182,7 @@ const ChatMonitoring = () => {
                                 <div className="p-4 border-t text-center">
                                     <button 
                                         onClick={() => navigate(ROUTES.admin.supportChatWithId(selectedChat._id))}
-                                        className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-500 transition"
+                                        className="w-full sm:w-auto bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-500 transition"
                                     >
                                         Open in Support Chat to Reply
                                     </button>

@@ -168,23 +168,23 @@ const RoleForm = ({ role, onSuccess, onCancel }) => {
   return (
     <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden h-full flex flex-col">
       {/* Header */}
-      <div className="px-8 py-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-white dark:bg-gray-900">
-        <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+      <div className="px-4 sm:px-8 py-6 border-b border-gray-100 dark:border-gray-700 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center bg-white dark:bg-gray-900">
+        <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
           {role ? "Edit Role" : "New Role"}
         </h3>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
           <button
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 font-medium transition-colors disabled:opacity-50"
+            className="w-full sm:w-auto px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 font-medium transition-colors disabled:opacity-50"
           >
             <FaTimes size={16} className="inline mr-2" /> Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="px-8 py-2 bg-primary-500 hover:opacity-90 text-white rounded-lg font-bold text-lg shadow-sm hover:shadow-md transform active:scale-95 transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full sm:w-auto px-8 py-2 bg-primary-500 hover:opacity-90 text-white rounded-lg font-bold text-lg shadow-sm hover:shadow-md transform active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {loading ? (
               <>
@@ -199,7 +199,7 @@ const RoleForm = ({ role, onSuccess, onCancel }) => {
         </div>
       </div>
 
-      <div className="p-8 overflow-y-auto custom-scrollbar flex-1">
+      <div className="p-4 sm:p-8 overflow-y-auto custom-scrollbar flex-1">
         {/* Basic Info */}
         <div className="space-y-6 mb-8">
           <div>
@@ -230,7 +230,7 @@ const RoleForm = ({ role, onSuccess, onCancel }) => {
           </div>
 
           {/* Team User Checkbox */}
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 flex items-center justify-between">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h4 className="font-bold text-gray-900 dark:text-gray-100">
                 This role is for Team users

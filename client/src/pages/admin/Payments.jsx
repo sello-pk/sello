@@ -236,7 +236,7 @@ const Payments = () => {
           <div className="flex overflow-x-auto border-b border-gray-200 dark:border-gray-700">
             {mainTabs.map((tab) => (
               <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-5 py-3 text-sm font-medium whitespace-nowrap transition-all border-b-2 ${activeTab === tab.id ? "border-primary-500 text-primary-500" : "border-transparent text-gray-500 hover:text-gray-700"}`}>
+                className={`flex items-center gap-2 px-5 py-3 text-sm font-medium transition-all border-b-2 ${activeTab === tab.id ? "border-primary-500 text-primary-500" : "border-transparent text-gray-500 hover:text-gray-700"}`}>
                 <tab.icon size={16} />{tab.label}
               </button>
             ))}
@@ -557,7 +557,7 @@ const Payments = () => {
                   <div className="space-y-6">
                     {/* Fees */}
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                      <div className="flex justify-between items-center mb-4">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Fee Configuration</h3>
                         <button onClick={() => setEditSettings({ ...settings })}
                           className="px-3 py-1.5 text-sm bg-primary-500 text-white rounded-lg hover:opacity-90 flex items-center gap-1">
@@ -656,14 +656,14 @@ const Payments = () => {
 
                       {/* Editable Deposit Tiers */}
                       <div>
-                        <div className="flex justify-between items-center mb-3">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-3">
                           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Deposit Tiers</label>
                           <button type="button" onClick={() => setEditSettings({ ...editSettings, depositTiers: [...(editSettings.depositTiers || []), { minDeposit: 0, maxBidLimit: 0, label: "" }] })}
-                            className="text-sm text-primary-500 hover:text-primary-500 font-medium">+ Add Tier</button>
+                            className="text-sm text-primary-500 hover:text-primary-500 font-medium self-start sm:self-auto">+ Add Tier</button>
                         </div>
                         <div className="space-y-3">
                           {(editSettings.depositTiers || []).map((tier, i) => (
-                            <div key={i} className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                            <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-3 bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
                               <input placeholder="Label" value={tier.label}
                                 onChange={(e) => { const tiers = [...editSettings.depositTiers]; tiers[i] = { ...tiers[i], label: e.target.value }; setEditSettings({ ...editSettings, depositTiers: tiers }); }}
                                 className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-600 dark:text-white" />

@@ -178,8 +178,8 @@ const InviteUserModal = ({ isOpen, onClose, onInviteSuccess, roles }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all border border-gray-200 dark:border-gray-700">
         {/* Header */}
-        <div className="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
-          <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Invite New User</h3>
+        <div className="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100">Invite New User</h3>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
