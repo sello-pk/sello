@@ -247,9 +247,9 @@ const CustomerRequests = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "open":
-        return "bg-primary-50 text-primary-800 border-primary-200";
+        return "bg-primary-50 text-primary-500 border-primary-200";
       case "in_progress":
-        return "bg-primary-100 text-primary-800 border-primary-300";
+        return "bg-primary-100 text-primary-500 border-primary-300";
       case "resolved":
         return "bg-green-100 text-green-800 border-green-200";
       case "closed":
@@ -264,9 +264,9 @@ const CustomerRequests = () => {
       case "urgent":
         return "bg-red-100 text-red-800";
       case "high":
-        return "bg-primary-100 text-primary-800";
+        return "bg-primary-100 text-primary-500";
       case "medium":
-        return "bg-primary-50 text-primary-800";
+        return "bg-primary-50 text-primary-500";
       case "low":
         return "bg-gray-100 text-gray-800";
       default:
@@ -305,12 +305,12 @@ const CustomerRequests = () => {
                 refetchRequests();
                 refetchContactForms();
               }}
-              className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:border-primary-300 dark:hover:border-primary-600 transition-colors duration-200"
+              className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 hover:border-primary-300 dark:hover:border-primary-500 transition-colors duration-200"
               title="Refresh data"
             >
               <FiMessageSquare size={20} />
             </button>
-            <div className="bg-gradient-to-r from-primary-500 to-primary-500 text-white px-4 py-3 rounded-xl shadow-lg flex items-center">
+            <div className="bg-primary-500 text-white px-4 py-3 rounded-xl shadow-lg flex items-center">
               <FiMessageSquare className="mr-2" size={20} />
               <span className="font-semibold">
                 {allItems.length} Total Items
@@ -325,7 +325,7 @@ const CustomerRequests = () => {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Open Requests</p>
-                <p className="text-2xl font-bold text-primary-600">
+                <p className="text-2xl font-bold text-primary-500">
                   {stats?.openRequests || 0}
                 </p>
               </div>
@@ -340,7 +340,7 @@ const CustomerRequests = () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-primary-200 dark:border-primary-800/30 p-5 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-primary-200 dark:border-primary-500/30 p-5 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">In Progress</p>
@@ -357,11 +357,11 @@ const CustomerRequests = () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-primary-200 dark:border-primary-800/30 p-5 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-primary-200 dark:border-primary-500/30 p-5 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Total Requests</p>
-                <p className="text-2xl font-bold text-primary-600">
+                <p className="text-2xl font-bold text-primary-500">
                   {stats?.totalRequests || 0}
                 </p>
               </div>
@@ -401,7 +401,7 @@ const CustomerRequests = () => {
                 onClick={() => setRequestType("all")}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   requestType === "all"
-                    ? "bg-gradient-to-r from-primary-500 to-primary-500 text-white shadow-md"
+                    ? "bg-primary-500 text-white shadow-md"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
@@ -411,7 +411,7 @@ const CustomerRequests = () => {
                 onClick={() => setRequestType("requests")}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   requestType === "requests"
-                    ? "bg-gradient-to-r from-primary-500 to-primary-500 text-white shadow-md"
+                    ? "bg-primary-500 text-white shadow-md"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
@@ -422,7 +422,7 @@ const CustomerRequests = () => {
                 onClick={() => setRequestType("contact_forms")}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   requestType === "contact_forms"
-                    ? "bg-gradient-to-r from-primary-500 to-primary-500 text-white shadow-md"
+                    ? "bg-primary-500 text-white shadow-md"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
@@ -437,7 +437,7 @@ const CustomerRequests = () => {
                 onClick={() => setActiveTab("all")}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   activeTab === "all"
-                    ? "bg-gradient-to-r from-primary-500 to-primary-500 text-white shadow-md"
+                    ? "bg-primary-500 text-white shadow-md"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
@@ -447,7 +447,7 @@ const CustomerRequests = () => {
                 onClick={() => setActiveTab("open")}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   activeTab === "open"
-                    ? "bg-gradient-to-r from-primary-500 to-primary-500 text-white shadow-md"
+                    ? "bg-primary-500 text-white shadow-md"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
@@ -457,7 +457,7 @@ const CustomerRequests = () => {
                 onClick={() => setActiveTab("in_progress")}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   activeTab === "in_progress"
-                    ? "bg-gradient-to-r from-primary-500 to-primary-500 text-white shadow-md"
+                    ? "bg-primary-500 text-white shadow-md"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
@@ -467,7 +467,7 @@ const CustomerRequests = () => {
                 onClick={() => setActiveTab("resolved")}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   activeTab === "resolved"
-                    ? "bg-gradient-to-r from-primary-500 to-primary-500 text-white shadow-md"
+                    ? "bg-primary-500 text-white shadow-md"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
@@ -562,12 +562,12 @@ const CustomerRequests = () => {
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
                         {item.itemType === "contact_form" ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-800">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-500">
                             <FiMail className="mr-1" size={12} />
                             Contact Form
                           </span>
                         ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-800">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-500">
                             <FiMessageSquare className="mr-1" size={12} />
                             Request
                           </span>
@@ -578,7 +578,7 @@ const CustomerRequests = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-primary-500 to-primary-500 flex items-center justify-center text-white text-sm font-semibold overflow-hidden border-2 border-white shadow-sm">
+                          <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white text-sm font-semibold overflow-hidden border-2 border-white shadow-sm">
                             {item.user?.avatar ? (
                               <img
                                 src={item.user.avatar}
@@ -621,7 +621,7 @@ const CustomerRequests = () => {
                               {
                                 urgent:
                                   "bg-red-100 text-red-800 border border-red-200",
-                                high: "bg-primary-100 text-primary-800 border border-primary-200",
+                                high: "bg-primary-100 text-primary-500 border border-primary-200",
                                 medium:
                                   "bg-yellow-100 text-yellow-800 border border-yellow-200",
                                 low: "bg-green-100 text-green-800 border border-green-200",
@@ -662,9 +662,9 @@ const CustomerRequests = () => {
                             }}
                             className={`px-3 py-1.5 text-xs font-semibold rounded-full border focus:outline-none focus:ring-1 focus:ring-primary-500 transition-all ${
                               {
-                                new: "bg-primary-50 text-primary-700 border-primary-200",
+                                new: "bg-primary-50 text-primary-500 border-primary-200",
                                 in_progress:
-                                  "bg-primary-100 text-primary-700 border-primary-300",
+                                  "bg-primary-100 text-primary-500 border-primary-300",
                                 resolved:
                                   "bg-green-50 text-green-700 border-green-200",
                               }[item.status === "open" ? "new" : item.status] ||
@@ -683,9 +683,9 @@ const CustomerRequests = () => {
                             }
                             className={`px-3 py-1.5 text-xs font-semibold rounded-full border focus:outline-none focus:ring-1 focus:ring-primary-500 transition-all ${
                               {
-                                open: "bg-primary-50 text-primary-700 border-primary-200",
+                                open: "bg-primary-50 text-primary-500 border-primary-200",
                                 in_progress:
-                                  "bg-primary-100 text-primary-700 border-primary-300",
+                                  "bg-primary-100 text-primary-500 border-primary-300",
                                 resolved:
                                   "bg-green-50 text-green-700 border-green-200",
                                 closed:
@@ -742,7 +742,7 @@ const CustomerRequests = () => {
                               setSelectedRequest(item._id);
                               setShowDetailsModal(true);
                             }}
-                            className="p-2 text-primary-600 hover:text-white bg-primary-50 hover:bg-primary-500 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
+                            className="p-2 text-primary-500 hover:text-white bg-primary-50 hover:bg-primary-500 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
                             title="View details"
                           >
                             <FiEye size={18} />
@@ -750,7 +750,7 @@ const CustomerRequests = () => {
                           {item.itemType === "contact_form" && !item.chatId && (
                             <button
                               onClick={() => handleConvertToChat(item._id)}
-                              className="p-2 text-primary-600 hover:text-white bg-primary-50 hover:bg-primary-500 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
+                              className="p-2 text-primary-500 hover:text-white bg-primary-50 hover:bg-primary-500 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
                               title="Convert to Chat"
                             >
                               <FiMessageSquare size={18} />
@@ -762,7 +762,7 @@ const CustomerRequests = () => {
                                 setSelectedRequest(item._id);
                                 setShowResponseModal(true);
                               }}
-                              className="p-2 text-primary-600 hover:text-white bg-primary-50 hover:bg-primary-500 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
+                              className="p-2 text-primary-500 hover:text-white bg-primary-50 hover:bg-primary-500 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
                               title="Add response"
                             >
                               <FiMessageSquare size={18} />
@@ -829,7 +829,7 @@ const CustomerRequests = () => {
                 <button
                   onClick={handleAddResponse}
                   disabled={!responseMessage.trim() || isAddingResponse}
-                  className="px-5 py-2.5 bg-gradient-to-r from-primary-500 to-primary-500 text-white rounded-xl hover:from-primary-500 hover:to-primary-500 font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-md hover:shadow-lg"
+                  className="px-5 py-2.5 bg-primary-500 text-white rounded-xl hover:bg-primary-500 font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-md hover:shadow-lg"
                 >
                   {isAddingResponse ? (
                     <>

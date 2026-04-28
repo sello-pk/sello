@@ -659,7 +659,7 @@ const Payments = () => {
                         <div className="flex justify-between items-center mb-3">
                           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Deposit Tiers</label>
                           <button type="button" onClick={() => setEditSettings({ ...editSettings, depositTiers: [...(editSettings.depositTiers || []), { minDeposit: 0, maxBidLimit: 0, label: "" }] })}
-                            className="text-sm text-primary-500 hover:text-primary-600 font-medium">+ Add Tier</button>
+                            className="text-sm text-primary-500 hover:text-primary-500 font-medium">+ Add Tier</button>
                         </div>
                         <div className="space-y-3">
                           {(editSettings.depositTiers || []).map((tier, i) => (

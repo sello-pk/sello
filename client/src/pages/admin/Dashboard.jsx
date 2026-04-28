@@ -170,7 +170,7 @@ const Dashboard = () => {
   const getCardColor = (index) => {
     const colors = [
       { bg: "bg-green-50", icon: "bg-green-500", text: "text-green-700" }, // Total Users - Green
-      { bg: "bg-primary-50", icon: "bg-primary-500", text: "text-primary-700" }, // Total Dealers - Primary
+      { bg: "bg-primary-50", icon: "bg-primary-500", text: "text-primary-500" }, // Total Dealers - Primary
       { bg: "bg-green-50", icon: "bg-green-500", text: "text-green-700" }, // Active Listings - Green
       { bg: "bg-red-50", icon: "bg-red-500", text: "text-red-700" }, // Customer Requests - Red
       { bg: "bg-blue-50", icon: "bg-blue-500", text: "text-blue-700" }, // Active Blogs - Blue

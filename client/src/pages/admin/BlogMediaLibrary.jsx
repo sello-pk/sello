@@ -27,10 +27,10 @@ const BlogMediaLibrary = () => {
                     </p>
                     <div className="bg-primary-50 border border-primary-200 rounded-lg p-4 text-left">
                         <div className="flex items-start">
-                            <FiAlertCircle className="h-5 w-5 text-primary-600 mt-0.5 mr-2 flex-shrink-0" />
-                            <div className="text-sm text-primary-800">
+                            <FiAlertCircle className="h-5 w-5 text-primary-500 mt-0.5 mr-2 flex-shrink-0" />
+                            <div className="text-sm text-primary-500">
                                 <p className="font-semibold mb-1">What to expect:</p>
-                                <ul className="list-disc list-inside space-y-1 text-primary-700">
+                                <ul className="list-disc list-inside space-y-1 text-primary-500">
                                     <li>Upload images, videos, and documents</li>
                                     <li>Organize media by categories or tags</li>
                                     <li>Search and filter media files</li>

@@ -36,7 +36,7 @@ const Settings = () => {
               onClick={() => setActiveTab("roles")}
               className={`whitespace-nowrap px-4 sm:px-6 py-2 rounded-md font-medium text-sm transition-all ${
                 activeTab === "roles"
-                  ? "bg-primary-500 dark:bg-primary-600 text-white shadow-sm"
+                  ? "bg-primary-500 dark:bg-primary-500 text-white shadow-sm"
                   : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               }`}
             >

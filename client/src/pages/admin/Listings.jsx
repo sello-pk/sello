@@ -651,7 +651,7 @@ const Listings = () => {
                       key={car._id}
                       className={`hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
                         selectedCars.has(car._id)
-                          ? "bg-primary-50 dark:bg-primary-900/20"
+                          ? "bg-primary-50 dark:bg-primary-500/20"
                           : ""
                       }`}
                     >

@@ -550,7 +550,7 @@ const BlogsOverview = () => {
                               : blog.status === "draft"
                               ? "bg-purple-100 text-purple-800"
                               : blog.status === "pending" || !blog.status
-                              ? "bg-primary-100 text-primary-800"
+                              ? "bg-primary-100 text-primary-500"
                               : blog.status === "archived"
                               ? "bg-green-100 text-green-800"
                               : "bg-gray-100 text-gray-800"

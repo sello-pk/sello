@@ -88,7 +88,7 @@ const Pagination = ({
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-4 py-2 bg-primary-500 text-white border border-primary-500 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-primary-600 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500 disabled:hover:shadow-md flex items-center gap-2"
+          className="px-4 py-2 bg-primary-500 text-white border border-primary-500 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-primary-500 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500 disabled:hover:shadow-md flex items-center gap-2"
           aria-label="Go to previous page"
         >
           <FiChevronLeft size={16} aria-hidden="true" />
@@ -158,7 +158,7 @@ const Pagination = ({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= totalPages}
-          className="px-4 py-2 bg-primary-500 text-white border border-primary-500 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-primary-600 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500 disabled:hover:shadow-md flex items-center gap-2"
+          className="px-4 py-2 bg-primary-500 text-white border border-primary-500 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-primary-500 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500 disabled:hover:shadow-md flex items-center gap-2"
           aria-label="Go to next page"
         >
           Next

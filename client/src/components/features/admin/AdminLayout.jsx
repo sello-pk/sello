@@ -258,7 +258,7 @@ const AdminLayout = ({ children }) => {
       {/* Main Content - takes remaining width; only this column scrolls */}
       <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden lg:ml-0">
         {/* Mobile Header */}
-        <header className="lg:hidden bg-primary-500 dark:bg-primary-600 text-white py-3 px-4 flex items-center justify-between shadow-md z-30">
+        <header className="lg:hidden bg-primary-500 dark:bg-primary-500 text-white py-3 px-4 flex items-center justify-between shadow-md z-30">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="p-2 hover:opacity-90 dark:hover:opacity-90 rounded-lg"

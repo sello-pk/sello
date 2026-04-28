@@ -737,7 +737,7 @@ const SupportChat = () => {
                                                     <div
                                                     className={`rounded-lg px-3 py-2 ${
                                                         isCurrentAdmin
-                                                            ? "bg-primary-100 dark:bg-primary-900/30 rounded-tr-none"
+                                                            ? "bg-primary-100 dark:bg-primary-500/30 rounded-tr-none"
                                                             : "bg-white dark:bg-gray-800 rounded-tl-none"
                                                     } shadow-sm`}
                                                     >

@@ -151,7 +151,7 @@ const ChatMonitoring = () => {
                                         <td className="px-6 py-4">
                                             <button 
                                                 onClick={() => handleOpenChat(chat)}
-                                                className="text-primary-600 hover:text-primary-900 font-medium text-sm flex items-center gap-1"
+                                                className="text-primary-500 hover:text-primary-500 font-medium text-sm flex items-center gap-1"
                                             >
                                                 <FiEye /> View
                                             </button>
@@ -182,7 +182,7 @@ const ChatMonitoring = () => {
                                 <div className="p-4 border-t text-center">
                                     <button 
                                         onClick={() => navigate(ROUTES.admin.supportChatWithId(selectedChat._id))}
-                                        className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition"
+                                        className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-500 transition"
                                     >
                                         Open in Support Chat to Reply
                                     </button>

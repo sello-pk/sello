@@ -137,7 +137,7 @@ const DataTable = memo(({
                                 <tr
                                     key={row.id || row._id || rowIndex}
                                     className={`hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
-                                        isSelected ? 'bg-primary-50 dark:bg-primary-900/20' : ''
+                                        isSelected ? 'bg-primary-50 dark:bg-primary-500/20' : ''
                                     } ${onRowClick ? 'cursor-pointer' : ''} ${rowClassName}`}
                                     onClick={() => handleRowClick(row)}
                                 >

@@ -175,7 +175,7 @@ const AccountDeletionRequests = () => {
       render: (request) => (
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
-            <FiUser className="text-primary-600" size={14} />
+            <FiUser className="text-primary-500" size={14} />
           </div>
           <div>
             <div className="font-medium text-gray-900">
@@ -245,7 +245,7 @@ const AccountDeletionRequests = () => {
           <Tooltip content="View details">
             <button
               onClick={() => handleViewDetails(request)}
-              className="p-1.5 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+              className="p-1.5 text-gray-600 hover:text-primary-500 hover:bg-primary-50 rounded-lg transition-colors"
               aria-label="View account deletion request details"
             >
               <FiEye size={14} />

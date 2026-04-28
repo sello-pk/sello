@@ -102,7 +102,7 @@ const BlogComments = () => {
                   onClick={() => setFilter(f)}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                     filter === f
-                      ? "bg-white text-primary-600 shadow-sm"
+                      ? "bg-white text-primary-500 shadow-sm"
                       : "text-gray-600 hover:text-gray-900"
                   }`}
                 >
@@ -148,7 +148,7 @@ const BlogComments = () => {
                          {comment.user?.avatar ? (
                              <img src={comment.user.avatar} alt={comment.user.name} className="w-10 h-10 rounded-full object-cover" />
                          ) : (
-                             <div className="w-10 h-10 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center font-bold">
+                             <div className="w-10 h-10 rounded-full bg-primary-100 text-primary-500 flex items-center justify-center font-bold">
                                  {comment.user?.name?.charAt(0) || "U"}
                              </div>
                          )}
@@ -166,7 +166,7 @@ const BlogComments = () => {
                          {comment.blog && (
                              <div className="text-xs text-gray-500 flex items-center gap-1">
                                  <span>on:</span>
-                                 <Link to={`/blog/${comment.blog.slug || comment.blog._id}`} target="_blank" className="font-medium hover:underline text-primary-600 truncate max-w-xs">
+                                 <Link to={`/blog/${comment.blog.slug || comment.blog._id}`} target="_blank" className="font-medium hover:underline text-primary-500 truncate max-w-xs">
                                      {comment.blog.title}
                                  </Link>
                              </div>

@@ -151,7 +151,7 @@ const Valuations = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm font-semibold text-primary-600">
+                        <div className="text-sm font-semibold text-primary-500">
                           PKR {v.estimation.averagePrice.toLocaleString()}
                         </div>
                         <div className="text-xs text-gray-500">
@@ -313,7 +313,7 @@ const Valuations = () => {
 
                   <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
                     <p className="text-xs text-gray-500 mb-1">Estimation</p>
-                    <p className="font-semibold text-primary-600 text-lg">
+                    <p className="font-semibold text-primary-500 text-lg">
                       PKR{" "}
                       {selectedValuation.estimation?.averagePrice?.toLocaleString()}
                     </p>
