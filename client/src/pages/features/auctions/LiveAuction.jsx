@@ -484,7 +484,7 @@ export default function LiveAuction() {
             </div>
             <div className="flex items-center gap-4">
               <Link
-                to="/auctions/transactions"
+                to="/auctions/wallet"
                 className="text-sm text-white/80 hover:text-white transition-colors"
               >
                 Wallet
