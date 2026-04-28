@@ -407,23 +407,11 @@ const CarDetailsEtc = () => {
               </h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Listing ID:</span>
-                  <span className="font-medium text-gray-900">
-                    {car._id?.slice(-8)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
                   <span className="text-gray-600">Posted:</span>
                   <span className="font-medium text-gray-900">
                     {car.createdAt
                       ? new Date(car.createdAt).toLocaleDateString()
                       : "N/A"}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Views:</span>
-                  <span className="font-medium text-gray-900">
-                    {car.views || 0}
                   </span>
                 </div>
               </div>
