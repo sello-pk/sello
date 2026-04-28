@@ -288,7 +288,7 @@ const CustomerRequests = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="p-3 sm:p-6 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div>
@@ -322,7 +322,7 @@ const CustomerRequests = () => {
         {/* Overview Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Open Requests</p>
                 <p className="text-2xl font-bold text-primary-600">
@@ -341,7 +341,7 @@ const CustomerRequests = () => {
           </div>
 
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-primary-200 dark:border-primary-800/30 p-5 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">In Progress</p>
                 <p className="text-2xl font-bold text-yellow-600">
@@ -358,7 +358,7 @@ const CustomerRequests = () => {
           </div>
 
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-primary-200 dark:border-primary-800/30 p-5 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Total Requests</p>
                 <p className="text-2xl font-bold text-primary-600">
@@ -375,7 +375,7 @@ const CustomerRequests = () => {
           </div>
 
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-green-200 dark:border-green-800/30 p-5 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Resolved</p>
                 <p className="text-2xl font-bold text-green-600">
@@ -500,7 +500,7 @@ const CustomerRequests = () => {
 
         {/* Requests Table */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto admin-table-scroll">
             {isLoading ? (
               <div className="flex justify-center py-12">
                 <Spinner fullScreen={false} />
@@ -519,7 +519,7 @@ const CustomerRequests = () => {
                 </p>
               </div>
             ) : (
-              <table className="w-full">
+              <table className="w-full min-w-[760px]">
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">

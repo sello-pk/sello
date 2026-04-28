@@ -225,7 +225,7 @@ const Payments = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="p-3 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Payment & Wallet Management</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage wallets, deposits, refunds, and platform settings</p>
@@ -252,8 +252,8 @@ const Payments = () => {
               ) : wallets.length === 0 ? (
                 <div className="p-12 text-center"><p className="text-gray-500">No wallets found</p></div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
+                <div className="overflow-x-auto admin-table-scroll">
+                  <table className="w-full min-w-[760px]">
                     <thead className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">User</th>
@@ -367,8 +367,8 @@ const Payments = () => {
               ) : deposits.length === 0 ? (
                 <div className="p-12 text-center"><p className="text-gray-500">No deposits found</p></div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
+                <div className="overflow-x-auto admin-table-scroll">
+                  <table className="w-full min-w-[760px]">
                     <thead className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">User</th>
@@ -441,8 +441,8 @@ const Payments = () => {
               ) : refunds.length === 0 ? (
                 <div className="p-12 text-center"><p className="text-gray-500">No refund requests</p></div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
+                <div className="overflow-x-auto admin-table-scroll">
+                  <table className="w-full min-w-[760px]">
                     <thead className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">User</th>
@@ -564,7 +564,7 @@ const Payments = () => {
                           <FiEdit2 size={14} />Edit Settings
                         </button>
                       </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                         <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                           <p className="text-xs text-gray-500 dark:text-gray-400">Platform Fee</p>
                           <p className="text-2xl font-bold text-gray-900 dark:text-white">{settings.platformFeePercent}%</p>
@@ -594,7 +594,7 @@ const Payments = () => {
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Deposit Tiers (Bid Limits)</h3>
                       {settings.depositTiers?.length > 0 ? (
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                           {settings.depositTiers.map((tier, i) => (
                             <div key={i} className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-gray-700 dark:to-gray-600 rounded-lg p-4 border border-amber-200 dark:border-gray-600">
                               <p className="text-sm font-bold text-gray-900 dark:text-white">{tier.label || `Tier ${i + 1}`}</p>
@@ -613,7 +613,7 @@ const Payments = () => {
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Edit Platform Settings</h3>
                     <div className="space-y-6">
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Platform Fee (%)</label>
                           <input type="number" min="0" max="100" step="0.1" value={editSettings.platformFeePercent}
@@ -722,8 +722,8 @@ const Payments = () => {
               ) : auditTransactions.length === 0 ? (
                 <div className="p-12 text-center"><p className="text-gray-500">No transactions found</p></div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
+                <div className="overflow-x-auto admin-table-scroll">
+                  <table className="w-full min-w-[760px]">
                     <thead className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">Date</th>
@@ -803,8 +803,8 @@ const Payments = () => {
               ) : payments.length === 0 ? (
                 <div className="p-12 text-center"><p className="text-gray-500">No subscription payments found</p></div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
+                <div className="overflow-x-auto admin-table-scroll">
+                  <table className="w-full min-w-[760px]">
                     <thead className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">User</th>

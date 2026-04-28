@@ -55,7 +55,7 @@ const ChatMonitoring = () => {
 
     return (
         <AdminLayout>
-            <div className="p-6 bg-gray-50 min-h-screen">
+            <div className="p-3 sm:p-6 bg-gray-50 min-h-screen">
                 <div className="mb-6">
                     <h2 className="text-2xl font-bold text-gray-900">Chat Monitoring</h2>
                     <p className="text-sm text-gray-500 mt-1">
@@ -120,8 +120,8 @@ const ChatMonitoring = () => {
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
+                    <div className="overflow-x-auto admin-table-scroll">
+                        <table className="w-full min-w-[760px]">
                             <thead>
                                 <tr className="bg-gray-50 border-b border-gray-200">
                                     <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">User</th>

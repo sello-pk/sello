@@ -352,3 +352,14 @@ div[style*="border"]:focus {
 .dark .admin-theme .custom-scrollbar::-webkit-scrollbar-thumb {
   background: #4b5563;
 }
+
+/* Improve mobile table usability across admin pages */
+.admin-theme .admin-table-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+  .admin-theme .admin-table-scroll table {
+    min-width: 700px;
+  }
+}

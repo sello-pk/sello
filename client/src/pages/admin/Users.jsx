@@ -210,9 +210,9 @@ const Users = () => {
 
     return (
         <AdminLayout>
-            <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+            <div className="p-3 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
                 {/* Header */}
-                <div className="mb-6 flex items-center justify-between">
+                <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">User Management</h2>
                         <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
@@ -222,7 +222,7 @@ const Users = () => {
                     <button
                         onClick={handleExportCSV}
                         disabled={users.length === 0 || isLoading}
-                        className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
+                        className="w-full sm:w-auto justify-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
                         aria-label="Export users to CSV"
                     >
                         <FiDownload size={18} aria-hidden="true" />
@@ -245,10 +245,10 @@ const Users = () => {
                     <div className="p-4">
                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                             {/* Tabs */}
-                            <div className="flex flex-wrap items-center gap-2">
+                            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
                                 <button
                                     onClick={() => setRoleFilter("")}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                    className={`w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                                         roleFilter === "" 
                                             ? "bg-primary-500 text-white" 
                                             : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
@@ -258,7 +258,7 @@ const Users = () => {
                                 </button>
                                 <button
                                     onClick={() => setRoleFilter("individual")}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                    className={`w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                                         roleFilter === "individual" 
                                             ? "bg-primary-500 text-white" 
                                             : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
@@ -268,7 +268,7 @@ const Users = () => {
                                 </button>
                                 <button
                                     onClick={() => setRoleFilter("dealer")}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                    className={`w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                                         roleFilter === "dealer" 
                                             ? "bg-primary-500 text-white" 
                                             : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
@@ -278,7 +278,7 @@ const Users = () => {
                                 </button>
                                 <button
                                     onClick={() => setStatusFilter("suspended")}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                    className={`w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                                         statusFilter === "suspended" 
                                             ? "bg-primary-500 text-white" 
                                             : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
@@ -288,7 +288,7 @@ const Users = () => {
                                 </button>
                                 <button
                                     onClick={() => setStatusFilter("active")}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                    className={`w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                                         statusFilter === "active" 
                                             ? "bg-primary-500 text-white" 
                                             : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
@@ -318,7 +318,8 @@ const Users = () => {
                     <TableSkeleton rows={10} columns={7} />
                 ) : (
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                        <table className="w-full">
+                        <div className="overflow-x-auto admin-table-scroll">
+                        <table className="w-full min-w-[760px]">
                             <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
                                 <tr>
                                     <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
@@ -423,6 +424,7 @@ const Users = () => {
                                 )}
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 )}
 
@@ -551,7 +553,7 @@ const EditUserModal = ({ user, onClose, onUpdate }) => {
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] flex flex-col">
                 {/* Fixed Header */}
                 <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white">Edit User</h3>
                         <button
                             onClick={onClose}

@@ -326,7 +326,7 @@ export default function AuctionManagement() {
   return (
     <AdminLayout>
     <div className="p-6 overflow-x-hidden min-w-0 max-w-full">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Auction Management</h1>
           <p className="text-slate-500 dark:text-slate-300">Manage live auctions, cars, bids, and payments</p>
@@ -399,7 +399,7 @@ export default function AuctionManagement() {
           {dashboard?.recentBids?.length > 0 && (
             <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
               <h3 className="font-semibold text-lg mb-4 text-slate-900 dark:text-slate-100">Recent Bids</h3>
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto admin-table-scroll">
                 <table className="w-full text-sm text-slate-800 dark:text-slate-200">
                   <thead><tr className="text-left text-slate-500 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700"><th className="pb-3">Bidder</th><th className="pb-3">Amount</th><th className="pb-3">Type</th><th className="pb-3">Time</th></tr></thead>
                   <tbody>
@@ -775,7 +775,7 @@ export default function AuctionManagement() {
         {showCreateModal && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-700">
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
                 <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">Create New Auction</h3>
                 <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-300"><X className="w-5 h-5" /></button>
               </div>
@@ -788,7 +788,7 @@ export default function AuctionManagement() {
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Description</label>
                   <textarea className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" rows="3" value={newAuction.description} onChange={(e) => setNewAuction({ ...newAuction, description: e.target.value })} />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Start Time *</label>
                     <input type="datetime-local" className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={newAuction.startTime} onChange={(e) => setNewAuction({ ...newAuction, startTime: e.target.value })} />
@@ -814,7 +814,7 @@ export default function AuctionManagement() {
         {showOfflineBidModal && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700">
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
                 <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">Place Floor Bid</h3>
                 <button onClick={() => setShowOfflineBidModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-300"><X className="w-5 h-5" /></button>
               </div>
@@ -839,7 +839,7 @@ export default function AuctionManagement() {
         {showAddCarModal && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
                 <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">Add Car to Auction</h3>
                 <button onClick={() => setShowAddCarModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-300"><X className="w-5 h-5" /></button>
               </div>
@@ -864,7 +864,7 @@ export default function AuctionManagement() {
                     ))}
                   </select>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Starting Bid (PKR)</label>
                     <input type="number" className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={addCarData.startingBid} onChange={(e) => setAddCarData({ ...addCarData, startingBid: e.target.value })} placeholder="500000" step="50000" />
@@ -888,7 +888,7 @@ export default function AuctionManagement() {
         {showEditCarModal && editingAuctionCar && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700 shadow-xl">
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
                 <div>
                   <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">Edit Auction Details</h3>
                   <p className="text-sm text-slate-500">{editingAuctionCar.car?.make} {editingAuctionCar.car?.model} ({editingAuctionCar.car?.year})</p>
@@ -896,7 +896,7 @@ export default function AuctionManagement() {
                 <button onClick={() => setShowEditCarModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-300"><X className="w-5 h-5" /></button>
               </div>
               <form onSubmit={handleUpdateAuctionCar} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Starting Bid (PKR)</label>
                     <input type="number" className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={editFormData.startingBid} onChange={(e) => setEditFormData({ ...editFormData, startingBid: e.target.value })} required />
@@ -906,7 +906,7 @@ export default function AuctionManagement() {
                     <input type="number" className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={editFormData.bidIncrement} onChange={(e) => setEditFormData({ ...editFormData, bidIncrement: e.target.value })} placeholder="Leave blank for global default" />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Reserve Price (PKR)</label>
                     <input type="number" className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" value={editFormData.reservePrice} onChange={(e) => setEditFormData({ ...editFormData, reservePrice: e.target.value })} />

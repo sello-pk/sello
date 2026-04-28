@@ -306,9 +306,9 @@ const AccountDeletionRequests = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+      <div className="p-3 sm:p-6 space-y-6 bg-gray-50 min-h-screen">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">
               Account Deletion Requests
@@ -322,7 +322,7 @@ const AccountDeletionRequests = () => {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-600">Pending</p>
                 <p className="text-2xl font-bold text-yellow-600">
@@ -335,7 +335,7 @@ const AccountDeletionRequests = () => {
             </div>
           </div>
           <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-600">Approved</p>
                 <p className="text-2xl font-bold text-green-600">
@@ -348,7 +348,7 @@ const AccountDeletionRequests = () => {
             </div>
           </div>
           <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-600">Rejected</p>
                 <p className="text-2xl font-bold text-red-600">
@@ -361,7 +361,7 @@ const AccountDeletionRequests = () => {
             </div>
           </div>
           <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-600">Completed</p>
                 <p className="text-2xl font-bold text-gray-600">
@@ -501,7 +501,7 @@ const AccountDeletionRequests = () => {
             title="Deletion Request Details"
             message={
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm font-medium text-gray-700">
                       User Information

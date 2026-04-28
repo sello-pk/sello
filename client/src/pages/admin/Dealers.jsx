@@ -157,7 +157,7 @@ const Dealers = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="p-3 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
         {/* Header */}
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -171,7 +171,7 @@ const Dealers = () => {
         {/* All Dealers Label and Search */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
           <div className="p-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <h3 className="text-base font-semibold text-gray-900 dark:text-white">
                 All Dealers
               </h3>
@@ -289,8 +289,8 @@ const Dealers = () => {
           </div>
         ) : (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="overflow-x-auto admin-table-scroll">
+              <table className="w-full min-w-[760px]">
                 <thead>
                   <tr className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
                     <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
@@ -547,7 +547,7 @@ const Dealers = () => {
                       <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                         Basic Information
                       </h4>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
                             Business Name
@@ -785,7 +785,7 @@ const Dealers = () => {
                           </p>
                           {dealerDetails.dealerInfo?.showroomImages?.length >
                           0 ? (
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                               {dealerDetails.dealerInfo.showroomImages.map(
                                 (img, idx) => (
                                   <div key={idx} className="relative group">

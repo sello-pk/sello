@@ -91,8 +91,8 @@ const DataTable = memo(({
 
     return (
         <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden ${className}`}>
-            <div className="overflow-x-auto">
-                <table className="w-full">
+            <div className="overflow-x-auto admin-table-scroll">
+                <table className="w-full min-w-[700px]">
                     <thead className={`bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 ${stickyHeader ? 'sticky top-0 z-10' : ''}`}>
                         <tr>
                             {selectable && (

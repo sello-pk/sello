@@ -216,12 +216,12 @@ const Notifications = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="p-3 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
         {/* Header */}
         <div className="mb-6">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-4">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
                 <div className="h-12 w-12 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
                   <MdNotificationsActive className="text-2xl text-primary-500 dark:text-primary-400" />
                 </div>
@@ -233,7 +233,7 @@ const Notifications = () => {
             </div>
             <button
               onClick={() => setShowModal(true)}
-              className="px-6 py-3 bg-primary-500 text-white rounded-lg hover:opacity-90 flex items-center gap-2 transition-colors shadow-md hover:shadow-lg"
+              className="w-full sm:w-auto justify-center px-6 py-3 bg-primary-500 text-white rounded-lg hover:opacity-90 flex items-center gap-2 transition-colors shadow-md hover:shadow-lg"
             >
               <FiPlus size={20} />
               Create Notification
@@ -243,7 +243,7 @@ const Notifications = () => {
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-gray-500">Total Notifications</p>
                   <p className="text-2xl font-bold text-gray-900 mt-1">
@@ -254,7 +254,7 @@ const Notifications = () => {
               </div>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-gray-500">Unread</p>
                   <p className="text-2xl font-bold text-gray-900 mt-1">
@@ -265,7 +265,7 @@ const Notifications = () => {
               </div>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-gray-500">Read</p>
                   <p className="text-2xl font-bold text-gray-900 mt-1">
@@ -278,7 +278,7 @@ const Notifications = () => {
           </div>
 
           {/* Filter Tabs */}
-          <div className="flex gap-2 mb-4">
+          <div className="flex flex-wrap gap-2 mb-4">
             <button
               onClick={() => setFilter("all")}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -358,8 +358,8 @@ const Notifications = () => {
           </div>
         ) : (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="overflow-x-auto admin-table-scroll">
+              <table className="w-full min-w-[760px]">
                 <thead className="bg-gray-50 dark:bg-gray-900">
                   <tr>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">

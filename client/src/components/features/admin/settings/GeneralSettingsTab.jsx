@@ -544,7 +544,7 @@ const GeneralSettingsTab = () => {
           </h3>
         </div>
         <div className="p-6 space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <h4 className="font-medium text-gray-800 dark:text-white">
@@ -566,7 +566,7 @@ const GeneralSettingsTab = () => {
               onChange={(val) => handleChange("allowRegistration", val)}
             />
           </div>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <h4 className="font-medium text-gray-800 dark:text-white">
@@ -588,7 +588,7 @@ const GeneralSettingsTab = () => {
               onChange={(val) => handleChange("requireEmailVerification", val)}
             />
           </div>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <h4 className="font-medium text-gray-800 dark:text-white">
@@ -622,7 +622,7 @@ const GeneralSettingsTab = () => {
           </h3>
         </div>
         <div className="p-6 space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <h4 className="font-medium text-gray-800 dark:text-white">
@@ -644,7 +644,7 @@ const GeneralSettingsTab = () => {
               onChange={(val) => handleChange("autoApproveDealers", val)}
             />
           </div>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <h4 className="font-medium text-gray-800 dark:text-white">
@@ -719,7 +719,7 @@ const GeneralSettingsTab = () => {
         </div>
         <div className="p-6 space-y-4">
           {/* Main Toggle */}
-          <div className="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between pb-4 border-b border-gray-200 dark:border-gray-700">
             <div>
               <h4 className="font-medium text-gray-800 dark:text-white">
                 Enable Payment System
@@ -742,7 +742,7 @@ const GeneralSettingsTab = () => {
           {/* Granular Controls */}
           {settings.paymentSystemEnabled !== false && (
             <>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <h4 className="font-medium text-gray-800 dark:text-white">
                     Show Subscription Plans
@@ -761,7 +761,7 @@ const GeneralSettingsTab = () => {
                 />
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <h4 className="font-medium text-gray-800 dark:text-white">
                     Show Subscription/Payment Tab
@@ -781,7 +781,7 @@ const GeneralSettingsTab = () => {
                 />
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <h4 className="font-medium text-gray-800 dark:text-white">
                     Show Payment History
@@ -800,7 +800,7 @@ const GeneralSettingsTab = () => {
                 />
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <h4 className="font-medium text-gray-800 dark:text-white">
                     Enable Auto-Renewal
@@ -819,7 +819,7 @@ const GeneralSettingsTab = () => {
                 />
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <h4 className="font-medium text-gray-800 dark:text-white">
                     Require Payment Approval

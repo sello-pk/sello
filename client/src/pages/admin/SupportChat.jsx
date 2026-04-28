@@ -11,7 +11,7 @@ import {
 import { useGetMeQuery } from "../../redux/services/api";
 import { Spinner } from "../../components/ui/Loading";
 import toast from "react-hot-toast";
-import { FiSend, FiPaperclip, FiTrash2, FiSearch, FiMoreVertical, FiEdit2, FiClock, FiZap } from "react-icons/fi";
+import { FiSend, FiPaperclip, FiTrash2, FiSearch, FiMoreVertical, FiEdit2, FiClock, FiZap, FiArrowLeft } from "react-icons/fi";
 import { IoMdCheckmark, IoMdDoneAll } from "react-icons/io";
 import { formatDistanceToNow } from "date-fns";
 import ConfirmModal from "../../components/features/admin/ConfirmModal";
@@ -480,9 +480,9 @@ const SupportChat = () => {
 
     return (
         <AdminLayout>
-            <div className="flex h-[calc(100vh-80px)] bg-gray-100 dark:bg-gray-900">
+            <div className="flex flex-col md:flex-row h-[calc(100vh-80px)] bg-gray-100 dark:bg-gray-900">
                 {/* Left Sidebar - User List */}
-                <div className="w-1/3 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+                <div className={`${selectedChat ? "hidden md:flex" : "flex"} w-full md:w-1/3 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex-col`}>
                     {/* Search Bar */}
                     <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                         <div className="relative">
@@ -582,7 +582,7 @@ const SupportChat = () => {
                 </div>
 
                 {/* Right Side - Chat Window */}
-                <div className="flex-1 flex flex-col bg-[#ECE5DD] bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cdefs%3E%3Cpattern id=%22grid%22 width=%2260%22 height=%2260%22 patternUnits=%22userSpaceOnUse%22%3E%3Cpath d=%22M 60 0 L 0 0 0 60%22 fill=%22none%22 stroke=%22%23d4d4d4%22 stroke-width=%221%22/%3E%3C/pattern%3E%3C/defs%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22url(%23grid)%22 opacity=%220.1%22/%3E%3C/svg%3E')]">
+                <div className={`${selectedChat ? "flex" : "hidden md:flex"} w-full flex-1 flex-col bg-[#ECE5DD] bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cdefs%3E%3Cpattern id=%22grid%22 width=%2260%22 height=%2260%22 patternUnits=%22userSpaceOnUse%22%3E%3Cpath d=%22M 60 0 L 0 0 0 60%22 fill=%22none%22 stroke=%22%23d4d4d4%22 stroke-width=%221%22/%3E%3C/pattern%3E%3C/defs%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22url(%23grid)%22 opacity=%220.1%22/%3E%3C/svg%3E')]`}>
                     {!selectedChat ? (
                         <div className="flex-1 flex items-center justify-center">
                             <div className="text-center text-gray-500 dark:text-gray-400">
@@ -616,6 +616,14 @@ const SupportChat = () => {
                             {/* Chat Header */}
                             <div className="bg-primary-500 text-white p-4 flex justify-between items-center">
                                 <div className="flex items-center gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => setSelectedChat(null)}
+                                        className="md:hidden p-1 rounded hover:bg-white/20 transition-colors"
+                                        aria-label="Back to chat list"
+                                    >
+                                        <FiArrowLeft size={18} />
+                                    </button>
                                     <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
                                         {getUserAvatar(selectedChatData) ? (
                                             <img
@@ -641,7 +649,7 @@ const SupportChat = () => {
                                     <select
                                         value={selectedChatData?.status || 'open'}
                                         onChange={(e) => handleStatusChange(e.target.value)}
-                                        className="px-3 py-1.5 bg-white/20 text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white/50"
+                                        className="px-2 sm:px-3 py-1.5 bg-white/20 text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white/50"
                                     >
                                         <option value="open">Open</option>
                                         <option value="resolved">Resolved</option>

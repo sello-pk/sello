@@ -142,8 +142,8 @@ const BlogEdit = () => {
 
     return (
         <AdminLayout>
-            <div className="p-6 bg-gray-50 min-h-screen">
-                <div className="flex justify-between items-center mb-6">
+            <div className="p-3 sm:p-6 bg-gray-50 min-h-screen">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => navigate("/admin/blogs")}
@@ -473,7 +473,7 @@ const BlogEdit = () => {
 
                 {/* Form Footer */}
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <div className="flex justify-end gap-3">
+                    <div className="flex flex-col-reverse sm:flex-row justify-end gap-3">
                         <button
                             type="button"
                             onClick={() => navigate("/admin/blogs")}

@@ -68,8 +68,8 @@ const Valuations = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
-        <div className="mb-6 flex items-center justify-between">
+      <div className="p-3 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
               Car Estimator History
@@ -110,8 +110,8 @@ const Valuations = () => {
           </div>
         ) : (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="overflow-x-auto admin-table-scroll">
+              <table className="w-full min-w-[760px]">
                 <thead>
                   <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
                     <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">

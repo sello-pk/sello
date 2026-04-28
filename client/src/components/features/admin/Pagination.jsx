@@ -71,7 +71,7 @@ const Pagination = ({
       )}
 
       {/* Pagination Controls */}
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2">
         {/* First Page Button */}
         {showFirstLast && currentPage > 1 && (
           <button

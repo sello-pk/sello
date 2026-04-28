@@ -21,10 +21,10 @@ const Settings = () => {
           </div>
 
           {/* Tab Switcher */}
-          <div className="bg-gray-100 dark:bg-gray-800 p-1 rounded-lg flex">
+          <div className="bg-gray-100 dark:bg-gray-800 p-1 rounded-lg flex w-full md:w-auto overflow-x-auto">
             <button
               onClick={() => setActiveTab("general")}
-              className={`px-6 py-2 rounded-md font-medium text-sm transition-all ${
+              className={`whitespace-nowrap px-4 sm:px-6 py-2 rounded-md font-medium text-sm transition-all ${
                 activeTab === "general"
                   ? "bg-white dark:bg-gray-700 text-gray-800 dark:text-white shadow-sm"
                   : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
@@ -34,7 +34,7 @@ const Settings = () => {
             </button>
             <button
               onClick={() => setActiveTab("roles")}
-              className={`px-6 py-2 rounded-md font-medium text-sm transition-all ${
+              className={`whitespace-nowrap px-4 sm:px-6 py-2 rounded-md font-medium text-sm transition-all ${
                 activeTab === "roles"
                   ? "bg-primary-500 dark:bg-primary-600 text-white shadow-sm"
                   : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"

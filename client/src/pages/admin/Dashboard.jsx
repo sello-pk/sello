@@ -77,7 +77,7 @@ const Dashboard = () => {
   if (isLoading) {
     return (
       <AdminLayout>
-        <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+        <div className="p-3 sm:p-6 space-y-6 bg-gray-50 min-h-screen">
           <div className="mb-6">
             <div className="h-8 bg-gray-200 rounded w-64 mb-2 animate-pulse"></div>
             <div className="h-4 bg-gray-200 rounded w-96 animate-pulse"></div>
@@ -221,9 +221,9 @@ const Dashboard = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="p-3 sm:p-6 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
               Dashboard Overview

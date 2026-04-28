@@ -161,9 +161,9 @@ const Banners = () => {
 
     return (
         <AdminLayout>
-            <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+            <div className="p-3 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Banner Management</h2>
                         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage homepage and promotional banners</p>
@@ -293,7 +293,7 @@ const Banners = () => {
                                     />
                                 </div>
                                 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             Type
@@ -328,7 +328,7 @@ const Banners = () => {
                                     </div>
                                 </div>
                                 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             Start Date
@@ -356,7 +356,7 @@ const Banners = () => {
                                     </div>
                                 </div>
                                 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             Order

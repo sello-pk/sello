@@ -459,7 +459,7 @@ const Categories = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="p-3 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
         {/* Header */}
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -473,14 +473,14 @@ const Categories = () => {
         {/* Tabs and Add Button */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
           <div className="p-4">
-            <div className="flex items-center justify-between gap-4 flex-wrap">
-              <div className="flex gap-2 flex-wrap">
+            <div className="flex flex-col gap-4">
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
                 {["brands", "models", "years", "country", "state", "city"].map(
                   (tab) => (
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      className={`w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                         activeTab === tab
                           ? "bg-primary-500 text-white"
                           : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
@@ -493,14 +493,14 @@ const Categories = () => {
               </div>
               {/* Vehicle Type Filter for Car Categories */}
               {["brands", "models"].includes(activeTab) && (
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Vehicle Type:
                   </label>
                   <select
                     value={selectedVehicleType}
                     onChange={(e) => setSelectedVehicleType(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                    className="w-full sm:w-auto px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
                   >
                     <option value="">All Types</option>
                     {vehicleTypes.map((vt) => (
@@ -511,17 +511,17 @@ const Categories = () => {
                   </select>
                 </div>
               )}
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search by name"
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                  className="w-full sm:flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
                 />
                 <button
                   onClick={handleOpenModal}
-                  className="px-4 py-2 bg-gray-900 dark:bg-primary-500 text-white rounded-lg hover:opacity-90 flex items-center gap-2 text-sm"
+                  className="w-full sm:w-auto justify-center px-4 py-2 bg-gray-900 dark:bg-primary-500 text-white rounded-lg hover:opacity-90 flex items-center gap-2 text-sm"
                 >
                   <span className="text-lg">+</span>
                   Add New Category
@@ -544,8 +544,8 @@ const Categories = () => {
           </div>
         ) : (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="overflow-x-auto admin-table-scroll">
+              <table className="w-full min-w-[760px]">
                 <thead>
                   <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
                     <th

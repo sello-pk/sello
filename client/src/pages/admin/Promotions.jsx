@@ -169,9 +169,9 @@ const Promotions = () => {
 
     return (
         <AdminLayout>
-            <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+            <div className="p-3 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Promotions</h2>
                         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Create and manage promotional campaigns</p>
@@ -196,7 +196,8 @@ const Promotions = () => {
                     </div>
                 ) : (
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                        <table className="w-full">
+                        <div className="overflow-x-auto admin-table-scroll">
+                        <table className="w-full min-w-[760px]">
                             <thead className="bg-gray-50 dark:bg-gray-900">
                                 <tr>
                                     <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">Title</th>
@@ -256,6 +257,7 @@ const Promotions = () => {
                                 ))}
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 )}
 
@@ -345,7 +347,7 @@ const Promotions = () => {
                                 </div>
 
                                 {/* Discount Type and Value */}
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             Discount Type <span className="text-red-500">*</span>
@@ -378,7 +380,7 @@ const Promotions = () => {
                                 </div>
 
                                 {/* Usage Limit and Min Purchase */}
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             Usage Limit <span className="text-red-500">*</span>
@@ -433,7 +435,7 @@ const Promotions = () => {
                                 )}
 
                                 {/* Start Date and End Date */}
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             Start Date <span className="text-red-500">*</span>
@@ -463,7 +465,7 @@ const Promotions = () => {
                                 </div>
 
                                 {/* Target Audience and Status */}
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             Target Audience <span className="text-red-500">*</span>

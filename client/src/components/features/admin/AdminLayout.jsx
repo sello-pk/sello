@@ -279,7 +279,7 @@ const AdminLayout = ({ children }) => {
         {/* Page Content - only this box scrolls (overflow-y: auto) */}
         <main
           ref={mainContentRef}
-          className="flex-1 min-h-0 h-full overflow-y-auto overflow-x-hidden bg-gray-100 dark:bg-gray-900 p-4 lg:p-6"
+          className="flex-1 min-h-0 h-full overflow-y-auto overflow-x-hidden bg-gray-100 dark:bg-gray-900 p-3 sm:p-4 lg:p-6"
         >
           <ErrorBoundary>
             {isRouteChanging ? (

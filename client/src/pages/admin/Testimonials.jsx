@@ -176,9 +176,9 @@ const Testimonials = () => {
 
     return (
         <AdminLayout>
-            <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+            <div className="p-3 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Testimonials Management</h2>
                         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage customer testimonials and reviews</p>
@@ -227,7 +227,7 @@ const Testimonials = () => {
                                     </div>
                                 </div>
                                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">{testimonial.text}</p>
-                                <div className="flex items-center justify-between">
+                                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                     <div className="flex gap-2">
                                         {testimonial.featured && (
                                             <span className="px-2 py-1 text-xs bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 rounded-full">
@@ -295,7 +295,7 @@ const Testimonials = () => {
                                     />
                                 </div>
                                 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             Role

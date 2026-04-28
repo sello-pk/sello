@@ -131,7 +131,7 @@ const BlogsOverview = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="p-3 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
         {/* Header */}
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -306,24 +306,24 @@ const BlogsOverview = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-3 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex gap-3 mb-6">
           <Link
             to="/admin/blogs/categories"
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-2 transition-colors"
+            className="w-full lg:w-auto justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-2 transition-colors"
           >
             <FiGrid size={18} />
             Categories
           </Link>
           <Link
             to="/admin/blogs/comments"
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-2 transition-colors"
+            className="w-full lg:w-auto justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-2 transition-colors"
           >
             <FiMessageSquare size={18} />
             Comments
           </Link>
           <Link
             to="/admin/blogs/create"
-            className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90 flex items-center gap-2 transition-colors"
+            className="w-full lg:w-auto justify-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90 flex items-center gap-2 transition-colors"
           >
             <FiPlus size={18} />
             New Post
@@ -351,7 +351,7 @@ const BlogsOverview = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                className="w-full sm:w-auto px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
               >
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>
@@ -364,7 +364,7 @@ const BlogsOverview = () => {
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                className="w-full sm:w-auto px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
               >
                 <option value="">All Categories</option>
                 {categories.map((category) => (
@@ -480,8 +480,8 @@ const BlogsOverview = () => {
 
         {/* Blogs Table */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
+          <div className="overflow-x-auto admin-table-scroll">
+            <table className="w-full min-w-[760px]">
               <thead>
                 <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">

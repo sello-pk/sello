@@ -3,9 +3,9 @@ import { FiInfo, FiAlertCircle, FiImage } from "react-icons/fi";
 const BlogMediaLibrary = () => {
     // Coming Soon - This feature will be available soon
     return (
-        <div className="p-6 bg-gray-50 min-h-screen">
+        <div className="p-3 sm:p-6 bg-gray-50 min-h-screen">
             {/* Header */}
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
                 <div>
                     <h2 className="text-2xl font-bold text-gray-900">Media Library</h2>
                     <p className="text-sm text-gray-500 mt-1">Manage your blog media files</p>
