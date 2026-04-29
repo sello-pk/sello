@@ -23,7 +23,7 @@ const ACCESS_COOKIE_MAX_AGE_MS = 30 * 60 * 1000;
 const isProduction = process.env.NODE_ENV === "production";
 
 const getAccessCookieOptions = () => ({
-    httpOnly: false, // kept for backward compatibility with existing cookie fallback auth
+    httpOnly: true,
     secure: isProduction,
     sameSite: "lax",
     path: "/",
@@ -343,6 +343,7 @@ export const forgotPassword = async (req, res) => {
         const otp = generateOtp();
         user.otp = otp;
         user.otpExpiry = Date.now() + 10 * 60 * 1000;
+        user.otpVerified = false;
         await user.save({ validateBeforeSave: false });
 
         await sendEmail(user.email, "Password Reset Code", getPasswordResetTemplate(user.name, otp));
@@ -370,9 +371,17 @@ export const resetPassword = async (req, res) => {
 
         const user = await User.findOne({ email: email.toLowerCase().trim(), otpVerified: true });
         if (!user) return res.status(400).json({ success: false, message: "Verify OTP first" });
+        if (!user.otp || !user.otpExpiry || Date.now() > user.otpExpiry) {
+            user.otp = null;
+            user.otpExpiry = null;
+            user.otpVerified = false;
+            await user.save({ validateBeforeSave: false });
+            return res.status(400).json({ success: false, message: "OTP expired. Please request a new code." });
+        }
 
         user.password = await bcrypt.hash(password, 12);
         user.otp = null;
+        user.otpExpiry = null;
         user.otpVerified = false;
         await RefreshToken.deleteMany({ userId: user._id });
         await user.save();
@@ -479,6 +488,7 @@ export const resendOtp = async (req, res) => {
         const otp = generateOtp();
         user.otp = otp;
         user.otpExpiry = Date.now() + 10 * 60 * 1000;
+        user.otpVerified = false;
         await user.save({ validateBeforeSave: false });
 
         await sendEmail(user.email, "Verification Code", getPasswordResetTemplate(user.name, otp));

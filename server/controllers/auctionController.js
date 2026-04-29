@@ -606,15 +606,6 @@ export const getAuctionCars = async (req, res) => {
     const auction = await Auction.findById(auctionId).select("status").lean();
     const visibleStatuses = ["approved", "live"];
 
-    // Self-heal stale records: live auctions should not keep lots in "pending".
-    // This makes dealer submissions visible immediately even if lifecycle cron is delayed/disabled.
-    if (auction?.status === "live") {
-      await AuctionCar.updateMany(
-        { auction: auctionId, status: "pending" },
-        { status: "live" },
-      );
-    }
-
     const filter = {
       auction: auctionId,
       status: { $in: visibleStatuses },
@@ -863,89 +854,160 @@ export const placeBid = async (req, res) => {
       }
     }
 
-    // Anti-sniping: extend end time if bid within window
-    const prevWinningBid = await Bid.findOne({
-      auctionCar: auctionCarId,
-      isWinning: true,
-    }).populate("bidder", "email name");
-    const ext = extendAuctionIfNeeded(ac.auction);
-    if (ext.extended && ext.newEndTime) {
-      await Auction.findByIdAndUpdate(ac.auction._id, {
-        endTime: ext.newEndTime,
+    const session = await mongoose.startSession();
+    let bid;
+    let prevWinningBid = null;
+    let extendedEndTime = null;
+    try {
+      await session.withTransaction(async () => {
+        const liveAuctionCar = await AuctionCar.findById(auctionCarId)
+          .populate("auction")
+          .session(session);
+        if (!liveAuctionCar) {
+          throw new Error("Auction car not found");
+        }
+
+        const liveValidation = engineValidateBid(
+          liveAuctionCar.auction,
+          liveAuctionCar,
+          amount,
+          settings?.minBidIncrement,
+        );
+        if (!liveValidation.valid) {
+          throw new Error(liveValidation.message);
+        }
+
+        prevWinningBid = await Bid.findOne({
+          auctionCar: auctionCarId,
+          isWinning: true,
+        })
+          .populate("bidder", "email name")
+          .session(session);
+
+        const ext = extendAuctionIfNeeded(liveAuctionCar.auction);
+        if (ext.extended && ext.newEndTime) {
+          await Auction.findByIdAndUpdate(
+            liveAuctionCar.auction._id,
+            { endTime: ext.newEndTime },
+            { session },
+          );
+          liveAuctionCar.auction.endTime = ext.newEndTime;
+          extendedEndTime = ext.newEndTime;
+        }
+
+        if (prevWinningBid && prevWinningBid.bidder) {
+          const prevWallet = await Wallet.findOneAndUpdate(
+            { user: prevWinningBid.bidder._id || prevWinningBid.bidder },
+            {
+              $inc: {
+                balance: prevWinningBid.amount,
+                totalBidHeld: -prevWinningBid.amount,
+              },
+              $set: { lastTransactionAt: new Date() },
+            },
+            { new: true, session },
+          );
+          if (prevWallet) {
+            prevWallet.totalBidHeld = Math.max(0, prevWallet.totalBidHeld || 0);
+            await prevWallet.save({ session });
+            await logWalletTxn({
+              user: prevWinningBid.bidder._id || prevWinningBid.bidder,
+              type: "bid_refund",
+              amount: prevWinningBid.amount,
+              reference: prevWinningBid._id,
+              referenceModel: "Bid",
+              description: "Outbid refund for auction car",
+              currentBalance: (prevWallet.balance || 0) - prevWinningBid.amount,
+              session,
+            });
+          }
+        }
+
+        await Bid.updateMany(
+          { auctionCar: auctionCarId, isWinning: true },
+          { isWinning: false },
+          { session },
+        );
+
+        const createdBids = await Bid.create(
+          [
+            {
+              auction: liveAuctionCar.auction._id,
+              auctionCar: auctionCarId,
+              bidder: userId,
+              bidderName: req.user.name || "Bidder",
+              amount,
+              bidType: "online",
+              isWinning: true,
+            },
+          ],
+          { session },
+        );
+        bid = createdBids[0];
+
+        if (hasWallet) {
+          const heldWallet = await Wallet.findOneAndUpdate(
+            {
+              user: userId,
+              balance: { $gte: amount },
+              $or: [{ isActive: { $exists: false } }, { isActive: { $ne: false } }],
+            },
+            {
+              $inc: { balance: -amount, totalBidHeld: amount },
+              $set: { lastTransactionAt: new Date() },
+            },
+            { new: true, session },
+          );
+          if (!heldWallet) {
+            throw new Error("Insufficient balance. Please refresh and try again.");
+          }
+          await logWalletTxn({
+            user: userId,
+            type: "bid_hold",
+            amount: -amount,
+            reference: bid._id,
+            referenceModel: "Bid",
+            description: `Bid placed – PKR ${amount.toLocaleString()}`,
+            currentBalance: (heldWallet.balance || 0) + amount,
+            session,
+          });
+        }
+
+        liveAuctionCar.currentBid = amount;
+        liveAuctionCar.currentBidder = userId;
+        liveAuctionCar.bidCount += 1;
+        if (liveAuctionCar.status === "approved") liveAuctionCar.status = "live";
+        await liveAuctionCar.save({ session });
+        await Auction.findByIdAndUpdate(
+          liveAuctionCar.auction._id,
+          { $inc: { totalBids: 1 } },
+          { session },
+        );
+
+        ac.currentBid = liveAuctionCar.currentBid;
+        ac.currentBidder = liveAuctionCar.currentBidder;
+        ac.bidCount = liveAuctionCar.bidCount;
+        ac.status = liveAuctionCar.status;
+        ac.auction.endTime = liveAuctionCar.auction.endTime;
       });
-      ac.auction.endTime = ext.newEndTime;
+    } finally {
+      await session.endSession();
+    }
+
+    if (extendedEndTime) {
       const io = req.app.get("io");
       if (io) {
         io.to(`auction:${ac.auction._id}`).emit("auction-status-change", {
           auctionId: ac.auction._id,
           status: "live",
-          endTime: ext.newEndTime,
+          endTime: extendedEndTime,
         });
         io.to(`auction:${ac.auction._id}`).emit("auction:extended", {
           auctionId: ac.auction._id,
-          newEndTime: ext.newEndTime,
+          newEndTime: extendedEndTime,
         });
       }
     }
-
-    // Refund previous winning bidder's wallet hold
-    if (prevWinningBid && prevWinningBid.bidder) {
-      const prevWallet = await Wallet.findOne({ user: prevWinningBid.bidder });
-      if (prevWallet) {
-        prevWallet.balance += prevWinningBid.amount;
-        prevWallet.totalBidHeld = Math.max(
-          0,
-          prevWallet.totalBidHeld - prevWinningBid.amount,
-        );
-        prevWallet.lastTransactionAt = new Date();
-        await prevWallet.save();
-        await logWalletTxn({
-          user: prevWinningBid.bidder,
-          type: "bid_refund",
-          amount: prevWinningBid.amount,
-          reference: prevWinningBid._id,
-          referenceModel: "Bid",
-          description: "Outbid refund for auction car",
-        });
-      }
-    }
-
-    await Bid.updateMany(
-      { auctionCar: auctionCarId, isWinning: true },
-      { isWinning: false },
-    );
-
-    const bid = await Bid.create({
-      auction: ac.auction._id,
-      auctionCar: auctionCarId,
-      bidder: userId,
-      bidderName: req.user.name || "Bidder",
-      amount,
-      bidType: "online",
-      isWinning: true,
-    });
-
-    if (hasWallet) {
-      wallet.balance -= amount;
-      wallet.totalBidHeld += amount;
-      wallet.lastTransactionAt = new Date();
-      await wallet.save();
-      await logWalletTxn({
-        user: userId,
-        type: "bid_hold",
-        amount: -amount,
-        reference: bid._id,
-        referenceModel: "Bid",
-        description: `Bid placed – PKR ${amount.toLocaleString()}`,
-      });
-    }
-
-    ac.currentBid = amount;
-    ac.currentBidder = userId;
-    ac.bidCount += 1;
-    if (ac.status === "approved") ac.status = "live";
-    await ac.save();
-    await Auction.findByIdAndUpdate(ac.auction._id, { $inc: { totalBids: 1 } });
 
     // Immutable bid audit log (outside transaction)
     try {
@@ -1127,115 +1189,166 @@ export const buyNow = async (req, res) => {
             : "Add funds to your wallet before using buy now.",
       });
 
-    // Refund any current winning bidder
-    const prevWin = await Bid.findOne({
-      auctionCar: auctionCarId,
-      isWinning: true,
-    });
-    if (prevWin && prevWin.bidder) {
-      const prevWallet = await Wallet.findOne({ user: prevWin.bidder });
-      if (prevWallet) {
-        prevWallet.balance += prevWin.amount;
-        prevWallet.totalBidHeld = Math.max(
-          0,
-          prevWallet.totalBidHeld - prevWin.amount,
+    const session = await mongoose.startSession();
+    let bid;
+    let escrow;
+    let prevWin = null;
+    let amountDue = 0;
+    try {
+      await session.withTransaction(async () => {
+        const liveAuctionCar = await AuctionCar.findById(auctionCarId)
+          .populate("auction")
+          .populate("car", "title make model year")
+          .session(session);
+        if (!liveAuctionCar) {
+          throw new Error("Auction car not found");
+        }
+        if (liveAuctionCar.auction.status !== "live") {
+          throw new Error("Auction is not live");
+        }
+        if (!["approved", "live"].includes(liveAuctionCar.status)) {
+          throw new Error("This lot is not available for buy now");
+        }
+        if (liveAuctionCar.status === "sold" || liveAuctionCar.winner) {
+          throw new Error("This lot has already been sold");
+        }
+
+        const buyingWallet = await Wallet.findOneAndUpdate(
+          {
+            user: userId,
+            balance: { $gte: buyNowPrice },
+            $or: [{ isActive: { $exists: false } }, { isActive: { $ne: false } }],
+          },
+          {
+            $inc: { balance: -buyNowPrice, totalBidHeld: buyNowPrice },
+            $set: { lastTransactionAt: new Date() },
+          },
+          { new: true, session },
         );
-        prevWallet.lastTransactionAt = new Date();
-        await prevWallet.save();
+        if (!buyingWallet) {
+          throw new Error(
+            `Insufficient balance. Buy now price is PKR ${buyNowPrice.toLocaleString()}.`,
+          );
+        }
+
+        prevWin = await Bid.findOne({
+          auctionCar: auctionCarId,
+          isWinning: true,
+        }).session(session);
+        if (prevWin && prevWin.bidder) {
+          const prevWallet = await Wallet.findOneAndUpdate(
+            { user: prevWin.bidder },
+            {
+              $inc: { balance: prevWin.amount, totalBidHeld: -prevWin.amount },
+              $set: { lastTransactionAt: new Date() },
+            },
+            { new: true, session },
+          );
+          if (prevWallet) {
+            prevWallet.totalBidHeld = Math.max(0, prevWallet.totalBidHeld || 0);
+            await prevWallet.save({ session });
+            await logWalletTxn({
+              user: prevWin.bidder,
+              type: "bid_refund",
+              amount: prevWin.amount,
+              reference: prevWin._id,
+              referenceModel: "Bid",
+              description: "Refund – lot sold via buy now",
+              currentBalance: (prevWallet.balance || 0) - prevWin.amount,
+              session,
+            });
+          }
+        }
+
+        await Bid.updateMany(
+          { auctionCar: auctionCarId, isWinning: true },
+          { isWinning: false },
+          { session },
+        );
+
+        const createdBids = await Bid.create(
+          [
+            {
+              auction: liveAuctionCar.auction._id,
+              auctionCar: auctionCarId,
+              bidder: userId,
+              bidderName: req.user.name || "Bidder",
+              amount: buyNowPrice,
+              bidType: "online",
+              isWinning: true,
+            },
+          ],
+          { session },
+        );
+        bid = createdBids[0];
+
         await logWalletTxn({
-          user: prevWin.bidder,
-          type: "bid_refund",
-          amount: prevWin.amount,
-          reference: prevWin._id,
+          user: userId,
+          type: "bid_hold",
+          amount: -buyNowPrice,
+          reference: bid._id,
           referenceModel: "Bid",
-          description: "Refund – lot sold via buy now",
+          description: `Buy now – PKR ${buyNowPrice.toLocaleString()}`,
+          currentBalance: (buyingWallet.balance || 0) + buyNowPrice,
+          session,
         });
-      }
-    }
-    await Bid.updateMany(
-      { auctionCar: auctionCarId, isWinning: true },
-      { isWinning: false },
-    );
 
-    const bid = await Bid.create({
-      auction: ac.auction._id,
-      auctionCar: auctionCarId,
-      bidder: userId,
-      bidderName: req.user.name || "Bidder",
-      amount: buyNowPrice,
-      bidType: "online",
-      isWinning: true,
-    });
+        liveAuctionCar.status = "sold";
+        liveAuctionCar.winner = userId;
+        liveAuctionCar.finalPrice = buyNowPrice;
+        liveAuctionCar.soldAt = new Date();
+        liveAuctionCar.currentBid = buyNowPrice;
+        liveAuctionCar.currentBidder = userId;
+        await liveAuctionCar.save({ session });
 
-    if (hasWallet) {
-      wallet.balance -= buyNowPrice;
-      wallet.totalBidHeld += buyNowPrice;
-      wallet.lastTransactionAt = new Date();
-      await wallet.save();
-      await logWalletTxn({
-        user: userId,
-        type: "bid_hold",
-        amount: -buyNowPrice,
-        reference: bid._id,
-        referenceModel: "Bid",
-        description: `Buy now – PKR ${buyNowPrice.toLocaleString()}`,
+        await ProxyBid.updateMany(
+          { auctionCar: auctionCarId },
+          { isActive: false },
+          { session },
+        );
+
+        amountDue = 0;
+        escrow = await createEscrowForWinner(
+          auctionCarId,
+          userId,
+          buyNowPrice,
+          buyNowPrice,
+          amountDue,
+          { session },
+        );
+
+        buyingWallet.totalBidHeld = Math.max(
+          0,
+          (buyingWallet.totalBidHeld || 0) - buyNowPrice,
+        );
+        await buyingWallet.save({ session });
+        await logWalletTxn({
+          user: userId,
+          type: "escrow_payment",
+          amount: -buyNowPrice,
+          reference: escrow._id,
+          referenceModel: "Escrow",
+          description: "Winning buy now moved to escrow",
+          currentBalance: buyingWallet.balance,
+          session,
+        });
+
+        await Auction.findByIdAndUpdate(
+          liveAuctionCar.auction._id,
+          { $inc: { totalSold: 1 } },
+          { session },
+        );
+
+        ac.status = liveAuctionCar.status;
+        ac.winner = liveAuctionCar.winner;
+        ac.finalPrice = liveAuctionCar.finalPrice;
+        ac.soldAt = liveAuctionCar.soldAt;
+        ac.currentBid = liveAuctionCar.currentBid;
+        ac.currentBidder = liveAuctionCar.currentBidder;
       });
+    } finally {
+      await session.endSession();
     }
-
-    ac.status = "sold";
-    ac.winner = userId;
-    ac.finalPrice = buyNowPrice;
-    ac.soldAt = new Date();
-    ac.currentBid = buyNowPrice;
-    ac.currentBidder = userId;
-    await ac.save();
-
-    await ProxyBid.updateMany(
-      { auctionCar: auctionCarId },
-      { isActive: false },
-    );
-
-    const winnerWallet = await Wallet.findOne({ user: userId });
-    const walletDeduction = await getHeldAmountForBid(
-      bid._id,
-      winnerWallet,
-      buyNowPrice,
-    );
-    const amountDue = Math.max(0, buyNowPrice - walletDeduction);
-    const escrow = await createEscrowForWinner(
-      auctionCarId,
-      userId,
-      buyNowPrice,
-      walletDeduction,
-      amountDue,
-    );
-
-    if (winnerWallet) {
-      winnerWallet.totalBidHeld = Math.max(
-        0,
-        winnerWallet.totalBidHeld - buyNowPrice,
-      );
-      await winnerWallet.save();
-      await logWalletTxn({
-        user: userId,
-        type: "escrow_payment",
-        amount: -buyNowPrice,
-        reference: escrow._id,
-        referenceModel: "Escrow",
-        description: "Winning buy now moved to escrow",
-      });
-    } else {
-      await logWalletTxn({
-        user: userId,
-        type: "token_deposit",
-        amount: -10000,
-        reference: escrow._id,
-        referenceModel: "Escrow",
-        description: "Token deposit applied to buy now",
-      });
-    }
-
-    await Auction.findByIdAndUpdate(ac.auction._id, { $inc: { totalSold: 1 } });
 
     await Notification.create({
       title: "Auction Won (Buy Now)!",
@@ -2657,7 +2770,7 @@ export const goLive = async (req, res) => {
     await auction.save();
 
     await AuctionCar.updateMany(
-      { auction: auction._id, status: { $in: ["approved", "pending"] } },
+      { auction: auction._id, status: "approved" },
       { status: "live" },
     );
 
@@ -3260,8 +3373,9 @@ export const adminDeleteAuctionCar = async (req, res) => {
 // Helpers – Wallet Ledger
 // ═══════════════════════════════════════════════════════════════════════════
 
-async function getRunningBalance(userId) {
+async function getRunningBalance(userId, session = null) {
   const last = await WalletTransaction.findOne({ user: userId })
+    .session(session)
     .sort({ createdAt: -1 })
     .select("balance")
     .lean();
@@ -3276,8 +3390,13 @@ async function logWalletTxn({
   referenceModel,
   description,
   status = "completed",
+  currentBalance,
+  session = null,
 }) {
-  const balance = (await getRunningBalance(user)) + amount;
+  const balance =
+    typeof currentBalance === "number"
+      ? currentBalance + amount
+      : (await getRunningBalance(user, session)) + amount;
   return WalletTransaction.create({
     user,
     type,
@@ -3287,7 +3406,7 @@ async function logWalletTxn({
     referenceModel,
     description,
     status,
-  });
+  }, { session });
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -3727,21 +3846,10 @@ export const runAuctionLifecycle = async () => {
       auction.status = "live";
       await auction.save();
       await AuctionCar.updateMany(
-        { auction: auction._id, status: { $in: ["approved", "pending"] } },
+        { auction: auction._id, status: "approved" },
         { status: "live" },
       );
       Logger.info(`Auction ${auction._id} auto-transitioned to live`);
-    }
-
-    // Self-heal: if a live auction still has pending lots, promote them to live.
-    const liveAuctionIds = (
-      await Auction.find({ status: "live" }).select("_id").lean()
-    ).map((a) => a._id);
-    if (liveAuctionIds.length > 0) {
-      await AuctionCar.updateMany(
-        { auction: { $in: liveAuctionIds }, status: "pending" },
-        { status: "live" },
-      );
     }
 
     // Live → Completed (past end time) – delegate to engine
@@ -3846,17 +3954,10 @@ export const extendAuction = async (req, res) => {
       });
     }
     const isAdmin = req.user.role === "admin";
-    const isDealer =
-      req.user.role === "dealer" || req.user.dealerInfo?.verified;
-    const submittedCars = await AuctionCar.find({
-      auction: auctionId,
-      submittedBy: req.user._id,
-    }).limit(1);
-    const isSeller = submittedCars.length > 0;
-    if (!isAdmin && !isSeller) {
+    if (!isAdmin) {
       return res.status(403).json({
         success: false,
-        message: "Only admin or the seller can extend this auction",
+        message: "Only admin can extend this auction",
       });
     }
     const previousEndTime = new Date(auction.endTime);
@@ -3868,7 +3969,7 @@ export const extendAuction = async (req, res) => {
       auction: auctionId,
       extendedBy: req.user._id,
       extensionMinutes: Number(minutes),
-      reason: isAdmin ? "admin_extend" : "manual_seller",
+      reason: "admin_extend",
       previousEndTime,
       newEndTime,
     });

@@ -166,19 +166,32 @@ export function extendAuctionIfNeeded(auction) {
  * Uses paymentWindowHours from AuctionSettings (default 72).
  * @returns {Promise<import('../models/auctionModel.js').Escrow>}
  */
-export async function createEscrowForWinner(auctionCarId, buyerId, amount, tokenDeduction, amountDue) {
+export async function createEscrowForWinner(
+  auctionCarId,
+  buyerId,
+  amount,
+  tokenDeduction,
+  amountDue,
+  options = {},
+) {
+  const { session = null } = options;
   const settings = await getAuctionSettings();
   const hours = settings?.paymentWindowHours ?? ESCROW_PAYMENT_DEADLINE_HOURS ?? 72;
   const paymentDeadline = new Date(Date.now() + hours * 60 * 60 * 1000);
-  const escrow = await Escrow.create({
-    auctionCar: auctionCarId,
-    buyer: buyerId,
-    amount,
-    tokenDeduction,
-    amountDue,
-    paymentDeadline,
-  });
-  return escrow;
+  const escrows = await Escrow.create(
+    [
+      {
+        auctionCar: auctionCarId,
+        buyer: buyerId,
+        amount,
+        tokenDeduction,
+        amountDue,
+        paymentDeadline,
+      },
+    ],
+    { session },
+  );
+  return escrows[0];
 }
 
 /**

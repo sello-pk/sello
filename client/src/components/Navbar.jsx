@@ -16,6 +16,7 @@ const Navbar = () => {
   const [openCompanyDropdown, setOpenCompanyDropdown] = useState(false);
   const [openAuctionsDropdown, setOpenAuctionsDropdown] = useState(false);
   const [openMobileAuctions, setOpenMobileAuctions] = useState(false);
+  const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
   const backdropRef = useRef(null);
   const drawerRef = useRef(null);
   const linkRefs = useRef([]);
@@ -48,6 +49,10 @@ const Navbar = () => {
   // Use cached user as fallback while loading or if query is skipped
   const cachedUser = getCachedUser();
   const user = currentUser || cachedUser;
+
+  useEffect(() => {
+    setAvatarLoadFailed(false);
+  }, [user?.avatar, user?.name, user?.email]);
 
   // Update token state when localStorage changes (after login)
   useEffect(() => {
@@ -187,12 +192,10 @@ const Navbar = () => {
 
   const avatarFallback = useMemo(() => {
     if (!user) return images.avatarIcon;
-    if (user.avatar) return user.avatar;
+    if (user.avatar && !avatarLoadFailed) return user.avatar;
     const name = user.name || user.email || "User";
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      name.charAt(0),
-    )}`;
-  }, [user]);
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`;
+  }, [avatarLoadFailed, user]);
 
   // Use the listings header style site-wide for visual consistency.
   const isListingsTheme = true;
@@ -434,10 +437,10 @@ const Navbar = () => {
               <span className="hidden md:inline">Sell Your Car</span>
             </button>
 
-            {!isLoading && currentUser ? (
+            {!isLoading && user ? (
               <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
                 {/* Dashboard Links */}
-                {currentUser.role === "admin" && (
+                {user.role === "admin" && (
                   <Link
                     to="/admin/dashboard"
                     className="hidden md:block text-xs px-2.5 py-1 bg-primary-500 rounded-md hover:opacity-90 text-white transition-colors"
@@ -475,6 +478,7 @@ const Navbar = () => {
                     src={avatarFallback}
                     alt="User Avatar"
                     className="w-full h-full object-cover"
+                    onError={() => setAvatarLoadFailed(true)}
                   />
                 </div>
               </div>

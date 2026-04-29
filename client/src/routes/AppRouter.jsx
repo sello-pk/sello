@@ -281,7 +281,9 @@ const AppRouter = () => {
         <Route path="/terms-conditions" element={<TermsCondition />} />
 
         <Route path="/help-center" element={<HelpCenter />} />
+        <Route path="/help" element={<HelpCenter />} />
         <Route path="/help/faqs" element={<FAQs />} />
+        <Route path="/help/*" element={<HelpCenter />} />
 
         {/* 404 */}
         <Route path="*" element={<NotFound />} />

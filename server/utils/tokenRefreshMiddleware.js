@@ -75,7 +75,7 @@ export const autoRefreshToken = async (req, res, next) => {
 
               // Set new token in cookie
               res.cookie("token", newAccessToken, {
-                httpOnly: false,
+                httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 sameSite: "lax",
                 maxAge:

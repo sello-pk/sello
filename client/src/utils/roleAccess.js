@@ -2,7 +2,6 @@ import {
   FULL_ACCESS_ROLE_NAMES,
   LEGACY_PATH_ALIASES,
   PERMISSION_ROUTE_ACCESS,
-  SYSTEM_ROLE_NAMES,
 } from "../constants/rbacPolicy";
 
 const LEGACY_ROLE_NAME_MAP = {
@@ -22,8 +21,18 @@ const hasAnyPermission = (userPermissions = {}, keys = []) =>
   keys.some((key) => Boolean(userPermissions?.[key]));
 
 export const isSuperAdmin = (user) => {
-  // Application rule: all admin accounts have full access.
-  return Boolean(user && user.role === "admin");
+  if (!user || user.role !== "admin") return false;
+
+  const adminRole = normalizeRoleName(user.adminRole || "");
+  const hasExplicitPermissions = Object.keys(user.permissions || {}).length > 0;
+
+  // Backward-compatible fallback for legacy full-admin accounts created
+  // before adminRole/permission-scoped staff accounts were introduced.
+  if (!adminRole && !hasExplicitPermissions) {
+    return true;
+  }
+
+  return FULL_ACCESS_ROLE_NAMES.includes(adminRole);
 };
 
 export const getAllowedMenuPaths = (user) => {
