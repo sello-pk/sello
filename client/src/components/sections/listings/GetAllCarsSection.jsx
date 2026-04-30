@@ -334,14 +334,14 @@ const GetAllCarsSection = () => {
             <span className="text-sm text-gray-600 font-medium">
               Page {page} of {totalPages}
             </span>
-            <div className="flex flex-wrap justify-center items-center gap-2">
+            <div className="flex flex-wrap justify-center items-center gap-2.5">
               <button
                 onClick={() => {
                   setPage((p) => Math.max(p - 1, 1));
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 disabled={page === 1}
-                className="px-4 py-2.5 rounded-xl border border-[#e5e7eb] bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2 text-sm"
+                className="inline-flex items-center justify-center min-w-[120px] px-4 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium gap-2 text-sm"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -351,7 +351,7 @@ const GetAllCarsSection = () => {
               {page > 2 && (
                 <button
                   onClick={() => { setPage(1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                  className="px-4 py-2.5 rounded-xl border border-[#e5e7eb] bg-white hover:bg-gray-50 font-medium text-sm"
+                  className="min-w-10 px-3 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 font-medium text-sm"
                 >
                   1
                 </button>
@@ -360,18 +360,18 @@ const GetAllCarsSection = () => {
               {page > 1 && (
                 <button
                   onClick={() => { setPage(page - 1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                  className="px-4 py-2.5 rounded-xl border border-[#e5e7eb] bg-white hover:bg-gray-50 font-medium text-sm"
+                  className="min-w-10 px-3 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 font-medium text-sm"
                 >
                   {page - 1}
                 </button>
               )}
-              <span className="px-4 py-2.5 rounded-xl bg-[#ff8a00] text-white font-semibold text-sm">
+              <span className="min-w-10 px-3 py-2.5 rounded-xl bg-primary-500 text-white font-semibold text-sm text-center">
                 {page}
               </span>
               {page < totalPages && (
                 <button
                   onClick={() => { setPage(page + 1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                  className="px-4 py-2.5 rounded-xl border border-[#e5e7eb] bg-white hover:bg-gray-50 font-medium text-sm"
+                  className="min-w-10 px-3 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 font-medium text-sm"
                 >
                   {page + 1}
                 </button>
@@ -380,7 +380,7 @@ const GetAllCarsSection = () => {
               {page < totalPages - 1 && (
                 <button
                   onClick={() => { setPage(totalPages); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                  className="px-4 py-2.5 rounded-xl border border-[#e5e7eb] bg-white hover:bg-gray-50 font-medium text-sm"
+                  className="min-w-10 px-3 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 font-medium text-sm"
                 >
                   {totalPages}
                 </button>
@@ -391,7 +391,7 @@ const GetAllCarsSection = () => {
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 disabled={page === totalPages}
-                className="px-4 py-2.5 rounded-xl bg-[#ff8a00] text-white font-semibold hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 text-sm"
+                className="inline-flex items-center justify-center min-w-[120px] px-4 py-2.5 rounded-xl bg-primary-500 text-white font-semibold hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors gap-2 text-sm"
               >
                 Next
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

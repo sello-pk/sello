@@ -249,11 +249,11 @@ const GenericVehicleCategoryPage = () => {
                 </div>
 
                 {pages > 1 && (
-                  <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-3 mt-6 sm:mt-8">
+                  <div className="flex flex-col sm:flex-row justify-center items-center gap-2.5 sm:gap-3 mt-6 sm:mt-8">
                     <button
                       onClick={() => handlePageChange(page - 1)}
                       disabled={page === 1}
-                      className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-white border rounded-lg disabled:opacity-50 text-sm sm:text-base hover:bg-gray-50 transition-colors"
+                      className="inline-flex items-center justify-center min-w-[120px] px-4 py-2.5 bg-white border border-gray-300 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium hover:bg-gray-50 transition-colors"
                     >
                       Previous
                     </button>
@@ -278,10 +278,10 @@ const GenericVehicleCategoryPage = () => {
                           <button
                             key={pageNum}
                             onClick={() => handlePageChange(pageNum)}
-                            className={`px-2 sm:px-3 py-2 rounded-lg text-sm sm:text-base transition-colors ${
+                            className={`min-w-10 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
                               page === pageNum 
                                 ? "bg-primary-500 text-white" 
-                                : "bg-white border hover:bg-gray-50"
+                                : "bg-white border border-gray-300 hover:bg-gray-50"
                             }`}
                           >
                             {pageNum}
@@ -292,7 +292,7 @@ const GenericVehicleCategoryPage = () => {
                     <button
                       onClick={() => handlePageChange(page + 1)}
                       disabled={page === pages}
-                      className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-white border rounded-lg disabled:opacity-50 text-sm sm:text-base hover:bg-gray-50 transition-colors"
+                      className="inline-flex items-center justify-center min-w-[120px] px-4 py-2.5 bg-primary-500 text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold hover:bg-primary-600 transition-colors"
                     >
                       Next
                     </button>
