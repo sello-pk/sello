@@ -29,9 +29,9 @@ const BottomHeader = () => {
   return (
     <div
       style={{ zIndex: 1000 }}
-      className="bg-[#050B20] border-y border-gray-200/80 w-full flex flex-wrap items-center justify-between gap-4 md:gap-6 px-4 md:px-20 py-2 md:py-3 text-sm md:text-base text-gray-100"
+      className="bg-[#050B20] border-y border-gray-200/80 w-full flex flex-col md:flex-row md:items-center md:justify-between gap-2 sm:gap-3 md:gap-6 px-3 sm:px-4 md:px-8 lg:px-20 py-2 md:py-3 text-sm md:text-base text-gray-100 overflow-x-hidden"
     >
-      <div className="flex min-w-0 items-center gap-3 md:gap-4 flex-shrink overflow-visible">
+      <div className="flex w-full md:w-auto min-w-0 items-center gap-2 sm:gap-3 md:gap-4">
         {showAuction && (
           <>
             {/* Live Badge */}
@@ -62,10 +62,10 @@ const BottomHeader = () => {
         )}
       </div>
 
-      <div className="flex items-center gap-4 md:gap-6 flex-shrink-0 ml-auto">
+      <div className="flex w-full md:w-auto items-center md:justify-end gap-2 sm:gap-3 md:gap-6 min-w-0">
         {/* Countdown */}
-        <div className="flex items-center gap-3 rounded-2xl bg-white/10 px-3 py-2 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_10px_30px_rgba(5,11,32,0.28)]">
-          <span className="text-white/70 text-xs uppercase tracking-[0.18em] whitespace-nowrap">
+        <div className="flex items-center gap-2 rounded-2xl bg-white/10 px-2.5 sm:px-3 py-1.5 sm:py-2 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_10px_30px_rgba(5,11,32,0.28)] min-w-0">
+          <span className="text-white/70 text-[10px] sm:text-xs uppercase tracking-[0.12em] whitespace-nowrap">
             Ends In
           </span>
           <CountdownTimer
@@ -76,10 +76,10 @@ const BottomHeader = () => {
           />
         </div>
 
-        <div className="flex items-center gap-5 md:gap-6">
+        <div className="flex items-center gap-3 sm:gap-4 md:gap-6 min-w-0 ml-auto">
           {showAuction && (
             <span
-              className="inline-flex items-center gap-2 text-white/80 text-sm whitespace-nowrap"
+              className="hidden lg:inline-flex items-center gap-2 text-white/80 text-sm whitespace-nowrap"
               role="status"
               aria-live="polite"
             >
@@ -103,7 +103,7 @@ const BottomHeader = () => {
             to="/filter"
             aria-label="Open filters"
             title="Filter cars"
-            className="text-white"
+            className="text-white text-sm sm:text-base whitespace-nowrap"
           >
             Filter
           </Link>

@@ -198,7 +198,7 @@ const CarCard = ({
         }
         className={`group bg-white rounded-xl overflow-hidden border border-[#e5e7eb] shadow-sm hover:shadow-md transition-all duration-300 flex flex-col sm:flex-row ${isClickable ? "cursor-pointer" : ""}`}
       >
-        <div className="relative w-full aspect-[3/2] sm:w-64 sm:aspect-auto sm:h-48 md:w-72 lg:w-80 flex-shrink-0 overflow-hidden bg-[#f3f4f6]">
+        <div className="relative w-full aspect-[3/2] sm:w-48 sm:aspect-auto sm:h-36 md:w-56 md:h-40 lg:w-64 lg:h-48 xl:w-72 xl:h-52 flex-shrink-0 overflow-hidden bg-[#f3f4f6]">
           {displayImage ? (
             <LazyImage
               src={displayImage}
@@ -241,15 +241,15 @@ const CarCard = ({
           )}
         </div>
 
-        <div className="flex-1 flex flex-col justify-between p-4 min-w-0">
+        <div className="flex-1 flex flex-col justify-between p-3 sm:p-4 min-w-0">
           <div>
-            <h3 className="text-[#111827] font-bold text-base sm:text-lg leading-tight line-clamp-1">
+            <h3 className="text-[#111827] font-bold text-sm sm:text-base lg:text-lg leading-tight line-clamp-1">
               {displayTitleShort}
             </h3>
             {displayYear != null && displayYear !== "" && (
-              <p className="text-[#6b7280] text-sm mt-0.5">{displayYear}</p>
+              <p className="text-[#6b7280] text-xs sm:text-sm mt-0.5">{displayYear}</p>
             )}
-            <div className="flex flex-wrap items-center gap-3 mt-2 text-[#6b7280] text-sm">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-2 text-[#6b7280] text-xs sm:text-sm">
               <span className="flex items-center gap-1.5">
                 {images.milesIcon && (
                   <img src={images.milesIcon} alt="" className="w-4 h-4 object-contain opacity-80" />
@@ -270,15 +270,15 @@ const CarCard = ({
               </span>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3 mt-3 pt-3 border-t border-[#e5e7eb]">
+          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-2 sm:gap-3 mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-[#e5e7eb]">
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <p className="text-xs text-gray-500">{priceLabel}</p>
+                <p className="text-xs text-gray-500 truncate">{priceLabel}</p>
                 {isAuction && <CountdownTimer targetDate={car?.auctionEndTime} />}
               </div>
-              <p className="text-lg font-bold text-primary-500 truncate">PKR {priceFormatted}</p>
+              <p className="text-base sm:text-lg font-bold text-primary-500 truncate">PKR {priceFormatted}</p>
             </div>
-            <div className="flex items-center justify-between gap-2 flex-wrap min-w-0">
+            <div className="flex items-center justify-between gap-1 sm:gap-2 flex-wrap min-w-0">
               <div className="flex items-center gap-2">
                 {showPhone && (
                   <a
@@ -305,9 +305,10 @@ const CarCard = ({
                   </a>
                 )}
               </div>
-              <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary-500 text-white text-sm font-semibold hover:brightness-110 transition-colors shrink-0">
-                VIEW DETAILS
-                <IoIosArrowRoundUp className="w-4 h-4 rotate-[43deg]" />
+              <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-primary-500 text-white text-xs sm:text-sm font-semibold hover:brightness-110 transition-colors shrink-0">
+                <span className="hidden xs:inline">VIEW</span>
+                <span className="xs:hidden">VIEW</span>
+                <IoIosArrowRoundUp className="w-3 h-3 sm:w-4 sm:h-4 rotate-[43deg]" />
               </span>
             </div>
           </div>
@@ -339,7 +340,7 @@ const CarCard = ({
       }
       className={`group bg-white rounded-xl overflow-hidden border border-[#e5e7eb] shadow-md hover:shadow-xl transition-all duration-300 flex flex-col ${isClickable ? "cursor-pointer" : ""}`}
     >
-      <div className="relative w-full aspect-[3/2] overflow-hidden bg-[#f3f4f6]">
+      <div className="relative w-full aspect-[4/3] sm:aspect-[3/2] overflow-hidden bg-[#f3f4f6]">
         {displayImage ? (
           <LazyImage
             src={displayImage}
@@ -367,14 +368,16 @@ const CarCard = ({
               "linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 45%, transparent 70%)",
           }}
         />
-        <div className="absolute bottom-0 left-0 right-0 px-3 py-2 flex items-end justify-between">
-          <p className="text-white font-bold text-lg sm:text-xl tracking-tight drop-shadow-lg flex items-center gap-2">
-            PKR {priceFormatted}
+        <div className="absolute bottom-0 left-0 right-0 px-2 py-1.5 sm:px-3 sm:py-2 flex items-end justify-between">
+          <div className="flex items-center gap-1">
+            <p className="text-white font-bold text-sm sm:text-base lg:text-lg tracking-tight drop-shadow-lg truncate">
+              PKR {priceFormatted}
+            </p>
             {isAuction && <CountdownTimer targetDate={car?.auctionEndTime} />}
-          </p>
+          </div>
         </div>
         <span
-          className={`absolute top-3 left-3 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide shadow-md ${tagStyles[displayTag] || tagStyles.for_sale}`}
+          className={`absolute top-1.5 left-1.5 sm:top-2 sm:left-2 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg text-xs font-bold uppercase tracking-wide shadow-md ${tagStyles[displayTag] || tagStyles.for_sale}`}
         >
           {tagLabel}
         </span>
@@ -383,26 +386,26 @@ const CarCard = ({
             type="button"
             onClick={handleBookmark}
             disabled={isSaving || isUnsaving}
-            className="absolute top-3 right-3 p-2.5 rounded-full bg-white/95 shadow-lg hover:bg-white hover:scale-105 disabled:opacity-50 z-10 transition-all"
+            className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 p-1.5 sm:p-2 rounded-full bg-white/95 shadow-lg hover:bg-white hover:scale-105 disabled:opacity-50 z-10 transition-all"
             aria-label={isSaved ? "Unsave" : "Save"}
           >
             {isSaved ? (
-              <AiFillHeart className="w-5 h-5 text-primary-500" />
+              <AiFillHeart className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-500" />
             ) : (
-              <AiOutlineHeart className="w-5 h-5 text-gray-500 hover:text-primary-500 transition-colors" />
+              <AiOutlineHeart className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500 hover:text-primary-500 transition-colors" />
             )}
           </button>
         )}
       </div>
 
-      <div className="p-4 flex flex-col flex-1">
-        <div className="flex items-center justify-between gap-2">
-          <h3 className="text-[#111827] font-bold text-base leading-tight line-clamp-2">
+      <div className="p-2.5 sm:p-3 lg:p-4 flex flex-col flex-1">
+        <div className="flex items-start justify-between gap-1">
+          <h3 className="text-[#111827] font-bold text-xs sm:text-sm md:text-base leading-tight line-clamp-2 flex-1">
             {displayTitle}
           </h3>
-          <p className="text-xs text-gray-500 shrink-0">{priceLabel}</p>
+          <p className="text-xs text-gray-500 shrink-0 ml-1 mt-0.5">{priceLabel}</p>
         </div>
-        <div className="flex items-center gap-1.5 mt-1.5 text-[#6b7280] text-xs">
+        <div className="flex items-center gap-1 mt-1 text-[#6b7280] text-xs">
           {images.location && (
             <img
               src={images.location}
@@ -412,8 +415,8 @@ const CarCard = ({
           )}
           <span className="truncate">{displayLocation}</span>
         </div>
-        <div className="border-t border-[#e5e7eb] my-3" />
-        <div className="flex items-center justify-between gap-2 text-[#6b7280] text-xs">
+        <div className="border-t border-[#e5e7eb] my-1.5 sm:my-2" />
+        <div className="flex flex-wrap items-center justify-between gap-1 text-[#6b7280] text-xs">
           <span className="flex items-center gap-2 min-w-0">
             {images.milesIcon && (
               <img
@@ -454,17 +457,17 @@ const CarCard = ({
           </span>
         </div>
 
-        <div className="mt-3 pt-3 flex items-center justify-between gap-2 border-t border-[#e5e7eb]">
-          <div className="flex items-center gap-2">
+        <div className="mt-1.5 sm:mt-2 pt-1.5 sm:pt-2 flex items-center justify-between gap-1 border-t border-[#e5e7eb]">
+          <div className="flex items-center gap-1">
             {showPhone && (
               <a
                 href={phoneUrl}
                 onClick={(e) => e.stopPropagation()}
-                className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
                 title="Call"
                 aria-label="Call"
               >
-                <FaPhone className="w-4 h-4" />
+                <FaPhone className="w-3.5 h-3.5" />
               </a>
             )}
             {showWhatsAppBtn && (
@@ -473,17 +476,17 @@ const CarCard = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="p-2 rounded-lg bg-[#25D366] text-white hover:opacity-90 transition-colors"
+                className="p-1.5 rounded-lg bg-[#25D366] text-white hover:opacity-90 transition-colors"
                 title="WhatsApp"
                 aria-label="WhatsApp"
               >
-                <FaWhatsapp className="w-4 h-4" />
+                <FaWhatsapp className="w-3.5 h-3.5" />
               </a>
             )}
           </div>
-          <span className="inline-flex items-center gap-1.5 text-primary-500 font-semibold text-sm hover:underline group-hover:text-primary-600 transition-colors shrink-0">
-            View Details
-            <IoIosArrowRoundUp className="w-4 h-4 rotate-[43deg]" />
+          <span className="inline-flex items-center gap-0.5 text-primary-500 font-semibold text-xs hover:underline group-hover:text-primary-600 transition-colors shrink-0">
+            <span>View</span>
+            <IoIosArrowRoundUp className="w-3 h-3 rotate-[43deg]" />
           </span>
         </div>
         {actions && (

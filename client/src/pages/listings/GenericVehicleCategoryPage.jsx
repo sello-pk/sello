@@ -39,7 +39,7 @@ const GenericVehicleCategoryPage = () => {
   const [sortBy, setSortBy] = useState("newest");
   const [viewMode, setViewMode] = useState("grid");
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isExpanded2, setIsExpanded2] = useState(false);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [filters, setFilters] = useState(() => {
     const params = {};
     searchParams.forEach((value, key) => {
@@ -108,45 +108,38 @@ const GenericVehicleCategoryPage = () => {
   const Icon = config.icon;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
       {/* Hero Section */}
-      <div
-        className="relative min-h-[48vh] md:h-[48vh] text-white overflow-hidden"
-        style={{
-          backgroundImage: `url("${config.bgImage}")`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundColor: "#1a1a1a",
-        }}
-      >
-        <div className="relative z-10 flex min-h-[48vh] md:h-[48vh] w-full flex-col justify-center items-center px-4 sm:px-6 py-6 sm:py-8 md:py-10 bg-black/50">
+      <div className="relative w-full min-h-[30vh] sm:min-h-[26vh] md:min-h-[24vh] text-white bg-primary-500 overflow-hidden">
+        <div className="relative z-10 flex min-h-[30vh] sm:min-h-[26vh] md:min-h-[24vh] w-full flex-col justify-center items-center px-2 sm:px-4 lg:px-6 py-3 sm:py-5 md:py-6">
           <Link
             to="/listings"
-            className="absolute left-4 sm:left-6 top-6 sm:top-8 z-20 inline-flex flex-wrap items-center gap-2 text-white/90 hover:text-white transition max-w-full"
+            className="absolute left-2 sm:left-4 lg:left-6 top-3 sm:top-6 lg:top-8 z-20 inline-flex items-center gap-1.5 sm:gap-2 text-white/90 hover:text-white transition"
           >
-            <HiOutlineArrowLeft className="flex-shrink-0" />
-            <span className="break-words">Back to All Vehicles</span>
+            <HiOutlineArrowLeft className="flex-shrink-0 w-3.5 h-3.5 sm:w-5 sm:h-5" />
+            <span className="text-xs sm:text-sm font-medium hidden sm:inline">Back to Vehicles</span>
+            <span className="text-xs sm:text-sm font-medium sm:hidden">Back</span>
           </Link>
 
-          <div className="flex justify-center items-center w-full max-w-full">
-            <div className="text-center w-full max-w-2xl mx-auto px-6 sm:px-8 py-5 sm:py-6 shrink-0">
-              <div className="mb-4">
-                <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl">
-                  <Icon className="text-4xl text-white drop-shadow-md" />
+          <div className="flex justify-center items-center w-full px-1 sm:px-0">
+            <div className="text-center w-full max-w-5xl mx-auto px-1 sm:px-4 lg:px-8 py-2 sm:py-4 lg:py-6">
+              <div className="mb-2 sm:mb-4">
+                <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl sm:rounded-2xl bg-white/15">
+                  <Icon className="text-2xl sm:text-3xl lg:text-4xl text-white drop-shadow-md" />
                 </div>
               </div>
 
-              <h1 className="text-4xl md:text-5xl font-bold mb-3 text-white drop-shadow-lg">
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-1.5 sm:mb-2 lg:mb-3 text-white drop-shadow-lg leading-tight px-2 sm:px-0">
                 {config.title}
               </h1>
-              <p className="text-base md:text-lg text-white/95 mb-5 max-w-xl mx-auto leading-relaxed drop-shadow-lg">
+              <p className="text-xs sm:text-sm md:text-base lg:text-lg text-white/90 mb-3 sm:mb-4 lg:mb-5 max-w-lg sm:max-w-2xl lg:max-w-3xl mx-auto leading-relaxed drop-shadow-lg px-3 sm:px-0">
                 {config.description}
               </p>
 
               {total > 0 && (
-                <div className="inline-flex items-center gap-4 px-5 py-2.5 rounded-full">
-                  <span className="text-white font-semibold text-sm md:text-base">
-                    {total} {total === 1 ? "Listing" : "Listings"} Available
+                <div className="inline-flex items-center gap-1.5 sm:gap-2 lg:gap-4 px-2 sm:px-4 lg:px-5 py-1.5 sm:py-2 lg:py-2.5 rounded-full bg-white/15">
+                  <span className="text-white font-semibold text-xs sm:text-sm md:text-base">
+                    {total} {total === 1 ? "Listing" : "Listings"}
                   </span>
                 </div>
               )}
@@ -156,11 +149,22 @@ const GenericVehicleCategoryPage = () => {
       </div>
 
       {/* Results Section */}
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-4">
-              <h2 className="text-xl font-semibold mb-4">Advanced Filters</h2>
+      <div className="max-w-8xl mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 lg:py-8">
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-2 sm:gap-4 lg:gap-6 xl:gap-8 min-w-0">
+          {/* Filter Sidebar - Mobile Collapsible */}
+          <div className={`xl:col-span-1 min-w-0 ${showMobileFilters ? 'block' : 'hidden'} xl:block`}>
+            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 xl:sticky xl:top-4 xl:max-h-[calc(100vh-120px)] xl:overflow-y-auto">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg sm:text-xl font-semibold">Filters</h2>
+                <button
+                  onClick={() => setShowMobileFilters(false)}
+                  className="xl:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
               <CategoryFilterForm
                 vehicleType={vehicleType}
                 onFilter={handleFilterChange}
@@ -168,7 +172,21 @@ const GenericVehicleCategoryPage = () => {
             </div>
           </div>
 
-          <div className="lg:col-span-3">
+          {/* Mobile Filter Toggle Button */}
+          <div className="xl:hidden mb-3 sm:mb-4">
+            <button
+              onClick={() => setShowMobileFilters(!showMobileFilters)}
+              className="w-full flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base"
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+              <span className="font-medium">{showMobileFilters ? 'Hide Filters' : 'Show Filters'}</span>
+            </button>
+          </div>
+
+          {/* Main Content */}
+          <div className="xl:col-span-3 min-w-0">
             {isLoading ? (
               <div className="text-center py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
@@ -201,7 +219,7 @@ const GenericVehicleCategoryPage = () => {
             ) : (
               <>
                 <div className="mb-4">
-                  <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
                     {config.title} Listings ({total})
                   </h2>
                   <SortAndViewOptions
@@ -214,10 +232,10 @@ const GenericVehicleCategoryPage = () => {
                   />
                 </div>
                 <div
-                  className={`mb-8 ${
+                  className={`mb-6 sm:mb-8 ${
                     viewMode === "list"
-                      ? "grid grid-cols-1 gap-4"
-                      : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+                      ? "grid grid-cols-1 gap-3 sm:gap-4"
+                      : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-4"
                   }`}
                 >
                   {sortedCars.map((car) => (
@@ -230,27 +248,50 @@ const GenericVehicleCategoryPage = () => {
                 </div>
 
                 {pages > 1 && (
-                  <div className="flex justify-center items-center gap-2 mt-8">
+                  <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-3 mt-6 sm:mt-8">
                     <button
                       onClick={() => handlePageChange(page - 1)}
                       disabled={page === 1}
-                      className="px-4 py-2 bg-white border rounded-lg disabled:opacity-50"
+                      className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-white border rounded-lg disabled:opacity-50 text-sm sm:text-base hover:bg-gray-50 transition-colors"
                     >
                       Previous
                     </button>
-                    {Array.from({ length: pages }, (_, i) => i + 1).map((p) => (
-                      <button
-                        key={p}
-                        onClick={() => handlePageChange(p)}
-                        className={`px-4 py-2 rounded-lg ${page === p ? "bg-primary-500 text-white" : "bg-white border"}`}
-                      >
-                        {p}
-                      </button>
-                    ))}
+                    <div className="flex flex-wrap justify-center gap-1 sm:gap-2 max-w-full overflow-x-auto">
+                      {Array.from({ length: Math.min(pages, 7) }, (_, i) => {
+                        let pageNum;
+                        if (pages <= 7) {
+                          pageNum = i + 1;
+                        } else if (page <= 4) {
+                          pageNum = i < 5 ? i + 1 : (i === 5 ? '...' : pages);
+                        } else if (page >= pages - 3) {
+                          pageNum = i < 2 ? (i === 0 ? 1 : '...') : pages - 6 + i;
+                        } else {
+                          pageNum = i === 0 ? 1 : i === 1 ? '...' : i === 5 ? '...' : i === 6 ? pages : page - 2 + i - 2;
+                        }
+                        
+                        if (pageNum === '...') {
+                          return <span key={i} className="px-2 sm:px-3 py-2 text-gray-500">...</span>;
+                        }
+                        
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => handlePageChange(pageNum)}
+                            className={`px-2 sm:px-3 py-2 rounded-lg text-sm sm:text-base transition-colors ${
+                              page === pageNum 
+                                ? "bg-primary-500 text-white" 
+                                : "bg-white border hover:bg-gray-50"
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                    </div>
                     <button
                       onClick={() => handlePageChange(page + 1)}
                       disabled={page === pages}
-                      className="px-4 py-2 bg-white border rounded-lg disabled:opacity-50"
+                      className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-white border rounded-lg disabled:opacity-50 text-sm sm:text-base hover:bg-gray-50 transition-colors"
                     >
                       Next
                     </button>

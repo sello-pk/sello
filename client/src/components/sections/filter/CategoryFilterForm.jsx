@@ -18,6 +18,15 @@ const getVehicleLabel = (vehicleType, fieldType) => {
   return `${vehicleName} ${fieldType}`;
 };
 
+const toPluralVehicleName = (vehicleType = "") => {
+  const name = String(vehicleType || "Vehicle").trim();
+  if (!name) return "Vehicles";
+  const lower = name.toLowerCase();
+  if (lower.endsWith("s")) return name;
+  if (lower.endsWith("bus")) return `${name}es`;
+  return `${name}s`;
+};
+
 const CategoryFilterForm = ({ vehicleType, onFilter }) => {
   const [availableModels, setAvailableModels] = useState([]);
   const [availableStates, setAvailableStates] = useState([]);
@@ -406,28 +415,28 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">
-            Filter {vehicleType}s
+    <div className="min-w-0">
+      <div className="flex items-start justify-between gap-3 mb-4 sm:mb-6">
+        <div className="min-w-0">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight">
+            Filter {toPluralVehicleName(vehicleType)}
           </h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-xs sm:text-sm text-gray-600 mt-1">
             Find your perfect {vehicleType.toLowerCase()} with advanced filters
           </p>
         </div>
         <button
           type="button"
           onClick={handleClearFilters}
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          className="shrink-0 px-3 sm:px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
         >
           Clear All
         </button>
       </div>
-      <form className="space-y-4 h-auto" onSubmit={handleSubmit}>
+      <form className="space-y-5 h-auto" onSubmit={handleSubmit}>
         {/* Title Search - Full Width */}
         <div className="field space-y-2">
-          <label className="block mb-2 text-sm font-medium text-gray-700">
+          <label className="block mb-1.5 sm:mb-2 text-sm font-medium text-gray-700">
             Search by Title
           </label>
           <Input
@@ -440,9 +449,9 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
 
         {/* Price */}
         <div className="field space-y-2">
-          <div className="flex flex-col sm:flex-row w-full mx-auto gap-4 items-center">
+          <div className="flex flex-col sm:flex-row w-full gap-3 sm:gap-4 items-start">
             <div className="w-full sm:w-1/2">
-              <label className="block mb-1">Price From (PKR)</label>
+              <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-700">Price From (PKR)</label>
               <Input
                 inputType="number"
                 value={filters.minPrice}
@@ -451,7 +460,7 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
               />
             </div>
             <div className="w-full sm:w-1/2">
-              <label className="block mb-1">To (PKR)</label>
+              <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-700">To (PKR)</label>
               <Input
                 inputType="number"
                 value={filters.maxPrice}
@@ -470,7 +479,7 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
 
         {/* Vehicle Make */}
         <div className="field space-y-2">
-          <label className="block mb-2 text-sm font-medium text-gray-700">
+          <label className="block mb-1.5 sm:mb-2 text-sm font-medium text-gray-700">
             {getVehicleLabel(vehicleType, "make")}
           </label>
           <SearchableSelect
@@ -488,7 +497,7 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
 
         {/* Vehicle Model */}
         <div className="field space-y-2">
-          <label className="block mb-2 text-sm font-medium text-gray-700">
+          <label className="block mb-1.5 sm:mb-2 text-sm font-medium text-gray-700">
             {getVehicleLabel(vehicleType, "model")}
           </label>
           <SearchableSelect
@@ -514,9 +523,9 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
 
         {/* Year */}
         <div className="field space-y-2">
-          <div className="flex flex-col sm:flex-row w-full mx-auto gap-4 items-center">
+          <div className="flex flex-col sm:flex-row w-full gap-3 sm:gap-4 items-start">
             <div className="w-full sm:w-1/2">
-              <label className="block mb-1">Year From</label>
+              <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-700">Year From</label>
               <Input
                 inputType="number"
                 value={filters.minYear}
@@ -527,7 +536,7 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
               />
             </div>
             <div className="w-full sm:w-1/2">
-              <label className="block mb-1">To</label>
+              <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-700">To</label>
               <Input
                 inputType="number"
                 value={filters.maxYear}
@@ -548,9 +557,9 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
 
         {/* Mileage */}
         <div className="field space-y-2">
-          <div className="flex flex-col sm:flex-row w-full mx-auto gap-4 items-center">
+          <div className="flex flex-col sm:flex-row w-full gap-3 sm:gap-4 items-start">
             <div className="w-full sm:w-1/2">
-              <label className="block mb-1">Mileage From</label>
+              <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-700">Mileage From</label>
               <Input
                 inputType="number"
                 value={filters.minMileage}
@@ -559,7 +568,7 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
               />
             </div>
             <div className="w-full sm:w-1/2">
-              <label className="block mb-1">To</label>
+              <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-700">To</label>
               <Input
                 inputType="number"
                 value={filters.maxMileage}
@@ -579,9 +588,9 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
         {/* Battery Range - Only show for electric vehicles */}
         {isFieldVisible(vehicleType, "batteryRange") && (
           <div className="field space-y-2">
-            <div className="flex flex-col sm:flex-row w-full mx-auto gap-4 items-center">
+            <div className="flex flex-col sm:flex-row w-full gap-3 sm:gap-4 items-start">
               <div className="w-full sm:w-1/2">
-                <label className="block mb-1">Battery Range From (km)</label>
+                <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-700">Battery Range From (km)</label>
                 <Input
                   inputType="number"
                   value={filters.minBatteryRange}
@@ -592,7 +601,7 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
                 />
               </div>
               <div className="w-full sm:w-1/2">
-                <label className="block mb-1">To (km)</label>
+                <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-700">To (km)</label>
                 <Input
                   inputType="number"
                   value={filters.maxBatteryRange}
@@ -615,9 +624,9 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
         {/* Motor Power - Only show for electric vehicles */}
         {isFieldVisible(vehicleType, "motorPower") && (
           <div className="field space-y-2">
-            <div className="flex flex-col sm:flex-row w-full mx-auto gap-4 items-center">
+            <div className="flex flex-col sm:flex-row w-full gap-3 sm:gap-4 items-start">
               <div className="w-full sm:w-1/2">
-                <label className="block mb-1">Motor Power From (kW)</label>
+                <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-700">Motor Power From (kW)</label>
                 <Input
                   inputType="number"
                   value={filters.minMotorPower}
@@ -628,7 +637,7 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
                 />
               </div>
               <div className="w-full sm:w-1/2">
-                <label className="block mb-1">To (kW)</label>
+                <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-700">To (kW)</label>
                 <Input
                   inputType="number"
                   value={filters.maxMotorPower}
@@ -649,10 +658,10 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
         )}
 
         {/* Submit Button */}
-        <div className="pt-4">
+        <div className="pt-3 sm:pt-4">
           <button
             type="submit"
-            className="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+            className="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition-colors duration-200 text-sm sm:text-base"
           >
             Apply Filters
           </button>
