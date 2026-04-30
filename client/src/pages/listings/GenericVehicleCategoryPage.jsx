@@ -38,7 +38,6 @@ const GenericVehicleCategoryPage = () => {
   const [page, setPage] = useState(parseInt(searchParams.get("page")) || 1);
   const [sortBy, setSortBy] = useState("newest");
   const [viewMode, setViewMode] = useState("grid");
-  const [isExpanded, setIsExpanded] = useState(false);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [filters, setFilters] = useState(() => {
     const params = {};
@@ -76,6 +75,7 @@ const GenericVehicleCategoryPage = () => {
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
     setPage(1);
+    setShowMobileFilters(false);
     const newParams = new URLSearchParams();
     Object.entries(newFilters).forEach(([key, value]) => {
       if (value) {
@@ -106,6 +106,15 @@ const GenericVehicleCategoryPage = () => {
   };
 
   const Icon = config.icon;
+
+  useEffect(() => {
+    if (!showMobileFilters) return undefined;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [showMobileFilters]);
 
   return (
     <div className="min-h-screen bg-gray-50 overflow-x-hidden">
@@ -151,19 +160,11 @@ const GenericVehicleCategoryPage = () => {
       {/* Results Section */}
       <div className="max-w-8xl mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 lg:py-8">
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-2 sm:gap-4 lg:gap-6 xl:gap-8 min-w-0">
-          {/* Filter Sidebar - Mobile Collapsible */}
-          <div className={`xl:col-span-1 min-w-0 ${showMobileFilters ? 'block' : 'hidden'} xl:block`}>
+          {/* Filter Sidebar - Desktop */}
+          <div className="xl:col-span-1 min-w-0 hidden xl:block">
             <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 xl:sticky xl:top-4 xl:max-h-[calc(100vh-120px)] xl:overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg sm:text-xl font-semibold">Filters</h2>
-                <button
-                  onClick={() => setShowMobileFilters(false)}
-                  className="xl:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
               </div>
               <CategoryFilterForm
                 vehicleType={vehicleType}
@@ -176,7 +177,7 @@ const GenericVehicleCategoryPage = () => {
           <div className="xl:hidden mb-3 sm:mb-4">
             <button
               onClick={() => setShowMobileFilters(!showMobileFilters)}
-              className="w-full flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base"
+              className="inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -303,6 +304,48 @@ const GenericVehicleCategoryPage = () => {
         </div>
 
         <ListingsCategoryBlogsSection categorySlug={categoryType?.toLowerCase()} />
+      </div>
+
+      {/* Mobile Filter Side Sheet */}
+      <div
+        className={`xl:hidden fixed inset-0 z-[80] transition-opacity duration-300 ${
+          showMobileFilters
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <button
+          type="button"
+          className="absolute inset-0 bg-black/45"
+          aria-label="Close filters"
+          onClick={() => setShowMobileFilters(false)}
+        />
+        <aside
+          className={`absolute top-0 right-0 h-full w-[80vw] max-w-[420px] bg-white shadow-2xl transition-transform duration-300 ease-in-out flex flex-col ${
+            showMobileFilters ? "translate-x-0" : "translate-x-full"
+          }`}
+          aria-label="Filters panel"
+        >
+          <div className="flex items-center justify-between p-4 border-b border-gray-200">
+            <h2 className="text-base font-semibold text-gray-900">Filters</h2>
+            <button
+              type="button"
+              onClick={() => setShowMobileFilters(false)}
+              className="p-2 hover:bg-gray-100 transition-colors"
+              aria-label="Close filters"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div className="p-4 overflow-y-auto flex-1">
+            <CategoryFilterForm
+              vehicleType={vehicleType}
+              onFilter={handleFilterChange}
+            />
+          </div>
+        </aside>
       </div>
     </div>
   );
