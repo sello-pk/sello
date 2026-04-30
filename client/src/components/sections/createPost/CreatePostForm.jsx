@@ -666,10 +666,15 @@ const CreatePostForm = ({ initialPrefill = null }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="py-8 md:py-10"
+      className="py-6 sm:py-8 md:py-10"
       encType="multipart/form-data"
     >
-      <h2 className="text-center md:text-3xl font-semibold">Create Post</h2>
+      <h2 className="text-center text-2xl md:text-3xl font-semibold text-gray-900">
+        Create Post
+      </h2>
+      <p className="text-center text-sm text-gray-600 mt-1 mb-5 sm:mb-6">
+        Share your vehicle details to publish a high-quality listing.
+      </p>
 
       {/* Duplicate Warning Modal */}
       {showDuplicateWarning && (
@@ -724,11 +729,11 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       )}
 
       {/* Vehicle Type Selection - Top of Form */}
-      <div className="mb-6">
+      <div className="mb-5 sm:mb-6">
         <label className="block mb-3 text-center font-medium">
           Vehicle Type *
         </label>
-        <div className="flex justify-center gap-3 flex-wrap">
+        <div className="flex justify-center gap-2 sm:gap-3 flex-wrap">
           {["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"].map(
             (type) => (
               <button
@@ -753,7 +758,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
                     handleChange("transmission", "");
                   }
                 }}
-                className={`group relative px-5 py-1.5 rounded font-semibold text-sm transition-all duration-300 transform hover:scale-105 active:scale-95 ${
+                className={`group relative px-3 sm:px-5 py-1.5 rounded font-semibold text-xs sm:text-sm transition-all duration-300 transform hover:scale-105 active:scale-95 ${
                   formData.vehicleType === type
                     ? "bg-primary-500 text-black shadow-lg shadow-primary-500/25 ring-2 ring-primary-500 ring-offset-2"
                     : "bg-white text-gray-700 border-2 border-gray-200 hover:border-primary-500 hover:shadow-md hover:bg-primary-50"
@@ -767,7 +772,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       </div>
 
       {/* Tab Content Container */}
-      <div className="border-[1px] border-gray-700 rounded-md px-5 py-5 my-4">
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm px-3 sm:px-5 py-4 sm:py-5 my-4">
         <div className="my-2">
           <ImagesUpload
             onImagesChange={(files) => handleChange("images", files)}
@@ -775,7 +780,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         </div>
 
         {/* Title - Full Width */}
-        <div className="mb-2 pl-2">
+        <div className="mb-2 pl-0 sm:pl-2">
           <label className="block mb-1">Title</label>
           <Input
             inputType="text"
@@ -787,7 +792,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         </div>
 
         {/* Make, Model, Year, Variant */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-2 pl-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-2 pl-0 sm:pl-2">
           <div>
             <label className="block mb-1">
               {getVehicleLabel(formData.vehicleType, "make")} *
@@ -876,7 +881,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
 
         {["Bus", "Car"].includes(formData.vehicleType) ? (
           <>
-            <div className="mb-2 pl-2">
+            <div className="mb-2 pl-0 sm:pl-2">
               <label className="block mb-1">Price (PKR)</label>
               <Input
                 inputType="number"
@@ -886,7 +891,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
                 required
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2 pl-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2 pl-0 sm:pl-2">
               <div>
                 <label className="block mb-1">Phone Number</label>
                 <Input
@@ -929,7 +934,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         ) : (
           <>
             {/* Price - Full Width */}
-            <div className="mb-2 pl-2">
+            <div className="mb-2 pl-0 sm:pl-2">
               <label className="block mb-1">Price (PKR)</label>
               <Input
                 inputType="number"
@@ -941,7 +946,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
             </div>
 
             {/* Phone Number, WhatsApp Number, Mileage */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2 pl-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2 pl-0 sm:pl-2">
               <div>
                 <label className="block mb-1">Phone Number</label>
                 <Input
@@ -988,7 +993,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         )}
 
         {/* Country, City, Address in same row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2 pl-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2 pl-0 sm:pl-2">
           <div>
             <label className="block mb-1">Country</label>
             <SearchableSelect
@@ -1039,7 +1044,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         </div>
 
         {/* Condition - Full Width */}
-        <div className="mb-2 pl-2">
+        <div className="mb-2 pl-0 sm:pl-2">
           <label className="block mb-1">Condition</label>
           <FilterSpecs specType="condition" value={formData.condition} onChange={(val) => handleChange("condition", val)} />
         </div>
@@ -1131,7 +1136,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         )}
 
         {/* Location Picker - Like Uber (Before Description) */}
-        <div className="mb-2 pl-2">
+        <div className="mb-2 pl-0 sm:pl-2">
           <label className="block mb-1">Location *</label>
           <LocationButton
             value={formData.geoLocation}
@@ -1156,7 +1161,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
           />
         </div>
 
-        <div className="mt-2 mb-2 pl-2">
+        <div className="mt-2 mb-2 pl-0 sm:pl-2">
           <label className="block mb-1">Description</label>
           <textarea
             value={formData.description}
@@ -1171,7 +1176,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
           />
         </div>
 
-        <div className="p-6">
+        <div className="p-3 sm:p-6">
           <button
             type="submit"
             disabled={isLoading}

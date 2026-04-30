@@ -495,10 +495,10 @@ const FilterForm = ({ onFilter }) => {
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Filter Cars</h2>
+    <div className="min-w-0">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
+        <div className="min-w-0">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Filter Cars</h2>
           <p className="text-sm text-gray-600 mt-1">
             Find your perfect car with advanced filters
           </p>
@@ -506,7 +506,7 @@ const FilterForm = ({ onFilter }) => {
         <button
           type="button"
           onClick={handleClearFilters}
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
         >
           Clear All
         </button>
@@ -517,13 +517,13 @@ const FilterForm = ({ onFilter }) => {
           <label className="block mb-3 text-center font-medium text-gray-700">
             Vehicle Type
           </label>
-          <div className="flex justify-center gap-3 flex-wrap">
+          <div className="flex justify-center gap-2 sm:gap-3 flex-wrap">
             {vehicleTypeOptions.map((type) => (
               <button
                 key={type}
                 type="button"
                 onClick={() => handleChange("vehicleType", type)}
-                className={`group relative px-5 py-1.5 rounded font-semibold text-sm transition-all duration-300 transform hover:scale-105 active:scale-95 ${
+                className={`group relative px-3 sm:px-5 py-1.5 rounded font-semibold text-xs sm:text-sm transition-all duration-300 transform hover:scale-105 active:scale-95 ${
                   filters.vehicleType === type
                     ? "bg-primary-500 text-black shadow-lg shadow-primary-500/25 ring-2 ring-primary-500 ring-offset-2"
                     : "bg-white text-gray-700 border-2 border-gray-200 hover:border-primary-500 hover:shadow-md hover:bg-primary-50"
@@ -551,7 +551,7 @@ const FilterForm = ({ onFilter }) => {
         {/* Price */}
         <div className="field space-y-2 min-w-0">
           <label className="block mb-2 text-sm font-medium text-gray-700">Price (PKR)</label>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block mb-1 text-xs text-gray-500">From</label>
               <Input
@@ -649,7 +649,7 @@ const FilterForm = ({ onFilter }) => {
         {/* Year - new line after Variant */}
         <div className="field space-y-2 min-w-0">
           <label className="block mb-2 text-sm font-medium text-gray-700">Year</label>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block mb-1 text-xs text-gray-500">From</label>
               <Input
@@ -686,7 +686,7 @@ const FilterForm = ({ onFilter }) => {
         {/* Mileage */}
         <div className="field space-y-2 min-w-0">
           <label className="block mb-2 text-sm font-medium text-gray-700">Mileage</label>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block mb-1 text-xs text-gray-500">From</label>
               <Input
@@ -720,7 +720,7 @@ const FilterForm = ({ onFilter }) => {
         {isFieldVisible(filters.vehicleType || "Car", "batteryRange") && (
           <div className="field space-y-2 min-w-0">
             <label className="block mb-2 text-sm font-medium text-gray-700">Battery Range (km)</label>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <label className="block mb-1 text-xs text-gray-500">From</label>
                 <Input
@@ -751,7 +751,7 @@ const FilterForm = ({ onFilter }) => {
         {isFieldVisible(filters.vehicleType || "Car", "motorPower") && (
           <div className="field space-y-2 min-w-0">
             <label className="block mb-2 text-sm font-medium text-gray-700">Motor Power (W)</label>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <label className="block mb-1 text-xs text-gray-500">From</label>
                 <Input

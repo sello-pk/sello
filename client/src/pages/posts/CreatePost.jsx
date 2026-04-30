@@ -57,8 +57,8 @@ const CreatePost = () => {
     "max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8";
 
   return (
-    <div className="w-full min-w-0">
-      <div className={pageGutter}>
+    <div className="w-full min-w-0 bg-gray-50">
+      <div className={`${pageGutter} py-4 sm:py-6`}>
         <CreatePostForm key={formKey} initialPrefill={prefill} />
       </div>
       <WhyChooseUsUtility />
