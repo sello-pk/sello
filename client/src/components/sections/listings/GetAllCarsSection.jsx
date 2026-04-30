@@ -56,14 +56,10 @@ const GetAllCarsSection = () => {
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState("newest");
   const [viewMode, setViewMode] = useState("grid");
-  const [displayLimit, setDisplayLimit] = useState(12); // For Load More feature
-  const [allLoadedCars, setAllLoadedCars] = useState([]); // Accumulate loaded cars
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   // Check if we're on home page or listing page
   const isHomePage = location.pathname === "/" || location.pathname === "/home";
   const limit = isHomePage ? 6 : 12; // Show 6 on home, 12 on listing page
-  const LOAD_MORE_THRESHOLD = 100; // Switch to pagination after 100 items
 
   // Get URL parameters
   const [searchParams] = useSearchParams();
@@ -115,8 +111,6 @@ const GetAllCarsSection = () => {
   // Reset to first page and clear loaded cars when changing tabs
   useEffect(() => {
     setPage(1);
-    setDisplayLimit(12);
-    setAllLoadedCars([]);
   }, [
     activeTab,
     urlSearch,
@@ -127,83 +121,14 @@ const GetAllCarsSection = () => {
     urlVehicleType,
   ]);
 
-  // Accumulate cars when new data arrives (for Load More feature)
-  useEffect(() => {
-    if (carsData?.cars && Array.isArray(carsData.cars) && !isHomePage) {
-      if (page === 1) {
-        // First page - replace all
-        setAllLoadedCars(carsData.cars);
-        setDisplayLimit(12); // Reset display limit
-      } else {
-        // Subsequent pages - append (for Load More)
-        setAllLoadedCars((prev) => {
-          const existingIds = new Set(prev.map((c) => c._id));
-          const newCars = carsData.cars.filter(
-            (c) => c?._id && !existingIds.has(c._id),
-          );
-          return [...prev, ...newCars];
-        });
-      }
-      setIsLoadingMore(false);
-    }
-  }, [carsData?.cars, page, isHomePage]);
-
   // Cars data from API with fallback to empty array
-  const cars = useMemo(() => {
-    if (isHomePage) {
-      // Home page - just show current page data
-      return Array.isArray(carsData?.cars) ? carsData.cars : [];
-    }
-
-    // Listing page - use accumulated cars if under threshold
-    const totalLoaded = allLoadedCars.length;
-    if (totalLoaded > 0 && totalLoaded < LOAD_MORE_THRESHOLD) {
-      // Load More mode - show up to displayLimit
-      return allLoadedCars.slice(0, displayLimit);
-    }
-
-    // Pagination mode - use current page data
-    return Array.isArray(carsData?.cars) ? carsData.cars : [];
-  }, [carsData?.cars, allLoadedCars, displayLimit, isHomePage]);
+  const cars = useMemo(
+    () => (Array.isArray(carsData?.cars) ? carsData.cars : []),
+    [carsData?.cars],
+  );
 
   const totalPages = carsData?.pages || 1;
-  const totalCars = carsData?.total || 0;
-  const totalLoaded = allLoadedCars.length;
-
-  // Determine if we should show Load More or Pagination
-  const shouldShowLoadMore =
-    !isHomePage &&
-    totalLoaded > 0 &&
-    totalLoaded < LOAD_MORE_THRESHOLD &&
-    (displayLimit < totalLoaded ||
-      (displayLimit < totalCars && page < totalPages));
-
-  const shouldShowPagination =
-    !isHomePage &&
-    (totalLoaded >= LOAD_MORE_THRESHOLD || totalCars > LOAD_MORE_THRESHOLD) &&
-    totalPages > 1;
-
-  // Handle Load More
-  const handleLoadMore = useCallback(async () => {
-    if (isLoadingMore) return;
-
-    setIsLoadingMore(true);
-    const nextLimit = displayLimit + 12;
-
-    // If we need more data and haven't reached threshold
-    if (
-      nextLimit > totalLoaded &&
-      page < totalPages &&
-      totalLoaded < LOAD_MORE_THRESHOLD
-    ) {
-      // Fetch next page
-      setPage((prev) => prev + 1);
-    } else {
-      // Just increase display limit
-      setDisplayLimit(nextLimit);
-      setIsLoadingMore(false);
-    }
-  }, [displayLimit, totalLoaded, page, totalPages, isLoadingMore]);
+  const shouldShowPagination = !isHomePage && totalPages > 1;
 
   // Handle tab change with useCallback
   const handleTabChange = useCallback(
@@ -403,51 +328,7 @@ const GetAllCarsSection = () => {
           </div>
         )}
 
-        {/* Load More Button - Show when under 100 items */}
-        {shouldShowLoadMore && (
-          <div className="flex justify-center mt-10">
-            <button
-              onClick={handleLoadMore}
-              disabled={isLoadingMore}
-              className="px-8 py-3 bg-primary-500 text-white rounded-xl font-semibold transition-all duration-200 shadow-md hover:shadow-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              {isLoadingMore ? (
-                <>
-                  <svg
-                    className="animate-spin h-5 w-5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Loading...
-                </>
-              ) : (
-                <>
-                  Load More ({Math.min(displayLimit, totalLoaded)} of{" "}
-                  {totalLoaded >= LOAD_MORE_THRESHOLD ? totalCars : totalLoaded}
-                  )
-                  <IoIosArrowRoundUp className="text-xl rotate-[90deg]" />
-                </>
-              )}
-            </button>
-          </div>
-        )}
-
-        {/* Pagination Controls - Show after 100 items or when total > 100 */}
+        {/* Pagination Controls */}
         {shouldShowPagination && totalPages > 1 && (
           <div className="flex flex-col items-center gap-5 mt-10 pt-8 border-t border-[#e5e7eb]">
             <span className="text-sm text-gray-600 font-medium">
