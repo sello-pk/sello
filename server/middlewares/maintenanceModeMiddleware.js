@@ -13,6 +13,11 @@ export const checkMaintenanceMode = async (req, res, next) => {
             return next();
         }
 
+        // Meta / advertising catalog feeds must stay CSV (not JSON maintenance payload)
+        if (req.path === '/feed/cars.csv') {
+            return next();
+        }
+
         // Check if maintenance mode is enabled
         const maintenanceSetting = await Settings.findOne({ key: 'maintenanceMode' });
         const isMaintenanceMode = maintenanceSetting && 

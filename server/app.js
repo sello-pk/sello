@@ -23,6 +23,7 @@ import {
 
 // Routes
 import apiRoutes from "./routes/index.js";
+import feedRoutes from "./routes/feedRoutes.js";
 import requestIdMiddleware from "./middlewares/requestIdMiddleware.js";
 import { requestTimeout } from "./middlewares/requestTimeout.js";
 import { sanitizeInput } from "./middlewares/sanitizeMiddleware.js";
@@ -141,6 +142,7 @@ app.use(
 app.use(checkMaintenanceMode);
 
 /* ----------------------------- ROUTES ----------------------------- */
+app.use(feedRoutes);
 app.use("/api", apiLimiter, apiRoutes);
 
 /* ---------------------- HEALTH & INFO ---------------------- */
