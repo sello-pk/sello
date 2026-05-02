@@ -1,32 +1,29 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="icon" href="/favicon.png" />
-    <link rel="manifest" href="/manifest.json" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Preconnect hints for performance -->
-    <link rel="preconnect" href="https://api.sello.pk" />
-    <link rel="preconnect" href="https://maps.googleapis.com" />
+  <link rel="icon" href="/favicon.png" />
+  <link rel="manifest" href="/manifest.json" />
 
-    
-    <meta name="robots" content="index, follow" />
-    <meta name="theme-color" content="#3B82F6" />
-    <meta name="author" content="Sello" />
-    <meta name="publisher" content="Sello" />
-    <meta
-      name="description"
-      content="Sello helps you buy and sell cars in Pakistan with verified listings, smart filters, and trusted dealers."
-    />
-    <meta name="format-detection" content="telephone=no" />
-    <link rel="canonical" href="https://sello.pk/" />
+  <!-- Preconnect hints for performance -->
+  <link rel="preconnect" href="https://api.sello.pk" />
+  <link rel="preconnect" href="https://maps.googleapis.com" />
 
-    <!-- Content Security Policy -->
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="
+
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#3B82F6" />
+  <meta name="author" content="Sello" />
+  <meta name="publisher" content="Sello" />
+  <meta name="description"
+    content="Sello helps you buy and sell cars in Pakistan with verified listings, smart filters, and trusted dealers." />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="canonical" href="https://sello.pk/" />
+
+  <!-- Content Security Policy -->
+  <meta http-equiv="Content-Security-Policy" content="
         default-src 'self' http: https: data: blob: 'unsafe-inline' 'unsafe-eval';
 
         connect-src
@@ -89,11 +86,10 @@
           blob:
           https://cdn.tiny.cloud
           https://*.tiny.cloud;
-      "
-    />
+      " />
 
-    <!-- Schema.org Structured Data (JSON-LD) -->
-    <script type="application/ld+json">
+  <!-- Schema.org Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@graph": [
@@ -205,46 +201,55 @@
       }
     </script>
 
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Sello" />
-    <meta property="og:title" content="Sello - Buy and Sell Cars in Pakistan" />
-    <meta
-      property="og:description"
-      content="Discover verified car listings, compare options, and sell your car confidently on Sello."
-    />
-    <meta property="og:url" content="https://sello.pk/" />
-    <meta property="og:image" content="https://sello.pk/favicon.png" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta
-      name="twitter:title"
-      content="Sello - Buy and Sell Cars in Pakistan"
-    />
-    <meta
-      name="twitter:description"
-      content="Discover verified car listings, compare options, and sell your car confidently on Sello."
-    />
-    <meta name="twitter:image" content="https://sello.pk/favicon.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Sello" />
+  <meta property="og:title" content="Sello - Buy and Sell Cars in Pakistan" />
+  <meta property="og:description"
+    content="Discover verified car listings, compare options, and sell your car confidently on Sello." />
+  <meta property="og:url" content="https://sello.pk/" />
+  <meta property="og:image" content="https://sello.pk/favicon.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Sello - Buy and Sell Cars in Pakistan" />
+  <meta name="twitter:description"
+    content="Discover verified car listings, compare options, and sell your car confidently on Sello." />
+  <meta name="twitter:image" content="https://sello.pk/favicon.png" />
 
-    
-    <link
-      rel="preload"
-      href="/assets/index-DoX1Gd1b.css"
-      as="style"
-      onload="this.rel = 'stylesheet'"
-    />
-    <noscript>
-      <link rel="stylesheet" href="/assets/index-DoX1Gd1b.css" />
-    </noscript>
 
-    <link rel="preload" href="/assets/index-D2jk3TiX.css" as="style" />
-    <link rel="stylesheet" href="/assets/index-D2jk3TiX.css" />
+  <link rel="preload" href="/assets/index-DoX1Gd1b.css" as="style" onload="this.rel = 'stylesheet'" />
+  <noscript>
+    <link rel="stylesheet" href="/assets/index-DoX1Gd1b.css" />
+  </noscript>
 
-    <title>Sello - Buy and Sell Cars in Pakistan</title>
-  </head>
+  <link rel="preload" href="/assets/index-D2jk3TiX.css" as="style" />
+  <link rel="stylesheet" href="/assets/index-D2jk3TiX.css" />
 
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+  <!-- Meta Pixel Code -->
+  <script>
+    !function (f, b, e, v, n, t, s) {
+      if (f.fbq) return; n = f.fbq = function () {
+        n.callMethod ?
+        n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+      };
+      if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+      n.queue = []; t = b.createElement(e); t.async = !0;
+      t.src = v; s = b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t, s)
+    }(window, document, 'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1329404792372303');
+    fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=1329404792372303&ev=PageView&noscript=1" /></noscript>
+  <!-- End Meta Pixel Code -->
+
+
+  <title>Sello - Buy and Sell Cars in Pakistan</title>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
 </html>
-  
