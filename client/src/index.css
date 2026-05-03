@@ -363,3 +363,8 @@ div[style*="border"]:focus {
     min-width: 700px;
   }
 }
+
+/* CLS: common embeds; app uses system fonts (see * {}) — no FOIT from bundled webfonts */
+iframe {
+  max-width: 100%;
+}

@@ -96,7 +96,7 @@ const LatestBlogsSection = () => {
 
         {/* Blog Posts Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {blogs.map((blog) => (
+          {blogs.map((blog, blogIdx) => (
             <Link
               key={blog._id}
               to={buildBlogUrl(blog)}
@@ -110,6 +110,10 @@ const LatestBlogsSection = () => {
                     "https://via.placeholder.com/600x400?text=No+Image"
                   }
                   alt={blog.title}
+                  width={600}
+                  height={400}
+                  loading={blogIdx === 0 ? "eager" : "lazy"}
+                  decoding="async"
                   className="max-h-full max-w-full w-auto h-auto object-cover object-center group-hover:scale-110 scale-105 transition-transform duration-300"
                   onError={(e) => {
                     e.target.onerror = null;
@@ -147,6 +151,9 @@ const LatestBlogsSection = () => {
                       <img
                         src={blog.author.avatar}
                         alt={blog.author.name || "Author"}
+                        width={32}
+                        height={32}
+                        decoding="async"
                         className="w-8 h-8 rounded-full object-cover"
                       />
                     ) : (

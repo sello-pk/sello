@@ -206,7 +206,10 @@ const HelpCenter = () => {
                 <img
                   src={images.logo}
                   alt="Sello Logo"
-                  className="h-12 md:h-16"
+                  width={160}
+                  height={64}
+                  decoding="async"
+                  className="h-12 md:h-16 w-auto"
                 />
                 <span className="text-2xl font-bold text-primary-500 hidden md:block">
                   Help Center
@@ -241,6 +244,9 @@ const HelpCenter = () => {
                 <img
                   src={currentUser.avatar}
                   alt="Profile"
+                  width={40}
+                  height={40}
+                  decoding="async"
                   className="w-10 h-10 rounded-full border-2 border-gray-300"
                 />
               ) : (

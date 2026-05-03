@@ -7,7 +7,7 @@ const BlogsHeroSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative bg-[#050B20] md:h-[80vh] overflow-hidden">
+    <section className="relative bg-[#050B20] md:h-[80vh] overflow-hidden min-h-[20rem] md:min-h-0">
       <div className="max-w-8xl mx-auto w-full h-full pl-3 pr-3 sm:pl-4 sm:pr-4 md:pl-6 md:pr-6 lg:pl-8 lg:pr-8">
         <div className="h-full flex flex-col md:flex-row items-center">
           {/* Left Side */}
@@ -48,10 +48,14 @@ const BlogsHeroSection = () => {
       </div>
 
       {/* Right Side - hard pinned to right edge */}
-      <div className="w-full h-64 md:absolute md:top-0 md:right-0 md:h-full md:w-[40%]">
+      <div className="w-full h-64 md:absolute md:top-0 md:right-0 md:h-full md:w-[40%] bg-gray-800 shrink-0">
         <img
           src={images.userHeroSectionImg}
           alt="Blog hero section image"
+          width="960"
+          height="720"
+          fetchPriority="high"
+          decoding="async"
           className="h-full rounded-bl-[155px] w-full object-cover"
         />
       </div>

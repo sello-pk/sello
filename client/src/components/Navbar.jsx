@@ -243,7 +243,7 @@ const Navbar = () => {
             : "bg-primary-500 text-white border-primary-400"
         }`}
       >
-        <div className="max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8 py-2.5 flex items-center justify-between min-w-0">
+        <div className="max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8 py-2.5 flex items-center justify-between min-w-0 min-h-[52px] sm:min-h-[56px]">
           <div className="flex items-center min-w-0 gap-4 xl:gap-6">
             {/* Logo */}
             <Link to="/" className="cursor-pointer flex-shrink-0">
@@ -252,6 +252,7 @@ const Navbar = () => {
                 src={isListingsTheme ? images.blackLogo : images.logo}
                 width="120"
                 height="48"
+                decoding="async"
                 alt="logo"
               />
             </Link>
@@ -474,12 +475,15 @@ const Navbar = () => {
                   className="cursor-pointer w-8 h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-full overflow-hidden border-2 border-white/80 shadow-sm flex-shrink-0"
                   title="Profile"
                 >
-                  <img
-                    src={avatarFallback}
-                    alt="User Avatar"
-                    className="w-full h-full object-cover"
-                    onError={() => setAvatarLoadFailed(true)}
-                  />
+              <img
+                src={avatarFallback}
+                alt="User Avatar"
+                width={44}
+                height={44}
+                decoding="async"
+                className="w-full h-full object-cover"
+                onError={() => setAvatarLoadFailed(true)}
+              />
                 </div>
               </div>
             ) : (

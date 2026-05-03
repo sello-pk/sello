@@ -138,6 +138,9 @@ const Footer = () => {
                     <img
                       src={apple}
                       alt="App Store"
+                      width={32}
+                      height={32}
+                      decoding="async"
                       className="w-8 h-8 object-contain brightness-0 invert"
                     />
                   </div>
@@ -162,6 +165,9 @@ const Footer = () => {
                     <img
                       src={android}
                       alt="Google Play"
+                      width={32}
+                      height={32}
+                      decoding="async"
                       className="w-8 h-8 object-contain brightness-0 invert"
                     />
                   </div>
@@ -193,6 +199,9 @@ const Footer = () => {
                   <img
                     src={facebook}
                     alt="Facebook"
+                    width={20}
+                    height={20}
+                    decoding="async"
                     className="w-5 h-5 brightness-0 invert opacity-80 group-hover:opacity-100 transition-opacity"
                   />
                 </a>
@@ -207,6 +216,9 @@ const Footer = () => {
                   <img
                     src={instagram}
                     alt="Instagram"
+                    width={20}
+                    height={20}
+                    decoding="async"
                     className="w-5 h-5 brightness-0 invert opacity-80 group-hover:opacity-100 transition-opacity"
                   />
                 </a>

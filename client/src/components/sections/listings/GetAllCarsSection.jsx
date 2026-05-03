@@ -24,7 +24,7 @@ const sortCars = (cars, sortBy) => {
 // Skeleton matching CarCard layout (rounded-xl, 3:2 image, content block)
 const CarCardSkeleton = () => (
   <div className="bg-white rounded-xl overflow-hidden border border-[#e5e7eb] shadow-md animate-pulse flex flex-col">
-    <div className="w-full aspect-[3/2] bg-gray-200" />
+    <div className="w-full aspect-[4/3] sm:aspect-[3/2] bg-gray-200" />
     <div className="p-4 flex flex-col flex-1">
       <div className="h-4 bg-gray-200 rounded w-3/4" />
       <div className="h-3 bg-gray-100 rounded w-1/2 mt-1.5" />

@@ -129,6 +129,8 @@ const BlogPosts = ({ search = "", category = "", sortBy = "newest" }) => {
                         "https://via.placeholder.com/600x400?text=No+Image"
                       }
                       alt={`${blog.title} - featured image`}
+                      width={600}
+                      height={400}
                       className="max-h-full max-w-full w-auto h-auto object-contain object-center transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
                       decoding="async"
@@ -167,6 +169,8 @@ const BlogPosts = ({ search = "", category = "", sortBy = "newest" }) => {
                           <img
                             src={blog.author.avatar}
                             alt={`${blog.author?.name || 'Author'} avatar`}
+                            width={32}
+                            height={32}
                             className="w-8 h-8 rounded-full object-cover"
                             loading="lazy"
                             decoding="async"

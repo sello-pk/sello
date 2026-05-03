@@ -29,10 +29,22 @@ const BottomHeader = () => {
   return (
     <div
       style={{ zIndex: 1000 }}
-      className="bg-[#050B20] border-y border-gray-200/80 w-full flex flex-col md:flex-row md:items-center md:justify-between gap-2 sm:gap-3 md:gap-6 px-3 sm:px-4 md:px-8 lg:px-20 py-2 md:py-3 text-sm md:text-base text-gray-100 overflow-x-hidden"
+      className="bg-[#050B20] border-y border-gray-200/80 w-full min-h-[52px] md:min-h-[56px] flex flex-col md:flex-row md:items-center md:justify-between gap-2 sm:gap-3 md:gap-6 px-3 sm:px-4 md:px-8 lg:px-20 py-2 md:py-3 text-sm md:text-base text-gray-100 overflow-x-hidden"
     >
-      <div className="flex w-full md:w-auto min-w-0 items-center gap-2 sm:gap-3 md:gap-4">
-        {showAuction && (
+      <div className="flex w-full md:w-auto min-w-0 min-h-[44px] items-center gap-2 sm:gap-3 md:gap-4">
+        {isLoading && (
+          <div
+            className="flex items-center gap-2 sm:gap-3 min-w-0 w-full md:w-auto"
+            aria-hidden
+          >
+            <div className="h-7 w-[72px] rounded-full bg-white/15 animate-pulse shrink-0" />
+            <div className="min-w-0 flex-1 space-y-2 max-w-[min(100%,320px)]">
+              <div className="h-3 sm:h-3.5 rounded-md bg-white/15 animate-pulse w-[85%]" />
+              <div className="h-3 rounded-md bg-white/10 animate-pulse w-[55%] sm:hidden" />
+            </div>
+          </div>
+        )}
+        {!isLoading && showAuction && (
           <>
             {/* Live Badge */}
             <Link
