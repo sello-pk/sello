@@ -121,65 +121,83 @@ const Footer = () => {
               </div>
             </div>
 
-            {/* Mobile App Downloads */}
+            {/* Mobile App Downloads — disabled until store listings go live */}
             <div>
-              <div className="text-sm font-semibold text-white mb-5 tracking-wide">
-                Download Our App
-              </div>
-              <div className="space-y-3">
-                {/* App Store Button */}
-                <a
-                  href="https://apps.apple.com/app/sello"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl px-4 py-3.5 transition-all duration-300 w-full md:w-auto min-w-[200px] group border border-white/10"
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <div className="text-sm font-semibold text-white tracking-wide">
+                  Download Our App
+                </div>
+                <span
+                  className="inline-flex items-center rounded-full bg-amber-500/15 text-amber-200/95 border border-amber-400/25 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
+                  aria-hidden="true"
                 >
-                  <div className="flex-shrink-0">
+                  Coming soon
+                </span>
+              </div>
+              <p className="text-xs text-gray-400 mb-4 max-w-[260px]">
+                Native iOS and Android apps are in development. Store links will
+                appear here when they launch.
+              </p>
+              <div className="flex flex-col gap-3 w-full max-w-sm">
+                <button
+                  type="button"
+                  disabled
+                  aria-disabled="true"
+                  aria-label="App Store download — coming soon, not available yet"
+                  className="flex items-center gap-3 bg-white/5 backdrop-blur-sm rounded-xl px-4 py-3.5 w-full border border-white/10 opacity-55 cursor-not-allowed grayscale-[0.35] text-left"
+                >
+                  <div className="flex-shrink-0 pointer-events-none">
                     <img
                       src={apple}
-                      alt="App Store"
+                      alt=""
                       width={32}
                       height={32}
                       decoding="async"
-                      className="w-8 h-8 object-contain brightness-0 invert"
+                      className="w-8 h-8 object-contain brightness-0 invert opacity-90"
                     />
                   </div>
-                  <div className="text-left flex-1">
-                    <p className="text-[10px] text-white/70 font-medium uppercase tracking-wide leading-tight mb-0.5">
+                  <div className="text-left flex-1 min-w-0 pointer-events-none">
+                    <p className="text-[10px] text-white/55 font-medium uppercase tracking-wide leading-tight mb-0.5">
                       Download on the
                     </p>
-                    <p className="text-sm font-semibold text-white leading-tight">
+                    <p className="text-sm font-semibold text-white/85 leading-tight">
                       App Store
                     </p>
                   </div>
-                </a>
+                  <span className="text-[10px] font-medium text-white/45 uppercase tracking-wide shrink-0 hidden sm:inline">
+                    Soon
+                  </span>
+                </button>
 
-                {/* Google Play Button */}
-                <a
-                  href="https://play.google.com/store/apps/details?id=ae.sello"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl px-4 py-3.5 transition-all duration-300 w-full md:w-auto min-w-[200px] group border border-white/10"
+                <button
+                  type="button"
+                  disabled
+                  aria-disabled="true"
+                  aria-label="Google Play download — coming soon, not available yet"
+                  className="flex items-center gap-3 bg-white/5 backdrop-blur-sm rounded-xl px-4 py-3.5 w-full border border-white/10 opacity-55 cursor-not-allowed grayscale-[0.35] text-left"
                 >
-                  <div className="flex-shrink-0">
+                  <div className="flex-shrink-0 pointer-events-none">
                     <img
                       src={android}
-                      alt="Google Play"
+                      alt=""
                       width={32}
                       height={32}
                       decoding="async"
-                      className="w-8 h-8 object-contain brightness-0 invert"
+                      className="w-8 h-8 object-contain brightness-0 invert opacity-90"
                     />
                   </div>
-                  <div className="text-left flex-1">
-                    <p className="text-[10px] text-white/70 font-medium uppercase tracking-wide leading-tight mb-0.5">
+                  <div className="text-left flex-1 min-w-0 pointer-events-none">
+                    <p className="text-[10px] text-white/55 font-medium uppercase tracking-wide leading-tight mb-0.5">
                       Get it on
                     </p>
-                    <p className="text-sm font-semibold text-white leading-tight">
+                    <p className="text-sm font-semibold text-white/85 leading-tight">
                       Google Play
                     </p>
                   </div>
-                </a>
+                  <span className="text-[10px] font-medium text-white/45 uppercase tracking-wide shrink-0 hidden sm:inline">
+                    Soon
+                  </span>
+                </button>
               </div>
             </div>
 
