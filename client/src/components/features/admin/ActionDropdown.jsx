@@ -84,38 +84,50 @@ const ActionDropdown = ({
     }
   }, [isOpen]);
 
-  // Update dropdown position on scroll/resize
+  // Update dropdown position on scroll/resize (rAF-throttled: one layout read per frame)
   useEffect(() => {
     if (!isOpen || !buttonRef.current) return;
 
+    let rafId = null;
+    let scrollTicking = false;
+
     const updatePosition = () => {
-      const rect = buttonRef.current.getBoundingClientRect();
-      const dropdownWidth = 192;
-      const dropdownHeight = actions.length * 40 + 20;
-      const gap = 8;
-      
-      let top = rect.bottom + gap;
-      let left = rect.right - dropdownWidth;
-      
-      if (left < 0) {
-        left = rect.left;
-      }
-      
-      const viewportHeight = window.innerHeight;
-      if (top + dropdownHeight > viewportHeight) {
-        top = rect.top - dropdownHeight - gap;
-        if (top < 0) {
-          top = viewportHeight - dropdownHeight - 10;
+      if (scrollTicking) return;
+      scrollTicking = true;
+      rafId = requestAnimationFrame(() => {
+        scrollTicking = false;
+        rafId = null;
+        const btn = buttonRef.current;
+        if (!btn) return;
+        const rect = btn.getBoundingClientRect();
+        const dropdownWidth = 192;
+        const dropdownHeight = actions.length * 40 + 20;
+        const gap = 8;
+
+        let top = rect.bottom + gap;
+        let left = rect.right - dropdownWidth;
+
+        if (left < 0) {
+          left = rect.left;
         }
-      }
-      
-      setPosition({ top, left });
+
+        const viewportHeight = window.innerHeight;
+        if (top + dropdownHeight > viewportHeight) {
+          top = rect.top - dropdownHeight - gap;
+          if (top < 0) {
+            top = viewportHeight - dropdownHeight - 10;
+          }
+        }
+
+        setPosition({ top, left });
+      });
     };
 
     window.addEventListener('scroll', updatePosition, true);
     window.addEventListener('resize', updatePosition);
 
     return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
       window.removeEventListener('scroll', updatePosition, true);
       window.removeEventListener('resize', updatePosition);
     };

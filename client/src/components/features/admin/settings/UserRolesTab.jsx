@@ -159,43 +159,52 @@ const UserRolesTab = () => {
     }
   }, [openDropdown]);
 
-  // Update dropdown position on scroll/resize
+  // Update dropdown position on scroll/resize (rAF-throttled: one layout read per frame)
   useEffect(() => {
     if (!openDropdown || !dropdownPosition.userId) return;
 
+    let rafId = null;
+    let scrollTicking = false;
+
     const updatePosition = () => {
-      const button = buttonRefs.current[dropdownPosition.userId];
-      if (!button) return;
+      if (scrollTicking) return;
+      scrollTicking = true;
+      rafId = requestAnimationFrame(() => {
+        scrollTicking = false;
+        rafId = null;
+        const userId = dropdownPosition.userId;
+        const button = buttonRefs.current[userId];
+        if (!button) return;
 
-      const rect = button.getBoundingClientRect();
-      const dropdownWidth = 192;
-      const dropdownHeight = 200;
-      const gap = 8;
+        const rect = button.getBoundingClientRect();
+        const dropdownWidth = 192;
+        const dropdownHeight = 200;
+        const gap = 8;
 
-      let top = rect.bottom + gap;
-      let left = rect.right - dropdownWidth;
+        let top = rect.bottom + gap;
+        let left = rect.right - dropdownWidth;
 
-      // Check if dropdown would go off-screen to the right
-      if (left < 0) {
-        left = rect.left;
-      }
-
-      // Check if dropdown would go off-screen to the bottom
-      const viewportHeight = window.innerHeight;
-      if (top + dropdownHeight > viewportHeight) {
-        top = rect.top - dropdownHeight - gap;
-        if (top < 0) {
-          top = viewportHeight - dropdownHeight - 10;
+        if (left < 0) {
+          left = rect.left;
         }
-      }
 
-      setDropdownPosition((prev) => ({ ...prev, top, left }));
+        const viewportHeight = window.innerHeight;
+        if (top + dropdownHeight > viewportHeight) {
+          top = rect.top - dropdownHeight - gap;
+          if (top < 0) {
+            top = viewportHeight - dropdownHeight - 10;
+          }
+        }
+
+        setDropdownPosition((prev) => ({ ...prev, top, left }));
+      });
     };
 
     window.addEventListener("scroll", updatePosition, true);
     window.addEventListener("resize", updatePosition);
 
     return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
       window.removeEventListener("scroll", updatePosition, true);
       window.removeEventListener("resize", updatePosition);
     };

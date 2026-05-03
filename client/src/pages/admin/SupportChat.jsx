@@ -236,19 +236,32 @@ const SupportChat = () => {
         setSelectedChat(chatIdString);
     }, [chatIdFromUrl, chats, chatsLoading, selectedChat, refetchChats]);
 
-    // Track user scroll to determine if we should auto-scroll
+    // Track user scroll to determine if we should auto-scroll (rAF: one layout read per frame)
     useEffect(() => {
         const container = messagesContainerRef.current;
         if (!container) return;
 
+        let rafId = null;
+        let ticking = false;
+
         const handleScroll = () => {
-            const { scrollTop, scrollHeight, clientHeight } = container;
-            const isNearBottom = scrollHeight - scrollTop - clientHeight < 100; // 100px threshold
-            shouldAutoScrollRef.current = isNearBottom;
+            if (ticking) return;
+            ticking = true;
+            rafId = requestAnimationFrame(() => {
+                ticking = false;
+                rafId = null;
+                const { scrollTop, scrollHeight, clientHeight } = container;
+                const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+                shouldAutoScrollRef.current = isNearBottom;
+            });
         };
 
-        container.addEventListener('scroll', handleScroll);
-        return () => container.removeEventListener('scroll', handleScroll);
+        const scrollOpts = { passive: true };
+        container.addEventListener('scroll', handleScroll, scrollOpts);
+        return () => {
+            if (rafId !== null) cancelAnimationFrame(rafId);
+            container.removeEventListener('scroll', handleScroll, scrollOpts);
+        };
     }, [selectedChat]);
 
     // Auto scroll to bottom only if user is near bottom (not on initial load or manual scroll up)

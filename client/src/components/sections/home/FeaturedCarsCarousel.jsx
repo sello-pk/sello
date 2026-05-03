@@ -76,17 +76,22 @@ const FeaturedCarsCarousel = () => {
     return () => clearInterval(interval);
   }, [featuredCars.length]);
 
-  // Scroll to current slide
+  // Scroll to current slide (rAF: read layout after commit, then write scroll)
   useEffect(() => {
-    if (sliderRef.current) {
-      const cardWidth = sliderRef.current.children[0]?.offsetWidth || 400;
+    const el = sliderRef.current;
+    if (!el) return;
+
+    const rafId = requestAnimationFrame(() => {
+      const cardWidth = el.children[0]?.offsetWidth || 400;
       const gap = 24;
       const scrollPosition = currentIndex * (cardWidth + gap);
-      sliderRef.current.scrollTo({
+      el.scrollTo({
         left: scrollPosition,
         behavior: "smooth",
       });
-    }
+    });
+
+    return () => cancelAnimationFrame(rafId);
   }, [currentIndex]);
 
   const handlePrev = () => {
