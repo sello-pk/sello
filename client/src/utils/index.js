@@ -71,7 +71,6 @@ export { default as mapsService } from "./mapsService.js";
 export { default as imageOptimization } from "./imageOptimization.js";
 export { default as keyboardNavigation } from "./keyboardNavigation.js";
 export { default as lazyImports } from "./lazyImports.js";
-export { default as exportUtils } from "./exportUtils.js";
 export { default as colors } from "./colors.js";
 export { default as colorContrast } from "./colorContrast.js";
 export { default as spacing } from "./spacing.js";

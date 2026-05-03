@@ -1,9 +1,8 @@
 /**
  * Export Utilities
  * Functions to export data to CSV/Excel formats
+ * (xlsx is loaded on demand only — keeps CSV-only pages off the SheetJS graph.)
  */
-
-import * as XLSX from "xlsx";
 
 /**
  * Convert data array to CSV format
@@ -108,10 +107,9 @@ export const exportToCSV = (data, headers, filename) => {
 };
 
 /**
- * Export data to Excel (XLSX) using SheetJS library
- * Note: Requires xlsx library to be installed
+ * Export data to Excel (XLSX) using SheetJS library (dynamic import).
  */
-export const exportToExcel = (
+export const exportToExcel = async (
   data,
   headers,
   filename,
@@ -121,6 +119,9 @@ export const exportToExcel = (
     if (!data || data.length === 0) {
       throw new Error("No data to export");
     }
+
+    const XLSXmod = await import("xlsx");
+    const XLSX = XLSXmod.default ?? XLSXmod;
 
     // Prepare headers
     const excelHeaders = headers || Object.keys(data[0]);

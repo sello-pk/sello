@@ -9,7 +9,6 @@ import { SupportChatProvider } from "./contexts/SupportChatContext.jsx";
 import { SocketProvider } from "./contexts/SocketContext.jsx";
 import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
 import AppRoot from "./AppRoot.jsx";
-import "leaflet/dist/leaflet.css";
 import { logger } from "./utils/logger.js";
 
 // Lazy load Google OAuth only when needed
