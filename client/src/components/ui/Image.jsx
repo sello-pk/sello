@@ -18,7 +18,9 @@ const Image = ({
   cloudinaryOptions = {},
   ...props
 }) => {
-  const [isLoading, setIsLoading] = useState(true);
+  // Lazy images use native loading="lazy" + dimensions from props/parent (CLS-safe).
+  // Non-lazy preload decode before paint to reduce flash inside fixed-aspect wrappers.
+  const [isLoading, setIsLoading] = useState(() => !lazy);
   const [hasError, setHasError] = useState(false);
   const [imgSrc, setImgSrc] = useState(src);
 
@@ -29,53 +31,32 @@ const Image = ({
       return;
     }
 
-    // Optimize Cloudinary URLs if enabled
-    const optimizedSrc = optimizeCloudinary && src?.includes('cloudinary.com')
-      ? optimizeCloudinaryUrl(src, cloudinaryOptions)
-      : src;
+    const optimizedSrc =
+      optimizeCloudinary && src?.includes("cloudinary.com")
+        ? optimizeCloudinaryUrl(src, cloudinaryOptions)
+        : src;
 
-    setIsLoading(true);
-    setHasError(false);
     setImgSrc(optimizedSrc);
-
-    const loadImage = () => {
-      const img = new window.Image();
-      img.onload = () => {
-        setIsLoading(false);
-        setHasError(false);
-      };
-      img.onerror = () => {
-        setHasError(true);
-        setIsLoading(false);
-        if (onError) onError();
-      };
-      img.src = optimizedSrc;
-    };
+    setHasError(false);
 
     if (lazy) {
-      // Create intersection observer to load image when in viewport
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              loadImage();
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.1 },
-      );
-
-      // Observe a temporary element
-      const tempElement = document.createElement("div");
-      observer.observe(tempElement);
-
-      return () => {
-        observer.disconnect();
-      };
-    } else {
-      loadImage();
+      setIsLoading(false);
+      return;
     }
+
+    setIsLoading(true);
+
+    const img = new window.Image();
+    img.onload = () => {
+      setIsLoading(false);
+      setHasError(false);
+    };
+    img.onerror = () => {
+      setHasError(true);
+      setIsLoading(false);
+      if (onError) onError();
+    };
+    img.src = optimizedSrc;
   }, [src, lazy, onError, optimizeCloudinary, cloudinaryOptions]);
 
   // Show placeholder while loading
