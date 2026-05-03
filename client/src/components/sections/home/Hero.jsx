@@ -9,6 +9,7 @@ const Hero = () => {
         alt="hero image"
         className="absolute inset-0 h-full w-full object-cover"
         fetchPriority="high"
+        loading="eager"
         decoding="async"
         width="1200"
         height="600"

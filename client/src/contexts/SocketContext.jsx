@@ -174,13 +174,33 @@ export const SocketProvider = ({ children }) => {
       return;
     }
 
-    // Delay connection slightly to ensure app is ready
-    const connectionDelay = setTimeout(() => {
-      createSocketConnection();
-    }, 100);
+    // Defer handshake until idle (or max 2s) so main thread finishes first paint/LCP work.
+    let idleIdOrTimer;
+    let cancelled = false;
+    let usedIdleCb = false;
+
+    const start = () => {
+      if (!cancelled) createSocketConnection();
+    };
+
+    if (typeof window !== "undefined" && typeof window.requestIdleCallback === "function") {
+      usedIdleCb = true;
+      idleIdOrTimer = window.requestIdleCallback(start, { timeout: 2000 });
+    } else {
+      idleIdOrTimer = setTimeout(start, 100);
+    }
 
     return () => {
-      clearTimeout(connectionDelay);
+      cancelled = true;
+      if (
+        usedIdleCb &&
+        typeof window !== "undefined" &&
+        typeof window.cancelIdleCallback === "function"
+      ) {
+        window.cancelIdleCallback(idleIdOrTimer);
+      } else {
+        clearTimeout(idleIdOrTimer);
+      }
       if (socketRef.current) {
         socketRef.current.removeAllListeners();
         socketRef.current.close();

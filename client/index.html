@@ -35,6 +35,8 @@
           https://api.sello.pk
           http://localhost:4000
           http://localhost:4001
+          https://connect.facebook.net
+          https://www.facebook.com
           https://nominatim.openstreetmap.org
           https://maps.googleapis.com
           https://*.tiny.cloud
@@ -50,14 +52,16 @@
           https://*.tiny.cloud
           https://accounts.google.com
           https://*.googleapis.com
-          https://apis.google.com;
+          https://apis.google.com
+          https://connect.facebook.net;
 
         frame-src
           'self'
           https://*.tiny.cloud
           https://cdn.tiny.cloud
           https://accounts.google.com
-          https://*.google.com;
+          https://*.google.com
+          https://www.facebook.com;
 
         style-src
           'self'
@@ -215,21 +219,37 @@
 
   <!-- App CSS is injected by Vite via src/main.jsx (index.css). Avoid stale hashed /assets/*.css links — they 404 after rebuild and cause FOUC / CLS. -->
 
-  <!-- Meta Pixel Code -->
+  <!-- Meta Pixel — deferred until idle/load so main thread & LCP aren’t contending with fbevents -->
   <script>
-    !function (f, b, e, v, n, t, s) {
-      if (f.fbq) return; n = f.fbq = function () {
-        n.callMethod ?
-          n.callMethod.apply(n, arguments) : n.queue.push(arguments)
-      };
-      if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
-      n.queue = []; t = b.createElement(e); t.async = !0;
-      t.src = v; s = b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t, s)
-    }(window, document, 'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1329404792372303');
-    fbq('track', 'PageView');
+    (function () {
+      function injectMetaPixel() {
+        if (window.__selloFbPixelScheduled) return;
+        window.__selloFbPixelScheduled = true;
+        !(function (f, b, e, v, n, t, s) {
+          if (f.fbq) return;
+          n = f.fbq = function () {
+            n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+          };
+          if (!f._fbq) f._fbq = n;
+          n.push = n;
+          n.loaded = !0;
+          n.version = "2.0";
+          n.queue = [];
+          t = b.createElement(e);
+          t.async = !0;
+          t.src = v;
+          s = b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t, s);
+        })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
+        fbq("init", "1329404792372303");
+        fbq("track", "PageView");
+      }
+      if (typeof window.requestIdleCallback === "function") {
+        window.requestIdleCallback(injectMetaPixel, { timeout: 4000 });
+      } else {
+        window.addEventListener("load", injectMetaPixel, { once: true });
+      }
+    })();
   </script>
   <!-- End Meta Pixel Code -->
 

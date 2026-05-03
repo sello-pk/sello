@@ -10,7 +10,7 @@ import { IoRefreshOutline as RefreshCw } from "react-icons/io5";
 const BottomHeader = () => {
   const location = useLocation();
   const { data: liveAuction, isLoading } = useGetLiveAuctionQuery(undefined, {
-    pollingInterval: 60000,
+    pollingInterval: 120000,
   });
 
   if (location.pathname === "/listings") return null;

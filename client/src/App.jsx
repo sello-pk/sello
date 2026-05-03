@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { lazy, Suspense, useMemo } from "react";
 import { matchPath, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
@@ -6,7 +6,9 @@ import { Toaster } from "react-hot-toast";
 import Navbar from "./components/Navbar.jsx";
 import BottomHeader from "./components/BottomHeader.jsx";
 import Footer from "./components/Footer.jsx";
-import WhatsAppChatWidget from "./components/features/help/WhatsAppChatWidget.jsx";
+const WhatsAppChatWidget = lazy(() =>
+  import("./components/features/help/WhatsAppChatWidget.jsx"),
+);
 import { ThemeProvider } from "./contexts/ThemeContext.jsx";
 import AppRouter from "./routes/AppRouter.jsx";
 import SEO from "./components/common/SEO.jsx";
@@ -542,8 +544,12 @@ const App = () => {
       {/* Show Footer except for auth pages & admin */}
       {shouldShowNavbarFooter && <Footer />}
 
-      {/* Support Chat Widget - Show on all pages except auth and admin */}
-      {shouldShowNavbarFooter && <WhatsAppChatWidget />}
+      {/* Support Chat Widget — lazy chunk so initial parse/eval skips widget + deps */}
+      {shouldShowNavbarFooter && (
+        <Suspense fallback={null}>
+          <WhatsAppChatWidget />
+        </Suspense>
+      )}
     </ThemeProvider>
   );
 };
