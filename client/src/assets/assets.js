@@ -76,7 +76,7 @@ import wbDigitalLogo from "./images/wbDigital.svg";
 import mianMotors from "./images/mianMotors.png";
 
 // SELLO VIDEO
-import selloVideo from "./selloVideo.gif";
+import selloVideo from "./selloVideo.webp";
 
 // Category Images
 import carCat from "./categories/carCat.webp";
@@ -107,10 +107,14 @@ import trustLegal from "./images/trustLegal.png";
 import auctionSchedule from "./images/auctionSchedule.png";
 
 // Review images for CustomerReviews component - using professional Unsplash people photos
-const review1 = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face&auto=format";
-const review2 = "https://images.unsplash.com/photo-1494790108755-2616b332c2ca?w=150&h=150&fit=crop&crop=face&auto=format";
-const review3 = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face&auto=format";
-const review4 = "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face&auto=format";
+const review1 =
+  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face&auto=format";
+const review2 =
+  "https://images.unsplash.com/photo-1494790108755-2616b332c2ca?w=150&h=150&fit=crop&crop=face&auto=format";
+const review3 =
+  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face&auto=format";
+const review4 =
+  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face&auto=format";
 
 export const images = {
   searchIcon,
@@ -1081,28 +1085,32 @@ export const reviews = [
     role: "Car Dealer",
     review:
       "Sello.pk has revolutionized our car dealership business. The platform is user-friendly and connects us with serious buyers across Pakistan. Highly recommended!",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face&auto=format",
+    image:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face&auto=format",
   },
   {
     name: "Sara Khan",
     role: "Individual Seller",
     review:
       "I sold my car within 3 days of listing on Sello.pk. The process was smooth and the support team was very helpful throughout the transaction.",
-    image: "https://images.unsplash.com/photo-1494790108755-2616b332c2ca?w=150&h=150&fit=crop&crop=face&auto=format",
+    image:
+      "https://images.unsplash.com/photo-1494790108755-2616b332c2ca?w=150&h=150&fit=crop&crop=face&auto=format",
   },
   {
     name: "Muhammad Ali",
     role: "Car Buyer",
     review:
       "Found my dream car at a great price through Sello.pk. The verified listings and detailed information made the buying process secure and transparent.",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face&auto=format",
+    image:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face&auto=format",
   },
   {
     name: "Fatima Sheikh",
     role: "Regular Customer",
     review:
       "As someone who buys and sells cars frequently, Sello.pk is my go-to platform. The AI car estimator feature is incredibly accurate and helpful.",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face&auto=format",
+    image:
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face&auto=format",
   },
 ];
 
