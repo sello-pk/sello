@@ -123,10 +123,12 @@ const WhatsAppChatWidget = () => {
         // Only auto-scroll if user is near bottom
         if (shouldAutoScrollRef.current && messagesContainerRef.current) {
           setTimeout(() => {
-            const container = messagesContainerRef.current;
-            if (container) {
-              container.scrollTop = container.scrollHeight;
-            }
+            requestAnimationFrame(() => {
+              const container = messagesContainerRef.current;
+              if (container) {
+                container.scrollTop = container.scrollHeight;
+              }
+            });
           }, 100);
         }
       }

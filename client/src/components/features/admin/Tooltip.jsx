@@ -17,16 +17,25 @@ const Tooltip = ({
   const triggerRef = useRef(null);
   const tooltipRef = useRef(null);
   const timeoutRef = useRef(null);
+  const measureRafRef = useRef(null);
 
   const showTooltip = () => {
-    // Clear any existing timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    if (measureRafRef.current !== null) {
+      cancelAnimationFrame(measureRafRef.current);
+      measureRafRef.current = null;
     }
 
     timeoutRef.current = setTimeout(() => {
-      if (triggerRef.current) {
-        const triggerRect = triggerRef.current.getBoundingClientRect();
+      measureRafRef.current = requestAnimationFrame(() => {
+        measureRafRef.current = null;
+        const triggerEl = triggerRef.current;
+        if (!triggerEl) return;
+
+        const triggerRect = triggerEl.getBoundingClientRect();
 
         // Create a temporary element to measure tooltip size
         const tempTooltip = document.createElement("div");
@@ -81,13 +90,19 @@ const Tooltip = ({
 
         setTooltipPosition({ top, left });
         setIsVisible(true);
-      }
+      });
+      timeoutRef.current = null;
     }, delay);
   };
 
   const hideTooltip = () => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    if (measureRafRef.current !== null) {
+      cancelAnimationFrame(measureRafRef.current);
+      measureRafRef.current = null;
     }
     setIsVisible(false);
   };
@@ -96,6 +111,11 @@ const Tooltip = ({
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      if (measureRafRef.current !== null) {
+        cancelAnimationFrame(measureRafRef.current);
+        measureRafRef.current = null;
       }
     };
   }, []);
