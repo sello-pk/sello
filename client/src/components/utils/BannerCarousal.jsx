@@ -150,7 +150,7 @@ const BannerCarousal = () => {
                     alt={slide.title || `Banner ${index + 1}`}
                     className="hidden sm:block absolute inset-0 w-full h-full object-cover object-center"
                     loading={index === 0 ? "eager" : "lazy"}
-                    fetchpriority={index === 0 ? "high" : "auto"}
+                    fetchPriority={index === 0 ? "high" : "low"}
                     decoding="async"
                     width="1400"
                     height="400"
@@ -161,7 +161,7 @@ const BannerCarousal = () => {
                     alt={slide.title || `Banner ${index + 1}`}
                     className="sm:hidden absolute inset-0 w-full h-full object-contain object-center"
                     loading={index === 0 ? "eager" : "lazy"}
-                    fetchpriority={index === 0 ? "high" : "auto"}
+                    fetchPriority={index === 0 ? "high" : "low"}
                     decoding="async"
                     width="768"
                     height="400"

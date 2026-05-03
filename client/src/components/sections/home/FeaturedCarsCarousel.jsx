@@ -122,10 +122,35 @@ const FeaturedCarsCarousel = () => {
 
   if (isLoading) {
     return (
-      <section className="relative py-14 bg-gray-50">
-        <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-2 border-primary-500 border-t-transparent"></div>
+      <section
+        className="relative min-h-[420px] py-12 md:py-14 bg-gray-100 overflow-hidden"
+        aria-busy="true"
+      >
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <div className="h-14 w-14 rounded-lg bg-gray-200 animate-pulse" />
+              <div className="space-y-2">
+                <div className="h-8 w-48 sm:w-64 rounded bg-gray-200 animate-pulse" />
+                <div className="h-4 w-40 rounded bg-gray-200 animate-pulse" />
+              </div>
+            </div>
+            <div className="hidden md:block h-10 w-28 rounded-lg bg-gray-200 animate-pulse" />
+          </div>
+          <div className="flex gap-4 overflow-hidden pb-2">
+            {[1, 2, 3].map((key) => (
+              <div
+                key={key}
+                className="min-w-[280px] sm:min-w-[300px] md:min-w-[320px] flex-shrink-0 rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden"
+              >
+                <div className="h-44 md:h-52 bg-gray-200 animate-pulse" />
+                <div className="p-4 space-y-3">
+                  <div className="h-4 w-[85%] max-w-[220px] rounded bg-gray-200 animate-pulse" />
+                  <div className="h-3 w-[60%] max-w-[160px] rounded bg-gray-200 animate-pulse" />
+                  <div className="h-5 w-24 rounded bg-gray-200 animate-pulse mt-4" />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -219,6 +244,15 @@ const FeaturedCarsCarousel = () => {
                         src={carImage}
                         alt={`${carMake} ${carModel}`}
                         className="w-full h-full object-cover"
+                        width={400}
+                        height={208}
+                        cloudinaryOptions={{
+                          width: 400,
+                          height: 208,
+                          crop: "fill",
+                          quality: 85,
+                          format: "auto",
+                        }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
 
@@ -264,19 +298,19 @@ const FeaturedCarsCarousel = () => {
                       <div className="flex items-center gap-3 mb-3 text-xs text-gray-600">
                         {images?.milesIcon && (
                           <span className="flex items-center gap-1">
-                            <img src={images.milesIcon} alt="" className="w-3.5 h-3.5 opacity-70" />
+                            <img src={images.milesIcon} alt="" width={14} height={14} className="w-3.5 h-3.5 opacity-70" />
                             {carMileage}
                           </span>
                         )}
                         {images?.fuelTypeIcon && (
                           <span className="flex items-center gap-1">
-                            <img src={images.fuelTypeIcon} alt="" className="w-3.5 h-3.5 opacity-70" />
+                            <img src={images.fuelTypeIcon} alt="" width={14} height={14} className="w-3.5 h-3.5 opacity-70" />
                             {carFuelType}
                           </span>
                         )}
                         {images?.transmissionIcon && (
                           <span className="flex items-center gap-1">
-                            <img src={images.transmissionIcon} alt="" className="w-3.5 h-3.5 opacity-70" />
+                            <img src={images.transmissionIcon} alt="" width={14} height={14} className="w-3.5 h-3.5 opacity-70" />
                             {carTransmission}
                           </span>
                         )}

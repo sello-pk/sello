@@ -15,6 +15,9 @@ const HeaderLogo = () => {
         className="h-12 w-auto md:h-16"
         src={images.blackLogo}
         alt="Sello logo"
+        width="160"
+        height="64"
+        decoding="async"
       />
     </button>
   );

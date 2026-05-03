@@ -252,19 +252,19 @@ const CarCard = ({
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-2 text-[#6b7280] text-xs sm:text-sm">
               <span className="flex items-center gap-1.5">
                 {images.milesIcon && (
-                  <img src={images.milesIcon} alt="" className="w-4 h-4 object-contain opacity-80" />
+                  <img src={images.milesIcon} alt="" width={16} height={16} className="w-4 h-4 object-contain opacity-80" />
                 )}
                 {mileageText}
               </span>
               <span className="flex items-center gap-1.5">
                 {images.fuelTypeIcon && (
-                  <img src={images.fuelTypeIcon} alt="" className="w-4 h-4 object-contain opacity-80" />
+                  <img src={images.fuelTypeIcon} alt="" width={16} height={16} className="w-4 h-4 object-contain opacity-80" />
                 )}
                 {displayFuel}
               </span>
               <span className="flex items-center gap-1.5">
                 {images.transmissionIcon && (
-                  <img src={images.transmissionIcon} alt="" className="w-4 h-4 object-contain opacity-80" />
+                  <img src={images.transmissionIcon} alt="" width={16} height={16} className="w-4 h-4 object-contain opacity-80" />
                 )}
                 {displayTransmission}
               </span>
@@ -410,6 +410,8 @@ const CarCard = ({
             <img
               src={images.location}
               alt=""
+              width={14}
+              height={14}
               className="w-3.5 h-3.5 flex-shrink-0 opacity-80"
             />
           )}
@@ -422,6 +424,8 @@ const CarCard = ({
               <img
                 src={images.milesIcon}
                 alt=""
+                width={14}
+                height={14}
                 className="w-3.5 h-3.5 flex-shrink-0 object-contain opacity-80"
               />
             )}
@@ -440,6 +444,8 @@ const CarCard = ({
               <img
                 src={images.fuelTypeIcon}
                 alt=""
+                width={14}
+                height={14}
                 className="w-3.5 h-3.5 flex-shrink-0 object-contain opacity-80"
               />
             )}
@@ -450,6 +456,8 @@ const CarCard = ({
               <img
                 src={images.transmissionIcon}
                 alt=""
+                width={14}
+                height={14}
                 className="w-3.5 h-3.5 flex-shrink-0 object-contain opacity-80"
               />
             )}

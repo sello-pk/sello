@@ -10,12 +10,16 @@ const GridCars = () => {
           return (
             <div
               key={item.id}
-              className="break-inside-avoid overflow-hidden rounded-xl shadow-md"
+              className="break-inside-avoid overflow-hidden rounded-xl shadow-md relative w-full aspect-[4/3] bg-gray-100"
             >
               <img
                 src={item.image}
-                alt={item.type}
-                className="w-full h-auto rounded-xl"
+                alt=""
+                width="1200"
+                height="900"
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full rounded-xl object-cover"
               />
             </div>
           );
