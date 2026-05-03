@@ -4,7 +4,6 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import SearchBar from "./utils/SearchBar";
 import { FaCirclePlus, FaBars, FaXmark, FaChevronDown } from "react-icons/fa6";
 import { FiSearch } from "react-icons/fi";
-import gsap from "gsap";
 import { useGetMeQuery } from "../redux/services/api";
 import NotificationBell from "./common/NotificationBell";
 
@@ -19,6 +18,8 @@ const Navbar = () => {
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
   const backdropRef = useRef(null);
   const drawerRef = useRef(null);
+  const gsapModRef = useRef(null);
+  const gsapLoadRef = useRef(null);
   const linkRefs = useRef([]);
   const searchPanelRef = useRef(null);
   const companyDropdownRef = useRef(null);
@@ -138,48 +139,69 @@ const Navbar = () => {
   const isCompanyActive = companyLinks.some((link) => isPathMatch(link.path));
   const isAuctionsActive = location.pathname.startsWith("/auctions");
 
+  /** Dynamic import keeps GSAP off the initial bundle / critical path until menu use. */
+  const ensureGsap = useCallback(() => {
+    if (gsapModRef.current) return Promise.resolve(gsapModRef.current);
+    if (!gsapLoadRef.current) {
+      gsapLoadRef.current = import("gsap").then((m) => {
+        const g = m.default;
+        gsapModRef.current = g;
+        return g;
+      });
+    }
+    return gsapLoadRef.current;
+  }, []);
+
   const openDrawer = () => {
     setOpen(true);
-    requestAnimationFrame(() => {
-      gsap.fromTo(
-        backdropRef.current,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.35, ease: "power2.out" },
-      );
-      gsap.fromTo(
-        drawerRef.current,
-        { xPercent: 100 },
-        { xPercent: 0, duration: 0.55, ease: "power4.out" },
-      );
-      gsap.fromTo(
-        linkRefs.current,
-        { y: 16, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.35,
-          ease: "power3.out",
-          stagger: 0.06,
-          delay: 0.16,
-        },
-      );
+    ensureGsap().then((gsap) => {
+      requestAnimationFrame(() => {
+        gsap.fromTo(
+          backdropRef.current,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.35, ease: "power2.out" },
+        );
+        gsap.fromTo(
+          drawerRef.current,
+          { xPercent: 100 },
+          { xPercent: 0, duration: 0.55, ease: "power4.out" },
+        );
+        gsap.fromTo(
+          linkRefs.current,
+          { y: 16, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.35,
+            ease: "power3.out",
+            stagger: 0.06,
+            delay: 0.16,
+          },
+        );
+      });
     });
   };
 
   const closeDrawer = () => {
-    gsap.to(linkRefs.current, {
+    const gsapLib = gsapModRef.current;
+    if (!gsapLib) {
+      setOpen(false);
+      setOpenMobileAuctions(false);
+      return;
+    }
+    gsapLib.to(linkRefs.current, {
       y: 12,
       opacity: 0,
       duration: 0.25,
       ease: "power2.in",
       stagger: { each: 0.04, from: "end" },
     });
-    gsap.to(backdropRef.current, {
+    gsapLib.to(backdropRef.current, {
       opacity: 0,
       duration: 0.32,
       ease: "power2.in",
     });
-    gsap.to(drawerRef.current, {
+    gsapLib.to(drawerRef.current, {
       xPercent: 100,
       duration: 0.45,
       ease: "power4.inOut",

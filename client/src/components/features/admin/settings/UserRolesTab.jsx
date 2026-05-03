@@ -72,15 +72,11 @@ const UserRolesTab = () => {
         setLoading(false);
         return;
       }
-      const usersRes = await axios.get(
-        `${API_BASE_URL}/admin/users?role=admin&limit=1000`,
-        {
+      const [usersRes, rolesRes, invitesRes] = await Promise.all([
+        axios.get(`${API_BASE_URL}/admin/users?role=admin&limit=1000`, {
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-
-      const [rolesRes, invitesRes] = await Promise.all([
+        }),
         axios.get(`${API_BASE_URL}/roles`, {
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },

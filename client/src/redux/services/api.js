@@ -885,6 +885,8 @@ export const api = createApi({
     // Car Filter Endpoint , for searching cars
     // In your api.js file, fix the typo:
     getFilteredCars: builder.query({
+      // Listings/filter responses are largely stable briefly; reuse cache longer to shorten repeat chains.
+      keepUnusedDataFor: 120,
       query: (params) => {
         const searchParams = new URLSearchParams(params).toString();
         return {

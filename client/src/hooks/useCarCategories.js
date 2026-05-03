@@ -20,7 +20,9 @@ export const useCarCategories = (vehicleType = null) => {
     data: allCarCategories,
     isLoading: carLoading,
   } = useGetAllCategoriesQuery(carQueryParams, {
-    refetchOnMountOrArgChange: true,
+    // Align with adminApi defaults — avoids waterfall refetches when Hero + BrandMarquee
+    // (and other mounts) subscribe; subscribers still fetch in parallel on cold cache.
+    refetchOnMountOrArgChange: false,
   });
 
   const {
@@ -33,7 +35,7 @@ export const useCarCategories = (vehicleType = null) => {
       isActive: "true",
     },
     {
-      refetchOnMountOrArgChange: true,
+      refetchOnMountOrArgChange: false,
     },
   );
 
@@ -46,7 +48,7 @@ export const useCarCategories = (vehicleType = null) => {
       isActive: "true",
     },
     {
-      refetchOnMountOrArgChange: true,
+      refetchOnMountOrArgChange: false,
     },
   );
 
