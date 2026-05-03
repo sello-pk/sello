@@ -17,6 +17,79 @@ import { buildBlogUrl } from "../../utils/urlBuilders";
 import BlogCommentsSection from "../../components/features/blog/BlogCommentsSection";
 import { hardcodedBlogPosts } from "../../assets/blogs/blogAssets";
 
+/** CLS: reserve aspect ratio for inline <img> in CMS HTML (browser-only). */
+function parseBlogImageDimensionsFromUrl(src) {
+  if (!src || typeof src !== "string") return null;
+  if (src.includes("cloudinary.com")) {
+    const wM = src.match(/[/,]w_(\d+)/);
+    const hM = src.match(/[/,]h_(\d+)/);
+    if (wM && hM) return { w: +wM[1], h: +hM[1] };
+    if (wM) {
+      const w = +wM[1];
+      return { w, h: Math.round((w * 9) / 16) };
+    }
+    if (hM) {
+      const h = +hM[1];
+      return { w: Math.round((h * 16) / 9), h };
+    }
+  }
+  try {
+    const u = new URL(src, "https://sello.pk");
+    const w = u.searchParams.get("w") || u.searchParams.get("width");
+    const h = u.searchParams.get("h") || u.searchParams.get("height");
+    if (w && h) {
+      const wn = parseInt(w, 10);
+      const hn = parseInt(h, 10);
+      if (wn > 0 && hn > 0) return { w: wn, h: hn };
+    }
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
+const BLOG_IMG_FALLBACK_W = 1200;
+const BLOG_IMG_FALLBACK_H = 675;
+
+function enhanceBlogPostHtml(html) {
+  if (typeof window === "undefined" || !html || typeof html !== "string") {
+    return html;
+  }
+  try {
+    const doc = new DOMParser().parseFromString(
+      `<div class="blog-html-root">${html}</div>`,
+      "text/html",
+    );
+    const root = doc.querySelector(".blog-html-root");
+    if (!root) return html;
+    root.querySelectorAll("img").forEach((img, index) => {
+      const src = img.getAttribute("src") || "";
+      let w = parseInt(img.getAttribute("width") || "", 10);
+      let h = parseInt(img.getAttribute("height") || "", 10);
+      const hasW = Number.isFinite(w) && w > 0;
+      const hasH = Number.isFinite(h) && h > 0;
+      if (!hasW || !hasH) {
+        const parsed = parseBlogImageDimensionsFromUrl(src);
+        if (!hasW) {
+          w = parsed?.w && parsed.w > 0 ? parsed.w : BLOG_IMG_FALLBACK_W;
+        }
+        if (!hasH) {
+          h = parsed?.h && parsed.h > 0 ? parsed.h : BLOG_IMG_FALLBACK_H;
+        }
+        img.setAttribute("width", String(w));
+        img.setAttribute("height", String(h));
+      }
+      if (!img.getAttribute("decoding")) img.setAttribute("decoding", "async");
+      if (!img.getAttribute("loading")) {
+        img.setAttribute("loading", index === 0 ? "eager" : "lazy");
+      }
+    });
+    return root.innerHTML;
+  } catch {
+    return html;
+  }
+}
+
 const BlogDetails = () => {
   const { id } = useParams();
 
@@ -154,6 +227,11 @@ const BlogDetails = () => {
   const canUseComments =
     currentBlog._id && /^[0-9a-fA-F]{24}$/.test(String(currentBlog._id));
 
+  const enhancedPostHtml = React.useMemo(
+    () => enhanceBlogPostHtml(currentBlog.content || ""),
+    [currentBlog.content],
+  );
+
   return (
     <>
       <SEO
@@ -211,13 +289,18 @@ const BlogDetails = () => {
           </nav>
 
           <article className="bg-[#FDFBF7] rounded-3xl overflow-hidden shadow-lg border border-gray-100">
-            <div className="relative w-full h-64 md:h-80 lg:h-[440px] overflow-hidden shrink-0">
+            <div className="relative w-full h-64 md:h-80 lg:h-[440px] overflow-hidden shrink-0 bg-gray-200">
               {showHeroPhoto ? (
                 <img
                   src={currentBlog.featuredImage}
                   alt=""
+                  width={1200}
+                  height={630}
                   className="absolute inset-0 size-full block object-cover object-center"
                   loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
+                  sizes="(max-width: 768px) 100vw, 896px"
                   onError={() => setHeroImgFailed(true)}
                 />
               ) : (
@@ -260,6 +343,9 @@ const BlogDetails = () => {
                     <img
                       src={currentBlog.author.avatar}
                       alt={authorName}
+                      width={44}
+                      height={44}
+                      decoding="async"
                       className="w-11 h-11 rounded-full object-cover border border-primary-500/20"
                     />
                   ) : (
@@ -292,7 +378,7 @@ const BlogDetails = () => {
               {currentBlog.content ? (
                 <div
                   className="blog-detail-body estimator-blog-body prose prose-lg max-w-none text-gray-700 leading-relaxed prose-headings:text-gray-900"
-                  dangerouslySetInnerHTML={{ __html: currentBlog.content }}
+                  dangerouslySetInnerHTML={{ __html: enhancedPostHtml }}
                 />
               ) : (
                 <div className="text-center py-8 text-gray-500">
@@ -376,6 +462,7 @@ const BlogDetails = () => {
         .blog-detail-body.prose img {
           margin: 1.5rem auto; display: block; max-width: 100%; height: auto;
           border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+          background-color: #f3f4f6;
         }
         .blog-detail-body.prose a { color: #FFA602; font-weight: 500; }
         .blog-detail-body.prose a:hover { text-decoration: underline; }
