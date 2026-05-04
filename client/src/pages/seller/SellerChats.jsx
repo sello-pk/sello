@@ -234,51 +234,56 @@ const SellerChats = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Header */}
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex items-start gap-3 sm:gap-4">
             <button
+              type="button"
               onClick={() => navigate(-1)}
-              className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+              className="rounded-lg p-2 transition-colors hover:bg-gray-200"
+              aria-label="Go back"
             >
               <FiArrowLeft size={24} />
             </button>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+            <div className="min-w-0">
+              <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
                 Buyer Messages
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="mt-1 text-gray-600">
                 Manage conversations with buyers
               </p>
             </div>
           </div>
           {socketConnected && (
-            <div className="flex items-center gap-2 text-green-600">
-              <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></div>
+            <div className="flex shrink-0 items-center gap-2 text-green-600">
+              <div className="h-2 w-2 animate-pulse rounded-full bg-green-600"></div>
               <span className="text-sm">Connected</span>
             </div>
           )}
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <div className="flex h-[calc(100vh-200px)]">
-            {/* Chat List Sidebar */}
-            <div className="w-1/3 border-r border-gray-200 flex flex-col">
-              <div className="p-4 border-b border-gray-200">
-                <h1 className="text-lg font-semibold text-gray-900">
-                  Conversations
-                </h1>
-              </div>
-              <div className="flex-1 overflow-y-auto">
-                {chatsLoading ? (
-                  <div className="flex justify-center py-8">
-                    <Spinner fullScreen={false} />
-                  </div>
-                ) : chats.length === 0 ? (
-                  <div className="text-center text-gray-500 py-8 px-4">
-                    No buyer conversations yet
-                  </div>
-                ) : (
-                  chats.map((chat) => {
+        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+          <div className="flex min-h-[min(520px,85dvh)] flex-col md:h-[calc(100vh-11rem)] md:max-h-[900px]">
+            <div className="flex min-h-0 flex-1 flex-col md:flex-row">
+              {/* Chat List Sidebar */}
+              <div
+                className={`flex min-h-0 w-full flex-col border-b border-gray-200 md:w-[34%] md:max-w-sm md:flex-shrink-0 md:border-b-0 md:border-r ${selectedChat ? "hidden md:flex" : "flex"}`}
+              >
+                <div className="border-b border-gray-200 p-4">
+                  <h1 className="text-lg font-semibold text-gray-900">
+                    Conversations
+                  </h1>
+                </div>
+                <div className="flex-1 overflow-y-auto">
+                  {chatsLoading ? (
+                    <div className="flex justify-center py-8">
+                      <Spinner fullScreen={false} />
+                    </div>
+                  ) : chats.length === 0 ? (
+                    <div className="px-4 py-8 text-center text-gray-500">
+                      No buyer conversations yet
+                    </div>
+                  ) : (
+                    chats.map((chat) => {
                     const unreadCount = getUnreadCount(chat);
                     const chatBuyer =
                       chat.buyer ||
@@ -288,78 +293,88 @@ const SellerChats = () => {
                       );
                     const isSelected = chat._id === selectedChat;
 
-                    return (
-                      <div
-                        key={chat._id}
-                        onClick={() => setSelectedChat(chat._id)}
-                        className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
-                          isSelected
-                            ? "bg-primary-50 border-l-4 border-l-primary-500"
-                            : ""
-                        }`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className="w-12 h-12 rounded-full bg-primary-500 flex items-center justify-center text-white font-semibold flex-shrink-0">
-                            {chatBuyer?.avatar ? (
-                              <img
-                                src={chatBuyer.avatar}
-                                alt={chatBuyer.name}
-                                className="w-full h-full rounded-full object-cover"
-                              />
-                            ) : (
-                              chatBuyer?.name?.charAt(0)?.toUpperCase() || "B"
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between mb-1">
-                              <h3 className="font-semibold text-gray-900 truncate">
-                                {chatBuyer?.name || "Buyer"}
-                              </h3>
-                              {unreadCount > 0 && (
-                                <span className="bg-primary-500 text-white text-xs font-bold rounded-full px-2 py-0.5">
-                                  {unreadCount}
-                                </span>
+                      return (
+                        <div
+                          key={chat._id}
+                          onClick={() => setSelectedChat(chat._id)}
+                          className={`cursor-pointer border-b border-gray-100 p-4 transition-colors hover:bg-gray-50 ${
+                            isSelected
+                              ? "border-l-4 border-l-primary-500 bg-primary-50"
+                              : ""
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary-500 font-semibold text-white">
+                              {chatBuyer?.avatar ? (
+                                <img
+                                  src={chatBuyer.avatar}
+                                  alt={chatBuyer.name}
+                                  className="h-full w-full rounded-full object-cover"
+                                />
+                              ) : (
+                                chatBuyer?.name?.charAt(0)?.toUpperCase() || "B"
                               )}
                             </div>
-                            <p className="text-sm text-gray-600 truncate mb-1">
-                              {chat.car?.title || "Car Listing"}
-                            </p>
-                            <p className="text-xs text-gray-500 truncate">
-                              {chat.lastMessage || "No messages yet"}
-                            </p>
+                            <div className="min-w-0 flex-1">
+                              <div className="mb-1 flex items-center justify-between">
+                                <h3 className="truncate font-semibold text-gray-900">
+                                  {chatBuyer?.name || "Buyer"}
+                                </h3>
+                                {unreadCount > 0 && (
+                                  <span className="rounded-full bg-primary-500 px-2 py-0.5 text-xs font-bold text-white">
+                                    {unreadCount}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="mb-1 truncate text-sm text-gray-600">
+                                {chat.car?.title || "Car Listing"}
+                              </p>
+                              <p className="truncate text-xs text-gray-500">
+                                {chat.lastMessage || "No messages yet"}
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })
-                )}
+                      );
+                    })
+                  )}
+                </div>
               </div>
-            </div>
 
-            {/* Chat Window */}
-            <div className="flex-1 flex flex-col">
+              {/* Chat Window */}
+              <div
+                className={`flex min-h-0 min-w-0 flex-1 flex-col ${selectedChat ? "flex" : "hidden md:flex"}`}
+              >
               {selectedChat ? (
                 <>
                   {/* Chat Header */}
-                  <div className="p-4 border-b border-gray-200 bg-white">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white font-semibold">
+                  <div className="border-b border-gray-200 bg-white p-4">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                      <button
+                        type="button"
+                        className="rounded-lg p-2 text-gray-700 hover:bg-gray-100 md:hidden"
+                        aria-label="Back to conversations"
+                        onClick={() => setSelectedChat(null)}
+                      >
+                        <FiArrowLeft size={20} />
+                      </button>
+                      <div className="flex min-w-0 flex-1 items-center gap-3">
+                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary-500 font-semibold text-white">
                           {buyer?.avatar ? (
                             <img
                               src={buyer.avatar}
                               alt={buyer.name}
-                              className="w-full h-full rounded-full object-cover"
+                              className="h-full w-full rounded-full object-cover"
                             />
                           ) : (
                             buyer?.name?.charAt(0)?.toUpperCase() || "B"
                           )}
                         </div>
-                        <div>
+                        <div className="min-w-0 flex-1">
                           <h3 className="font-semibold text-gray-900">
                             {buyer?.name || "Buyer"}
                           </h3>
-                          <p className="text-sm text-gray-600">
+                          <p className="truncate text-sm text-gray-600">
                             {selectedChatData?.car?.title || "Car Listing"}
                           </p>
                         </div>
@@ -572,6 +587,7 @@ const SellerChats = () => {
                   </div>
                 </div>
               )}
+            </div>
             </div>
           </div>
         </div>

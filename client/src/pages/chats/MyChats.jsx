@@ -157,9 +157,13 @@ const MyChats = () => {
     }
   }, [messages]);
 
-  // Auto select first chat
+  // Auto-select first chat on md+ only so mobile shows the list until the user picks a thread
   useEffect(() => {
-    if (chats.length > 0 && !selectedChat) {
+    if (chats.length === 0 || selectedChat != null) return;
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(min-width: 768px)").matches
+    ) {
       setSelectedChat(chats[0]._id);
     }
   }, [chats, selectedChat]);
@@ -305,13 +309,12 @@ const MyChats = () => {
           </p>
         </div>
 
-        <div
-          className="bg-white rounded-lg shadow-lg overflow-hidden"
-          style={{ height: "calc(100vh - 200px)" }}
-        >
-          <div className="flex h-full">
+        <div className="flex min-h-[min(520px,85dvh)] flex-col overflow-hidden rounded-lg bg-white shadow-lg md:h-[calc(100vh-11rem)] md:max-h-[900px]">
+          <div className="flex min-h-0 flex-1 flex-col md:flex-row">
             {/* Sidebar - Chat List */}
-            <div className="w-1/3 border-r border-gray-200 flex flex-col">
+            <div
+              className={`flex min-h-0 w-full flex-col border-b border-gray-200 md:w-[34%] md:max-w-sm md:flex-shrink-0 md:border-b-0 md:border-r ${selectedChat ? "hidden md:flex" : "flex"}`}
+            >
               <div className="p-4 border-b border-gray-200 bg-primary-50">
                 <h2 className="font-semibold text-gray-900">Conversations</h2>
                 {socketConnected && (
@@ -425,44 +428,57 @@ const MyChats = () => {
             </div>
 
             {/* Main Chat Area */}
-            <div className="flex-1 flex flex-col">
+            <div
+              className={`flex min-h-0 min-w-0 flex-1 flex-col ${selectedChat ? "flex" : "hidden md:flex"}`}
+            >
               {selectedChatData ? (
                 <>
                   {/* Chat Header */}
-                  <div className="p-4 border-b border-gray-200 bg-primary-50">
-                    <div className="flex items-center gap-3">
+                  <div className="border-b border-gray-200 bg-primary-50 p-4">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                      <button
+                        type="button"
+                        className="rounded-lg p-2 text-gray-700 hover:bg-gray-100 md:hidden"
+                        aria-label="Back to conversations"
+                        onClick={() => setSelectedChat(null)}
+                      >
+                        <FiArrowLeft size={20} />
+                      </button>
                       {(() => {
                         const otherUser = getOtherParticipant(selectedChatData);
                         return (
                           <>
-                            <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white font-semibold flex-shrink-0 overflow-hidden">
-                              {otherUser?.avatar ? (
-                                <img
-                                  src={otherUser.avatar}
-                                  alt={otherUser?.name || "User"}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                (otherUser?.name || "U").charAt(0).toUpperCase()
-                              )}
-                            </div>
-                            <div className="flex-1">
-                              <h3 className="font-semibold text-gray-900">
-                                {otherUser?.name || "Unknown User"}
-                              </h3>
-                              {selectedChatData.car && (
-                                <p className="text-sm text-gray-600">
-                                  {selectedChatData.car.title ||
-                                    `${selectedChatData.car.make} ${selectedChatData.car.model}`}
-                                </p>
-                              )}
+                            <div className="flex min-w-0 flex-1 items-center gap-3">
+                              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary-500 font-semibold text-white">
+                                {otherUser?.avatar ? (
+                                  <img
+                                    src={otherUser.avatar}
+                                    alt={otherUser?.name || "User"}
+                                    className="h-full w-full object-cover"
+                                  />
+                                ) : (
+                                  (otherUser?.name || "U").charAt(0).toUpperCase()
+                                )}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <h3 className="font-semibold text-gray-900">
+                                  {otherUser?.name || "Unknown User"}
+                                </h3>
+                                {selectedChatData.car && (
+                                  <p className="truncate text-sm text-gray-600">
+                                    {selectedChatData.car.title ||
+                                      `${selectedChatData.car.make} ${selectedChatData.car.model}`}
+                                  </p>
+                                )}
+                              </div>
                             </div>
                             {selectedChatData.car && (
                               <button
+                                type="button"
                                 onClick={() =>
                                   navigate(buildCarUrl(selectedChatData.car))
                                 }
-                                className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90 text-sm"
+                                className="shrink-0 rounded-lg bg-primary-500 px-3 py-2 text-sm text-white hover:opacity-90 sm:px-4"
                               >
                                 View Car
                               </button>
