@@ -20,9 +20,21 @@ import {
   useGetSavedCarsQuery,
 } from "../../../redux/services/api";
 import { images as placeholderImages } from "../../../assets/assets";
-import { Image as LazyImage } from "../../ui/Image";
 import toast from "react-hot-toast";
 import { extractCarIdFromSlug } from "../../../utils/urlBuilders";
+import { optimizeCloudinaryUrl } from "../../../utils/imageUtils";
+
+/** Smaller Cloudinary thumbs load faster and avoid stacking decode work with the hero image */
+function galleryThumbSrc(url) {
+  if (!url || typeof url !== "string") return url;
+  if (!url.includes("cloudinary.com")) return url;
+  return optimizeCloudinaryUrl(url, {
+    width: 168,
+    height: 168,
+    crop: "limit",
+    quality: 82,
+  });
+}
 
 const CarDetailsGallerySection = () => {
   const { id: routeParam } = useParams();
@@ -101,8 +113,15 @@ const CarDetailsGallerySection = () => {
   const thumbnailRefs = useRef([]);
 
   useEffect(() => {
-    if (thumbnailRefs.current[current]) {
-      thumbnailRefs.current[current].scrollIntoView({
+    const el = thumbnailRefs.current[current];
+    const scrollParent = el?.parentElement;
+    if (!el || !scrollParent) return;
+    const pr = scrollParent.getBoundingClientRect();
+    const er = el.getBoundingClientRect();
+    const clippedAbove = er.top < pr.top - 2;
+    const clippedBelow = er.bottom > pr.bottom + 2;
+    if (clippedAbove || clippedBelow) {
+      el.scrollIntoView({
         behavior: "auto",
         block: "nearest",
         inline: "nearest",
@@ -172,7 +191,7 @@ const CarDetailsGallerySection = () => {
     const imageElement = modalImageRef.current;
     imageElement.addEventListener("wheel", handleWheel, { passive: false });
     return () => imageElement.removeEventListener("wheel", handleWheel);
-  }, [isImageModalOpen, zoomLevel]);
+  }, [isImageModalOpen, zoomLevel, modalCurrentIndex]);
 
   // Cleanup effect to ensure body styles are restored on unmount
   useEffect(() => {
@@ -384,17 +403,21 @@ const CarDetailsGallerySection = () => {
                   <button
                     key={idx}
                     ref={(el) => (thumbnailRefs.current[idx] = el)}
+                    type="button"
                     onClick={() => setCurrent(idx)}
-                    className={`w-full aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 mb-2 bg-gray-100 flex items-center justify-center ${
+                    className={`mb-2 flex aspect-square w-full items-center justify-center overflow-hidden rounded-lg border-2 bg-gray-100 transition-[border-color,box-shadow,opacity] duration-150 ${
                       current === idx
-                        ? "border-primary-500 ring-2 ring-primary-200 scale-105"
-                        : "border-gray-200 hover:border-gray-300 opacity-70 hover:opacity-100"
+                        ? "border-primary-500 opacity-100 ring-2 ring-primary-200 ring-offset-2 ring-offset-white"
+                        : "border-gray-200 opacity-75 hover:border-gray-300 hover:opacity-100"
                     }`}
                   >
-                    <LazyImage
-                      src={img}
+                    <img
+                      src={galleryThumbSrc(img)}
                       alt={`Thumbnail ${idx + 1}`}
-                      className="w-full h-full object-contain object-center"
+                      className="h-full w-full object-contain object-center"
+                      loading="lazy"
+                      decoding="async"
+                      draggable={false}
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = placeholderImages.carPlaceholder;
@@ -416,11 +439,12 @@ const CarDetailsGallerySection = () => {
             >
               {/* Native img so object-fit always applies; LazyImage skeleton was forcing layout before load */}
               <img
+                key={current}
                 src={images[current]}
                 alt={`Car Image ${current + 1}`}
-                className="w-full h-full object-contain object-center select-none"
+                className="h-full w-full select-none object-contain object-center"
                 draggable={false}
-                decoding="async"
+                decoding="sync"
                 fetchPriority="high"
                 onError={(e) => {
                   e.target.onerror = null;
@@ -429,10 +453,10 @@ const CarDetailsGallerySection = () => {
               />
 
               {/* Overlay Gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
 
               {/* Image Count Badge */}
-              <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-black/70 backdrop-blur-sm text-white px-3 py-2 rounded-lg text-sm">
+              <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-lg bg-black/78 px-3 py-2 text-sm text-white">
                 <CiImageOn size={18} />
                 <span>
                   {current + 1} / {images.length}
@@ -440,7 +464,7 @@ const CarDetailsGallerySection = () => {
               </div>
 
               {/* View All Button */}
-              <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/90 backdrop-blur-sm text-gray-800 px-4 py-2 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer hover:bg-white">
+              <div className="absolute bottom-4 right-4 flex cursor-pointer items-center gap-2 rounded-lg bg-white/95 px-4 py-2 text-sm font-medium text-gray-800 opacity-0 shadow-sm transition-opacity group-hover:opacity-100 hover:bg-white">
                 <FaExpand size={14} />
                 <span>View All</span>
               </div>
@@ -453,7 +477,7 @@ const CarDetailsGallerySection = () => {
                       e.stopPropagation();
                       prevImage();
                     }}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white backdrop-blur-sm p-3 rounded-full shadow-lg transition-all opacity-0 group-hover:opacity-100 hover:scale-110"
+                    className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/95 p-3 text-gray-800 shadow-lg opacity-0 ring-1 ring-black/5 transition-opacity hover:bg-white group-hover:opacity-100"
                     aria-label="Previous image"
                   >
                     <FaChevronLeft size={18} className="text-gray-800" />
@@ -464,7 +488,7 @@ const CarDetailsGallerySection = () => {
                       e.stopPropagation();
                       nextImage();
                     }}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white backdrop-blur-sm p-3 rounded-full shadow-lg transition-all opacity-0 group-hover:opacity-100 hover:scale-110"
+                    className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/95 p-3 text-gray-800 shadow-lg opacity-0 ring-1 ring-black/5 transition-opacity hover:bg-white group-hover:opacity-100"
                     aria-label="Next image"
                   >
                     <FaChevronRight size={18} className="text-gray-800" />
@@ -476,7 +500,7 @@ const CarDetailsGallerySection = () => {
               <button
                 onClick={toggleSave}
                 disabled={isSaving || isUnsaving}
-                className="absolute top-4 right-4 bg-white/90 hover:bg-white backdrop-blur-sm p-3 rounded-full shadow-lg transition-all disabled:opacity-50 z-10"
+                className="absolute right-4 top-4 z-10 rounded-full bg-white/95 p-3 shadow-lg ring-1 ring-black/5 transition-colors hover:bg-white disabled:opacity-50"
                 title={isSaved ? "Remove from saved" : "Save car"}
               >
                 {isSaved ? (
@@ -507,11 +531,12 @@ const CarDetailsGallerySection = () => {
               onClick={() => openImageModal(current)}
             >
               <img
+                key={current}
                 src={images[current]}
                 alt={`Car Image ${current + 1}`}
-                className="w-full h-full object-contain object-center select-none"
+                className="h-full w-full select-none object-contain object-center"
                 draggable={false}
-                decoding="async"
+                decoding="sync"
                 fetchPriority="high"
                 onError={(e) => {
                   e.target.onerror = null;
@@ -520,7 +545,7 @@ const CarDetailsGallerySection = () => {
               />
 
               {/* Image Count */}
-              <div className="absolute bottom-3 left-3 bg-black/70 text-white px-2 py-1 rounded text-xs">
+              <div className="absolute bottom-3 left-3 rounded bg-black/78 px-2 py-1 text-xs text-white">
                 {current + 1} / {images.length}
               </div>
 
@@ -569,17 +594,21 @@ const CarDetailsGallerySection = () => {
               {images.map((img, idx) => (
                 <button
                   key={idx}
+                  type="button"
                   onClick={() => setCurrent(idx)}
-                  className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all bg-gray-100 flex items-center justify-center ${
+                  className={`flex h-20 w-20 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border-2 bg-gray-100 transition-[border-color,box-shadow,opacity] duration-150 ${
                     current === idx
-                      ? "border-primary-500 ring-2 ring-primary-200"
-                      : "border-gray-200"
+                      ? "border-primary-500 ring-2 ring-primary-200 ring-offset-2 ring-offset-white"
+                      : "border-gray-200 opacity-90 hover:border-gray-300 hover:opacity-100"
                   }`}
                 >
-                  <LazyImage
-                    src={img}
+                  <img
+                    src={galleryThumbSrc(img)}
                     alt={`Thumbnail ${idx + 1}`}
-                    className="w-full h-full object-contain object-center"
+                    className="h-full w-full object-contain object-center"
+                    loading="lazy"
+                    decoding="async"
+                    draggable={false}
                     onError={(e) => {
                       e.target.onerror = null;
                       e.target.src = placeholderImages.carPlaceholder;
@@ -691,11 +720,13 @@ const CarDetailsGallerySection = () => {
                     }}
                   >
                     <img
+                      key={modalCurrentIndex}
                       ref={modalImageRef}
                       src={images[modalCurrentIndex]}
                       alt={`Car Image ${modalCurrentIndex + 1}`}
-                      className="max-w-full max-h-[calc(100vh-200px)] object-contain select-none"
+                      className="max-h-[calc(100vh-200px)] max-w-full select-none object-contain"
                       draggable={false}
+                      decoding="sync"
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = placeholderImages.carPlaceholder;
@@ -711,7 +742,7 @@ const CarDetailsGallerySection = () => {
                           e.stopPropagation();
                           handlePrevModalImage();
                         }}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white p-4 rounded-full transition-all z-10 hover:scale-110"
+                        className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/15 p-4 text-white ring-1 ring-white/25 transition-colors hover:bg-white/25"
                         aria-label="Previous image"
                       >
                         <FaChevronLeft size={24} />
@@ -722,7 +753,7 @@ const CarDetailsGallerySection = () => {
                           e.stopPropagation();
                           handleNextModalImage();
                         }}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white p-4 rounded-full transition-all z-10 hover:scale-110"
+                        className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/15 p-4 text-white ring-1 ring-white/25 transition-colors hover:bg-white/25"
                         aria-label="Next image"
                       >
                         <FaChevronRight size={24} />
@@ -746,14 +777,14 @@ const CarDetailsGallerySection = () => {
                               setPanPosition({ x: 0, y: 0 });
                               setIsZoomed(false);
                             }}
-                            className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all bg-black/40 flex items-center justify-center ${
+                            className={`flex h-16 w-16 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border-2 bg-black/40 transition-[border-color,opacity,box-shadow] ${
                               modalCurrentIndex === idx
-                                ? "border-primary-500 ring-2 ring-primary-200 opacity-100 scale-110"
-                                : "border-white/30 opacity-60 hover:opacity-100 hover:border-white/50"
+                                ? "border-primary-500 opacity-100 ring-2 ring-primary-200 ring-offset-2 ring-offset-black/50"
+                                : "border-white/30 opacity-60 hover:border-white/50 hover:opacity-100"
                             }`}
                           >
                             <img
-                              src={img}
+                              src={galleryThumbSrc(img)}
                               alt={`Thumbnail ${idx + 1}`}
                               className="w-full h-full object-contain object-center"
                               onError={(e) => {
