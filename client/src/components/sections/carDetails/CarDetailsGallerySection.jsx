@@ -26,6 +26,7 @@ import { extractCarIdFromSlug } from "../../../utils/urlBuilders";
 
 const CarDetailsGallerySection = () => {
   const { id: routeParam } = useParams();
+  const location = useLocation();
   const extractedCarId = extractCarIdFromSlug(routeParam);
   const {
     data: car,
@@ -62,6 +63,19 @@ const CarDetailsGallerySection = () => {
   }, [car?.images]);
 
   const [current, setCurrent] = useState(0);
+  const prevCarIdRef = useRef(extractedCarId);
+
+  useEffect(() => {
+    const carChanged = prevCarIdRef.current !== extractedCarId;
+    prevCarIdRef.current = extractedCarId;
+    if (carChanged) {
+      setCurrent(0);
+      return;
+    }
+    setCurrent((prev) =>
+      images.length === 0 ? 0 : Math.min(prev, images.length - 1),
+    );
+  }, [extractedCarId, images.length]);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [modalCurrentIndex, setModalCurrentIndex] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
@@ -89,9 +103,9 @@ const CarDetailsGallerySection = () => {
   useEffect(() => {
     if (thumbnailRefs.current[current]) {
       thumbnailRefs.current[current].scrollIntoView({
-        behavior: "smooth",
+        behavior: "auto",
         block: "nearest",
-        inline: "center",
+        inline: "nearest",
       });
     }
   }, [current]);
@@ -404,8 +418,10 @@ const CarDetailsGallerySection = () => {
               <img
                 src={images[current]}
                 alt={`Car Image ${current + 1}`}
-                className="w-full h-full object-contain object-center select-none transition-opacity duration-200 group-hover:opacity-95"
+                className="w-full h-full object-contain object-center select-none"
                 draggable={false}
+                decoding="async"
+                fetchPriority="high"
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = placeholderImages.carPlaceholder;
@@ -495,6 +511,8 @@ const CarDetailsGallerySection = () => {
                 alt={`Car Image ${current + 1}`}
                 className="w-full h-full object-contain object-center select-none"
                 draggable={false}
+                decoding="async"
+                fetchPriority="high"
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = placeholderImages.carPlaceholder;

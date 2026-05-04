@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { optimizeCloudinaryUrl } from "../../utils/imageUtils";
 
 /**
@@ -24,6 +24,13 @@ const Image = ({
   const [hasError, setHasError] = useState(false);
   const [imgSrc, setImgSrc] = useState(src);
 
+  // Inline onError / cloudinaryOptions objects change identity every render; including them in the
+  // preload effect deps was re-running preload → skeleton pulse ("ghost"/blur loop) on parents that re-render often.
+  const onErrorRef = useRef(onError);
+  const cloudinaryOptionsRef = useRef(cloudinaryOptions);
+  onErrorRef.current = onError;
+  cloudinaryOptionsRef.current = cloudinaryOptions;
+
   useEffect(() => {
     if (!src || src === "") {
       setHasError(true);
@@ -33,7 +40,7 @@ const Image = ({
 
     const optimizedSrc =
       optimizeCloudinary && src?.includes("cloudinary.com")
-        ? optimizeCloudinaryUrl(src, cloudinaryOptions)
+        ? optimizeCloudinaryUrl(src, cloudinaryOptionsRef.current)
         : src;
 
     setImgSrc(optimizedSrc);
@@ -54,10 +61,14 @@ const Image = ({
     img.onerror = () => {
       setHasError(true);
       setIsLoading(false);
-      if (onError) onError();
+      try {
+        onErrorRef.current?.();
+      } catch {
+        /* Optional handlers often expect a DOM event; preload path has none */
+      }
     };
     img.src = optimizedSrc;
-  }, [src, lazy, onError, optimizeCloudinary, cloudinaryOptions]);
+  }, [src, lazy, optimizeCloudinary]);
 
   // Show placeholder while loading
   if (isLoading && placeholder) {
@@ -99,10 +110,10 @@ const Image = ({
       loading={lazy ? "lazy" : "eager"}
       decoding="async"
       onLoad={() => setIsLoading(false)}
-      onError={() => {
+      onError={(e) => {
         setHasError(true);
         setIsLoading(false);
-        if (onError) onError();
+        onErrorRef.current?.(e);
       }}
       {...props}
     />
