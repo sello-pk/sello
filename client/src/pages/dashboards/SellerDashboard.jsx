@@ -23,6 +23,8 @@ import {
   FiZap,
   FiXCircle,
   FiEdit,
+  FiMenu,
+  FiX,
 } from "react-icons/fi";
 import {
   useGetMeQuery,
@@ -43,6 +45,7 @@ import { useCarCategories } from "../../hooks/useCarCategories";
 const SellerDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [showAddCar, setShowAddCar] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [newCar, setNewCar] = useState({
@@ -178,6 +181,22 @@ const SellerDashboard = () => {
     }
   }, [user, userLoading, navigate]);
 
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (showAddCar) setMobileNavOpen(false);
+  }, [showAddCar]);
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") setMobileNavOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   // Don't show full-page loader - let page render normally
   if (userLoading) {
     return null;
@@ -283,15 +302,41 @@ const SellerDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div
+      className={`min-h-screen bg-gray-50 ${mobileNavOpen ? "max-lg:overflow-hidden" : ""}`}
+    >
+      <div className="mx-auto w-full max-w-[1600px] px-3 py-4 sm:px-6">
+        {mobileNavOpen && (
+          <button
+            type="button"
+            className="fixed inset-0 z-[52] bg-black/40 lg:hidden"
+            aria-label="Close menu"
+            onClick={() => setMobileNavOpen(false)}
+          />
+        )}
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch lg:gap-4">
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-lg flex flex-col">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-primary-500">SELLO</h2>
-          <p className="text-xs text-gray-500 mt-1">My Dashboard</p>
+      <div
+        className={`fixed lg:static inset-y-0 left-0 z-[53] lg:z-auto flex h-[100dvh] max-h-[100dvh] w-[min(17rem,calc(100vw-1rem))] shrink-0 flex-col overflow-hidden bg-white pb-[env(safe-area-inset-bottom,0px)] shadow-xl transition-transform duration-300 ease-out lg:h-auto lg:max-h-none lg:min-h-[calc(100vh-2rem)] lg:w-64 lg:rounded-2xl lg:border lg:border-slate-200 lg:pb-0 lg:shadow-sm ${
+          mobileNavOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        }`}
+      >
+        <div className="flex items-start justify-between gap-2 border-b border-gray-200 p-6">
+          <div className="min-w-0">
+            <h2 className="text-2xl font-bold text-primary-500">SELLO</h2>
+            <p className="text-xs text-gray-500 mt-1">My Dashboard</p>
+          </div>
+          <button
+            type="button"
+            className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 lg:hidden"
+            aria-label="Close menu"
+            onClick={() => setMobileNavOpen(false)}
+          >
+            <FiX size={22} />
+          </button>
         </div>
 
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-y-contain p-4">
           <button
             onClick={() => setActiveTab("dashboard")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
@@ -399,25 +444,35 @@ const SellerDashboard = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        <header className="bg-gradient-to-br from-slate-900 to-slate-800 px-6 py-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-white">
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <header className="bg-gradient-to-br from-slate-900 to-slate-800 px-4 py-5 sm:px-6 md:py-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex min-w-0 items-start gap-3">
+              <button
+                type="button"
+                className="mt-0.5 shrink-0 rounded-lg bg-white/10 p-2 text-white hover:bg-white/20 lg:hidden"
+                aria-label="Open menu"
+                onClick={() => setMobileNavOpen(true)}
+              >
+                <FiMenu size={22} />
+              </button>
+              <div className="min-w-0">
+              <h2 className="text-xl font-bold text-white sm:text-2xl md:text-3xl">
                 {user.role === "dealer"
                   ? "My Dashboard"
                   : "Seller Dashboard"}
               </h2>
-              <p className="text-slate-400">
+              <p className="text-sm text-slate-400 md:text-base">
                 Manage your vehicle listings and auctions
               </p>
+              </div>
             </div>
             <button
               onClick={() => {
                 toast.error("Only approved auction dealers can register cars for auction.");
                 navigate("/profile");
               }}
-              className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-amber-500 hover:to-orange-500 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-all hover:shadow-lg"
+              className="flex w-full shrink-0 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 px-4 py-3 text-sm font-medium text-white transition-all hover:shadow-lg hover:from-amber-500 hover:to-orange-500 sm:w-auto sm:px-6 md:text-base"
             >
               <FiPlus size={20} />
               Submit to Auction
@@ -427,7 +482,7 @@ const SellerDashboard = () => {
 
         {/* Verification status banner – only for unverified dealers */}
         {user?.role === "dealer" && !user?.dealerInfo?.verified && (
-          <div className="mx-6 mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl flex flex-wrap items-center justify-between gap-3">
+          <div className="mx-0 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 sm:mx-4 md:mx-6">
             <div className="flex items-center gap-3">
               <FiAlertCircle className="text-amber-600 shrink-0" size={24} />
               <div>
@@ -446,7 +501,7 @@ const SellerDashboard = () => {
           </div>
         )}
 
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-4 sm:p-6">
           {activeTab === "dashboard" && (
             <div className="space-y-6">
               {/* Stats Cards */}
@@ -934,7 +989,7 @@ const SellerDashboard = () => {
 
         {/* Comprehensive Auction Posting Dialog */}
         {showAddCar && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
             <div className="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
               <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                 <h3 className="text-xl font-bold text-gray-900">
@@ -1419,6 +1474,8 @@ const SellerDashboard = () => {
             </div>
           </div>
         )}
+      </div>
+        </div>
       </div>
     </div>
   );

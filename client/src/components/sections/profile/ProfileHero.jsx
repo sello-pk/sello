@@ -450,7 +450,7 @@ const ProfileHero = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen overflow-x-hidden bg-gray-50">
       {/* Modern Header Section */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -523,10 +523,10 @@ const ProfileHero = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="max-w-7xl mx-auto min-w-0 px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-4">
           {/* Sidebar Menu */}
-          <div className="lg:col-span-1">
+          <div className="min-w-0 lg:col-span-1">
             <div className="bg-white rounded-xl border border-gray-200 p-2 shadow-sm">
               <nav className="space-y-1">
                 {menuItems.map((item) => {
@@ -579,7 +579,7 @@ const ProfileHero = () => {
           </div>
 
           {/* Content Area */}
-          <div className="lg:col-span-3 space-y-6">
+          <div className="min-w-0 space-y-6 lg:col-span-3">
             {activeSection === "overview" && (
               <>
                 {/* Account Information Cards - Different for Dealers vs Individuals */}
