@@ -227,6 +227,29 @@ const ImagesUpload = ({ onImagesChange }) => {
   };
 
   const completedUploads = uploads.filter((u) => u.status === "done");
+  const doneIndices = uploads
+    .map((u, i) => (u.status === "done" ? i : -1))
+    .filter((i) => i >= 0);
+
+  const goToPreviousImage = (e) => {
+    e.stopPropagation();
+    if (doneIndices.length < 2) return;
+    let pos = doneIndices.indexOf(activeIndex);
+    if (pos < 0) pos = 0;
+    const prevIdx =
+      doneIndices[(pos - 1 + doneIndices.length) % doneIndices.length];
+    setActiveIndex(prevIdx);
+  };
+
+  const goToNextImage = (e) => {
+    e.stopPropagation();
+    if (doneIndices.length < 2) return;
+    let pos = doneIndices.indexOf(activeIndex);
+    if (pos < 0) pos = 0;
+    const nextIdx = doneIndices[(pos + 1) % doneIndices.length];
+    setActiveIndex(nextIdx);
+  };
+
   const openFileInput = () => fileInputRef.current?.click();
 
   return (
@@ -297,6 +320,52 @@ const ImagesUpload = ({ onImagesChange }) => {
               >
                 Remove
               </button>
+              {doneIndices.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    aria-label="Previous photo"
+                    onClick={goToPreviousImage}
+                    className="absolute left-2 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-gray-800 shadow-md ring-1 ring-black/5 transition hover:bg-white hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                  >
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      viewBox="0 0 24 24"
+                      aria-hidden
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Next photo"
+                    onClick={goToNextImage}
+                    className="absolute right-2 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-gray-800 shadow-md ring-1 ring-black/5 transition hover:bg-white hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                  >
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      viewBox="0 0 24 24"
+                      aria-hidden
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </button>
+                </>
+              )}
             </>
           ) : (
             <div className="flex flex-col items-center justify-center gap-4 py-8 px-4">
