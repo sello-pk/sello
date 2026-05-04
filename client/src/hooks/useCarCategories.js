@@ -206,23 +206,52 @@ export const useCarCategories = (vehicleType = null) => {
 
   const getCitiesByCountry = useMemo(() => {
     const map = {};
+    const countryIdSet = new Set(
+      countries.map((c) => String(c._id)),
+    );
+
+    const pushCity = (countryKey, city) => {
+      if (countryKey == null || !city?._id) return;
+      const k = String(countryKey);
+      if (!map[k]) map[k] = [];
+      if (map[k].some((x) => String(x._id) === String(city._id))) return;
+      map[k].push(city);
+    };
+
+    // Cities linked directly to a country (legacy / flat hierarchy)
     cities.forEach((city) => {
-      // Skip if no parentCategory
-      if (!city.parentCategory) {
-        return;
-      }
-      const countryId =
+      if (!city.parentCategory) return;
+      const parentId =
         typeof city.parentCategory === "object" && city.parentCategory !== null
           ? city.parentCategory._id
           : city.parentCategory;
-      if (countryId) {
-        if (!map[countryId]) {
-          map[countryId] = [];
-        }
-        map[countryId].push(city);
+      const parentStr = String(parentId);
+      if (countryIdSet.has(parentStr)) {
+        pushCity(parentStr, city);
       }
     });
-    // Sort cities within each country
+
+    // Cities under states — roll up into their parent country (fixes sparse lists
+    // when admin uses Country → State → City in Categories)
+    states.forEach((state) => {
+      if (!state.parentCategory) return;
+      const countryId =
+        typeof state.parentCategory === "object" && state.parentCategory !== null
+          ? state.parentCategory._id
+          : state.parentCategory;
+      const sid = state._id;
+      cities.forEach((city) => {
+        if (!city.parentCategory) return;
+        const cityParent =
+          typeof city.parentCategory === "object" && city.parentCategory !== null
+            ? city.parentCategory._id
+            : city.parentCategory;
+        if (String(cityParent) === String(sid)) {
+          pushCity(countryId, city);
+        }
+      });
+    });
+
     Object.keys(map).forEach((countryId) => {
       map[countryId].sort((a, b) => {
         const orderA = a.order || 0;
@@ -232,7 +261,7 @@ export const useCarCategories = (vehicleType = null) => {
       });
     });
     return map;
-  }, [cities]);
+  }, [cities, states, countries]);
 
   const getCitiesByState = useMemo(() => {
     const map = {};

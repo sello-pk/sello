@@ -135,6 +135,8 @@ const carSchema = new mongoose.Schema(
       ],
     },
     city: { type: String, required: true },
+    country: { type: String, default: "" },
+    state: { type: String, default: "" },
     location: { type: String, default: "" },
     carDoors: { type: Number, default: 4 },
     contactNumber: {

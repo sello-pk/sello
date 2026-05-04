@@ -23,6 +23,8 @@ export const VEHICLE_FIELD_CONFIG = {
     optional: [
       "description",
       "variant",
+      "country",
+      "state",
       "colorExterior",
       "colorInterior",
       "mileage",
@@ -47,6 +49,8 @@ export const VEHICLE_FIELD_CONFIG = {
     optional: [
       "description",
       "variant",
+      "country",
+      "state",
       "colorExterior",
       "colorInterior",
       "mileage",
@@ -72,6 +76,8 @@ export const VEHICLE_FIELD_CONFIG = {
     optional: [
       "description",
       "variant",
+      "country",
+      "state",
       "colorExterior",
       "colorInterior",
       "mileage",
@@ -97,6 +103,8 @@ export const VEHICLE_FIELD_CONFIG = {
     optional: [
       "description",
       "variant",
+      "country",
+      "state",
       "colorExterior",
       "colorInterior",
       "mileage",
@@ -121,6 +129,8 @@ export const VEHICLE_FIELD_CONFIG = {
     optional: [
       "description",
       "variant",
+      "country",
+      "state",
       "colorExterior",
       "colorInterior",
       "mileage",
@@ -144,6 +154,8 @@ export const VEHICLE_FIELD_CONFIG = {
     optional: [
       "description",
       "variant",
+      "country",
+      "state",
       "colorExterior",
       "colorInterior",
       "mileage",
@@ -172,6 +184,8 @@ export const VEHICLE_FIELD_CONFIG = {
     optional: [
       "description",
       "variant",
+      "country",
+      "state",
       "mileage",
       "location",
       "whatsappNumber",

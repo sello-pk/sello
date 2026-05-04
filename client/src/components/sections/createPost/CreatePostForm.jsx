@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -54,7 +54,6 @@ const CreatePostForm = ({ initialPrefill = null }) => {
   const submitLockRef = useRef(false);
   const [availableModels, setAvailableModels] = useState([]);
   const [availableYears, setAvailableYears] = useState([]);
-  const [availableCities, setAvailableCities] = useState([]);
   const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
   const [duplicateInfo, setDuplicateInfo] = useState(null);
 
@@ -77,6 +76,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
     mileage: "",
     bodyType: "",
     country: "",
+    state: "",
     city: "",
     location: "",
     contactNumber: "",
@@ -95,10 +95,52 @@ const CreatePostForm = ({ initialPrefill = null }) => {
     models,
     years,
     countries,
+    states,
     cities,
+    getStatesByCountry,
     getCitiesByCountry,
+    getCitiesByState,
     isLoading: categoriesLoading,
   } = useCarCategories(formData.vehicleType || null);
+
+  const selectedCountryObj = useMemo(
+    () => countries.find((c) => c.name === formData.country),
+    [countries, formData.country],
+  );
+  const selectedStateObj = useMemo(
+    () => states.find((s) => s.name === formData.state),
+    [states, formData.state],
+  );
+  const statesForCountry = useMemo(() => {
+    if (!selectedCountryObj?._id) return [];
+    return getStatesByCountry[selectedCountryObj._id] || [];
+  }, [getStatesByCountry, selectedCountryObj]);
+
+  const citiesForPicker = useMemo(() => {
+    if (!formData.country) {
+      return cities;
+    }
+    if (!selectedCountryObj?._id) {
+      return cities;
+    }
+    const countryStates =
+      getStatesByCountry[selectedCountryObj._id] || [];
+    if (selectedStateObj?._id) {
+      return getCitiesByState[selectedStateObj._id] || [];
+    }
+    if (countryStates.length > 0) {
+      return [];
+    }
+    return getCitiesByCountry[selectedCountryObj._id] || [];
+  }, [
+    cities,
+    formData.country,
+    getCitiesByCountry,
+    getCitiesByState,
+    getStatesByCountry,
+    selectedCountryObj,
+    selectedStateObj,
+  ]);
 
   const [createCar, { isLoading }] = useCreateCarMutation();
 
@@ -171,84 +213,61 @@ const CreatePostForm = ({ initialPrefill = null }) => {
     setAvailableYears(years);
   }, [years]);
 
-  // Initialize available cities - optimized
-  useEffect(() => {
-    if (!formData.country || countries.length === 0) {
-      setAvailableCities(cities);
+  const handleChange = (field, value) => {
+    if (field === "vehicleType") {
+      setFormData((prev) => ({
+        ...prev,
+        vehicleType: value,
+        make: "",
+        model: "",
+      }));
+      setAvailableModels([]);
       return;
     }
 
-    const selectedCountryObj = countries.find(
-      (c) => c.name === formData.country,
-    );
-    if (selectedCountryObj && getCitiesByCountry[selectedCountryObj._id]) {
-      const countryCities = getCitiesByCountry[selectedCountryObj._id];
-      setAvailableCities(countryCities.length > 0 ? countryCities : cities);
-    } else {
-      setAvailableCities(cities);
-    }
-  }, [formData.country, countries, cities, getCitiesByCountry]);
-
-  const handleChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-
-      // When vehicle type changes, reset dependent fields
-      if (field === "vehicleType") {
-        setFormData((prev) => ({
-          ...prev,
-          make: "", // Reset make when vehicle type changes
-          model: "", // Reset model when vehicle type changes
-        }));
-        // Reset available models when vehicle type changes (make/model cleared)
-        setAvailableModels([]);
-      }
-
-      // When make changes, update available models
-      if (field === "make") {
+    if (field === "make") {
+      setFormData((prev) => {
+        const next = { ...prev, make: value };
         const makeModels = resolveModelsBySelectedMake(value);
         setAvailableModels(makeModels);
         if (
-          formData.model &&
+          prev.model &&
           makeModels.length > 0 &&
-          !makeModels.find((m) => m.name === formData.model)
+          !makeModels.find((m) => m.name === prev.model)
         ) {
-          setFormData((prev) => ({ ...prev, model: "" }));
+          next.model = "";
         }
-      }
+        return next;
+      });
+      return;
+    }
 
-      // When model changes, years are independent - don't filter years
-      if (field === "model") {
-        // Years are now independent - always show all years
-        setAvailableYears(years);
-        // No need to reset year since all years are available for all models
-      }
+    if (field === "model") {
+      setFormData((prev) => ({ ...prev, model: value }));
+      setAvailableYears(years);
+      return;
+    }
 
-      // When country changes, update available cities
-      if (field === "country") {
-        if (value) {
-          const selectedCountryObj = countries.find((c) => c.name === value);
-          if (selectedCountryObj) {
-            const countryCities =
-              getCitiesByCountry[selectedCountryObj._id] || [];
-            setAvailableCities(
-              countryCities.length > 0 ? countryCities : cities,
-            );
-            // Reset city if it's not available for the new country
-            if (
-              formData.city &&
-              countryCities.length > 0 &&
-              !countryCities.find((c) => c.name === formData.city)
-            ) {
-              setFormData((prev) => ({ ...prev, city: "" }));
-            }
-          } else {
-            setAvailableCities(cities);
-          }
-        } else {
-          // Show all cities when country is cleared
-          setAvailableCities(cities);
-        }
-      }
+    if (field === "country") {
+      setFormData((prev) => ({
+        ...prev,
+        country: value,
+        state: "",
+        city: "",
+      }));
+      return;
+    }
+
+    if (field === "state") {
+      setFormData((prev) => ({
+        ...prev,
+        state: value,
+        city: "",
+      }));
+      return;
+    }
+
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const prepareFormData = () => {
@@ -324,6 +343,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       "mileage",
       "bodyType",
       "country",
+      "state",
       "city",
       "location",
       "contactNumber",
@@ -405,6 +425,21 @@ const CreatePostForm = ({ initialPrefill = null }) => {
     if (submitLockRef.current || isLoading) return;
     submitLockRef.current = true;
     try {
+      if (!String(formData.country || "").trim()) {
+        toast.error("Please select a country.");
+        return;
+      }
+      const statesUnderCountryForce = selectedCountryObj
+        ? getStatesByCountry[selectedCountryObj._id] || []
+        : [];
+      if (
+        statesUnderCountryForce.length > 0 &&
+        !String(formData.state || "").trim()
+      ) {
+        toast.error("Please select a state.");
+        return;
+      }
+
       const data = prepareFormData();
       // Send force=true param
       const res = await createCar({
@@ -445,6 +480,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         mileage: "",
         bodyType: "",
         country: "",
+        state: "",
         city: "",
         location: "",
         contactNumber: "",
@@ -458,7 +494,6 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       });
       setAvailableModels([]);
       setAvailableYears([]);
-      setAvailableCities([]);
       setShowDuplicateWarning(false);
       setDuplicateInfo(null);
 
@@ -508,6 +543,22 @@ const CreatePostForm = ({ initialPrefill = null }) => {
     if (missing.length) {
       const labels = missing.map((key) => capitalize(key.replace(/([A-Z])/g, " $1").trim()));
       toast.error(`Please fill in: ${labels.join(", ")}`);
+      return;
+    }
+
+    if (!String(formData.country || "").trim()) {
+      toast.error("Please select a country.");
+      return;
+    }
+
+    const statesUnderCountry = selectedCountryObj
+      ? getStatesByCountry[selectedCountryObj._id] || []
+      : [];
+    if (
+      statesUnderCountry.length > 0 &&
+      !String(formData.state || "").trim()
+    ) {
+      toast.error("Please select a state.");
       return;
     }
 
@@ -575,6 +626,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         mileage: "",
         bodyType: "",
         country: "",
+        state: "",
         city: "",
         location: "",
         contactNumber: "",
@@ -588,7 +640,6 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       });
       setAvailableModels([]);
       setAvailableYears([]);
-      setAvailableCities([]);
 
       // Ensure listing pages get fresh data before route change.
       dispatch(api.util.invalidateTags(["Cars"]));
@@ -749,7 +800,6 @@ const CreatePostForm = ({ initialPrefill = null }) => {
                   if (!isFieldVisible(newVehicleType, "bodyType")) {
                     handleChange("bodyType", "");
                     setAvailableModels([]);
-                    setAvailableCities([]);
                   }
                   if (!isFieldVisible(newVehicleType, "fuelType")) {
                     handleChange("fuelType", "");
@@ -992,7 +1042,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
           </>
         )}
 
-        {/* Country, City, Address in same row */}
+        {/* Country → State → City (matches admin location categories) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2 pl-0 sm:pl-2">
           <div>
             <label className="block mb-1">Country</label>
@@ -1010,35 +1060,62 @@ const CreatePostForm = ({ initialPrefill = null }) => {
             />
           </div>
           <div>
+            <label className="block mb-1">State</label>
+            <SearchableSelect
+              value={formData.state || ""}
+              onChange={(value) => handleChange("state", value)}
+              options={statesForCountry.map((st) => ({
+                value: st.name,
+                label: st.name,
+              }))}
+              placeholder={
+                categoriesLoading
+                  ? "Loading..."
+                  : !formData.country
+                    ? "Select country first"
+                    : statesForCountry.length === 0
+                      ? "No states (pick city below)"
+                      : "Select State"
+              }
+              disabled={
+                categoriesLoading ||
+                !formData.country ||
+                statesForCountry.length === 0
+              }
+              isLoading={categoriesLoading}
+              required={statesForCountry.length > 0}
+            />
+          </div>
+          <div>
             <label className="block mb-1">City</label>
             <SearchableSelect
               value={formData.city}
               onChange={(value) => handleChange("city", value)}
-              options={availableCities.map((city) => ({
+              options={citiesForPicker.map((city) => ({
                 value: city.name,
                 label: city.name,
               }))}
               placeholder={
                 categoriesLoading
                   ? "Loading..."
-                  : availableCities.length === 0
-                    ? "No cities available"
-                    : formData.country
-                      ? "Select City"
-                      : "Select City (or select Country to filter)"
+                  : citiesForPicker.length === 0
+                    ? formData.country &&
+                        statesForCountry.length > 0 &&
+                        !formData.state
+                      ? "Select state first"
+                      : "No cities available"
+                    : !formData.country
+                      ? "Select City (or select Country to filter)"
+                      : "Select City"
               }
-              disabled={categoriesLoading}
+              disabled={
+                categoriesLoading ||
+                (Boolean(formData.country) &&
+                  statesForCountry.length > 0 &&
+                  !formData.state)
+              }
               isLoading={categoriesLoading}
               required
-            />
-          </div>
-          <div>
-            <label className="block mb-1">Address</label>
-            <Input
-              inputType="text"
-              value={formData.location}
-              onChange={(e) => handleChange("location", e.target.value)}
-              placeholder="Enter address"
             />
           </div>
         </div>

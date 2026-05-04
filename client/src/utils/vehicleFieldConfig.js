@@ -26,6 +26,8 @@ export const VEHICLE_FIELD_CONFIG = {
     ],
     optional: [
       "description",
+      "country",
+      "state",
       "colorExterior",
       "colorInterior",
       "mileage",
@@ -60,7 +62,7 @@ export const VEHICLE_FIELD_CONFIG = {
       "city",
       "contactNumber",
     ],
-    optional: ["description", "mileage", "location", "geoLocation"],
+    optional: ["description", "country", "state", "mileage", "location", "geoLocation"],
     fields: {
       bodyType: { visible: true, required: true },
       cylinders: { visible: false, required: false },
@@ -88,7 +90,7 @@ export const VEHICLE_FIELD_CONFIG = {
       "city",
       "contactNumber",
     ],
-    optional: ["description", "mileage", "location", "geoLocation"],
+    optional: ["description", "country", "state", "mileage", "location", "geoLocation"],
     fields: {
       bodyType: { visible: true, required: true },
       cylinders: { visible: false, required: false },
@@ -116,7 +118,7 @@ export const VEHICLE_FIELD_CONFIG = {
       "city",
       "contactNumber",
     ],
-    optional: ["description", "mileage", "location", "geoLocation"],
+    optional: ["description", "country", "state", "mileage", "location", "geoLocation"],
     fields: {
       bodyType: { visible: true, required: true },
       cylinders: { visible: false, required: false },
@@ -143,7 +145,7 @@ export const VEHICLE_FIELD_CONFIG = {
       "city",
       "contactNumber",
     ],
-    optional: ["description", "mileage", "location", "geoLocation"],
+    optional: ["description", "country", "state", "mileage", "location", "geoLocation"],
     fields: {
       bodyType: { visible: true, required: true },
       cylinders: { visible: false, required: false },
@@ -173,6 +175,8 @@ export const VEHICLE_FIELD_CONFIG = {
     ],
     optional: [
       "description",
+      "country",
+      "state",
       "colorExterior",
       "colorInterior",
       "mileage",
@@ -210,7 +214,7 @@ export const VEHICLE_FIELD_CONFIG = {
       "city",
       "contactNumber",
     ],
-    optional: ["description", "mileage", "location", "geoLocation", "fuelType"],
+    optional: ["description", "country", "state", "mileage", "location", "geoLocation", "fuelType"],
     fields: {
       bodyType: { visible: false, required: false },
       cylinders: { visible: false, required: false },
