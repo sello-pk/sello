@@ -59,7 +59,7 @@ const GetAllCarsSection = () => {
 
   // Check if we're on home page or listing page
   const isHomePage = location.pathname === "/" || location.pathname === "/home";
-  const limit = isHomePage ? 6 : 12; // Show 6 on home, 12 on listing page
+  const limit = isHomePage ? 6 : 36; // Show 6 on home, 36 on listing page
 
   // Get URL parameters
   const [searchParams] = useSearchParams();
@@ -338,7 +338,6 @@ const GetAllCarsSection = () => {
               <button
                 onClick={() => {
                   setPage((p) => Math.max(p - 1, 1));
-                  window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 disabled={page === 1}
                 className="inline-flex items-center justify-center min-w-[120px] px-4 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium gap-2 text-sm"
@@ -350,7 +349,9 @@ const GetAllCarsSection = () => {
               </button>
               {page > 2 && (
                 <button
-                  onClick={() => { setPage(1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                  onClick={() => {
+                    setPage(1);
+                  }}
                   className="min-w-10 px-3 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 font-medium text-sm"
                 >
                   1
@@ -359,7 +360,9 @@ const GetAllCarsSection = () => {
               {page > 3 && <span className="px-1 text-gray-400">...</span>}
               {page > 1 && (
                 <button
-                  onClick={() => { setPage(page - 1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                  onClick={() => {
+                    setPage(page - 1);
+                  }}
                   className="min-w-10 px-3 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 font-medium text-sm"
                 >
                   {page - 1}
@@ -370,7 +373,9 @@ const GetAllCarsSection = () => {
               </span>
               {page < totalPages && (
                 <button
-                  onClick={() => { setPage(page + 1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                  onClick={() => {
+                    setPage(page + 1);
+                  }}
                   className="min-w-10 px-3 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 font-medium text-sm"
                 >
                   {page + 1}
@@ -379,7 +384,9 @@ const GetAllCarsSection = () => {
               {page < totalPages - 2 && <span className="px-1 text-gray-400">...</span>}
               {page < totalPages - 1 && (
                 <button
-                  onClick={() => { setPage(totalPages); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                  onClick={() => {
+                    setPage(totalPages);
+                  }}
                   className="min-w-10 px-3 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 font-medium text-sm"
                 >
                   {totalPages}
@@ -388,7 +395,6 @@ const GetAllCarsSection = () => {
               <button
                 onClick={() => {
                   setPage((p) => Math.min(p + 1, totalPages));
-                  window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 disabled={page === totalPages}
                 className="inline-flex items-center justify-center min-w-[120px] px-4 py-2.5 rounded-xl bg-primary-500 text-white font-semibold hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors gap-2 text-sm"
