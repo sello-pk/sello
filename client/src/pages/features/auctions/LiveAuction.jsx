@@ -102,7 +102,7 @@ const CountdownTimer = ({ targetDate }) => {
   }, [targetDate]);
   const pad = (n) => String(n).padStart(2, "0");
   return (
-    <div className="flex items-center gap-2 text-sm">
+    <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
       {[
         { v: time.d, l: "d" },
         { v: time.h, l: "h" },
@@ -111,7 +111,7 @@ const CountdownTimer = ({ targetDate }) => {
       ].map((t, i) => (
         <React.Fragment key={t.l}>
           {i > 0 && <span className="text-white">:</span>}
-          <div className="text-center">
+          <div className="text-center min-w-[24px] sm:min-w-[28px]">
             <span className="font-bold text-white">{pad(t.v)}</span>
             <span className="text-xs text-slate-400 ml-1">{t.l}</span>
           </div>
@@ -143,8 +143,8 @@ const CarCard = ({ auctionCar, compact = false, auctionLocation, auctionEndTime 
     return (
       <Link to={`/auctions/car-detail?id=${auctionCar._id}`} className="block">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all border border-slate-200">
-          <div className="flex">
-            <div className="w-48 h-36 bg-slate-200 relative">
+          <div className="flex flex-col sm:flex-row">
+            <div className="w-full sm:w-48 h-44 sm:h-36 bg-slate-200 relative">
               {img && (
                 <img
                   src={img}
@@ -153,7 +153,7 @@ const CarCard = ({ auctionCar, compact = false, auctionLocation, auctionEndTime 
                 />
               )}
             </div>
-            <div className="flex-1 p-4">
+            <div className="flex-1 p-3 sm:p-4">
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="font-semibold text-lg">
@@ -464,16 +464,16 @@ export default function LiveAuction() {
       />
       <div className="min-h-screen bg-slate-50">
       {/* Live Header */}
-      <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 sticky top-0 z-40 border-b border-slate-700">
+      <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 md:sticky md:top-16 z-40 border-b border-slate-700">
         <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 md:gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 min-w-0">
+              <div className="flex items-center gap-2 min-w-0">
                 <Badge className="inline-flex items-center px-3 py-1 gap-2 rounded-full text-xs font-medium bg-white !text-red-400 border border-white whitespace-nowrap animate-pulse duration-500 ease">
                   <Zap className="w-3.5 h-3.5 shrink-0 !text-red-400" />
                   Live
                 </Badge>
-                <h1 className="text-xl font-bold text-white">
+                <h1 className="text-base sm:text-xl font-bold text-white truncate">
                   {liveAuction.title}
                 </h1>
               </div>
@@ -482,20 +482,20 @@ export default function LiveAuction() {
                 {liveAuction.location}
               </div>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-3 md:gap-4">
               <Link
                 to="/auctions/wallet"
                 className="text-sm text-white/80 hover:text-white transition-colors"
               >
                 Wallet
               </Link>
-              <div className="flex items-center gap-2 text-slate-400 text-sm">
+              <div className="hidden sm:flex items-center gap-2 text-slate-400 text-sm">
                 <RefreshCw className="w-4 h-4 animate-spin" />
                 Live updates
               </div>
-              <div className="bg-white/10 rounded-xl px-4 py-2 backdrop-blur">
+              <div className="bg-white/10 rounded-xl px-3 sm:px-4 py-2 backdrop-blur w-full md:w-auto">
                 <div className="flex items-center gap-3">
-                  <span className="text-slate-400 text-sm">Ends in:</span>
+                  <span className="text-slate-400 text-xs sm:text-sm whitespace-nowrap">Ends in:</span>
                   <CountdownTimer targetDate={liveAuction.endTime} />
                 </div>
               </div>
@@ -547,7 +547,7 @@ export default function LiveAuction() {
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <select
-                className="h-11 px-3 border border-slate-200 rounded-lg text-sm"
+                className="h-11 px-3 border border-slate-200 rounded-lg text-sm w-full sm:w-auto"
                 value={filters.make}
                 onChange={(e) =>
                   setFilters({ ...filters, make: e.target.value })
@@ -561,7 +561,7 @@ export default function LiveAuction() {
                 ))}
               </select>
               <select
-                className="h-11 px-3 border border-slate-200 rounded-lg text-sm"
+                className="h-11 px-3 border border-slate-200 rounded-lg text-sm w-full sm:w-auto"
                 value={filters.condition}
                 onChange={(e) =>
                   setFilters({ ...filters, condition: e.target.value })
@@ -572,7 +572,7 @@ export default function LiveAuction() {
                 <option value="Used">Used</option>
               </select>
               <select
-                className="h-11 px-3 border border-slate-200 rounded-lg text-sm"
+                className="h-11 px-3 border border-slate-200 rounded-lg text-sm w-full sm:w-auto"
                 value={filters.sortBy}
                 onChange={(e) =>
                   setFilters({ ...filters, sortBy: e.target.value })

@@ -82,7 +82,7 @@ export default function LiveAuctionUpdates({
               key={it.id}
               className="px-4 py-2 border-b border-slate-50 flex justify-between gap-2"
             >
-              <span className="text-slate-800">{it.text}</span>
+              <span className="text-slate-800 min-w-0 break-words">{it.text}</span>
               <span className="text-slate-400 text-xs whitespace-nowrap">
                 {new Date(it.ts).toLocaleTimeString()}
               </span>

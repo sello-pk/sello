@@ -149,8 +149,10 @@ const CarChatWidget = ({ carId, carTitle, onClose }) => {
 
   return (
     <div
-      className={`fixed bottom-6 left-6 bg-white rounded-lg shadow-2xl z-40 flex flex-col ${
-        isOpen ? "w-96 h-[500px]" : "w-96 h-12"
+      className={`fixed bottom-3 left-3 right-3 sm:bottom-6 sm:left-6 sm:right-auto bg-white rounded-xl sm:rounded-lg shadow-2xl z-40 flex flex-col overflow-hidden ${
+        isOpen
+          ? "h-[min(76vh,560px)] sm:w-96 sm:h-[500px]"
+          : "h-12 sm:w-96"
       } transition-all`}
     >
       {/* Header */}
@@ -310,7 +312,7 @@ const CarChatWidget = ({ carId, carTitle, onClose }) => {
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
                 placeholder="Type your message..."
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="flex-1 min-w-0 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
               <button
                 onClick={handleSendMessage}

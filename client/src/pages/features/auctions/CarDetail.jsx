@@ -109,7 +109,7 @@ const CountdownTimer = ({ targetDate }) => {
   }, [targetDate]);
   const pad = (n) => String(n).padStart(2, "0");
   return (
-    <div className="flex items-center justify-center gap-3">
+    <div className="flex items-center justify-center gap-1.5 sm:gap-3">
       {[
         { v: time.d, l: "Days" },
         { v: time.h, l: "Hours" },
@@ -117,13 +117,13 @@ const CountdownTimer = ({ targetDate }) => {
         { v: time.s, l: "Secs" },
       ].map((t, i) => (
         <React.Fragment key={t.l}>
-          <div className="w-16 rounded-xl bg-[#101c35] border border-white/10 py-2 text-center">
-            <div className="text-xl font-bold text-white">{pad(t.v)}</div>
-            <div className="text-[10px] uppercase tracking-wide text-slate-300">
+          <div className="w-12 sm:w-16 rounded-xl bg-[#101c35] border border-white/10 py-2 text-center">
+            <div className="text-base sm:text-xl font-bold text-white">{pad(t.v)}</div>
+            <div className="text-[9px] sm:text-[10px] uppercase tracking-wide text-slate-300">
               {t.l}
             </div>
           </div>
-          {i < 3 && <span className="text-slate-400 font-semibold">:</span>}
+          {i < 3 && <span className="text-slate-400 font-semibold text-xs sm:text-base">:</span>}
         </React.Fragment>
       ))}
     </div>
@@ -435,18 +435,18 @@ export default function CarDetail() {
       />
       <div className="min-h-screen bg-slate-50">
       <div className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-[1320px] items-center justify-between gap-6 px-4 py-5 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-[1320px] items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-4">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-500 text-white shadow-lg shadow-primary-500/25">
               <Gavel className="h-5 w-5" />
             </div>
-            <div>
-              <p className="text-3xl font-black tracking-tight text-slate-900">
+            <div className="min-w-0">
+              <p className="text-lg sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900 leading-tight break-words">
                 {auctionLocation.split(" ").slice(0, 2).join(" ") ||
                   "Okara Auto"}{" "}
                 <span className="text-primary-500">Auction</span>
               </p>
-              <p className="text-sm text-slate-500">
+              <p className="text-xs sm:text-sm text-slate-500 truncate">
                 {auction.title || "Premium live bidding"}
               </p>
             </div>
@@ -471,7 +471,7 @@ export default function CarDetail() {
         </div>
       </div>
 
-      <div className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
+      <div className="sticky top-14 sm:top-16 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
         <div className="mx-auto max-w-[1320px] px-4 py-4 sm:px-6 lg:px-8">
           <Link
             to="/auctions/live"
@@ -483,21 +483,21 @@ export default function CarDetail() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1320px] px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid gap-8 xl:grid-cols-[minmax(0,1.55fr)_minmax(360px,0.95fr)]">
+      <div className="mx-auto max-w-[1320px] px-4 py-8 sm:px-6 lg:px-8 overflow-x-hidden">
+        <div className="grid gap-6 lg:gap-8 xl:grid-cols-[minmax(0,1.55fr)_minmax(360px,0.95fr)] min-w-0">
           {/* Left */}
-          <div className="space-y-7">
+          <div className="space-y-7 min-w-0">
             {/* Gallery */}
             <div
               id="overview"
-              className="bg-white rounded-[28px] overflow-hidden border border-slate-200 shadow-[0_18px_48px_rgba(15,23,42,0.08)]"
+              className="bg-white rounded-[28px] overflow-hidden border border-slate-200 shadow-[0_18px_48px_rgba(15,23,42,0.08)] max-w-full"
             >
-              <div className="relative aspect-[16/10] bg-slate-100">
+              <div className="relative aspect-[4/3] sm:aspect-[16/10] bg-slate-100 w-full overflow-hidden">
                 {images[currentImageIndex] && (
                   <img
                     src={images[currentImageIndex]}
                     alt={`${car.make} ${car.model}`}
-                    className="w-full h-full object-cover"
+                    className="block w-full h-full object-cover max-w-full"
                   />
                 )}
                 {images.length > 1 && (
@@ -508,7 +508,7 @@ export default function CarDetail() {
                           p > 0 ? p - 1 : images.length - 1,
                         )
                       }
-                      className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/90 rounded-full flex items-center justify-center shadow-lg hover:bg-white"
+                      className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 bg-white/90 rounded-full flex items-center justify-center shadow-lg hover:bg-white"
                     >
                       <ChevronLeft className="w-6 h-6" />
                     </button>
@@ -518,7 +518,7 @@ export default function CarDetail() {
                           p < images.length - 1 ? p + 1 : 0,
                         )
                       }
-                      className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/90 rounded-full flex items-center justify-center shadow-lg hover:bg-white"
+                      className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 bg-white/90 rounded-full flex items-center justify-center shadow-lg hover:bg-white"
                     >
                       <ChevronRight className="w-6 h-6" />
                     </button>
@@ -526,25 +526,25 @@ export default function CarDetail() {
                 )}
                 <button
                   onClick={() => setShowGallery(true)}
-                  className="absolute right-4 bottom-4 px-5 py-3 bg-white/95 text-slate-900 rounded-2xl flex items-center gap-2 text-sm font-semibold hover:bg-white border border-slate-200 shadow-sm"
+                  className="absolute right-2 sm:right-4 bottom-2 sm:bottom-4 px-3 sm:px-5 py-2 sm:py-3 bg-white/95 text-slate-900 rounded-xl sm:rounded-2xl flex items-center gap-2 text-xs sm:text-sm font-semibold hover:bg-white border border-slate-200 shadow-sm"
                 >
                   <ZoomIn className="w-4 h-4" />
                   View All Photos
                 </button>
-                <div className="absolute left-4 bottom-4">
-                  <Badge className="bg-slate-900/85 text-white border border-white/20 backdrop-blur-sm shadow-lg px-3 py-1.5 text-sm">
+                <div className="absolute left-2 sm:left-4 bottom-2 sm:bottom-4">
+                  <Badge className="bg-slate-900/85 text-white border border-white/20 backdrop-blur-sm shadow-lg px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm">
                     <MapPin className="w-3 h-3 mr-1 text-amber-300" />
                     {auction.location || "Okara Auction Yard"}
                   </Badge>
                 </div>
               </div>
               {images.length > 1 && (
-                <div className="p-5 flex gap-3 overflow-x-auto">
+                <div className="p-4 sm:p-5 flex gap-2 sm:gap-3 overflow-x-auto overscroll-x-contain max-w-full">
                   {images.map((img, i) => (
                     <button
                       key={i}
                       onClick={() => setCurrentImageIndex(i)}
-                      className={`w-24 h-16 rounded-2xl overflow-hidden flex-shrink-0 border-2 transition-all ${currentImageIndex === i ? "border-primary-500 shadow-[0_0_0_4px_rgba(245,158,11,0.14)]" : "border-transparent opacity-75 hover:opacity-100"}`}
+                      className={`w-20 h-14 sm:w-24 sm:h-16 rounded-xl sm:rounded-2xl overflow-hidden shrink-0 border-2 transition-all ${currentImageIndex === i ? "border-primary-500 shadow-[0_0_0_4px_rgba(245,158,11,0.14)]" : "border-transparent opacity-75 hover:opacity-100"}`}
                     >
                       <img
                         src={img}
@@ -558,10 +558,10 @@ export default function CarDetail() {
             </div>
 
             {/* Title */}
-            <div className="bg-white rounded-[28px] p-7 border border-slate-200 shadow-[0_18px_48px_rgba(15,23,42,0.08)]">
+            <div className="bg-white rounded-[28px] p-5 sm:p-7 border border-slate-200 shadow-[0_18px_48px_rgba(15,23,42,0.08)]">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <h1 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 mb-2">
+                  <h1 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tight text-slate-900 mb-2 break-words">
                     {car.year} {car.make} {car.model}
                   </h1>
                   <div className="flex flex-wrap items-center gap-4 text-base text-slate-500 mb-4">
@@ -612,7 +612,7 @@ export default function CarDetail() {
               id="specifications"
               className="bg-white rounded-[28px] border border-slate-200 overflow-hidden shadow-[0_18px_48px_rgba(15,23,42,0.08)]"
             >
-              <div className="grid grid-cols-3 border-b border-slate-200 bg-slate-50/70">
+              <div className="grid grid-cols-1 sm:grid-cols-3 border-b border-slate-200 bg-slate-50/70">
                 {[
                   { id: "specs", label: "Specifications" },
                   { id: "inspection", label: "Inspection Report" },
@@ -622,7 +622,7 @@ export default function CarDetail() {
                     key={tab.id}
                     type="button"
                     onClick={() => setActiveTab(tab.id)}
-                    className={`px-3 py-4 text-sm font-semibold transition ${
+                    className={`px-3 py-3 sm:py-4 text-sm font-semibold transition ${
                       activeTab === tab.id
                         ? "bg-white text-slate-900"
                         : "text-slate-500 hover:text-slate-700"
@@ -634,7 +634,7 @@ export default function CarDetail() {
               </div>
 
               {activeTab === "specs" && (
-                <div className="p-6">
+                <div className="p-4 sm:p-6">
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {specs.map((spec, i) => (
                       <div key={i} className="bg-slate-50 rounded-3xl p-5">
@@ -652,7 +652,7 @@ export default function CarDetail() {
               )}
 
               {activeTab === "inspection" && (
-                <div id="inspection" className="p-6">
+                <div id="inspection" className="p-4 sm:p-6">
                   {detail?.inspectionReportPdfUrl && (
                     <a
                       href={detail.inspectionReportPdfUrl}
@@ -710,7 +710,7 @@ export default function CarDetail() {
               )}
 
               {activeTab === "chart" && (
-                <div className="p-6">
+                <div className="p-4 sm:p-6">
                   <BidPriceChart
                     bids={
                       Array.isArray(detail?.priceChart) &&
@@ -774,16 +774,16 @@ export default function CarDetail() {
 
           {/* Right - Merged Bid Panel */}
           <div>
-            <div className="sticky top-24 space-y-4">
+            <div className="lg:sticky lg:top-24 space-y-4">
               {/* ✅ Merged Timer + Bid Panel */}
               <div
                 id="bidding"
                 className="bg-white rounded-[28px] border border-slate-200 overflow-hidden shadow-[0_18px_48px_rgba(15,23,42,0.08)]"
               >
                 {/* Dark Header: Timer + Live Bidding + Current Bid + Meta */}
-                <div className="bg-slate-900 p-5">
+                <div className="bg-slate-900 p-4 sm:p-5">
                   {/* Timer Row */}
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
                     <p className="text-slate-400 text-xs uppercase tracking-widest">
                       Ends in
                     </p>
@@ -808,7 +808,7 @@ export default function CarDetail() {
                   </div>
 
                   {/* Current Highest Bid */}
-                  <div className="bg-white/10 rounded-[16px] p-4 flex items-center justify-between">
+                  <div className="bg-white/10 rounded-[16px] p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <span className="text-xs text-slate-400 uppercase tracking-wider">
                         Current Highest Bid
@@ -825,7 +825,7 @@ export default function CarDetail() {
                   </div>
 
                   {/* Meta Row */}
-                  <div className="flex items-center gap-4 mt-3">
+                  <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-3">
                     <p className="text-xs text-slate-400">
                       Min:{" "}
                       <span className="font-semibold text-slate-200">
@@ -1046,7 +1046,7 @@ export default function CarDetail() {
                 )}
 
               {/* AI Valuation */}
-              <div className="mt-6 bg-white rounded-[28px] border border-slate-200 p-6 shadow-[0_18px_48px_rgba(15,23,42,0.08)]">
+              <div className="mt-6 bg-white rounded-[28px] border border-slate-200 p-5 sm:p-6 shadow-[0_18px_48px_rgba(15,23,42,0.08)]">
                 <h3 className="text-2xl font-semibold text-slate-900 mb-2">
                   AI Market Valuation
                 </h3>

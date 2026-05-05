@@ -62,9 +62,11 @@ export default function BidPriceChart({ bids = [], carLabel = "", className = ""
           );
         })}
       </div>
-      <div className="flex justify-between text-xs text-slate-500 mt-2">
+      <div className="flex flex-wrap justify-between gap-2 text-xs text-slate-500 mt-2">
         <span>Older</span>
-        <span>Latest: PKR {series[series.length - 1].amount.toLocaleString()}</span>
+        <span className="break-all sm:break-normal">
+          Latest: PKR {series[series.length - 1].amount.toLocaleString()}
+        </span>
       </div>
     </div>
   );

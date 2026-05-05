@@ -407,7 +407,7 @@ const WhatsAppChatWidget = () => {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 bg-[#050B20] text-white p-4 rounded-full shadow-lg hover:bg-[#050B20] transition-all z-50 flex items-center gap-2"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-[#050B20] text-white p-3 sm:p-4 rounded-full shadow-lg hover:bg-[#050B20] transition-all z-50 flex items-center gap-2"
       >
         <FiMessageSquare size={24} />
         <span className="hidden sm:inline">Support</span>
@@ -416,15 +416,15 @@ const WhatsAppChatWidget = () => {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 bg-white rounded-lg shadow-2xl z-50 flex flex-col w-96 h-[600px] transition-all">
+    <div className="fixed z-50 flex flex-col bg-white shadow-2xl transition-all overflow-hidden bottom-3 left-3 right-3 h-[min(78vh,620px)] rounded-xl sm:bottom-6 sm:left-auto sm:right-6 sm:w-96 sm:h-[600px] sm:rounded-lg">
       {/* Header */}
-      <div className="bg-primary-500 text-white p-4 rounded-t-lg flex justify-between items-center">
+      <div className="bg-primary-500 text-white p-3 sm:p-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
             <FiMessageSquare />
           </div>
-          <div>
-            <p className="font-semibold">Support Chat</p>
+          <div className="min-w-0">
+            <p className="font-semibold truncate">Support Chat</p>
             <div className="flex items-center gap-2">
               <div
                 className={`w-2 h-2 rounded-full ${socketConnected ? "bg-green-400" : "bg-gray-400"}`}
@@ -548,7 +548,7 @@ const WhatsAppChatWidget = () => {
                 placeholder="Describe your issue..."
               />
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <button
                 type="submit"
                 className="flex-1 bg-primary-500 text-white py-2 px-4 rounded-lg hover:opacity-90 transition"
@@ -715,7 +715,7 @@ const WhatsAppChatWidget = () => {
           </div>
 
           {/* Message Input */}
-          <div className="p-4 border-t border-gray-200 bg-white">
+          <div className="p-3 sm:p-4 border-t border-gray-200 bg-white">
             <div className="flex gap-2 items-center">
               <input
                 ref={fileInputRef}
@@ -744,7 +744,7 @@ const WhatsAppChatWidget = () => {
                   }
                 }}
                 placeholder="Type a message..."
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="flex-1 min-w-0 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
               <button
                 onClick={handleSendMessage}

@@ -177,7 +177,7 @@ export default function AuctionsActions() {
       />
       <div className="min-h-screen w-full bg-slate-50">
       {/* Hero */}
-      <section className="relative h-[68vh] flex items-center overflow-hidden">
+      <section className="relative min-h-[72vh] md:h-[68vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920"
@@ -186,8 +186,8 @@ export default function AuctionsActions() {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/80 to-slate-900/60" />
         </div>
-        <div className="relative max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="relative max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+          <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -198,20 +198,20 @@ export default function AuctionsActions() {
                   <Zap className="w-4 h-4 mr-1" /> Live Auction in Progress
                 </Badge>
               )}
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 md:mb-6 leading-tight">
                 Pakistan's Largest Hybrid
                 <span className="block text-transparent bg-clip-text bg-primary">
                   Car Auction
                 </span>
                 Platform
               </h1>
-              <p className="text-lg text-slate-300 mb-8 max-w-xl">
+              <p className="text-base md:text-lg text-slate-300 mb-6 md:mb-8 max-w-xl">
                 Buy, sell, or bid on verified cars across Pakistan. Join live
                 online auctions or attend our physical auction events.
               </p>
-              <div className="flex items-center gap-2 text-slate-400 mb-8">
+              <div className="flex items-start sm:items-center gap-2 text-slate-400 mb-6 md:mb-8">
                 <MapPin className="w-5 h-5 text-primary" />
-                <span>Serving Buyers & Sellers Across Pakistan</span>
+                <span className="leading-snug">Serving Buyers & Sellers Across Pakistan</span>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/auctions/live">
@@ -281,7 +281,7 @@ export default function AuctionsActions() {
       {/* Stats */}
       <section className="bg-white border-y border-slate-200 py-8">
         <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-5 md:gap-8">
             {stats.map((stat, i) => (
               <motion.div
                 key={i}

@@ -293,9 +293,9 @@ Auction sheets protect you from cars with hidden damage, mileage fraud, and poor
 
 export default function AuctionBlogsSection() {
   return (
-    <section className="w-full bg-gradient-to-b from-gray-50 to-white py-16">
+    <section className="w-full bg-gradient-to-b from-gray-50 to-white py-12 sm:py-16">
       <div className="max-w-8xl mx-auto w-full px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16 relative">
+        <div className="text-center mb-10 sm:mb-16 relative">
           <div className="absolute inset-0 flex items-center justify-center opacity-10">
             <div className="w-96 h-96 bg-primary-500 rounded-full blur-3xl" />
           </div>
@@ -304,10 +304,10 @@ export default function AuctionBlogsSection() {
               <span className="w-2 h-2 bg-primary-500 rounded-full animate-pulse" />
               Auction Guides
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
               Car Auction <span className="text-primary-500">Insights</span>
             </h2>
-            <p className="text-lg md:text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
               Learn online bidding basics, Japan import checks, and verification
               steps before you place a bid.
             </p>
@@ -326,25 +326,25 @@ export default function AuctionBlogsSection() {
                 transition={{ duration: 0.4, delay: index * 0.06 }}
                 className={`group flex flex-col rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#FDFBF7] lg:items-start ${isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"}`}
               >
-                <div className="relative flex-1 flex flex-col justify-between p-8 lg:p-10 min-h-[280px] lg:min-h-0 lg:min-w-0">
+                <div className="relative flex-1 flex flex-col justify-between p-5 sm:p-8 lg:p-10 min-h-[260px] lg:min-h-0 lg:min-w-0">
                   <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2 text-gray-600">
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                      <div className="flex items-center gap-2 text-gray-600 min-w-0">
                         <div className="w-8 h-8 rounded-full bg-gray-200/80 flex items-center justify-center">
                           <User className="w-4 h-4 text-gray-600" />
                         </div>
-                        <span className="text-sm font-medium text-gray-700">
+                        <span className="text-sm font-medium text-gray-700 truncate">
                           {post.author}
                         </span>
                       </div>
-                      <span className="text-sm text-gray-500">{post.date}</span>
+                      <span className="text-xs sm:text-sm text-gray-500">{post.date}</span>
                     </div>
 
-                    <h3 className="text-2xl lg:text-3xl font-bold text-primary-500 mb-4 leading-tight">
+                    <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary-500 mb-4 leading-tight break-words">
                       {post.title}
                     </h3>
 
-                    <p className="text-base lg:text-lg leading-relaxed mb-6 text-gray-600">
+                    <p className="text-sm sm:text-base lg:text-lg leading-relaxed mb-6 text-gray-600">
                       {post.excerpt}
                     </p>
 
@@ -361,7 +361,7 @@ export default function AuctionBlogsSection() {
                   </div>
                 </div>
 
-                <div className="relative w-full lg:w-[520px] lg:flex-shrink-0 h-72 lg:h-[400px] lg:min-h-[400px] lg:self-stretch overflow-hidden">
+                <div className="relative w-full lg:w-[520px] lg:flex-shrink-0 h-56 sm:h-72 lg:h-[400px] lg:min-h-[400px] lg:self-stretch overflow-hidden">
                   <img
                     src={post.image}
                     alt={post.title}
