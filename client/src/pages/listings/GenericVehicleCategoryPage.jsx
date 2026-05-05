@@ -60,7 +60,7 @@ const GenericVehicleCategoryPage = () => {
 
   const queryParams = {
     page,
-    limit: 12,
+    limit: 36,
     vehicleType,
     ...filters,
   };
@@ -102,7 +102,6 @@ const GenericVehicleCategoryPage = () => {
     navigate(
       `/listings/${categoryType?.toLowerCase()}?${newParams.toString()}`,
     );
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const Icon = config.icon;

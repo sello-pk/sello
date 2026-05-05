@@ -134,7 +134,7 @@ const CategoryListings = () => {
   // Build query params - always filter for specific vehicle type
   const queryParams = {
     page,
-    limit: 12,
+    limit: 36,
     ...(vehicleType && { vehicleType }),
     ...filters,
   };
@@ -180,7 +180,6 @@ const CategoryListings = () => {
       {},
       `/listings/${category}${newParams.toString() ? "?" + newParams.toString() : ""}`,
     );
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // If no category specified, redirect to main listings
