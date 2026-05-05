@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect, useLayoutEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
   FaHeart,
@@ -98,6 +98,38 @@ const CarDetailsGallerySection = () => {
 
   const mainImageRef = useRef(null);
   const modalImageRef = useRef(null);
+
+  /** Decode target hero URL before swapping visible src — avoids ghost/double-frame while progressive/JPEG decodes */
+  const heroLoadTokenRef = useRef(0);
+  const [heroDisplayedSrc, setHeroDisplayedSrc] = useState("");
+  const heroTarget = images[current] ?? "";
+
+  useLayoutEffect(() => {
+    heroLoadTokenRef.current++;
+    setHeroDisplayedSrc("");
+  }, [extractedCarId]);
+
+  useLayoutEffect(() => {
+    if (!heroTarget) {
+      setHeroDisplayedSrc("");
+      return;
+    }
+
+    const token = ++heroLoadTokenRef.current;
+
+    const commit = () => {
+      if (heroLoadTokenRef.current !== token) return;
+      setHeroDisplayedSrc(heroTarget);
+    };
+
+    const pre = new Image();
+    pre.onload = commit;
+    pre.onerror = commit;
+    pre.src = heroTarget;
+    if (pre.complete && pre.naturalWidth > 0) {
+      commit();
+    }
+  }, [heroTarget]);
 
   // Reset modal state on mount/route change - ensure modal is closed
   useEffect(() => {
@@ -434,17 +466,18 @@ const CarDetailsGallerySection = () => {
             <div className="w-full max-w-[680px] rounded-xl overflow-hidden bg-white shadow-lg border border-gray-100">
             <div
               ref={mainImageRef}
-              className="relative w-full h-[min(72vh,560px)] min-h-[400px] cursor-zoom-in group bg-neutral-50"
+              className="group relative isolate h-[min(72vh,560px)] min-h-[400px] w-full cursor-zoom-in bg-neutral-50"
               onClick={() => openImageModal(current)}
             >
               {/* Native img so object-fit always applies; LazyImage skeleton was forcing layout before load */}
               <img
-                key={current}
-                src={images[current]}
+                src={
+                  heroDisplayedSrc || placeholderImages.carPlaceholder
+                }
                 alt={`Car Image ${current + 1}`}
-                className="h-full w-full select-none object-contain object-center"
+                className="h-full w-full select-none object-contain object-center [backface-visibility:hidden] transform-gpu"
                 draggable={false}
-                decoding="sync"
+                decoding="async"
                 fetchPriority="high"
                 onError={(e) => {
                   e.target.onerror = null;
@@ -453,7 +486,7 @@ const CarDetailsGallerySection = () => {
               />
 
               {/* Overlay Gradient */}
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 duration-75 group-hover:opacity-100"></div>
 
               {/* Image Count Badge */}
               <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-lg bg-black/78 px-3 py-2 text-sm text-white">
@@ -464,7 +497,7 @@ const CarDetailsGallerySection = () => {
               </div>
 
               {/* View All Button */}
-              <div className="absolute bottom-4 right-4 flex cursor-pointer items-center gap-2 rounded-lg bg-white/95 px-4 py-2 text-sm font-medium text-gray-800 opacity-0 shadow-sm transition-opacity group-hover:opacity-100 hover:bg-white">
+              <div className="absolute bottom-4 right-4 flex cursor-pointer items-center gap-2 rounded-lg bg-white/95 px-4 py-2 text-sm font-medium text-gray-800 opacity-0 shadow-sm group-hover:opacity-100 hover:bg-white">
                 <FaExpand size={14} />
                 <span>View All</span>
               </div>
@@ -477,7 +510,7 @@ const CarDetailsGallerySection = () => {
                       e.stopPropagation();
                       prevImage();
                     }}
-                    className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/95 p-3 text-gray-800 shadow-lg opacity-0 ring-1 ring-black/5 transition-opacity hover:bg-white group-hover:opacity-100"
+                    className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/95 p-3 text-gray-800 opacity-0 shadow-lg ring-1 ring-black/5 hover:bg-white group-hover:opacity-100"
                     aria-label="Previous image"
                   >
                     <FaChevronLeft size={18} className="text-gray-800" />
@@ -488,7 +521,7 @@ const CarDetailsGallerySection = () => {
                       e.stopPropagation();
                       nextImage();
                     }}
-                    className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/95 p-3 text-gray-800 shadow-lg opacity-0 ring-1 ring-black/5 transition-opacity hover:bg-white group-hover:opacity-100"
+                    className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/95 p-3 text-gray-800 opacity-0 shadow-lg ring-1 ring-black/5 hover:bg-white group-hover:opacity-100"
                     aria-label="Next image"
                   >
                     <FaChevronRight size={18} className="text-gray-800" />
@@ -527,16 +560,17 @@ const CarDetailsGallerySection = () => {
           {/* Main image: centered + max-width so portrait isn’t swimming in empty space */}
           <div className="relative rounded-xl overflow-hidden bg-white shadow-lg border border-gray-100 mb-4 max-w-lg mx-auto w-full">
             <div
-              className="relative w-full h-[50vh] min-h-[280px] max-h-[480px] cursor-pointer bg-neutral-50"
+              className="relative isolate h-[50vh] min-h-[280px] max-h-[480px] w-full cursor-pointer bg-neutral-50"
               onClick={() => openImageModal(current)}
             >
               <img
-                key={current}
-                src={images[current]}
+                src={
+                  heroDisplayedSrc || placeholderImages.carPlaceholder
+                }
                 alt={`Car Image ${current + 1}`}
-                className="h-full w-full select-none object-contain object-center"
+                className="h-full w-full select-none object-contain object-center [backface-visibility:hidden] transform-gpu"
                 draggable={false}
-                decoding="sync"
+                decoding="async"
                 fetchPriority="high"
                 onError={(e) => {
                   e.target.onerror = null;
