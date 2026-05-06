@@ -14,6 +14,7 @@ const Navbar = () => {
   const [showHeaderSearch, setShowHeaderSearch] = useState(false);
   const [openCompanyDropdown, setOpenCompanyDropdown] = useState(false);
   const [openAuctionsDropdown, setOpenAuctionsDropdown] = useState(false);
+  const [openMobileAuctionsDropdown, setOpenMobileAuctionsDropdown] = useState(false);
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
   const backdropRef = useRef(null);
   const drawerRef = useRef(null);
@@ -205,6 +206,7 @@ const Navbar = () => {
       ease: "power4.inOut",
       onComplete: () => {
         setOpen(false);
+        setOpenMobileAuctionsDropdown(false);
       },
     });
   };
@@ -544,7 +546,7 @@ const Navbar = () => {
           />
           <div
             ref={drawerRef}
-            className="absolute inset-0 text-black px-4 sm:px-6 py-4 sm:py-6 bg-white shadow-xl"
+            className="absolute inset-0 text-black px-4 sm:px-6 py-4 sm:py-6 bg-white shadow-xl overflow-y-auto"
           >
             {/* Close Button */}
             <div className="flex justify-end text-2xl sm:text-3xl mb-4 sm:mb-6">
@@ -578,36 +580,70 @@ const Navbar = () => {
                 </Link>
               ))}
 
-              {/* Live Auctions Links - Show as regular navlinks on mobile */}
-              {publicAuctionLinks.map((link, index) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  ref={(el) => (linkRefs.current[mobilePrimaryLinks.length + index] = el)}
-                  onClick={closeDrawer}
-                  className={`pb-2 ${
-                    isPathMatch(link.path) ? "font-bold text-black" : ""
+              {/* Live Auctions Dropdown (mobile) */}
+              <div className="pb-2">
+                <button
+                  type="button"
+                  onClick={() => setOpenMobileAuctionsDropdown((prev) => !prev)}
+                  aria-expanded={openMobileAuctionsDropdown}
+                  aria-haspopup="true"
+                  className={`w-full inline-flex items-center justify-between rounded-md px-2 py-2 transition-all ${
+                    isAuctionsActive
+                      ? "text-primary-500 font-semibold bg-primary-50"
+                      : "text-black"
                   }`}
                 >
-                  {link.name}
-                </Link>
-              ))}
-              
-              {/* User-specific auction links */}
-              {token &&
-                userAuctionLinks.map((link, index) => (
-                  <Link
-                    key={link.path}
-                    to={link.path}
-                    ref={(el) => (linkRefs.current[mobilePrimaryLinks.length + publicAuctionLinks.length + index] = el)}
-                    onClick={closeDrawer}
-                    className={`pb-2 ${
-                      isPathMatch(link.path) ? "font-bold text-black" : ""
+                  <span>Live Auctions</span>
+                  <FaChevronDown
+                    size={14}
+                    className={`transition-transform duration-200 ${
+                      openMobileAuctionsDropdown ? "rotate-180" : ""
                     }`}
-                  >
-                    {link.name}
-                  </Link>
-                ))}
+                    aria-hidden="true"
+                  />
+                </button>
+
+                {openMobileAuctionsDropdown && (
+                  <div className="mt-2 rounded-xl border border-gray-200 bg-white shadow-sm py-2">
+                    {publicAuctionLinks.map((link) => (
+                      <Link
+                        key={link.path}
+                        to={link.path}
+                        onClick={closeDrawer}
+                        role="menuitem"
+                        className={`block px-4 py-2.5 text-base transition-colors ${
+                          isPathMatch(link.path)
+                            ? "text-primary-500 font-semibold bg-primary-50"
+                            : "hover:bg-gray-50"
+                        }`}
+                      >
+                        {link.name}
+                      </Link>
+                    ))}
+
+                    {token && (
+                      <>
+                        <div className="my-2 border-t border-gray-200" />
+                        {userAuctionLinks.map((link) => (
+                          <Link
+                            key={link.path}
+                            to={link.path}
+                            onClick={closeDrawer}
+                            role="menuitem"
+                            className={`block px-4 py-2.5 text-base transition-colors ${
+                              isPathMatch(link.path)
+                                ? "text-primary-500 font-semibold bg-primary-50"
+                                : "hover:bg-gray-50"
+                            }`}
+                          >
+                            {link.name}
+                          </Link>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
 
               {/* Create Post (Mobile) */}
               <button
