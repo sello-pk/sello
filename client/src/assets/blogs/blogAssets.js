@@ -104,7 +104,7 @@ export const customerReviews = [
       "Very easy to use website. You can compare different cars while sitting at home. It saves time and gives plenty of options.",
     name: "Hassan Ahmed",
     country: "UAE",
-    image: "https://randomuser.me/api/portraits/women/44.jpg",
+    image: "https://randomuser.me/api/portraits/men/44.jpg",
   },
   {
     id: 3,
@@ -136,7 +136,7 @@ export const customerReviews = [
       "I found a genuine seller through this platform. The car matched the description perfectly. Highly recommended for buyers.",
     name: "Ahmed Raza",
     country: "Multan",
-    image: "https://randomuser.me/api/portraits/women/65.jpg",
+    image: "https://randomuser.me/api/portraits/men/65.jpg",
   },
   {
     id: 7,
@@ -147,12 +147,12 @@ export const customerReviews = [
     image: "https://randomuser.me/api/portraits/women/65.jpg",
   },
   {
-    id: 6,
+    id: 8,
     review:
       "Sello.pk is becoming a strong platform for online car buying in Pakistan. It feels more reliable compared to random social media sellers.",
     name: "Imran Shah",
     country: "Peshawar",
-    image: "https://randomuser.me/api/portraits/women/65.jpg",
+    image: "https://randomuser.me/api/portraits/men/75.jpg",
   },
 ];
 

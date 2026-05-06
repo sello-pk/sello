@@ -48,7 +48,7 @@ const BlogsHeroSection = () => {
       </div>
 
       {/* Right Side - hard pinned to right edge */}
-      <div className="w-full h-64 md:absolute md:top-0 md:right-0 md:h-full md:w-[40%] bg-gray-800 shrink-0">
+      <div className="w-full h-64 md:absolute md:top-0 md:right-0 md:h-full md:w-[40%] bg-[#050B20] shrink-0">
         <img
           src={images.userHeroSectionImg}
           alt="Blog hero section image"

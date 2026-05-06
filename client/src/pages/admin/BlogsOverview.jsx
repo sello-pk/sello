@@ -39,7 +39,7 @@ const BlogsOverview = () => {
   const [blogToDelete, setBlogToDelete] = useState(null);
   const { data: blogsData, isLoading: blogsLoading, refetch: refetchBlogs } = useGetAllBlogsQuery({
     page,
-    limit: 10,
+    limit: 20,
     status: 'all'
   });
   const { data: categoriesData } =

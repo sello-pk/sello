@@ -4,30 +4,14 @@ import { useGetBlogsQuery } from "../../../redux/services/api";
 import { MdArrowRightAlt } from "react-icons/md";
 
 const BlogSection = () => {
-  const { data, isLoading: featuredLoading } = useGetBlogsQuery({
+  // Fetch all published blogs (not just featured)
+  const { data, isLoading } = useGetBlogsQuery({
     limit: 6,
     status: "published",
-    isFeatured: true,
   });
 
-  // Fallback to all published blogs if no featured blogs exist
-  const { data: allBlogsData, isLoading: allLoading } = useGetBlogsQuery(
-    {
-      limit: 6,
-      status: "published",
-    },
-    {
-      skip: !!(data?.blogs && data.blogs.length > 0), // Only fetch all blogs if no featured blogs found
-    },
-  );
-
   // Robust blog data access
-  const featuredBlogs = data?.blogs || data?.data?.blogs || [];
-  const allBlogs = allBlogsData?.blogs || allBlogsData?.data?.blogs || [];
-
-  const blogs = featuredBlogs.length > 0 ? featuredBlogs : allBlogs;
-  const isLoading =
-    featuredLoading || (featuredBlogs.length === 0 && allLoading);
+  const blogs = data?.blogs || data?.data?.blogs || [];
 
   const formatDate = useCallback((dateString) => {
     if (!dateString) return "";

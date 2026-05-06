@@ -14,7 +14,6 @@ const Navbar = () => {
   const [showHeaderSearch, setShowHeaderSearch] = useState(false);
   const [openCompanyDropdown, setOpenCompanyDropdown] = useState(false);
   const [openAuctionsDropdown, setOpenAuctionsDropdown] = useState(false);
-  const [openMobileAuctions, setOpenMobileAuctions] = useState(false);
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
   const backdropRef = useRef(null);
   const drawerRef = useRef(null);
@@ -186,7 +185,6 @@ const Navbar = () => {
     const gsapLib = gsapModRef.current;
     if (!gsapLib) {
       setOpen(false);
-      setOpenMobileAuctions(false);
       return;
     }
     gsapLib.to(linkRefs.current, {
@@ -207,7 +205,6 @@ const Navbar = () => {
       ease: "power4.inOut",
       onComplete: () => {
         setOpen(false);
-        setOpenMobileAuctions(false);
       },
     });
   };
@@ -581,51 +578,36 @@ const Navbar = () => {
                 </Link>
               ))}
 
-              <div
-                className={`pb-2 ${isAuctionsActive ? "font-bold text-black" : ""}`}
-              >
-                <button
-                  type="button"
-                  onClick={() => setOpenMobileAuctions((prev) => !prev)}
-                  aria-expanded={openMobileAuctions}
-                  aria-haspopup="true"
-                  className="w-full flex items-center justify-between py-2"
+              {/* Live Auctions Links - Show as regular navlinks on mobile */}
+              {publicAuctionLinks.map((link, index) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  ref={(el) => (linkRefs.current[mobilePrimaryLinks.length + index] = el)}
+                  onClick={closeDrawer}
+                  className={`pb-2 ${
+                    isPathMatch(link.path) ? "font-bold text-black" : ""
+                  }`}
                 >
-                  <span>Live Auctions</span>
-                  <FaChevronDown
-                    size={14}
-                    className={`transition-transform duration-200 ${
-                      openMobileAuctions ? "rotate-180" : ""
+                  {link.name}
+                </Link>
+              ))}
+              
+              {/* User-specific auction links */}
+              {token &&
+                userAuctionLinks.map((link, index) => (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    ref={(el) => (linkRefs.current[mobilePrimaryLinks.length + publicAuctionLinks.length + index] = el)}
+                    onClick={closeDrawer}
+                    className={`pb-2 ${
+                      isPathMatch(link.path) ? "font-bold text-black" : ""
                     }`}
-                    aria-hidden="true"
-                  />
-                </button>
-                {openMobileAuctions && (
-                  <div className="mt-3 ml-2 flex flex-col gap-3 text-[15px] text-gray-700 border-l border-gray-200 pl-3">
-                    {publicAuctionLinks.map((link) => (
-                      <Link
-                        key={link.path}
-                        to={link.path}
-                        onClick={closeDrawer}
-                        className={`${isPathMatch(link.path) ? "text-primary-500 font-semibold" : ""}`}
-                      >
-                        {link.name}
-                      </Link>
-                    ))}
-                    {token &&
-                      userAuctionLinks.map((link) => (
-                        <Link
-                          key={link.path}
-                          to={link.path}
-                          onClick={closeDrawer}
-                          className={`${isPathMatch(link.path) ? "text-primary-500 font-semibold" : ""}`}
-                        >
-                          {link.name}
-                        </Link>
-                      ))}
-                  </div>
-                )}
-              </div>
+                  >
+                    {link.name}
+                  </Link>
+                ))}
 
               {/* Create Post (Mobile) */}
               <button
