@@ -21,75 +21,7 @@
   <meta name="format-detection" content="telephone=no" />
   <link rel="canonical" href="https://sello.pk/" />
 
-  <!-- Content Security Policy -->
-  <meta http-equiv="Content-Security-Policy" content="
-        default-src 'self' http: https: data: blob: 'unsafe-inline' 'unsafe-eval';
-
-        connect-src
-          'self'
-          wss://api.sello.pk
-          wss://localhost:4000
-          wss://localhost:4001
-          ws://localhost:4000
-          ws://localhost:4001
-          https://api.sello.pk
-          http://localhost:4000
-          http://localhost:4001
-          https://connect.facebook.net
-          https://www.facebook.com
-          https://nominatim.openstreetmap.org
-          https://maps.googleapis.com
-          https://*.tiny.cloud
-          https://cdn.tiny.cloud
-          https://accounts.google.com
-          https://*.googleapis.com;
-
-        script-src
-          'self'
-          'unsafe-inline'
-          'unsafe-eval'
-          https://cdn.tiny.cloud
-          https://*.tiny.cloud
-          https://accounts.google.com
-          https://*.googleapis.com
-          https://apis.google.com
-          https://connect.facebook.net;
-
-        frame-src
-          'self'
-          https://*.tiny.cloud
-          https://cdn.tiny.cloud
-          https://accounts.google.com
-          https://*.google.com
-          https://www.facebook.com;
-
-        style-src
-          'self'
-          'unsafe-inline'
-          https://cdn.tiny.cloud
-          https://*.tiny.cloud
-          https://accounts.google.com;
-
-        font-src
-          'self'
-          data:
-          https://cdn.tiny.cloud
-          https://*.tiny.cloud;
-
-        img-src
-          'self'
-          https:
-          http:
-          data:
-          blob:
-          https://api.sello.pk;
-
-        worker-src
-          'self'
-          blob:
-          https://cdn.tiny.cloud
-          https://*.tiny.cloud;
-      " />
+  <!-- Content Security Policy handled by server-side helmet middleware -->
 
   <!-- Schema.org Structured Data (JSON-LD) -->
   <script type="application/ld+json">
