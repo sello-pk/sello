@@ -154,9 +154,42 @@
   <!-- Meta Pixel — deferred until idle/load so main thread & LCP aren't contending with fbevents -->
   <script>
     (function () {
+      function setFbqNoop() {
+        if (typeof window.fbq !== "function") {
+          window.fbq = function () { };
+          window.fbq.queue = [];
+        }
+      }
+
+      function shouldSkipMetaPixel() {
+        // Respect explicit browser/user privacy preferences.
+        if (navigator.globalPrivacyControl === true) return true;
+        if (navigator.doNotTrack === "1" || window.doNotTrack === "1") return true;
+
+        // Fast ad-block heuristic: common ad placeholders are hidden.
+        try {
+          var bait = document.createElement("div");
+          bait.className = "adsbox";
+          bait.style.cssText = "position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;";
+          document.body.appendChild(bait);
+          var blocked = bait.offsetParent === null || bait.offsetHeight === 0 || bait.offsetWidth === 0;
+          bait.remove();
+          if (blocked) return true;
+        } catch (e) {
+          // Fail open and continue with normal loading path.
+        }
+
+        return false;
+      }
+
       function injectMetaPixel() {
         if (window.__selloFbPixelScheduled) return;
         window.__selloFbPixelScheduled = true;
+
+        if (shouldSkipMetaPixel()) {
+          setFbqNoop();
+          return;
+        }
 
         try {
           !(function (f, b, e, v, n, t, s) {
@@ -176,7 +209,7 @@
             t.onerror = function () {
               // Pixel script was blocked — provide a no-op stub so any
               // later fbq() calls don't throw ReferenceErrors
-              window.fbq = window.fbq || function () { };
+              setFbqNoop();
             };
             s = b.getElementsByTagName(e)[0];
             s.parentNode.insertBefore(t, s);
@@ -189,7 +222,7 @@
         } catch (e) {
           // Pixel initialisation failed (ad blocker, network error, etc.)
           // Provide a safe no-op so the rest of the app is unaffected
-          window.fbq = window.fbq || function () { };
+          setFbqNoop();
         }
       }
 

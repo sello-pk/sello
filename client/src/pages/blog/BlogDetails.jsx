@@ -209,7 +209,30 @@ const BlogDetails = () => {
     );
   }
 
-  const authorName = currentBlog.author?.name || "Sello";
+  // Guard against successful-but-empty API responses to avoid runtime crashes.
+  if (!currentBlog) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Blog Post Not Found
+          </h1>
+          <p className="text-gray-600 mb-6 max-w-md mx-auto">
+            The blog post you&apos;re looking for doesn&apos;t exist or has been
+            removed.
+          </p>
+          <Link
+            to="/blog"
+            className="inline-flex items-center gap-2 text-primary-500 font-medium hover:underline"
+          >
+            <HiOutlineArrowLeft className="w-5 h-5" /> Back to all blogs
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const authorName = currentBlog?.author?.name || "Sello";
   const authorInitials =
     authorName
       .split(/\s+/)
