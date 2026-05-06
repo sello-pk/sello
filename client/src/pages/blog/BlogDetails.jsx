@@ -232,7 +232,11 @@ const BlogDetails = () => {
     );
   }
 
-  const authorName = currentBlog?.author?.name || "Sello";
+  const authorName =
+    typeof currentBlog?.author?.name === "string" &&
+    currentBlog.author.name.trim()
+      ? currentBlog.author.name
+      : "Sello";
   const authorInitials =
     authorName
       .split(/\s+/)
@@ -243,8 +247,13 @@ const BlogDetails = () => {
   const displayDate = formatDate(
     currentBlog.publishedAt || currentBlog.createdAt,
   );
-  const readLabel = `${currentBlog.readTime || 5} min read`;
-  const categoryName = currentBlog.category?.name || "Blog";
+  const readTimeValue = Number(currentBlog?.readTime);
+  const readLabel = `${Number.isFinite(readTimeValue) && readTimeValue > 0 ? readTimeValue : 5} min read`;
+  const categoryName =
+    typeof currentBlog?.category?.name === "string" &&
+    currentBlog.category.name.trim()
+      ? currentBlog.category.name
+      : "Blog";
   const hasFeaturedUrl = Boolean(currentBlog.featuredImage);
   const showHeroPhoto = hasFeaturedUrl && !heroImgFailed;
   const canUseComments =
