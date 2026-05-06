@@ -279,10 +279,7 @@ const BlogDetails = () => {
       ? safeContent.replace(/<[^>]*>/g, "").substring(0, 160)
       : "";
 
-  const enhancedPostHtml = React.useMemo(
-    () => enhanceBlogPostHtml(safeContent || ""),
-    [safeContent],
-  );
+  const enhancedPostHtml = enhanceBlogPostHtml(safeContent || "");
 
   return (
     <>
