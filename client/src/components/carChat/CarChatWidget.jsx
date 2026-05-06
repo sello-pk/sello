@@ -41,7 +41,7 @@ const CarChatWidget = ({ carId, carTitle, onClose }) => {
     const newSocket = io(SOCKET_BASE_URL, {
       auth: { token },
       query: { token },
-      transports: ["websocket", "polling"],
+      transports: import.meta.env.PROD ? ["polling"] : ["websocket", "polling"],
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionAttempts: 5,

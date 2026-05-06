@@ -60,7 +60,7 @@ const Notifications = () => {
     const newSocket = io(SOCKET_BASE_URL, {
       auth: { token },
       query: { token },
-      transports: ["websocket", "polling"],
+      transports: import.meta.env.PROD ? ["polling"] : ["websocket", "polling"],
       reconnection: true,
     });
 

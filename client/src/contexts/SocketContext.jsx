@@ -28,6 +28,28 @@ export const SocketProvider = ({ children }) => {
   const listenersRef = useRef(new Map());
   const connectErrorLoggedRef = useRef(false);
 
+  const ssGet = (key) => {
+    try {
+      return sessionStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  };
+  const ssSet = (key, value) => {
+    try {
+      sessionStorage.setItem(key, value);
+    } catch {
+      /* ignore */
+    }
+  };
+  const ssRemove = (key) => {
+    try {
+      sessionStorage.removeItem(key);
+    } catch {
+      /* ignore */
+    }
+  };
+
   // Get token from localStorage with proper error handling
   const getToken = () => {
     try {
@@ -53,10 +75,14 @@ export const SocketProvider = ({ children }) => {
     setConnectionAttempted(true);
 
     try {
+      // CSP-safe default: in production, prefer polling-only (avoids wss:// blocks when connect-src isn't set).
+      const transports =
+        import.meta.env.PROD ? ["polling"] : ["websocket", "polling"];
+
       // Prefer websocket, fallback to polling.
       const newSocket = io(SOCKET_BASE_URL, {
         auth: { token: currentToken },
-        transports: ["websocket", "polling"],
+        transports,
         reconnection: true,
         reconnectionDelay: 2000,
         reconnectionAttempts: 5,
@@ -67,7 +93,7 @@ export const SocketProvider = ({ children }) => {
       newSocket.on("connect", () => {
         connectErrorLoggedRef.current = false;
         setSocketConnected(true);
-        sessionStorage.removeItem("socketErrorShown");
+        ssRemove("socketErrorShown");
 
         // Join essential rooms
         newSocket.emit("join-chats");
@@ -103,13 +129,13 @@ export const SocketProvider = ({ children }) => {
         if (error.message.includes("Authentication error") || error.message.includes("Token expired")) {
           console.warn("🛑 Stopping socket reconnection due to authentication failure.");
           // Reset session storage error flag if it was an auth error
-          sessionStorage.removeItem("socketErrorShown");
+          ssRemove("socketErrorShown");
           return;
         }
 
         // Show user-friendly error message only once per session
         const errorKey = "socketErrorShown";
-        if (!sessionStorage.getItem(errorKey)) {
+        if (!ssGet(errorKey)) {
           // Only show error if this isn't a development environment issue
           if (
             !SOCKET_BASE_URL.includes("localhost") ||
@@ -121,7 +147,7 @@ export const SocketProvider = ({ children }) => {
               icon: "🔄",
             });
           }
-          sessionStorage.setItem(errorKey, "true");
+          ssSet(errorKey, "true");
         }
 
       });
@@ -134,7 +160,7 @@ export const SocketProvider = ({ children }) => {
           position: "bottom-right",
           icon: "✅",
         });
-        sessionStorage.removeItem("socketErrorShown");
+        ssRemove("socketErrorShown");
       });
 
       newSocket.on("reconnect_attempt", (attemptNumber) => {
