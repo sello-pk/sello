@@ -51,6 +51,16 @@ function parseBlogImageDimensionsFromUrl(src) {
 const BLOG_IMG_FALLBACK_W = 1200;
 const BLOG_IMG_FALLBACK_H = 675;
 
+function normalizeText(value, fallback = "") {
+  if (typeof value === "string") return value;
+  if (value === null || value === undefined) return fallback;
+  try {
+    return String(value);
+  } catch {
+    return fallback;
+  }
+}
+
 function enhanceBlogPostHtml(html) {
   if (typeof window === "undefined" || !html || typeof html !== "string") {
     return html;
@@ -237,6 +247,12 @@ const BlogDetails = () => {
     currentBlog.author.name.trim()
       ? currentBlog.author.name
       : "Sello";
+  const safeTitle = normalizeText(currentBlog?.title, "Untitled Blog");
+  const safeExcerpt = normalizeText(currentBlog?.excerpt, "");
+  const safeMetaTitle = normalizeText(currentBlog?.metaTitle, "");
+  const safeMetaDescription = normalizeText(currentBlog?.metaDescription, "");
+  const safeFeaturedImage = normalizeText(currentBlog?.featuredImage, "");
+  const safeContent = normalizeText(currentBlog?.content, "");
   const authorInitials =
     authorName
       .split(/\s+/)
@@ -254,30 +270,30 @@ const BlogDetails = () => {
     currentBlog.category.name.trim()
       ? currentBlog.category.name
       : "Blog";
-  const hasFeaturedUrl = Boolean(currentBlog.featuredImage);
+  const hasFeaturedUrl = Boolean(safeFeaturedImage);
   const showHeroPhoto = hasFeaturedUrl && !heroImgFailed;
   const canUseComments =
     currentBlog._id && /^[0-9a-fA-F]{24}$/.test(String(currentBlog._id));
   const plainContentPreview =
-    typeof currentBlog.content === "string"
-      ? currentBlog.content.replace(/<[^>]*>/g, "").substring(0, 160)
+    typeof safeContent === "string"
+      ? safeContent.replace(/<[^>]*>/g, "").substring(0, 160)
       : "";
 
   const enhancedPostHtml = React.useMemo(
-    () => enhanceBlogPostHtml(currentBlog.content || ""),
-    [currentBlog.content],
+    () => enhanceBlogPostHtml(safeContent || ""),
+    [safeContent],
   );
 
   return (
     <>
       <SEO
-        title={currentBlog.metaTitle || currentBlog.title}
+        title={safeMetaTitle || safeTitle}
         description={
-          currentBlog.metaDescription ||
-          currentBlog.excerpt ||
+          safeMetaDescription ||
+          safeExcerpt ||
           plainContentPreview
         }
-        image={currentBlog.featuredImage}
+        image={safeFeaturedImage}
         url={buildBlogUrl(currentBlog)}
         canonical={
           currentBlog
@@ -317,9 +333,9 @@ const BlogDetails = () => {
               </li>
               <li
                 className="text-gray-900 font-medium truncate max-w-[180px] sm:max-w-xs"
-                title={currentBlog.title}
+                title={safeTitle}
               >
-                {currentBlog.title}
+                {safeTitle}
               </li>
             </ol>
           </nav>
@@ -328,7 +344,7 @@ const BlogDetails = () => {
             <div className="relative w-full h-64 md:h-80 lg:h-[440px] overflow-hidden shrink-0 bg-gray-200">
               {showHeroPhoto ? (
                 <img
-                  src={currentBlog.featuredImage}
+                  src={safeFeaturedImage}
                   alt=""
                   width={1200}
                   height={630}
@@ -367,7 +383,7 @@ const BlogDetails = () => {
               </div>
               <div className="absolute bottom-6 left-6 right-6">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white drop-shadow-lg leading-tight">
-                  {currentBlog.title}
+                  {safeTitle}
                 </h1>
               </div>
             </div>
@@ -398,20 +414,20 @@ const BlogDetails = () => {
                     <p className="text-sm text-gray-500">{displayDate}</p>
                   </div>
                 </div>
-                {currentBlog.views > 0 && (
+                {Number(currentBlog?.views) > 0 && (
                   <span className="text-sm text-gray-500">
-                    {currentBlog.views} views
+                    {Number(currentBlog?.views)} views
                   </span>
                 )}
               </div>
 
-              {currentBlog.excerpt && (
+              {safeExcerpt && (
                 <p className="text-lg text-gray-600 leading-relaxed mb-8 pl-1 border-l-4 border-primary-500/50">
-                  {currentBlog.excerpt}
+                  {safeExcerpt}
                 </p>
               )}
 
-              {currentBlog.content ? (
+              {safeContent ? (
                 <div
                   className="blog-detail-body estimator-blog-body prose prose-lg max-w-none text-gray-700 leading-relaxed prose-headings:text-gray-900"
                   dangerouslySetInnerHTML={{ __html: enhancedPostHtml }}
@@ -450,7 +466,7 @@ const BlogDetails = () => {
                           <span className="w-2 h-2 rounded-full bg-primary-500 flex-shrink-0 mt-2" />
                           <div className="min-w-0 flex-1">
                             <span className="font-medium text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-2 block">
-                              {relatedBlog.title}
+                              {normalizeText(relatedBlog?.title, "Untitled Blog")}
                             </span>
                             <span className="text-sm text-gray-500">
                               {formatDate(

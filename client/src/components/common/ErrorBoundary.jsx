@@ -16,7 +16,7 @@ const ErrorBoundaryWithNavigate = ({ children }) => {
 class ErrorBoundaryClass extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false, error: null, errorRef: null };
   }
 
   static getDerivedStateFromError(error) {
@@ -51,6 +51,7 @@ class ErrorBoundaryClass extends React.Component {
     this.setState({
       error,
       errorInfo,
+      errorRef: `EB-${Date.now().toString(36)}`,
     });
   }
 
@@ -81,6 +82,12 @@ class ErrorBoundaryClass extends React.Component {
               We're sorry, but something unexpected happened. Please try
               refreshing the page.
             </p>
+            {this.state.error?.message && (
+              <p className="text-xs text-gray-500 mb-4 break-words">
+                Error: {this.state.error.message}
+                {this.state.errorRef ? ` (${this.state.errorRef})` : ""}
+              </p>
+            )}
             <div className="space-y-3">
               <button
                 onClick={() => {
