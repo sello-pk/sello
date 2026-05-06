@@ -48,9 +48,6 @@ app.use(
           "blob:",
           "'unsafe-inline'",
         ],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-        fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
-        imgSrc: ["'self'", "data:", "https:", "http:"],
         scriptSrc: [
           "'self'",
           "'unsafe-inline'",
@@ -69,7 +66,7 @@ app.use(
           "https://sello.pk",
           "https://accounts.google.com",
           "https://www.googleapis.com",
-          "https://*.gstatic.com", // Added for Google Auth/Maps stability
+          "https://*.gstatic.com",
           "https://connect.facebook.net",
           "https://www.facebook.com",
           "wss://api.sello.pk",
@@ -101,12 +98,6 @@ app.use(
           "https://cdn.tiny.cloud",
           "https://*.tiny.cloud",
         ],
-        workerSrc: [
-          "'self'",
-          "blob:",
-          "https://cdn.tiny.cloud",
-          "https://*.tiny.cloud",
-        ],
         imgSrc: [
           "'self'",
           "data:",
@@ -116,6 +107,12 @@ app.use(
           "https://res.cloudinary.com",
           "https://*.cloudinary.com",
           "https://api.sello.pk",
+        ],
+        workerSrc: [
+          "'self'",
+          "blob:",
+          "https://cdn.tiny.cloud",
+          "https://*.tiny.cloud",
         ],
       },
     },
