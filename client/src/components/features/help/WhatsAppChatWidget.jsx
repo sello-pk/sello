@@ -161,8 +161,10 @@ const WhatsAppChatWidget = () => {
 
     newSocket.on("connect_error", (error) => {
       console.error("Socket connection error", error);
+      const errorMessage =
+        typeof error?.message === "string" ? error.message : "";
       // Don't show error toast on every reconnect attempt
-      if (error.message.includes("Authentication")) {
+      if (errorMessage.includes("Authentication")) {
         toast.error("Authentication failed. Please login again.");
       }
     });

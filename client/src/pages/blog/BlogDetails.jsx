@@ -226,6 +226,10 @@ const BlogDetails = () => {
   const showHeroPhoto = hasFeaturedUrl && !heroImgFailed;
   const canUseComments =
     currentBlog._id && /^[0-9a-fA-F]{24}$/.test(String(currentBlog._id));
+  const plainContentPreview =
+    typeof currentBlog.content === "string"
+      ? currentBlog.content.replace(/<[^>]*>/g, "").substring(0, 160)
+      : "";
 
   const enhancedPostHtml = React.useMemo(
     () => enhanceBlogPostHtml(currentBlog.content || ""),
@@ -239,7 +243,7 @@ const BlogDetails = () => {
         description={
           currentBlog.metaDescription ||
           currentBlog.excerpt ||
-          currentBlog.content?.replace(/<[^>]*>/g, "").substring(0, 160)
+          plainContentPreview
         }
         image={currentBlog.featuredImage}
         url={buildBlogUrl(currentBlog)}

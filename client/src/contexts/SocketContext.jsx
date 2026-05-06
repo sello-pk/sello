@@ -118,15 +118,20 @@ export const SocketProvider = ({ children }) => {
 
       newSocket.on("connect_error", (error) => {
         setSocketConnected(false);
+        const errorMessage =
+          typeof error?.message === "string" ? error.message : "";
         // Log only once per session to avoid console spam when WSS is unavailable
         if (!connectErrorLoggedRef.current) {
           connectErrorLoggedRef.current = true;
-          console.warn("Socket connection unavailable:", error.message);
+          console.warn("Socket connection unavailable:", errorMessage || error);
         }
 
         // If it's an authentication error (like expired token), don't auto-reconnect
         // This prevents infinite loops with an expired token
-        if (error.message.includes("Authentication error") || error.message.includes("Token expired")) {
+        if (
+          errorMessage.includes("Authentication error") ||
+          errorMessage.includes("Token expired")
+        ) {
           console.warn("🛑 Stopping socket reconnection due to authentication failure.");
           // Reset session storage error flag if it was an auth error
           ssRemove("socketErrorShown");
@@ -139,7 +144,7 @@ export const SocketProvider = ({ children }) => {
           // Only show error if this isn't a development environment issue
           if (
             !SOCKET_BASE_URL.includes("localhost") ||
-            error.message !== "xhr poll error"
+            errorMessage !== "xhr poll error"
           ) {
             toast.error("Real-time features connecting...", {
               duration: 3000,
