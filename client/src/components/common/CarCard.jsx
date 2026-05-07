@@ -282,39 +282,43 @@ const CarCard = ({
               </div>
               <p className="text-base sm:text-lg font-bold text-primary-500 truncate">PKR {priceFormatted}</p>
             </div>
-            <div className="flex items-center justify-between gap-1 sm:gap-2 flex-wrap min-w-0">
-              <div className="flex items-center gap-2">
-                {showPhone && (
-                  <a
-                    href={phoneUrl}
-                    onClick={(e) => e.stopPropagation()}
-                    className="p-2.5 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
-                    title="Call"
-                    aria-label="Call"
-                  >
-                    <FaPhone className="w-4 h-4" />
-                  </a>
-                )}
-                {showWhatsAppBtn && (
-                  <a
-                    href={whatsappUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="p-2.5 rounded-lg bg-[#25D366] text-white hover:opacity-90 transition-colors"
-                    title="WhatsApp"
-                    aria-label="WhatsApp"
-                  >
-                    <FaWhatsapp className="w-4 h-4" />
-                  </a>
+            {(showPhone || showWhatsAppBtn || showViewCta) && (
+              <div className="flex items-center justify-between gap-1 sm:gap-2 flex-wrap min-w-0">
+                <div className="flex items-center gap-2">
+                  {showPhone && (
+                    <a
+                      href={phoneUrl}
+                      onClick={(e) => e.stopPropagation()}
+                      className="p-2.5 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                      title="Call"
+                      aria-label="Call"
+                    >
+                      <FaPhone className="w-4 h-4" />
+                    </a>
+                  )}
+                  {showWhatsAppBtn && (
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="p-2.5 rounded-lg bg-[#25D366] text-white hover:opacity-90 transition-colors"
+                      title="WhatsApp"
+                      aria-label="WhatsApp"
+                    >
+                      <FaWhatsapp className="w-4 h-4" />
+                    </a>
+                  )}
+                </div>
+                {showViewCta && (
+                  <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-primary-500 text-white text-xs sm:text-sm font-semibold hover:brightness-110 transition-colors shrink-0">
+                    <span className="hidden xs:inline">VIEW</span>
+                    <span className="xs:hidden">VIEW</span>
+                    <IoIosArrowRoundUp className="w-3 h-3 sm:w-4 sm:h-4 rotate-[43deg]" />
+                  </span>
                 )}
               </div>
-              <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-primary-500 text-white text-xs sm:text-sm font-semibold hover:brightness-110 transition-colors shrink-0">
-                <span className="hidden xs:inline">VIEW</span>
-                <span className="xs:hidden">VIEW</span>
-                <IoIosArrowRoundUp className="w-3 h-3 sm:w-4 sm:h-4 rotate-[43deg]" />
-              </span>
-            </div>
+            )}
           </div>
           {actions && (
             <div className="mt-3 pt-3 border-t border-[#e5e7eb]" onClick={(e) => e.stopPropagation()}>

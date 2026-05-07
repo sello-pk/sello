@@ -165,7 +165,7 @@ const UserListings = () => {
               showViewCta={false}
               actions={
                 <div className="space-y-2">
-                  <div className="flex gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <button
                       type="button"
                       onClick={() =>
@@ -176,7 +176,7 @@ const UserListings = () => {
                         )
                       }
                       disabled={car?.isSold}
-                      className={`flex-1 px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors ${
+                      className={`w-full h-10 px-4 text-sm font-semibold rounded-xl transition-colors ${
                         car?.isSold
                           ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                           : "bg-primary-500 hover:brightness-110 text-white"
@@ -188,7 +188,7 @@ const UserListings = () => {
                       type="button"
                       onClick={() => handleMarkAsSold(car, car?.isSold)}
                       disabled={updatingCars.has(car._id)}
-                      className={`flex-1 px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-primary-500 hover:brightness-110 text-white`}
+                      className={`w-full h-10 px-4 text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-primary-500 hover:brightness-110 text-white`}
                     >
                       {updatingCars.has(car._id)
                         ? "Updating..."
@@ -219,7 +219,7 @@ const UserListings = () => {
                         }
                       }}
                       disabled={isRelisting || updatingCars.has(car?._id)}
-                      className="w-full px-4 py-2.5 bg-primary-500 hover:brightness-110 text-white rounded-lg font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full h-10 px-4 bg-primary-500 hover:brightness-110 text-white rounded-xl font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isRelisting || updatingCars.has(car?._id) ? "Relisting..." : "Relist"}
                     </button>
