@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   useGetMyCarsQuery,
@@ -30,21 +30,45 @@ const UserListings = () => {
   const [statusFilter, _setStatusFilter] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const [viewMode, setViewMode] = useState("grid");
+  const [page, setPage] = useState(1);
+  const limit = 12;
   const {
     data,
     isLoading,
     error: listingsError,
     refetch,
-  } = useGetMyCarsQuery(statusFilter !== "all" ? { status: statusFilter } : {}, {
-    refetchOnMountOrArgChange: true,
-    refetchOnFocus: true,
-    refetchOnReconnect: true,
-  });
+  } = useGetMyCarsQuery(
+    {
+      ...(statusFilter !== "all" ? { status: statusFilter } : {}),
+      page,
+      limit,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+    },
+  );
   const [updatingCars, setUpdatingCars] = useState(new Set());
   const [relistCar, { isLoading: isRelisting }] = useRelistCarMutation();
 
-  const cars = Array.isArray(data?.cars) ? data.cars : [];
+  const cars = useMemo(
+    () => (Array.isArray(data?.cars) ? data.cars : []),
+    [data?.cars],
+  );
+  const totalCars = Number(data?.total || 0);
+  const totalPages = Number(data?.pages || 1);
   const sortedCars = useMemo(() => sortCars(cars, sortBy), [cars, sortBy]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [statusFilter]);
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
 
   const handleMarkAsSold = async (car, isSold) => {
     if (
@@ -120,7 +144,7 @@ const UserListings = () => {
               onSortChange={setSortBy}
               viewMode={viewMode}
               onViewChange={setViewMode}
-              totalResults={sortedCars.length}
+              totalResults={totalCars}
               resultLabel="listings"
             />
           </div>
@@ -128,7 +152,7 @@ const UserListings = () => {
             className={`${
               viewMode === "list"
                 ? "grid grid-cols-1 gap-4"
-                : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+                : "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6"
             }`}
           >
           {sortedCars.map((car) => (
@@ -137,6 +161,8 @@ const UserListings = () => {
               car={car}
               variant={viewMode === "list" ? "list" : "grid"}
               showContactButtons={false}
+              showSaveButton={false}
+              showViewCta={false}
               actions={
                 <div className="space-y-2">
                   <div className="flex gap-2">
@@ -203,6 +229,76 @@ const UserListings = () => {
             />
           ))}
           </div>
+          {totalPages > 1 && (
+            <div className="flex flex-col items-center gap-5 mt-10 pt-8 border-t border-[#e5e7eb]">
+              <span className="text-sm text-gray-600 font-medium">
+                Page {page} of {totalPages}
+              </span>
+              <div className="flex flex-wrap justify-center items-center gap-2.5">
+                <button
+                  onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={page === 1}
+                  className="inline-flex items-center justify-center min-w-[120px] px-4 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium gap-2 text-sm"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Previous
+                </button>
+
+                {page > 2 && (
+                  <button
+                    onClick={() => setPage(1)}
+                    className="min-w-10 px-3 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 font-medium text-sm"
+                  >
+                    1
+                  </button>
+                )}
+                {page > 3 && <span className="px-1 text-gray-400">...</span>}
+                {page > 1 && (
+                  <button
+                    onClick={() => setPage(page - 1)}
+                    className="min-w-10 px-3 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 font-medium text-sm"
+                  >
+                    {page - 1}
+                  </button>
+                )}
+
+                <span className="min-w-10 px-3 py-2.5 rounded-xl bg-primary-500 text-white font-semibold text-sm text-center">
+                  {page}
+                </span>
+
+                {page < totalPages && (
+                  <button
+                    onClick={() => setPage(page + 1)}
+                    className="min-w-10 px-3 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 font-medium text-sm"
+                  >
+                    {page + 1}
+                  </button>
+                )}
+                {page < totalPages - 2 && <span className="px-1 text-gray-400">...</span>}
+                {page < totalPages - 1 && (
+                  <button
+                    onClick={() => setPage(totalPages)}
+                    className="min-w-10 px-3 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 font-medium text-sm"
+                  >
+                    {totalPages}
+                  </button>
+                )}
+
+                <button
+                  onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={page === totalPages}
+                  className="inline-flex items-center justify-center min-w-[120px] px-4 py-2.5 rounded-xl bg-primary-500 text-white font-semibold hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors gap-2 text-sm"
+                >
+                  Next
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
         </>
       )}
     </section>

@@ -911,6 +911,12 @@ export const api = createApi({
         if (params && params.status && params.status !== "all") {
           queryParams.append("status", params.status);
         }
+        if (params?.page) {
+          queryParams.append("page", params.page);
+        }
+        if (params?.limit) {
+          queryParams.append("limit", params.limit);
+        }
         const queryString = queryParams.toString();
         return `/cars/my/listings${queryString ? `?${queryString}` : ""}`;
       },
@@ -919,6 +925,8 @@ export const api = createApi({
         return {
           cars: data?.cars || [],
           total: data?.total || 0,
+          page: data?.page || 1,
+          pages: data?.pages || 1,
           stats: data?.stats || { total: 0, active: 0, sold: 0, expired: 0 },
         };
       },

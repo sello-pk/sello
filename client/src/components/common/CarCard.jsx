@@ -51,6 +51,8 @@ const CountdownTimer = ({ targetDate }) => {
  * @param {boolean} [props.showWhatsApp] - Show WhatsApp CTA
  * @param {string} [props.whatsappNumber] - WhatsApp number for link
  * @param {boolean} [props.showContactButtons] - Show phone & WhatsApp icons (default true; set false for "my listings")
+ * @param {boolean} [props.showSaveButton] - Show save/heart button (default true)
+ * @param {boolean} [props.showViewCta] - Show footer "View" CTA (default true)
  */
 const CarCard = ({
   car,
@@ -59,6 +61,8 @@ const CarCard = ({
   showWhatsApp = false,
   whatsappNumber,
   showContactButtons = true,
+  showSaveButton = true,
+  showViewCta = true,
 }) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -224,7 +228,7 @@ const CarCard = ({
           >
             {tagLabel}
           </span>
-          {id && (
+          {showSaveButton && id && (
             <button
               type="button"
               onClick={handleBookmark}
@@ -381,7 +385,7 @@ const CarCard = ({
         >
           {tagLabel}
         </span>
-        {id && (
+        {showSaveButton && id && (
           <button
             type="button"
             onClick={handleBookmark}
@@ -492,10 +496,12 @@ const CarCard = ({
               </a>
             )}
           </div>
-          <span className="inline-flex items-center gap-0.5 text-primary-500 font-semibold text-xs hover:underline group-hover:text-primary-600 transition-colors shrink-0">
-            <span>View</span>
-            <IoIosArrowRoundUp className="w-3 h-3 rotate-[43deg]" />
-          </span>
+          {showViewCta && (
+            <span className="inline-flex items-center gap-0.5 text-primary-500 font-semibold text-xs hover:underline group-hover:text-primary-600 transition-colors shrink-0">
+              <span>View</span>
+              <IoIosArrowRoundUp className="w-3 h-3 rotate-[43deg]" />
+            </span>
+          )}
         </div>
         {actions && (
           <div className="mt-3 pt-3 border-t border-[#e5e7eb]" onClick={(e) => e.stopPropagation()}>
