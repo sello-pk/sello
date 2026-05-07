@@ -245,7 +245,7 @@ const Users = () => {
                     <div className="p-4">
                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                             {/* Tabs */}
-                            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 lg:flex lg:flex-wrap lg:items-center">
                                 <button
                                     onClick={() => setRoleFilter("")}
                                     className={`w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium transition-colors ${

@@ -269,7 +269,7 @@ const Dashboard = () => {
         {/* Metric Cards */}
         {isCompactView ? (
           /* Compact View - Two rows of 3 cards each */
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {metrics.map((metric, index) => {
               const isPositive = metric.change >= 0;
               const changeText = Math.abs(metric.change).toFixed(0);
@@ -402,7 +402,7 @@ const Dashboard = () => {
         )}
 
         {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-6">
           {/* Sales Trends Chart */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
             <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-6">

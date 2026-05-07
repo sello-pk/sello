@@ -495,7 +495,7 @@ const SupportChat = () => {
         <AdminLayout>
             <div className="flex flex-col md:flex-row h-[calc(100vh-80px)] bg-gray-100 dark:bg-gray-900">
                 {/* Left Sidebar - User List */}
-                <div className={`${selectedChat ? "hidden md:flex" : "flex"} w-full md:w-1/3 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex-col`}>
+                <div className={`${selectedChat ? "hidden md:flex" : "flex"} w-full md:w-1/3 lg:w-2/5 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex-col`}>
                     {/* Search Bar */}
                     <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                         <div className="relative">
@@ -550,12 +550,12 @@ const SupportChat = () => {
                                     <div
                                         key={chat._id}
                                         onClick={() => handleSelectChat(chat._id)}
-                                        className={`p-4 border-b border-gray-100 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition ${
+                                        className={`p-3 sm:p-4 border-b border-gray-100 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition touch-manipulation ${
                                             isSelected ? 'bg-[#E5E5E5] dark:bg-gray-700' : ''
                                         }`}
                                     >
-                                        <div className="flex items-start gap-3">
-                                            <div className="w-12 h-12 rounded-full bg-primary-500 flex items-center justify-center text-white font-semibold flex-shrink-0">
+                                        <div className="flex items-start gap-2 sm:gap-3">
+                                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary-500 flex items-center justify-center text-white font-semibold flex-shrink-0 text-sm sm:text-base">
                                                 {getUserAvatar(chat) ? (
                                                     <img
                                                         src={getUserAvatar(chat)}
@@ -568,19 +568,19 @@ const SupportChat = () => {
                                             </div>
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex justify-between items-start mb-1">
-                                                        <p className="font-semibold text-gray-900 dark:text-white truncate">
+                                                        <p className="font-semibold text-gray-900 dark:text-white truncate text-sm sm:text-base">
                                                             {getUserName(chat)}
                                                         </p>
-                                                        <span className="text-[10px] text-gray-400 font-medium">
+                                                        <span className="text-[10px] sm:text-xs text-gray-400 font-medium whitespace-nowrap ml-2">
                                                             {formatTime(chat.lastMessageAt || chat.createdAt)}
                                                         </span>
                                                     </div>
-                                                    <div className="flex items-center justify-between gap-2">
-                                                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate pr-2">
+                                                    <div className="flex items-center justify-between gap-1 sm:gap-2">
+                                                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate pr-1 sm:pr-2">
                                                             {chat.lastMessage || chat.subject || 'No messages'}
                                                         </p>
                                                         {unreadCount > 0 && (
-                                                            <span className="bg-primary-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                                                            <span className="bg-primary-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] sm:min-w-[20px] text-center">
                                                                 {unreadCount}
                                                             </span>
                                                         )}
@@ -627,17 +627,17 @@ const SupportChat = () => {
                     ) : (
                         <>
                             {/* Chat Header */}
-                            <div className="bg-primary-500 text-white p-4 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
-                                <div className="flex items-center gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={() => setSelectedChat(null)}
-                                        className="md:hidden p-1 rounded hover:bg-white/20 transition-colors"
-                                        aria-label="Back to chat list"
-                                    >
-                                        <FiArrowLeft size={18} />
-                                    </button>
-                                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                            <div className="bg-primary-500 text-white p-3 sm:p-4 flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
+                                <div className="flex items-center gap-2 sm:gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => setSelectedChat(null)}
+                                            className="md:hidden p-2 rounded hover:bg-white/20 transition-colors touch-manipulation"
+                                            aria-label="Back to chat list"
+                                        >
+                                            <FiArrowLeft size={18} />
+                                        </button>
+                                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center">
                                         {getUserAvatar(selectedChatData) ? (
                                             <img
                                                 src={getUserAvatar(selectedChatData)}
@@ -662,7 +662,7 @@ const SupportChat = () => {
                                     <select
                                         value={selectedChatData?.status || 'open'}
                                         onChange={(e) => handleStatusChange(e.target.value)}
-                                        className="w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-white/20 text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white/50"
+                                        className="w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-white/20 text-white rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-white/50"
                                     >
                                         <option value="open">Open</option>
                                         <option value="resolved">Resolved</option>
@@ -718,10 +718,10 @@ const SupportChat = () => {
                                                 key={msg._id}
                                                 className={`flex ${isCurrentAdmin ? 'justify-end' : 'justify-start'} group`}
                                             >
-                                                <div className={`flex items-end gap-2 max-w-[88%] sm:max-w-[70%] ${isCurrentAdmin ? 'flex-row-reverse' : ''}`}>
+                                                <div className={`flex items-end gap-1 sm:gap-2 max-w-[85%] sm:max-w-[70%] ${isCurrentAdmin ? 'flex-row-reverse' : ''}`}>
                                                     {/* Avatar for user messages (left side) */}
                                                     {!isCurrentAdmin && !isBot && (
-                                                        <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 overflow-hidden">
+                                                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 overflow-hidden">
                                                             {senderUser?.avatar || msg.sender?.avatar ? (
                                                                 <img
                                                                     src={senderUser?.avatar || msg.sender?.avatar}
@@ -735,7 +735,7 @@ const SupportChat = () => {
                                                     )}
                                                     {/* Avatar for admin messages (right side) - show after message */}
                                                     {isCurrentAdmin && !isBot && (
-                                                        <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 overflow-hidden">
+                                                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 overflow-hidden">
                                                             {adminUser?.avatar ? (
                                                                 <img
                                                                     src={adminUser.avatar}
@@ -748,14 +748,14 @@ const SupportChat = () => {
                                                         </div>
                                                     )}
                                                     <div
-                                                    className={`rounded-lg px-3 py-2 ${
+                                                    className={`rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm ${
                                                         isCurrentAdmin
                                                             ? "bg-primary-100 dark:bg-primary-500/30 rounded-tr-none"
                                                             : "bg-white dark:bg-gray-800 rounded-tl-none"
                                                     } shadow-sm`}
                                                     >
                                                         {!isCurrentAdmin && (
-                                                            <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                                                            <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-0.5">
                                                                 {msg.sender?.name || 'User'}
                                                             </p>
                                                         )}
@@ -891,9 +891,9 @@ const SupportChat = () => {
                             </div>
 
                             {/* Message Input */}
-                            <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 relative">
+                            <div className="p-3 sm:p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 relative">
                                 {showQuickReplies && quickReplies.length > 0 && (
-                                    <div className="absolute bottom-full left-4 mb-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-10 max-h-48 overflow-y-auto">
+                                    <div className="absolute bottom-full left-4 mb-2 w-64 sm:w-72 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-10 max-h-48 overflow-y-auto">
                                         <div className="p-2 border-b border-gray-100 dark:border-gray-700 font-semibold text-xs flex items-center justify-between gap-2">
                                             <span>Quick Replies</span>
                                             <FiZap size={14} className="text-yellow-500" />
@@ -913,7 +913,7 @@ const SupportChat = () => {
                                         ))}
                                     </div>
                                 )}
-                                <div className="flex gap-2 items-center">
+                                <div className="flex gap-1 sm:gap-2 items-center">
                                     <input
                                         ref={fileInputRef}
                                         type="file"
@@ -923,16 +923,16 @@ const SupportChat = () => {
                                     />
                                     <button
                                         onClick={() => setShowQuickReplies(!showQuickReplies)}
-                                        className={`p-2 transition-colors ${showQuickReplies ? 'text-primary-500' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-300'}`}
+                                        className={`p-2 sm:p-2.5 transition-colors touch-manipulation ${showQuickReplies ? 'text-primary-500' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-300'}`}
                                         title="Quick Replies"
                                     >
-                                        <FiZap size={20} />
+                                        <FiZap size={18} />
                                     </button>
                                     <button
                                         onClick={() => fileInputRef.current?.click()}
-                                        className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-300"
+                                        className="p-2 sm:p-2.5 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-300 touch-manipulation"
                                     >
-                                        <FiPaperclip size={20} />
+                                        <FiPaperclip size={18} />
                                     </button>
                                     <input
                                         type="text"
@@ -948,7 +948,7 @@ const SupportChat = () => {
                                             }
                                         }}
                                         placeholder="Type a message..."
-                                        className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                                        className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white text-sm sm:text-base"
                                     />
                                     <button
                                         onClick={handleSendMessage}

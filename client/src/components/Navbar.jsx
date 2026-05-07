@@ -332,14 +332,14 @@ const Navbar = () => {
                     className="absolute top-full left-0 pt-2 z-[100]"
                     role="menu"
                   >
-                    <div className="w-64 rounded-xl border border-gray-200 bg-white shadow-lg text-gray-700 py-2">
+                    <div className="w-64 sm:w-72 rounded-xl border border-gray-200 bg-white shadow-lg text-gray-700 py-2">
                       {publicAuctionLinks.map((link) => (
                         <Link
                           key={link.path}
                           to={link.path}
                           onClick={() => setOpenAuctionsDropdown(false)}
                           role="menuitem"
-                          className={`block px-5 py-2.5 text-base transition-colors ${
+                          className={`block px-4 sm:px-5 py-2.5 sm:py-3 text-sm sm:text-base transition-colors touch-manipulation ${
                             isPathMatch(link.path)
                               ? "text-primary-500 font-semibold bg-primary-50"
                               : "hover:bg-gray-50"
@@ -357,7 +357,7 @@ const Navbar = () => {
                               to={link.path}
                               onClick={() => setOpenAuctionsDropdown(false)}
                               role="menuitem"
-                              className={`block px-5 py-2.5 text-base transition-colors ${
+                              className={`block px-4 sm:px-5 py-2.5 sm:py-3 text-sm sm:text-base transition-colors touch-manipulation ${
                                 isPathMatch(link.path)
                                   ? "text-primary-500 font-semibold bg-primary-50"
                                   : "hover:bg-gray-50"

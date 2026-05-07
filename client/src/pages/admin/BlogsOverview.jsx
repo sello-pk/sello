@@ -143,7 +143,7 @@ const BlogsOverview = () => {
         </div>
 
         {/* Stats Cards - Match reference design exactly */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-4 mb-6">
           {/* Total Posts */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3 border border-gray-100 dark:border-gray-700">
             <div className="flex items-start justify-between">
@@ -481,28 +481,28 @@ const BlogsOverview = () => {
         {/* Blogs Table */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           <div className="overflow-x-auto admin-table-scroll">
-            <table className="w-full min-w-[760px]">
+            <table className="w-full min-w-[600px] sm:min-w-[700px] md:min-w-[760px]">
               <thead>
                 <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-3 sm:px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                     Title
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-3 sm:px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                     Author
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-3 sm:px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider hidden sm:table-cell">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-3 sm:px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-3 sm:px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider hidden sm:table-cell">
                     Views
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-3 sm:px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider hidden sm:table-cell">
                     Comments
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-3 sm:px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                     Action
                   </th>
                 </tr>
@@ -529,20 +529,20 @@ const BlogsOverview = () => {
                       key={blog._id}
                       className="hover:bg-gray-50 dark:hover:bg-gray-700"
                     >
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-gray-900 dark:text-white">
+                      <td className="px-3 sm:px-4 py-3 sm:py-4">
+                        <div className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">
                           {blog.title}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-3 sm:px-4 py-3 sm:py-4">
                         <div className="text-sm text-gray-600 dark:text-gray-300">
                           {blog.author?.name || "Admin"}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                      <td className="px-3 sm:px-4 py-3 sm:py-4 text-sm text-gray-500 dark:text-gray-400 hidden sm:table-cell">
                         {formatDate(blog.createdAt)}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-3 sm:px-4 py-3 sm:py-4">
                         <span
                           className={`px-2 py-1 text-xs rounded-full ${
                             blog.status === "published"
@@ -562,13 +562,13 @@ const BlogsOverview = () => {
                             : "Pending"}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                      <td className="px-3 sm:px-4 py-3 sm:py-4 text-sm text-gray-600 dark:text-gray-300 hidden sm:table-cell">
                         {blog.views || 0}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                      <td className="px-3 sm:px-4 py-3 sm:py-4 text-sm text-gray-600 dark:text-gray-300 hidden sm:table-cell">
                         0
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-3 sm:px-4 py-3 sm:py-4 text-right">
                         <ActionDropdown
                           onView={() => window.open(`/blog/${blog.slug || blog._id}`, '_blank')}
                           onEdit={() => navigate(`/admin/blogs/${blog._id}/edit`)}

@@ -200,7 +200,7 @@ const AdminLayout = ({ children }) => {
         {/* Menu Items */}
         <nav
           ref={sidebarNavRef}
-          className="flex-1 overflow-y-auto py-4 scrollbar"
+          className="flex-1 overflow-y-auto py-4 scrollbar touch-pan-y"
         >
           {menuItems.map((item) => {
             const Icon = item.icon;
@@ -219,7 +219,7 @@ const AdminLayout = ({ children }) => {
                 key={item.path}
                 to={item.path}
                 onClick={handleSidebarLinkClick}
-                className={`flex items-center space-x-3 px-4 py-3 mx-2 rounded-lg transition-colors ${
+                className={`flex items-center space-x-3 px-3 py-4 mx-1 rounded-lg transition-colors touch-manipulation ${
                   isMainItemActive
                     ? "bg-primary-500 text-white"
                     : "text-gray-300 hover:bg-gray-700 hover:text-white"
@@ -227,7 +227,7 @@ const AdminLayout = ({ children }) => {
               >
                 <Icon size={20} />
                 {sidebarOpen && (
-                  <span className="font-medium">{item.label}</span>
+                  <span className="font-medium text-sm">{item.label}</span>
                 )}
               </Link>
             );
