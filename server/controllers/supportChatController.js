@@ -1046,6 +1046,7 @@ export const editSupportMessage = async (req, res) => {
       });
     }
 
+    const previousMessage = messageDoc.message;
     // Update message
     messageDoc.message = message.trim();
     messageDoc.editedAt = new Date();
@@ -1053,10 +1054,7 @@ export const editSupportMessage = async (req, res) => {
     await messageDoc.save();
 
     // Update chat last message if this was the last message
-    if (
-      chat.lastMessage === messageDoc.message ||
-      chat._id.toString() === messageDoc.chat.toString()
-    ) {
+    if (chat.lastMessage === previousMessage) {
       chat.lastMessage = message.trim();
       await chat.save();
     }

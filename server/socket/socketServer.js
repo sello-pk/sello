@@ -513,7 +513,13 @@ export const initializeSocket = (server) => {
     // Handle sending message
     socket.on(
       "send-message",
-      async ({ chatId, message, messageType = "text", attachments = [] }) => {
+      async ({
+        chatId,
+        message,
+        messageType = "text",
+        attachments = [],
+        isAdminReply = true,
+      }) => {
         try {
           console.log("🔵 Received send-message event:", {
             chatId,
@@ -557,9 +563,9 @@ export const initializeSocket = (server) => {
             messageType,
             attachments,
             isBot: false,
-            // Trust the client if they say it's NOT an admin reply (useful for testing),
-            // but only allow true if they are actually an admin.
-            isAdminReply: (socket.user?.role === "admin") && (data.isAdminReply !== false),
+            // Only admins can mark messages as admin replies.
+            isAdminReply:
+              socket.user?.role === "admin" ? isAdminReply !== false : false,
           });
 
           // Populate sender
