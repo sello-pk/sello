@@ -122,7 +122,6 @@ export const VEHICLE_FIELD_CONFIG = {
       "year",
       "condition",
       "price",
-      "bodyType",
       "city",
       "contactNumber",
     ],

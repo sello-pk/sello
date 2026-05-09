@@ -132,6 +132,10 @@ const carSchema = new mongoose.Schema(
         "Cement Truck",
         "Refrigerated Truck",
         "Tanker Truck",
+        // Van body types
+        "Minivan",
+        "Cargo Van",
+        "Passenger Van",
       ],
     },
     city: { type: String, required: true },

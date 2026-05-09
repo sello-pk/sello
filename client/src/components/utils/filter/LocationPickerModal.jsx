@@ -87,6 +87,7 @@ const LocationPickerModal = ({
   const [address, setAddress] = useState("");
   const [locationMode, setLocationMode] = useState("auto"); // "auto" or "manual"
   const watchIdRef = useRef(null);
+  const searchInputRef = useRef(null);
 
   // Initialize with provided location
   useEffect(() => {
@@ -112,6 +113,16 @@ const LocationPickerModal = ({
       }
     };
   }, []);
+
+  // Autofocus search input whenever modal opens
+  useEffect(() => {
+    if (!isOpen) return;
+    const timer = setTimeout(() => {
+      searchInputRef.current?.focus();
+      searchInputRef.current?.select();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [isOpen]);
 
   // Reverse geocode to get address
   const reverseGeocode = async (lat, lng) => {
@@ -411,6 +422,7 @@ const LocationPickerModal = ({
             {/* Search Input */}
             <div className="relative">
               <input
+                ref={searchInputRef}
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}

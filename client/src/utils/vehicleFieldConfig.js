@@ -141,13 +141,12 @@ export const VEHICLE_FIELD_CONFIG = {
       "year",
       "condition",
       "price",
-      "bodyType",
       "city",
       "contactNumber",
     ],
     optional: ["description", "country", "state", "mileage", "location", "geoLocation"],
     fields: {
-      bodyType: { visible: true, required: true },
+      bodyType: { visible: false, required: false },
       cylinders: { visible: false, required: false },
       doors: { visible: false, required: false },
       horsepower: { visible: false, required: false },
@@ -170,8 +169,6 @@ export const VEHICLE_FIELD_CONFIG = {
       "price",
       "city",
       "contactNumber",
-      "warranty",
-      "ownerType",
     ],
     optional: [
       "description",
