@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import { images, menuLinks } from "../assets/assets";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import SearchBar from "./utils/SearchBar";
@@ -14,7 +20,8 @@ const Navbar = () => {
   const [showHeaderSearch, setShowHeaderSearch] = useState(false);
   const [openCompanyDropdown, setOpenCompanyDropdown] = useState(false);
   const [openAuctionsDropdown, setOpenAuctionsDropdown] = useState(false);
-  const [openMobileAuctionsDropdown, setOpenMobileAuctionsDropdown] = useState(false);
+  const [openMobileAuctionsDropdown, setOpenMobileAuctionsDropdown] =
+    useState(false);
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
   const backdropRef = useRef(null);
   const drawerRef = useRef(null);
@@ -70,34 +77,37 @@ const Navbar = () => {
     };
   }, []);
 
-  const handleClickOutside = useCallback((event) => {
-    // Close search panel
-    if (
-      showHeaderSearch &&
-      searchPanelRef.current &&
-      !searchPanelRef.current.contains(event.target)
-    ) {
-      setShowHeaderSearch(false);
-    }
+  const handleClickOutside = useCallback(
+    (event) => {
+      // Close search panel
+      if (
+        showHeaderSearch &&
+        searchPanelRef.current &&
+        !searchPanelRef.current.contains(event.target)
+      ) {
+        setShowHeaderSearch(false);
+      }
 
-    // Close company dropdown
-    if (
-      openCompanyDropdown &&
-      companyDropdownRef.current &&
-      !companyDropdownRef.current.contains(event.target)
-    ) {
-      setOpenCompanyDropdown(false);
-    }
+      // Close company dropdown
+      if (
+        openCompanyDropdown &&
+        companyDropdownRef.current &&
+        !companyDropdownRef.current.contains(event.target)
+      ) {
+        setOpenCompanyDropdown(false);
+      }
 
-    // Close auctions dropdown
-    if (
-      openAuctionsDropdown &&
-      auctionsDropdownRef.current &&
-      !auctionsDropdownRef.current.contains(event.target)
-    ) {
-      setOpenAuctionsDropdown(false);
-    }
-  }, [showHeaderSearch, openCompanyDropdown, openAuctionsDropdown]);
+      // Close auctions dropdown
+      if (
+        openAuctionsDropdown &&
+        auctionsDropdownRef.current &&
+        !auctionsDropdownRef.current.contains(event.target)
+      ) {
+        setOpenAuctionsDropdown(false);
+      }
+    },
+    [showHeaderSearch, openCompanyDropdown, openAuctionsDropdown],
+  );
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -328,7 +338,7 @@ const Navbar = () => {
                 </button>
 
                 {openAuctionsDropdown && (
-                  <div 
+                  <div
                     className="absolute top-full left-0 pt-2 z-[100]"
                     role="menu"
                   >
@@ -401,7 +411,7 @@ const Navbar = () => {
                 </button>
 
                 {openCompanyDropdown && (
-                  <div 
+                  <div
                     className="absolute top-full left-0 pt-2 z-[100]"
                     role="menu"
                   >
@@ -498,15 +508,15 @@ const Navbar = () => {
                   className="cursor-pointer w-8 h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-full overflow-hidden border-2 border-white/80 shadow-sm flex-shrink-0"
                   title="Profile"
                 >
-              <img
-                src={avatarFallback}
-                alt="User Avatar"
-                width={44}
-                height={44}
-                decoding="async"
-                className="w-full h-full object-cover"
-                onError={() => setAvatarLoadFailed(true)}
-              />
+                  <img
+                    src={avatarFallback}
+                    alt="User Avatar"
+                    width={44}
+                    height={44}
+                    decoding="async"
+                    className="w-full h-full object-cover"
+                    onError={() => setAvatarLoadFailed(true)}
+                  />
                 </div>
               </div>
             ) : (
@@ -514,7 +524,7 @@ const Navbar = () => {
                 <button
                   type="button"
                   onClick={() => navigate("/login")}
-                  className="px-3 py-1.5 sm:px-3.5 sm:py-2 md:px-4 md:py-2 bg-primary-700 rounded-lg text-white text-xs sm:text-sm font-medium hover:bg-primary-800 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2"
+                  className="px-3 py-1.5 sm:px-3.5 sm:py-2 md:px-4 md:py-2 bg-primary-500 rounded-lg text-white text-xs sm:text-sm font-medium hover:opacity-90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2"
                 >
                   Login
                 </button>
@@ -553,7 +563,7 @@ const Navbar = () => {
           >
             {/* Close Button */}
             <div className="flex justify-end text-2xl sm:text-3xl mb-4 sm:mb-6">
-              <button 
+              <button
                 onClick={closeDrawer}
                 aria-label="Close navigation menu"
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
