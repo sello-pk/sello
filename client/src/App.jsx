@@ -479,6 +479,23 @@ const getRouteSeo = (pathname, search) => {
     : defaultSeo;
 };
 
+/** Meta Pixel PageView on SPA navigations (initial PageView is sent from index.html). */
+const MetaPixelRoutePageViews = () => {
+  const { pathname, search } = useLocation();
+  const isFirstPaint = React.useRef(true);
+
+  React.useEffect(() => {
+    if (isFirstPaint.current) {
+      isFirstPaint.current = false;
+      return;
+    }
+    if (typeof window.fbq !== "function") return;
+    window.fbq("track", "PageView");
+  }, [pathname, search]);
+
+  return null;
+};
+
 const ScrollToTop = () => {
   const { pathname } = useLocation();
 
@@ -521,6 +538,7 @@ const App = () => {
   return (
     <ThemeProvider>
       {fallbackSeo && <SEO {...fallbackSeo} />}
+      <MetaPixelRoutePageViews />
       <ScrollToTop />
       <Toaster />
 

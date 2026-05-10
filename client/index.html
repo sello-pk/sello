@@ -151,7 +151,8 @@
 
   <!-- App CSS is injected by Vite via src/main.jsx (index.css). Avoid stale hashed /assets/*.css links — they 404 after rebuild and cause FOUC / CLS. -->
 
-  <!-- Meta Pixel — deferred until idle/load so main thread & LCP aren't contending with fbevents -->
+  <!-- Meta Pixel — load on window.load (reliable). Do not gate on DNT/GPC or .adsbox heuristics:
+       those caused false "skip" and Meta Business Suite / Events Manager showed no activity. -->
   <script>
     (function () {
       function setFbqNoop() {
@@ -161,35 +162,9 @@
         }
       }
 
-      function shouldSkipMetaPixel() {
-        // Respect explicit browser/user privacy preferences.
-        if (navigator.globalPrivacyControl === true) return true;
-        if (navigator.doNotTrack === "1" || window.doNotTrack === "1") return true;
-
-        // Fast ad-block heuristic: common ad placeholders are hidden.
-        try {
-          var bait = document.createElement("div");
-          bait.className = "adsbox";
-          bait.style.cssText = "position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;";
-          document.body.appendChild(bait);
-          var blocked = bait.offsetParent === null || bait.offsetHeight === 0 || bait.offsetWidth === 0;
-          bait.remove();
-          if (blocked) return true;
-        } catch (e) {
-          // Fail open and continue with normal loading path.
-        }
-
-        return false;
-      }
-
       function injectMetaPixel() {
         if (window.__selloFbPixelScheduled) return;
         window.__selloFbPixelScheduled = true;
-
-        if (shouldSkipMetaPixel()) {
-          setFbqNoop();
-          return;
-        }
 
         try {
           !(function (f, b, e, v, n, t, s) {
@@ -205,10 +180,7 @@
             t = b.createElement(e);
             t.async = !0;
             t.src = v;
-            // FIX: catch load errors (e.g. blocked by ad blocker) silently
             t.onerror = function () {
-              // Pixel script was blocked — provide a no-op stub so any
-              // later fbq() calls don't throw ReferenceErrors
               setFbqNoop();
             };
             s = b.getElementsByTagName(e)[0];
@@ -220,17 +192,11 @@
             fbq("track", "PageView");
           }
         } catch (e) {
-          // Pixel initialisation failed (ad blocker, network error, etc.)
-          // Provide a safe no-op so the rest of the app is unaffected
           setFbqNoop();
         }
       }
 
-      if (typeof window.requestIdleCallback === "function") {
-        window.requestIdleCallback(injectMetaPixel, { timeout: 4000 });
-      } else {
-        window.addEventListener("load", injectMetaPixel, { once: true });
-      }
+      window.addEventListener("load", injectMetaPixel, { once: true });
     })();
   </script>
   <!-- End Meta Pixel Code -->
