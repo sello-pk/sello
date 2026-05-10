@@ -479,7 +479,7 @@ const getRouteSeo = (pathname, search) => {
     : defaultSeo;
 };
 
-/** Meta Pixel PageView on SPA navigations (initial PageView is sent from index.html). */
+/** Meta Pixel PageView on SPA navigations (initial PageView is queued from index.html when Pixel inject runs). */
 const MetaPixelRoutePageViews = () => {
   const { pathname, search } = useLocation();
   const isFirstPaint = React.useRef(true);
@@ -489,8 +489,40 @@ const MetaPixelRoutePageViews = () => {
       isFirstPaint.current = false;
       return;
     }
-    if (typeof window.fbq !== "function") return;
-    window.fbq("track", "PageView");
+
+    let cancelled = false;
+    const track = () => {
+      if (cancelled) return;
+      if (typeof window.fbq !== "function") return;
+      try {
+        window.fbq("track", "PageView");
+      } catch {
+        /* ignore */
+      }
+    };
+
+    track();
+    if (typeof window.fbq === "function") {
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const started = Date.now();
+    const id = window.setInterval(() => {
+      if (cancelled) return;
+      if (typeof window.fbq === "function") {
+        track();
+        window.clearInterval(id);
+        return;
+      }
+      if (Date.now() - started > 20000) window.clearInterval(id);
+    }, 150);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
   }, [pathname, search]);
 
   return null;

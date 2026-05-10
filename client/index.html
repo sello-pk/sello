@@ -11,6 +11,8 @@
   <!-- Preconnect hints for performance -->
   <link rel="preconnect" href="https://api.sello.pk" />
   <link rel="preconnect" href="https://maps.googleapis.com" />
+  <!-- Meta Pixel host: dns-prefetch only (cheap); script itself is deferred — avoids competing with LCP/FCP -->
+  <link rel="dns-prefetch" href="https://connect.facebook.net" />
 
   <meta name="robots" content="index, follow" />
   <meta name="theme-color" content="#3B82F6" />
@@ -151,8 +153,8 @@
 
   <!-- App CSS is injected by Vite via src/main.jsx (index.css). Avoid stale hashed /assets/*.css links — they 404 after rebuild and cause FOUC / CLS. -->
 
-  <!-- Meta Pixel — load on window.load (reliable). Do not gate on DNT/GPC or .adsbox heuristics:
-       those caused false "skip" and Meta Business Suite / Events Manager showed no activity. -->
+  <!-- Meta Pixel — after window.load + requestIdleCallback (timeout caps wait) so fbevents.js does not
+       contend with first paint / LCP. Do not gate on DNT/GPC or .adsbox heuristics (Events Manager reliability). -->
   <script>
     (function () {
       function setFbqNoop() {
@@ -180,6 +182,11 @@
             t = b.createElement(e);
             t.async = !0;
             t.src = v;
+            try {
+              t.fetchPriority = "low";
+            } catch (err) {
+              /* older engines */
+            }
             t.onerror = function () {
               setFbqNoop();
             };
@@ -187,16 +194,30 @@
             s.parentNode.insertBefore(t, s);
           })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
 
-          if (typeof fbq === "function") {
-            fbq("init", "1329404792372303");
-            fbq("track", "PageView");
+          if (typeof window.fbq === "function") {
+            window.fbq("init", "1329404792372303");
+            window.fbq("track", "PageView");
           }
         } catch (e) {
           setFbqNoop();
         }
       }
 
-      window.addEventListener("load", injectMetaPixel, { once: true });
+      function scheduleWhenIdle(fn) {
+        if (typeof window.requestIdleCallback === "function") {
+          window.requestIdleCallback(fn, { timeout: 5000 });
+        } else {
+          window.setTimeout(fn, 2000);
+        }
+      }
+
+      window.addEventListener(
+        "load",
+        function () {
+          scheduleWhenIdle(injectMetaPixel);
+        },
+        { once: true },
+      );
     })();
   </script>
   <!-- End Meta Pixel Code -->
