@@ -10,17 +10,31 @@ import { SocketProvider } from "./contexts/SocketContext.jsx";
 import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
 import AppRoot from "./AppRoot.jsx";
 import { logger } from "./utils/logger.js";
-import heroLcpUrl from "./assets/images/hero.webp";
+import heroLcpDesktop from "./assets/images/hero.webp";
+import heroLcpMobile from "./assets/images/heroMobile.webp";
 
-// Early LCP hint: same URL as Hero.jsx (browser dedupes with <img>)
+// Early LCP hint: responsive preloads matching Hero.jsx <picture>
 if (typeof document !== "undefined") {
-  const id = "sello-preload-hero-lcp";
-  if (!document.getElementById(id)) {
+  const preloads = [
+    {
+      id: "sello-preload-hero-lcp-mobile",
+      href: heroLcpMobile,
+      media: "(max-width: 767px)",
+    },
+    {
+      id: "sello-preload-hero-lcp-desktop",
+      href: heroLcpDesktop,
+      media: "(min-width: 768px)",
+    },
+  ];
+  for (const { id, href, media } of preloads) {
+    if (document.getElementById(id)) continue;
     const link = document.createElement("link");
     link.id = id;
     link.rel = "preload";
     link.as = "image";
-    link.href = heroLcpUrl;
+    link.href = href;
+    link.media = media;
     link.setAttribute("fetchpriority", "high");
     document.head.appendChild(link);
   }
