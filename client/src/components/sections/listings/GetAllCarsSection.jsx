@@ -139,9 +139,13 @@ const GetAllCarsSection = () => {
       if (tab === "all") params.delete("condition");
       else params.set("condition", tab);
 
-      navigate(`/listings${params.toString() ? `?${params.toString()}` : ""}`);
+      const basePath =
+        location.pathname === "/cars" || location.pathname.startsWith("/cars/")
+          ? "/cars"
+          : "/listings";
+      navigate(`${basePath}${params.toString() ? `?${params.toString()}` : ""}`);
     },
-    [navigate, searchParams],
+    [navigate, searchParams, location.pathname],
   );
 
   // Handle page change with loading state
@@ -156,9 +160,9 @@ const GetAllCarsSection = () => {
   // Define the available tabs - memoized
   const tabs = useMemo(
     () => [
-      { id: "all", label: "All Vehicles" },
-      { id: "new", label: "New Vehicles" },
-      { id: "used", label: "Used Vehicles" },
+      { id: "all", label: "All Vehicles", compact: "All" },
+      { id: "new", label: "New Vehicles", compact: "New" },
+      { id: "used", label: "Used Vehicles", compact: "Used" },
     ],
     [],
   );
@@ -234,7 +238,7 @@ const GetAllCarsSection = () => {
 
   return (
     <section className="px-3 max-w-8xl mx-auto sm:px-4 md:px-6 lg:px-8 py-10 md:py-12 min-w-0 overflow-x-hidden">
-      <div className="min-w-0">
+      <div className="min-w-0 max-w-full">
         <h2 className="text-2xl md:text-3xl font-bold text-[#0B0C1E]">
           Explore All Vehicles
         </h2>
@@ -242,19 +246,25 @@ const GetAllCarsSection = () => {
           Browse new and used vehicles
         </p>
 
-        {/* Tabs */}
-        <div className="flex gap-1 mt-6 p-1 bg-gray-100 rounded-xl w-fit overflow-x-auto">
+        {/* Tabs: compact row on mobile (short labels), full labels from sm — no horizontal scroll */}
+        <div className="mt-6 flex w-full min-w-0 max-w-full flex-wrap gap-1 p-1 bg-gray-100 rounded-xl sm:flex-nowrap sm:justify-start">
           {tabs.map((tab) => (
             <button
               key={tab.id}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              aria-label={tab.label}
+              title={tab.label}
               onClick={() => handleTabChange(tab.id)}
-              className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+              className={`min-w-0 flex-1 basis-0 sm:flex-none sm:basis-auto rounded-lg font-semibold transition-all duration-200 px-2 py-2 text-xs sm:px-4 sm:py-2.5 sm:text-sm whitespace-nowrap ${
                 activeTab === tab.id
                   ? "bg-white text-[#0B0C1E] shadow-sm"
                   : "text-gray-600 hover:text-[#0B0C1E] hover:bg-white/50"
               }`}
             >
-              {tab.label}
+              <span className="sm:hidden">{tab.compact}</span>
+              <span className="hidden sm:inline">{tab.label}</span>
             </button>
           ))}
         </div>
