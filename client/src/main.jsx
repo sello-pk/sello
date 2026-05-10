@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
@@ -10,6 +10,10 @@ import { SocketProvider } from "./contexts/SocketContext.jsx";
 import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
 import AppRoot from "./AppRoot.jsx";
 import { logger } from "./utils/logger.js";
+import {
+  lazyImport,
+  tryReloadOnceForStaleChunk,
+} from "./utils/lazyImports.js";
 import heroLcpDesktop from "./assets/images/hero.webp";
 import heroLcpMobile from "./assets/images/heroMobile.webp";
 
@@ -40,9 +44,17 @@ if (typeof document !== "undefined") {
   }
 }
 
+window.addEventListener("unhandledrejection", (event) => {
+  if (tryReloadOnceForStaleChunk(event.reason)) {
+    event.preventDefault();
+  }
+});
+
 // Lazy load Google OAuth only when needed
-const GoogleOAuthProvider = lazy(() => 
-  import('@react-oauth/google').then(module => ({ default: module.GoogleOAuthProvider }))
+const GoogleOAuthProvider = lazyImport(() =>
+  import("@react-oauth/google").then((module) => ({
+    default: module.GoogleOAuthProvider,
+  })),
 );
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;

@@ -1,6 +1,7 @@
-import React, { lazy, Suspense } from "react";
+import React, { Suspense } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import RouteLoader from "../components/common/RouteLoader";
+import { lazyImport } from "../utils/lazyImports.js";
 import {
   ProtectedRoute,
   AdminRoute,
@@ -8,148 +9,148 @@ import {
 } from "../components/shared/RouteGuards.jsx";
 
 // Public core routes (Lazy)
-const Home = lazy(() => import("../pages/Home.jsx"));
-const Login = lazy(() => import("../pages/auth/Login.jsx"));
-const Signup = lazy(() => import("../pages/auth/SignUp.jsx"));
-const CarListings = lazy(() => import("../pages/listings/CarListings.jsx"));
-const CategoryListings = lazy(
+const Home = lazyImport(() => import("../pages/Home.jsx"));
+const Login = lazyImport(() => import("../pages/auth/Login.jsx"));
+const Signup = lazyImport(() => import("../pages/auth/SignUp.jsx"));
+const CarListings = lazyImport(() => import("../pages/listings/CarListings.jsx"));
+const CategoryListings = lazyImport(
   () => import("../pages/listings/CategoryListings.jsx"),
 );
-const CarDetails = lazy(() => import("../pages/listings/CarDetails.jsx"));
-const GenericVehicleCategoryPage = lazy(
+const CarDetails = lazyImport(() => import("../pages/listings/CarDetails.jsx"));
+const GenericVehicleCategoryPage = lazyImport(
   () => import("../pages/listings/GenericVehicleCategoryPage.jsx"),
 );
-const Blog = lazy(() => import("../pages/blog/Blog.jsx"));
-const AllBlog = lazy(() => import("../pages/blog/AllBlog.jsx"));
-const BlogDetails = lazy(() => import("../pages/blog/BlogDetails.jsx"));
-const CarEstimator = lazy(() => import("../pages/features/CarEstimator.jsx"));
-const EstimatorGuideDetail = lazy(
+const Blog = lazyImport(() => import("../pages/blog/Blog.jsx"));
+const AllBlog = lazyImport(() => import("../pages/blog/AllBlog.jsx"));
+const BlogDetails = lazyImport(() => import("../pages/blog/BlogDetails.jsx"));
+const CarEstimator = lazyImport(() => import("../pages/features/CarEstimator.jsx"));
+const EstimatorGuideDetail = lazyImport(
   () => import("../pages/features/EstimatorGuideDetail.jsx"),
 );
-const AuctionGuideDetail = lazy(
+const AuctionGuideDetail = lazyImport(
   () => import("../pages/features/AuctionGuideDetail.jsx"),
 );
-const CategoryGuideDetail = lazy(
+const CategoryGuideDetail = lazyImport(
   () => import("../pages/listings/CategoryGuideDetail.jsx"),
 );
-const AuctionsActions = lazy(() => import("../pages/features/auctions/Actions.jsx"));
-const LiveAuction = lazy(() => import("../pages/features/auctions/LiveAuction.jsx"));
-const AuctionSchedule = lazy(
+const AuctionsActions = lazyImport(() => import("../pages/features/auctions/Actions.jsx"));
+const LiveAuction = lazyImport(() => import("../pages/features/auctions/LiveAuction.jsx"));
+const AuctionSchedule = lazyImport(
   () => import("../pages/features/auctions/AuctionSchedule.jsx"),
 );
-const TrustLegal = lazy(() => import("../pages/features/auctions/TrustLegal.jsx"));
-const AuctionResult = lazy(
+const TrustLegal = lazyImport(() => import("../pages/features/auctions/TrustLegal.jsx"));
+const AuctionResult = lazyImport(
   () => import("../pages/features/auctions/AuctionResult.jsx"),
 );
-const BuyerTransactions = lazy(
+const BuyerTransactions = lazyImport(
   () => import("../pages/features/auctions/BuyerTransactions.jsx"),
 );
-const CarDetail = lazy(() => import("../pages/features/auctions/CarDetail.jsx"));
-const TokenPayment = lazy(
+const CarDetail = lazyImport(() => import("../pages/features/auctions/CarDetail.jsx"));
+const TokenPayment = lazyImport(
   () => import("../pages/features/auctions/TokenPayment.jsx"),
 );
-const Watchlist = lazy(() => import("../pages/features/auctions/Watchlist.jsx"));
-const CompareVehicles = lazy(
+const Watchlist = lazyImport(() => import("../pages/features/auctions/Watchlist.jsx"));
+const CompareVehicles = lazyImport(
   () => import("../pages/features/auctions/CompareVehicles.jsx"),
 );
-const BuyerDashboardAuction = lazy(
+const BuyerDashboardAuction = lazyImport(
   () => import("../pages/features/auctions/BuyerDashboard.jsx"),
 );
-const WalletDashboardAuction = lazy(
+const WalletDashboardAuction = lazyImport(
   () => import("../pages/features/auctions/WalletDashboard.jsx"),
 );
-const SellerAuctionDashboard = lazy(
+const SellerAuctionDashboard = lazyImport(
   () => import("../pages/features/auctions/SellerAuctionDashboard.jsx"),
 );
-const FilteredResults = lazy(
+const FilteredResults = lazyImport(
   () => import("../pages/listings/FilteredResults.jsx"),
 );
-const NotFound = lazy(() => import("../pages/NotFound.jsx"));
+const NotFound = lazyImport(() => import("../pages/NotFound.jsx"));
 
 // Auth (Lazy)
-const ForgotPassword = lazy(() => import("../pages/auth/ForgotPassword.jsx"));
-const VerifyOTP = lazy(() => import("../pages/auth/VerifyOTP.jsx"));
-const ResetPassword = lazy(() => import("../pages/auth/ResetPassword.jsx"));
-const ResetSuccess = lazy(() => import("../pages/auth/ResetSuccess.jsx"));
-const AcceptInvite = lazy(() => import("../pages/auth/AcceptInvite.jsx"));
+const ForgotPassword = lazyImport(() => import("../pages/auth/ForgotPassword.jsx"));
+const VerifyOTP = lazyImport(() => import("../pages/auth/VerifyOTP.jsx"));
+const ResetPassword = lazyImport(() => import("../pages/auth/ResetPassword.jsx"));
+const ResetSuccess = lazyImport(() => import("../pages/auth/ResetSuccess.jsx"));
+const AcceptInvite = lazyImport(() => import("../pages/auth/AcceptInvite.jsx"));
 
 // Public (Lazy)
-const OurPrivacyPolicy = lazy(
+const OurPrivacyPolicy = lazyImport(
   () => import("../pages/ourPages/OurPrivacyPolicy.jsx"),
 );
-const TermsCondition = lazy(
+const TermsCondition = lazyImport(
   () => import("../pages/ourPages/TermsCondition.jsx"),
 );
-const About = lazy(() => import("../pages/about/About.jsx"));
-const Contact = lazy(() => import("../pages/contact/Contact.jsx"));
-const AllBrands = lazy(() => import("../pages/AllBrands.jsx"));
-const FilterPage = lazy(() => import("../pages/filter/FilterPage.jsx"));
-const CategoryPage = lazy(() => import("../pages/categories/CategoryPage.jsx"));
+const About = lazyImport(() => import("../pages/about/About.jsx"));
+const Contact = lazyImport(() => import("../pages/contact/Contact.jsx"));
+const AllBrands = lazyImport(() => import("../pages/AllBrands.jsx"));
+const FilterPage = lazyImport(() => import("../pages/filter/FilterPage.jsx"));
+const CategoryPage = lazyImport(() => import("../pages/categories/CategoryPage.jsx"));
 
 // Protected User (Lazy)
-const CreatePost = lazy(() => import("../pages/posts/CreatePost.jsx"));
-const EditCar = lazy(() => import("../pages/posts/EditCar.jsx"));
-const EditAuctionCar = lazy(() => import("../pages/posts/EditAuctionCar.jsx"));
-const UserListingPage = lazy(
+const CreatePost = lazyImport(() => import("../pages/posts/CreatePost.jsx"));
+const EditCar = lazyImport(() => import("../pages/posts/EditCar.jsx"));
+const EditAuctionCar = lazyImport(() => import("../pages/posts/EditAuctionCar.jsx"));
+const UserListingPage = lazyImport(
   () => import("../pages/userListings/UserListingPage.jsx"),
 );
-const ProfilePage = lazy(() => import("../pages/profile/ProfilePage.jsx"));
-const SavedCars = lazy(() => import("../pages/SavedCars.jsx"));
-const MyChats = lazy(() => import("../pages/chats/MyChats.jsx"));
-const SellerChats = lazy(() => import("../pages/seller/SellerChats.jsx"));
-const DealerDashboard = lazy(
+const ProfilePage = lazyImport(() => import("../pages/profile/ProfilePage.jsx"));
+const SavedCars = lazyImport(() => import("../pages/SavedCars.jsx"));
+const MyChats = lazyImport(() => import("../pages/chats/MyChats.jsx"));
+const SellerChats = lazyImport(() => import("../pages/seller/SellerChats.jsx"));
+const DealerDashboard = lazyImport(
   () => import("../pages/dashboards/DealerDashboard.jsx"),
 );
-const SellerDashboard = lazy(
+const SellerDashboard = lazyImport(
   () => import("../pages/dashboards/SellerDashboard.jsx"),
 );
 
 // Admin (Lazy)
-const AdminDashboard = lazy(() => import("../pages/admin/Dashboard.jsx"));
-const AdminUsers = lazy(() => import("../pages/admin/Users.jsx"));
-const AdminListings = lazy(() => import("../pages/admin/Listings.jsx"));
-const AdminDealers = lazy(() => import("../pages/admin/Dealers.jsx"));
-const AdminCategories = lazy(() => import("../pages/admin/Categories.jsx"));
-const AdminValuations = lazy(() => import("../pages/admin/Valuations.jsx"));
-const AdminChatMonitoring = lazy(
+const AdminDashboard = lazyImport(() => import("../pages/admin/Dashboard.jsx"));
+const AdminUsers = lazyImport(() => import("../pages/admin/Users.jsx"));
+const AdminListings = lazyImport(() => import("../pages/admin/Listings.jsx"));
+const AdminDealers = lazyImport(() => import("../pages/admin/Dealers.jsx"));
+const AdminCategories = lazyImport(() => import("../pages/admin/Categories.jsx"));
+const AdminValuations = lazyImport(() => import("../pages/admin/Valuations.jsx"));
+const AdminChatMonitoring = lazyImport(
   () => import("../pages/admin/ChatMonitoring.jsx"),
 );
-const AdminPromotions = lazy(() => import("../pages/admin/Promotions.jsx"));
-const AdminPayments = lazy(() => import("../pages/admin/Payments.jsx"));
-const AdminNotifications = lazy(
+const AdminPromotions = lazyImport(() => import("../pages/admin/Promotions.jsx"));
+const AdminPayments = lazyImport(() => import("../pages/admin/Payments.jsx"));
+const AdminNotifications = lazyImport(
   () => import("../pages/admin/Notifications.jsx"),
 );
-const AdminReports = lazy(() => import("../pages/admin/Reports.jsx"));
-const ActivityLog = lazy(() => import("../pages/admin/ActivityLog.jsx"));
-const AccountDeletionRequests = lazy(
+const AdminReports = lazyImport(() => import("../pages/admin/Reports.jsx"));
+const ActivityLog = lazyImport(() => import("../pages/admin/ActivityLog.jsx"));
+const AccountDeletionRequests = lazyImport(
   () => import("../pages/admin/AccountDeletionRequests.jsx"),
 );
-const Settings = lazy(() => import("../pages/admin/Settings.jsx"));
-const SupportChat = lazy(() => import("../pages/admin/SupportChat.jsx"));
-const CustomerRequests = lazy(
+const Settings = lazyImport(() => import("../pages/admin/Settings.jsx"));
+const SupportChat = lazyImport(() => import("../pages/admin/SupportChat.jsx"));
+const CustomerRequests = lazyImport(
   () => import("../pages/admin/CustomerRequests.jsx"),
 );
-const Banners = lazy(() => import("../pages/admin/Banners.jsx"));
-const Testimonials = lazy(() => import("../pages/admin/Testimonials.jsx"));
-const AuctionManagement = lazy(
+const Banners = lazyImport(() => import("../pages/admin/Banners.jsx"));
+const Testimonials = lazyImport(() => import("../pages/admin/Testimonials.jsx"));
+const AuctionManagement = lazyImport(
   () => import("../pages/admin/AuctionManagement.jsx"),
 );
 
 // Blog Admin (Lazy)
-const BlogsOverview = lazy(() => import("../pages/admin/BlogsOverview.jsx"));
-const BlogCategories = lazy(() => import("../pages/admin/BlogCategories.jsx"));
-const BlogCreateEnhanced = lazy(
+const BlogsOverview = lazyImport(() => import("../pages/admin/BlogsOverview.jsx"));
+const BlogCategories = lazyImport(() => import("../pages/admin/BlogCategories.jsx"));
+const BlogCreateEnhanced = lazyImport(
   () => import("../pages/admin/BlogCreateEnhanced.jsx"),
 );
-const BlogEdit = lazy(() => import("../pages/admin/BlogEdit.jsx"));
-const BlogComments = lazy(() => import("../pages/admin/BlogComments.jsx"));
-const BlogMediaLibrary = lazy(
+const BlogEdit = lazyImport(() => import("../pages/admin/BlogEdit.jsx"));
+const BlogComments = lazyImport(() => import("../pages/admin/BlogComments.jsx"));
+const BlogMediaLibrary = lazyImport(
   () => import("../pages/admin/BlogMediaLibrary.jsx"),
 );
 
 // Help (Lazy)
-const HelpCenter = lazy(() => import("../pages/help/HelpCenter.jsx"));
-const FAQs = lazy(() => import("../pages/help/FAQs.jsx"));
+const HelpCenter = lazyImport(() => import("../pages/help/HelpCenter.jsx"));
+const FAQs = lazyImport(() => import("../pages/help/FAQs.jsx"));
 
 const AppRouter = () => {
   const location = useLocation();

@@ -16,7 +16,10 @@ export default defineConfig({
 
     // Copy _redirects for Netlify/Vercel
     viteStaticCopy({
-      targets: [{ src: "public/_redirects", dest: "." }],
+      targets: [
+        { src: "public/_redirects", dest: "." },
+        { src: "public/_headers", dest: "." },
+      ],
     }),
 
     // Fast image optimization - minimal build time impact

@@ -4,6 +4,10 @@ import {
   isRouteErrorResponse,
   useNavigate,
 } from "react-router-dom";
+import {
+  clearChunkRetryFlag,
+  tryReloadOnceForStaleChunk,
+} from "../../utils/lazyImports.js";
 
 // Functional component wrapper for ErrorBoundary with navigate
 const ErrorBoundaryWithNavigate = ({ children }) => {
@@ -24,6 +28,10 @@ class ErrorBoundaryClass extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
+    if (tryReloadOnceForStaleChunk(error)) {
+      return;
+    }
+
     // Log error to console
     console.error("ErrorBoundary caught an error", error, {
       componentStack: errorInfo?.componentStack,
@@ -91,6 +99,7 @@ class ErrorBoundaryClass extends React.Component {
             <div className="space-y-3">
               <button
                 onClick={() => {
+                  clearChunkRetryFlag();
                   this.setState({ hasError: false, error: null });
                   this.props.navigate("/");
                 }}
@@ -99,7 +108,10 @@ class ErrorBoundaryClass extends React.Component {
                 Go to Homepage
               </button>
               <button
-                onClick={() => this.props.navigate(0)}
+                onClick={() => {
+                  clearChunkRetryFlag();
+                  window.location.reload();
+                }}
                 className="w-full bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
               >
                 Refresh Page
