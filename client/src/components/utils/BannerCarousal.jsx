@@ -206,10 +206,11 @@ const BannerCarousal = () => {
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`transition-all duration-300 rounded-full ${
+              type="button"
+              className={`h-3 w-3 md:h-3.5 md:w-3.5 shrink-0 rounded-full bg-white shadow-sm transition-[transform,opacity] duration-300 ease-out origin-center ${
                 index === currentSlide
-                  ? "w-3 h-3 md:w-3.5 md:h-3.5 bg-white shadow-lg"
-                  : "w-2.5 h-2.5 md:w-3 md:h-3 bg-white/60 hover:bg-white/80"
+                  ? "scale-110 opacity-100 shadow-lg"
+                  : "scale-[0.88] opacity-60 hover:opacity-80"
               }`}
               aria-label={`Go to slide ${index + 1}`}
             />

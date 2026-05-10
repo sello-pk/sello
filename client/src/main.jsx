@@ -10,6 +10,21 @@ import { SocketProvider } from "./contexts/SocketContext.jsx";
 import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
 import AppRoot from "./AppRoot.jsx";
 import { logger } from "./utils/logger.js";
+import heroLcpUrl from "./assets/images/hero.webp";
+
+// Early LCP hint: same URL as Hero.jsx (browser dedupes with <img>)
+if (typeof document !== "undefined") {
+  const id = "sello-preload-hero-lcp";
+  if (!document.getElementById(id)) {
+    const link = document.createElement("link");
+    link.id = id;
+    link.rel = "preload";
+    link.as = "image";
+    link.href = heroLcpUrl;
+    link.setAttribute("fetchpriority", "high");
+    document.head.appendChild(link);
+  }
+}
 
 // Lazy load Google OAuth only when needed
 const GoogleOAuthProvider = lazy(() => 
@@ -29,10 +44,6 @@ if (!googleClientId) {
     );
   }
 }
-
-// Check if we're on auth pages
-const isAuthPage = typeof window !== 'undefined' && 
-  (window.location.pathname === '/login' || window.location.pathname === '/signup');
 
 // Always wrap with OAuth provider when configured
 const OAuthWrapper = ({ children }) => {
