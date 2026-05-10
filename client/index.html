@@ -8,9 +8,10 @@
   <link rel="icon" href="/favicon.png" />
   <link rel="manifest" href="/manifest.json" />
 
-  <!-- Preconnect hints for performance -->
+  <!-- Preconnect hints for performance ([data] APIs = warm TLS early). Maps: dns-prefetch only so
+       homepage LCP is not competing with an unused Google Maps TLS handshake on first paint. -->
   <link rel="preconnect" href="https://api.sello.pk" />
-  <link rel="preconnect" href="https://maps.googleapis.com" />
+  <link rel="dns-prefetch" href="https://maps.googleapis.com" />
   <!-- Meta Pixel host: dns-prefetch only (cheap); script itself is deferred — avoids competing with LCP/FCP -->
   <link rel="dns-prefetch" href="https://connect.facebook.net" />
 

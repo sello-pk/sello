@@ -1,10 +1,8 @@
 import React, { useEffect, Suspense } from "react";
 import { useLocation } from "react-router-dom";
 import Hero from "../components/sections/home/Hero";
-import HowAuctionsWork from "../components/auction/HowAuctionsWork";
 import NewsLatter from "../components/utils/NewsLatter";
 import BuySellCards from "../components/utils/BuySellCards";
-import BannerCarousal from "../components/utils/BannerCarousal";
 import SEO from "../components/common/SEO";
 import StructuredData from "../components/common/StructuredData";
 import RecentlyViewedCars from "../components/sections/home/RecentlyViewedCars";
@@ -18,6 +16,12 @@ const BrandsSection = React.lazy(() =>
 );
 const FeaturedCarsCarousel = React.lazy(() =>
   import("../components/sections/home/FeaturedCarsCarousel"),
+);
+const BannerCarousal = React.lazy(() =>
+  import("../components/utils/BannerCarousal"),
+);
+const HowAuctionsWork = React.lazy(() =>
+  import("../components/auction/HowAuctionsWork"),
 );
 
 const Home = () => {
@@ -59,7 +63,16 @@ const Home = () => {
         <Suspense fallback={<div style={{height: "400px"}} className="bg-gray-100 animate-pulse rounded-lg" />}>
           <Video />
         </Suspense>
-        <BannerCarousal />
+        <Suspense
+          fallback={
+            <section
+              className="relative w-full min-h-[60vh] md:min-h-[350px] lg:min-h-[400px] overflow-hidden bg-gradient-to-r from-primary-500/30 to-gray-400/40 animate-pulse"
+              aria-hidden="true"
+            />
+          }
+        >
+          <BannerCarousal />
+        </Suspense>
         <Suspense
           fallback={
             <section
@@ -95,7 +108,28 @@ const Home = () => {
         >
           <FeaturedCarsCarousel />
         </Suspense>
-        <HowAuctionsWork />
+        <Suspense
+          fallback={
+            <section
+              className="py-16 min-h-[280px] bg-gradient-to-br from-slate-50 to-primary-50/20"
+              aria-hidden="true"
+            >
+              <div className="max-w-5xl mx-auto px-4">
+                <div className="h-10 w-64 max-w-[80%] mx-auto rounded-lg bg-gray-200/80 animate-pulse mb-10" />
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-36 rounded-xl bg-gray-200/60 animate-pulse"
+                    />
+                  ))}
+                </div>
+              </div>
+            </section>
+          }
+        >
+          <HowAuctionsWork />
+        </Suspense>
         <Suspense fallback={<div style={{height: "400px"}} className="bg-gray-100 animate-pulse rounded-lg" />}>
           <CustomerReview key="customer-review" />
         </Suspense>
