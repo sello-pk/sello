@@ -76,7 +76,7 @@ import wbDigitalLogo from "./images/wbDigital.svg";
 import mianMotors from "./images/mianMotors.png";
 
 // SELLO VIDEO
-import selloVideo from "./selloVideo.webp";
+import selloVideo from "./selloVideo.gif";
 
 // Category Images
 import carCat from "./categories/carCat.webp";
