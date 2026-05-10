@@ -378,7 +378,7 @@ const GetAllCarsSection = () => {
                   {page - 1}
                 </button>
               )}
-              <span className="min-w-10 px-3 py-2.5 rounded-xl bg-primary-500 text-white font-semibold text-sm text-center">
+              <span className="min-w-10 px-3 py-2.5 rounded-xl bg-primary-800 text-white font-semibold text-sm text-center">
                 {page}
               </span>
               {page < totalPages && (
@@ -407,7 +407,7 @@ const GetAllCarsSection = () => {
                   setPage((p) => Math.min(p + 1, totalPages));
                 }}
                 disabled={page === totalPages}
-                className="inline-flex items-center justify-center min-w-[120px] px-4 py-2.5 rounded-xl bg-primary-500 text-white font-semibold hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors gap-2 text-sm"
+                className="inline-flex items-center justify-center min-w-[120px] px-4 py-2.5 rounded-xl bg-primary-800 text-white font-semibold hover:bg-primary-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors gap-2 text-sm"
               >
                 Next
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

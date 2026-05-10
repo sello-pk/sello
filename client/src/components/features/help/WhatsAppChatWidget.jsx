@@ -408,10 +408,13 @@ const WhatsAppChatWidget = () => {
   if (!isOpen) {
     return (
       <button
+        type="button"
         onClick={() => setIsOpen(true)}
+        aria-label="Open support chat"
+        title="Support chat"
         className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-[#050B20] text-white p-3 sm:p-4 rounded-full shadow-lg hover:bg-[#050B20] transition-all z-50 flex items-center gap-2"
       >
-        <FiMessageSquare size={24} />
+        <FiMessageSquare size={24} aria-hidden />
         <span className="hidden sm:inline">Support</span>
       </button>
     );
@@ -420,7 +423,7 @@ const WhatsAppChatWidget = () => {
   return (
     <div className="fixed z-50 flex flex-col bg-white shadow-2xl transition-all overflow-hidden bottom-3 left-3 right-3 h-[min(78vh,620px)] rounded-xl sm:bottom-6 sm:left-auto sm:right-6 sm:w-96 sm:h-[600px] sm:rounded-lg">
       {/* Header */}
-      <div className="bg-primary-500 text-white p-3 sm:p-4 flex justify-between items-center">
+      <div className="bg-primary-700 text-white p-3 sm:p-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
             <FiMessageSquare />

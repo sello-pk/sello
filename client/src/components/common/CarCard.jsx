@@ -142,6 +142,9 @@ const CarCard = ({
         )}`
       : "";
   const phoneUrl = contactNumber ? `tel:${contactNumber.replace(/\s/g, "")}` : "";
+  const callSellerLabel = contactNumber?.trim()
+    ? `Call seller at ${contactNumber.trim()}`
+    : "Call seller";
   const showPhone = showContactButtons && !car?.isSold && !!phoneUrl;
   const showWhatsAppBtn = showContactButtons && !car?.isSold && !!whatsappUrl;
 
@@ -164,10 +167,10 @@ const CarCard = ({
 
   const tagStyles = {
     sold: "bg-[#111827] text-white",
-    auction: "bg-[#FFA602] text-white",
-    featured: "bg-primary-500 text-white",
-    verified: "bg-[#16a34a] text-white",
-    for_sale: "bg-[#111827]/80 text-white",
+    auction: "bg-amber-900 text-white",
+    featured: "bg-neutral-900 text-white",
+    verified: "bg-[#15803d] text-white",
+    for_sale: "bg-[#111827]/90 text-white",
   };
 
   const priceLabel = isAuction 
@@ -189,6 +192,7 @@ const CarCard = ({
       <div
         role={isClickable ? "button" : undefined}
         tabIndex={isClickable ? 0 : undefined}
+        aria-label={isClickable ? `View details for ${displayTitle}` : undefined}
         onClick={isClickable ? handleCardClick : undefined}
         onKeyDown={
           isClickable
@@ -289,11 +293,11 @@ const CarCard = ({
                     <a
                       href={phoneUrl}
                       onClick={(e) => e.stopPropagation()}
-                      className="p-2.5 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
-                      title="Call"
-                      aria-label="Call"
+                      className="p-2.5 rounded-lg bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
+                      title={callSellerLabel}
+                      aria-label={callSellerLabel}
                     >
-                      <FaPhone className="w-4 h-4" />
+                      <FaPhone className="w-4 h-4" aria-hidden />
                     </a>
                   )}
                   {showWhatsAppBtn && (
@@ -311,10 +315,10 @@ const CarCard = ({
                   )}
                 </div>
                 {showViewCta && (
-                  <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-primary-500 text-white text-xs sm:text-sm font-semibold hover:brightness-110 transition-colors shrink-0">
-                    <span className="hidden xs:inline">VIEW</span>
-                    <span className="xs:hidden">VIEW</span>
-                    <IoIosArrowRoundUp className="w-3 h-3 sm:w-4 sm:h-4 rotate-[43deg]" />
+                  <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-primary-800 text-white text-xs sm:text-sm font-semibold hover:bg-primary-900 transition-colors shrink-0">
+                    <span className="sr-only">{`View ${displayTitle}`}</span>
+                    <span aria-hidden>VIEW</span>
+                    <IoIosArrowRoundUp className="w-3 h-3 sm:w-4 sm:h-4 rotate-[43deg]" aria-hidden />
                   </span>
                 )}
               </div>
@@ -335,6 +339,7 @@ const CarCard = ({
     <div
       role={isClickable ? "button" : undefined}
       tabIndex={isClickable ? 0 : undefined}
+      aria-label={isClickable ? `View listing: ${displayTitle}, ${priceLabel} PKR ${priceFormatted}` : undefined}
       onClick={isClickable ? handleCardClick : undefined}
       onKeyDown={
         isClickable
@@ -479,11 +484,11 @@ const CarCard = ({
               <a
                 href={phoneUrl}
                 onClick={(e) => e.stopPropagation()}
-                className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
-                title="Call"
-                aria-label="Call"
+                className="p-1.5 rounded-lg bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
+                title={callSellerLabel}
+                aria-label={callSellerLabel}
               >
-                <FaPhone className="w-3.5 h-3.5" />
+                <FaPhone className="w-3.5 h-3.5" aria-hidden />
               </a>
             )}
             {showWhatsAppBtn && (
@@ -501,9 +506,9 @@ const CarCard = ({
             )}
           </div>
           {showViewCta && (
-            <span className="inline-flex items-center gap-0.5 text-primary-500 font-semibold text-xs hover:underline group-hover:text-primary-600 transition-colors shrink-0">
+            <span className="inline-flex items-center gap-0.5 text-neutral-900 font-semibold text-xs underline-offset-2 group-hover:underline shrink-0">
               <span>View</span>
-              <IoIosArrowRoundUp className="w-3 h-3 rotate-[43deg]" />
+              <IoIosArrowRoundUp className="w-3 h-3 rotate-[43deg]" aria-hidden />
             </span>
           )}
         </div>

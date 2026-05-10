@@ -29,7 +29,7 @@ const BottomHeader = () => {
   return (
     <div
       style={{ zIndex: 1000 }}
-      className="bg-[#050B20] border-y border-gray-200/80 w-full min-h-[52px] md:min-h-[56px] flex flex-col md:flex-row md:items-center md:justify-between gap-2 sm:gap-3 md:gap-6 px-3 sm:px-4 md:px-8 lg:px-20 py-2 md:py-3 text-sm md:text-base text-gray-100 overflow-x-hidden"
+      className="bg-[#050B20] border-y border-gray-200/80 w-full min-h-[52px] md:min-h-[56px] flex flex-col md:flex-row md:items-center md:justify-between gap-2 sm:gap-3 md:gap-6 px-3 sm:px-4 md:px-8 lg:px-20 py-2 md:py-3 text-sm md:text-base text-white overflow-x-hidden"
     >
       <div className="flex w-full md:w-auto min-w-0 min-h-[44px] items-center gap-2 sm:gap-3 md:gap-4">
         {isLoading && (
@@ -51,9 +51,9 @@ const BottomHeader = () => {
               to="/auctions/live"
               aria-label="Go to live auction"
               title="Go to live auction"
-              className="inline-flex items-center px-3 py-1 gap-2 animate-pulse duration-500 ease rounded-full text-xs font-medium bg-red-600 text-white border border-red-600 whitespace-nowrap flex-shrink-0"
+              className="inline-flex items-center px-3 py-1 gap-2 animate-pulse duration-500 ease rounded-full text-xs font-semibold bg-red-900 text-white border border-red-900 whitespace-nowrap flex-shrink-0"
             >
-              <FiZap className="w-4 h-4 shrink-0" />
+              <FiZap className="w-4 h-4 shrink-0 text-white" aria-hidden />
               <span>Live</span>
             </Link>
 
@@ -67,7 +67,7 @@ const BottomHeader = () => {
               <FaLocationDot className="w-4 h-4 shrink-0" />
               <div className="min-w-0 leading-tight">
                 <p className="truncate text-sm font-semibold">{auctionVenue}</p>
-                <p className="truncate text-xs text-white/70">{auctionName}</p>
+                <p className="truncate text-xs text-white/85">{auctionName}</p>
               </div>
             </Link>
           </>
@@ -77,7 +77,7 @@ const BottomHeader = () => {
       <div className="flex w-full md:w-auto items-center md:justify-end gap-2 sm:gap-3 md:gap-6 min-w-0">
         {/* Countdown */}
         <div className="flex items-center gap-2 rounded-2xl bg-white/10 px-2.5 sm:px-3 py-1.5 sm:py-2 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_10px_30px_rgba(5,11,32,0.28)] min-w-0">
-          <span className="text-white/70 text-[10px] sm:text-xs uppercase tracking-[0.12em] whitespace-nowrap">
+          <span className="text-white text-[10px] sm:text-xs uppercase tracking-[0.12em] whitespace-nowrap">
             Ends In
           </span>
           <CountdownTimer
@@ -91,11 +91,11 @@ const BottomHeader = () => {
         <div className="flex items-center gap-3 sm:gap-4 md:gap-6 min-w-0 ml-auto">
           {showAuction && (
             <span
-              className="hidden lg:inline-flex items-center gap-2 text-white/80 text-sm whitespace-nowrap"
+              className="hidden lg:inline-flex items-center gap-2 text-white text-sm whitespace-nowrap"
               role="status"
               aria-live="polite"
             >
-              <RefreshCw className="w-4 h-4 animate-spin text-primary-500" />
+              <RefreshCw className="w-4 h-4 animate-spin text-amber-300" aria-hidden />
               Live auction updating
             </span>
           )}
@@ -113,9 +113,9 @@ const BottomHeader = () => {
           {/* Filter (FIXED - already had text but improved) */}
           <Link
             to="/filter"
-            aria-label="Open filters"
+            aria-label="Open vehicle filters"
             title="Filter cars"
-            className="text-white text-sm sm:text-base whitespace-nowrap"
+            className="text-white text-sm sm:text-base font-medium whitespace-nowrap underline-offset-4 hover:underline"
           >
             Filter
           </Link>

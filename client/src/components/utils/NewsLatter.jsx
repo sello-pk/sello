@@ -47,10 +47,15 @@ const NewsLatter = () => {
           onSubmit={handleSubmit}
           className="field bg-white/20 h-12 sm:h-14 md:h-16 w-full max-w-md mx-auto px-3 sm:px-4 flex items-center justify-between gap-2 sm:gap-3 rounded-full"
         >
+          <label htmlFor="newsletter-email" className="sr-only">
+            Email address for newsletter
+          </label>
           <input
-            className="flex-1 h-full text-sm sm:text-base md:text-lg outline-none text-primary-500 bg-transparent border-none placeholder:text-primary-500/80"
+            id="newsletter-email"
+            className="flex-1 h-full text-sm sm:text-base md:text-lg outline-none text-white bg-transparent border-none placeholder:text-white/85"
             type="email"
             placeholder="Your Email Address..."
+            aria-label="Email address for newsletter"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -59,7 +64,7 @@ const NewsLatter = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-primary-500 text-white text-xs sm:text-sm md:text-base py-1.5 px-3 sm:py-2 sm:px-4 md:py-3 md:px-6 rounded-full hover:opacity-90 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-primary-500 text-white text-xs sm:text-sm md:text-base py-1.5 px-3 sm:py-2 sm:px-4 md:py-3 md:px-6 rounded-full hover:opacity-90 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#050B20]"
           >
             {isLoading ? "Subscribing..." : "Subscribe"}
           </button>

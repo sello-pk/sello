@@ -65,10 +65,10 @@ const BlogSection = () => {
           </div>
         ) : (
           <>
-            <div className="text-sm text-gray-500 mb-3 flex items-center gap-2" role="status" aria-live="polite">
-              <span className="inline-flex items-center gap-1 rounded-full bg-gray-200 px-2.5 py-1">
+            <div className="text-sm text-neutral-800 mb-3 flex items-center gap-2" role="status" aria-live="polite">
+              <span className="inline-flex items-center gap-1 rounded-full border border-gray-300 bg-white px-2.5 py-1 text-neutral-900 font-medium shadow-sm">
                 <svg
-                  className="w-4 h-4 text-gray-700"
+                  className="w-4 h-4 text-neutral-900"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -122,7 +122,7 @@ const BlogSection = () => {
                   <div className="mb-3 flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2 min-w-0">
                       <div className="relative w-8 h-8 flex-shrink-0 rounded-full overflow-hidden">
-                        <div className="absolute inset-0 flex items-center justify-center rounded-full bg-primary-500 text-white text-xs font-semibold" aria-hidden="true">
+                        <div className="absolute inset-0 flex items-center justify-center rounded-full bg-primary-800 text-white text-xs font-semibold" aria-hidden="true">
                           {(blog.author?.name || "A")[0].toUpperCase()}
                         </div>
                         {blog.author?.avatar && (
@@ -138,9 +138,9 @@ const BlogSection = () => {
                           />
                         )}
                       </div>
-                      <h5 className="text-sm text-gray-600 font-medium truncate">
+                      <p className="text-sm text-gray-700 font-medium truncate">
                         By {blog.author?.name || "Admin"}
-                      </h5>
+                      </p>
                     </div>
                     <p className="text-xs text-gray-600 flex-shrink-0">
                       {formatDate(blog.publishedAt || blog.createdAt)}
@@ -154,7 +154,7 @@ const BlogSection = () => {
                       blog.content?.replace(/<[^>]*>/g, "").substring(0, 150) +
                         "..."}
                   </p>
-                  <div className="mt-4 text-primary-500 font-medium flex items-center gap-1 hover:gap-2 transition-all">
+                  <div className="mt-4 text-primary-900 font-semibold flex items-center gap-1 hover:gap-2 transition-all">
                     Read more
                     <MdArrowRightAlt className="text-xl" aria-hidden="true" />
                   </div>

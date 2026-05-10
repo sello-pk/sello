@@ -201,19 +201,25 @@ const BannerCarousal = () => {
 
       {/* Pagination Dots */}
       {activeSlides.length > 1 && (
-        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-30 flex gap-2 md:gap-3">
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-30 flex items-center justify-center gap-1 md:gap-2">
           {activeSlides.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
               type="button"
-              className={`h-3 w-3 md:h-3.5 md:w-3.5 shrink-0 rounded-full bg-white shadow-sm transition-[transform,opacity] duration-300 ease-out origin-center ${
-                index === currentSlide
-                  ? "scale-110 opacity-100 shadow-lg"
-                  : "scale-[0.88] opacity-60 hover:opacity-80"
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
+              aria-label={`Go to banner slide ${index + 1} of ${activeSlides.length}`}
+              title={`Slide ${index + 1}`}
+              className="inline-flex min-h-11 min-w-11 items-center justify-center p-0 rounded-full focus-visible:outline focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-gray-600"
+            >
+              <span
+                className={`block h-3 w-3 md:h-3.5 md:w-3.5 rounded-full bg-white shadow-sm transition-[transform,opacity] duration-300 ease-out origin-center ${
+                  index === currentSlide
+                    ? "scale-110 opacity-100 shadow-lg"
+                    : "scale-[0.88] opacity-60 hover:opacity-90"
+                }`}
+                aria-hidden
+              />
+            </button>
           ))}
         </div>
       )}

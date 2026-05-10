@@ -137,7 +137,7 @@ const FeaturedCarsCarousel = () => {
                   {page - 1}
                 </button>
               )}
-              <span className="min-w-10 rounded-xl bg-primary-500 px-3 py-2.5 text-center text-sm font-semibold text-white">
+              <span className="min-w-10 rounded-xl bg-primary-800 px-3 py-2.5 text-center text-sm font-semibold text-white">
                 {page}
               </span>
               {page < totalPages && (
@@ -160,7 +160,7 @@ const FeaturedCarsCarousel = () => {
               <button
                 onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
                 disabled={page === totalPages}
-                className="inline-flex min-w-[120px] items-center justify-center gap-2 rounded-xl bg-primary-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex min-w-[120px] items-center justify-center gap-2 rounded-xl bg-primary-800 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-900 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>

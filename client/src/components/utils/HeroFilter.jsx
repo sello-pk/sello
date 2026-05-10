@@ -191,6 +191,8 @@ const HeroFilter = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-3">
             <Select
               inputId="make-select"
+              name="make-select"
+              aria-label="Vehicle make"
               value={
                 makeSelectOptions.find((o) => o.value === filters.make) || null
               }
@@ -205,6 +207,8 @@ const HeroFilter = () => {
 
             <Select
               inputId="model-select"
+              name="model-select"
+              aria-label="Vehicle model"
               value={
                 modelSelectOptions.find((o) => o.value === filters.model) ||
                 null
@@ -220,6 +224,8 @@ const HeroFilter = () => {
 
             <Select
               inputId="city-select"
+              name="city-select"
+              aria-label="City"
               value={
                 citySelectOptions.find((o) => o.value === filters.city) || null
               }
@@ -234,7 +240,9 @@ const HeroFilter = () => {
 
             <input
               type="number"
+              id="hero-min-price"
               placeholder="Min Price"
+              aria-label="Minimum price in PKR"
               className="h-12 bg-gray-50 rounded-xl px-4"
               value={filters.minPrice}
               onChange={(e) => handleChange("minPrice", e.target.value)}
@@ -242,7 +250,9 @@ const HeroFilter = () => {
 
             <input
               type="number"
+              id="hero-max-price"
               placeholder="Max Price"
+              aria-label="Maximum price in PKR"
               className="h-12 bg-gray-50 rounded-xl px-4"
               value={filters.maxPrice}
               onChange={(e) => handleChange("maxPrice", e.target.value)}
@@ -250,7 +260,7 @@ const HeroFilter = () => {
 
             <button
               type="submit"
-              className="h-12 bg-primary-500 text-white rounded-xl flex items-center justify-center gap-2 font-medium"
+              className="h-12 bg-primary-500 text-white rounded-xl flex items-center justify-center gap-2 font-semibold hover:bg-primary-800 focus-visible:outline focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-600"
             >
               <FiSearch />
               Search
@@ -261,21 +271,21 @@ const HeroFilter = () => {
             <button
               onClick={() => navigate("/listings")}
               type="button"
-              className="h-12 border border-primary text-primary px-4 rounded-lg"
+              className="h-12 border border-primary-500 text-primary-500 px-4 rounded-lg font-medium hover:bg-primary-500 hover:text-white"
             >
               Browse Listings
             </button>
             <button
               onClick={() => navigate("/create-post")}
               type="button"
-              className="h-12 border border-primary text-primary px-4 rounded-lg"
+              className="h-12 border border-primary-500 text-primary-500 px-4 rounded-lg font-medium hover:bg-primary-500 hover:text-white"
             >
               Sell Your Car
             </button>
             <button
               onClick={() => navigate("/auctions/live")}
               type="button"
-              className="h-12 border border-primary text-primary px-4 rounded-lg"
+              className="h-12 border border-primary-500 text-primary-500 px-4 rounded-lg font-medium hover:bg-primary-500 hover:text-white"
             >
               Live Auction
             </button>

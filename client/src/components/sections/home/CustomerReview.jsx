@@ -447,8 +447,9 @@ const CustomerReview = () => {
         <div className="text-center mt-12">
           {token ? (
             <button
+              type="button"
               onClick={handleOpenReviewForm}
-              className="bg-primary-500 hover:opacity-90 text-white px-8 py-4 rounded font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
+              className="bg-primary-500 hover:opacity-90 text-white px-8 py-4 rounded font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-700"
             >
               Write a Review
             </button>
@@ -458,8 +459,9 @@ const CustomerReview = () => {
                 Want to share your experience?
               </p>
               <button
+                type="button"
                 onClick={() => navigate("/login")}
-                className="bg-primary-500 hover:bg-primary-600 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
+                className="bg-primary-700 hover:bg-primary-800 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-700"
               >
                 Login to Write a Review
               </button>

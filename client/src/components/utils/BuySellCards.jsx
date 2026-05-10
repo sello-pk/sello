@@ -21,7 +21,7 @@ const BuySellCards = () => {
               <div className="flex items-end justify-between gap-4">
                 <Link
                   to={post.redirect}
-                  className="inline-flex h-11 items-center gap-2 rounded-lg bg-primary-500 px-5 text-white font-semibold hover:opacity-90 transition-colors"
+                  className="inline-flex h-11 items-center gap-2 rounded-lg bg-primary-500 px-5 text-white font-semibold hover:opacity-90 transition-colors focus-visible:ring-2 focus-visible:ring-primary-700 focus-visible:ring-offset-2"
                   aria-label={`Get started ${post.title.toLowerCase().includes('looking') ? 'buying a car' : 'selling a car'}`}
                 >
                   {post.title.toLowerCase().includes('looking') ? 'Browse Cars' : 'Sell Your Car'}
