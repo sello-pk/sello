@@ -22,14 +22,13 @@ const FeaturedCarsCarousel = () => {
     if (!Array.isArray(cars)) {
       return [];
     }
-    return cars
-      .filter(
-        (car) =>
-          car.featured === true &&
-          car.isApproved !== false &&
-          car.status !== "sold" &&
-          !car.isSold,
-      );
+    return cars.filter(
+      (car) =>
+        car.featured === true &&
+        car.isApproved !== false &&
+        car.status !== "sold" &&
+        !car.isSold,
+    );
   }, [carsData]);
 
   const totalPages = carsData?.pages || 1;
@@ -137,7 +136,7 @@ const FeaturedCarsCarousel = () => {
                   {page - 1}
                 </button>
               )}
-              <span className="min-w-10 rounded-xl bg-primary-800 px-3 py-2.5 text-center text-sm font-semibold text-white">
+              <span className="min-w-10 rounded-xl bg-primary-500 px-3 py-2.5 text-center text-sm font-semibold text-white">
                 {page}
               </span>
               {page < totalPages && (
@@ -148,7 +147,9 @@ const FeaturedCarsCarousel = () => {
                   {page + 1}
                 </button>
               )}
-              {page < totalPages - 2 && <span className="px-1 text-gray-400">...</span>}
+              {page < totalPages - 2 && (
+                <span className="px-1 text-gray-400">...</span>
+              )}
               {page < totalPages - 1 && (
                 <button
                   onClick={() => setPage(totalPages)}
@@ -160,7 +161,7 @@ const FeaturedCarsCarousel = () => {
               <button
                 onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
                 disabled={page === totalPages}
-                className="inline-flex min-w-[120px] items-center justify-center gap-2 rounded-xl bg-primary-800 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-900 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex min-w-[120px] items-center justify-center gap-2 rounded-xl bg-primary-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>
