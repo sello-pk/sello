@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import FilterResultsSection from "../../components/sections/filter/FilterResultsSection";
@@ -6,12 +6,14 @@ import SortAndViewOptions from "../../components/listings/SortAndViewOptions";
 import { FiX, FiFilter } from "react-icons/fi";
 import Breadcrumb from "../../components/common/Breadcrumb";
 import { useGetFilteredCarsQuery } from "../../redux/services/api";
+import { trackSearch } from "../../utils/metaPixel.js";
 
 const FilteredResults = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [sortBy, setSortBy] = useState("newest");
   const [viewMode, setViewMode] = useState("grid");
+  const searchTrackedKey = useRef("");
 
   // Get search term from URL params (navbar search)
   const searchTerm = searchParams.get("search") || "";
@@ -44,6 +46,15 @@ const FilteredResults = () => {
     queryParams,
     { skip: !queryParams },
   );
+
+  useEffect(() => {
+    const q = searchTerm.trim();
+    if (!q || apiLoading || apiError || !apiResults) return;
+    const key = `${q}|${searchParams.toString()}`;
+    if (searchTrackedKey.current === key) return;
+    searchTrackedKey.current = key;
+    trackSearch(q);
+  }, [searchTerm, apiLoading, apiError, apiResults, searchParams]);
 
   // Debug: Log API results
   console.log('FilteredResults - API Query:', queryParams);

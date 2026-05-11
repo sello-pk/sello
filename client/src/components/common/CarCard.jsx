@@ -13,6 +13,7 @@ import { buildCarUrl } from "../../utils/urlBuilders";
 import { images } from "../../assets/assets";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "../../utils/errorHandler";
+import { trackContact } from "../../utils/metaPixel.js";
 
 const CountdownTimer = ({ targetDate }) => {
   const [time, setTime] = React.useState({ d: 0, h: 0, m: 0, s: 0 });
@@ -305,7 +306,10 @@ const CarCard = ({
                       href={whatsappUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        trackContact();
+                        e.stopPropagation();
+                      }}
                       className="p-2.5 rounded-lg bg-[#25D366] text-white hover:opacity-90 transition-colors"
                       title="WhatsApp"
                       aria-label="WhatsApp"
@@ -496,7 +500,10 @@ const CarCard = ({
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  trackContact();
+                  e.stopPropagation();
+                }}
                 className="p-1.5 rounded-lg bg-[#25D366] text-white hover:opacity-90 transition-colors"
                 title="WhatsApp"
                 aria-label="WhatsApp"

@@ -12,6 +12,7 @@ const WhatsAppChatWidget = lazy(() =>
 import { ThemeProvider } from "./contexts/ThemeContext.jsx";
 import AppRouter from "./routes/AppRouter.jsx";
 import SEO from "./components/common/SEO.jsx";
+import useMetaPixel from "./hooks/useMetaPixel.js";
 
 const prettifySlug = (value = "") =>
   value
@@ -479,55 +480,6 @@ const getRouteSeo = (pathname, search) => {
     : defaultSeo;
 };
 
-/** Meta Pixel PageView on SPA navigations (initial PageView is queued from index.html when Pixel inject runs). */
-const MetaPixelRoutePageViews = () => {
-  const { pathname, search } = useLocation();
-  const isFirstPaint = React.useRef(true);
-
-  React.useEffect(() => {
-    if (isFirstPaint.current) {
-      isFirstPaint.current = false;
-      return;
-    }
-
-    let cancelled = false;
-    const track = () => {
-      if (cancelled) return;
-      if (typeof window.fbq !== "function") return;
-      try {
-        window.fbq("track", "PageView");
-      } catch {
-        /* ignore */
-      }
-    };
-
-    track();
-    if (typeof window.fbq === "function") {
-      return () => {
-        cancelled = true;
-      };
-    }
-
-    const started = Date.now();
-    const id = window.setInterval(() => {
-      if (cancelled) return;
-      if (typeof window.fbq === "function") {
-        track();
-        window.clearInterval(id);
-        return;
-      }
-      if (Date.now() - started > 20000) window.clearInterval(id);
-    }, 150);
-
-    return () => {
-      cancelled = true;
-      window.clearInterval(id);
-    };
-  }, [pathname, search]);
-
-  return null;
-};
-
 const ScrollToTop = () => {
   const { pathname } = useLocation();
 
@@ -547,6 +499,7 @@ const ScrollToTop = () => {
 };
 
 const App = () => {
+  useMetaPixel();
   const location = useLocation();
   const fallbackSeo = useMemo(
     () => getRouteSeo(location.pathname, location.search),
@@ -570,7 +523,6 @@ const App = () => {
   return (
     <ThemeProvider>
       {fallbackSeo && <SEO {...fallbackSeo} />}
-      <MetaPixelRoutePageViews />
       <ScrollToTop />
       <Toaster />
 

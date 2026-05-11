@@ -1,33 +1,102 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Responsive -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <link rel="icon" href="/favicon.png" />
-  <link rel="manifest" href="/manifest.json" />
+    <!-- Favicon / PWA -->
+    <link rel="icon" href="/favicon.png" />
+    <link rel="manifest" href="/manifest.json" />
 
-  <!-- Preconnect hints for performance ([data] APIs = warm TLS early). Maps: dns-prefetch only so
-       homepage LCP is not competing with an unused Google Maps TLS handshake on first paint. -->
-  <link rel="preconnect" href="https://api.sello.pk" />
-  <link rel="dns-prefetch" href="https://maps.googleapis.com" />
-  <!-- Meta Pixel host: dns-prefetch only (cheap); script itself is deferred — avoids competing with LCP/FCP -->
-  <link rel="dns-prefetch" href="https://connect.facebook.net" />
+    <!-- Performance -->
+    <link rel="preconnect" href="https://api.sello.pk" />
+    <link rel="dns-prefetch" href="https://maps.googleapis.com" />
+    <link rel="preconnect" href="https://connect.facebook.net" crossorigin />
 
-  <meta name="robots" content="index, follow" />
-  <meta name="theme-color" content="#3B82F6" />
-  <meta name="author" content="Sello" />
-  <meta name="publisher" content="Sello" />
-  <meta name="description"
-    content="Sello helps you buy and sell cars in Pakistan with verified listings, smart filters, and trusted dealers." />
-  <meta name="format-detection" content="telephone=no" />
-  <link rel="canonical" href="https://sello.pk/" />
+    <!-- SEO -->
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#3B82F6" />
+    <meta name="author" content="Sello" />
+    <meta name="publisher" content="Sello" />
+    <meta name="format-detection" content="telephone=no" />
 
-  <!-- Content Security Policy handled by server-side helmet middleware -->
+    <meta
+      name="description"
+      content="Sello helps you buy and sell cars in Pakistan with verified listings, smart filters, and trusted dealers."
+    />
 
-  <!-- Schema.org Structured Data (JSON-LD) -->
-  <script type="application/ld+json">
+    <link rel="canonical" href="https://sello.pk/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Sello" />
+    <meta property="og:title" content="Sello - Buy and Sell Cars in Pakistan" />
+    <meta
+      property="og:description"
+      content="Discover verified car listings, compare options, and sell your car confidently on Sello."
+    />
+    <meta property="og:url" content="https://sello.pk/" />
+    <meta property="og:image" content="https://sello.pk/favicon.png" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Sello - Buy and Sell Cars in Pakistan"
+    />
+    <meta
+      name="twitter:description"
+      content="Discover verified car listings, compare options, and sell your car confidently on Sello."
+    />
+    <meta name="twitter:image" content="https://sello.pk/favicon.png" />
+
+    <!-- ========================= -->
+    <!-- META PIXEL -->
+    <!-- ========================= -->
+
+    <script>
+      !(function (f, b, e, v, n, t, s) {
+        if (f.fbq) return;
+
+        n = f.fbq = function () {
+          n.callMethod
+            ? n.callMethod.apply(n, arguments)
+            : n.queue.push(arguments);
+        };
+
+        if (!f._fbq) f._fbq = n;
+
+        n.push = n;
+        n.loaded = true;
+        n.version = "2.0";
+        n.queue = [];
+
+        t = b.createElement(e);
+        t.async = true;
+        t.src = v;
+
+        s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s);
+      })(
+        window,
+        document,
+        "script",
+        "https://connect.facebook.net/en_US/fbevents.js",
+      );
+
+      fbq("init", "1329404792372303");
+
+      // Initial PageView
+      fbq("track", "PageView");
+    </script>
+
+    <!-- ========================= -->
+    <!-- STRUCTURED DATA -->
+    <!-- ========================= -->
+
+    <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@graph": [
@@ -139,103 +208,26 @@
       }
     </script>
 
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Sello" />
-  <meta property="og:title" content="Sello - Buy and Sell Cars in Pakistan" />
-  <meta property="og:description"
-    content="Discover verified car listings, compare options, and sell your car confidently on Sello." />
-  <meta property="og:url" content="https://sello.pk/" />
-  <meta property="og:image" content="https://sello.pk/favicon.png" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Sello - Buy and Sell Cars in Pakistan" />
-  <meta name="twitter:description"
-    content="Discover verified car listings, compare options, and sell your car confidently on Sello." />
-  <meta name="twitter:image" content="https://sello.pk/favicon.png" />
+    <!-- Title -->
+    <title>Sello - Buy and Sell Cars in Pakistan</title>
+  </head>
 
-  <!-- App CSS is injected by Vite via src/main.jsx (index.css). Avoid stale hashed /assets/*.css links — they 404 after rebuild and cause FOUC / CLS. -->
+  <body>
+    <!-- Meta Pixel Noscript -->
+    <noscript>
+      <img
+        height="1"
+        width="1"
+        style="display: none"
+        src="https://www.facebook.com/tr?id=1329404792372303&ev=PageView&noscript=1"
+        alt=""
+      />
+    </noscript>
 
-  <!-- Meta Pixel — after window.load + requestIdleCallback (timeout caps wait) so fbevents.js does not
-       contend with first paint / LCP. Do not gate on DNT/GPC or .adsbox heuristics (Events Manager reliability). -->
-  <script>
-    (function () {
-      function setFbqNoop() {
-        if (typeof window.fbq !== "function") {
-          window.fbq = function () { };
-          window.fbq.queue = [];
-        }
-      }
+    <!-- React Root -->
+    <div id="root"></div>
 
-      function injectMetaPixel() {
-        if (window.__selloFbPixelScheduled) return;
-        window.__selloFbPixelScheduled = true;
-
-        try {
-          !(function (f, b, e, v, n, t, s) {
-            if (f.fbq) return;
-            n = f.fbq = function () {
-              n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
-            };
-            if (!f._fbq) f._fbq = n;
-            n.push = n;
-            n.loaded = !0;
-            n.version = "2.0";
-            n.queue = [];
-            t = b.createElement(e);
-            t.async = !0;
-            t.src = v;
-            try {
-              t.fetchPriority = "low";
-            } catch (err) {
-              /* older engines */
-            }
-            t.onerror = function () {
-              setFbqNoop();
-            };
-            s = b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t, s);
-          })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
-
-          if (typeof window.fbq === "function") {
-            window.fbq("init", "1329404792372303");
-            window.fbq("track", "PageView");
-          }
-        } catch (e) {
-          setFbqNoop();
-        }
-      }
-
-      function scheduleWhenIdle(fn) {
-        if (typeof window.requestIdleCallback === "function") {
-          window.requestIdleCallback(fn, { timeout: 5000 });
-        } else {
-          window.setTimeout(fn, 2000);
-        }
-      }
-
-      window.addEventListener(
-        "load",
-        function () {
-          scheduleWhenIdle(injectMetaPixel);
-        },
-        { once: true },
-      );
-    })();
-  </script>
-  <!-- End Meta Pixel Code -->
-
-  <title>Sello - Buy and Sell Cars in Pakistan</title>
-</head>
-
-<body>
-
-  <!-- ONLY FIX -->
-  <noscript>
-    <img height="1" width="1" style="display:none"
-      src="https://www.facebook.com/tr?id=1329404792372303&ev=PageView&noscript=1" />
-  </noscript>
-
-  <div id="root"></div>
-  <script type="module" src="/src/main.jsx"></script>
-</body>
-
+    <!-- React Entry -->
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>

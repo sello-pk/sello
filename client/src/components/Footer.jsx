@@ -2,6 +2,7 @@ import React from "react";
 import { footerData } from "../assets/assets";
 import { Link } from "react-router-dom";
 import { apple, android, facebook, instagram } from "../assets/assets";
+import { trackContact } from "../utils/metaPixel.js";
 import { FaYoutube, FaWhatsapp } from "react-icons/fa";
 import { FaTiktok } from "react-icons/fa6";
 
@@ -112,6 +113,7 @@ const Footer = () => {
                     href="https://wa.me/923134211023"
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => trackContact()}
                     className="hover:text-white transition-colors duration-200 inline-flex items-center gap-2"
                   >
                     <FaWhatsapp size={16} />

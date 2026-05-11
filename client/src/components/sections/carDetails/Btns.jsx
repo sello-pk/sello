@@ -21,6 +21,7 @@ import {
   FaWhatsapp,
 } from "react-icons/fa";
 import { extractCarIdFromSlug } from "../../../utils/urlBuilders";
+import { trackContact } from "../../../utils/metaPixel.js";
 
 const Btns = () => {
   const navigate = useNavigate();
@@ -120,6 +121,7 @@ const Btns = () => {
     const detailsUrl = typeof window !== "undefined" ? window.location.href : "";
     const defaultMessage = `Hi, I'm interested in this car listing on Sello: ${detailsUrl}`;
     const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(defaultMessage)}`;
+    trackContact();
     window.open(waUrl, "_blank", "noopener,noreferrer");
   };
 

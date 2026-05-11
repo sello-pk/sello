@@ -2,6 +2,7 @@ import React from "react";
 import { MdEmail, MdLocationOn } from "react-icons/md";
 import { FaPhoneAlt, FaClock, FaWhatsapp } from "react-icons/fa";
 import { FiMail, FiPhone, FiMapPin, FiClock } from "react-icons/fi";
+import { trackContact } from "../../../utils/metaPixel.js";
 
 const ContactInformation = () => {
   const contactInfo = [
@@ -99,6 +100,9 @@ const ContactInformation = () => {
                               className="block text-gray-700 hover:text-primary-500 transition-colors"
                               target={item.label === "WhatsApp" ? "_blank" : "_self"}
                               rel={item.label === "WhatsApp" ? "noopener noreferrer" : ""}
+                              onClick={
+                                item.label === "WhatsApp" ? () => trackContact() : undefined
+                              }
                             >
                               <span className="text-sm font-medium text-gray-500 block mb-1">
                                 {item.label}:
@@ -147,6 +151,7 @@ const ContactInformation = () => {
             href="https://wa.me/923134211023"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackContact()}
             className="inline-flex items-center gap-2 bg-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors"
           >
             <FaWhatsapp size={20} />

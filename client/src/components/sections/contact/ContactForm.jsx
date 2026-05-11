@@ -10,6 +10,7 @@ import {
   FiMessageSquare,
   FiLoader,
 } from "react-icons/fi";
+import { trackLead } from "../../../utils/metaPixel.js";
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -92,6 +93,7 @@ const ContactForm = () => {
       });
 
       if (response.data.success) {
+        trackLead();
         toast.success("Message sent successfully! We'll get back to you soon.");
         setFormData({
           firstName: "",

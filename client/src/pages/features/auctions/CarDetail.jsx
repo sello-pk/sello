@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import toast from "react-hot-toast";
@@ -42,6 +42,7 @@ import {
 import { useSocket } from "@contexts/SocketContext";
 import BidPriceChart from "@components/auction/BidPriceChart";
 import SEO from "../../../components/common/SEO";
+import { trackViewContent } from "../../../utils/metaPixel.js";
 
 const Badge = ({ children, variant = "default", className = "", ...props }) => {
   const variants = {
@@ -145,6 +146,7 @@ export default function CarDetail() {
   const [proxyMax, setProxyMax] = useState(0);
   const [activeTab, setActiveTab] = useState("specs");
   const [valuationResult, setValuationResult] = useState(null);
+  const viewContentTrackedId = useRef(null);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -224,6 +226,19 @@ export default function CarDetail() {
       ? `View auction details for the ${car.year || ""} ${car.make} ${car.model} on Sello.pk. Check bidding activity, inspection info, pricing, and vehicle specifications before you bid.`
       : "View auction car details on Sello.pk including current bid, inspection information, pricing, and vehicle specifications before placing your bid.";
   const canonicalUrl = `https://sello.pk${location.pathname}${location.search}`;
+
+  useEffect(() => {
+    const c = detail?.car;
+    if (!detail || !c?._id || !auctionCarId) return;
+    const key = `${auctionCarId}|${c._id}`;
+    if (viewContentTrackedId.current === key) return;
+    viewContentTrackedId.current = key;
+    trackViewContent({
+      ...c,
+      price: detail?.currentBid ?? detail?.startingBid ?? c.price,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per auction car; detail identity updates on poll; ref key blocks dupes
+  }, [detail, auctionCarId, detail?.car?._id]);
 
   useEffect(() => {
     setBidAmount(currentHigh + minIncrement);

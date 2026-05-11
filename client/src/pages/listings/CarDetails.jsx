@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useGetSingleCarQuery, useGetLiveAuctionByCarIdQuery } from "../../redux/services/api";
 import { useRecentlyViewedCars } from "../../hooks/useRecentlyViewedCars";
@@ -19,6 +19,7 @@ import SEO from "../../components/common/SEO";
 import StructuredData from "../../components/common/StructuredData";
 import { extractCarIdFromSlug } from "../../utils/urlBuilders";
 import AuctionBidBlock from "../../components/auction/AuctionBidBlock";
+import { trackViewContent } from "../../utils/metaPixel.js";
 
 const CarDetails = () => {
   const { id: routeParam } = useParams();
@@ -39,6 +40,7 @@ const CarDetails = () => {
     skip: !extractedCarId,
   });
   const { addRecentlyViewed } = useRecentlyViewedCars();
+  const viewContentTrackedId = useRef(null);
 
   // Track car as recently viewed when it loads
   useEffect(() => {
@@ -46,6 +48,13 @@ const CarDetails = () => {
       addRecentlyViewed(car);
     }
   }, [car, addRecentlyViewed]);
+
+  useEffect(() => {
+    if (!car?._id) return;
+    if (viewContentTrackedId.current === car._id) return;
+    viewContentTrackedId.current = car._id;
+    trackViewContent(car);
+  }, [car]);
 
   // Scroll to top when component mounts or route changes
   useEffect(() => {
