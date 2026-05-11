@@ -315,7 +315,7 @@ const CarCard = ({
                   )}
                 </div>
                 {showViewCta && (
-                  <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-primary-800 text-white text-xs sm:text-sm font-semibold hover:bg-primary-900 transition-colors shrink-0">
+                  <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-primary-500 text-white text-xs sm:text-sm font-semibold hover:bg-primary-600 transition-colors shrink-0">
                     <span className="sr-only">{`View ${displayTitle}`}</span>
                     <span aria-hidden>VIEW</span>
                     <IoIosArrowRoundUp className="w-3 h-3 sm:w-4 sm:h-4 rotate-[43deg]" aria-hidden />
