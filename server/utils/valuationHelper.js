@@ -131,13 +131,19 @@ const removeOutliers = (cars) => {
    STEP 2: AI ADJUSTMENT (ONLY % BASED)
 -------------------------------------------------- */
 export const getAIAdjustment = async (vehicleData, baselinePrice) => {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const rawKey = process.env.OPENAI_API_KEY || process.env.OPENAI_KEY;
+  const apiKey = typeof rawKey === "string" ? rawKey.trim() : "";
   if (!apiKey) {
+    Logger.warn(
+      "Car valuation: OPENAI_API_KEY (or OPENAI_KEY) is not set; skipping OpenAI — set it on the server to enable GPT refinement.",
+    );
     return {
       adjustedPrice: baselinePrice,
       adjustmentPercent: 0,
-      reason: "AI adjustment unavailable; using market baseline.",
+      reason:
+        "Market-only estimate: the server has no OpenAI API key configured, so this result uses listing data and rules only. Add OPENAI_API_KEY to your deployment environment (and billing/credits on the OpenAI account) to enable GPT-4o refinement.",
       confidenceScore: 70,
+      usedOpenAI: false,
     };
   }
 
@@ -188,12 +194,16 @@ Return JSON:
       ],
       response_format: { type: "json_object" },
       temperature: 0.2,
-      max_tokens: 150,
+      max_tokens: 400,
     }),
   });
 
   if (!response.ok) {
     const errorText = await response.text();
+    Logger.error("OpenAI valuation request failed", {
+      status: response.status,
+      body: errorText?.slice?.(0, 500),
+    });
     throw new Error(`OpenAI request failed (${response.status}): ${errorText}`);
   }
 
@@ -216,11 +226,17 @@ Return JSON:
   );
   const adjustedPrice = Math.round(baselinePrice * (1 + adjustment / 100));
 
+  const reasonText =
+    typeof result.reason === "string" && result.reason.trim()
+      ? result.reason.trim()
+      : `Applied a ${adjustment >= 0 ? "+" : ""}${adjustment}% adjustment to the PKR ${baselinePrice.toLocaleString("en-PK")} baseline based on mileage and condition.`;
+
   return {
     adjustedPrice,
     adjustmentPercent: adjustment,
-    reason: result.reason,
-    confidenceScore: result.confidenceScore || 80,
+    reason: reasonText,
+    confidenceScore: Number(result.confidenceScore) || 80,
+    usedOpenAI: true,
   };
 };
 
@@ -323,10 +339,16 @@ export const calculateEstimation = async (vehicleData) => {
     aiAdjustment = {
       adjustedPrice: baselinePrice,
       adjustmentPercent: 0,
-      reason: "AI valuation temporarily unavailable; using market baseline.",
+      reason:
+        "AI refinement was skipped or failed (check server logs, OPENAI_API_KEY, and OpenAI billing). Showing market baseline only.",
       confidenceScore: 70,
+      usedOpenAI: false,
     };
   }
+
+  const summaryText =
+    (aiAdjustment.reason && String(aiAdjustment.reason).trim()) ||
+    "Estimate based on similar listings and standard depreciation factors.";
 
   return {
     averagePrice: aiAdjustment.adjustedPrice,
@@ -334,13 +356,17 @@ export const calculateEstimation = async (vehicleData) => {
     maxPrice: Math.round(aiAdjustment.adjustedPrice * 1.07),
     confidenceScore:
       cleanedCars.length >= 5 ? 90 : cleanedCars.length >= 3 ? 75 : 60,
-    analysisSummary: aiAdjustment.reason,
+    analysisSummary: summaryText,
     marketContext: {
       similarListingsCount: cleanedCars.length,
       dataSource:
-        similarCars.length > 0 ? "Similar Cars" : "Brand Average + AI",
+        similarCars.length > 0
+          ? "Similar Cars"
+          : aiAdjustment.usedOpenAI
+            ? "Brand Average + AI"
+            : "Brand average (heuristic baseline)",
     },
-    isAIPowered: true,
+    isAIPowered: Boolean(aiAdjustment.usedOpenAI),
   };
 };
 

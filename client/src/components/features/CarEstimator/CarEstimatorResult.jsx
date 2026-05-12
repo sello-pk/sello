@@ -337,7 +337,9 @@ const CarEstimatorResult = ({ result, onSave, onSellCar }) => {
                 </div>
                 <div className="bg-white rounded-lg p-3 sm:p-4 border border-blue-100">
                   <p className="text-blue-800 text-sm leading-relaxed whitespace-pre-line">
-                    {result.summary}
+                    {String(result.summary ?? "").trim()
+                      ? result.summary
+                      : "No written analysis was returned for this estimate. Try running the estimator again, or contact support if this persists."}
                   </p>
                 </div>
                 {result.isAIPowered && (
