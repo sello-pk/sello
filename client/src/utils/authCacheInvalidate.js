@@ -1,20 +1,26 @@
 /**
  * RTK Query cache invalidation for auth/session changes.
- * Lives in its own module so tokenManager does not statically import `api` (avoids circular init with api → tokenManager).
+ * Keep imports lazy to avoid initialization cycles in production bundles.
  */
-import { store } from "../redux/store.js";
-import { api } from "../redux/services/api.js";
-import { adminApi } from "../redux/services/adminApi.js";
-
 export function invalidateAuthCaches() {
-  try {
-    store.dispatch(api.util.invalidateTags(["User"]));
-  } catch {
-    // ignore
-  }
-  try {
-    store.dispatch(adminApi.util.invalidateTags(["Users"]));
-  } catch {
-    // ignore
-  }
+  void Promise.all([
+    import("../redux/store.js"),
+    import("../redux/services/api.js"),
+    import("../redux/services/adminApi.js"),
+  ])
+    .then(([storeMod, apiMod, adminMod]) => {
+      try {
+        storeMod.store.dispatch(apiMod.api.util.invalidateTags(["User"]));
+      } catch {
+        // ignore
+      }
+      try {
+        storeMod.store.dispatch(
+          adminMod.adminApi.util.invalidateTags(["Users"]),
+        );
+      } catch {
+        // ignore
+      }
+    })
+    .catch(() => {});
 }
