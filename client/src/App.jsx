@@ -1,13 +1,15 @@
-import React, { lazy, Suspense, useMemo } from "react";
+import React, { Suspense, useMemo } from "react";
 import { matchPath, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import { lazyImport } from "./utils/lazyImports.js";
 
 // Components
 import Navbar from "./components/Navbar.jsx";
 import BottomHeader from "./components/BottomHeader.jsx";
 import Footer from "./components/Footer.jsx";
-const WhatsAppChatWidget = lazy(() =>
-  import("./components/features/help/WhatsAppChatWidget.jsx"),
+/** Chunk filename avoids "WhatsApp" (many blockers strip that URL substring). */
+const HelpChatWidget = lazyImport(() =>
+  import("./components/features/help/HelpChatWidget.jsx"),
 );
 import { ThemeProvider } from "./contexts/ThemeContext.jsx";
 import AppRouter from "./routes/AppRouter.jsx";
@@ -546,10 +548,10 @@ const App = () => {
       {/* Show Footer except for auth pages & admin */}
       {shouldShowNavbarFooter && <Footer />}
 
-      {/* Support Chat Widget — lazy chunk so initial parse/eval skips widget + deps */}
+      {/* Support chat — lazy chunk; filename HelpChatWidget avoids ad-block false blocks */}
       {shouldShowNavbarFooter && (
         <Suspense fallback={null}>
-          <WhatsAppChatWidget />
+          <HelpChatWidget />
         </Suspense>
       )}
     </ThemeProvider>
