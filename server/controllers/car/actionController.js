@@ -68,6 +68,20 @@ const parseNumericField = (value) => {
   return numbers[0];
 };
 
+/** Multer / multipart can surface duplicate fields as arrays — use last value. */
+const firstMultipartScalar = (v) => {
+  if (v === undefined || v === null) return v;
+  if (Array.isArray(v)) return v.length ? v[v.length - 1] : "";
+  return v;
+};
+
+/** Strip spaces/dashes so client can send "0300-1234567" and schema still validates. */
+const normalizeListingPhone = (v) => {
+  const s = firstMultipartScalar(v);
+  if (s === undefined || s === null) return s;
+  return String(s).replace(/[\s-]/g, "").trim();
+};
+
 const parseGeoLocation = (rawGeoLocation) => {
   const defaultCoordinates = [74.3587, 31.5204]; // Lahore fallback
   if (!rawGeoLocation) {
@@ -156,6 +170,20 @@ export const createCar = async (req, res) => {
   try {
     if (!req.user) return res.status(401).json({ success: false, message: "Unauthorized" });
     const requestStartedAt = Date.now();
+
+    if (req.body.contactNumber !== undefined) {
+      req.body.contactNumber = firstMultipartScalar(req.body.contactNumber);
+    }
+    if (req.body.whatsappNumber !== undefined) {
+      req.body.whatsappNumber = firstMultipartScalar(req.body.whatsappNumber);
+    }
+    if (req.body.contactNumber != null && req.body.contactNumber !== "") {
+      const n = normalizeListingPhone(req.body.contactNumber);
+      if (n) req.body.contactNumber = n;
+    }
+    if (req.body.whatsappNumber != null && req.body.whatsappNumber !== "") {
+      req.body.whatsappNumber = normalizeListingPhone(req.body.whatsappNumber) || "";
+    }
 
     const validation = validateRequiredFields(req.body.vehicleType || "Car", req.body);
     if (!validation.isValid) {
@@ -257,6 +285,20 @@ export const editCar = async (req, res) => {
       return res.status(403).json({ success: false, message: "Not authorized" });
     }
 
+    if (req.body.contactNumber !== undefined) {
+      req.body.contactNumber = firstMultipartScalar(req.body.contactNumber);
+    }
+    if (req.body.whatsappNumber !== undefined) {
+      req.body.whatsappNumber = firstMultipartScalar(req.body.whatsappNumber);
+    }
+    if (req.body.contactNumber != null && req.body.contactNumber !== "") {
+      const n = normalizeListingPhone(req.body.contactNumber);
+      if (n) req.body.contactNumber = n;
+    }
+    if (req.body.whatsappNumber != null && req.body.whatsappNumber !== "") {
+      req.body.whatsappNumber = normalizeListingPhone(req.body.whatsappNumber) || "";
+    }
+
     const validation = validateRequiredFields(req.body.vehicleType || car.vehicleType || "Car", req.body);
     if (!validation.isValid) {
       return res.status(400).json({ success: false, message: `Missing: ${validation.missing.join(", ")}` });
@@ -312,6 +354,16 @@ export const editCar = async (req, res) => {
       req.body.vehicleType || car.vehicleType || "Car", 
       updateData
     );
+
+    // Never drop contact fields: scrub uses a whitelist; multipart quirks must not omit phones.
+    if (Object.prototype.hasOwnProperty.call(req.body, "contactNumber")) {
+      const normalizedContact = normalizeListingPhone(req.body.contactNumber);
+      if (normalizedContact) finalUpdateData.contactNumber = normalizedContact;
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body, "whatsappNumber")) {
+      const w = normalizeListingPhone(req.body.whatsappNumber);
+      finalUpdateData.whatsappNumber = w === undefined || w === null ? "" : w;
+    }
 
     const updated = await Car.findByIdAndUpdate(id, finalUpdateData, { new: true, runValidators: true });
     return res.status(200).json({ success: true, data: updated });

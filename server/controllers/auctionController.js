@@ -2486,6 +2486,15 @@ export const updateMyAuctionSubmissionByCar = async (req, res) => {
       });
     }
 
+    if (Array.isArray(req.body.contactNumber)) {
+      req.body.contactNumber =
+        req.body.contactNumber[req.body.contactNumber.length - 1];
+    }
+    if (Array.isArray(req.body.whatsappNumber)) {
+      req.body.whatsappNumber =
+        req.body.whatsappNumber[req.body.whatsappNumber.length - 1];
+    }
+
     const {
       title,
       description,
@@ -2650,9 +2659,16 @@ export const updateMyAuctionSubmissionByCar = async (req, res) => {
     car.bodyType = bodyType ?? car.bodyType;
     car.city = city || car.city;
     car.location = location ?? car.location;
-    car.contactNumber = contactNumber || car.contactNumber;
-    car.whatsappNumber =
-      whatsappNumber !== undefined ? whatsappNumber : car.whatsappNumber;
+    if (contactNumber !== undefined && contactNumber !== null) {
+      const normalizedContact = String(contactNumber)
+        .replace(/[\s-]/g, "")
+        .trim();
+      if (normalizedContact) car.contactNumber = normalizedContact;
+    }
+    if (whatsappNumber !== undefined) {
+      const w = String(whatsappNumber).replace(/[\s-]/g, "").trim();
+      car.whatsappNumber = w || "";
+    }
     car.geoLocation = normalizedGeoLocation;
     car.warranty = warranty || car.warranty;
     car.ownerType = ownerType || car.ownerType;

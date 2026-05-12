@@ -34,6 +34,12 @@ const splitList = (value) =>
     .map((item) => item.trim())
     .filter(Boolean);
 
+/** Match server/schema validation: digits only, optional leading +; ignore spaces/dashes in UI. */
+const normalizeContactInput = (raw) =>
+  String(raw ?? "")
+    .replace(/[\s-]/g, "")
+    .trim();
+
 const formatGeoLocation = (geoLocation) => {
   if (!geoLocation?.coordinates?.length) return "";
   return JSON.stringify({
@@ -314,7 +320,7 @@ const EditCarForm = () => {
     }
   };
 
-  const handleRegularSubmit = async () => {
+  const handleRegularSubmit = async (contactNorm, waNorm) => {
     const requiredFields = getRequiredFields(formData.vehicleType);
     const missing = requiredFields.filter((key) => {
       const value = formData[key];
@@ -362,11 +368,48 @@ const EditCarForm = () => {
       });
     }
 
-    const skipKeys = ["images", "existingImages", "features", "carDoors", "horsepower", "numberOfCylinders", "engineCapacity", "regionalSpec"];
-    Object.keys(formData).forEach((key) => {
-      if (skipKeys.includes(key)) return;
-      data.append(key, defaults[key] !== undefined ? defaults[key] : formData[key]);
+    const scalarFields = [
+      "title",
+      "description",
+      "vehicleType",
+      "make",
+      "model",
+      "year",
+      "condition",
+      "price",
+      "colorExterior",
+      "colorInterior",
+      "fuelType",
+      "transmission",
+      "mileage",
+      "bodyType",
+      "city",
+      "location",
+      "warranty",
+      "ownerType",
+      "variant",
+      "country",
+      "state",
+      "regionalSpec",
+      "engineCapacity",
+      "horsepower",
+      "carDoors",
+      "numberOfCylinders",
+      "batteryRange",
+      "motorPower",
+      "vehicleTypeCategory",
+    ];
+
+    scalarFields.forEach((key) => {
+      const raw = defaults[key] !== undefined ? defaults[key] : formData[key];
+      if (raw === undefined || raw === null || raw === "") return;
+      data.append(key, String(raw));
     });
+
+    data.append("contactNumber", contactNorm);
+    data.append("whatsappNumber", waNorm ?? "");
+
+    data.append("geoLocation", JSON.stringify(parsedGeoLocation));
 
     data.append("newImagesFirst", formData.isNewImageCover ? "true" : "false");
 
@@ -380,7 +423,7 @@ const EditCarForm = () => {
     return true;
   };
 
-  const handleAuctionSubmit = async () => {
+  const handleAuctionSubmit = async (contactNorm, waNorm) => {
     if (!formData.title || !formData.make || !formData.model || !formData.year) {
       toast.error("Title, make, model, and year are required.");
       return false;
@@ -426,8 +469,8 @@ const EditCarForm = () => {
       ["colorInterior", formData.colorInterior],
       ["city", formData.city],
       ["location", formData.location],
-      ["contactNumber", formData.contactNumber],
-      ["whatsappNumber", formData.whatsappNumber],
+      ["contactNumber", contactNorm],
+      ["whatsappNumber", waNorm ?? ""],
       ["geoLocation", formData.geoLocation],
       ["warranty", formData.warranty],
       ["ownerType", formData.ownerType],
@@ -454,19 +497,24 @@ const EditCarForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!/^\+?\d{9,15}$/.test(formData.contactNumber)) {
+    const contactNorm = normalizeContactInput(formData.contactNumber);
+    const waNorm = formData.whatsappNumber
+      ? normalizeContactInput(formData.whatsappNumber)
+      : "";
+
+    if (!/^\+?\d{9,15}$/.test(contactNorm)) {
       toast.error("Invalid contact number. Must be 9-15 digits.");
       return;
     }
-    if (formData.whatsappNumber && !/^\+?\d{9,15}$/.test(formData.whatsappNumber)) {
+    if (waNorm && !/^\+?\d{9,15}$/.test(waNorm)) {
       toast.error("Invalid WhatsApp number. Must be 9-15 digits or leave empty.");
       return;
     }
 
     if (isAuction) {
-      await handleAuctionSubmit();
+      await handleAuctionSubmit(contactNorm, waNorm);
     } else {
-      await handleRegularSubmit();
+      await handleRegularSubmit(contactNorm, waNorm);
     }
   };
 

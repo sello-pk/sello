@@ -61,7 +61,9 @@ const sanitizeObject = (obj, excludeFields = []) => {
                 key.toLowerCase().includes('avatar') ||
                 key === 'geoLocation' ||
                 key === 'content' || // Blog content from editor
-                key === 'description' // Rich text descriptions
+                key === 'description' || // Rich text descriptions
+                key === 'contactNumber' ||
+                key === 'whatsappNumber'
             ) {
                 sanitized[key] = value;
             } else {
@@ -110,7 +112,9 @@ export const sanitizeInput = (excludeFields = []) => {
                                 !key.toLowerCase().includes('avatar') &&
                                 key !== 'geoLocation' &&
                                 key !== 'content' &&
-                                key !== 'description'
+                                key !== 'description' &&
+                                key !== 'contactNumber' &&
+                                key !== 'whatsappNumber'
                             ) {
                                 req.query[key] = sanitizeString(value);
                             }
