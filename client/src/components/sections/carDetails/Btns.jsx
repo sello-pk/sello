@@ -152,10 +152,10 @@ const Btns = () => {
 
   return (
     <>
-      <div className="px-4 md:px-20 py-6 bg-[#F9FAFB] border-b border-gray-200">
-        <div className="flex flex-wrap gap-4 items-center justify-between">
+      <div className="px-3 sm:px-4 md:px-8 lg:px-20 py-6 bg-[#F9FAFB] border-b border-gray-200 w-full min-w-0 max-w-full">
+        <div className="flex flex-col gap-4 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between w-full min-w-0">
           {/* Left Side - Action Buttons */}
-          <div className="flex flex-wrap gap-4 items-center">
+          <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4 items-center min-w-0">
             {/* Contact Seller / Chat Button */}
             {!isSold && (
               <button
@@ -224,7 +224,7 @@ const Btns = () => {
           </div>
 
           {/* Right Side - Status & Report */}
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 shrink-0">
             {isSold && (
               <span className="px-4 py-2 bg-red-100 text-red-600 rounded-lg font-semibold">
                 Sold

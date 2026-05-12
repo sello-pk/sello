@@ -69,7 +69,7 @@ const FilterPage = () => {
   };
 
   return (
-    <div className="max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-10">
+    <div className="max-w-8xl mx-auto w-full min-w-0 px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-10">
       <div className="text-center mb-6 sm:mb-8">
         <h2 className="text-2xl sm:text-3xl font-semibold text-primary-500">
           Find the Right Vehicle

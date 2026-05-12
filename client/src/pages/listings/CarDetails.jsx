@@ -183,7 +183,7 @@ const CarDetails = () => {
   const carImage = car?.images?.[0] || "/logo.png";
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen w-full min-w-0 max-w-full overflow-x-hidden bg-gray-50">
       <SEO
         title={carTitle}
         description={carDescription}
@@ -217,9 +217,9 @@ const CarDetails = () => {
         <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 mt-2 space-y-4">
           <Link
             to={`/auctions/car-detail?id=${liveAuctionByCar.auctionCarId}`}
-            className="flex items-center justify-between gap-4 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-amber-900 hover:bg-amber-100 transition-colors"
+            className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-lg bg-amber-50 border border-amber-200 px-3 sm:px-4 py-3 text-amber-900 hover:bg-amber-100 transition-colors min-w-0"
           >
-            <span className="font-medium">
+            <span className="font-medium min-w-0 break-words">
               {liveAuctionByCar.auction?.status === "live"
                 ? "Also in Live Auction"
                 : "In Upcoming Auction"}

@@ -33,7 +33,7 @@ const Home = () => {
   }, [location.pathname]);
 
   return (
-    <div className="">
+    <div className="w-full min-w-0 max-w-full overflow-x-hidden">
       <SEO
         title="Car for Sale in Pakistan | Buy & Sell Used Cars – Sello.pk"
         description="Find the best car for sale in Pakistan on Sello.pk. Buy or sell used cars in Karachi, Lahore, Islamabad & beyond with verified sellers and fair pricing."
@@ -43,7 +43,7 @@ const Home = () => {
       {/* Structured Data for SEO */}
       <StructuredData.OrganizationSchema />
       <StructuredData.WebSiteSchema />
-      <div className="">
+      <div className="w-full min-w-0">
         <Hero />
         <Suspense
           fallback={

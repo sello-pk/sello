@@ -11,6 +11,18 @@ body,
   overflow-x: hidden;
 }
 
+/* Main outlet: flex/grid defaults use min-width:auto and can force horizontal scroll */
+#main-content {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Smoother horizontal scroll regions on touch devices */
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
 img,
 video,
 canvas,
