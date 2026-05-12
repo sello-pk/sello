@@ -651,8 +651,10 @@ function ResaleTool() {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between mb-5">
             <h3 className="font-bold text-gray-800 text-sm">Year-by-Year Value</h3>
-            <div className="flex items-center gap-1 bg-gradient-to-r from-purple-100 to-blue-100 px-2 py-1 rounded-full">
-              <span className="text-xs font-medium text-purple-700">AI Powered</span>
+            <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-full">
+              <span className="text-xs font-medium text-gray-700">
+                Rule-based curve
+              </span>
             </div>
           </div>
           
@@ -746,6 +748,7 @@ const CarEstimatorPage = () => {
       estimatedPriceAverage: (result.min + result.max) / 2,
       created_date: new Date().toISOString(),
       summary: result.summary,
+      marketContext: result.marketContext ?? null,
     };
 
     const updatedValuations = [...savedValuations, valuation];
@@ -807,7 +810,7 @@ const CarEstimatorPage = () => {
                 className="inline-flex items-center gap-2 bg-white text-primary-500 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium mb-4"
               >
                 <Zap className="w-4 h-4" />
-                AI-Powered • Real-Time Market Data
+                Sello listings + market rules
               </MotionDiv>
 
               <motion.h1
@@ -825,8 +828,9 @@ const CarEstimatorPage = () => {
                 transition={{ delay: 0.2 }}
                 className="text-base sm:text-lg text-gray-100 max-w-3xl mx-auto mb-8 px-4"
               >
-                Our AI analyzes real-time data from Sello & local dealerships to
-                give you the most accurate valuation for your car.
+                PKR ranges use similar cars on Sello and standard depreciation
+                rules. Optional GPT-4o refinement runs only when the API server
+                has a valid OpenAI key and your OpenAI account accepts requests.
               </motion.p>
 
               {/* Trust Badges */}
@@ -845,11 +849,11 @@ const CarEstimatorPage = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
-                  <span>95% accuracy</span>
+                  <span>Listing-based model</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
-                  <span>Updated hourly</span>
+                  <span>Updated when you run an estimate</span>
                 </div>
               </motion.div>
             </div>

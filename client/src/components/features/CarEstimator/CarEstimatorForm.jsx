@@ -234,6 +234,7 @@ export default function CarEstimatorForm({ onEstimate }) {
         summary: estimation.analysisSummary,
         isAIPowered: estimation.isAIPowered || false,
         formData: vehicleData,
+        marketContext: estimation.marketContext || null,
       });
       toast.success("Analysis complete!");
     } catch (error) {

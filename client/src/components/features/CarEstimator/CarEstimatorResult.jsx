@@ -82,56 +82,46 @@ const CarEstimatorResult = ({ result, onSave, onSellCar }) => {
   const scores = calculateConditionScores();
   const avgPrice = (result.min + result.max) / 2;
 
-  // Mock market comparison data
-  const marketData = [
-    {
-      platform: "Real-time data",
-      price: avgPrice,
-      km: "0 km",
-      source: "Market Database",
-    },
-    {
-      platform: "Pakistan Market",
-      price: avgPrice * 0.97,
-      km: "118,000 km",
-      source: "Used, 2025 model, 118,000 km, Good condition",
-    },
-    {
-      platform: "Local Dealerships",
-      price: avgPrice * 1.03,
-      km: "95,000 km",
-      source: "Dealer certified, 2025 model, 95,000 km, Excellent condition",
-    },
-    {
-      platform: "Market Analysis",
-      price: avgPrice * 0.95,
-      km: "135,000 km",
-      source: "Used, 2025 model, 135,000 km, Fair condition",
-    },
-    {
-      platform: "Recent Sales",
-      price: avgPrice * 1.06,
-      km: "88,000 km",
-      source: "Sold last week, 2025 model, 88,000 km, Excellent condition",
-    },
-    {
-      platform: "Market Trends",
-      price: avgPrice * 0.99,
-      km: "125,000 km",
-      source: "Market average, 2025 model, 125,000 km, Average condition",
-    },
-  ];
+  const formatEngineLabel = (raw) => {
+    if (!raw) return "Petrol";
+    return String(raw)
+      .replace(/_/g, " ")
+      .split(" ")
+      .filter(Boolean)
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(" ");
+  };
 
   const getDemandLevel = () => {
     const formData = result.formData || {};
     let demand = "Medium";
+    const makeLower = String(formData.make || "").toLowerCase();
 
-    if (formData.make === "toyota" || formData.make === "honda")
+    if (
+      makeLower.includes("toyota") ||
+      makeLower.includes("honda") ||
+      makeLower.includes("suzuki")
+    ) {
       demand = "High";
-    if (formData.engineType === "hybrid" || formData.engineType === "electric")
+    }
+    const engineLower = String(formData.engineType || "").toLowerCase();
+    if (engineLower === "hybrid" || engineLower === "electric") {
       demand = "High";
-    if (formData.transmission === "automatic") demand = "High";
-    if (formData.mileage > 150000) demand = "Low";
+    }
+    const transLower = String(formData.transmission || "").toLowerCase();
+    if (transLower === "automatic") {
+      if (
+        makeLower.includes("toyota") ||
+        makeLower.includes("honda") ||
+        makeLower.includes("suzuki") ||
+        makeLower.includes("kia") ||
+        makeLower.includes("hyundai")
+      ) {
+        demand = "High";
+      }
+    }
+    const mileageNum = Number(formData.mileage);
+    if (Number.isFinite(mileageNum) && mileageNum > 150000) demand = "Low";
 
     return demand;
   };
@@ -149,10 +139,11 @@ const CarEstimatorResult = ({ result, onSave, onSellCar }) => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold mb-2">
-              AI Car Price Estimator
+              Car market estimate
             </h1>
             <p className="text-sm sm:text-base opacity-90">
-              Professional Market Valuation
+              PKR band from Sello listings + rules; GPT only refines when enabled
+              on the server
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
@@ -192,7 +183,11 @@ const CarEstimatorResult = ({ result, onSave, onSellCar }) => {
                 <span>•</span>
                 <span>{result.formData?.transmission || "Manual"}</span>
                 <span>•</span>
-                <span>{result.formData?.fuelType || "Petrol"}</span>
+                <span>
+                  {formatEngineLabel(
+                    result.formData?.engineType || result.formData?.fuelType,
+                  )}
+                </span>
                 <span>•</span>
                 <span>{result.formData?.mileage || "100000"} km</span>
               </div>
@@ -283,8 +278,8 @@ const CarEstimatorResult = ({ result, onSave, onSellCar }) => {
                   {tab === "analysis" && (
                     <>
                       <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <span className="hidden sm:inline">AI Analysis</span>
-                      <span className="sm:hidden">Analysis</span>
+                      <span className="hidden sm:inline">Summary</span>
+                      <span className="sm:hidden">Summary</span>
                     </>
                   )}
                   {tab === "breakdown" && (
@@ -297,8 +292,8 @@ const CarEstimatorResult = ({ result, onSave, onSellCar }) => {
                   {tab === "compare" && (
                     <>
                       <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                      <span className="hidden sm:inline">Market</span>
-                      <span className="sm:hidden">Compare</span>
+                      <span className="hidden sm:inline">Basis</span>
+                      <span className="sm:hidden">Basis</span>
                     </>
                   )}
                   {tab === "tips" && (
@@ -324,7 +319,7 @@ const CarEstimatorResult = ({ result, onSave, onSellCar }) => {
                     <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
                       <div className="w-4 h-4 bg-white rounded-full"></div>
                     </div>
-                    AI Market Analysis
+                    {result.isAIPowered ? "AI market summary" : "Estimate summary"}
                   </h3>
                   {result.isAIPowered && (
                     <div className="flex items-center gap-2">
@@ -347,8 +342,8 @@ const CarEstimatorResult = ({ result, onSave, onSellCar }) => {
                     <div className="w-4 h-4 bg-blue-100 rounded-full flex items-center justify-center">
                       <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                     </div>
-                    Enhanced with real-time market data and professional
-                    analysis
+                    GPT-4o adjusted the baseline within the allowed band using
+                    mileage and condition.
                   </div>
                 )}
               </div>
@@ -485,68 +480,65 @@ const CarEstimatorResult = ({ result, onSave, onSellCar }) => {
 
           {activeTab === "compare" && (
             <div className="space-y-4">
-              <div className="flex justify-between items-center mb-4">
+              <div className="mb-2">
                 <h3 className="font-bold text-gray-900 flex items-center gap-3">
                   <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
                     <div className="w-4 h-4 bg-white rounded-full"></div>
                   </div>
-                  Market Comparison
+                  How this estimate is built
                 </h3>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-xs text-gray-500">
-                    Live market data
+                <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+                  Your PKR range is calculated on the Sello server from active
+                  listings where possible, plus mileage and condition rules. It
+                  is not scraped live from other websites. OpenAI (GPT-4o) only
+                  applies a small optional adjustment when{" "}
+                  <code className="text-xs bg-gray-100 px-1 rounded">
+                    OPENAI_API_KEY
+                  </code>{" "}
+                  is configured and the OpenAI account can accept API calls.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-4 space-y-3 text-sm">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-gray-200 pb-3">
+                  <span className="text-gray-600">Mid estimate (average)</span>
+                  <span className="font-bold text-gray-900">
+                    PKR {formatPrice(avgPrice)}
+                  </span>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-gray-200 pb-3">
+                  <span className="text-gray-600">Similar listings used</span>
+                  <span className="font-medium text-gray-900">
+                    {result.marketContext?.similarListingsCount != null
+                      ? `${result.marketContext.similarListingsCount} (approx.)`
+                      : "—"}
+                  </span>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 border-b border-gray-200 pb-3">
+                  <span className="text-gray-600 shrink-0">Baseline method</span>
+                  <span className="font-medium text-gray-900 text-right sm:max-w-[70%]">
+                    {result.marketContext?.dataSource ||
+                      "Similar cars on Sello"}
+                  </span>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
+                  <span className="text-gray-600">GPT-4o refinement</span>
+                  <span
+                    className={`font-medium ${result.isAIPowered ? "text-green-700" : "text-amber-800"}`}
+                  >
+                    {result.isAIPowered
+                      ? "Applied for this run"
+                      : "Not used (no key, billing error, or API failure)"}
                   </span>
                 </div>
               </div>
 
-              <div className="space-y-3">
-                {marketData.map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200 hover:shadow-md transition-all duration-200"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div
-                        className={`w-3 h-3 rounded-full ${
-                          index === 0
-                            ? "bg-green-500 animate-pulse"
-                            : "bg-gray-400"
-                        }`}
-                      />
-                      <div>
-                        <div className="font-semibold text-gray-900 flex items-center gap-2">
-                          {item.platform}
-                          {index === 0 && (
-                            <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full uppercase tracking-wider font-bold">
-                              Real-time
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-xs text-gray-500 mt-1">
-                          {item.source}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-bold text-gray-900 text-lg">
-                        {formatPrice(item.price)}
-                      </div>
-                      <div className="text-xs text-gray-500">{item.km}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-4 p-4 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-xl">
-                <div className="flex items-center gap-2 text-xs text-orange-800">
-                  <div className="w-4 h-4 bg-orange-100 rounded-full flex items-center justify-center">
-                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                  </div>
-                  Market comparison data is based on similar listings in our
-                  database and enhanced with AI analysis for accurate Pakistani
-                  market insights.
-                </div>
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 leading-relaxed">
+                We removed decorative &quot;dealer row&quot; comparisons that
+                were only illustrations. If OpenAI usage stays at zero, add{" "}
+                <code className="bg-white px-1 rounded">OPENAI_API_KEY</code> to
+                your API host environment and ensure your OpenAI org has an
+                active credit balance.
               </div>
             </div>
           )}
