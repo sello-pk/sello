@@ -8,6 +8,7 @@ import {
 } from "@utils/tokenRefresh";
 import { logger } from "@utils/logger";
 import { API_BASE_URL } from "@redux/config";
+import { clearAuthSession } from "@utils/tokenManager.js";
 
 // Track if we're currently refreshing to avoid multiple simultaneous refresh attempts
 let isRefreshing = false;
@@ -320,17 +321,13 @@ export const api = createApi({
               // Token refresh succeeded but no new token received - clear and fail
               clearTokens();
               localStorage.removeItem("user");
-              void import("../../utils/tokenManager.js").then((m) =>
-                m.clearAuthSession(),
-              );
+              clearAuthSession();
             }
           } catch (refreshError) {
             // Refresh failed, clear tokens and let it fall through to 401 handling
             clearTokens();
             localStorage.removeItem("user");
-            void import("../../utils/tokenManager.js").then((m) =>
-              m.clearAuthSession(),
-            );
+            clearAuthSession();
           }
         }
 
@@ -338,9 +335,7 @@ export const api = createApi({
         if (url.includes("/users/me") || url.includes("/auth/")) {
           clearTokens();
           localStorage.removeItem("user");
-          void import("../../utils/tokenManager.js").then((m) =>
-            m.clearAuthSession(),
-          );
+          clearAuthSession();
         }
         // Don't redirect automatically - let components handle it
       }
@@ -681,9 +676,7 @@ export const api = createApi({
       invalidatesTags: ["User"],
       transformResponse: () => {
         // Full session wipe so next login does not see cached getMe / previous user
-        void import("../../utils/tokenManager.js").then((m) =>
-          m.clearAuthSession(),
-        );
+        clearAuthSession();
         return { success: true };
       },
     }),

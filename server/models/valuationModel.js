@@ -47,6 +47,11 @@ const valuationSchema = new mongoose.Schema(
       marketContext: {
         similarListingsCount: { type: Number, default: 0 },
         priceIndicator: { type: String }, // 'fair', 'below_market', 'above_market'
+        dataSource: { type: String },
+        baselineSource: {
+          type: String,
+          enum: ["similar_listings", "make_broader", "static_year_table"],
+        },
       },
       isAIPowered: { type: Boolean, default: false },
     },

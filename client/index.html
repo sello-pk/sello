@@ -76,6 +76,9 @@
         t = b.createElement(e);
         t.async = true;
         t.src = v;
+        t.onerror = function () {
+          /* Ad blockers / privacy tools — avoid surfacing as an app error */
+        };
 
         s = b.getElementsByTagName(e)[0];
         s.parentNode.insertBefore(t, s);

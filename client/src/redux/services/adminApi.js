@@ -7,6 +7,7 @@ import {
   refreshAccessToken,
   shouldRefreshToken,
 } from "@utils/tokenRefresh";
+import { clearAuthSession } from "@utils/tokenManager.js";
 
 // Track if we're currently refreshing to avoid multiple simultaneous refresh attempts
 let isRefreshing = false;
@@ -83,9 +84,7 @@ export const adminApi = createApi({
             // Refresh failed, clear tokens and let it fall through to 401 handling
             clearTokens();
             localStorage.removeItem("user");
-            void import("../../utils/tokenManager.js").then((m) =>
-              m.clearAuthSession(),
-            );
+            clearAuthSession();
           }
         }
 
@@ -96,9 +95,7 @@ export const adminApi = createApi({
         if (url.includes("/admin/") || url.includes("/auth/")) {
           clearTokens();
           localStorage.removeItem("user");
-          void import("../../utils/tokenManager.js").then((m) =>
-            m.clearAuthSession(),
-          );
+          clearAuthSession();
 
           // Return a modified error that components can handle
           baseResult.error = {

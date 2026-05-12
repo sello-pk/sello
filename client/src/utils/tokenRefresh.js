@@ -4,8 +4,10 @@
  */
 
 import { API_BASE_URL } from "@redux/config";
+import { invalidateAuthCaches } from "./authCacheInvalidate.js";
 
 const ACCESS_TOKEN_KEY = "token";
+const USER_STORAGE_KEY = "user";
 
 /**
  * Store access token
@@ -73,12 +75,13 @@ export const refreshAccessToken = async () => {
       accessToken: newAccessToken,
     };
   } catch (error) {
-    // Full session wipe like logout (tokens + user + RTK caches) so UI never shows stale user
-    void import("./tokenManager.js")
-      .then((m) => m.clearAuthSession())
-      .catch(() => {
-        clearTokens();
-      });
+    clearTokens();
+    try {
+      localStorage.removeItem(USER_STORAGE_KEY);
+    } catch {
+      // ignore
+    }
+    invalidateAuthCaches();
     throw error;
   }
 };

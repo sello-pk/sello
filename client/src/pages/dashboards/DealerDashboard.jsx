@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { buildCarUrl } from "../../utils/urlBuilders";
+import { clearAuthSession } from "../../utils/tokenManager.js";
 import { getErrorMessage } from "../../utils/errorHandler";
 import {
   FiHome,
@@ -335,12 +336,10 @@ const DealerDashboard = () => {
   const handleLogout = async () => {
     try {
       await logout().unwrap();
-      const { clearAuthSession } = await import("../../utils/tokenManager");
       clearAuthSession();
       toast.success("Logged out successfully");
       navigate("/login");
     } catch (error) {
-      const { clearAuthSession } = await import("../../utils/tokenManager");
       clearAuthSession();
       toast.error("Logout failed");
       navigate("/login");

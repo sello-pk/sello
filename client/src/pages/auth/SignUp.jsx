@@ -10,6 +10,7 @@ import {
   useRegisterUserMutation,
   useGoogleLoginMutation,
 } from "../../redux/services/api";
+import { applyLoginSession } from "../../utils/tokenManager.js";
 import { Spinner } from "../../components/ui/Loading";
 import DealerSignup from "./DealerSignup";
 import SEO from "../../components/common/SEO";
@@ -112,7 +113,6 @@ const SignUp = () => {
         throw new Error("Invalid response from server. Please try again.");
       }
 
-      const { applyLoginSession } = await import("../../utils/tokenManager.js");
       applyLoginSession(responseToken, responseUser);
 
       toast.success("Google sign-up successful!");

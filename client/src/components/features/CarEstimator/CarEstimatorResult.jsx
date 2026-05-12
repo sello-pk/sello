@@ -132,6 +132,27 @@ const CarEstimatorResult = ({ result, onSave, onSellCar }) => {
     return "Low";
   };
 
+  const fd = result.formData || {};
+  const titleParts = [
+    String(fd.make || "").trim(),
+    String(fd.model || "").trim(),
+    String(fd.variant || "").trim(),
+  ].filter(Boolean);
+  const vehicleTitle = titleParts.length ? titleParts.join(" ") : "Your vehicle";
+
+  const specLineParts = [];
+  if (fd.year != null && String(fd.year).trim() !== "")
+    specLineParts.push(String(fd.year));
+  if (String(fd.transmission || "").trim())
+    specLineParts.push(String(fd.transmission).trim());
+  const engineRaw = fd.engineType || fd.fuelType;
+  if (engineRaw) specLineParts.push(formatEngineLabel(engineRaw));
+  const mileageNum = Number(fd.mileage);
+  if (Number.isFinite(mileageNum) && mileageNum >= 0)
+    specLineParts.push(`${mileageNum.toLocaleString("en-PK")} km`);
+  else if (String(fd.mileage ?? "").trim())
+    specLineParts.push(`${String(fd.mileage).trim()} km`);
+
   return (
     <div className="bg-white rounded-2xl shadow-md border border-gray-200/80 overflow-hidden">
       {/* Header */}
@@ -174,22 +195,19 @@ const CarEstimatorResult = ({ result, onSave, onSellCar }) => {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6">
             <div>
               <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-1">
-                {result.formData?.make || "Toyota"}{" "}
-                {result.formData?.model || "Baleno"}{" "}
-                {result.formData?.variant || "rs XLi"}
+                {vehicleTitle}
               </h2>
               <div className="flex flex-wrap gap-2 text-xs sm:text-sm text-gray-600">
-                <span>{result.formData?.year || "2025"}</span>
-                <span>•</span>
-                <span>{result.formData?.transmission || "Manual"}</span>
-                <span>•</span>
-                <span>
-                  {formatEngineLabel(
-                    result.formData?.engineType || result.formData?.fuelType,
-                  )}
-                </span>
-                <span>•</span>
-                <span>{result.formData?.mileage || "100000"} km</span>
+                {specLineParts.length > 0 ? (
+                  specLineParts.map((part, i) => (
+                    <React.Fragment key={`spec-${i}`}>
+                      {i > 0 && <span aria-hidden="true">•</span>}
+                      <span>{part}</span>
+                    </React.Fragment>
+                  ))
+                ) : (
+                  <span>—</span>
+                )}
               </div>
             </div>
             <div className="mt-3 sm:mt-0">

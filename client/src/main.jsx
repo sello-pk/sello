@@ -17,30 +17,34 @@ import {
 import heroLcpDesktop from "./assets/images/hero.webp";
 import heroLcpMobile from "./assets/images/heroMobile.webp";
 
-// Early LCP hint: responsive preloads matching Hero.jsx <picture>
+// Early LCP hint for home hero only — other routes would trigger "preloaded but not used" warnings
 if (typeof document !== "undefined") {
-  const preloads = [
-    {
-      id: "sello-preload-hero-lcp-mobile",
-      href: heroLcpMobile,
-      media: "(max-width: 767px)",
-    },
-    {
-      id: "sello-preload-hero-lcp-desktop",
-      href: heroLcpDesktop,
-      media: "(min-width: 768px)",
-    },
-  ];
-  for (const { id, href, media } of preloads) {
-    if (document.getElementById(id)) continue;
-    const link = document.createElement("link");
-    link.id = id;
-    link.rel = "preload";
-    link.as = "image";
-    link.href = href;
-    link.media = media;
-    link.setAttribute("fetchpriority", "high");
-    document.head.appendChild(link);
+  const path = window.location.pathname || "/";
+  const isHome = path === "/" || path === "/home";
+  if (isHome) {
+    const preloads = [
+      {
+        id: "sello-preload-hero-lcp-mobile",
+        href: heroLcpMobile,
+        media: "(max-width: 767px)",
+      },
+      {
+        id: "sello-preload-hero-lcp-desktop",
+        href: heroLcpDesktop,
+        media: "(min-width: 768px)",
+      },
+    ];
+    for (const { id, href, media } of preloads) {
+      if (document.getElementById(id)) continue;
+      const link = document.createElement("link");
+      link.id = id;
+      link.rel = "preload";
+      link.as = "image";
+      link.href = href;
+      link.media = media;
+      link.setAttribute("fetchpriority", "high");
+      document.head.appendChild(link);
+    }
   }
 }
 

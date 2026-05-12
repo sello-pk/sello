@@ -25,6 +25,7 @@ import {
 import { images } from "../../../assets/assets";
 import { useGetMeQuery, useLogoutMutation } from "../../../redux/services/api";
 import { canAccessMenu } from "../../../utils/roleAccess";
+import { clearAuthSession } from "../../../utils/tokenManager.js";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import KeyboardShortcuts from "./KeyboardShortcuts";
 import { useTheme } from "../../../contexts/ThemeContext";
@@ -143,14 +144,12 @@ const AdminLayout = ({ children }) => {
   const handleLogout = async () => {
     try {
       await logout().unwrap();
-      const { clearAuthSession } = await import("../../../utils/tokenManager");
       clearAuthSession();
       navigate("/login");
     } catch (error) {
       if (import.meta.env.DEV) {
         console.error("Logout error:", error);
       }
-      const { clearAuthSession } = await import("../../../utils/tokenManager");
       clearAuthSession();
       navigate("/login");
     }

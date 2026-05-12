@@ -4,9 +4,7 @@
  * Logout / login-as-other-user must reset RTK caches or getMe keeps showing previous user.
  */
 import { getAccessToken, setAccessToken, clearTokens } from "./tokenRefresh.js";
-import { store } from "../redux/store.js";
-import { api } from "../redux/services/api.js";
-import { adminApi } from "../redux/services/adminApi.js";
+import { invalidateAuthCaches } from "./authCacheInvalidate.js";
 
 const USER_STORAGE_KEY = "user";
 
@@ -22,16 +20,7 @@ export function clearAuthSession() {
   } catch {
     // ignore
   }
-  try {
-    store.dispatch(api.util.invalidateTags(["User"]));
-  } catch {
-    // ignore
-  }
-  try {
-    store.dispatch(adminApi.util.invalidateTags(["Users"]));
-  } catch {
-    // ignore
-  }
+  invalidateAuthCaches();
 }
 
 /**
@@ -48,16 +37,7 @@ export function applyLoginSession(accessToken, user) {
       // ignore
     }
   }
-  try {
-    store.dispatch(api.util.invalidateTags(["User"]));
-  } catch {
-    // ignore
-  }
-  try {
-    store.dispatch(adminApi.util.invalidateTags(["Users"]));
-  } catch {
-    // ignore
-  }
+  invalidateAuthCaches();
 }
 
 /**

@@ -261,6 +261,8 @@ export const calculateEstimation = async (vehicleData) => {
   // If no similar cars, use broader search or fallback
   let baselinePrice = 0;
   let cleanedCars = [];
+  /** @type {"similar_listings"|"make_broader"|"static_year_table"} */
+  let baselineSource = "similar_listings";
 
   if (similarCars.length > 0) {
     // Remove price outliers
@@ -271,6 +273,7 @@ export const calculateEstimation = async (vehicleData) => {
       cleanedCars.reduce((sum, car) => sum + car.price, 0) / cleanedCars.length;
 
     baselinePrice = Math.round(avgPrice);
+    baselineSource = "similar_listings";
   } else {
     // Fallback: Use broader search or estimated baseline
     const anyCars = await Promise.race([
@@ -290,10 +293,12 @@ export const calculateEstimation = async (vehicleData) => {
         anyCars.reduce((sum, car) => sum + car.price, 0) / anyCars.length;
       baselinePrice = Math.round(avgPrice);
       cleanedCars = anyCars;
+      baselineSource = "make_broader";
     } else {
-      // Final fallback: Use estimated baseline based on Pakistani market
+      // Final fallback: internal year/brand tables — not live comps for this make
       baselinePrice = getEstimatedBaseline(vehicleData);
-      cleanedCars = [{ price: baselinePrice }]; // Dummy for confidence calculation
+      cleanedCars = [];
+      baselineSource = "static_year_table";
     }
   }
 
@@ -346,9 +351,31 @@ export const calculateEstimation = async (vehicleData) => {
     };
   }
 
+  const staticBaselineNote =
+    baselineSource === "static_year_table"
+      ? "No active Sello listings matched this make, so the PKR midpoint starts from an internal year/brand table (not a live, model-specific market price). Treat as rough guidance only.\n\n"
+      : "";
+
   const summaryText =
-    (aiAdjustment.reason && String(aiAdjustment.reason).trim()) ||
-    "Estimate based on similar listings and standard depreciation factors.";
+    staticBaselineNote +
+    ((aiAdjustment.reason && String(aiAdjustment.reason).trim()) ||
+      "Estimate based on similar listings and standard depreciation factors.");
+
+  const dataSourceLabel =
+    baselineSource === "similar_listings"
+      ? `Average of similar Sello listings (same make/model, ±2 years)${
+          aiAdjustment.usedOpenAI ? "; GPT-4o applied a small adjustment" : ""
+        }`
+      : baselineSource === "make_broader"
+        ? `Average of active Sello listings for this make only (no close model/year matches)${
+            aiAdjustment.usedOpenAI ? "; GPT-4o applied a small adjustment" : ""
+          }`
+        : `Internal year-based placeholder (no Sello listings for this make)${
+            aiAdjustment.usedOpenAI ? "; GPT-4o applied a small adjustment" : ""
+          }`;
+
+  const similarListingsCount =
+    baselineSource === "static_year_table" ? 0 : cleanedCars.length;
 
   return {
     averagePrice: aiAdjustment.adjustedPrice,
@@ -358,13 +385,9 @@ export const calculateEstimation = async (vehicleData) => {
       cleanedCars.length >= 5 ? 90 : cleanedCars.length >= 3 ? 75 : 60,
     analysisSummary: summaryText,
     marketContext: {
-      similarListingsCount: cleanedCars.length,
-      dataSource:
-        similarCars.length > 0
-          ? "Similar Cars"
-          : aiAdjustment.usedOpenAI
-            ? "Brand Average + AI"
-            : "Brand average (heuristic baseline)",
+      similarListingsCount,
+      baselineSource,
+      dataSource: dataSourceLabel,
     },
     isAIPowered: Boolean(aiAdjustment.usedOpenAI),
   };

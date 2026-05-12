@@ -103,9 +103,7 @@ export default defineConfig({
           
           // Split heavy utilities
           "html2canvas": ["html2canvas"],
-          "dompurify": ["isomorphic-dompurify"],
           "date-utils": ["date-fns"],
-          "query-string": ["query-string"],
           "socket": ["socket.io-client"],
           "axios": ["axios"],
           
