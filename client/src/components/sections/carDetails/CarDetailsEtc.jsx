@@ -294,11 +294,13 @@ const CarDetailsEtc = () => {
                               .join(", ")}
                           </p>
                         )}
-                        {(car.postedBy.dealerInfo?.businessPhone ||
+                        {(car.contactNumber ||
+                          car.postedBy.dealerInfo?.businessPhone ||
                           car.postedBy.dealerInfo?.whatsappNumber) && (
                           <p className="flex items-center gap-1">
                             <FaPhone size={12} />
-                            {car.postedBy.dealerInfo?.businessPhone ||
+                            {car.contactNumber ||
+                              car.postedBy.dealerInfo?.businessPhone ||
                               car.postedBy.dealerInfo?.whatsappNumber ||
                               ""}
                           </p>

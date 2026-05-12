@@ -110,8 +110,13 @@ const Btns = () => {
       toast.error("This car has been sold. WhatsApp is disabled.");
       return;
     }
+    // Listing contact first (per-post seller / staff), then dealer profile fallback
     const number =
-      car?.postedBy?.dealerInfo?.whatsappNumber || car?.contactNumber;
+      (car?.whatsappNumber && String(car.whatsappNumber).trim()) ||
+      (car?.contactNumber && String(car.contactNumber).trim()) ||
+      (car?.postedBy?.dealerInfo?.whatsappNumber &&
+        String(car.postedBy.dealerInfo.whatsappNumber).trim()) ||
+      "";
     if (!number) {
       toast.error("WhatsApp number not available");
       return;
@@ -179,7 +184,10 @@ const Btns = () => {
             )}
 
             {/* WhatsApp Button */}
-            {!isSold && (car?.contactNumber || car?.postedBy?.dealerInfo?.whatsappNumber) && (
+            {!isSold &&
+              (car?.whatsappNumber ||
+                car?.contactNumber ||
+                car?.postedBy?.dealerInfo?.whatsappNumber) && (
               <button
                 onClick={handleWhatsApp}
                 className="flex items-center gap-2 bg-[#25D366] text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-colors"

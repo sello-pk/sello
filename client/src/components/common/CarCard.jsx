@@ -127,8 +127,8 @@ const CarCard = ({
   const waNumber =
     whatsappNumber ||
     car?.whatsappNumber ||
-    car?.postedBy?.dealerInfo?.whatsappNumber ||
     car?.contactNumber ||
+    car?.postedBy?.dealerInfo?.whatsappNumber ||
     "";
   const listingUrl =
     typeof window !== "undefined" && car?._id
