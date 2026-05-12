@@ -2,6 +2,14 @@ import Car from "../models/carModel.js";
 import Logger from "./logger.js";
 import fetch from "node-fetch";
 
+/** Listings below this PKR are excluded from valuation comps (bad data, typos, lakhs entered as 3, etc.). */
+const MIN_LISTING_PRICE_PKR_FOR_COMPS = 100_000;
+/**
+ * If the listing average is below this fraction of the internal year/brand reference,
+ * treat comps as unreliable (wrong units, corrupt rows) and fall back.
+ */
+const MIN_LISTING_AVG_VS_STATIC_RATIO = 0.03;
+
 /* --------------------------------------------------
    STEP 0: BASELINE ESTIMATION FALLBACK
 -------------------------------------------------- */
@@ -252,6 +260,7 @@ export const calculateEstimation = async (vehicleData) => {
       model: new RegExp(model, "i"),
       year: { $gte: Number(year) - 2, $lte: Number(year) + 2 },
       status: "active",
+      price: { $gte: MIN_LISTING_PRICE_PKR_FOR_COMPS },
     }).select("price mileage year"),
     new Promise((_, reject) =>
       setTimeout(() => reject(new Error("Database timeout")), 5000),
@@ -280,6 +289,7 @@ export const calculateEstimation = async (vehicleData) => {
       Car.find({
         make: new RegExp(make, "i"),
         status: "active",
+        price: { $gte: MIN_LISTING_PRICE_PKR_FOR_COMPS },
       })
         .select("price mileage year")
         .limit(10),
@@ -297,6 +307,64 @@ export const calculateEstimation = async (vehicleData) => {
     } else {
       // Final fallback: internal year/brand tables — not live comps for this make
       baselinePrice = getEstimatedBaseline(vehicleData);
+      cleanedCars = [];
+      baselineSource = "static_year_table";
+    }
+  }
+
+  const staticReference = getEstimatedBaseline(vehicleData);
+  if (
+    baselineSource !== "static_year_table" &&
+    (baselinePrice < MIN_LISTING_PRICE_PKR_FOR_COMPS ||
+      (staticReference > 0 &&
+        baselinePrice < staticReference * MIN_LISTING_AVG_VS_STATIC_RATIO))
+  ) {
+    Logger.warn(
+      "Valuation: listing-based baseline implausible; using safer comps or static table",
+      {
+        make,
+        model,
+        year,
+        baselinePrice,
+        baselineSource,
+        staticReference,
+      },
+    );
+
+    const broaderCars = await Promise.race([
+      Car.find({
+        make: new RegExp(make, "i"),
+        status: "active",
+        price: { $gte: MIN_LISTING_PRICE_PKR_FOR_COMPS },
+      })
+        .select("price mileage year")
+        .limit(10),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Database timeout")), 5000),
+      ),
+    ]).catch(() => []);
+
+    if (broaderCars.length > 0) {
+      const cleanedBroader = removeOutliers(broaderCars);
+      const setForAvg = cleanedBroader.length ? cleanedBroader : broaderCars;
+      const avgBroader =
+        setForAvg.reduce((sum, car) => sum + car.price, 0) / setForAvg.length;
+      const roundedBroader = Math.round(avgBroader);
+      if (
+        roundedBroader >= MIN_LISTING_PRICE_PKR_FOR_COMPS &&
+        (!staticReference ||
+          roundedBroader >= staticReference * MIN_LISTING_AVG_VS_STATIC_RATIO)
+      ) {
+        baselinePrice = roundedBroader;
+        cleanedCars = setForAvg;
+        baselineSource = "make_broader";
+      } else {
+        baselinePrice = staticReference;
+        cleanedCars = [];
+        baselineSource = "static_year_table";
+      }
+    } else {
+      baselinePrice = staticReference;
       cleanedCars = [];
       baselineSource = "static_year_table";
     }
