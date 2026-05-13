@@ -16,8 +16,6 @@ import ImagesUpload from "../createPost/ImagesUpload";
 import Input from "../../utils/filter/Input";
 import SearchableSelect from "../../common/SearchableSelect";
 import FilterSpecs from "../../utils/filter/FilterSpecs";
-import ExteriorColor from "../../utils/filter/ExteriorColor";
-import InteriorColor from "../../utils/filter/InteriorColor";
 import { useCarCategories } from "../../../hooks/useCarCategories";
 import {
   isFieldVisible,
@@ -690,13 +688,6 @@ const EditCarForm = () => {
             <FilterSpecs specType="condition" value={formData.condition} onChange={(val) => handleChange("condition", val)} />
           </div>
           
-          {(isAuction || isFieldVisible(formData.vehicleType, "bodyType")) && (
-            <div>
-              <label className="block mb-1">Body Type</label>
-              <FilterSpecs specType="bodyTypes" vehicleType={isAuction ? "Car" : formData.vehicleType} value={formData.bodyType} onChange={(val) => handleChange("bodyType", val)} />
-            </div>
-          )}
-
           {(isAuction || isFieldVisible(formData.vehicleType, "fuelType")) && (
             <div>
               <label className="block mb-1">Fuel Type</label>
@@ -711,9 +702,6 @@ const EditCarForm = () => {
             </div>
           )}
         </div>
-
-        <ExteriorColor value={formData.colorExterior} onChange={(val) => handleChange("colorExterior", val)} />
-        <InteriorColor value={formData.colorInterior} onChange={(val) => handleChange("colorInterior", val)} />
 
         {/* CONTACT & LOCATION */}
         <div className="grid md:grid-cols-2 gap-4">

@@ -11,8 +11,6 @@ import ImagesUpload from "../createPost/ImagesUpload";
 import Input from "../../utils/filter/Input";
 import SearchableSelect from "../../common/SearchableSelect";
 import FilterSpecs from "../../utils/filter/FilterSpecs";
-import ExteriorColor from "../../utils/filter/ExteriorColor";
-import InteriorColor from "../../utils/filter/InteriorColor";
 import { useCarCategories } from "../../../hooks/useCarCategories";
 import LocationButton from "../../utils/filter/LocationButton";
 import {
@@ -69,12 +67,9 @@ const CreatePostForm = ({ initialPrefill = null }) => {
     year: "",
     condition: "",
     price: "",
-    colorExterior: "",
-    colorInterior: "",
     fuelType: "",
     transmission: "",
     mileage: "",
-    bodyType: "",
     country: "",
     state: "",
     city: "",
@@ -199,7 +194,6 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       mileage: (initialPrefill.mileage != null && initialPrefill.mileage !== "")
         ? String(initialPrefill.mileage).trim()
         : prev.mileage,
-      bodyType: (initialPrefill.bodyType && String(initialPrefill.bodyType).trim()) || prev.bodyType,
     }));
   }, [initialPrefill, makes]);
 
@@ -308,8 +302,6 @@ const CreatePostForm = ({ initialPrefill = null }) => {
 
     // Only set defaults for fields that are visible for this vehicle type
     const defaults = {
-      colorExterior: formData.colorExterior || "N/A",
-      colorInterior: formData.colorInterior || "N/A",
       mileage: formData.mileage || "0",
       location: formData.location || "",
       description: formData.description || "",
@@ -336,12 +328,9 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       "year",
       "condition",
       "price",
-      "colorExterior",
-      "colorInterior",
       "fuelType",
       "transmission",
       "mileage",
-      "bodyType",
       "country",
       "state",
       "city",
@@ -381,11 +370,6 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         ) {
           shouldSend = false;
         } else if (
-          key === "bodyType" &&
-          !isFieldVisible(formData.vehicleType, "bodyType")
-        ) {
-          shouldSend = false;
-        } else if (
           key === "batteryRange" &&
           !isFieldVisible(formData.vehicleType, "batteryRange")
         ) {
@@ -399,11 +383,6 @@ const CreatePostForm = ({ initialPrefill = null }) => {
           (key === "warranty" || key === "ownerType") &&
           formData.vehicleType !== "Car" &&
           formData.vehicleType !== "Motorcycle"
-        ) {
-          shouldSend = false;
-        } else if (
-          (key === "colorExterior" || key === "colorInterior") &&
-          formData.vehicleType !== "Car"
         ) {
           shouldSend = false;
         }
@@ -467,18 +446,16 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         description: "",
         vehicleType: "Car",
         vehicleTypeCategory: "",
+        listingType: "Regular Listing",
         make: "",
         model: "",
         variant: "",
         year: "",
         condition: "",
         price: "",
-        colorExterior: "",
-        colorInterior: "",
         fuelType: "",
         transmission: "",
         mileage: "",
-        bodyType: "",
         country: "",
         state: "",
         city: "",
@@ -614,17 +591,16 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         description: "",
         vehicleType: "Car",
         vehicleTypeCategory: "",
+        listingType: "Regular Listing",
         make: "",
         model: "",
+        variant: "",
         year: "",
         condition: "",
         price: "",
-        colorExterior: "",
-        colorInterior: "",
         fuelType: "",
         transmission: "",
         mileage: "",
-        bodyType: "",
         country: "",
         state: "",
         city: "",
@@ -797,10 +773,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
                   handleChange("vehicleTypeCategory", "");
 
                   // Clear fields that are not visible for the new vehicle type
-                  if (!isFieldVisible(newVehicleType, "bodyType")) {
-                    handleChange("bodyType", "");
-                    setAvailableModels([]);
-                  }
+                  setAvailableModels([]);
                   if (!isFieldVisible(newVehicleType, "fuelType")) {
                     handleChange("fuelType", "");
                   }
@@ -1134,41 +1107,11 @@ const CreatePostForm = ({ initialPrefill = null }) => {
           </div>
         )}
 
-        {/* Body Type - Full Width */}
-        {isFieldVisible(formData.vehicleType, "bodyType") && (
-          <div className="mb-2 pl-2">
-            <label className="block mb-1">Body Type</label>
-            <FilterSpecs specType="bodyTypes" vehicleType={formData.vehicleType} value={formData.bodyType} onChange={(val) => handleChange("bodyType", val)} />
-          </div>
-        )}
-
         {/* Transmission - Full Width */}
         {isFieldVisible(formData.vehicleType, "transmission") && (
           <div className="mb-2 pl-2">
             <label className="block mb-1">Transmission</label>
             <FilterSpecs specType="transmissionType" value={formData.transmission} onChange={(val) => handleChange("transmission", val)} />
-          </div>
-        )}
-
-        {/* Exterior Color - Full Width */}
-        {formData.vehicleType === "Car" && (
-          <div className="mb-2 pl-2">
-            <label className="block mb-1">Exterior Color</label>
-            <ExteriorColor
-              value={formData.colorExterior}
-              onChange={(val) => handleChange("colorExterior", val)}
-            />
-          </div>
-        )}
-
-        {/* Interior Color - Full Width */}
-        {formData.vehicleType === "Car" && (
-          <div className="mb-2 pl-2">
-            <label className="block mb-1">Interior Color</label>
-            <InteriorColor
-              value={formData.colorInterior}
-              onChange={(val) => handleChange("colorInterior", val)}
-            />
           </div>
         )}
 
