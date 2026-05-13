@@ -18,8 +18,6 @@ const HeroFilter = () => {
     make: "",
     model: "",
     city: "",
-    minPrice: "",
-    maxPrice: "",
   });
 
   const [queryParams, setQueryParams] = useState(null);
@@ -48,7 +46,9 @@ const HeroFilter = () => {
         height: "48px",
         borderRadius: "12px",
         border: "none",
-        boxShadow: state.isFocused ? "0 0 0 2px rgba(6, 78, 59, 0.2)" : "none",
+        boxShadow: state.isFocused
+          ? "0 0 0 2px rgba(255, 166, 2, 0.35)"
+          : "none",
         backgroundColor: "#f9fafb",
       }),
       valueContainer: (base) => ({ ...base, padding: "0 14px" }),
@@ -143,23 +143,12 @@ const HeroFilter = () => {
       return;
     }
 
-    if (
-      filters.minPrice &&
-      filters.maxPrice &&
-      Number(filters.minPrice) > Number(filters.maxPrice)
-    ) {
-      toast.error("Min Price cannot be greater than Max Price");
-      return;
-    }
-
     const payload = Object.fromEntries(
       Object.entries({
         vehicleType,
         make: filters.make,
         model: filters.model,
         city: filters.city,
-        priceMin: filters.minPrice,
-        priceMax: filters.maxPrice,
       }).filter(([_, v]) => v),
     );
 
@@ -180,15 +169,15 @@ const HeroFilter = () => {
   }, [searchError]);
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6 min-h-[240px]">
-      <div className="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-sm p-4 sm:p-5 md:p-6">
+    <div className="mx-auto w-full max-w-6xl px-3 py-3 sm:px-4 sm:py-4">
+      <div className="rounded-xl border border-white/20 bg-white/10 p-4 shadow-sm backdrop-blur-md sm:p-5 md:p-6">
         <form onSubmit={handleSearch} className="flex flex-col gap-4 sm:gap-5">
-          <h2 className="text-white font-medium text-lg text-center sm:text-left">
-            Find the Best Cars for Sale in Pakistan with Verified Listings &
+          <h2 className="text-center text-base font-medium leading-snug text-white sm:text-left sm:text-lg">
+            Find the Best Cars for Sale in Pakistan with Verified Listings &amp;
             Great Deals
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <Select
               inputId="make-select"
               name="make-select"
@@ -238,31 +227,11 @@ const HeroFilter = () => {
               menuPortalTarget={menuPortalTarget}
             />
 
-            <input
-              type="number"
-              id="hero-min-price"
-              placeholder="Min Price"
-              aria-label="Minimum price in PKR"
-              className="h-12 bg-gray-50 rounded-xl px-4"
-              value={filters.minPrice}
-              onChange={(e) => handleChange("minPrice", e.target.value)}
-            />
-
-            <input
-              type="number"
-              id="hero-max-price"
-              placeholder="Max Price"
-              aria-label="Maximum price in PKR"
-              className="h-12 bg-gray-50 rounded-xl px-4"
-              value={filters.maxPrice}
-              onChange={(e) => handleChange("maxPrice", e.target.value)}
-            />
-
             <button
               type="submit"
-              className="h-12 bg-primary-500 text-white rounded-xl flex items-center justify-center gap-2 font-semibold hover:bg-opacity-90 focus-visible:outline focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-600"
+              className="flex h-12 items-center justify-center gap-2 rounded-xl bg-primary-500 font-semibold text-white hover:bg-opacity-90 focus-visible:outline focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2"
             >
-              <FiSearch />
+              <FiSearch aria-hidden />
               Search
             </button>
           </div>
@@ -271,21 +240,21 @@ const HeroFilter = () => {
             <button
               onClick={() => navigate("/listings")}
               type="button"
-              className="h-12 border border-primary-500 text-primary-500 px-4 rounded-lg font-medium hover:bg-primary-500 hover:text-white"
+              className="h-12 rounded-lg border border-primary-500 px-4 font-medium text-primary-500 hover:bg-primary-500 hover:text-white"
             >
               Browse Listings
             </button>
             <button
               onClick={() => navigate("/create-post")}
               type="button"
-              className="h-12 border border-primary-500 text-primary-500 px-4 rounded-lg font-medium hover:bg-primary-500 hover:text-white"
+              className="h-12 rounded-lg border border-primary-500 px-4 font-medium text-primary-500 hover:bg-primary-500 hover:text-white"
             >
               Sell Your Car
             </button>
             <button
               onClick={() => navigate("/auctions/live")}
               type="button"
-              className="h-12 border border-primary-500 text-primary-500 px-4 rounded-lg font-medium hover:bg-primary-500 hover:text-white"
+              className="h-12 rounded-lg border border-primary-500 px-4 font-medium text-primary-500 hover:bg-primary-500 hover:text-white"
             >
               Live Auction
             </button>

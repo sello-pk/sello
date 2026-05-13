@@ -20,7 +20,7 @@ const Hero = () => {
       </picture>
       <div className="bg-slate-900/70 absolute inset-0" />
       <div className="relative z-10 flex min-h-[48vh] md:h-[48vh] flex-col items-center justify-center px-2 py-6 sm:py-8 md:py-10">
-        <h1 className="mb-4 text-center text-4xl font-bold text-white md:text-5xl">
+        <h1 className="mb-4 text-center text-2xl font-bold text-white md:text-5xl">
           Buy and Sell Cars in Pakistan
         </h1>
         <HeroFilter />

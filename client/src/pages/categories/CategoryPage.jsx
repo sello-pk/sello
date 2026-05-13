@@ -11,15 +11,27 @@ const sortCars = (cars, sortBy) => {
   if (!cars?.length) return cars;
   const list = [...cars];
   switch (sortBy) {
-    case "price-low": return list.sort((a, b) => (a.price || 0) - (b.price || 0));
-    case "price-high": return list.sort((a, b) => (b.price || 0) - (a.price || 0));
-    case "year-new": return list.sort((a, b) => (b.year || 0) - (a.year || 0));
-    case "year-old": return list.sort((a, b) => (a.year || 0) - (b.year || 0));
-    case "mileage-low": return list.sort((a, b) => (a.mileage || 0) - (b.mileage || 0));
-    case "mileage-high": return list.sort((a, b) => (b.mileage || 0) - (a.mileage || 0));
-    case "oldest": return list.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+    case "price-low":
+      return list.sort((a, b) => (a.price || 0) - (b.price || 0));
+    case "price-high":
+      return list.sort((a, b) => (b.price || 0) - (a.price || 0));
+    case "year-new":
+      return list.sort((a, b) => (b.year || 0) - (a.year || 0));
+    case "year-old":
+      return list.sort((a, b) => (a.year || 0) - (b.year || 0));
+    case "mileage-low":
+      return list.sort((a, b) => (a.mileage || 0) - (b.mileage || 0));
+    case "mileage-high":
+      return list.sort((a, b) => (b.mileage || 0) - (a.mileage || 0));
+    case "oldest":
+      return list.sort(
+        (a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0),
+      );
     case "newest":
-    default: return list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    default:
+      return list.sort(
+        (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0),
+      );
   }
 };
 import {

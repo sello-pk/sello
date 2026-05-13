@@ -46,47 +46,24 @@ export const getAllCars = async (req, res) => {
       }
     }
 
-    // Always apply advanced filters (search, price range, make, model, etc.)
-    // We pass the entire query object to buildCarQuery
-    console.log('🔍 getAllCars - req.query:', req.query);
     try {
       const { filter: advancedFilter } = buildCarQuery(req.query);
-      console.log('🔍 getAllCars - advancedFilter from buildCarQuery:', advancedFilter);
       if (advancedFilter && Object.keys(advancedFilter).length > 0) {
-         console.log('🔍 getAllCars - Merging with base query. Base query:', JSON.stringify(query, null, 2));
-         console.log('🔍 getAllCars - Advanced filter:', JSON.stringify(advancedFilter, null, 2));
-         // Merge advanced filters into the main query
-         // We use $and to ensure both base constraints and user filters are met
-         query = { $and: [query, advancedFilter] };
-         console.log('🔍 getAllCars - Final merged query:', JSON.stringify(query, null, 2));
-      } else {
-         console.log('🔍 getAllCars - No advanced filters to apply');
+        query = { $and: [query, advancedFilter] };
       }
     } catch (filterError) {
       Logger.warn("Error building car query filters", filterError);
-      // Continue with base query if filter building fails (or return error if strict)
     }
 
-    console.log('🔍 getAllCars - Final MongoDB query:', JSON.stringify(query, null, 2));
-    
     const carsDocuments = await Car.find(query)
-      .select("title make model year price images city location status featured condition fuelType transmission mileage postedBy createdAt viewsgeoLocation vehicleType features carDoors horsepower engineCapacity contactNumber whatsappNumber isSold listingType")
+      .select(
+        "title make model year price images city location status featured condition fuelType transmission mileage postedBy createdAt views geoLocation vehicleType features carDoors horsepower engineCapacity contactNumber whatsappNumber isSold listingType",
+      )
       .skip(skip)
       .limit(limit)
       .populate("postedBy", "name email role sellerRating isVerified dealerInfo")
       .sort({ featured: -1, status: 1, createdAt: -1 })
       .lean();
-      
-    console.log('🔍 getAllCars - Found cars count:', carsDocuments.length);
-    
-    // Debug: Log first few cars to see what we have
-    if (carsDocuments.length > 0) {
-      console.log('🔍 getAllCars - Sample cars:', carsDocuments.slice(0, 3).map(car => ({
-        make: car.make,
-        model: car.model,
-        title: car.title
-      })));
-    }
 
     // Enrichment: For auction-flagged items, join minimal auction data (timer/bid)
     const cars = await Promise.all(

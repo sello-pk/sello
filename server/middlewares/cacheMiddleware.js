@@ -36,10 +36,22 @@ export const cache = (ttl = 3600, keyGenerator = null) => {
       // Override res.json to cache the response
       const originalJson = res.json.bind(res);
       res.json = function (data) {
-        // Cache the response
-        dbCache.set(cacheKey, data, ttl).catch((err) => {
-          Logger.error("Cache set error", err, { cacheKey });
-        });
+        let storable = data;
+        try {
+          storable = JSON.parse(JSON.stringify(data));
+        } catch (serializeErr) {
+          Logger.warn("Cache skipped: response not JSON-safe", {
+            cacheKey,
+            message: serializeErr?.message,
+          });
+          storable = null;
+        }
+
+        if (storable !== null) {
+          dbCache.set(cacheKey, storable, ttl).catch((err) => {
+            Logger.error("Cache set error", err, { cacheKey });
+          });
+        }
 
         // Set cache headers
         res.set("X-Cache", "MISS");

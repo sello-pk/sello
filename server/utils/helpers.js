@@ -387,20 +387,31 @@ export const trackEvent = async (event, userId = null, metadata = {}) => {
 /*                                QUERY BUILDER                               */
 /* -------------------------------------------------------------------------- */
 
+/** Escape user input so it can be safely embedded in RegExp (prevents SyntaxError / ReDoS). */
+export const escapeRegex = (s) =>
+  String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 export const buildCarQuery = (query) => {
   const filter = {};
-  
-  // Debug: Log incoming query
-  console.log('🔍 buildCarQuery - Input query:', query);
+
+  const safeRegex = (pattern, flags = "i") => {
+    try {
+      return new RegExp(pattern, flags);
+    } catch {
+      return null;
+    }
+  };
 
   // 1. Keyword search (Across title, make, model, description)
   if (query.search) {
-    const regex = new RegExp(query.search, "i");
-    filter.$or = [
-      { title: regex },
-      { make: regex },
-      { description: regex },
-    ];
+    const regex = safeRegex(escapeRegex(query.search), "i");
+    if (regex) {
+      filter.$or = [
+        { title: regex },
+        { make: regex },
+        { description: regex },
+      ];
+    }
   }
 
   // 2. Exact match fields (make needs exact match for brand filtering)
@@ -419,16 +430,15 @@ export const buildCarQuery = (query) => {
 
   exactMatchFields.forEach((field) => {
     if (query[field]) {
-      // Use case-insensitive exact match for robustness
-      filter[field] = { $regex: new RegExp(`^${query[field]}$`, "i") };
+      const regex = safeRegex(`^${escapeRegex(query[field])}$`, "i");
+      if (regex) filter[field] = { $regex: regex };
     }
   });
 
   // 2b. Partial match fields (model should be more flexible)
   if (query.model) {
-    // Use case-insensitive partial match for model to allow "City" to match "Civic", etc.
-    filter.model = { $regex: new RegExp(query.model, "i") };
-    console.log('🔍 buildCarQuery - Model filter applied:', filter.model);
+    const regex = safeRegex(escapeRegex(query.model), "i");
+    if (regex) filter.model = { $regex: regex };
   }
 
   // 3. Numeric range fields
@@ -452,10 +462,6 @@ export const buildCarQuery = (query) => {
   if (query.featured === "true") filter.featured = true;
   if (query.isApproved === "true") filter.isApproved = true;
 
-  
-  // Debug: Log final filter
-  console.log('🔍 buildCarQuery - Final filter:', JSON.stringify(filter, null, 2));
-  
   return { filter };
 };
 
@@ -471,4 +477,5 @@ export default {
   generateOtp,
   trackEvent,
   buildCarQuery,
+  escapeRegex,
 };
