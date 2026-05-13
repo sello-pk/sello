@@ -525,12 +525,16 @@ const EditCarForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="w-full py-12" encType="multipart/form-data">
-      <h2 className="text-center md:text-3xl font-semibold">
+    <form
+      onSubmit={handleSubmit}
+      className="w-full min-w-0 max-w-full py-12"
+      encType="multipart/form-data"
+    >
+      <h2 className="text-center md:text-3xl font-semibold px-1">
         {isAuction ? "Edit Auction Listing" : "Edit Car"}
       </h2>
-      
-      <div className="border-[1px] border-gray-700 rounded-md px-5 py-6 my-5 space-y-5">
+
+      <div className="border border-gray-700 rounded-md px-3 sm:px-5 py-6 my-5 space-y-5 min-w-0 max-w-full box-border">
         
         {isAuction && activeAuction && (
           <div className="rounded-lg bg-gray-50 border border-gray-200 p-4">
@@ -543,7 +547,7 @@ const EditCarForm = () => {
         )}
 
         {/* IMAGES */}
-        <div className="my-2">
+        <div className="my-2 min-w-0">
           <label className="block mb-2">Images</label>
           {formData.existingImages.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-3">
@@ -591,7 +595,7 @@ const EditCarForm = () => {
             // We can add a way to tell ImagesUpload to be the ABSOLUTE cover
           />
           {formData.images.length > 0 && (
-            <div className="mt-2 flex items-center gap-2">
+            <div className="mt-2 flex flex-wrap items-center gap-2 min-w-0">
               <input 
                 type="checkbox" 
                 id="isNewImageCover" 
@@ -607,7 +611,9 @@ const EditCarForm = () => {
         </div>
 
         {/* BASIC FIELDS */}
-        <div className={`grid ${isAuction ? "md:grid-cols-2" : "md:grid-cols-1"} gap-4`}>
+        <div
+          className={`grid min-w-0 [&>div]:min-w-0 ${isAuction ? "md:grid-cols-2" : "md:grid-cols-1"} gap-4`}
+        >
           <div>
             <label className="block mb-1">Title</label>
             <Input inputType="text" value={formData.title} onChange={(e) => handleChange("title", e.target.value)} placeholder="Title" required />
@@ -632,13 +638,19 @@ const EditCarForm = () => {
           )}
         </div>
 
-        <div>
+        <div className="min-w-0">
           <label className="block mb-1">Description</label>
-          <textarea value={formData.description} onChange={(e) => handleChange("description", e.target.value)} placeholder="Describe the vehicle" className="w-full p-2 border rounded" rows={4} />
+          <textarea
+            value={formData.description}
+            onChange={(e) => handleChange("description", e.target.value)}
+            placeholder="Describe the vehicle"
+            className="w-full min-w-0 max-w-full box-border p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            rows={4}
+          />
         </div>
 
         {/* MAKE, MODEL, YEAR */}
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid min-w-0 [&>div]:min-w-0 md:grid-cols-2 gap-4">
           <div>
             <label className="block mb-1">{getVehicleLabel(formData.vehicleType, "make")} *</label>
             <SearchableSelect
@@ -682,7 +694,7 @@ const EditCarForm = () => {
         </div>
 
         {/* SPECS */}
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid min-w-0 [&>div]:min-w-0 md:grid-cols-2 gap-4">
           <div>
             <label className="block mb-1">Condition</label>
             <FilterSpecs specType="condition" value={formData.condition} onChange={(val) => handleChange("condition", val)} />
@@ -704,7 +716,7 @@ const EditCarForm = () => {
         </div>
 
         {/* CONTACT & LOCATION */}
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid min-w-0 [&>div]:min-w-0 md:grid-cols-2 gap-4">
           <div>
             <label className="block mb-1">City</label>
             <Input inputType="text" value={formData.city} onChange={(e) => handleChange("city", e.target.value)} required />
@@ -717,10 +729,14 @@ const EditCarForm = () => {
             <label className="block mb-1">Phone Number</label>
             <Input inputType="tel" value={formData.contactNumber} onChange={(e) => handleChange("contactNumber", e.target.value)} required />
           </div>
-          <div>
-            <label className="block mb-1">
-              WhatsApp 
-              <button type="button" onClick={() => handleChange("whatsappNumber", formData.contactNumber)} className="ml-2 text-primary-500 hover:underline text-sm font-normal">
+          <div className="min-w-0">
+            <label className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+              <span className="font-medium text-gray-900">WhatsApp</span>
+              <button
+                type="button"
+                onClick={() => handleChange("whatsappNumber", formData.contactNumber)}
+                className="text-primary-500 hover:underline text-sm font-normal"
+              >
                 Same as Phone
               </button>
             </label>
@@ -739,17 +755,29 @@ const EditCarForm = () => {
         {/* AUCTION ONLY FIELDS */}
         {isAuction && (
           <>
-            <div>
+            <div className="min-w-0">
               <label className="block mb-1">Features</label>
-              <textarea value={formData.featuresText} onChange={(e) => handleChange("featuresText", e.target.value)} placeholder="Comma or line separated features" className="w-full p-2 border rounded" rows={3} />
+              <textarea
+                value={formData.featuresText}
+                onChange={(e) => handleChange("featuresText", e.target.value)}
+                placeholder="Comma or line separated features"
+                className="w-full min-w-0 max-w-full box-border p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                rows={3}
+              />
             </div>
 
-            <div>
+            <div className="min-w-0">
               <label className="block mb-1">Video URLs</label>
-              <textarea value={formData.videoUrlsText} onChange={(e) => handleChange("videoUrlsText", e.target.value)} placeholder="One URL per line" className="w-full p-2 border rounded" rows={3} />
+              <textarea
+                value={formData.videoUrlsText}
+                onChange={(e) => handleChange("videoUrlsText", e.target.value)}
+                placeholder="One URL per line"
+                className="w-full min-w-0 max-w-full box-border p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                rows={3}
+              />
             </div>
 
-            <div className="rounded-lg border border-gray-200 p-4 space-y-4">
+            <div className="rounded-lg border border-gray-200 p-4 space-y-4 min-w-0">
               <div>
                 <label className="block mb-2">Inspection Report *</label>
                 {formData.existingInspectionReportPdfUrl && (

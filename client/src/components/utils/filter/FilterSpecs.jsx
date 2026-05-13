@@ -99,7 +99,7 @@ const FilterSpecs = ({ specType, vehicleType = "Car", value, onChange }) => {
   if (!specsTypes || specsTypes.length === 0) return null;
 
   return (
-    <div>
+    <div className="min-w-0 max-w-full">
       <SpecsUtility
         groupName={config.groupName}
         specsTypes={specsTypes}

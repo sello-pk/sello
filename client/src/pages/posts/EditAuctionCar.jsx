@@ -13,7 +13,7 @@ const PAGE_GUTTER =
 const EditAuctionCar = () => {
   return (
     <div className="w-full min-w-0">
-      <div className={PAGE_GUTTER}>
+      <div className={`${PAGE_GUTTER} min-w-0`}>
         <EditCarForm />
       </div>
       <WhyChooseUsUtility />

@@ -205,7 +205,7 @@ const CarCard = ({
               }
             : undefined
         }
-        className={`group bg-white rounded-xl overflow-hidden border border-[#e5e7eb] shadow-sm hover:shadow-md transition-all duration-300 flex flex-col sm:flex-row ${isClickable ? "cursor-pointer" : ""}`}
+        className={`group bg-white rounded-xl overflow-hidden border border-[#e5e7eb] shadow-sm hover:shadow-md transition-all duration-300 flex flex-col sm:flex-row min-w-0 w-full max-w-full ${isClickable ? "cursor-pointer" : ""}`}
       >
         <div className="relative w-full aspect-[3/2] sm:w-48 sm:aspect-auto sm:h-36 md:w-56 md:h-40 lg:w-64 lg:h-48 xl:w-72 xl:h-52 flex-shrink-0 overflow-hidden bg-[#f3f4f6]">
           {displayImage ? (
@@ -355,7 +355,7 @@ const CarCard = ({
             }
           : undefined
       }
-      className={`group bg-white rounded-xl overflow-hidden border border-[#e5e7eb] shadow-md hover:shadow-xl transition-all duration-300 flex flex-col ${isClickable ? "cursor-pointer" : ""}`}
+      className={`group bg-white rounded-xl overflow-hidden border border-[#e5e7eb] shadow-md hover:shadow-xl transition-all duration-300 flex flex-col min-w-0 w-full max-w-full ${isClickable ? "cursor-pointer" : ""}`}
     >
       <div className="relative w-full aspect-[4/3] sm:aspect-[3/2] overflow-hidden bg-[#f3f4f6]">
         {displayImage ? (
@@ -416,8 +416,8 @@ const CarCard = ({
       </div>
 
       <div className="p-2.5 sm:p-3 lg:p-4 flex flex-col flex-1">
-        <div className="flex items-start justify-between gap-1">
-          <h3 className="text-[#111827] font-bold text-xs sm:text-sm md:text-base leading-tight line-clamp-2 flex-1">
+        <div className="flex items-start justify-between gap-1 min-w-0">
+          <h3 className="text-[#111827] font-bold text-xs sm:text-sm md:text-base leading-tight line-clamp-2 flex-1 min-w-0">
             {displayTitle}
           </h3>
           <p className="text-xs text-gray-500 shrink-0 ml-1 mt-0.5">{priceLabel}</p>

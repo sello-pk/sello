@@ -27,12 +27,12 @@ const BannerInUesrListings = () => {
   };
 
   return (
-    <div className="py-12 ">
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="h-auto md:h-[55vh] flex flex-col justify-around bg-gradient-to-r from-primary-500 to-primary-400 rounded-2xl shadow-xl p-8 md:p-10 border border-gray-100">
-          <div className="px-4 sm:px-6 lg:px-8 py-7">
+    <div className="py-12 min-w-0">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0">
+        <div className="h-auto md:h-[55vh] flex flex-col justify-around bg-gradient-to-r from-primary-500 to-primary-400 rounded-2xl shadow-xl p-4 sm:p-8 md:p-10 border border-gray-100 min-w-0 max-w-full box-border">
+          <div className="px-2 sm:px-6 lg:px-8 py-5 sm:py-7 min-w-0">
             {/* Top Section */}
-            <div className="w-full flex flex-col md:flex-row md:items-start md:justify-between gap-6 md:gap-6 my-4">
+            <div className="w-full flex flex-col md:flex-row md:items-start md:justify-between gap-6 md:gap-6 my-4 min-w-0">
               {/* Left Image */}
               <div className="flex justify-center md:justify-start">
                 <img
@@ -43,7 +43,7 @@ const BannerInUesrListings = () => {
               </div>
 
               {/* Center Text */}
-              <div className="text-center md:text-left">
+              <div className="text-center md:text-left min-w-0">
                 <h3 className="text-2xl md:text-4xl font-semibold mb-4 text-white">
                   Search Thousands of Vehicles
                 </h3>

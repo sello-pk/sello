@@ -33,7 +33,7 @@ const SpecsUtility = ({
   };
 
   return (
-    <div className="flex gap-3 py-3 pl-2 overflow-x-auto hideScrollbar">
+    <div className="flex gap-3 py-3 pl-2 overflow-x-auto hideScrollbar min-w-0 max-w-full">
       {specsTypes.map((item, index) => {
         const isChecked = multiple
           ? selected.includes(item.titleValue)

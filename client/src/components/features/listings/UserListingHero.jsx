@@ -6,11 +6,11 @@ const UserListingHero = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative bg-[#050B20] md:h-[80vh] overflow-hidden">
-      <div className="max-w-8xl mx-auto w-full h-full pl-3 pr-3 sm:pl-4 sm:pr-4 md:pl-6 md:pr-6 lg:pl-8 lg:pr-8">
-        <div className="h-full flex flex-col md:flex-row items-center">
+    <section className="relative bg-[#050B20] md:h-[80vh] overflow-hidden min-w-0">
+      <div className="max-w-8xl mx-auto w-full min-w-0 h-full pl-3 pr-3 sm:pl-4 sm:pr-4 md:pl-6 md:pr-6 lg:pl-8 lg:pr-8">
+        <div className="h-full flex flex-col md:flex-row items-center min-w-0">
           {/* Left Side */}
-          <div className="w-full md:w-[60%] py-10 md:py-0 md:pr-6 lg:pr-10">
+          <div className="w-full min-w-0 md:w-[60%] py-10 md:py-0 md:pr-6 lg:pr-10">
             <div>
               <h1 className="md:text-5xl mb-16 text-3xl font-bold text-white">
                 My Listings
@@ -25,16 +25,16 @@ const UserListingHero = () => {
                 real-time updates and insights.
               </p>
             </div>
-            <div className="flex items-center flex-wrap my-7 gap-5">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center flex-wrap my-7 gap-3 sm:gap-5">
               <button
                 onClick={() => navigate("/create-post")}
-                className="px-6 w-48 py-3 rounded-lg border-[1px] flex items-center justify-center gap-3 bg-primary text-white border-transparent hover:bg-white hover:text-black transition-all ease-in"
+                className="px-6 w-full sm:w-48 py-3 rounded-lg border-[1px] flex items-center justify-center gap-3 bg-primary text-white border-transparent hover:bg-white hover:text-black transition-all ease-in"
               >
                 Add New Listing
               </button>
               <button
                 onClick={() => navigate("/cars")}
-                className="px-6 w-48 py-3 rounded-lg border-[1px] flex items-center justify-center gap-3 border-black text-black hover:bg-primary hover:text-white transition-all ease-in bg-white"
+                className="px-6 w-full sm:w-48 py-3 rounded-lg border-[1px] flex items-center justify-center gap-3 border-black text-black hover:bg-primary hover:text-white transition-all ease-in bg-white"
               >
                 Browse Cars
               </button>

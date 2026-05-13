@@ -202,7 +202,7 @@ const SearchableSelect = ({
 
   return (
     <div
-      className={`relative ${className}`}
+      className={`relative min-w-0 max-w-full ${className}`}
       ref={dropdownRef}
       style={{ zIndex: isOpen ? 10 : "auto" }}
     >
@@ -216,7 +216,7 @@ const SearchableSelect = ({
       )}
 
       <div
-        className={`relative w-full border border-gray-300 rounded-lg bg-white cursor-pointer transition-all ${
+        className={`relative w-full min-w-0 max-w-full border border-gray-300 rounded-lg bg-white cursor-pointer transition-all ${
           disabled ? "bg-gray-100 cursor-not-allowed opacity-50" : ""
         } ${isOpen ? "ring-2 ring-primary-500 border-primary-500" : "hover:border-gray-400"} ${compact ? "px-2 py-1 h-9" : "px-3 py-2"}`}
         onClick={handleToggle}
@@ -226,24 +226,24 @@ const SearchableSelect = ({
         aria-expanded={isOpen}
         aria-haspopup="listbox"
       >
-        <div className="flex items-center justify-between">
-          <div className="flex-1 truncate">
+        <div className="flex items-center justify-between min-w-0 gap-2">
+          <div className="flex-1 min-w-0 truncate">
             {selectedOption ? (
               <span
-                className={`text-gray-900 ${compact ? "text-xs" : "text-sm"}`}
+                className={`block truncate text-gray-900 ${compact ? "text-xs" : "text-sm"}`}
               >
                 {selectedOption.label}
               </span>
             ) : (
               <span
-                className={`text-gray-500 ${compact ? "text-xs" : "text-sm"}`}
+                className={`block truncate text-gray-500 ${compact ? "text-xs" : "text-sm"}`}
               >
                 {placeholder}
               </span>
             )}
           </div>
 
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-1 shrink-0">
             {value && !disabled && !isLoading && (
               <button
                 type="button"

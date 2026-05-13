@@ -111,7 +111,7 @@ const UserListings = () => {
 
   if (isLoading) {
     return (
-      <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-gray-100">
+      <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-gray-100 min-w-0 max-w-full">
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">My Listings</h2>
         <p className="text-gray-600">Loading your cars...</p>
       </section>
@@ -120,7 +120,7 @@ const UserListings = () => {
 
   if (listingsError) {
     return (
-      <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-gray-100">
+      <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-gray-100 min-w-0 max-w-full">
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">My Listings</h2>
         <p className="text-red-500">Error loading your listings</p>
       </section>
@@ -128,7 +128,7 @@ const UserListings = () => {
   }
 
   return (
-    <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-gray-100">
+    <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-12 bg-gray-100 min-w-0 max-w-full">
       <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">My Listings</h2>
       <p className="text-gray-600 text-sm mb-6">Manage and edit your posted vehicles</p>
 
@@ -149,10 +149,10 @@ const UserListings = () => {
             />
           </div>
           <div
-            className={`${
+            className={`min-w-0 ${
               viewMode === "list"
                 ? "grid grid-cols-1 gap-4"
-                : "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6"
+                : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6"
             }`}
           >
           {sortedCars.map((car) => (

@@ -11,18 +11,18 @@ import CustomerReview from "../../components/sections/home/CustomerReview";
 
 const UserListingPage = () => {
   return (
-    <div className="bg-gray-100">
+    <div className="bg-gray-100 min-w-0">
       <UserListingHero />
 
       {/* Constrained Width Sections - Like Header */}
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex items-center justify-between w-full">
-          <h1 className="md:text-3xl text-xl font-semibold">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12 min-w-0">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between w-full min-w-0">
+          <h1 className="md:text-3xl text-xl font-semibold min-w-0">
             Explore Our Premium Brands
           </h1>
           <Link
             to={"/view-all-brands"}
-            className="flex items-center gap-2 text-lg"
+            className="flex items-center gap-2 text-lg shrink-0"
           >
             Show All Brands <GoArrowUpRight />
           </Link>
@@ -33,7 +33,7 @@ const UserListingPage = () => {
         </div>
       </div>
 
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0">
         <UserListings />
       </div>
 
