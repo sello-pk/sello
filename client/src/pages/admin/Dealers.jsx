@@ -32,20 +32,22 @@ const Dealers = () => {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [requestStatusFilter, setRequestStatusFilter] = useState("pending");
+  const [requestTypeFilter, setRequestTypeFilter] = useState("all");
   const [selectedDealer, setSelectedDealer] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const { data, isLoading, refetch } = useGetAllDealersQuery({
     page,
     limit: 20,
     search,
+    queueStatus: requestStatusFilter,
+    queueType: requestTypeFilter,
   });
   const [verifyDealer] = useVerifyDealerMutation();
   const [deleteUser] = useDeleteUserMutation();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [dealerToDelete, setDealerToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [requestStatusFilter, setRequestStatusFilter] = useState("pending");
-  const [requestTypeFilter, setRequestTypeFilter] = useState("all");
   const { data: dealerDetails, isLoading: detailsLoading } =
     useGetUserByIdQuery(selectedDealer, { skip: !selectedDealer });
 
@@ -66,10 +68,10 @@ const Dealers = () => {
   const [reviewAuctionAccessRequest, { isLoading: reviewingRequest }] =
     useReviewAuctionAccessRequestMutation();
 
-  // Reset to page 1 when search changes
+  // Reset to page 1 when search or queue filters change
   useEffect(() => {
     setPage(1);
-  }, [search]);
+  }, [search, requestStatusFilter, requestTypeFilter]);
 
   const handleVerify = async (userId, verified) => {
     try {
@@ -206,8 +208,9 @@ const Dealers = () => {
             <h3 className="text-base font-semibold text-gray-900 dark:text-white">
               Auction Access Review Queue
             </h3>
-            <div className="flex gap-2">
-              <select
+            <div className="flex flex-col gap-1 sm:items-end min-w-0">
+              <div className="flex gap-2 flex-wrap justify-end">
+                <select
                 value={requestTypeFilter}
                 onChange={(e) => setRequestTypeFilter(e.target.value)}
                 className="px-3 py-1.5 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm"
@@ -227,6 +230,10 @@ const Dealers = () => {
                 <option value="rejected">Rejected</option>
                 <option value="all">All</option>
               </select>
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 text-right max-w-xs">
+                The dealer table below uses the same status and type filters.
+              </p>
             </div>
           </div>
           <div className="p-4 min-w-0">
