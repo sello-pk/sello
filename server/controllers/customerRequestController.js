@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import CustomerRequest from '../models/customerRequestModel.js';
+import ContactForm from '../models/contactFormModel.js';
 import User from '../models/userModel.js';
 
 /**
@@ -359,16 +360,29 @@ export const getCustomerRequestStatistics = async (req, res) => {
         }
 
         const [
-            openRequests,
-            inProgressRequests,
-            totalRequests,
-            resolvedRequests
+            crOpen,
+            crInProgress,
+            crTotal,
+            crResolved,
+            cfNew,
+            cfInProgress,
+            cfTotal,
+            cfResolved,
         ] = await Promise.all([
             CustomerRequest.countDocuments({ status: 'open' }),
             CustomerRequest.countDocuments({ status: 'in_progress' }),
             CustomerRequest.countDocuments(),
-            CustomerRequest.countDocuments({ status: 'resolved' })
+            CustomerRequest.countDocuments({ status: 'resolved' }),
+            ContactForm.countDocuments({ status: 'new' }),
+            ContactForm.countDocuments({ status: 'in_progress' }),
+            ContactForm.countDocuments(),
+            ContactForm.countDocuments({ status: 'resolved' }),
         ]);
+
+        const openRequests = crOpen + cfNew;
+        const inProgressRequests = crInProgress + cfInProgress;
+        const totalRequests = crTotal + cfTotal;
+        const resolvedRequests = crResolved + cfResolved;
 
         return res.status(200).json({
             success: true,

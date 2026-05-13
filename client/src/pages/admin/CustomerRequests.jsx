@@ -24,8 +24,10 @@ import {
   FiUser,
   FiX,
   FiMail,
+  FiRefreshCw,
 } from "react-icons/fi";
 import { formatDistanceToNow } from "date-fns";
+import { Link } from "react-router-dom";
 import { ROUTES } from "../../routes";
 import ConfirmModal from "../../components/features/admin/ConfirmModal";
 import ActionDropdown from "../../components/features/admin/ActionDropdown";
@@ -41,7 +43,8 @@ const CustomerRequests = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [requestToDelete, setRequestToDelete] = useState(null);
 
-  const { data: stats } = useGetCustomerRequestStatisticsQuery();
+  const { data: stats, refetch: refetchStats } =
+    useGetCustomerRequestStatisticsQuery();
 
   // Fetch customer requests
   const {
@@ -63,7 +66,14 @@ const CustomerRequests = () => {
   // Fetch contact forms
   const contactFormQueryParams = {};
   if (activeTab !== "all") {
-    contactFormQueryParams.status = activeTab;
+    const contactStatusByTab = {
+      open: "new",
+      in_progress: "in_progress",
+      resolved: "resolved",
+      closed: "resolved",
+    };
+    const mapped = contactStatusByTab[activeTab];
+    if (mapped) contactFormQueryParams.status = mapped;
   }
   if (searchQuery) {
     contactFormQueryParams.search = searchQuery;
@@ -86,7 +96,8 @@ const CustomerRequests = () => {
   const [addResponse, { isLoading: isAddingResponse }] =
     useAddCustomerRequestResponseMutation();
   const [updateContactFormStatus] = useUpdateContactFormStatusMutation();
-  const [deleteContactForm] = useDeleteContactFormMutation();
+  const [deleteContactForm, { isLoading: isDeletingContact }] =
+    useDeleteContactFormMutation();
   const [convertToChat] = useConvertToChatMutation();
 
   const requests = requestsData?.requests || [];
@@ -211,15 +222,49 @@ const CustomerRequests = () => {
 
   const handleDeleteConfirm = async () => {
     if (!requestToDelete) return;
+    const item = allItems.find((i) => String(i._id) === String(requestToDelete));
+    if (!item) {
+      toast.error("Item not found");
+      setShowDeleteModal(false);
+      setRequestToDelete(null);
+      return;
+    }
     try {
-      await deleteRequest(requestToDelete).unwrap();
-      toast.success("Request deleted successfully");
+      if (item?.itemType === "contact_form") {
+        await deleteContactForm(requestToDelete).unwrap();
+        toast.success("Contact form deleted successfully");
+      } else {
+        await deleteRequest(requestToDelete).unwrap();
+        toast.success("Request deleted successfully");
+      }
       refetchRequests();
+      refetchContactForms();
     } catch (error) {
-      toast.error(error?.data?.message || "Failed to delete request");
+      toast.error(error?.data?.message || "Failed to delete");
     } finally {
       setShowDeleteModal(false);
       setRequestToDelete(null);
+    }
+  };
+
+  const handleContactFormStatusChange = async (id, newStatus) => {
+    try {
+      await updateContactFormStatus({ id, status: newStatus }).unwrap();
+      toast.success("Contact form status updated");
+      refetchContactForms();
+    } catch (error) {
+      toast.error(error?.data?.message || "Failed to update status");
+    }
+  };
+
+  const handleConvertToChat = async (id) => {
+    try {
+      await convertToChat(id).unwrap();
+      toast.success("Chat created — open Support Chat to reply to this contact");
+      refetchContactForms();
+      refetchRequests();
+    } catch (error) {
+      toast.error(error?.data?.message || "Could not start chat");
     }
   };
 
@@ -288,27 +333,28 @@ const CustomerRequests = () => {
 
   return (
     <AdminLayout>
-      <div className="p-3 sm:p-6 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="p-3 sm:p-6 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen min-w-0 max-w-full box-border">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 min-w-0">
+          <div className="min-w-0">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white break-words">
               Customer Requests
             </h2>
-            <p className="text-gray-700 dark:text-gray-300 mt-1">
+            <p className="text-gray-700 dark:text-gray-300 mt-1 text-sm sm:text-base">
               Manage support tickets, customer inquiries, and contact forms
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button
               onClick={() => {
                 refetchRequests();
                 refetchContactForms();
+                refetchStats();
               }}
               className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 hover:border-primary-300 dark:hover:border-primary-500 transition-colors duration-200"
-              title="Refresh data"
+              title="Refresh list and statistics"
             >
-              <FiMessageSquare size={20} />
+              <FiRefreshCw size={20} />
             </button>
             <div className="bg-primary-500 text-white px-4 py-3 rounded-xl shadow-lg flex items-center">
               <FiMessageSquare className="mr-2" size={20} />
@@ -320,7 +366,7 @@ const CustomerRequests = () => {
         </div>
 
         {/* Overview Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 min-w-0">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -393,8 +439,8 @@ const CustomerRequests = () => {
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-5">
-          <div className="flex flex-col gap-4 mb-5">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 min-w-0 max-w-full">
+          <div className="flex flex-col gap-4 mb-5 min-w-0">
             {/* Request Type Filter */}
             <div className="flex flex-wrap gap-2">
               <button
@@ -474,7 +520,7 @@ const CustomerRequests = () => {
                 Resolved
               </button>
             </div>
-            <div className="relative w-full md:w-80">
+            <div className="relative w-full min-w-0 md:max-w-md md:w-80">
               <FiSearch
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 size={18}
@@ -484,7 +530,7 @@ const CustomerRequests = () => {
                 placeholder="Search by subject, user, or request ID..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition"
+                className="w-full min-w-0 box-border pl-10 pr-10 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition dark:bg-gray-900 dark:border-gray-600 dark:text-white"
               />
               {searchQuery && (
                 <button
@@ -499,8 +545,8 @@ const CustomerRequests = () => {
         </div>
 
         {/* Requests Table */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-          <div className="overflow-x-auto admin-table-scroll">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden min-w-0 max-w-full">
+          <div className="overflow-x-auto admin-table-scroll min-w-0">
             {isLoading ? (
               <div className="flex justify-center py-12">
                 <Spinner fullScreen={false} />
@@ -751,10 +797,24 @@ const CustomerRequests = () => {
                             <button
                               onClick={() => handleConvertToChat(item._id)}
                               className="p-2 text-primary-500 hover:text-white bg-primary-50 hover:bg-primary-500 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
-                              title="Convert to Chat"
+                              title="Start a support chat to reply to this contact"
                             >
                               <FiMessageSquare size={18} />
                             </button>
+                          )}
+                          {item.itemType === "contact_form" && item.chatId && (
+                            <Link
+                              to={ROUTES.admin.supportChatWithId(
+                                typeof item.chatId === "string"
+                                  ? item.chatId
+                                  : item.chatId?._id?.toString?.() ||
+                                    String(item.chatId),
+                              )}
+                              className="p-2 text-primary-500 hover:text-white bg-primary-50 hover:bg-primary-500 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md inline-flex"
+                              title="Open Support Chat to reply"
+                            >
+                              <FiMessageSquare size={18} />
+                            </Link>
                           )}
                           {item.itemType === "customer_request" && (
                             <button
@@ -868,7 +928,9 @@ const CustomerRequests = () => {
               </button>
             </div>
             {(() => {
-              const item = allItems.find((i) => i._id === selectedRequest);
+              const item = allItems.find(
+                (i) => String(i._id) === String(selectedRequest),
+              );
               if (!item) return <div>Item not found</div>;
 
               return (
@@ -1039,7 +1101,9 @@ const CustomerRequests = () => {
         onConfirm={handleDeleteConfirm}
         title="Delete Item"
         message={(() => {
-          const item = allItems.find((i) => i._id === requestToDelete);
+          const item = allItems.find(
+            (i) => String(i._id) === String(requestToDelete),
+          );
           const itemType =
             item?.itemType === "contact_form"
               ? "contact form"
@@ -1048,7 +1112,7 @@ const CustomerRequests = () => {
         })()}
         confirmText="Delete"
         variant="danger"
-        isLoading={isDeleting}
+        isLoading={isDeleting || isDeletingContact}
       />
     </AdminLayout>
   );

@@ -712,7 +712,7 @@ export const adminApi = createApi({
         url: `/contact-form/${id}/convert-to-chat`,
         method: "POST",
       }),
-      invalidatesTags: ["ContactForms", "SupportChat"],
+      invalidatesTags: ["ContactForms", "SupportChat", "CustomerRequests"],
     }),
     updateContactFormStatus: builder.mutation({
       query: ({ id, status }) => ({
@@ -720,14 +720,14 @@ export const adminApi = createApi({
         method: "PUT",
         body: { status },
       }),
-      invalidatesTags: ["ContactForms"],
+      invalidatesTags: ["ContactForms", "CustomerRequests"],
     }),
     deleteContactForm: builder.mutation({
       query: (id) => ({
         url: `/contact-form/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["ContactForms"],
+      invalidatesTags: ["ContactForms", "CustomerRequests"],
     }),
 
     // Customer Requests
