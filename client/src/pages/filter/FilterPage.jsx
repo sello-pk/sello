@@ -26,11 +26,8 @@ const FilterPage = () => {
 
     // Map URL params to backend filter format in single pass
     const paramMap = {
-      city: "city",
-      bodyType: "bodyType",
       make: "make",
       model: "model",
-      variant: "variant",
       yearMin: "yearMin",
       yearMax: "yearMax",
       priceMin: "priceMin",
@@ -80,7 +77,7 @@ const FilterPage = () => {
       </div>
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm px-3 sm:px-5 md:px-6 py-5 sm:py-6 my-4">
         <div className="w-full">
-          <FilterForm onFilter={handleFilter} />
+          <FilterForm onFilter={handleFilter} simplifiedFields />
         </div>
       </div>
       <GridCars />

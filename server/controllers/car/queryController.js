@@ -127,7 +127,31 @@ export const getAllCars = async (req, res) => {
 };
 
 // Start of Selection
-export const getFilteredCars = getAllCars;
+export const getFilteredCars = async (req, res) => {
+  const disallowedFilterFields = [
+    "search",
+    "title",
+    "country",
+    "city",
+    "bodyType",
+    "variant",
+    "colors",
+    "colorExterior",
+    "colorInterior",
+    "location",
+    "userLat",
+    "userLng",
+    "radius",
+  ];
+
+  const sanitizedQuery = { ...req.query };
+  disallowedFilterFields.forEach((field) => {
+    delete sanitizedQuery[field];
+  });
+
+  req.query = sanitizedQuery;
+  return getAllCars(req, res);
+};
 // End of Selection
 
 export const getSingleCar = async (req, res) => {

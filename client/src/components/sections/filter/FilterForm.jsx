@@ -23,7 +23,7 @@ const getVehicleLabel = (vehicleType, fieldType) => {
   return `${vehicleName} ${fieldType}`;
 };
 
-const FilterForm = ({ onFilter }) => {
+const FilterForm = ({ onFilter, simplifiedFields = false }) => {
   // Vehicle type options - same as CreatePostForm and HeroFilter
   const vehicleTypeOptions = [
     "Car",
@@ -116,26 +116,28 @@ const FilterForm = ({ onFilter }) => {
     const urlFilters = {};
 
     // Read all URL parameters
-    const city = searchParams.get("city");
-    const bodyType = searchParams.get("bodyType");
     const make = searchParams.get("make");
     const model = searchParams.get("model");
     const yearMin = searchParams.get("yearMin");
     const yearMax = searchParams.get("yearMax");
-    const variant = searchParams.get("variant");
     const priceMin = searchParams.get("priceMin");
     const priceMax = searchParams.get("priceMax");
 
     // Build filter object from URL params
-    if (city) urlFilters.city = city;
-    if (bodyType) urlFilters.bodyType = bodyType;
+    if (!simplifiedFields) {
+      const city = searchParams.get("city");
+      const bodyType = searchParams.get("bodyType");
+      const variant = searchParams.get("variant");
+      if (city) urlFilters.city = city;
+      if (bodyType) urlFilters.bodyType = bodyType;
+      if (variant) urlFilters.variant = variant;
+    }
     if (make) {
       urlFilters.make = make;
     }
     if (model) urlFilters.model = model;
     if (yearMin) urlFilters.minYear = yearMin;
     if (yearMax) urlFilters.maxYear = yearMax;
-    if (variant) urlFilters.variant = variant;
     if (priceMin) urlFilters.minPrice = priceMin;
     if (priceMax) urlFilters.maxPrice = priceMax;
 
@@ -145,13 +147,15 @@ const FilterForm = ({ onFilter }) => {
 
       // Build backend filters and trigger search
       const backendFilters = {};
-      if (urlFilters.city) backendFilters.city = urlFilters.city;
-      if (urlFilters.bodyType) backendFilters.bodyType = urlFilters.bodyType;
+      if (!simplifiedFields) {
+        if (urlFilters.city) backendFilters.city = urlFilters.city;
+        if (urlFilters.bodyType) backendFilters.bodyType = urlFilters.bodyType;
+        if (urlFilters.variant) backendFilters.variant = urlFilters.variant;
+      }
       if (urlFilters.make) backendFilters.make = urlFilters.make;
       if (urlFilters.model) backendFilters.model = urlFilters.model;
       if (urlFilters.minYear) backendFilters.yearMin = urlFilters.minYear;
       if (urlFilters.maxYear) backendFilters.yearMax = urlFilters.maxYear;
-      if (urlFilters.variant) backendFilters.variant = urlFilters.variant;
       if (urlFilters.minPrice) backendFilters.priceMin = urlFilters.minPrice;
       if (urlFilters.maxPrice) backendFilters.priceMax = urlFilters.maxPrice;
 
@@ -160,7 +164,7 @@ const FilterForm = ({ onFilter }) => {
         onFilter(backendFilters);
       }
     }
-  }, [searchParams, makes, onFilter]);
+  }, [searchParams, makes, onFilter, simplifiedFields]);
 
   const handleChange = (field, value) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
@@ -396,24 +400,25 @@ const FilterForm = ({ onFilter }) => {
     const backendFilters = {};
 
     // Map filters to backend query
-    if (filters.search) backendFilters.search = filters.search;
+    if (!simplifiedFields && filters.search) backendFilters.search = filters.search;
     if (filters.vehicleType) backendFilters.vehicleType = filters.vehicleType;
     if (filters.minPrice) backendFilters.priceMin = filters.minPrice;
     if (filters.maxPrice) backendFilters.priceMax = filters.maxPrice;
     if (filters.minYear) backendFilters.yearMin = filters.minYear;
     if (filters.maxYear) backendFilters.yearMax = filters.maxYear;
-    if (filters.variant) backendFilters.variant = filters.variant;
+    if (!simplifiedFields && filters.variant) backendFilters.variant = filters.variant;
     if (filters.minMileage) backendFilters.mileageMin = filters.minMileage;
     if (filters.maxMileage) backendFilters.mileageMax = filters.maxMileage;
     if (filters.make) backendFilters.make = filters.make;
     if (filters.model) backendFilters.model = filters.model;
-    if (filters.bodyType) backendFilters.bodyType = filters.bodyType;
+    if (!simplifiedFields && filters.bodyType)
+      backendFilters.bodyType = filters.bodyType;
     if (filters.fuelType) backendFilters.fuelType = filters.fuelType;
     if (filters.transmission)
       backendFilters.transmission = filters.transmission;
-    if (filters.exteriorColor)
+    if (!simplifiedFields && filters.exteriorColor)
       backendFilters.colorExterior = filters.exteriorColor;
-    if (filters.interiorColor)
+    if (!simplifiedFields && filters.interiorColor)
       backendFilters.colorInterior = filters.interiorColor;
     if (filters.ownerType) backendFilters.ownerType = filters.ownerType;
     if (filters.warranty) backendFilters.warranty = filters.warranty;
@@ -426,11 +431,11 @@ const FilterForm = ({ onFilter }) => {
     if (filters.maxMotorPower)
       backendFilters.motorPowerMax = filters.maxMotorPower;
     if (filters.condition) backendFilters.condition = filters.condition;
-    if (filters.country) backendFilters.country = filters.country;
-    if (filters.city) backendFilters.city = filters.city;
-    if (filters.radius) backendFilters.radius = filters.radius;
-    if (filters.userLat) backendFilters.userLat = filters.userLat;
-    if (filters.userLng) backendFilters.userLng = filters.userLng;
+    if (!simplifiedFields && filters.country) backendFilters.country = filters.country;
+    if (!simplifiedFields && filters.city) backendFilters.city = filters.city;
+    if (!simplifiedFields && filters.radius) backendFilters.radius = filters.radius;
+    if (!simplifiedFields && filters.userLat) backendFilters.userLat = filters.userLat;
+    if (!simplifiedFields && filters.userLng) backendFilters.userLng = filters.userLng;
 
     // Remove empty values
     const cleanFilters = {};
@@ -511,7 +516,7 @@ const FilterForm = ({ onFilter }) => {
           Clear All
         </button>
       </div>
-      <form className="space-y-4 h-auto min-w-0 overflow-x-hidden" onSubmit={handleSubmit}>
+      <form className="space-y-4 h-auto min-w-0" onSubmit={handleSubmit}>
         {/* Vehicle Type Selection - Button Style like CreatePostForm */}
         <div className="mb-6">
           <label className="block mb-3 text-center font-medium text-gray-700">
@@ -535,18 +540,19 @@ const FilterForm = ({ onFilter }) => {
           </div>
         </div>
 
-        {/* Title Search - Full Width */}
-        <div className="field space-y-2">
-          <label className="block mb-2 text-sm font-medium text-gray-700">
-            Search by Title
-          </label>
-          <Input
-            inputType="text"
-            value={filters.search}
-            onChange={(e) => handleChange("search", e.target.value)}
-            placeholder="e.g., Toyota Camry"
-          />
-        </div>
+        {!simplifiedFields && (
+          <div className="field space-y-2">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Search by Title
+            </label>
+            <Input
+              inputType="text"
+              value={filters.search}
+              onChange={(e) => handleChange("search", e.target.value)}
+              placeholder="e.g., Toyota Camry"
+            />
+          </div>
+        )}
 
         {/* Price */}
         <div className="field space-y-2 min-w-0">
@@ -635,16 +641,19 @@ const FilterForm = ({ onFilter }) => {
           </div>
         </div>
 
-        {/* Variant */}
-        <div className="field min-w-0">
-          <label className="block mb-2 text-sm font-medium text-gray-700">Variant</label>
-          <Input
-            inputType="text"
-            value={filters.variant}
-            onChange={(e) => handleChange("variant", e.target.value)}
-            placeholder="e.g., VTi Oriel"
-          />
-        </div>
+        {!simplifiedFields && (
+          <div className="field min-w-0">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Variant
+            </label>
+            <Input
+              inputType="text"
+              value={filters.variant}
+              onChange={(e) => handleChange("variant", e.target.value)}
+              placeholder="e.g., VTi Oriel"
+            />
+          </div>
+        )}
 
         {/* Year - new line after Variant */}
         <div className="field space-y-2 min-w-0">
@@ -795,7 +804,7 @@ const FilterForm = ({ onFilter }) => {
         </div>
 
         {/* Body Type Filter - Full Width */}
-        {isFieldVisible(filters.vehicleType || "Car", "bodyType") && (
+        {!simplifiedFields && isFieldVisible(filters.vehicleType || "Car", "bodyType") && (
           <div className="field space-y-2">
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Body Type
@@ -824,27 +833,29 @@ const FilterForm = ({ onFilter }) => {
           </div>
         )}
 
-        {/* Exterior Color - Full Width */}
-        <div className="field space-y-2">
-          <label className="block mb-2 text-sm font-medium text-gray-700">
-            Exterior Color
-          </label>
-          <ExteriorColor
-            value={filters.exteriorColor}
-            onChange={(value) => handleChange("exteriorColor", value)}
-          />
-        </div>
+        {!simplifiedFields && (
+          <div className="field space-y-2">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Exterior Color
+            </label>
+            <ExteriorColor
+              value={filters.exteriorColor}
+              onChange={(value) => handleChange("exteriorColor", value)}
+            />
+          </div>
+        )}
 
-        {/* Interior Color - Full Width */}
-        <div className="field space-y-2">
-          <label className="block mb-2 text-sm font-medium text-gray-700">
-            Interior Color
-          </label>
-          <InteriorColor
-            value={filters.interiorColor}
-            onChange={(value) => handleChange("interiorColor", value)}
-          />
-        </div>
+        {!simplifiedFields && (
+          <div className="field space-y-2">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Interior Color
+            </label>
+            <InteriorColor
+              value={filters.interiorColor}
+              onChange={(value) => handleChange("interiorColor", value)}
+            />
+          </div>
+        )}
 
         {/* Owner Type - Full Width */}
         <div className="field space-y-2">
@@ -862,67 +873,70 @@ const FilterForm = ({ onFilter }) => {
           <FilterSpecs specType="warrantyType" value={filters.warranty} onChange={(value) => handleChange("warranty", value)} />
         </div>
 
-        {/* Country - Full Width */}
-        <div className="field space-y-2">
-          <label className="block mb-2 text-sm font-medium text-gray-700">
-            Country
-          </label>
-          <SearchableSelect
-            value={filters.country}
-            onChange={(value) => handleChange("country", value)}
-            options={countries.map((country) => ({
-              value: country.name,
-              label: country.name,
-            }))}
-            placeholder="All Countries"
-            disabled={categoriesLoading}
-            isLoading={categoriesLoading}
-          />
-        </div>
+        {!simplifiedFields && (
+          <div className="field space-y-2">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Country
+            </label>
+            <SearchableSelect
+              value={filters.country}
+              onChange={(value) => handleChange("country", value)}
+              options={countries.map((country) => ({
+                value: country.name,
+                label: country.name,
+              }))}
+              placeholder="All Countries"
+              disabled={categoriesLoading}
+              isLoading={categoriesLoading}
+            />
+          </div>
+        )}
 
-        {/* City - Full Width */}
-        <div className="field space-y-2">
-          <label className="block mb-2 text-sm font-medium text-gray-700">
-            City
-          </label>
-          <SearchableSelect
-            value={filters.city}
-            onChange={(value) => handleChange("city", value)}
-            options={availableCities.map((city) => ({
-              value: city.name,
-              label: city.name,
-            }))}
-            placeholder={
-              categoriesLoading
-                ? "Loading..."
-                : availableCities.length === 0
-                  ? "No cities available"
-                  : filters.country
-                    ? "All Cities"
-                    : "All Cities (select Country to filter)"
-            }
-            disabled={categoriesLoading}
-            isLoading={categoriesLoading}
-          />
-        </div>
+        {!simplifiedFields && (
+          <div className="field space-y-2">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              City
+            </label>
+            <SearchableSelect
+              value={filters.city}
+              onChange={(value) => handleChange("city", value)}
+              options={availableCities.map((city) => ({
+                value: city.name,
+                label: city.name,
+              }))}
+              placeholder={
+                categoriesLoading
+                  ? "Loading..."
+                  : availableCities.length === 0
+                    ? "No cities available"
+                    : filters.country
+                      ? "All Cities"
+                      : "All Cities (select Country to filter)"
+              }
+              disabled={categoriesLoading}
+              isLoading={categoriesLoading}
+            />
+          </div>
+        )}
 
-        {/* Location Picker */}
-        <div className="field space-y-2">
-          <label className="block mb-2 text-sm font-medium text-gray-700">
-            Location
-          </label>
-          <LocationButton
-            value={
-              filters.userLat && filters.userLng
-                ? JSON.stringify([
-                    parseFloat(filters.userLng),
-                    parseFloat(filters.userLat),
-                  ])
-                : null
-            }
-            onChange={handleLocationChange}
-          />
-        </div>
+        {!simplifiedFields && (
+          <div className="field space-y-2">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Location
+            </label>
+            <LocationButton
+              value={
+                filters.userLat && filters.userLng
+                  ? JSON.stringify([
+                      parseFloat(filters.userLng),
+                      parseFloat(filters.userLat),
+                    ])
+                  : null
+              }
+              onChange={handleLocationChange}
+            />
+          </div>
+        )}
 
         {/* Submit */}
         <div>
