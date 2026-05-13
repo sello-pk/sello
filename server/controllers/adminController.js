@@ -603,12 +603,75 @@ export const featureCar = async (req, res) => {
 
 export const getAllDealers = async (req, res) => {
   try {
-    const dealers = await User.find({ role: "dealer", status: "active" }).sort({
-      createdAt: -1,
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
+    const skip = (page - 1) * limit;
+    const search = String(req.query.search || "").trim();
+
+    const match = {
+      role: "dealer",
+      status: { $ne: "suspended" },
+    };
+
+    if (search) {
+      const esc = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const rx = new RegExp(esc, "i");
+      match.$and = [
+        {
+          $or: [
+            { name: rx },
+            { email: rx },
+            { "dealerInfo.businessName": rx },
+          ],
+        },
+      ];
+    }
+
+    const [dealers, total] = await Promise.all([
+      User.find(match)
+        .select("-password")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      User.countDocuments(match),
+    ]);
+
+    const ids = dealers.map((d) => d._id);
+    const countMap = new Map();
+    if (ids.length) {
+      const counts = await Car.aggregate([
+        { $match: { postedBy: { $in: ids } } },
+        { $group: { _id: "$postedBy", c: { $sum: 1 } } },
+      ]);
+      counts.forEach((row) => {
+        countMap.set(String(row._id), row.c);
+      });
+    }
+
+    const enriched = dealers.map((d) => ({
+      ...d,
+      listingsCount: countMap.get(String(d._id)) || 0,
+      salesCount: typeof d.salesCount === "number" ? d.salesCount : 0,
+    }));
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        dealers: enriched,
+        pagination: {
+          page,
+          limit,
+          total,
+          pages: Math.max(1, Math.ceil(total / limit)),
+        },
+      },
     });
-    return res.status(200).json({ success: true, data: dealers });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("getAllDealers", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch dealers" });
   }
 };
 
@@ -627,57 +690,122 @@ export const verifyUser = async (req, res) => {
 
 export const verifyDealer = async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(
-      req.params.userId,
-      {
-        "dealerInfo.verified": true,
-        "dealerInfo.verifiedAt": new Date(),
-        "auctionCapabilities.auctionDealer.status": "approved",
-        "auctionCapabilities.auctionDealer.reviewedAt": new Date(),
-        "auctionCapabilities.auctionDealer.reviewedBy": req.user._id,
-        role: "dealer",
-      },
-      { new: true },
-    );
+    const verified = req.body?.verified !== false;
+    const reviewedAt = new Date();
+    const update = verified
+      ? {
+          "dealerInfo.verified": true,
+          "dealerInfo.verifiedAt": reviewedAt,
+          "auctionCapabilities.auctionDealer.status": "approved",
+          "auctionCapabilities.auctionDealer.reviewedAt": reviewedAt,
+          "auctionCapabilities.auctionDealer.reviewedBy": req.user._id,
+          "auctionCapabilities.auctionDealer.rejectionReason": "",
+          role: "dealer",
+        }
+      : {
+          "dealerInfo.verified": false,
+          $unset: { "dealerInfo.verifiedAt": "" },
+        };
+
+    const user = await User.findByIdAndUpdate(req.params.userId, update, {
+      new: true,
+    }).select("-password");
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
     return res.status(200).json({ success: true, data: user });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("verifyDealer", error);
+    return res.status(500).json({ success: false, message: "Failed to update dealer" });
   }
 };
 
 export const getAuctionAccessRequests = async (req, res) => {
   try {
-    const { status = "pending", type = "all", search = "" } = req.query;
-    const query = {
-      $or: [
-        {
-          "auctionCapabilities.auctionBidder.status":
-            status === "all" ? { $exists: true } : status,
-        },
-        {
-          "auctionCapabilities.auctionDealer.status":
-            status === "all" ? { $exists: true } : status,
-        },
-      ],
-    };
+    const status = String(req.query.status || "pending").toLowerCase();
+    const type = String(req.query.type || "all").toLowerCase();
+    const search = String(req.query.search || "").trim();
 
-    if (type === "auctionBidder") {
-      query["auctionCapabilities.auctionBidder.status"] =
-        status === "all" ? { $exists: true } : status;
-      delete query.$or;
-    } else if (type === "auctionDealer" || type === "dealer") {
-      query["auctionCapabilities.auctionDealer.status"] =
-        status === "all" ? { $exists: true } : status;
-      delete query.$or;
+    const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const searchRx = search ? new RegExp(esc(search), "i") : null;
+
+    const orBlocks = [];
+
+    const includeBidder = type === "all" || type === "auctionbidder";
+    const includeDealerOnboarding = type === "all" || type === "dealer";
+
+    if (status === "pending") {
+      if (includeBidder) {
+        orBlocks.push({ "auctionCapabilities.auctionBidder.status": "pending" });
+      }
+      if (type === "all" || type === "auctiondealer") {
+        orBlocks.push({ "auctionCapabilities.auctionDealer.status": "pending" });
+      }
+      if (includeDealerOnboarding) {
+        orBlocks.push({
+          role: "dealer",
+          $or: [
+            { "dealerInfo.verified": false },
+            { "dealerInfo.verified": { $exists: false } },
+          ],
+        });
+      }
+    } else if (status === "approved") {
+      if (includeBidder) {
+        orBlocks.push({ "auctionCapabilities.auctionBidder.status": "approved" });
+      }
+      if (type === "all" || type === "auctiondealer") {
+        orBlocks.push({ "auctionCapabilities.auctionDealer.status": "approved" });
+      }
+      if (includeDealerOnboarding) {
+        orBlocks.push({ role: "dealer", "dealerInfo.verified": true });
+      }
+    } else if (status === "rejected") {
+      const rejectedIn = { $in: ["rejected", "revoked"] };
+      if (includeBidder) {
+        orBlocks.push({
+          "auctionCapabilities.auctionBidder.status": rejectedIn,
+        });
+      }
+      if (type === "all" || type === "auctiondealer") {
+        orBlocks.push({
+          "auctionCapabilities.auctionDealer.status": rejectedIn,
+        });
+      }
+      if (type === "dealer") {
+        orBlocks.push({
+          role: "dealer",
+          $or: [
+            { "auctionCapabilities.auctionDealer.status": rejectedIn },
+            { "auctionCapabilities.auctionBidder.status": rejectedIn },
+          ],
+        });
+      }
+    } else {
+      if (includeBidder) {
+        orBlocks.push({
+          "auctionCapabilities.auctionBidder.status": { $ne: "not_requested" },
+        });
+      }
+      if (type === "all" || type === "auctiondealer") {
+        orBlocks.push({
+          "auctionCapabilities.auctionDealer.status": { $ne: "not_requested" },
+        });
+      }
+      if (includeDealerOnboarding) {
+        orBlocks.push({ role: "dealer" });
+      }
     }
 
-    if (search) {
+    const query = { $or: orBlocks.length ? orBlocks : [{ role: "dealer" }] };
+
+    if (searchRx) {
       query.$and = [
         {
           $or: [
-            { name: new RegExp(search, "i") },
-            { email: new RegExp(search, "i") },
-            { "dealerInfo.businessName": new RegExp(search, "i") },
+            { name: searchRx },
+            { email: searchRx },
+            { "dealerInfo.businessName": searchRx },
           ],
         },
       ];
@@ -688,6 +816,7 @@ export const getAuctionAccessRequests = async (req, res) => {
       .populate("auctionCapabilities.auctionBidder.reviewedBy", "name email")
       .populate("auctionCapabilities.auctionDealer.reviewedBy", "name email")
       .sort({ updatedAt: -1 })
+      .limit(200)
       .lean();
 
     return res.status(200).json({

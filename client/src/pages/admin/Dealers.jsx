@@ -49,14 +49,20 @@ const Dealers = () => {
   const { data: dealerDetails, isLoading: detailsLoading } =
     useGetUserByIdQuery(selectedDealer, { skip: !selectedDealer });
 
-  const dealers = data?.dealers || [];
-  const pagination = data?.pagination || {};
-  const { data: auctionAccessRequests = [], refetch: refetchRequests } =
+  const dealers = Array.isArray(data) ? data : data?.dealers || [];
+  const pagination =
+    !Array.isArray(data) && data?.pagination
+      ? data.pagination
+      : { page: 1, pages: 1, total: dealers.length, limit: 20 };
+  const { data: auctionAccessRaw = [], refetch: refetchRequests } =
     useGetAuctionAccessRequestsQuery({
       status: requestStatusFilter,
       type: requestTypeFilter,
       search,
     });
+  const auctionAccessRequests = Array.isArray(auctionAccessRaw)
+    ? auctionAccessRaw
+    : [];
   const [reviewAuctionAccessRequest, { isLoading: reviewingRequest }] =
     useReviewAuctionAccessRequestMutation();
 
@@ -157,25 +163,25 @@ const Dealers = () => {
 
   return (
     <AdminLayout>
-      <div className="p-3 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="p-3 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen min-w-0 max-w-full box-border">
         {/* Header */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <div className="mb-6 min-w-0">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white break-words">
             Dealer Management
           </h2>
           <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
-            Manage verified dealers and subscriptions
+            Dealer accounts, verification, documents, and auction access review
           </p>
         </div>
 
         {/* All Dealers Label and Search */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
-          <div className="p-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6 min-w-0">
+          <div className="p-4 min-w-0">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between min-w-0">
+              <h3 className="text-base font-semibold text-gray-900 dark:text-white shrink-0">
                 All Dealers
               </h3>
-              <div className="flex-1 max-w-md ml-4">
+              <div className="w-full sm:flex-1 sm:max-w-md sm:ml-4 min-w-0">
                 <div className="relative">
                   <FiSearch
                     className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
@@ -186,7 +192,7 @@ const Dealers = () => {
                     placeholder="Search by name or email..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                    className="w-full min-w-0 box-border pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
                   />
                 </div>
               </div>
@@ -195,8 +201,8 @@ const Dealers = () => {
         </div>
 
         {/* Table */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-wrap gap-3 items-center justify-between">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6 min-w-0 max-w-full">
+          <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row flex-wrap gap-3 items-stretch sm:items-center sm:justify-between min-w-0">
             <h3 className="text-base font-semibold text-gray-900 dark:text-white">
               Auction Access Review Queue
             </h3>
@@ -223,49 +229,88 @@ const Dealers = () => {
               </select>
             </div>
           </div>
-          <div className="p-4">
+          <div className="p-4 min-w-0">
             {auctionAccessRequests.length === 0 ? (
-              <p className="text-sm text-gray-500">No requests in this queue.</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                No requests in this queue.
+              </p>
             ) : (
-              <div className="space-y-3">
-                {auctionAccessRequests.slice(0, 12).map((req) => (
+              <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1">
+                {auctionAccessRequests.map((req) => (
                   <div
                     key={req._id}
-                    className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3"
+                    className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 min-w-0"
                   >
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">
-                        {req.name} ({req.email})
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-gray-900 dark:text-white truncate">
+                        {req.name}{" "}
+                        <span className="text-gray-500 font-normal">
+                          ({req.email})
+                        </span>
                       </p>
-                      <p className="text-xs text-gray-500">
-                        Bidder: {req.auctionCapabilities?.auctionBidder?.status} | Dealer:{" "}
-                        {req.auctionCapabilities?.auctionDealer?.status}
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Bidder:{" "}
+                        {req.auctionCapabilities?.auctionBidder?.status} | Dealer
+                        cap:{" "}
+                        {req.auctionCapabilities?.auctionDealer?.status} | Profile:{" "}
+                        {req.dealerInfo?.verified ? "Verified" : "Not verified"}
                       </p>
+                      {(req.auctionCapabilities?.auctionBidder?.documents?.length > 0 ||
+                        req.auctionCapabilities?.auctionDealer?.documents?.length >
+                          0) && (
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {[
+                            ...(req.auctionCapabilities?.auctionBidder?.documents ||
+                              []),
+                            ...(req.auctionCapabilities?.auctionDealer?.documents ||
+                              []),
+                          ].map((doc, idx) => (
+                            <a
+                              key={`${doc.url || doc.name || idx}`}
+                              href={doc.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-primary-600 dark:text-primary-400 hover:underline truncate max-w-[200px]"
+                            >
+                              {doc.name || "Document"}
+                            </a>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap items-center gap-2 shrink-0">
                       <button
+                        type="button"
+                        onClick={() => handleViewDetails(req._id)}
+                        className="px-3 py-1.5 text-xs rounded border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                      >
+                        View details
+                      </button>
+                      <button
+                        type="button"
                         onClick={() =>
                           handleReviewRequest(
                             req._id,
                             requestTypeFilter === "all" ? "both" : requestTypeFilter,
-                            "approve"
+                            "approve",
                           )
                         }
                         disabled={reviewingRequest}
-                        className="px-3 py-1.5 text-xs rounded bg-green-600 text-white"
+                        className="px-3 py-1.5 text-xs rounded bg-green-600 text-white disabled:opacity-50"
                       >
                         Approve
                       </button>
                       <button
+                        type="button"
                         onClick={() =>
                           handleReviewRequest(
                             req._id,
                             requestTypeFilter === "all" ? "both" : requestTypeFilter,
-                            "reject"
+                            "reject",
                           )
                         }
                         disabled={reviewingRequest}
-                        className="px-3 py-1.5 text-xs rounded bg-red-600 text-white"
+                        className="px-3 py-1.5 text-xs rounded bg-red-600 text-white disabled:opacity-50"
                       >
                         Reject
                       </button>
@@ -669,7 +714,7 @@ const Dealers = () => {
                           Social Media
                         </h4>
                         <div className="space-y-2">
-                          {dealerDetails.dealerInfo.socialMedia.facebook && (
+                          {dealerDetails.dealerInfo?.socialMedia?.facebook && (
                             <a
                               href={
                                 dealerDetails.dealerInfo.socialMedia.facebook
@@ -681,7 +726,7 @@ const Dealers = () => {
                               Facebook
                             </a>
                           )}
-                          {dealerDetails.dealerInfo.socialMedia.instagram && (
+                          {dealerDetails.dealerInfo?.socialMedia?.instagram && (
                             <a
                               href={
                                 dealerDetails.dealerInfo.socialMedia.instagram
@@ -693,7 +738,7 @@ const Dealers = () => {
                               Instagram
                             </a>
                           )}
-                          {dealerDetails.dealerInfo.socialMedia.twitter && (
+                          {dealerDetails.dealerInfo?.socialMedia?.twitter && (
                             <a
                               href={
                                 dealerDetails.dealerInfo.socialMedia.twitter
@@ -816,6 +861,74 @@ const Dealers = () => {
                         </div>
                       </div>
                     </div>
+
+                    {dealerDetails.auctionCapabilities && (
+                      <div>
+                        <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                          Auction access
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                          <div className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
+                            <p className="font-medium text-gray-800 dark:text-gray-200">
+                              Bidder
+                            </p>
+                            <p className="text-gray-600 dark:text-gray-300 mt-1">
+                              Status:{" "}
+                              {dealerDetails.auctionCapabilities?.auctionBidder
+                                ?.status || "—"}
+                            </p>
+                            {dealerDetails.auctionCapabilities?.auctionBidder?.documents
+                              ?.length > 0 && (
+                              <ul className="mt-2 space-y-1 list-disc list-inside">
+                                {dealerDetails.auctionCapabilities.auctionBidder.documents.map(
+                                  (d, i) => (
+                                    <li key={i}>
+                                      <a
+                                        href={d.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-600 dark:text-primary-400 hover:underline break-all"
+                                      >
+                                        {d.name || "Document"}
+                                      </a>
+                                    </li>
+                                  ),
+                                )}
+                              </ul>
+                            )}
+                          </div>
+                          <div className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
+                            <p className="font-medium text-gray-800 dark:text-gray-200">
+                              Auction dealer
+                            </p>
+                            <p className="text-gray-600 dark:text-gray-300 mt-1">
+                              Status:{" "}
+                              {dealerDetails.auctionCapabilities?.auctionDealer
+                                ?.status || "—"}
+                            </p>
+                            {dealerDetails.auctionCapabilities?.auctionDealer?.documents
+                              ?.length > 0 && (
+                              <ul className="mt-2 space-y-1 list-disc list-inside">
+                                {dealerDetails.auctionCapabilities.auctionDealer.documents.map(
+                                  (d, i) => (
+                                    <li key={i}>
+                                      <a
+                                        href={d.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-600 dark:text-primary-400 hover:underline break-all"
+                                      >
+                                        {d.name || "Document"}
+                                      </a>
+                                    </li>
+                                  ),
+                                )}
+                              </ul>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Verification Status */}
                     <div>
