@@ -40,8 +40,6 @@ const Dealers = () => {
     page,
     limit: 20,
     search,
-    queueStatus: requestStatusFilter,
-    queueType: requestTypeFilter,
   });
   const [verifyDealer] = useVerifyDealerMutation();
   const [deleteUser] = useDeleteUserMutation();
@@ -68,10 +66,10 @@ const Dealers = () => {
   const [reviewAuctionAccessRequest, { isLoading: reviewingRequest }] =
     useReviewAuctionAccessRequestMutation();
 
-  // Reset to page 1 when search or queue filters change
+  // Reset to page 1 when directory search changes
   useEffect(() => {
     setPage(1);
-  }, [search, requestStatusFilter, requestTypeFilter]);
+  }, [search]);
 
   const handleVerify = async (userId, verified) => {
     try {
@@ -232,7 +230,8 @@ const Dealers = () => {
               </select>
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400 text-right max-w-xs">
-                The dealer table below uses the same status and type filters.
+                Filters apply to this queue only. The dealer directory below lists
+                all dealers (use search).
               </p>
             </div>
           </div>

@@ -601,72 +601,6 @@ export const featureCar = async (req, res) => {
   }
 };
 
-/**
- * Extra match for GET /admin/dealers so the table respects the same
- * Access Queue status/type as the review list (dealers only).
- */
-const buildDealerTableQueueFilter = (statusRaw, typeRaw) => {
-  const status = String(statusRaw || "all").toLowerCase();
-  const type = String(typeRaw || "all").toLowerCase();
-  if (status === "all") return null;
-
-  const parts = [];
-  const includeBidder = type === "all" || type === "auctionbidder";
-  const includeAuctionDealerCap =
-    type === "all" || type === "auctiondealer";
-  const includeOnboarding = type === "all" || type === "dealer";
-
-  if (status === "pending") {
-    if (includeBidder) {
-      parts.push({ "auctionCapabilities.auctionBidder.status": "pending" });
-    }
-    if (includeAuctionDealerCap) {
-      parts.push({ "auctionCapabilities.auctionDealer.status": "pending" });
-    }
-    if (includeOnboarding) {
-      parts.push({
-        $or: [
-          { "dealerInfo.verified": false },
-          { "dealerInfo.verified": { $exists: false } },
-        ],
-      });
-    }
-  } else if (status === "approved") {
-    if (includeBidder) {
-      parts.push({ "auctionCapabilities.auctionBidder.status": "approved" });
-    }
-    if (includeAuctionDealerCap) {
-      parts.push({ "auctionCapabilities.auctionDealer.status": "approved" });
-    }
-    if (includeOnboarding) {
-      parts.push({ "dealerInfo.verified": true });
-    }
-  } else if (status === "rejected") {
-    const rejectedIn = { $in: ["rejected", "revoked"] };
-    if (includeBidder) {
-      parts.push({
-        "auctionCapabilities.auctionBidder.status": rejectedIn,
-      });
-    }
-    if (type === "all" || type === "auctiondealer") {
-      parts.push({
-        "auctionCapabilities.auctionDealer.status": rejectedIn,
-      });
-    }
-    if (type === "dealer") {
-      parts.push({
-        $or: [
-          { "auctionCapabilities.auctionDealer.status": rejectedIn },
-          { "auctionCapabilities.auctionBidder.status": rejectedIn },
-        ],
-      });
-    }
-  }
-
-  if (!parts.length) return null;
-  return { $or: parts };
-};
-
 export const getAllDealers = async (req, res) => {
   try {
     const page = Math.max(1, parseInt(req.query.page, 10) || 1);
@@ -679,28 +613,18 @@ export const getAllDealers = async (req, res) => {
       status: { $ne: "suspended" },
     };
 
-    const queueFilter = buildDealerTableQueueFilter(
-      req.query.queueStatus,
-      req.query.queueType,
-    );
-
-    const andClauses = [];
-    if (queueFilter) andClauses.push(queueFilter);
-
     if (search) {
       const esc = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       const rx = new RegExp(esc, "i");
-      andClauses.push({
-        $or: [
-          { name: rx },
-          { email: rx },
-          { "dealerInfo.businessName": rx },
-        ],
-      });
-    }
-
-    if (andClauses.length) {
-      match.$and = andClauses;
+      match.$and = [
+        {
+          $or: [
+            { name: rx },
+            { email: rx },
+            { "dealerInfo.businessName": rx },
+          ],
+        },
+      ];
     }
 
     const [dealers, total] = await Promise.all([
@@ -818,12 +742,10 @@ export const getAuctionAccessRequests = async (req, res) => {
         orBlocks.push({ "auctionCapabilities.auctionDealer.status": "pending" });
       }
       if (includeDealerOnboarding) {
+        // Match UI: anything not explicitly verified (false, null, missing)
         orBlocks.push({
           role: "dealer",
-          $or: [
-            { "dealerInfo.verified": false },
-            { "dealerInfo.verified": { $exists: false } },
-          ],
+          $nor: [{ "dealerInfo.verified": true }],
         });
       }
     } else if (status === "approved") {
