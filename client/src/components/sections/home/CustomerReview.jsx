@@ -160,7 +160,7 @@ const CustomerReview = () => {
             {allReviews.map((review) => (
               <div
                 key={review.id}
-                className="group relative bg-gradient-to-br from-white via-white to-primary-50/30 backdrop-blur-xl rounded-3xl shadow-xl border border-white/50 p-8 h-full flex flex-col justify-between hover:shadow-2xl hover:shadow-primary-500/20 transition-all duration-500 hover:-translate-y-2 overflow-hidden"
+                className="group relative bg-gradient-to-br from-white via-white to-primary-50/30 backdrop-blur-xl rounded-3xl shadow-xl border border-white/50 p-8 h-full flex flex-col justify-between hover:shadow-2xl hover:shadow-primary-500/20 transition-[transform,box-shadow,opacity] duration-500 hover:-translate-y-2 overflow-hidden"
               >
                 {/* Background decoration */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary-100/20 to-primary-200/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
@@ -172,7 +172,7 @@ const CustomerReview = () => {
                   <div className="flex items-start justify-between mb-8">
                     <div className="relative">
                       <div className="absolute inset-0 bg-primary-500 rounded-2xl blur-sm opacity-75 group-hover:opacity-100 transition-opacity"></div>
-                      <div className="relative w-14 h-14 bg-primary-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                      <div className="relative w-14 h-14 bg-primary-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-transform duration-300 group-hover:scale-110">
                         <svg
                           className="w-7 h-7"
                           fill="currentColor"
@@ -188,7 +188,7 @@ const CustomerReview = () => {
                       {[...Array(5)].map((_, i) => (
                         <svg
                           key={i}
-                          className={`w-4 h-4 transition-all duration-200 ${
+                          className={`w-4 h-4 transition-colors duration-200 ${
                             i < review.rating
                               ? "text-primary-500 drop-shadow-sm"
                               : "text-gray-300"
@@ -275,12 +275,12 @@ const CustomerReview = () => {
           </div>
 
           {/* Mobile: Slider */}
-          <div className="lg:hidden">
-            <div className="relative h-[400px]">
+          <div className="lg:hidden relative">
+            <div className="relative h-[400px] isolate">
               {allReviews.map((review, index) => (
                 <div
                   key={review.id}
-                  className={`absolute inset-0 transition-all duration-700 ease-in-out transform ${
+                  className={`absolute inset-0 transition-[opacity,transform] duration-700 ease-in-out transform ${
                     index === currentReview
                       ? "opacity-100 translate-x-0 scale-100"
                       : index < currentReview
@@ -368,78 +368,76 @@ const CustomerReview = () => {
                   </div>
                 </div>
               ))}
+              <button
+                type="button"
+                onClick={() =>
+                  setCurrentReview(
+                    (prev) =>
+                      (prev - 1 + allReviews.length) % allReviews.length,
+                  )
+                }
+                className="absolute left-2 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow-lg backdrop-blur-sm transition-transform duration-200 hover:scale-105 hover:bg-white hover:shadow-xl group"
+                aria-label="Previous review"
+              >
+                <svg
+                  className="h-6 w-6 text-slate-600 transition-colors group-hover:text-slate-900"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setCurrentReview((prev) => (prev + 1) % allReviews.length)
+                }
+                className="absolute right-2 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow-lg backdrop-blur-sm transition-transform duration-200 hover:scale-105 hover:bg-white hover:shadow-xl group"
+                aria-label="Next review"
+              >
+                <svg
+                  className="h-6 w-6 text-slate-600 transition-colors group-hover:text-slate-900"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
             </div>
 
-            {/* Mobile Navigation dots */}
-            <div className="flex justify-center gap-3 mt-8">
+            {/* Mobile Navigation dots — fixed hit target; pill uses transform (no layout width jump) */}
+            <div className="mt-8 flex justify-center gap-3">
               {allReviews.map((_, index) => (
                 <button
                   key={index}
+                  type="button"
                   onClick={() => setCurrentReview(index)}
-                  className={`relative transition-all duration-300 ${
-                    index === currentReview ? "w-12 h-3" : "w-3 h-3"
-                  }`}
+                  className="flex h-3 w-12 shrink-0 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
                   aria-label={`Go to review ${index + 1}`}
                 >
-                  <div
-                    className={`absolute inset-0 rounded-full transition-all duration-300 ${
+                  <span
+                    className={`block h-3 w-3 origin-center rounded-full transition-[transform,background-color,box-shadow] duration-300 ease-out ${
                       index === currentReview
-                        ? "bg-gradient-to-r from-primary-500 to-primary-500 shadow-lg shadow-primary-500/25"
-                        : "bg-slate-300 hover:bg-slate-400"
+                        ? "scale-x-[4] bg-gradient-to-r from-primary-500 to-primary-600 shadow-lg shadow-primary-500/25"
+                        : "scale-x-100 bg-slate-300 hover:bg-slate-400"
                     }`}
+                    aria-hidden
                   />
-                  {index === currentReview && (
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary-500 to-primary-500 animate-pulse" />
-                  )}
                 </button>
               ))}
             </div>
-
-            {/* Mobile Navigation arrows */}
-            <button
-              onClick={() =>
-                setCurrentReview(
-                  (prev) => (prev - 1 + allReviews.length) % allReviews.length,
-                )
-              }
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white hover:shadow-xl transition-all duration-200 hover:scale-105 group"
-              aria-label="Previous review"
-            >
-              <svg
-                className="w-6 h-6 text-slate-600 group-hover:text-slate-900 transition-colors"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-            </button>
-            <button
-              onClick={() =>
-                setCurrentReview((prev) => (prev + 1) % allReviews.length)
-              }
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white hover:shadow-xl transition-all duration-200 hover:scale-105 group"
-              aria-label="Next review"
-            >
-              <svg
-                className="w-6 h-6 text-slate-600 group-hover:text-slate-900 transition-colors"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
           </div>
         </div>
 
@@ -449,7 +447,7 @@ const CustomerReview = () => {
             <button
               type="button"
               onClick={handleOpenReviewForm}
-              className="bg-primary-500 hover:opacity-90 text-white px-8 py-4 rounded font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-700"
+              className="bg-primary-500 hover:opacity-90 text-white px-8 py-4 rounded font-semibold transition-[transform,opacity,box-shadow] duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-700"
             >
               Write a Review
             </button>
@@ -461,7 +459,7 @@ const CustomerReview = () => {
               <button
                 type="button"
                 onClick={() => navigate("/login")}
-                className="bg-primary-700 hover:bg-primary-800 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-700"
+                className="bg-primary-700 hover:bg-primary-800 text-white px-8 py-4 rounded-xl font-semibold transition-[transform,opacity,box-shadow] duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-700"
               >
                 Login to Write a Review
               </button>
@@ -571,7 +569,7 @@ const CustomerReview = () => {
                       onClick={() =>
                         setFormData((prev) => ({ ...prev, rating }))
                       }
-                      className={`text-4xl transition-all hover:scale-110 ${
+                      className={`text-4xl transition-transform hover:scale-110 ${
                         rating <= formData.rating
                           ? "text-primary-500"
                           : "text-gray-300"

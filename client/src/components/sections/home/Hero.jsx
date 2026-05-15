@@ -16,6 +16,7 @@ const Hero = () => {
           decoding="async"
           width="768"
           height="600"
+          sizes="100vw"
         />
       </picture>
       <div className="bg-slate-900/70 absolute inset-0" />
