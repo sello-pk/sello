@@ -100,7 +100,7 @@ const LatestBlogsSection = () => {
             <Link
               key={blog._id}
               to={buildBlogUrl(blog)}
-              className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 flex flex-col"
+              className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col"
             >
               {/* Blog Image - fit inside box like categories (no crop) */}
               <div className="w-full h-48 md:h-60 overflow-hidden rounded-t-lg bg-gray-100 flex-shrink-0 flex items-center justify-center">

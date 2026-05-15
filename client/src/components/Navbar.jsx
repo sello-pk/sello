@@ -233,12 +233,12 @@ const Navbar = () => {
   const renderHeaderSearchToggle = () => (
     <div
       ref={searchPanelRef}
-      className={`hidden lg:block relative h-10 overflow-hidden transition-all duration-300 ease-out ${
+      className={`hidden lg:block relative h-10 overflow-hidden transition-[width] duration-300 ease-out will-change-[width] ${
         showHeaderSearch ? "w-[260px]" : "w-8"
       }`}
     >
       <div
-        className={`absolute inset-0 transition-all duration-300 ease-out ${
+        className={`absolute inset-0 transition-[opacity,transform] duration-300 ease-out ${
           showHeaderSearch
             ? "opacity-100 translate-x-0 pointer-events-auto"
             : "opacity-0 translate-x-2 pointer-events-none"
@@ -249,7 +249,7 @@ const Navbar = () => {
       <button
         type="button"
         onClick={() => setShowHeaderSearch(true)}
-        className={`absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg border transition-all duration-300 flex items-center justify-center ${
+        className={`absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg border transition-[opacity,transform] duration-300 flex items-center justify-center ${
           showHeaderSearch
             ? "opacity-0 scale-95 pointer-events-none"
             : "opacity-100 scale-100 pointer-events-auto"
@@ -300,7 +300,7 @@ const Navbar = () => {
                 <Link
                   key={index}
                   to={link.path}
-                  className={`px-2 py-1 rounded-md transition-all whitespace-nowrap ${
+                  className={`px-2 py-1 rounded-md transition-colors duration-200 whitespace-nowrap ${
                     isPathMatch(link.path)
                       ? "text-primary-500 font-semibold bg-primary-50"
                       : "hover:text-primary-500"
@@ -321,7 +321,7 @@ const Navbar = () => {
                   onClick={() => setOpenAuctionsDropdown((prev) => !prev)}
                   aria-expanded={openAuctionsDropdown}
                   aria-haspopup="true"
-                  className={`px-2 py-1 rounded-md transition-all whitespace-nowrap inline-flex items-center gap-2 ${
+                  className={`px-2 py-1 rounded-md transition-colors duration-200 whitespace-nowrap inline-flex items-center gap-2 ${
                     isAuctionsActive
                       ? "text-primary-500 font-semibold bg-primary-50"
                       : "hover:text-primary-500"
@@ -394,7 +394,7 @@ const Navbar = () => {
                   onClick={() => setOpenCompanyDropdown((prev) => !prev)}
                   aria-expanded={openCompanyDropdown}
                   aria-haspopup="true"
-                  className={`px-2 py-1 rounded-md transition-all whitespace-nowrap inline-flex items-center gap-2 ${
+                  className={`px-2 py-1 rounded-md transition-colors duration-200 whitespace-nowrap inline-flex items-center gap-2 ${
                     isCompanyActive
                       ? "text-primary-500 font-semibold bg-primary-50"
                       : "hover:text-primary-500"
@@ -459,7 +459,7 @@ const Navbar = () => {
             <button
               type="button"
               onClick={() => navigate("/create-post")}
-              className={`hidden sm:flex gap-1.5 sm:gap-2 items-center text-xs sm:text-sm px-3 py-2 rounded-lg border transition-all ${
+              className={`hidden sm:flex gap-1.5 sm:gap-2 items-center text-xs sm:text-sm px-3 py-2 rounded-lg border transition-colors duration-200 ${
                 isListingsTheme
                   ? "text-primary-500 border-primary-500 hover:bg-primary-50"
                   : "text-white border-white/70 hover:bg-white/20"
@@ -471,7 +471,14 @@ const Navbar = () => {
               <span className="hidden md:inline">Sell Your Car</span>
             </button>
 
-            {!isLoading && user ? (
+            {isLoading && token ? (
+              <div
+                className="flex items-center gap-2 sm:gap-3 lg:gap-4"
+                aria-hidden="true"
+              >
+                <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:h-11 shrink-0 rounded-full border-2 border-gray-200 bg-gray-100 animate-pulse" />
+              </div>
+            ) : !isLoading && user ? (
               <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
                 {/* Dashboard Links */}
                 {user.role === "admin" && (
@@ -600,7 +607,7 @@ const Navbar = () => {
                   onClick={() => setOpenMobileAuctionsDropdown((prev) => !prev)}
                   aria-expanded={openMobileAuctionsDropdown}
                   aria-haspopup="true"
-                  className={`w-full inline-flex items-center justify-between rounded-md px-2 py-2 transition-all ${
+                  className={`w-full inline-flex items-center justify-between rounded-md px-2 py-2 transition-colors duration-200 ${
                     isAuctionsActive
                       ? "text-primary-500 font-semibold bg-primary-50"
                       : "text-black"

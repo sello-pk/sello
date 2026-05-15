@@ -226,7 +226,7 @@ const GetAllCarsSection = () => {
             <p className="text-gray-600 mb-6">{errorMessage}</p>
             <button
               onClick={() => navigate(0)}
-              className="px-6 py-2.5 bg-[#ff8a00] text-white rounded-xl font-semibold hover:brightness-110 transition-all"
+              className="px-6 py-2.5 bg-[#ff8a00] text-white rounded-xl font-semibold hover:brightness-110 transition-colors"
             >
               Retry
             </button>
@@ -257,7 +257,7 @@ const GetAllCarsSection = () => {
               aria-label={tab.label}
               title={tab.label}
               onClick={() => handleTabChange(tab.id)}
-              className={`min-w-0 flex-1 basis-0 sm:flex-none sm:basis-auto rounded-lg font-semibold transition-all duration-200 px-2 py-2 text-xs sm:px-4 sm:py-2.5 sm:text-sm whitespace-nowrap ${
+              className={`min-w-0 flex-1 basis-0 sm:flex-none sm:basis-auto rounded-lg font-semibold transition-[color,background-color,box-shadow] duration-200 px-2 py-2 text-xs sm:px-4 sm:py-2.5 sm:text-sm whitespace-nowrap ${
                 activeTab === tab.id
                   ? "bg-white text-[#0B0C1E] shadow-sm"
                   : "text-gray-600 hover:text-[#0B0C1E] hover:bg-white/50"
@@ -330,7 +330,7 @@ const GetAllCarsSection = () => {
                   `/listings${params.toString() ? "?" + params.toString() : ""}`,
                 );
               }}
-              className="px-6 py-3 bg-[#ff8a00] text-white rounded-xl font-semibold hover:brightness-110 transition-all shadow-md flex items-center gap-2"
+              className="px-6 py-3 bg-[#ff8a00] text-white rounded-xl font-semibold hover:brightness-110 transition-colors shadow-md flex items-center gap-2"
             >
               View All Vehicles
               <IoIosArrowRoundUp className="text-xl rotate-[40deg]" />

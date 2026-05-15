@@ -213,7 +213,7 @@ const Footer = () => {
                   href="https://web.facebook.com/profile.php?id=61584930269294&mibextid=wwXIfr&rdid=6QUy9q5xMtmsDjOi&share_url=https%3A%2F%2Fweb.facebook.com%2Fshare%2F19jao3GFzS%2F%3Fmibextid%3DwwXIfr%26_rdc%3D1%26_rdr"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-11 h-11 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition-all duration-300 hover:scale-110 border border-white/10 group"
+                  className="w-11 h-11 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition-[background-color,transform] duration-300 hover:scale-110 border border-white/10 group"
                   title="Facebook"
                 >
                   <img
@@ -230,7 +230,7 @@ const Footer = () => {
                   href="https://www.instagram.com/sello.p.k"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-11 h-11 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition-all duration-300 hover:scale-110 border border-white/10 group"
+                  className="w-11 h-11 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition-[background-color,transform] duration-300 hover:scale-110 border border-white/10 group"
                   title="Instagram"
                 >
                   <img
@@ -246,7 +246,7 @@ const Footer = () => {
                   href="https://youtube.com/@sello.p.k?si=OxPdwNCh2HLERIt8"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-11 h-11 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition-all duration-300 hover:scale-110 border border-white/10 group"
+                  className="w-11 h-11 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition-[background-color,transform] duration-300 hover:scale-110 border border-white/10 group"
                   title="LinkedIn"
                 >
                   <FaYoutube className="w-5 h-5 brightness-0 invert opacity-80 group-hover:opacity-100 transition-opacity" />
@@ -255,7 +255,7 @@ const Footer = () => {
                   href="https://www.tiktok.com/@sello..pk?_r=1&_t=ZS-92DrKceCaAi"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-11 h-11 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition-all duration-300 hover:scale-110 border border-white/10 group"
+                  className="w-11 h-11 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition-[background-color,transform] duration-300 hover:scale-110 border border-white/10 group"
                   title="LinkedIn"
                 >
                   <FaTiktok className="w-5 h-5 brightness-0 invert opacity-80 group-hover:opacity-100 transition-opacity" />

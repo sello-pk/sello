@@ -31,16 +31,16 @@ const BottomHeader = () => {
       style={{ zIndex: 1000 }}
       className="bg-[#050B20] border-y border-gray-200/80 w-full min-h-[52px] md:min-h-[56px] flex flex-col md:flex-row md:items-center md:justify-between gap-2 sm:gap-3 md:gap-6 px-3 sm:px-4 md:px-8 lg:px-20 py-2 md:py-3 text-sm md:text-base text-white overflow-x-hidden"
     >
-      <div className="flex w-full md:w-auto min-w-0 min-h-[44px] items-center gap-2 sm:gap-3 md:gap-4">
+      <div className="flex w-full min-h-[52px] md:min-h-[56px] md:w-auto min-w-0 items-center gap-2 sm:gap-3 md:gap-4">
         {isLoading && (
           <div
-            className="flex items-center gap-2 sm:gap-3 min-w-0 w-full md:w-auto"
+            className="flex min-h-[44px] w-full min-w-0 items-center gap-2 sm:gap-3 md:w-auto"
             aria-hidden
           >
-            <div className="h-7 w-[72px] rounded-full bg-white/15 animate-pulse shrink-0" />
-            <div className="min-w-0 flex-1 space-y-2 max-w-[min(100%,320px)]">
-              <div className="h-3 sm:h-3.5 rounded-md bg-white/15 animate-pulse w-[85%]" />
-              <div className="h-3 rounded-md bg-white/10 animate-pulse w-[55%] sm:hidden" />
+            <div className="h-7 w-[72px] shrink-0 animate-pulse rounded-full bg-white/15" />
+            <div className="min-w-0 max-w-[min(100%,320px)] flex-1 space-y-2">
+              <div className="h-3 w-[85%] animate-pulse rounded-md bg-white/15 sm:h-3.5" />
+              <div className="h-3 w-[55%] animate-pulse rounded-md bg-white/10 sm:hidden" />
             </div>
           </div>
         )}
@@ -71,6 +71,12 @@ const BottomHeader = () => {
               </div>
             </Link>
           </>
+        )}
+        {!isLoading && !showAuction && (
+          <div
+            className="min-h-[44px] min-w-0 flex-1 md:max-w-md"
+            aria-hidden
+          />
         )}
       </div>
 

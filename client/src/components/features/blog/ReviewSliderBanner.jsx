@@ -53,7 +53,7 @@ const ReviewSliderBanner = () => {
           </div>
 
           <div className="max-w-full mx-auto">
-            <div className="group relative bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-lg border border-gray-100 hover:border-primary-200 hover:shadow-2xl transition-all duration-500 overflow-hidden">
+            <div className="group relative bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-lg border border-gray-100 hover:border-primary-200 hover:shadow-2xl transition-shadow duration-500 overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-primary-50/60 to-transparent rounded-2xl md:rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               <div className="relative">
                 <div className="flex items-start justify-between gap-4">
@@ -113,7 +113,7 @@ const ReviewSliderBanner = () => {
                         key={i}
                         type="button"
                         onClick={() => setCurrentIndex(i)}
-                        className={`h-2 rounded-full transition-all ${
+                        className={`h-2 rounded-full transition-[width,background-color] duration-200 ${
                           i === currentIndex
                             ? "bg-primary-500 w-7"
                             : "bg-gray-200 w-2 hover:bg-gray-300"
@@ -127,7 +127,7 @@ const ReviewSliderBanner = () => {
                     <button
                       type="button"
                       onClick={prevSlide}
-                      className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-700 shadow-md border border-gray-200 hover:bg-primary-500 hover:text-white hover:border-primary-500 transition-all duration-200"
+                      className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-700 shadow-md border border-gray-200 hover:bg-primary-500 hover:text-white hover:border-primary-500 transition-colors duration-200"
                       aria-label="Previous review"
                     >
                       <FaArrowLeft className="text-sm" aria-hidden />
@@ -135,7 +135,7 @@ const ReviewSliderBanner = () => {
                     <button
                       type="button"
                       onClick={nextSlide}
-                      className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-700 shadow-md border border-gray-200 hover:bg-primary-500 hover:text-white hover:border-primary-500 transition-all duration-200"
+                      className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-700 shadow-md border border-gray-200 hover:bg-primary-500 hover:text-white hover:border-primary-500 transition-colors duration-200"
                       aria-label="Next review"
                     >
                       <FaArrowRight className="text-sm" aria-hidden />

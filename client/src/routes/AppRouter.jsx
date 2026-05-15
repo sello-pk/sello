@@ -8,22 +8,33 @@ import {
   AuctionCapabilityRoute,
 } from "../components/shared/RouteGuards.jsx";
 
+/**
+ * Eager imports for high-traffic public URLs — these routes do not suspend on
+ * first paint, which removes the large RouteLoader → page layout swap (CLS).
+ */
+import Home from "../pages/Home.jsx";
+import Login from "../pages/auth/Login.jsx";
+import CarListings from "../pages/listings/CarListings.jsx";
+import CarDetails from "../pages/listings/CarDetails.jsx";
+import Blog from "../pages/blog/Blog.jsx";
+import AllBlog from "../pages/blog/AllBlog.jsx";
+import CarEstimator from "../pages/features/CarEstimator.jsx";
+import OurPrivacyPolicy from "../pages/ourPages/OurPrivacyPolicy.jsx";
+import TermsCondition from "../pages/ourPages/TermsCondition.jsx";
+import About from "../pages/about/About.jsx";
+import Contact from "../pages/contact/Contact.jsx";
+import HelpCenter from "../pages/help/HelpCenter.jsx";
+import FAQs from "../pages/help/FAQs.jsx";
+
 // Public core routes (Lazy)
-const Home = lazyImport(() => import("../pages/Home.jsx"));
-const Login = lazyImport(() => import("../pages/auth/Login.jsx"));
 const Signup = lazyImport(() => import("../pages/auth/SignUp.jsx"));
-const CarListings = lazyImport(() => import("../pages/listings/CarListings.jsx"));
 const CategoryListings = lazyImport(
   () => import("../pages/listings/CategoryListings.jsx"),
 );
-const CarDetails = lazyImport(() => import("../pages/listings/CarDetails.jsx"));
 const GenericVehicleCategoryPage = lazyImport(
   () => import("../pages/listings/GenericVehicleCategoryPage.jsx"),
 );
-const Blog = lazyImport(() => import("../pages/blog/Blog.jsx"));
-const AllBlog = lazyImport(() => import("../pages/blog/AllBlog.jsx"));
 const BlogDetails = lazyImport(() => import("../pages/blog/BlogDetails.jsx"));
-const CarEstimator = lazyImport(() => import("../pages/features/CarEstimator.jsx"));
 const EstimatorGuideDetail = lazyImport(
   () => import("../pages/features/EstimatorGuideDetail.jsx"),
 );
@@ -75,14 +86,6 @@ const ResetSuccess = lazyImport(() => import("../pages/auth/ResetSuccess.jsx"));
 const AcceptInvite = lazyImport(() => import("../pages/auth/AcceptInvite.jsx"));
 
 // Public (Lazy)
-const OurPrivacyPolicy = lazyImport(
-  () => import("../pages/ourPages/OurPrivacyPolicy.jsx"),
-);
-const TermsCondition = lazyImport(
-  () => import("../pages/ourPages/TermsCondition.jsx"),
-);
-const About = lazyImport(() => import("../pages/about/About.jsx"));
-const Contact = lazyImport(() => import("../pages/contact/Contact.jsx"));
 const AllBrands = lazyImport(() => import("../pages/AllBrands.jsx"));
 const FilterPage = lazyImport(() => import("../pages/filter/FilterPage.jsx"));
 const CategoryPage = lazyImport(() => import("../pages/categories/CategoryPage.jsx"));
@@ -147,10 +150,6 @@ const BlogComments = lazyImport(() => import("../pages/admin/BlogComments.jsx"))
 const BlogMediaLibrary = lazyImport(
   () => import("../pages/admin/BlogMediaLibrary.jsx"),
 );
-
-// Help (Lazy)
-const HelpCenter = lazyImport(() => import("../pages/help/HelpCenter.jsx"));
-const FAQs = lazyImport(() => import("../pages/help/FAQs.jsx"));
 
 const AppRouter = () => {
   const location = useLocation();

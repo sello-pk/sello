@@ -182,7 +182,7 @@ const BannerCarousal = () => {
             <button
               onClick={goToPrevious}
               onMouseEnter={() => setIsPaused(true)}
-              className="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 z-30 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 group"
+              className="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 z-30 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-transform duration-300 hover:scale-110 group"
               aria-label="Previous slide"
             >
               <FaChevronLeft className="w-3 h-3 text-gray-800 group-hover:text-primary-500 transition-colors" />
@@ -190,7 +190,7 @@ const BannerCarousal = () => {
             <button
               onClick={goToNext}
               onMouseEnter={() => setIsPaused(true)}
-              className="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 z-30 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 group"
+              className="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 z-30 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-transform duration-300 hover:scale-110 group"
               aria-label="Next slide"
             >
               <FaChevronRight className="w-3 h-3 text-gray-800 group-hover:text-primary-500 transition-colors" />

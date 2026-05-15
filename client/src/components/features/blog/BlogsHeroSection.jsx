@@ -30,14 +30,14 @@ const BlogsHeroSection = () => {
             <div className="flex items-center flex-wrap my-7 gap-5">
               <button
                 onClick={() => navigate("/blog/all")}
-                className="px-6 w-48 py-3 rounded-lg border-[1px] flex items-center justify-center gap-3 bg-primary text-white border-transparent hover:bg-white hover:text-black transition-all ease-in"
+                className="px-6 w-48 py-3 rounded-lg border-[1px] flex items-center justify-center gap-3 bg-primary text-white border-transparent hover:bg-white hover:text-black transition-colors ease-in"
               >
                 Browse Blogs
                 <LuArrowUpRight size={20} />
               </button>
               <button
                 onClick={() => navigate("/contact")}
-                className="px-6 w-48 py-3 rounded-lg border-[1px] flex items-center justify-center gap-3 border-black text-black hover:bg-primary hover:text-white transition-all ease-in bg-white"
+                className="px-6 w-48 py-3 rounded-lg border-[1px] flex items-center justify-center gap-3 border-black text-black hover:bg-primary hover:text-white transition-colors ease-in bg-white"
               >
                 Contact
                 <LuArrowUpRight size={20} />

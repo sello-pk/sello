@@ -205,7 +205,7 @@ const CarCard = ({
               }
             : undefined
         }
-        className={`group bg-white rounded-xl overflow-hidden border border-[#e5e7eb] shadow-sm hover:shadow-md transition-all duration-300 flex flex-col sm:flex-row min-w-0 w-full max-w-full ${isClickable ? "cursor-pointer" : ""}`}
+        className={`group bg-white rounded-xl overflow-hidden border border-[#e5e7eb] shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col sm:flex-row min-w-0 w-full max-w-full ${isClickable ? "cursor-pointer" : ""}`}
       >
         <div className="relative w-full aspect-[3/2] sm:w-48 sm:aspect-auto sm:h-36 md:w-56 md:h-40 lg:w-64 lg:h-48 xl:w-72 xl:h-52 flex-shrink-0 overflow-hidden bg-[#f3f4f6]">
           {displayImage ? (
@@ -355,7 +355,7 @@ const CarCard = ({
             }
           : undefined
       }
-      className={`group bg-white rounded-xl overflow-hidden border border-[#e5e7eb] shadow-md hover:shadow-xl transition-all duration-300 flex flex-col min-w-0 w-full max-w-full ${isClickable ? "cursor-pointer" : ""}`}
+      className={`group bg-white rounded-xl overflow-hidden border border-[#e5e7eb] shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col min-w-0 w-full max-w-full ${isClickable ? "cursor-pointer" : ""}`}
     >
       <div className="relative w-full aspect-[4/3] sm:aspect-[3/2] overflow-hidden bg-[#f3f4f6]">
         {displayImage ? (
@@ -403,7 +403,7 @@ const CarCard = ({
             type="button"
             onClick={handleBookmark}
             disabled={isSaving || isUnsaving}
-            className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 p-1.5 sm:p-2 rounded-full bg-white/95 shadow-lg hover:bg-white hover:scale-105 disabled:opacity-50 z-10 transition-all"
+            className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 p-1.5 sm:p-2 rounded-full bg-white/95 shadow-lg hover:bg-white hover:scale-105 disabled:opacity-50 z-10 transition-transform duration-200"
             aria-label={isSaved ? "Unsave" : "Save"}
           >
             {isSaved ? (
