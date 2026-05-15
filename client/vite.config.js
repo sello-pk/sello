@@ -51,7 +51,8 @@ export default defineConfig({
   ],
 
   resolve: {
-    dedupe: ["react", "react-dom"], // ensure single React instance
+    // Single React instance across all deps (react-redux, RTK, router, etc.)
+    dedupe: ["react", "react-dom", "react-is", "react-redux"],
     alias: {
       "@": path.resolve(__dirname, "./src"),
       "@components": path.resolve(__dirname, "./src/components"),
@@ -84,10 +85,17 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          // Core vendor chunks - critical for initial load
-          "react-vendor": ["react", "react-dom", "react-is"],
+          // React + Redux must share one chunk — splitting react-redux from react
+          // makes Rollup wire hooks through react-router and causes a prod-only
+          // "Cannot read properties of undefined (reading 'useLayoutEffect')" crash.
+          "react-vendor": [
+            "react",
+            "react-dom",
+            "react-is",
+            "react-redux",
+            "@reduxjs/toolkit",
+          ],
           "react-router": ["react-router-dom"],
-          "redux": ["@reduxjs/toolkit", "react-redux"],
           
           // UI libraries - commonly used
           "ui-libs": ["react-hot-toast", "react-icons", "lucide-react"],
