@@ -1,12 +1,17 @@
 import HeroFilter from "../../utils/HeroFilter";
-import hero from "../../../assets/images/hero.webp";
-import heroMobile from "../../../assets/images/heroMobile.webp";
+import heroBundled from "../../../assets/images/hero.webp";
+import heroMobileBundled from "../../../assets/images/heroMobile.webp";
+
+const heroDesktop = import.meta.env.PROD ? "/lcp/hero.webp" : heroBundled;
+const heroMobile = import.meta.env.PROD
+  ? "/lcp/heroMobile.webp"
+  : heroMobileBundled;
 
 const Hero = () => {
   return (
     <section className="relative w-full overflow-hidden min-h-[48vh] md:h-[48vh]">
       <picture className="absolute inset-0 block h-full w-full">
-        <source media="(min-width: 768px)" srcSet={hero} />
+        <source media="(min-width: 768px)" srcSet={heroDesktop} />
         <img
           src={heroMobile}
           alt="hero image"

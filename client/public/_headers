@@ -1,3 +1,11 @@
-# Avoid long-lived cached HTML referencing old hashed JS after deploy (Netlify-compatible).
+# HTML: always revalidate so hashed asset URLs stay fresh after deploy
 /index.html
   Cache-Control: public, max-age=0, must-revalidate
+
+# LCP hero (stable paths, long cache)
+/lcp/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Vite hashed assets
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable

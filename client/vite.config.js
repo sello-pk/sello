@@ -19,6 +19,8 @@ export default defineConfig({
       targets: [
         { src: "public/_redirects", dest: "." },
         { src: "public/_headers", dest: "." },
+        { src: "src/assets/images/hero.webp", dest: "lcp" },
+        { src: "src/assets/images/heroMobile.webp", dest: "lcp" },
       ],
     }),
 
@@ -76,12 +78,12 @@ export default defineConfig({
 
   build: {
     cssCodeSplit: true,
-    target: "es2015",
+    target: "es2020",
     minify: "terser",
-    sourcemap: false, // Disable sourcemaps for faster builds
-    chunkSizeWarningLimit: 600, // Increase to reduce warnings
+    sourcemap: false,
+    chunkSizeWarningLimit: 600,
+    modulePreload: { polyfill: false },
 
-    // Manual chunk splitting for better performance
     rollupOptions: {
       output: {
         manualChunks: {

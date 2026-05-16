@@ -1,24 +1,58 @@
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Hero from "../components/sections/home/Hero";
-import NewsLatter from "../components/utils/NewsLatter";
-import BuySellCards from "../components/utils/BuySellCards";
 import SEO from "../components/common/SEO";
 import StructuredData from "../components/common/StructuredData";
-import RecentlyViewedCars from "../components/sections/home/RecentlyViewedCars";
-import BrandsSection from "../components/sections/home/BrandsSection.jsx";
-import Video from "../components/sections/home/Video.jsx";
-import FeaturedCarsCarousel from "../components/sections/home/FeaturedCarsCarousel.jsx";
-import BannerCarousal from "../components/utils/BannerCarousal.jsx";
-import HowAuctionsWork from "../components/auction/HowAuctionsWork.jsx";
-import CustomerReview from "../components/sections/home/CustomerReview.jsx";
-import BlogSection from "../components/sections/home/BlogSection.jsx";
+import { lazyImport } from "../utils/lazyImports.js";
+
+/** Below-fold sections — separate chunks so homepage initial JS stays smaller (LCP/TBT). */
+const BrandsSection = lazyImport(
+  () => import("../components/sections/home/BrandsSection.jsx"),
+);
+const Video = lazyImport(() => import("../components/sections/home/Video.jsx"));
+const BannerCarousal = lazyImport(
+  () => import("../components/utils/BannerCarousal.jsx"),
+);
+const FeaturedCarsCarousel = lazyImport(
+  () => import("../components/sections/home/FeaturedCarsCarousel.jsx"),
+);
+const HowAuctionsWork = lazyImport(
+  () => import("../components/auction/HowAuctionsWork.jsx"),
+);
+const CustomerReview = lazyImport(
+  () => import("../components/sections/home/CustomerReview.jsx"),
+);
+const BlogSection = lazyImport(
+  () => import("../components/sections/home/BlogSection.jsx"),
+);
+const BuySellCards = lazyImport(
+  () => import("../components/utils/BuySellCards.jsx"),
+);
+const RecentlyViewedCars = lazyImport(
+  () => import("../components/sections/home/RecentlyViewedCars.jsx"),
+);
+const NewsLatter = lazyImport(
+  () => import("../components/utils/NewsLatter.jsx"),
+);
+
+const BelowFold = ({ children, minHeight = "8rem" }) => (
+  <Suspense
+    fallback={
+      <div
+        aria-hidden="true"
+        className="w-full"
+        style={{ minHeight }}
+      />
+    }
+  >
+    {children}
+  </Suspense>
+);
 
 const Home = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Ensure we scroll to top when Home component renders
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, [location.pathname]);
 
@@ -30,21 +64,40 @@ const Home = () => {
         keywords="cars for sale, cars for sale in Pakistan"
         canonical="https://sello.pk/"
       />
-      {/* Structured Data for SEO */}
       <StructuredData.OrganizationSchema />
       <StructuredData.WebSiteSchema />
       <div className="w-full min-w-0">
         <Hero />
-        <BrandsSection />
-        <Video />
-        <BannerCarousal />
-        <FeaturedCarsCarousel />
-        <HowAuctionsWork />
-        <CustomerReview key="customer-review" />
-        <BlogSection />
-        <BuySellCards />
-        <RecentlyViewedCars />
-        <NewsLatter />
+        <BelowFold minHeight="6rem">
+          <BrandsSection />
+        </BelowFold>
+        <BelowFold minHeight="12rem">
+          <Video />
+        </BelowFold>
+        <BelowFold minHeight="10rem">
+          <BannerCarousal />
+        </BelowFold>
+        <BelowFold minHeight="14rem">
+          <FeaturedCarsCarousel />
+        </BelowFold>
+        <BelowFold minHeight="10rem">
+          <HowAuctionsWork />
+        </BelowFold>
+        <BelowFold minHeight="12rem">
+          <CustomerReview key="customer-review" />
+        </BelowFold>
+        <BelowFold minHeight="10rem">
+          <BlogSection />
+        </BelowFold>
+        <BelowFold minHeight="8rem">
+          <BuySellCards />
+        </BelowFold>
+        <BelowFold minHeight="8rem">
+          <RecentlyViewedCars />
+        </BelowFold>
+        <BelowFold minHeight="6rem">
+          <NewsLatter />
+        </BelowFold>
       </div>
     </div>
   );

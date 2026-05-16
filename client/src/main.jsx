@@ -14,11 +14,15 @@ import {
   lazyImport,
   tryReloadOnceForStaleChunk,
 } from "./utils/lazyImports.js";
+import { scheduleFacebookPixelLoad } from "./utils/metaPixel.js";
 import heroLcpDesktop from "./assets/images/hero.webp";
 import heroLcpMobile from "./assets/images/heroMobile.webp";
 
-// Early LCP hint for home hero only — other routes would trigger "preloaded but not used" warnings
-if (typeof document !== "undefined") {
+// Defer Meta Pixel network (index.html only stubs fbq)
+scheduleFacebookPixelLoad();
+
+// Dev fallback: production uses /lcp/* preloads in index.html
+if (typeof document !== "undefined" && import.meta.env.DEV) {
   const path = window.location.pathname || "/";
   const isHome = path === "/" || path === "/home";
   if (isHome) {

@@ -2,8 +2,8 @@ import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 
 /**
- * Fires Meta Pixel PageView on client-side route changes.
- * Skips the first run so the initial PageView from index.html is not duplicated.
+ * PageView on SPA navigations after deferred pixel has loaded.
+ * Initial PageView is fired from loadFacebookPixel() — not duplicated here.
  */
 export default function useMetaPixel() {
   const location = useLocation();
@@ -15,14 +15,22 @@ export default function useMetaPixel() {
       return;
     }
 
-    if (typeof window !== "undefined" && typeof window.fbq === "function") {
-      try {
-        window.fbq("track", "PageView");
-      } catch {
-        /* ignore */
+    const track = () => {
+      if (typeof window !== "undefined" && typeof window.fbq === "function") {
+        try {
+          window.fbq("track", "PageView");
+        } catch {
+          /* ignore */
+        }
       }
-    } else if (import.meta.env.DEV) {
-      console.warn("Meta Pixel not available (route change)");
+    };
+
+    if (typeof window.fbq === "function" && !window.fbq.__selloStub) {
+      track();
+      return;
     }
+
+    window.addEventListener("sello:meta-pixel-ready", track, { once: true });
+    return () => window.removeEventListener("sello:meta-pixel-ready", track);
   }, [location.pathname, location.search]);
 }
