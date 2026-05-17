@@ -68,34 +68,34 @@ const Home = () => {
       <StructuredData.WebSiteSchema />
       <div className="w-full min-w-0">
         <Hero />
-        <BelowFold minHeight="6rem">
+        <BelowFold minHeight="10rem">
           <BrandsSection />
         </BelowFold>
-        <BelowFold minHeight="12rem">
+        <BelowFold minHeight="16rem">
           <Video />
         </BelowFold>
-        <BelowFold minHeight="10rem">
+        <BelowFold minHeight="14rem">
           <BannerCarousal />
         </BelowFold>
-        <BelowFold minHeight="14rem">
+        <BelowFold minHeight="22rem">
           <FeaturedCarsCarousel />
         </BelowFold>
-        <BelowFold minHeight="10rem">
+        <BelowFold minHeight="14rem">
           <HowAuctionsWork />
         </BelowFold>
-        <BelowFold minHeight="12rem">
+        <BelowFold minHeight="18rem">
           <CustomerReview key="customer-review" />
         </BelowFold>
-        <BelowFold minHeight="10rem">
+        <BelowFold minHeight="14rem">
           <BlogSection />
         </BelowFold>
-        <BelowFold minHeight="8rem">
+        <BelowFold minHeight="12rem">
           <BuySellCards />
         </BelowFold>
-        <BelowFold minHeight="8rem">
+        <BelowFold minHeight="12rem">
           <RecentlyViewedCars />
         </BelowFold>
-        <BelowFold minHeight="6rem">
+        <BelowFold minHeight="10rem">
           <NewsLatter />
         </BelowFold>
       </div>

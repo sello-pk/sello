@@ -182,17 +182,17 @@ export default function AuctionsActions() {
           <img
             src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920"
             alt="Luxury car"
+            width="1920"
+            height="1080"
+            decoding="async"
+            fetchPriority="high"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/80 to-slate-900/60" />
         </div>
         <div className="relative max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
           <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
+            <motion.div initial={false}>
               {liveAuction && (
                 <Badge className="bg-red-500 text-white border-0 mb-6 animate-pulse">
                   <Zap className="w-4 h-4 mr-1" /> Live Auction in Progress
@@ -230,12 +230,7 @@ export default function AuctionsActions() {
                 </Link>
               </div>
             </motion.div>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="hidden lg:block"
-            >
+            <motion.div initial={false} className="hidden lg:block">
               <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20">
                 <div className="text-center mb-6">
                   <h3 className="text-white font-semibold text-xl mb-2">
@@ -285,7 +280,7 @@ export default function AuctionsActions() {
             {stats.map((stat, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
+                initial={false}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
                 className="text-center"
@@ -304,7 +299,7 @@ export default function AuctionsActions() {
       {/* Trust Badges */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-8xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={false}
           whileInView={{ opacity: 1, y: 0 }}
           className="text-center mb-10"
         >
@@ -344,7 +339,7 @@ export default function AuctionsActions() {
           <div className="max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8">
             <div className="max-w-full mx-auto text-center">
               <motion.div
-                initial={{ opacity: 0, scale: 0.98 }}
+                initial={false}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true, amount: 0.4 }}
                 className="group relative bg-white rounded-2xl md:rounded-3xl p-8 sm:p-10 md:p-12 shadow-lg border border-gray-100 hover:border-primary-200 hover:shadow-2xl transition-all duration-500 overflow-hidden"

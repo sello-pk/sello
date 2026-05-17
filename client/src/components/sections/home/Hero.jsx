@@ -9,7 +9,7 @@ const heroMobile = import.meta.env.PROD
 
 const Hero = () => {
   return (
-    <section className="relative w-full overflow-hidden min-h-[48vh] md:h-[48vh]">
+    <section className="sello-hero-shell relative w-full overflow-hidden min-h-[48vh] md:h-[48vh]">
       <picture className="absolute inset-0 block h-full w-full">
         <source media="(min-width: 768px)" srcSet={heroDesktop} />
         <img

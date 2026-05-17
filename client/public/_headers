@@ -1,3 +1,7 @@
+# Core Web Vitals: PerimeterX/HUMAN (px-cloud.net, px-cdn.net, pxchk.net) is injected
+# at the CDN/WAF layer, not in this repo. Ask hosting to use passive/async bot mode on
+# public HTML routes (/, /listings, /blog) so collectors do not block mobile LCP (~6s chains).
+
 # HTML: always revalidate so hashed asset URLs stay fresh after deploy
 /index.html
   Cache-Control: public, max-age=0, must-revalidate

@@ -1,4 +1,4 @@
-import React, { Suspense, useMemo } from "react";
+import React, { Suspense, useMemo, useState, useEffect } from "react";
 import { matchPath, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { lazyImport } from "./utils/lazyImports.js";
@@ -503,6 +503,7 @@ const ScrollToTop = () => {
 const App = () => {
   useMetaPixel();
   const location = useLocation();
+  const [showHelpChat, setShowHelpChat] = useState(false);
   const fallbackSeo = useMemo(
     () => getRouteSeo(location.pathname, location.search),
     [location.pathname, location.search],
@@ -521,6 +522,30 @@ const App = () => {
   const shouldShowNavbarFooter =
     !hideNavbarFooter.includes(location.pathname) &&
     !location.pathname.startsWith("/admin");
+
+  // Defer support chat (socket.io + RTK) until idle — reduces mobile INP/TBT on first paint
+  useEffect(() => {
+    if (!shouldShowNavbarFooter) {
+      setShowHelpChat(false);
+      return;
+    }
+    let cancelled = false;
+    const enable = () => {
+      if (!cancelled) setShowHelpChat(true);
+    };
+    if (typeof window.requestIdleCallback === "function") {
+      const id = window.requestIdleCallback(enable, { timeout: 4500 });
+      return () => {
+        cancelled = true;
+        window.cancelIdleCallback(id);
+      };
+    }
+    const t = window.setTimeout(enable, 3500);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(t);
+    };
+  }, [shouldShowNavbarFooter, location.pathname]);
 
   return (
     <ThemeProvider>
@@ -549,7 +574,7 @@ const App = () => {
       {shouldShowNavbarFooter && <Footer />}
 
       {/* Support chat — lazy chunk; filename HelpChatWidget avoids ad-block false blocks */}
-      {shouldShowNavbarFooter && (
+      {shouldShowNavbarFooter && showHelpChat && (
         <Suspense fallback={null}>
           <HelpChatWidget />
         </Suspense>

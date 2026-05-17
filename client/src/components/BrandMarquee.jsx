@@ -139,9 +139,13 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
     if (!el || row.length < 2 || reducedMotion) return;
 
     let rafId;
+    let ro;
+    let cancelled = false;
+
     const update = () => {
-      // Batch DOM reads and writes to prevent forced reflows
+      if (cancelled) return;
       rafId = requestAnimationFrame(() => {
+        if (cancelled) return;
         const w = el.scrollWidth;
         if (w < 16) return;
         const half = w / 2;
@@ -149,25 +153,33 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
           MIN_LOOP_SEC,
           Math.min(MAX_LOOP_SEC, half / PX_PER_SEC),
         );
-        
-        // Batch the state update
-        rafId = requestAnimationFrame(() => {
-          setDurationSec(sec);
-        });
+        setDurationSec(sec);
       });
     };
 
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    
-    // Initial update
-    update();
-    
+    const attach = () => {
+      if (cancelled) return;
+      ro = new ResizeObserver(update);
+      ro.observe(el);
+      update();
+    };
+
+    if (typeof window.requestIdleCallback === "function") {
+      const idleId = window.requestIdleCallback(attach, { timeout: 2000 });
+      return () => {
+        cancelled = true;
+        window.cancelIdleCallback(idleId);
+        if (rafId) cancelAnimationFrame(rafId);
+        ro?.disconnect();
+      };
+    }
+
+    const t = window.setTimeout(attach, 100);
     return () => {
-      if (rafId) {
-        cancelAnimationFrame(rafId);
-      }
-      ro.disconnect();
+      cancelled = true;
+      window.clearTimeout(t);
+      if (rafId) cancelAnimationFrame(rafId);
+      ro?.disconnect();
     };
   }, [brandsKey, row.length, reducedMotion]);
 

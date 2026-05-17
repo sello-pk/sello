@@ -7,7 +7,7 @@ import React from 'react';
 const RouteLoader = () => {
   return (
     <div
-      className="w-full px-4 py-10 sm:py-12"
+      className="w-full min-h-[50vh] flex items-center justify-center px-4 py-10 sm:py-12"
       role="status"
       aria-live="polite"
       aria-busy="true"

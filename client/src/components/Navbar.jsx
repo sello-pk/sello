@@ -268,7 +268,7 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className={`w-full sticky top-0 z-50 border-b backdrop-blur-md ${
+        className={`sello-site-nav w-full sticky top-0 z-50 border-b backdrop-blur-md ${
           isListingsTheme
             ? "bg-white/95 text-gray-700 border-gray-200"
             : "bg-primary-500 text-white border-primary-400"
@@ -452,7 +452,7 @@ const Navbar = () => {
           </div>
 
           {/* User Avatar / Login + Actions */}
-          <div className="flex items-center gap-3 sm:gap-4 lg:gap-5 flex-shrink-0">
+          <div className="sello-auth-slot flex items-center gap-3 sm:gap-4 lg:gap-5 flex-shrink-0">
             {renderHeaderSearchToggle()}
 
             {/* Create Post Button (Desktop) */}

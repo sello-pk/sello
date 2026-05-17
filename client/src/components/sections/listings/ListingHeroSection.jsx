@@ -5,7 +5,7 @@ import listingHeroMobile from "../../../assets/images/listingHeroMobile.webp";
 
 const ListingHeroSection = () => {
   return (
-    <section className="relative w-full overflow-hidden min-h-[48vh] md:h-[48vh] bg-gray-200">
+    <section className="sello-hero-shell relative w-full overflow-hidden min-h-[48vh] md:h-[48vh] bg-gray-200">
       <picture className="absolute inset-0 block h-full w-full">
         <source media="(min-width: 768px)" srcSet={listingHero} />
         <img

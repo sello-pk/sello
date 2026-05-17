@@ -5,7 +5,6 @@ import CountdownTimer from "./auction/CountdownTimer";
 import { FiZap } from "react-icons/fi";
 import { FaLocationDot } from "react-icons/fa6";
 import { FaRegHeart } from "react-icons/fa";
-import { IoRefreshOutline as RefreshCw } from "react-icons/io5";
 
 const BottomHeader = () => {
   const location = useLocation();
@@ -29,35 +28,26 @@ const BottomHeader = () => {
   return (
     <div
       style={{ zIndex: 1000 }}
-      className="bg-[#050B20] border-y border-gray-200/80 w-full min-h-[52px] md:min-h-[56px] flex flex-col md:flex-row md:items-center md:justify-between gap-2 sm:gap-3 md:gap-6 px-3 sm:px-4 md:px-8 lg:px-20 py-2 md:py-3 text-sm md:text-base text-white overflow-x-hidden"
+      className="sello-bottom-bar bg-[#050B20] border-y border-gray-200/80 w-full flex items-center px-3 sm:px-4 md:px-8 lg:px-20 text-sm md:text-base text-white overflow-hidden"
+      aria-busy={isLoading}
     >
-      <div className="flex w-full min-h-[52px] md:min-h-[56px] md:w-auto min-w-0 items-center gap-2 sm:gap-3 md:gap-4">
-        {isLoading && (
+      <div className="flex w-full min-w-0 h-full items-center gap-2 sm:gap-3 md:gap-4">
+        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3 min-h-[40px] overflow-hidden">
           <div
-            className="flex min-h-[44px] w-full min-w-0 items-center gap-2 sm:gap-3 md:w-auto"
-            aria-hidden
+            className={`flex min-w-0 items-center gap-2 sm:gap-3 transition-opacity duration-200 ${
+              showAuction ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
+            aria-hidden={!showAuction}
           >
-            <div className="h-7 w-[72px] shrink-0 animate-pulse rounded-full bg-white/15" />
-            <div className="min-w-0 max-w-[min(100%,320px)] flex-1 space-y-2">
-              <div className="h-3 w-[85%] animate-pulse rounded-md bg-white/15 sm:h-3.5" />
-              <div className="h-3 w-[55%] animate-pulse rounded-md bg-white/10 sm:hidden" />
-            </div>
-          </div>
-        )}
-        {!isLoading && showAuction && (
-          <>
-            {/* Live Badge */}
             <Link
               to="/auctions/live"
               aria-label="Go to live auction"
               title="Go to live auction"
-              className="inline-flex items-center px-3 py-1 gap-2 animate-pulse duration-500 ease rounded-full text-xs font-semibold bg-red-900 text-white border border-red-900 whitespace-nowrap flex-shrink-0"
+              className="inline-flex items-center px-3 py-1 gap-2 rounded-full text-xs font-semibold bg-red-900 text-white border border-red-900 whitespace-nowrap shrink-0"
             >
               <FiZap className="w-4 h-4 shrink-0 text-white" aria-hidden />
               <span>Live</span>
             </Link>
-
-            {/* Auction Info */}
             <Link
               to="/auctions/live"
               aria-label={`${auctionVenue} - ${auctionName}`}
@@ -65,63 +55,52 @@ const BottomHeader = () => {
               className="min-w-0 inline-flex items-center gap-2 text-white hover:text-primary transition-colors"
             >
               <FaLocationDot className="w-4 h-4 shrink-0" />
-              <div className="min-w-0 leading-tight">
+              <div className="min-w-0 leading-tight max-w-[min(100%,200px)] sm:max-w-xs">
                 <p className="truncate text-sm font-semibold">{auctionVenue}</p>
-                <p className="truncate text-xs text-white/85">{auctionName}</p>
+                <p className="truncate text-xs text-white/85 hidden sm:block">
+                  {auctionName}
+                </p>
               </div>
             </Link>
-          </>
-        )}
-        {!isLoading && !showAuction && (
-          <div
-            className="min-h-[44px] min-w-0 flex-1 md:max-w-md"
-            aria-hidden
-          />
-        )}
-      </div>
-
-      <div className="flex w-full md:w-auto items-center md:justify-end gap-2 sm:gap-3 md:gap-6 min-w-0">
-        {/* Countdown */}
-        <div className="flex items-center gap-2 rounded-2xl bg-white/10 px-2.5 sm:px-3 py-1.5 sm:py-2 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_10px_30px_rgba(5,11,32,0.28)] min-w-0">
-          <span className="text-white text-[10px] sm:text-xs uppercase tracking-[0.12em] whitespace-nowrap">
-            Ends In
-          </span>
-          <CountdownTimer
-            targetDate={targetDate}
-            size="small"
-            showLabel={false}
-            variant="glassDark"
-          />
+          </div>
         </div>
 
-        <div className="flex items-center gap-3 sm:gap-4 md:gap-6 min-w-0 ml-auto">
-          {showAuction && (
-            <span
-              className="hidden lg:inline-flex items-center gap-2 text-white text-sm whitespace-nowrap"
-              role="status"
-              aria-live="polite"
-            >
-              <RefreshCw className="w-4 h-4 animate-spin text-amber-300" aria-hidden />
-              Live auction updating
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3 md:gap-4">
+          <div className="flex items-center gap-2 rounded-2xl bg-white/10 px-2.5 sm:px-3 py-1.5 min-h-[36px] min-w-[7.5rem] sm:min-w-[8.5rem] justify-center">
+            <span className="text-white text-[10px] sm:text-xs uppercase tracking-[0.12em] whitespace-nowrap">
+              Ends In
             </span>
-          )}
+            {targetDate ? (
+              <CountdownTimer
+                targetDate={targetDate}
+                size="small"
+                showLabel={false}
+                variant="glassDark"
+              />
+            ) : (
+              <span
+                className="text-xs sm:text-sm tabular-nums text-white/70 whitespace-nowrap"
+                aria-hidden
+              >
+                --:--:--
+              </span>
+            )}
+          </div>
 
-          {/* Saved Cars (FIXED) */}
           <Link
             to="/saved-cars"
             aria-label="View saved cars"
             title="Saved Cars"
-            className="inline-flex items-center justify-center"
+            className="inline-flex items-center justify-center shrink-0 w-9 h-9"
           >
             <FaRegHeart className="w-5 h-5 hover:text-primary text-white shrink-0" />
           </Link>
 
-          {/* Filter (FIXED - already had text but improved) */}
           <Link
             to="/filter"
             aria-label="Open vehicle filters"
             title="Filter cars"
-            className="text-white text-sm sm:text-base font-medium whitespace-nowrap underline-offset-4 hover:underline"
+            className="text-white text-sm sm:text-base font-medium whitespace-nowrap underline-offset-4 hover:underline shrink-0"
           >
             Filter
           </Link>

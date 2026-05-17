@@ -33,16 +33,61 @@
     media="(min-width: 768px)"
   />
 
-  <!-- Reserve hero space before CSS/JS to limit CLS on mobile -->
+  <!-- Critical shell CSS before Tailwind bundle — reduces mobile CLS/LCP snap -->
   <style>
     #root {
       min-height: 100vh;
     }
 
     .sello-hero-shell {
+      position: relative;
       min-height: 48vh;
       width: 100%;
+      overflow: hidden;
       background: #0f172a;
+      contain: layout style;
+    }
+
+    .sello-site-nav {
+      min-height: 52px;
+      contain: layout style;
+    }
+
+    @media (min-width: 640px) {
+      .sello-site-nav {
+        min-height: 56px;
+      }
+    }
+
+    .sello-bottom-bar {
+      box-sizing: border-box;
+      min-height: 52px;
+      height: 52px;
+      max-height: 52px;
+      background: #050b20;
+      contain: layout style;
+    }
+
+    @media (min-width: 768px) {
+      .sello-bottom-bar {
+        min-height: 56px;
+        height: 56px;
+        max-height: 56px;
+      }
+    }
+
+    .sello-auth-slot {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    @media (min-width: 640px) {
+      .sello-auth-slot {
+        min-width: 112px;
+      }
     }
   </style>
 

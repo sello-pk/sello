@@ -44,7 +44,7 @@ const AuctionGuideDetail = lazyImport(
 const CategoryGuideDetail = lazyImport(
   () => import("../pages/listings/CategoryGuideDetail.jsx"),
 );
-const AuctionsActions = lazyImport(() => import("../pages/features/auctions/Actions.jsx"));
+import AuctionsActions from "../pages/features/auctions/Actions.jsx";
 const LiveAuction = lazyImport(() => import("../pages/features/auctions/LiveAuction.jsx"));
 const AuctionSchedule = lazyImport(
   () => import("../pages/features/auctions/AuctionSchedule.jsx"),
