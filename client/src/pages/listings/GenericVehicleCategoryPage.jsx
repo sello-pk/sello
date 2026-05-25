@@ -130,7 +130,7 @@ const GenericVehicleCategoryPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 overflow-x-hidden">
       {/* Hero Section */}
-      <div className="relative w-full md:h-[38vh] sm:h-[30vh] h-[18vh] text-white bg-primary-500 overflow-hidden">
+      <div className="relative w-full md:h-[38vh] sm:h-[30vh] h-[24vh] text-white bg-primary-500 overflow-hidden">
         <div className="relative z-10 flex min-h-[30vh] sm:min-h-[26vh] md:min-h-[24vh] w-full flex-col justify-start items-center px-2 sm:px-4 lg:px-6 py-3 sm:py-5 md:py-6">
           <Link
             to="/listings"
@@ -159,14 +159,6 @@ const GenericVehicleCategoryPage = () => {
               <p className="text-xs sm:text-sm md:text-base lg:text-lg text-white/90 mb-3 sm:mb-4 lg:mb-5 max-w-lg sm:max-w-2xl lg:max-w-3xl mx-auto leading-relaxed drop-shadow-lg px-3 sm:px-0">
                 {config.description}
               </p>
-
-              {total > 0 && (
-                <div className="inline-flex items-center gap-1.5 sm:gap-2 lg:gap-4 px-2 sm:px-4 lg:px-5 py-1.5 sm:py-2 lg:py-2.5 rounded-full bg-white/15">
-                  <span className="text-white font-semibold text-xs sm:text-sm md:text-base">
-                    {total} {total === 1 ? "Listing" : "Listings"}
-                  </span>
-                </div>
-              )}
             </div>
           </div>
         </div>

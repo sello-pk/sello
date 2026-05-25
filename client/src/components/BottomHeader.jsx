@@ -28,44 +28,56 @@ const BottomHeader = () => {
   return (
     <div
       style={{ zIndex: 1000 }}
-      className="sello-bottom-bar bg-[#050B20] border-y border-gray-200/80 w-full flex items-center px-3 sm:px-4 md:px-8 lg:px-20 text-sm md:text-base text-white overflow-x-auto scrollbar-hide"
+      className="sello-bottom-bar bg-[#050B20] border-y border-gray-200/80 w-full flex items-center px-3 sm:px-4 md:px-8 lg:px-20 text-sm text-white"
       aria-busy={isLoading}
     >
-      <div className="flex w-full min-w-0 h-full items-center gap-2 sm:gap-3 md:gap-4">
-        <div className={`flex min-w-0 flex-1 items-center gap-2 sm:gap-3 min-h-[40px] overflow-hidden ${!showAuction ? "hidden" : ""}`}>
-          <div
-            className={`flex min-w-0 items-center gap-2 sm:gap-3 transition-opacity duration-200 opacity-100`}
-            aria-hidden={!showAuction}
-          >
+      <div className="flex w-full h-full items-center gap-2 sm:gap-3">
+        {/* LEFT — hidden on mobile, visible sm+ */}
+        {showAuction && (
+          <div className="hidden sm:flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
+            {/* Live badge */}
             <Link
               to="/auctions/live"
               aria-label="Go to live auction"
-              title="Go to live auction"
-              className="inline-flex items-center px-3 py-1 gap-2 rounded-full text-xs font-semibold bg-red-900 text-white border border-red-900 whitespace-nowrap shrink-0"
+              className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold bg-red-700 text-white border border-red-600 whitespace-nowrap shrink-0"
             >
-              <FiZap className="w-4 h-4 shrink-0 text-white" aria-hidden />
+              <FiZap className="w-3 h-3 shrink-0" aria-hidden />
               <span>Live</span>
             </Link>
+
+            {/* Venue */}
             <Link
               to="/auctions/live"
               aria-label={`${auctionVenue} - ${auctionName}`}
-              title={`${auctionVenue} - ${auctionName}`}
-              className="min-w-0 inline-flex items-center gap-2 text-white hover:text-primary transition-colors"
+              className="min-w-0 inline-flex items-center gap-1.5 text-white hover:text-primary transition-colors"
             >
-              <FaLocationDot className="w-4 h-4 shrink-0" />
-              <div className="min-w-0 leading-tight max-w-[min(100%,200px)] sm:max-w-xs">
-                <p className="truncate text-sm font-semibold">{auctionVenue}</p>
-                <p className="truncate text-xs text-white/85 hidden sm:block">
+              <FaLocationDot className="w-3.5 h-3.5 shrink-0" />
+              <div className="min-w-0 leading-tight max-w-xs">
+                <p className="truncate text-xs font-semibold">{auctionVenue}</p>
+                <p className="truncate text-[10px] text-white/70">
                   {auctionName}
                 </p>
               </div>
             </Link>
           </div>
-        </div>
+        )}
 
-        <div className="flex shrink items-center gap-2 sm:gap-3 md:gap-4 ml-auto w-full justify-between sm:justify-end sm:w-auto">
-          <div className="flex items-center gap-1.5 sm:gap-2 rounded-2xl bg-white/10 px-2 sm:px-3 py-1.5 min-h-[32px] sm:min-h-[36px] justify-center">
-            <span className="hidden sm:inline text-white text-[10px] sm:text-xs uppercase tracking-[0.12em] whitespace-nowrap">
+        {/* Mobile-only: compact Live icon badge */}
+        {showAuction && (
+          <Link
+            to="/auctions/live"
+            aria-label="Go to live auction"
+            className="sm:hidden inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-700 border border-red-600 shrink-0"
+          >
+            <FiZap className="w-3 h-3 text-white" aria-hidden />
+          </Link>
+        )}
+
+        {/* RIGHT — always visible */}
+        <div className="flex items-center gap-1.5 sm:gap-3 ml-auto shrink-0">
+          {/* Countdown pill — tighter on mobile */}
+          <div className="flex items-center gap-1 rounded-xl bg-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1">
+            <span className="hidden md:inline text-[9px] uppercase tracking-widest text-white/60 whitespace-nowrap mr-1">
               Ends In
             </span>
             {targetDate ? (
@@ -74,31 +86,29 @@ const BottomHeader = () => {
                 size="small"
                 showLabel={false}
                 variant="glassDark"
+                className="text-[10px] sm:text-xs tabular-nums"
               />
             ) : (
-              <span
-                className="text-xs sm:text-sm tabular-nums text-white/70 whitespace-nowrap"
-                aria-hidden
-              >
+              <span className="text-[10px] sm:text-xs tabular-nums text-white/60 whitespace-nowrap">
                 --:--:--
               </span>
             )}
           </div>
 
+          {/* Heart */}
           <Link
             to="/saved-cars"
             aria-label="View saved cars"
-            title="Saved Cars"
-            className="inline-flex items-center justify-center shrink-0 w-9 h-9"
+            className="inline-flex items-center justify-center w-7 h-7 sm:w-9 sm:h-9 shrink-0"
           >
-            <FaRegHeart className="w-5 h-5 hover:text-primary text-white shrink-0" />
+            <FaRegHeart className="w-4 h-4 sm:w-5 sm:h-5 text-white hover:text-primary" />
           </Link>
 
+          {/* Filter */}
           <Link
             to="/filter"
             aria-label="Open vehicle filters"
-            title="Filter cars"
-            className="text-white text-sm sm:text-base font-medium whitespace-nowrap underline-offset-4 hover:underline shrink-0"
+            className="text-white text-xs sm:text-sm font-medium whitespace-nowrap hover:underline underline-offset-4 shrink-0"
           >
             Filter
           </Link>
