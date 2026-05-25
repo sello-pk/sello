@@ -58,12 +58,7 @@ window.addEventListener("unhandledrejection", (event) => {
   }
 });
 
-// Lazy load Google OAuth only when needed
-const GoogleOAuthProvider = lazyImport(() =>
-  import("@react-oauth/google").then((module) => ({
-    default: module.GoogleOAuthProvider,
-  })),
-);
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -86,11 +81,9 @@ const OAuthWrapper = ({ children }) => {
   }
   
   return (
-    <Suspense fallback={children}>
-      <GoogleOAuthProvider clientId={googleClientId}>
-        {children}
-      </GoogleOAuthProvider>
-    </Suspense>
+    <GoogleOAuthProvider clientId={googleClientId}>
+      {children}
+    </GoogleOAuthProvider>
   );
 };
 

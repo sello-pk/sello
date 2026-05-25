@@ -28,15 +28,13 @@ const BottomHeader = () => {
   return (
     <div
       style={{ zIndex: 1000 }}
-      className="sello-bottom-bar bg-[#050B20] border-y border-gray-200/80 w-full flex items-center px-3 sm:px-4 md:px-8 lg:px-20 text-sm md:text-base text-white overflow-hidden"
+      className="sello-bottom-bar bg-[#050B20] border-y border-gray-200/80 w-full flex items-center px-3 sm:px-4 md:px-8 lg:px-20 text-sm md:text-base text-white overflow-x-auto scrollbar-hide"
       aria-busy={isLoading}
     >
       <div className="flex w-full min-w-0 h-full items-center gap-2 sm:gap-3 md:gap-4">
-        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3 min-h-[40px] overflow-hidden">
+        <div className={`flex min-w-0 flex-1 items-center gap-2 sm:gap-3 min-h-[40px] overflow-hidden ${!showAuction ? "hidden" : ""}`}>
           <div
-            className={`flex min-w-0 items-center gap-2 sm:gap-3 transition-opacity duration-200 ${
-              showAuction ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`}
+            className={`flex min-w-0 items-center gap-2 sm:gap-3 transition-opacity duration-200 opacity-100`}
             aria-hidden={!showAuction}
           >
             <Link
@@ -65,9 +63,9 @@ const BottomHeader = () => {
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3 md:gap-4">
-          <div className="flex items-center gap-2 rounded-2xl bg-white/10 px-2.5 sm:px-3 py-1.5 min-h-[36px] min-w-[7.5rem] sm:min-w-[8.5rem] justify-center">
-            <span className="text-white text-[10px] sm:text-xs uppercase tracking-[0.12em] whitespace-nowrap">
+        <div className="flex shrink items-center gap-2 sm:gap-3 md:gap-4 ml-auto w-full justify-between sm:justify-end sm:w-auto">
+          <div className="flex items-center gap-1.5 sm:gap-2 rounded-2xl bg-white/10 px-2 sm:px-3 py-1.5 min-h-[32px] sm:min-h-[36px] justify-center">
+            <span className="hidden sm:inline text-white text-[10px] sm:text-xs uppercase tracking-[0.12em] whitespace-nowrap">
               Ends In
             </span>
             {targetDate ? (

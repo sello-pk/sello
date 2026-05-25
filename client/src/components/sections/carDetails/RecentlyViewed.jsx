@@ -72,7 +72,7 @@ const RecentlyViewed = () => {
           <div className="h-8 bg-gray-200 rounded w-48 mb-2 animate-pulse" />
           <div className="h-4 bg-gray-200 rounded w-40 animate-pulse" />
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
           {[...Array(PAGE_SIZE)].map((_, i) => (
             <div
               key={i}
@@ -112,7 +112,7 @@ const RecentlyViewed = () => {
         )}
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
         {visibleItems.map((car) => (
           <Link
             key={car._id}

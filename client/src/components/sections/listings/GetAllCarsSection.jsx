@@ -288,7 +288,7 @@ const GetAllCarsSection = () => {
           className={`mt-6 min-w-0 ${
             !isHomePage && viewMode === "list"
               ? "grid grid-cols-1 gap-4 sm:gap-6"
-              : "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6"
+              : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
           }`}
         >
           {filteredCars.length === 0 ? (

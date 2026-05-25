@@ -74,8 +74,8 @@ const CarDetailsHeroSection = () => {
           </div>
 
           {/* Price and Badges */}
-          <div className="flex flex-col items-end gap-2">
-            <div className="text-right">
+          <div className="flex flex-col items-start md:items-end gap-2">
+            <div className="text-left md:text-right">
               <p className="text-3xl md:text-4xl font-bold text-primary-500">
                 PKR {car.price?.toLocaleString() || "0"}
               </p>
@@ -83,7 +83,7 @@ const CarDetailsHeroSection = () => {
                 <p className="text-red-600 font-medium text-sm mt-1">Sold</p>
               )}
             </div>
-            <div className="flex items-center gap-2 flex-wrap justify-end">
+            <div className="flex items-center gap-2 flex-wrap justify-start md:justify-end">
               {car.priceAnalysis && car.priceAnalysis.pricePosition && (
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 border ${
