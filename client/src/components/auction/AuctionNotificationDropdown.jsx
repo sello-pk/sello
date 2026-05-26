@@ -53,7 +53,7 @@ export default function AuctionNotificationDropdown({ className = "" }) {
   const unread = items.filter((n) => !n.isRead && !n.read).length;
 
   return (
-    <div className={`relative ${className}`} ref={ref}>
+    <div className={`static sm:relative ${className}`} ref={ref}>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -66,7 +66,7 @@ export default function AuctionNotificationDropdown({ className = "" }) {
         )}
       </button>
       {open && (
-        <div className="absolute right-0 mt-2 w-80 max-h-96 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl z-50">
+        <div className="absolute right-4 sm:right-0 mt-2 w-[min(20rem,calc(100vw-2rem))] max-h-96 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl z-50">
           <div className="flex items-center justify-between px-3 py-2 border-b border-slate-100">
             <span className="font-semibold text-slate-900 text-sm">Notifications</span>
             <button

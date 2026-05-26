@@ -223,7 +223,7 @@ const NotificationBell = () => {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="static sm:relative" ref={dropdownRef}>
       {/* Notification Bell Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
@@ -246,7 +246,7 @@ const NotificationBell = () => {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-[min(24rem,calc(100vw-1rem))] sm:w-80 md:w-96 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-96 overflow-hidden flex flex-col">
+        <div className="absolute right-4 sm:right-0 mt-2 w-[min(24rem,calc(100vw-2rem))] sm:w-80 md:w-96 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-96 overflow-hidden flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
             <h3 className="text-lg font-semibold text-gray-800">
@@ -281,7 +281,7 @@ const NotificationBell = () => {
                   >
                     <div className="flex items-start gap-3">
                       <div
-                        className={`text-2xl ${
+                        className={`text-2xl flex-shrink-0 ${
                           !notification.isRead ? "animate-pulse" : ""
                         }`}
                       >
