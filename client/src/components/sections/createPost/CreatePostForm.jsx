@@ -29,6 +29,12 @@ const getVehicleLabel = (vehicleType, fieldType) => {
   return `${vehicleName} ${fieldType}`;
 };
 
+/** Match server/schema validation: digits only, optional leading +; ignore spaces/dashes in UI. */
+const normalizeContactInput = (raw) =>
+  String(raw ?? "")
+    .replace(/[\s-]/g, "")
+    .trim();
+
 const parseRangeLikeNumber = (value) => {
   if (value === null || value === undefined || value === "") return "";
   if (typeof value === "number" && Number.isFinite(value)) return value;
@@ -388,8 +394,11 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         }
 
         if (shouldSend) {
-          const value =
+          let value =
             defaults[key] !== undefined ? defaults[key] : formData[key];
+          if (key === "contactNumber" || key === "whatsappNumber") {
+            value = value ? normalizeContactInput(value) : value;
+          }
           if (value !== null && value !== undefined && value !== "") {
             data.append(key, String(value));
           }
@@ -555,11 +564,16 @@ const CreatePostForm = ({ initialPrefill = null }) => {
     }
 
     // Validate contact number
-    if (!/^\+?\d{9,15}$/.test(formData.contactNumber)) {
+    const contactNorm = normalizeContactInput(formData.contactNumber);
+    const waNorm = formData.whatsappNumber
+      ? normalizeContactInput(formData.whatsappNumber)
+      : "";
+
+    if (!/^\+?\d{9,15}$/.test(contactNorm)) {
       toast.error("Invalid contact number. Must be 9-15 digits.");
       return;
     }
-    if (formData.whatsappNumber && !/^\+?\d{9,15}$/.test(formData.whatsappNumber)) {
+    if (waNorm && !/^\+?\d{9,15}$/.test(waNorm)) {
       toast.error("Invalid WhatsApp number. Must be 9-15 digits or leave empty.");
       return;
     }
