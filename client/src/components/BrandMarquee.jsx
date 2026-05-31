@@ -272,7 +272,7 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
         )}
 
         <div
-          className={`min-w-7xl flex-1 overflow-hidden px-1 md:px-2 ${!reducedMotion ? "" : "overflow-x-auto scrollbar-hide"}`}
+          className={`w-full max-w-full flex-1 overflow-hidden px-1 md:px-2 ${!reducedMotion ? "" : "overflow-x-auto scrollbar-hide"}`}
           onMouseEnter={() => setHoverPause(true)}
           onMouseLeave={() => setHoverPause(false)}
           onFocus={() => setFocusPause(true)}
