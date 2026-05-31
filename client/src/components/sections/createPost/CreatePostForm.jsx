@@ -734,11 +734,11 @@ const CreatePostForm = ({ initialPrefill = null }) => {
               </div>
             )}
 
-            <div className="flex gap-3 justify-end mt-6">
+            <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 sm:justify-end mt-6">
               <button
                 type="button"
                 onClick={() => setShowDuplicateWarning(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
               >
                 Cancel
               </button>
@@ -746,7 +746,7 @@ const CreatePostForm = ({ initialPrefill = null }) => {
                 type="button"
                 onClick={handleForceCreate}
                 disabled={isLoading}
-                className="px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
               >
                 {isLoading ? "Creating..." : "Post Anyway"}
               </button>

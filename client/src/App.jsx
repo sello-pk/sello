@@ -551,7 +551,7 @@ const App = () => {
     <ThemeProvider>
       {fallbackSeo && <SEO {...fallbackSeo} />}
       <ScrollToTop />
-      <Toaster />
+      <Toaster containerStyle={{ zIndex: 100001 }} />
 
       {/* Show Navbar + BottomHeader except for auth pages + admin */}
       {shouldShowNavbarFooter && (

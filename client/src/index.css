@@ -319,7 +319,7 @@ div[style*="border"]:focus {
 }
 
 .location-picker-modal {
-  z-index: 9999 !important;
+  z-index: 50 !important;
 }
 
 /* Admin dark-mode compatibility layer (scoped to admin layout only) */

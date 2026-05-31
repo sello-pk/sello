@@ -390,11 +390,11 @@ const LocationPickerModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999] p-4 overflow-y-auto">
-      <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] flex flex-col relative z-[100000] overflow-hidden">
+    <div className="location-picker-modal fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto">
+      <div className="bg-white rounded-t-2xl sm:rounded-lg w-full max-w-4xl max-h-[92dvh] sm:max-h-[90vh] flex flex-col relative overflow-hidden">
         {/* Header */}
-        <div className="p-4 border-b flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Enter Address</h2>
+        <div className="p-3 sm:p-4 border-b flex items-center justify-between shrink-0">
+          <h2 className="text-lg sm:text-xl font-semibold">Enter Address</h2>
           <button
             onClick={handleClose}
             className="text-orange-500 hover:text-orange-600 text-2xl font-bold"
@@ -405,12 +405,12 @@ const LocationPickerModal = ({
 
         <div className="flex-1 min-h-0 overflow-y-auto">
           {/* Search and Controls */}
-          <div className="p-4 border-b space-y-3">
-            <div className="flex items-center justify-end">
+          <div className="p-3 sm:p-4 border-b space-y-3">
+            <div className="flex items-center justify-stretch sm:justify-end">
               <button
                 onClick={handleUseCurrentLocation}
                 disabled={isLocating}
-                className="px-3 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+                className="w-full sm:w-auto px-3 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isLocating && (
                   <span className="inline-block h-4 w-4 rounded-full border-2 border-white border-b-transparent animate-spin" />
@@ -485,7 +485,7 @@ const LocationPickerModal = ({
           </div>
 
           {/* Map */}
-          <div className="relative h-[45vh] min-h-[280px] md:h-[400px]">
+          <div className="relative h-[32vh] min-h-[200px] sm:h-[45vh] sm:min-h-[280px] md:h-[400px]">
             <MapContainer
               center={mapCenter}
               zoom={mapZoom}
@@ -519,11 +519,13 @@ const LocationPickerModal = ({
 
             {/* Instructions overlay */}
             {!selectedLocation && searchResults.length === 0 && (
-              <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg border border-gray-200 z-[100001]">
-                <p className="text-sm text-gray-700 flex items-center gap-2">
-                  <FiMapPin className="w-4 h-4 text-primary-500" />
-                  <span className="font-semibold">Click on the map</span> to
-                  select a location, or search above
+              <div className="absolute top-2 left-2 right-2 sm:top-4 sm:left-4 sm:right-auto sm:max-w-sm bg-white/90 backdrop-blur-sm px-3 py-2 sm:px-4 rounded-lg shadow-lg border border-gray-200 z-10">
+                <p className="text-xs sm:text-sm text-gray-700 flex items-start sm:items-center gap-2">
+                  <FiMapPin className="w-4 h-4 text-primary-500 shrink-0 mt-0.5 sm:mt-0" />
+                  <span>
+                    <span className="font-semibold">Click on the map</span> to
+                    select a location, or search above
+                  </span>
                 </p>
               </div>
             )}
@@ -531,18 +533,18 @@ const LocationPickerModal = ({
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t bg-gray-50">
-          <div className="flex justify-end gap-3">
+        <div className="p-3 sm:p-6 border-t bg-gray-50 shrink-0">
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3">
             <button
               onClick={handleClose}
-              className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              className="w-full sm:w-auto px-6 py-2.5 sm:py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
             >
               Cancel
             </button>
             <button
               onClick={handleConfirm}
               disabled={!selectedLocation || isResolvingAddress || isLocating}
-              className="px-8 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium shadow-md"
+              className="w-full sm:w-auto px-8 py-2.5 sm:py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium shadow-md"
             >
               {isResolvingAddress ? "Resolving..." : "Select Location"}
             </button>
