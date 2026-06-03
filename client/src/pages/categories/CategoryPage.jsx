@@ -131,15 +131,17 @@ const CategoryPage = () => {
   const pages = data?.pages || 0;
 
   const handleFilterChange = (newFilters) => {
-    setFilters(newFilters);
+    setFilters(newFilters || {});
     setPage(1);
     // Update URL params
     const newParams = new URLSearchParams();
-    Object.entries(newFilters).forEach(([key, value]) => {
-      if (value) {
-        newParams.set(key, value);
-      }
-    });
+    if (newFilters) {
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (value) {
+          newParams.set(key, value);
+        }
+      });
+    }
     setSearchParams(newParams);
   };
 

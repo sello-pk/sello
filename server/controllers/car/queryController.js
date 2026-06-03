@@ -106,15 +106,9 @@ export const getAllCars = async (req, res) => {
 // Start of Selection
 export const getFilteredCars = async (req, res) => {
   const disallowedFilterFields = [
-    "search",
     "title",
-    "country",
-    "city",
-    "bodyType",
     "variant",
     "colors",
-    "colorExterior",
-    "colorInterior",
     "location",
     "userLat",
     "userLng",

@@ -56,7 +56,7 @@ const Btns = () => {
     }
   }, [extractedCarId, currentUser, trackRecentlyViewed]);
 
-  const handleShare = () => {
+  const handleShare = async () => {
     try {
       const currentUrl = window.location.href;
       if (navigator.share) {
@@ -67,7 +67,7 @@ const Btns = () => {
         });
       } else {
         // Fallback: copy to clipboard
-        navigator.clipboard.writeText(currentUrl);
+        await navigator.clipboard.writeText(currentUrl);
         toast.success("Link copied to clipboard!");
       }
     } catch {

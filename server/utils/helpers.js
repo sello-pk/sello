@@ -426,6 +426,9 @@ export const buildCarQuery = (query) => {
     "bodyType",
     "ownerType",
     "warranty",
+    "country",
+    "colorExterior",
+    "colorInterior",
   ];
 
   exactMatchFields.forEach((field) => {

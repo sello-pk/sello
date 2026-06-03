@@ -504,9 +504,13 @@ const NotificationBell = () => {
                   Close
                 </button>
                 <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(selectedPromotion.promoCode);
-                    toast.success("Promo code copied to clipboard!");
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(selectedPromotion.promoCode);
+                      toast.success("Promo code copied to clipboard!");
+                    } catch {
+                      toast.error("Could not copy. Please copy manually.");
+                    }
                   }}
                   className="flex-1 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium"
                 >

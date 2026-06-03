@@ -141,30 +141,11 @@ const FilterForm = ({ onFilter, simplifiedFields = false }) => {
     if (priceMin) urlFilters.minPrice = priceMin;
     if (priceMax) urlFilters.maxPrice = priceMax;
 
-    // Update filters state
+    // Update filters state only - parent component handles API calls via URL params
     if (Object.keys(urlFilters).length > 0) {
       setFilters((prev) => ({ ...prev, ...urlFilters }));
-
-      // Build backend filters and trigger search
-      const backendFilters = {};
-      if (!simplifiedFields) {
-        if (urlFilters.city) backendFilters.city = urlFilters.city;
-        if (urlFilters.bodyType) backendFilters.bodyType = urlFilters.bodyType;
-        if (urlFilters.variant) backendFilters.variant = urlFilters.variant;
-      }
-      if (urlFilters.make) backendFilters.make = urlFilters.make;
-      if (urlFilters.model) backendFilters.model = urlFilters.model;
-      if (urlFilters.minYear) backendFilters.yearMin = urlFilters.minYear;
-      if (urlFilters.maxYear) backendFilters.yearMax = urlFilters.maxYear;
-      if (urlFilters.minPrice) backendFilters.priceMin = urlFilters.minPrice;
-      if (urlFilters.maxPrice) backendFilters.priceMax = urlFilters.maxPrice;
-
-      // Trigger filter
-      if (onFilter && Object.keys(backendFilters).length > 0) {
-        onFilter(backendFilters);
-      }
     }
-  }, [searchParams, makes, onFilter, simplifiedFields]);
+  }, [searchParams]);
 
   const handleChange = (field, value) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
@@ -447,15 +428,20 @@ const FilterForm = ({ onFilter, simplifiedFields = false }) => {
 
     // Trigger filter callback and navigate to results page with URL params
     if (Object.keys(cleanFilters).length > 0) {
-      if (onFilter) onFilter(cleanFilters);
+      if (onFilter) {
+        // Embedded mode - let parent handle navigation
+        onFilter(cleanFilters);
+        toast.success("Filters applied successfully!");
+      } else {
+        // Standalone mode - navigate to search results
+        const params = new URLSearchParams();
+        Object.entries(cleanFilters).forEach(([key, value]) => {
+          if (value) params.set(key, value);
+        });
 
-      const params = new URLSearchParams();
-      Object.entries(cleanFilters).forEach(([key, value]) => {
-        if (value) params.set(key, value);
-      });
-
-      navigate(`/search-results?${params.toString()}`);
-      toast.success("Filters applied successfully!");
+        navigate(`/search-results?${params.toString()}`);
+        toast.success("Filters applied successfully!");
+      }
     } else {
       toast.error("Please select at least one filter");
     }

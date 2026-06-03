@@ -85,17 +85,19 @@ const GenericVehicleCategoryPage = () => {
   const pages = data?.pages || 0;
 
   const handleFilterChange = (newFilters) => {
-    setFilters(newFilters);
+    setFilters(newFilters || {});
     setPage(1);
     setShowMobileFilters(false);
     const newParams = new URLSearchParams();
-    Object.entries(newFilters).forEach(([key, value]) => {
-      if (value) {
-        newParams.set(key, value);
-      }
-    });
+    if (newFilters) {
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (value) {
+          newParams.set(key, value);
+        }
+      });
+    }
     navigate(
-      `/listings/${categoryType?.toLowerCase()}?${newParams.toString()}`,
+      `/listings/${categoryType?.toLowerCase()}${newParams.toString() ? "?" + newParams.toString() : ""}`,
       { replace: true },
     );
   };

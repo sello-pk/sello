@@ -125,27 +125,11 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
     if (priceMin) urlFilters.minPrice = priceMin;
     if (priceMax) urlFilters.maxPrice = priceMax;
 
-    // Update filters state
+    // Update filters state only - parent component handles API calls via URL params
     if (Object.keys(urlFilters).length > 0) {
       setFilters((prev) => ({ ...prev, ...urlFilters }));
-
-      // Build backend filters and trigger search
-      const backendFilters = {};
-      if (urlFilters.city) backendFilters.city = urlFilters.city;
-      if (urlFilters.bodyType) backendFilters.bodyType = urlFilters.bodyType;
-      if (urlFilters.make) backendFilters.make = urlFilters.make;
-      if (urlFilters.model) backendFilters.model = urlFilters.model;
-      if (urlFilters.minYear) backendFilters.yearMin = urlFilters.minYear;
-      if (urlFilters.maxYear) backendFilters.yearMax = urlFilters.maxYear;
-      if (urlFilters.minPrice) backendFilters.priceMin = urlFilters.minPrice;
-      if (urlFilters.maxPrice) backendFilters.priceMax = urlFilters.maxPrice;
-
-      // Trigger filter
-      if (onFilter && Object.keys(backendFilters).length > 0) {
-        onFilter(backendFilters);
-      }
     }
-  }, [searchParams, makes, onFilter]);
+  }, [searchParams]);
 
   const handleChange = (field, value) => {
     setFilters((prev) => ({ ...prev, [field]: value }));

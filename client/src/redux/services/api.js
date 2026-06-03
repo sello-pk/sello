@@ -256,10 +256,6 @@ export const api = createApi({
   refetchOnMountOrArgChange: false, // Don't refetch on mount - use cached data
   refetchOnFocus: false, // Don't refetch on window focus
   refetchOnReconnect: true, // Refetch on reconnect
-  // Add tags for better cache invalidation
-  tagTypes: [
-    'Car', 'Category', 'User', 'Blog', 'Auction', 'Listing', 'SavedCar'
-  ],
   baseQuery: async (args, api, extraOptions) => {
     try {
       const baseResult = await fetchBaseQuery({
@@ -425,6 +421,10 @@ export const api = createApi({
     "Cars",
     "Boost",
     "Auction",
+    "Car",
+    "Category",
+    "Listing",
+    "SavedCar",
   ],
   endpoints: (builder) => ({
     registerUser: builder.mutation({
