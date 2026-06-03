@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useGetBlogsQuery } from "../../../redux/services/api";
 import { formatDate } from "../../../utils";
 import { buildBlogUrl } from "../../../utils/urlBuilders";
 
 const LatestBlogsSection = () => {
+  const [page, setPage] = useState(1);
+
   const { data, isLoading } = useGetBlogsQuery({
+    page,
     limit: 12,
     status: "published",
   });
@@ -13,6 +16,7 @@ const LatestBlogsSection = () => {
   // Robust blog data access
   const blogs =
     data?.blogs || data?.data?.blogs || (Array.isArray(data) ? data : []);
+  const pagination = data?.pagination || {};
 
   // Show skeleton while loading
   if (isLoading) {
@@ -46,7 +50,7 @@ const LatestBlogsSection = () => {
       <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-8 md:py-12">
         <div className="max-w-7xl mx-auto w-full text-center py-12">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-            Latest Blog Posts
+            Blog Posts
           </h2>
           <p className="text-gray-500 mb-6">No blog posts available yet.</p>
           <Link
@@ -67,14 +71,14 @@ const LatestBlogsSection = () => {
         <div className="mb-8 flex items-center justify-between gap-4">
           <div>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
-              Latest Blog Posts
+              Blog Posts
             </h2>
             <p className="text-gray-600">
               Stay updated with our latest articles and insights
             </p>
           </div>
           <Link
-            to="/blog"
+            to="/blog/all"
             className="text-primary-900 hover:text-neutral-950 font-semibold flex items-center gap-2 transition-colors"
           >
             View All
@@ -178,6 +182,66 @@ const LatestBlogsSection = () => {
             </Link>
           ))}
         </div>
+
+        {/* Pagination */}
+        {pagination.pages > 1 && (
+          <div className="flex justify-center items-center gap-3 mt-12 pt-8 border-t border-gray-200">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-6 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 hover:border-primary-500 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+              aria-label="Go to previous page"
+            >
+              Previous
+            </button>
+            <div className="flex items-center gap-2">
+              {[...Array(pagination.pages)].map((_, i) => {
+                const pageNum = i + 1;
+                if (
+                  pageNum === 1 ||
+                  pageNum === pagination.pages ||
+                  (pageNum >= page - 1 && pageNum <= page + 1)
+                ) {
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setPage(pageNum)}
+                      className={`px-4 py-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${
+                        page === pageNum
+                          ? "bg-primary-500 text-white"
+                          : "border border-gray-300 hover:bg-gray-50 hover:border-primary-500"
+                      }`}
+                      aria-label={`Go to page ${pageNum}`}
+                      aria-current={page === pageNum ? "page" : undefined}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                } else if (pageNum === page - 2 || pageNum === page + 2) {
+                  return (
+                    <span key={pageNum} className="px-2 text-gray-400">
+                      ...
+                    </span>
+                  );
+                }
+                return null;
+              })}
+            </div>
+            <span className="px-4 py-2 text-gray-600 text-sm">
+              Page {page} of {pagination.pages}
+            </span>
+            <button
+              onClick={() =>
+                setPage((p) => Math.min(pagination.pages, p + 1))
+              }
+              disabled={page >= pagination.pages}
+              className="px-6 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 hover:border-primary-500 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+              aria-label="Go to next page"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
