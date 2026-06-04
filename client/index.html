@@ -1,147 +1,175 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
 
-<head>
-  <meta charset="UTF-8" />
+    <!-- Responsive -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Responsive -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Favicon / PWA -->
+    <link rel="icon" href="/favicon.png" />
+    <link rel="manifest" href="/manifest.json" />
 
-  <!-- Favicon / PWA -->
-  <link rel="icon" href="/favicon.png" />
-  <link rel="manifest" href="/manifest.json" />
+    <!-- Performance: API + Meta CAPI gateway early; Facebook only dns-prefetch until deferred pixel loads -->
+    <link rel="preconnect" href="https://api.sello.pk" crossorigin />
+    <link rel="preconnect" href="https://capig.stape.vip" crossorigin />
+    <link rel="dns-prefetch" href="https://maps.googleapis.com" />
+    <link rel="dns-prefetch" href="https://connect.facebook.net" />
 
-  <!-- Performance: API + Meta CAPI gateway early; Facebook only dns-prefetch until deferred pixel loads -->
-  <link rel="preconnect" href="https://api.sello.pk" crossorigin />
-  <link rel="preconnect" href="https://capig.stape.vip" crossorigin />
-  <link rel="dns-prefetch" href="https://maps.googleapis.com" />
-  <link rel="dns-prefetch" href="https://connect.facebook.net" />
+    <!-- LCP: stable URLs (copied to /lcp/ at build) — discoverable before JS bundle -->
+    <link
+      rel="preload"
+      as="image"
+      href="/lcp/heroMobile.webp"
+      fetchpriority="high"
+      media="(max-width: 767px)"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="/lcp/hero.webp"
+      fetchpriority="high"
+      media="(min-width: 768px)"
+    />
 
-  <!-- LCP: stable URLs (copied to /lcp/ at build) — discoverable before JS bundle -->
-  <link
-    rel="preload"
-    as="image"
-    href="/lcp/heroMobile.webp"
-    fetchpriority="high"
-    media="(max-width: 767px)"
-  />
-  <link
-    rel="preload"
-    as="image"
-    href="/lcp/hero.webp"
-    fetchpriority="high"
-    media="(min-width: 768px)"
-  />
+    <!-- Critical shell CSS before Tailwind bundle — reduces mobile CLS/LCP snap -->
+    <style>
+      #root {
+        min-height: 100vh;
+      }
 
-  <!-- Critical shell CSS before Tailwind bundle — reduces mobile CLS/LCP snap -->
-  <style>
-    #root {
-      min-height: 100vh;
-    }
+      .sello-hero-shell {
+        position: relative;
+        min-height: 48vh;
+        width: 100%;
+        overflow: hidden;
+        background: #0f172a;
+        contain: layout style;
+      }
 
-    .sello-hero-shell {
-      position: relative;
-      min-height: 48vh;
-      width: 100%;
-      overflow: hidden;
-      background: #0f172a;
-      contain: layout style;
-    }
-
-    .sello-site-nav {
-      min-height: 52px;
-      contain: layout style;
-    }
-
-    @media (min-width: 640px) {
       .sello-site-nav {
-        min-height: 56px;
+        min-height: 52px;
+        contain: layout style;
       }
-    }
 
-    .sello-bottom-bar {
-      box-sizing: border-box;
-      min-height: 52px;
-      height: 52px;
-      max-height: 52px;
-      background: #050b20;
-      contain: layout style;
-    }
+      @media (min-width: 640px) {
+        .sello-site-nav {
+          min-height: 56px;
+        }
+      }
 
-    @media (min-width: 768px) {
       .sello-bottom-bar {
-        min-height: 56px;
-        height: 56px;
-        max-height: 56px;
+        box-sizing: border-box;
+        min-height: 52px;
+        height: 52px;
+        max-height: 52px;
+        background: #050b20;
+        contain: layout style;
       }
-    }
 
-    .sello-auth-slot {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      min-height: 44px;
-      min-width: 44px;
-    }
+      @media (min-width: 768px) {
+        .sello-bottom-bar {
+          min-height: 56px;
+          height: 56px;
+          max-height: 56px;
+        }
+      }
 
-    @media (min-width: 640px) {
       .sello-auth-slot {
-        min-width: 112px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        min-height: 44px;
+        min-width: 44px;
       }
-    }
-  </style>
 
-  <!-- SEO -->
-  <meta name="robots" content="index, follow" />
-  <meta name="theme-color" content="#3B82F6" />
-  <meta name="author" content="Sello" />
-  <meta name="publisher" content="Sello" />
-  <meta name="format-detection" content="telephone=no" />
+      @media (min-width: 640px) {
+        .sello-auth-slot {
+          min-width: 112px;
+        }
+      }
+    </style>
 
-  <meta name="description"
-    content="Sello helps you buy and sell cars in Pakistan with verified listings, smart filters, and trusted dealers." />
+    <!-- SEO -->
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#3B82F6" />
+    <meta name="author" content="Sello" />
+    <meta name="publisher" content="Sello" />
+    <meta name="format-detection" content="telephone=no" />
 
-  <link rel="canonical" href="https://sello.pk/" />
+    <meta
+      name="description"
+      content="Sello helps you buy and sell cars in Pakistan with verified listings, smart filters, and trusted dealers."
+    />
 
-  <!-- Open Graph -->
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Sello" />
-  <meta property="og:title" content="Sello - Buy and Sell Cars in Pakistan" />
-  <meta property="og:description"
-    content="Discover verified car listings, compare options, and sell your car confidently on Sello." />
-  <meta property="og:url" content="https://sello.pk/" />
-  <meta property="og:image" content="https://sello.pk/favicon.png" />
+    <link rel="canonical" href="https://sello.pk/" />
 
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Sello - Buy and Sell Cars in Pakistan" />
-  <meta name="twitter:description"
-    content="Discover verified car listings, compare options, and sell your car confidently on Sello." />
-  <meta name="twitter:image" content="https://sello.pk/favicon.png" />
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Sello" />
+    <meta property="og:title" content="Sello - Buy and Sell Cars in Pakistan" />
+    <meta
+      property="og:description"
+      content="Discover verified car listings, compare options, and sell your car confidently on Sello."
+    />
+    <meta property="og:url" content="https://sello.pk/" />
+    <meta property="og:image" content="https://sello.pk/favicon.png" />
 
-  <!-- Meta Pixel: stub queues events; fbevents.js deferred via main.jsx (FCP/LCP/TBT) -->
-  <script>
-    (function (w) {
-      if (w.fbq) return;
-      var n = function () {
-        n.callMethod
-          ? n.callMethod.apply(n, arguments)
-          : n.queue.push(arguments);
-      };
-      n.queue = [];
-      n.loaded = false;
-      n.version = "2.0";
-      n.__selloStub = true;
-      w.fbq = n;
-      w._fbq = n;
-    })(window);
-  </script>
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Sello - Buy and Sell Cars in Pakistan"
+    />
+    <meta
+      name="twitter:description"
+      content="Discover verified car listings, compare options, and sell your car confidently on Sello."
+    />
+    <meta name="twitter:image" content="https://sello.pk/favicon.png" />
 
-  <!-- ========================= -->
-  <!-- STRUCTURED DATA -->
-  <!-- ========================= -->
+    <!-- Meta Pixel: stub queues events; fbevents.js deferred via main.jsx (FCP/LCP/TBT) -->
+    <!-- Meta Pixel Code -->
+    <script>
+      !(function (f, b, e, v, n, t, s) {
+        if (f.fbq) return;
+        n = f.fbq = function () {
+          n.callMethod
+            ? n.callMethod.apply(n, arguments)
+            : n.queue.push(arguments);
+        };
+        if (!f._fbq) f._fbq = n;
+        n.push = n;
+        n.loaded = !0;
+        n.version = "2.0";
+        n.queue = [];
+        t = b.createElement(e);
+        t.async = !0;
+        t.src = v;
+        s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s);
+      })(
+        window,
+        document,
+        "script",
+        "https://connect.facebook.net/en_US/fbevents.js",
+      );
+      fbq("init", "1687648445884627");
+      fbq("track", "PageView");
+    </script>
+    <noscript
+      ><img
+        height="1"
+        width="1"
+        style="display: none"
+        src="https://www.facebook.com/tr?id=1687648445884627&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
 
-  <script type="application/ld+json">
+    <!-- ========================= -->
+    <!-- STRUCTURED DATA -->
+    <!-- ========================= -->
+
+    <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@graph": [
@@ -253,22 +281,26 @@
       }
     </script>
 
-  <!-- Title -->
-  <title>Sello - Buy and Sell Cars in Pakistan</title>
-</head>
+    <!-- Title -->
+    <title>Sello - Buy and Sell Cars in Pakistan</title>
+  </head>
 
-<body>
-  <!-- Meta Pixel Noscript -->
-  <noscript>
-    <img height="1" width="1" style="display: none"
-      src="https://www.facebook.com/tr?id=1329404792372303&ev=PageView&noscript=1" alt="" />
-  </noscript>
+  <body>
+    <!-- Meta Pixel Noscript -->
+    <noscript>
+      <img
+        height="1"
+        width="1"
+        style="display: none"
+        src="https://www.facebook.com/tr?id=1329404792372303&ev=PageView&noscript=1"
+        alt=""
+      />
+    </noscript>
 
-  <!-- React Root -->
-  <div id="root"></div>
+    <!-- React Root -->
+    <div id="root"></div>
 
-  <!-- React Entry -->
-  <script type="module" src="/src/main.jsx"></script>
-</body>
-
+    <!-- React Entry -->
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
