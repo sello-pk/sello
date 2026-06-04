@@ -126,6 +126,52 @@ export const authorize = (...roles) => {
 };
 
 /**
+ * Optional Authentication Middleware
+ * Tries to authenticate user but silently continues if no token or token is invalid/expired.
+ * Useful for routes that work with or without a logged-in user.
+ */
+export const optionalAuth = async (req, res, next) => {
+  try {
+    let token = null;
+
+    // Try to get token from Authorization header first
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      token = authHeader.split(" ")[1];
+    }
+
+    // Fallback: try to get token from cookies
+    if (!token && req.cookies && req.cookies.token) {
+      token = req.cookies.token;
+    }
+
+    // No token — continue without user
+    if (!token) return next();
+
+    // Token present — try to verify
+    if (!process.env.JWT_SECRET) return next();
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch {
+      // Token expired or invalid — continue without user
+      return next();
+    }
+
+    if (decoded?.type && decoded.type !== "access") return next();
+
+    const user = await User.findById(decoded.id).select("-password -otp -otpExpiry");
+    if (user && !["suspended", "inactive"].includes(user.status)) {
+      req.user = user;
+    }
+  } catch {
+    // Silently continue on any error
+  }
+  next();
+};
+
+/**
  * Auction Bid Access Middleware
  * Centralized capability + verification enforcement for bidding APIs.
  */

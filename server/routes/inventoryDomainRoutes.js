@@ -15,7 +15,7 @@ import {
     getSimilarListings, trackRecentlyViewed, getRecentlyViewed, getRecommendedListings
 } from '../controllers/recommendationsController.js';
 import { upload } from "../middlewares/multer.js";
-import { auth, authorize } from "../middlewares/authMiddleware.js";
+import { auth, authorize, optionalAuth } from "../middlewares/authMiddleware.js";
 import { hasAnyPermission } from "../middlewares/permissionMiddleware.js";
 import { validateObjectId } from "../middlewares/validationMiddleware.js";
 import { cache, cacheKeys, invalidateCache } from "../middlewares/cacheMiddleware.js";
@@ -62,9 +62,7 @@ router.delete("/cars/:id", auth, validateObjectId('id'), async (req, res, next) 
 router.get("/cars/my/listings", auth, getMyCars);
 
 /* ------------------------------- VALUATIONS ------------------------------- */
-router.post("/valuations", (req, res, next) => {
-  auth(req, res, (err) => { next(); });
-}, createValuation);
+router.post("/valuations", optionalAuth, createValuation);
 router.get("/valuations/my-history", auth, getUserValuationHistory);
 router.get("/valuations/:id", validateObjectId('id'), getValuationById);
 // Admin

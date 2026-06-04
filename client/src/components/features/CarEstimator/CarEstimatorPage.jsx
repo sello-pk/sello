@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
@@ -47,14 +47,18 @@ const selectStyles = {
     height: "48px",
     borderRadius: "12px",
     borderColor: state.isFocused ? "var(--primary-500, #FFA602)" : "#d1d5db",
-    boxShadow: state.isFocused ? "0 0 0 2px var(--primary-500-25, rgba(255, 166, 2, 0.25))" : "none",
+    boxShadow: state.isFocused
+      ? "0 0 0 2px var(--primary-500-25, rgba(255, 166, 2, 0.25))"
+      : "none",
     "&:hover": { borderColor: "var(--primary-500, #FFA602)" },
   }),
   menu: (baseStyles) => ({ ...baseStyles, zIndex: 9999 }),
   menuPortal: (baseStyles) => ({ ...baseStyles, zIndex: 9999 }),
   option: (baseStyles, state) => ({
     ...baseStyles,
-    backgroundColor: state.isFocused ? "var(--primary-500-25, rgba(255, 166, 2, 0.25))" : "transparent",
+    backgroundColor: state.isFocused
+      ? "var(--primary-500-25, rgba(255, 166, 2, 0.25))"
+      : "transparent",
     color: state.isFocused ? "var(--primary-500, #FFA602)" : "#374151",
     "&:active": {
       backgroundColor: "var(--primary-500-50, rgba(255, 166, 2, 0.5))",
@@ -65,9 +69,9 @@ const selectStyles = {
 // Trends Tool Component
 function TrendsTool({ savedValuations, currentResult, currentFormData }) {
   const { makes, models, years, getModelsByMake } = useCarCategories("Car");
-  const [make, setMake] = useState('');
-  const [model, setModel] = useState('');
-  const [year, setYear] = useState('');
+  const [make, setMake] = useState("");
+  const [model, setModel] = useState("");
+  const [year, setYear] = useState("");
   const [trendData, setTrendData] = useState(null);
   const [loading, setLoading] = useState(false);
   const debounceRef = useRef(null);
@@ -94,8 +98,8 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
   // Reset model when make changes
   useEffect(() => {
     if (make) {
-      setModel('');
-      setYear('');
+      setModel("");
+      setYear("");
     }
   }, [make]);
 
@@ -115,7 +119,7 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
       try {
         // Call backend API for real trend data
         const response = await fetch(
-          `${API_BASE}/tools/trends?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&year=${encodeURIComponent(year)}`
+          `${API_BASE}/tools/trends?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&year=${encodeURIComponent(year)}`,
         );
         const data = await response.json();
 
@@ -125,32 +129,45 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
           // Fallback: Calculate from saved valuations of same make/model/year
           // Use case-insensitive comparison to match backend behavior
           const relevantValuations = savedValuations.filter(
-            v => v.make?.toLowerCase() === make?.toLowerCase() &&
-                 v.model?.toLowerCase() === model?.toLowerCase() &&
-                 Math.abs(parseInt(v.year) - parseInt(year)) <= 2
+            (v) =>
+              v.make?.toLowerCase() === make?.toLowerCase() &&
+              v.model?.toLowerCase() === model?.toLowerCase() &&
+              Math.abs(parseInt(v.year) - parseInt(year)) <= 2,
           );
-          
+
           if (relevantValuations.length >= 3) {
             // Generate trend from actual saved data
-            const sorted = relevantValuations.sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
-            const prices = sorted.slice(-6).map(v => v.estimatedPriceAverage || v.estimatedPriceMax);
-            const months = sorted.slice(-6).map(v => new Date(v.created_date).toLocaleDateString('en-US', { month: 'short', year: '2-digit' }));
-            
+            const sorted = relevantValuations.sort(
+              (a, b) => new Date(a.created_date) - new Date(b.created_date),
+            );
+            const prices = sorted
+              .slice(-6)
+              .map((v) => v.estimatedPriceAverage || v.estimatedPriceMax);
+            const months = sorted
+              .slice(-6)
+              .map((v) =>
+                new Date(v.created_date).toLocaleDateString("en-US", {
+                  month: "short",
+                  year: "2-digit",
+                }),
+              );
+
             const startPrice = prices[0];
             const currentPrice = prices[prices.length - 1];
             const change = ((currentPrice - startPrice) / startPrice) * 100;
-            
+
             setTrendData({
               make,
               model,
               year,
-              percentage: change > 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`,
+              percentage:
+                change > 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`,
               isPositive: change > 0,
               prices,
               months,
               currentPrice,
               startPrice,
-              summary: `Based on ${relevantValuations.length} actual valuations for ${year} ${make} ${model}, prices have ${change > 0 ? 'increased' : 'decreased'} by ${Math.abs(change).toFixed(1)}%. This trend reflects real market conditions including depreciation, demand fluctuations, and economic factors in Pakistan.`
+              summary: `Based on ${relevantValuations.length} actual valuations for ${year} ${make} ${model}, prices have ${change > 0 ? "increased" : "decreased"} by ${Math.abs(change).toFixed(1)}%. This trend reflects real market conditions including depreciation, demand fluctuations, and economic factors in Pakistan.`,
             });
           } else {
             // Not enough data - show message
@@ -158,19 +175,19 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
               make,
               model,
               year,
-              percentage: 'N/A',
+              percentage: "N/A",
               isPositive: true,
               prices: [],
               months: [],
               currentPrice: 0,
               startPrice: 0,
-              summary: `Not enough data for ${year} ${make} ${model}. Please estimate more cars of this type to see price trends.`
+              summary: `Not enough data for ${year} ${make} ${model}. Please estimate more cars of this type to see price trends.`,
             });
           }
         }
       } catch (error) {
-        console.error('Failed to fetch trend data:', error);
-        toast.error('Failed to load trend data');
+        console.error("Failed to fetch trend data:", error);
+        toast.error("Failed to load trend data");
       } finally {
         setLoading(false);
       }
@@ -187,7 +204,7 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
   // Helper to get available models for selected make
   const availableModels = useMemo(() => {
     if (!make) return [];
-    const selectedMake = makes.find(m => m.name === make);
+    const selectedMake = makes.find((m) => m.name === make);
     if (!selectedMake) return [];
     return getModelsByMake[selectedMake._id] || [];
   }, [make, makes, getModelsByMake]);
@@ -196,7 +213,7 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
   const handleQuickSelect = (valuation) => {
     setMake(valuation.make);
     setModel(valuation.model);
-    setYear(valuation.year?.toString() || '');
+    setYear(valuation.year?.toString() || "");
   };
 
   const maxPrice = trendData ? Math.max(...trendData.prices) : 0;
@@ -220,24 +237,37 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
       </div>
 
       {/* Main Content Grid - CSS variable for primary color used by SVG */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" style={{ '--color-primary': 'var(--primary-500, #3b82f6)' }}>
+      <div
+        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        style={{ "--color-primary": "var(--primary-500, #3b82f6)" }}
+      >
         {/* Left Card - Select a Car */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <h3 className="font-semibold text-gray-800 mb-5">
-            {make && model && year ? `${capitalize(make)} ${capitalize(model)} ${year}` : 'Select a Car'}
+            {make && model && year
+              ? `${capitalize(make)} ${capitalize(model)} ${year}`
+              : "Select a Car"}
           </h3>
           <div className="space-y-4">
             {/* Make */}
             <div>
-              <label className="text-sm font-medium text-gray-600 mb-2 block">Make</label>
+              <label className="text-sm font-medium text-gray-600 mb-2 block">
+                Make
+              </label>
               <Select
-                value={make ? makes.find(m => m.name === make) ? { value: make, label: capitalize(make) } : null : null}
+                value={
+                  make
+                    ? makes.find((m) => m.name === make)
+                      ? { value: make, label: capitalize(make) }
+                      : null
+                    : null
+                }
                 onChange={(option) => {
-                  setMake(option?.value || '');
-                  setModel('');
-                  setYear('');
+                  setMake(option?.value || "");
+                  setModel("");
+                  setYear("");
                 }}
-                options={makes.map(m => ({
+                options={makes.map((m) => ({
                   value: m.name,
                   label: capitalize(m.name),
                 }))}
@@ -253,14 +283,22 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
 
             {/* Model */}
             <div>
-              <label className="text-sm font-medium text-gray-600 mb-2 block">Model</label>
+              <label className="text-sm font-medium text-gray-600 mb-2 block">
+                Model
+              </label>
               <Select
-                value={model ? availableModels.find(m => m.name === model) ? { value: model, label: capitalize(model) } : null : null}
+                value={
+                  model
+                    ? availableModels.find((m) => m.name === model)
+                      ? { value: model, label: capitalize(model) }
+                      : null
+                    : null
+                }
                 onChange={(option) => {
-                  setModel(option?.value || '');
-                  setYear('');
+                  setModel(option?.value || "");
+                  setYear("");
                 }}
-                options={availableModels.map(m => ({
+                options={availableModels.map((m) => ({
                   value: m.name,
                   label: capitalize(m.name),
                 }))}
@@ -277,15 +315,25 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
 
             {/* Year */}
             <div>
-              <label className="text-sm font-medium text-gray-600 mb-2 block">Year</label>
+              <label className="text-sm font-medium text-gray-600 mb-2 block">
+                Year
+              </label>
               <Select
-                value={year ? years.find(y => y.name === year) ? { value: year, label: year } : null : null}
-                onChange={(option) => setYear(option?.value || '')}
-                options={years.map(y => ({
+                value={
+                  year
+                    ? years.find((y) => y.name === year)
+                      ? { value: year, label: year }
+                      : null
+                    : null
+                }
+                onChange={(option) => setYear(option?.value || "")}
+                options={years.map((y) => ({
                   value: y.name,
                   label: y.name,
                 }))}
-                placeholder={make && model ? "Select year" : "Select make & model first"}
+                placeholder={
+                  make && model ? "Select year" : "Select make & model first"
+                }
                 isDisabled={!make || !model}
                 isClearable
                 isSearchable
@@ -309,16 +357,22 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
               {/* Chart Header */}
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="font-semibold text-gray-800">{trendData.make} {trendData.model} Price History</h3>
+                  <h3 className="font-semibold text-gray-800">
+                    {trendData.make} {trendData.model} Price History
+                  </h3>
                   <p className="text-sm text-gray-500">
-                    {trendData.year} model • {trendData.dataPoints || trendData.prices.length} real valuations
+                    {trendData.year} model •{" "}
+                    {trendData.dataPoints || trendData.prices.length} real
+                    valuations
                   </p>
                 </div>
-                <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
-                  trendData.isPositive 
-                    ? 'bg-primary-50 text-primary-600' 
-                    : 'bg-red-50 text-red-600'
-                }`}>
+                <div
+                  className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
+                    trendData.isPositive
+                      ? "bg-primary-50 text-primary-600"
+                      : "bg-red-50 text-red-600"
+                  }`}
+                >
                   <TrendingUp className="w-4 h-4" />
                   {trendData.percentage}
                 </div>
@@ -329,22 +383,38 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
                 <svg viewBox="0 0 300 150" className="w-full h-full">
                   {/* Gradient definition using CSS variables */}
                   <defs>
-                    <linearGradient id="trendGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.2" />
-                      <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
+                    <linearGradient
+                      id="trendGradient"
+                      x1="0%"
+                      y1="0%"
+                      x2="0%"
+                      y2="100%"
+                    >
+                      <stop
+                        offset="0%"
+                        stopColor="var(--color-primary)"
+                        stopOpacity="0.2"
+                      />
+                      <stop
+                        offset="100%"
+                        stopColor="var(--color-primary)"
+                        stopOpacity="0"
+                      />
                     </linearGradient>
                   </defs>
-                  
+
                   {/* Area under line */}
                   <polygon
                     fill="url(#trendGradient)"
-                    points={`0,150 ${trendData.prices.map((p, i) => {
-                      const x = (i / (trendData.prices.length - 1)) * 300;
-                      const y = getY(p);
-                      return `${x},${y}`;
-                    }).join(' ')} 300,150`}
+                    points={`0,150 ${trendData.prices
+                      .map((p, i) => {
+                        const x = (i / (trendData.prices.length - 1)) * 300;
+                        const y = getY(p);
+                        return `${x},${y}`;
+                      })
+                      .join(" ")} 300,150`}
                   />
-                  
+
                   {/* Line */}
                   <polyline
                     fill="none"
@@ -352,13 +422,15 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
                     strokeWidth="3"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    points={trendData.prices.map((p, i) => {
-                      const x = (i / (trendData.prices.length - 1)) * 300;
-                      const y = getY(p);
-                      return `${x},${y}`;
-                    }).join(' ')}
+                    points={trendData.prices
+                      .map((p, i) => {
+                        const x = (i / (trendData.prices.length - 1)) * 300;
+                        const y = getY(p);
+                        return `${x},${y}`;
+                      })
+                      .join(" ")}
                   />
-                  
+
                   {/* Data points */}
                   {trendData.prices.map((p, i) => {
                     const x = (i / (trendData.prices.length - 1)) * 300;
@@ -376,39 +448,56 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
                     );
                   })}
                 </svg>
-                
+
                 {/* Y-axis labels */}
                 <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-xs text-gray-400">
-                  <span>{maxPrice > 0 ? fmt(maxPrice) : ''}</span>
-                  <span>{maxPrice > 0 && minPrice > 0 ? fmt((maxPrice + minPrice) / 2) : ''}</span>
-                  <span>{minPrice > 0 ? fmt(minPrice) : ''}</span>
+                  <span>{maxPrice > 0 ? fmt(maxPrice) : ""}</span>
+                  <span>
+                    {maxPrice > 0 && minPrice > 0
+                      ? fmt((maxPrice + minPrice) / 2)
+                      : ""}
+                  </span>
+                  <span>{minPrice > 0 ? fmt(minPrice) : ""}</span>
                 </div>
               </div>
 
               {/* X-axis labels */}
               <div className="flex justify-between text-xs text-gray-400 mt-2">
                 {trendData.months.map((m, i) => (
-                  <span key={i} className={i % 2 === 0 ? '' : 'hidden sm:inline'}>{m}</span>
+                  <span
+                    key={i}
+                    className={i % 2 === 0 ? "" : "hidden sm:inline"}
+                  >
+                    {m}
+                  </span>
                 ))}
               </div>
 
               {/* Summary Text */}
               <div className="mt-6 p-4 bg-gray-50 rounded-xl">
-                <p className="text-sm text-gray-600 leading-relaxed">{trendData.summary}</p>
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  {trendData.summary}
+                </p>
               </div>
             </>
           ) : trendData ? (
             // Has trendData but no prices (not enough data)
             <div className="h-64 flex flex-col items-center justify-center text-center px-4">
               <TrendingUp className="w-12 h-12 text-gray-300 mb-3" />
-              <p className="text-gray-600 font-medium mb-1">{trendData.summary}</p>
-              <p className="text-sm text-gray-400">Try selecting a different car or year</p>
+              <p className="text-gray-600 font-medium mb-1">
+                {trendData.summary}
+              </p>
+              <p className="text-sm text-gray-400">
+                Try selecting a different car or year
+              </p>
             </div>
           ) : (
             // No car selected yet
             <div className="h-64 flex flex-col items-center justify-center text-center px-4">
               <TrendingUp className="w-12 h-12 text-gray-300 mb-3" />
-              <p className="text-gray-600 font-medium">Select a car to view price trends</p>
+              <p className="text-gray-600 font-medium">
+                Select a car to view price trends
+              </p>
             </div>
           )}
         </div>
@@ -417,7 +506,9 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
       {/* Quick Access - Your Cars */}
       {savedValuations.length > 0 && (
         <div className="mt-8">
-          <h3 className="font-semibold text-gray-800 mb-4">Quick Access - Your Cars</h3>
+          <h3 className="font-semibold text-gray-800 mb-4">
+            Quick Access - Your Cars
+          </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {savedValuations.slice(0, 4).map((v) => (
               <button
@@ -425,7 +516,9 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
                 onClick={() => handleQuickSelect(v)}
                 className="p-3 bg-white rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all text-left"
               >
-                <p className="font-medium text-gray-800 text-sm">{v.make} {v.model}</p>
+                <p className="font-medium text-gray-800 text-sm">
+                  {v.make} {v.model}
+                </p>
                 <p className="text-xs text-gray-500">{v.year}</p>
               </button>
             ))}
@@ -438,9 +531,15 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
 
 // Resale Tool Component
 function ResaleTool() {
-  const { makes, models, years: availableYears, getModelsByMake, isLoading } = useCarCategories("Car");
-  const [make, setMake] = useState('');
-  const [model, setModel] = useState('');
+  const {
+    makes,
+    models,
+    years: availableYears,
+    getModelsByMake,
+    isLoading,
+  } = useCarCategories("Car");
+  const [make, setMake] = useState("");
+  const [model, setModel] = useState("");
   const [value, setValue] = useState(6000000);
   const [years, setYears] = useState(5);
   const [result, setResult] = useState(null);
@@ -449,7 +548,7 @@ function ResaleTool() {
   // Helper to get available models for selected make
   const availableModels = useMemo(() => {
     if (!make) return [];
-    const selectedMake = makes.find(m => m.name === make);
+    const selectedMake = makes.find((m) => m.name === make);
     if (!selectedMake) return [];
     return getModelsByMake[selectedMake._id] || [];
   }, [make, makes, getModelsByMake]);
@@ -467,24 +566,24 @@ function ResaleTool() {
       setModel(availableModels[0].name);
     }
   }, [availableModels, model]);
-  
+
   const calculate = async () => {
     setLoading(true);
     try {
       const response = await fetch(`${API_BASE}/tools/resale`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ currentValue: value, years, make, model }),
       });
       const data = await response.json();
       if (data.success) {
         setResult(data.data);
       } else {
-        toast.error(data.message || 'Failed to calculate resale value');
+        toast.error(data.message || "Failed to calculate resale value");
       }
     } catch (error) {
-      console.error('Resale calculation error:', error);
-      toast.error('Network error: Could not connect to server');
+      console.error("Resale calculation error:", error);
+      toast.error("Network error: Could not connect to server");
     } finally {
       setLoading(false);
     }
@@ -496,8 +595,8 @@ function ResaleTool() {
       setLoading(true);
       try {
         const response = await fetch(`${API_BASE}/tools/resale`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ currentValue: value, years, make, model }),
         });
         const data = await response.json();
@@ -505,7 +604,7 @@ function ResaleTool() {
           setResult(data.data);
         }
       } catch (error) {
-        console.error('Initial resale calculation error:', error);
+        console.error("Initial resale calculation error:", error);
         // Silent fail on auto-load - don't show toast
       } finally {
         setLoading(false);
@@ -517,11 +616,11 @@ function ResaleTool() {
   const yearData = result?.yearData || [];
   const finalVal = result?.finalValue || 0;
   const loss = result?.totalLoss || 0;
-  const depreciationRate = result?.depreciationRate?.toFixed(1) || '12.0';
+  const depreciationRate = result?.depreciationRate?.toFixed(1) || "12.0";
 
   // Calculate bar heights relative to the range for better visualization
-  const minVal = Math.min(...yearData.map(d => d.value));
-  const maxVal = Math.max(...yearData.map(d => d.value));
+  const minVal = Math.min(...yearData.map((d) => d.value));
+  const maxVal = Math.max(...yearData.map((d) => d.value));
   const valRange = maxVal - minVal || 1;
   const getBarHeight = (val) => {
     // Minimum 15% height so bars don't disappear, scale the rest
@@ -533,10 +632,14 @@ function ResaleTool() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <h3 className="font-bold text-gray-800 mb-5 text-sm">Car Value Inputs</h3>
+        <h3 className="font-bold text-gray-800 mb-5 text-sm">
+          Car Value Inputs
+        </h3>
         <div className="space-y-4">
           <div>
-            <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">Car Make</label>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">
+              Car Make
+            </label>
             {isLoading ? (
               <div className="flex gap-2 flex-wrap">
                 <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
@@ -546,12 +649,18 @@ function ResaleTool() {
             ) : (
               <div className="react-select-container">
                 <Select
-                  value={make ? makes.find(m => m.name === make) ? { value: make, label: capitalize(make) } : null : null}
+                  value={
+                    make
+                      ? makes.find((m) => m.name === make)
+                        ? { value: make, label: capitalize(make) }
+                        : null
+                      : null
+                  }
                   onChange={(option) => {
-                    setMake(option?.value || '');
-                    setModel(''); // Reset model when make changes
+                    setMake(option?.value || "");
+                    setModel(""); // Reset model when make changes
                   }}
-                  options={makes.map(m => ({
+                  options={makes.map((m) => ({
                     value: m.name,
                     label: capitalize(m.name),
                   }))}
@@ -567,7 +676,9 @@ function ResaleTool() {
             )}
           </div>
           <div>
-            <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">Model</label>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">
+              Model
+            </label>
             {isLoading ? (
               <div className="flex gap-2 flex-wrap">
                 <div className="w-20 h-10 bg-gray-100 rounded-xl animate-pulse" />
@@ -576,9 +687,15 @@ function ResaleTool() {
             ) : availableModels.length > 0 ? (
               <div className="react-select-container">
                 <Select
-                  value={model ? availableModels.find(m => m.name === model) ? { value: model, label: capitalize(model) } : null : null}
-                  onChange={(option) => setModel(option?.value || '')}
-                  options={availableModels.map(m => ({
+                  value={
+                    model
+                      ? availableModels.find((m) => m.name === model)
+                        ? { value: model, label: capitalize(model) }
+                        : null
+                      : null
+                  }
+                  onChange={(option) => setModel(option?.value || "")}
+                  options={availableModels.map((m) => ({
                     value: m.name,
                     label: capitalize(m.name),
                   }))}
@@ -592,86 +709,131 @@ function ResaleTool() {
                 />
               </div>
             ) : (
-              <input 
-                type="text" 
-                value={model} 
-                onChange={e => setModel(e.target.value)}
+              <input
+                type="text"
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
                 placeholder="Enter model"
                 className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:border-primary-500 focus:outline-none"
               />
             )}
           </div>
           <div>
-            <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">Current Value: {fmt(value)}</label>
-            <input type="range" min="500000" max="30000000" step="100000" value={value} onChange={e => setValue(+e.target.value)} className="w-full accent-primary-500" />
-            <div className="flex justify-between text-xs text-gray-400 mt-1"><span>5L</span><span>3Cr</span></div>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">
+              Current Value: {fmt(value)}
+            </label>
+            <input
+              type="range"
+              min="500000"
+              max="30000000"
+              step="100000"
+              value={value}
+              onChange={(e) => setValue(+e.target.value)}
+              className="w-full accent-primary-500"
+            />
+            <div className="flex justify-between text-xs text-gray-400 mt-1">
+              <span>5L</span>
+              <span>3Cr</span>
+            </div>
           </div>
           <div>
-            <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">Predict for: {years} years</label>
-            <input type="range" min="1" max="10" value={years} onChange={e => setYears(+e.target.value)} className="w-full accent-primary-500" />
-            <div className="flex justify-between text-xs text-gray-400 mt-1"><span>1</span><span>10</span></div>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">
+              Predict for: {years} years
+            </label>
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value={years}
+              onChange={(e) => setYears(+e.target.value)}
+              className="w-full accent-primary-500"
+            />
+            <div className="flex justify-between text-xs text-gray-400 mt-1">
+              <span>1</span>
+              <span>10</span>
+            </div>
           </div>
-          <button 
-            onClick={calculate} 
+          <button
+            onClick={calculate}
             disabled={loading}
             className="w-full bg-primary-500 text-white py-3 rounded-xl font-bold hover:bg-primary-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {loading ? (
-              <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Calculating...</>
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />{" "}
+                Calculating...
+              </>
             ) : (
-              <><BarChart3 className="w-4 h-4" /> Calculate Resale Value</>
+              <>
+                <BarChart3 className="w-4 h-4" /> Calculate Resale Value
+              </>
             )}
           </button>
         </div>
-        
+
         {result && (
           <div className="grid grid-cols-2 gap-3 mt-6">
             <div className="bg-gradient-to-r from-primary-50 to-primary-100 rounded-xl p-4 text-center border border-primary-200">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <TrendingDown className="w-4 h-4 text-primary-500" />
-                <p className="text-xs text-primary-600 font-medium uppercase tracking-wide">Future Value</p>
+                <p className="text-xs text-primary-600 font-medium uppercase tracking-wide">
+                  Future Value
+                </p>
               </div>
-              <p className="font-black text-primary-500 text-xl">{fmt(finalVal)}</p>
+              <p className="font-black text-primary-500 text-xl">
+                {fmt(finalVal)}
+              </p>
               <p className="text-xs text-gray-500">In {years} years</p>
             </div>
-            
+
             <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-4 text-center border border-red-200">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <TrendingDown className="w-4 h-4 text-red-500" />
-                <p className="text-xs text-red-600 font-medium uppercase tracking-wide">Total Loss</p>
+                <p className="text-xs text-red-600 font-medium uppercase tracking-wide">
+                  Total Loss
+                </p>
               </div>
               <p className="font-black text-red-600 text-xl">{fmt(loss)}</p>
-              <p className="text-xs text-gray-500">{depreciationRate}% per year</p>
+              <p className="text-xs text-gray-500">
+                {depreciationRate}% per year
+              </p>
             </div>
           </div>
         )}
       </div>
-      
+
       {result && (
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between mb-5">
-            <h3 className="font-bold text-gray-800 text-sm">Year-by-Year Value</h3>
+            <h3 className="font-bold text-gray-800 text-sm">
+              Year-by-Year Value
+            </h3>
             <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-full">
               <span className="text-xs font-medium text-gray-700">
                 Rule-based curve
               </span>
             </div>
           </div>
-          
+
           {/* Improved Bar Chart with better visualization */}
           <div className="flex items-end gap-2 h-40 mb-6 px-2">
             {yearData.map((d, i) => {
               const barHeight = getBarHeight(d.value);
               const isLast = i === yearData.length - 1;
               return (
-                <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                <div
+                  key={i}
+                  className="flex-1 flex flex-col items-center gap-2"
+                >
                   <div className="w-full relative group">
-                    <div 
+                    <div
                       className={`w-full rounded-t-lg transition-all duration-500 ${
-                        i === 0 ? 'bg-primary-500' : 
-                        isLast ? 'bg-gradient-to-t from-red-500 to-red-400' : 
-                        'bg-gradient-to-t from-primary-400 to-primary-300'
-                      }`} 
+                        i === 0
+                          ? "bg-primary-500"
+                          : isLast
+                            ? "bg-gradient-to-t from-red-500 to-red-400"
+                            : "bg-gradient-to-t from-primary-400 to-primary-300"
+                      }`}
                       style={{ height: `${barHeight}%`, minHeight: 20 }}
                     />
                     {/* Tooltip */}
@@ -680,26 +842,41 @@ function ResaleTool() {
                     </div>
                   </div>
                   <div className="text-center">
-                    <span className="text-xs text-gray-600 font-medium block">Y{d.year}</span>
+                    <span className="text-xs text-gray-600 font-medium block">
+                      Y{d.year}
+                    </span>
                     {d.depreciation > 0 && (
-                      <span className="text-xs text-red-500 font-medium">-{d.depreciation}%</span>
+                      <span className="text-xs text-red-500 font-medium">
+                        -{d.depreciation}%
+                      </span>
                     )}
                   </div>
                 </div>
               );
             })}
           </div>
-          
+
           <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4">
-            <p className="text-xs text-gray-600 font-medium mb-3">Depreciation Timeline</p>
+            <p className="text-xs text-gray-600 font-medium mb-3">
+              Depreciation Timeline
+            </p>
             <div className="space-y-2 max-h-40 overflow-y-auto">
               {yearData.map((d) => (
-                <div key={d.year} className="flex justify-between text-xs py-2 border-b border-gray-200 last:border-b-0">
-                  <span className="text-gray-600 font-medium">Year {d.year}</span>
+                <div
+                  key={d.year}
+                  className="flex justify-between text-xs py-2 border-b border-gray-200 last:border-b-0"
+                >
+                  <span className="text-gray-600 font-medium">
+                    Year {d.year}
+                  </span>
                   <div className="text-right">
-                    <span className="font-bold text-gray-800">{fmt(d.value)}</span>
+                    <span className="font-bold text-gray-800">
+                      {fmt(d.value)}
+                    </span>
                     {d.depreciation > 0 && (
-                      <span className="text-red-500 ml-2 font-medium">-{d.depreciation}%</span>
+                      <span className="text-red-500 ml-2 font-medium">
+                        -{d.depreciation}%
+                      </span>
                     )}
                   </div>
                 </div>
@@ -861,7 +1038,10 @@ const CarEstimatorPage = () => {
         </section>
 
         {/* Tabs */}
-        <div id="estimator-tabs" className="max-w-8xl mx-auto w-full px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8 scroll-mt-4">
+        <div
+          id="estimator-tabs"
+          className="max-w-8xl mx-auto w-full px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8 scroll-mt-4"
+        >
           <div className="border-b border-gray-200">
             <nav className="-mb-px flex flex-wrap sm:flex-nowrap space-x-2 sm:space-x-8">
               {[
@@ -889,9 +1069,13 @@ const CarEstimatorPage = () => {
                     // Scroll to top of tabs when clicking Estimate tab (with slight delay to ensure tab switch)
                     if (tab.id === "estimate") {
                       setTimeout(() => {
-                        const tabsElement = document.getElementById("estimator-tabs");
+                        const tabsElement =
+                          document.getElementById("estimator-tabs");
                         if (tabsElement) {
-                          tabsElement.scrollIntoView({ behavior: "smooth", block: "start" });
+                          tabsElement.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start",
+                          });
                         }
                       }, 100);
                     }
@@ -1029,8 +1213,8 @@ const CarEstimatorPage = () => {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
               >
-                <TrendsTool 
-                  savedValuations={savedValuations} 
+                <TrendsTool
+                  savedValuations={savedValuations}
                   currentFormData={result?.formData}
                 />
               </motion.div>
@@ -1047,7 +1231,6 @@ const CarEstimatorPage = () => {
                 <ResaleTool />
               </motion.div>
             )}
-
           </AnimatePresence>
         </div>
 

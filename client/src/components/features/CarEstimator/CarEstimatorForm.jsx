@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ArrowRight,
   Brain,
@@ -12,6 +13,7 @@ import { useCarCategories } from "../../../hooks/useCarCategories";
 import { capitalize } from "../../../utils/formatters";
 import FilterSpecs from "../../../components/utils/filter/FilterSpecs";
 import { useCreateValuationMutation } from "../../../redux/services/api";
+import { isAuthenticated } from "../../../utils/tokenManager";
 
 const accidentHistories = ["None", "Minor", "Major"];
 const paintStatusOptions = [
@@ -107,6 +109,7 @@ const parseMileageValue = (value) => {
 };
 
 export default function CarEstimatorForm({ onEstimate }) {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const vehicleType = "Car";
   const { makes, models, years, cities, getModelsByMake } =
@@ -195,6 +198,12 @@ export default function CarEstimatorForm({ onEstimate }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (!isAuthenticated()) {
+      navigate("/login");
+      return;
+    }
+
     if (!validateForm()) {
       toast.error("Please fix required fields before estimating.");
       return;
@@ -238,6 +247,10 @@ export default function CarEstimatorForm({ onEstimate }) {
       });
       toast.success("Analysis complete!");
     } catch (error) {
+      if (error?.status === 401) {
+        navigate("/login");
+        return;
+      }
       const errorMessage =
         error?.data?.message ||
         error?.message ||
