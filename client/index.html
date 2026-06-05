@@ -127,7 +127,6 @@
     />
     <meta name="twitter:image" content="https://sello.pk/favicon.png" />
 
-    <!-- Meta Pixel: stub queues events; fbevents.js deferred via main.jsx (FCP/LCP/TBT) -->
     <!-- Meta Pixel Code -->
     <script>
       !(function (f, b, e, v, n, t, s) {
@@ -157,10 +156,6 @@
       fbq("track", "PageView");
     </script>
     <!-- End Meta Pixel Code -->
-
-    <!-- ========================= -->
-    <!-- STRUCTURED DATA -->
-    <!-- ========================= -->
 
     <script type="application/ld+json">
       {
@@ -272,6 +267,21 @@
           }
         ]
       }
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-81SP569LXT"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-81SP569LXT");
     </script>
 
     <!-- Title -->
