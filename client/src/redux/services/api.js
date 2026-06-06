@@ -358,11 +358,14 @@ export const api = createApi({
         };
       }
 
-      // Handle network errors (Failed to fetch) — avoid blaming "internet" only; uploads often time out
+      // Handle network errors (Failed to fetch / Load failed) — Safari vs Chrome differ on the exact message
       if (
         baseResult.error &&
         (baseResult.error.status === "FETCH_ERROR" ||
-          baseResult.error.error === "TypeError: Failed to fetch")
+          baseResult.error.error === "TypeError: Failed to fetch" ||
+          baseResult.error.error === "TypeError: Load failed" ||
+          /load failed/i.test(baseResult.error.error || "") ||
+          /failed to fetch/i.test(baseResult.error.error || ""))
       ) {
         logApiErrorSafely("fetch_error", baseResult.error, args);
         const uploadAttempt = isMultipartDocumentUpload(args);

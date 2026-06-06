@@ -1145,49 +1145,55 @@ export default function EstimatorBlogsSection() {
   };
 
   return (
-    <section className="w-full bg-gradient-to-b from-gray-50 to-white py-16">
+    <section className="w-full bg-gradient-to-b from-gray-50 to-white py-12 sm:py-16">
       <div className="max-w-8xl mx-auto w-full px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-20 relative">
-          <div className="absolute inset-0 flex items-center justify-center opacity-10">
-            <div className="w-96 h-96 bg-primary-500 rounded-full blur-3xl"></div>
+        <div className="text-center mb-12 sm:mb-20 relative">
+          <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+            <div className="w-72 h-72 sm:w-96 sm:h-96 bg-primary-500 rounded-full blur-3xl"></div>
           </div>
           <div className="relative z-10">
-            <div className="inline-flex items-center gap-2 bg-primary-50 text-primary-500 px-4 py-2 rounded-full text-sm font-semibold mb-6">
+            <div className="inline-flex items-center gap-2 bg-primary-50 text-primary-500 px-4 py-2 rounded-full text-xs sm:text-sm font-semibold mb-6">
               <span className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></span>
               AI-Powered Insights
             </div>
-            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+            <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
               AI Car Price
               <span className="text-primary-500"> Estimator</span>
               <br />
               Insights
             </h2>
-            <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
               Discover how our advanced AI technology provides{" "}
               <span className="font-semibold text-gray-900">
                 accurate, data-driven
               </span>{" "}
               car valuations for the Pakistani market
             </p>
-            <div className="flex items-center justify-center gap-8 mt-8">
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:gap-8 mt-6 sm:mt-8 px-2">
               <div className="flex items-center gap-2 text-gray-500">
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                  <span className="w-3 h-3 bg-green-500 rounded-full"></span>
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-green-100 rounded-full flex items-center justify-center shrink-0">
+                  <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full"></span>
                 </div>
-                <span className="text-sm font-medium">Real-time Data</span>
+                <span className="text-xs sm:text-sm font-medium whitespace-nowrap">
+                  Real-time Data
+                </span>
               </div>
               <div className="flex items-center gap-2 text-gray-500">
-                <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                  <span className="w-3 h-3 bg-primary-500 rounded-full"></span>
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-primary-100 rounded-full flex items-center justify-center shrink-0">
+                  <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-primary-500 rounded-full"></span>
                 </div>
-                <span className="text-sm font-medium">AI Analysis</span>
+                <span className="text-xs sm:text-sm font-medium whitespace-nowrap">
+                  AI Analysis
+                </span>
               </div>
               <div className="flex items-center gap-2 text-gray-500">
-                <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                  <span className="w-3 h-3 bg-primary-500 rounded-full"></span>
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-primary-100 rounded-full flex items-center justify-center shrink-0">
+                  <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-primary-500 rounded-full"></span>
                 </div>
-                <span className="text-sm font-medium">Fair Pricing</span>
+                <span className="text-xs sm:text-sm font-medium whitespace-nowrap">
+                  Fair Pricing
+                </span>
               </div>
             </div>
           </div>
@@ -1267,23 +1273,23 @@ export default function EstimatorBlogsSection() {
         </div>
 
         {/* Enhanced Call to Action */}
-        <div className="mt-20 relative">
-          <div className="absolute inset-0 flex items-center justify-center opacity-10">
-            <div className="w-[600px] h-[600px] bg-primary-500 rounded-full blur-3xl"></div>
+        <div className="mt-12 sm:mt-20 relative">
+          <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+            <div className="w-[320px] h-[320px] sm:w-[600px] sm:h-[600px] bg-primary-500 rounded-full blur-3xl"></div>
           </div>
           <div className="relative z-10">
-            <div className="bg-primary-500 rounded-3xl p-16 text-white shadow-2xl relative overflow-hidden">
+            <div className="bg-primary-500 rounded-3xl p-6 sm:p-10 lg:p-16 text-white shadow-2xl relative overflow-hidden">
               <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
               <div className="relative z-10">
-                <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-semibold mb-6">
+                <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-xs sm:text-sm font-semibold mb-6">
                   <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
                   Get Started Today
                 </div>
-                <h3 className="text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+                <h3 className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
                   Ready to Get Your Car's
                   <span className="text-yellow-300"> True Value</span>?
                 </h3>
-                <p className="text-xl mb-10 text-white/90 max-w-2xl mx-auto leading-relaxed">
+                <p className="text-base sm:text-xl mb-8 sm:mb-10 text-white/90 max-w-2xl mx-auto leading-relaxed">
                   Try our AI-powered car price estimator and get instant,
                   accurate valuations trusted by thousands of Pakistani buyers
                   and sellers
@@ -1292,18 +1298,18 @@ export default function EstimatorBlogsSection() {
                   <button
                     type="button"
                     onClick={handleCtaClick}
-                    className="bg-white text-primary-500 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-50 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 flex items-center gap-3 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-500"
+                    className="bg-white text-primary-500 px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg hover:bg-gray-50 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 flex items-center gap-3 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-500"
                   >
                     <span>Try AI Estimator Now</span>
                     <ArrowRight className="w-5 h-5" aria-hidden />
                   </button>
-                  <div className="flex items-center gap-6 text-white/80 text-sm">
+                  <div className="flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-2 text-white/80 text-xs sm:text-sm">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 bg-green-400 rounded-full"></span>
                       <span>Free to Use</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-primary-500 rounded-full"></span>
+                      <span className="w-2 h-2 bg-yellow-300 rounded-full"></span>
                       <span>Instant Results</span>
                     </div>
                   </div>

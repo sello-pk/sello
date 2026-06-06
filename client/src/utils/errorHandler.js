@@ -27,7 +27,10 @@ export const getErrorMessage = (error) => {
 
   if (
     error?.status === "FETCH_ERROR" ||
-    error?.error === "TypeError: Failed to fetch"
+    error?.error === "TypeError: Failed to fetch" ||
+    error?.error === "TypeError: Load failed" ||
+    /load failed/i.test(error?.error || "") ||
+    /failed to fetch/i.test(error?.error || "")
   ) {
     if (error?.data?.message) return error.data.message;
     return "Request couldn't complete. This usually happens if the upload is too large or your connection is unstable. Try fewer or smaller images.";
@@ -115,7 +118,9 @@ export const isNetworkError = (error) => {
   return (
     error?.status === "FETCH_ERROR" ||
     error?.error === "TypeError: Failed to fetch" ||
+    error?.error === "TypeError: Load failed" ||
     error?.message?.includes("Failed to fetch") ||
+    error?.message?.includes("Load failed") ||
     error?.message?.includes("NetworkError")
   );
 };

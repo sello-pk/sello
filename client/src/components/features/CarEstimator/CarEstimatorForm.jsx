@@ -251,11 +251,24 @@ export default function CarEstimatorForm({ onEstimate }) {
         navigate("/login");
         return;
       }
-      const errorMessage =
-        error?.data?.message ||
+      const rawNetworkSignal =
+        error?.error ||
+        error?.data?.error ||
         error?.message ||
-        "Failed to analyze car value. Please try again.";
-      toast.error(errorMessage);
+        "";
+      const isNetworkError =
+        error?.status === "FETCH_ERROR" ||
+        /load failed/i.test(rawNetworkSignal) ||
+        /failed to fetch/i.test(rawNetworkSignal) ||
+        /networkerror/i.test(rawNetworkSignal);
+      const serverMessage =
+        typeof error?.data?.message === "string" && error.data.message.trim()
+          ? error.data.message.trim()
+          : "";
+      const friendly = isNetworkError
+        ? "Couldn't reach the estimator service. Please check your connection and try again."
+        : serverMessage || "Failed to analyze car value. Please try again.";
+      toast.error(friendly);
     }
   };
 

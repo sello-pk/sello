@@ -121,6 +121,9 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
         const response = await fetch(
           `${API_BASE}/tools/trends?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&year=${encodeURIComponent(year)}`,
         );
+        if (!response.ok) {
+          throw new Error(`Trends request failed (${response.status})`);
+        }
         const data = await response.json();
 
         if (data.success && data.data) {
@@ -186,8 +189,22 @@ function TrendsTool({ savedValuations, currentResult, currentFormData }) {
           }
         }
       } catch (error) {
-        console.error("Failed to fetch trend data:", error);
-        toast.error("Failed to load trend data");
+        if (import.meta.env.DEV) {
+          console.error("Failed to fetch trend data:", error);
+        }
+        // Silent fallback: avoid generic "Load failed" toasts on flaky networks
+        setTrendData({
+          make,
+          model,
+          year,
+          percentage: "N/A",
+          isPositive: true,
+          prices: [],
+          months: [],
+          currentPrice: 0,
+          startPrice: 0,
+          summary: `Trends are temporarily unavailable for ${year} ${make} ${model}. Please retry in a moment.`,
+        });
       } finally {
         setLoading(false);
       }
@@ -568,6 +585,10 @@ function ResaleTool() {
   }, [availableModels, model]);
 
   const calculate = async () => {
+    if (!make || !model) {
+      toast.error("Please pick a make and model first.");
+      return;
+    }
     setLoading(true);
     try {
       const response = await fetch(`${API_BASE}/tools/resale`, {
@@ -575,6 +596,9 @@ function ResaleTool() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ currentValue: value, years, make, model }),
       });
+      if (!response.ok) {
+        throw new Error(`Resale request failed (${response.status})`);
+      }
       const data = await response.json();
       if (data.success) {
         setResult(data.data);
@@ -582,8 +606,12 @@ function ResaleTool() {
         toast.error(data.message || "Failed to calculate resale value");
       }
     } catch (error) {
-      console.error("Resale calculation error:", error);
-      toast.error("Network error: Could not connect to server");
+      if (import.meta.env.DEV) {
+        console.error("Resale calculation error:", error);
+      }
+      toast.error(
+        "Couldn't reach the resale service. Please check your connection and retry.",
+      );
     } finally {
       setLoading(false);
     }
@@ -591,7 +619,9 @@ function ResaleTool() {
 
   // Auto-calculate on first load (silent - no error toast)
   useEffect(() => {
+    let cancelled = false;
     const silentCalculate = async () => {
+      if (!make || !model) return;
       setLoading(true);
       try {
         const response = await fetch(`${API_BASE}/tools/resale`, {
@@ -599,19 +629,26 @@ function ResaleTool() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ currentValue: value, years, make, model }),
         });
+        if (!response.ok) return;
         const data = await response.json();
-        if (data.success) {
+        if (!cancelled && data.success) {
           setResult(data.data);
         }
       } catch (error) {
-        console.error("Initial resale calculation error:", error);
+        if (import.meta.env.DEV) {
+          console.error("Initial resale calculation error:", error);
+        }
         // Silent fail on auto-load - don't show toast
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     silentCalculate();
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [make, model]);
 
   const yearData = result?.yearData || [];
   const finalVal = result?.finalValue || 0;
@@ -1005,9 +1042,9 @@ const CarEstimatorPage = () => {
                 transition={{ delay: 0.2 }}
                 className="text-base sm:text-lg text-gray-100 max-w-3xl mx-auto mb-8 px-4"
               >
-                PKR ranges use similar cars on Sello and standard depreciation
-                rules. Optional GPT-4o refinement runs only when the API server
-                has a valid OpenAI key and your OpenAI account accepts requests.
+                PKR ranges are built from similar active listings on Sello,
+                standard depreciation rules, and an AI-driven refinement tuned
+                for the Pakistani market.
               </motion.p>
 
               {/* Trust Badges */}
@@ -1043,7 +1080,10 @@ const CarEstimatorPage = () => {
           className="max-w-8xl mx-auto w-full px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8 scroll-mt-4"
         >
           <div className="border-b border-gray-200">
-            <nav className="-mb-px flex flex-wrap sm:flex-nowrap space-x-2 sm:space-x-8">
+            <nav
+              className="-mb-px flex space-x-4 sm:space-x-8 overflow-x-auto scrollbar-hide"
+              aria-label="Estimator sections"
+            >
               {[
                 { id: "estimate", label: "Estimate", icon: Car },
                 {
@@ -1081,7 +1121,7 @@ const CarEstimatorPage = () => {
                     }
                   }}
                   disabled={tab.disabled}
-                  className={`group relative py-2 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap ${
+                  className={`group relative py-3 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap shrink-0 ${
                     tab.disabled
                       ? "border-transparent text-gray-300 cursor-not-allowed"
                       : activeTab === tab.id
@@ -1091,8 +1131,7 @@ const CarEstimatorPage = () => {
                 >
                   <span className="flex items-center gap-2">
                     <tab.icon className="w-4 h-4" />
-                    <span className="hidden sm:inline">{tab.label}</span>
-                    <span className="sm:hidden">{tab.label.slice(0, 3)}</span>
+                    <span>{tab.label}</span>
                     {tab.count > 0 && (
                       <span className="bg-primary-100 text-primary-600 px-2 py-0.5 rounded-full text-xs font-medium">
                         {tab.count}

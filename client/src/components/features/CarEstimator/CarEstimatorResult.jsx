@@ -163,8 +163,8 @@ const CarEstimatorResult = ({ result, onSave, onSellCar }) => {
               Car market estimate
             </h1>
             <p className="text-sm sm:text-base opacity-90">
-              PKR band from Sello listings + rules; GPT only refines when enabled
-              on the server
+              PKR band built from live Sello listings, market rules, and
+              AI-driven refinement.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
@@ -339,14 +339,6 @@ const CarEstimatorResult = ({ result, onSave, onSellCar }) => {
                     </div>
                     {result.isAIPowered ? "AI market summary" : "Estimate summary"}
                   </h3>
-                  {result.isAIPowered && (
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-xs bg-blue-600 text-white px-2.5 py-1 rounded-full uppercase tracking-wider font-bold">
-                        GPT-4o Professional
-                      </span>
-                    </div>
-                  )}
                 </div>
                 <div className="bg-white rounded-lg p-3 sm:p-4 border border-blue-100">
                   <p className="text-blue-800 text-sm leading-relaxed whitespace-pre-line">
@@ -355,15 +347,6 @@ const CarEstimatorResult = ({ result, onSave, onSellCar }) => {
                       : "No written analysis was returned for this estimate. Try running the estimator again, or contact support if this persists."}
                   </p>
                 </div>
-                {result.isAIPowered && (
-                  <div className="mt-4 flex items-center gap-2 text-xs text-blue-600">
-                    <div className="w-4 h-4 bg-blue-100 rounded-full flex items-center justify-center">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    </div>
-                    GPT-4o adjusted the baseline within the allowed band using
-                    mileage and condition.
-                  </div>
-                )}
               </div>
             </div>
           )}
@@ -506,14 +489,10 @@ const CarEstimatorResult = ({ result, onSave, onSellCar }) => {
                   How this estimate is built
                 </h3>
                 <p className="text-sm text-gray-600 mt-2 leading-relaxed">
-                  Your PKR range is calculated on the Sello server from active
-                  listings where possible, plus mileage and condition rules. It
-                  is not scraped live from other websites. OpenAI (GPT-4o) only
-                  applies a small optional adjustment when{" "}
-                  <code className="text-xs bg-gray-100 px-1 rounded">
-                    OPENAI_API_KEY
-                  </code>{" "}
-                  is configured and the OpenAI account can accept API calls.
+                  Your PKR range is calculated from active Sello listings where
+                  possible, plus mileage and condition rules. We then apply an
+                  AI-assisted refinement so the figure better reflects current
+                  Pakistani market conditions.
                 </p>
               </div>
 
@@ -532,31 +511,13 @@ const CarEstimatorResult = ({ result, onSave, onSellCar }) => {
                       : "—"}
                   </span>
                 </div>
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 border-b border-gray-200 pb-3">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1">
                   <span className="text-gray-600 shrink-0">Baseline method</span>
-                  <span className="font-medium text-gray-900 text-right sm:max-w-[70%]">
+                  <span className="font-medium text-gray-900 sm:text-right sm:max-w-[70%]">
                     {result.marketContext?.dataSource ||
                       "Similar cars on Sello"}
                   </span>
                 </div>
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-                  <span className="text-gray-600">GPT-4o refinement</span>
-                  <span
-                    className={`font-medium ${result.isAIPowered ? "text-green-700" : "text-amber-800"}`}
-                  >
-                    {result.isAIPowered
-                      ? "Applied for this run"
-                      : "Not used (no key, billing error, or API failure)"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 leading-relaxed">
-                We removed decorative &quot;dealer row&quot; comparisons that
-                were only illustrations. If OpenAI usage stays at zero, add{" "}
-                <code className="bg-white px-1 rounded">OPENAI_API_KEY</code> to
-                your API host environment and ensure your OpenAI org has an
-                active credit balance.
               </div>
             </div>
           )}

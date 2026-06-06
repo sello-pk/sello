@@ -127,7 +127,10 @@ export const adminApi = createApi({
       if (
         baseResult.error &&
         (baseResult.error.status === "FETCH_ERROR" ||
-          baseResult.error.error === "TypeError: Failed to fetch")
+          baseResult.error.error === "TypeError: Failed to fetch" ||
+          baseResult.error.error === "TypeError: Load failed" ||
+          /load failed/i.test(baseResult.error.error || "") ||
+          /failed to fetch/i.test(baseResult.error.error || ""))
       ) {
         const isFormData = args?.body instanceof FormData;
         const message = isFormData

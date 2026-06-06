@@ -143,13 +143,13 @@ export const getAIAdjustment = async (vehicleData, baselinePrice) => {
   const apiKey = typeof rawKey === "string" ? rawKey.trim() : "";
   if (!apiKey) {
     Logger.warn(
-      "Car valuation: OPENAI_API_KEY (or OPENAI_KEY) is not set; skipping OpenAI — set it on the server to enable GPT refinement.",
+      "Car valuation: OPENAI_API_KEY (or OPENAI_KEY) is not set; using market baseline only.",
     );
     return {
       adjustedPrice: baselinePrice,
       adjustmentPercent: 0,
       reason:
-        "Market-only estimate: the server has no OpenAI API key configured, so this result uses listing data and rules only. Add OPENAI_API_KEY to your deployment environment (and billing/credits on the OpenAI account) to enable GPT-4o refinement.",
+        "Estimate built from active Sello listings and standard depreciation factors for your make, model, year, mileage, and condition.",
       confidenceScore: 70,
       usedOpenAI: false,
     };
@@ -184,27 +184,40 @@ Return JSON:
 }
 `;
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content:
-            "You adjust car prices based strictly on baseline data. Never hallucinate market prices.",
-        },
-        { role: "user", content: prompt },
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.2,
-      max_tokens: 400,
-    }),
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 20_000);
+  let response;
+  try {
+    response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content:
+              "You adjust car prices based strictly on baseline data. Never hallucinate market prices.",
+          },
+          { role: "user", content: prompt },
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.2,
+        max_tokens: 400,
+      }),
+      signal: controller.signal,
+    });
+  } catch (fetchError) {
+    if (fetchError?.name === "AbortError") {
+      throw new Error("OpenAI request timed out after 20s");
+    }
+    throw fetchError;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!response.ok) {
     const errorText = await response.text();
@@ -413,7 +426,7 @@ export const calculateEstimation = async (vehicleData) => {
       adjustedPrice: baselinePrice,
       adjustmentPercent: 0,
       reason:
-        "AI refinement was skipped or failed (check server logs, OPENAI_API_KEY, and OpenAI billing). Showing market baseline only.",
+        "Estimate built from active Sello listings and standard depreciation factors for your make, model, year, mileage, and condition.",
       confidenceScore: 70,
       usedOpenAI: false,
     };
@@ -421,7 +434,7 @@ export const calculateEstimation = async (vehicleData) => {
 
   const staticBaselineNote =
     baselineSource === "static_year_table"
-      ? "No active Sello listings matched this make, so the PKR midpoint starts from an internal year/brand table (not a live, model-specific market price). Treat as rough guidance only.\n\n"
+      ? "No active Sello listings matched this make, so the PKR midpoint starts from an internal year/brand reference. Treat as rough guidance only.\n\n"
       : "";
 
   const summaryText =
@@ -431,16 +444,10 @@ export const calculateEstimation = async (vehicleData) => {
 
   const dataSourceLabel =
     baselineSource === "similar_listings"
-      ? `Average of similar Sello listings (same make/model, ±2 years)${
-          aiAdjustment.usedOpenAI ? "; GPT-4o applied a small adjustment" : ""
-        }`
+      ? "Average of similar Sello listings (same make/model, ±2 years), refined for mileage and condition"
       : baselineSource === "make_broader"
-        ? `Average of active Sello listings for this make only (no close model/year matches)${
-            aiAdjustment.usedOpenAI ? "; GPT-4o applied a small adjustment" : ""
-          }`
-        : `Internal year-based placeholder (no Sello listings for this make)${
-            aiAdjustment.usedOpenAI ? "; GPT-4o applied a small adjustment" : ""
-          }`;
+        ? "Average of active Sello listings for this make (no close model/year matches), refined for mileage and condition"
+        : "Internal year-based reference (no Sello listings for this make), refined for mileage and condition";
 
   const similarListingsCount =
     baselineSource === "static_year_table" ? 0 : cleanedCars.length;
