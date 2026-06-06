@@ -49,6 +49,8 @@ const SellerDashboard = () => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [showAddCar, setShowAddCar] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [listingsPage, setListingsPage] = useState(1);
+  const LISTINGS_PAGE_SIZE = 12;
   const [newCar, setNewCar] = useState({
     make: "",
     model: "",
@@ -68,7 +70,10 @@ const SellerDashboard = () => {
   });
   const token = localStorage.getItem("token");
   const { data: user, isLoading: userLoading } = useGetMeQuery(undefined, { skip: !token });
-  const { data: carsData, isLoading: carsLoading } = useGetMyCarsQuery();
+  const { data: carsData, isLoading: carsLoading } = useGetMyCarsQuery(
+    { page: listingsPage, limit: LISTINGS_PAGE_SIZE },
+    { refetchOnMountOrArgChange: true, refetchOnFocus: true },
+  );
   const [logout] = useLogoutMutation();
   const { data: tokenData } = useGetMyTokenPaymentsQuery();
   const { data: wonAuctions = [] } = useGetMyWonAuctionsQuery();
@@ -133,9 +138,26 @@ const SellerDashboard = () => {
   };
 
   const cars = carsData?.cars || [];
+  const totalCars = Number(carsData?.total || 0);
+  const totalListingsPages = Math.max(
+    1,
+    Number(carsData?.pages || Math.ceil(totalCars / LISTINGS_PAGE_SIZE) || 1),
+  );
+
+  useEffect(() => {
+    if (listingsPage > totalListingsPages) {
+      setListingsPage(totalListingsPages);
+    }
+  }, [listingsPage, totalListingsPages]);
+
+  useEffect(() => {
+    if (activeTab !== "listings" && listingsPage !== 1) {
+      setListingsPage(1);
+    }
+  }, [activeTab, listingsPage]);
 
   const stats = {
-    totalAds: cars.length,
+    totalAds: carsData?.total ?? cars.length,
     activeListings: cars.filter((c) => !c.isSold && c.isActive).length,
     soldCars: cars.filter((c) => c.isSold).length,
     totalEarnings: cars
@@ -927,61 +949,176 @@ const SellerDashboard = () => {
 
           {activeTab === "listings" && (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-semibold text-gray-900">
-                  My Listings
-                </h3>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    My Listings
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-0.5">
+                    {totalCars > 0
+                      ? `Showing ${cars.length} of ${totalCars} listing${totalCars === 1 ? "" : "s"}`
+                      : "No listings yet"}
+                  </p>
+                </div>
                 <button
                   onClick={() => navigate("/create-post")}
-                  className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90 flex items-center gap-2"
+                  className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90 flex items-center gap-2 self-start sm:self-auto"
                 >
                   <FiPlus size={18} />
                   New Listing
                 </button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {cars.map((car) => (
-                  <div
-                    key={car._id}
-                    className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
-                  >
-                    <div className="relative w-full aspect-[4/3] bg-gray-100 overflow-hidden">
-                      <LazyImage
-                        src={car.images?.[0] || images.carPlaceholder}
-                        alt={car.title}
-                        className="absolute inset-0 w-full h-full object-cover object-center"
-                      />
-                      {car.isSold && (
-                        <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold">
-                          SOLD
+              {cars.length === 0 ? (
+                <div className="border border-dashed border-gray-300 rounded-lg py-12 text-center">
+                  <p className="text-gray-600">
+                    You haven't posted any cars yet.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {cars.map((car) => (
+                      <div
+                        key={car._id}
+                        className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+                      >
+                        <div className="relative w-full aspect-[4/3] bg-gray-100 overflow-hidden">
+                          <LazyImage
+                            src={car.images?.[0] || images.carPlaceholder}
+                            alt={car.title}
+                            className="absolute inset-0 w-full h-full object-cover object-center"
+                          />
+                          {car.isSold && (
+                            <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold">
+                              SOLD
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                    <div className="p-4">
-                      <h4 className="font-semibold text-gray-900">
-                        {car.make} {car.model} {car.year}
-                      </h4>
-                      <p className="text-primary-500 font-bold mt-1">
-                        PKR {car.price?.toLocaleString()}
-                      </p>
-                      <div className="flex items-center gap-2 mt-3">
+                        <div className="p-4">
+                          <h4 className="font-semibold text-gray-900">
+                            {car.make} {car.model} {car.year}
+                          </h4>
+                          <p className="text-primary-500 font-bold mt-1">
+                            PKR {car.price?.toLocaleString()}
+                          </p>
+                          <div className="flex items-center gap-2 mt-3">
+                            <button
+                              onClick={() => navigate(`/edit-car/${car._id}`)}
+                              className="flex-1 px-3 py-2 bg-primary-500 text-white rounded text-sm hover:opacity-90"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => navigate(buildCarUrl(car))}
+                              className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm hover:bg-gray-50"
+                            >
+                              View
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {totalListingsPages > 1 && (
+                    <div className="flex flex-col items-center gap-3 mt-8 pt-6 border-t border-gray-200">
+                      <span className="text-sm text-gray-600 font-medium">
+                        Page {listingsPage} of {totalListingsPages}
+                      </span>
+                      <div className="flex flex-wrap justify-center items-center gap-2">
                         <button
-                          onClick={() => navigate(`/edit-car/${car._id}`)}
-                          className="flex-1 px-3 py-2 bg-primary-500 text-white rounded text-sm hover:opacity-90"
+                          onClick={() =>
+                            setListingsPage((prev) => Math.max(prev - 1, 1))
+                          }
+                          disabled={listingsPage === 1}
+                          className="inline-flex items-center justify-center min-w-[110px] px-4 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium gap-2 text-sm"
                         >
-                          Edit
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15 19l-7-7 7-7"
+                            />
+                          </svg>
+                          Previous
                         </button>
+                        {listingsPage > 2 && (
+                          <button
+                            onClick={() => setListingsPage(1)}
+                            className="min-w-10 px-3 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 font-medium text-sm"
+                          >
+                            1
+                          </button>
+                        )}
+                        {listingsPage > 3 && (
+                          <span className="px-1 text-gray-400">...</span>
+                        )}
+                        {listingsPage > 1 && (
+                          <button
+                            onClick={() => setListingsPage(listingsPage - 1)}
+                            className="min-w-10 px-3 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 font-medium text-sm"
+                          >
+                            {listingsPage - 1}
+                          </button>
+                        )}
+                        <span className="min-w-10 px-3 py-2 rounded-lg bg-primary-500 text-white font-semibold text-sm text-center">
+                          {listingsPage}
+                        </span>
+                        {listingsPage < totalListingsPages && (
+                          <button
+                            onClick={() => setListingsPage(listingsPage + 1)}
+                            className="min-w-10 px-3 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 font-medium text-sm"
+                          >
+                            {listingsPage + 1}
+                          </button>
+                        )}
+                        {listingsPage < totalListingsPages - 2 && (
+                          <span className="px-1 text-gray-400">...</span>
+                        )}
+                        {listingsPage < totalListingsPages - 1 && (
+                          <button
+                            onClick={() =>
+                              setListingsPage(totalListingsPages)
+                            }
+                            className="min-w-10 px-3 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 font-medium text-sm"
+                          >
+                            {totalListingsPages}
+                          </button>
+                        )}
                         <button
-                          onClick={() => navigate(buildCarUrl(car))}
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm hover:bg-gray-50"
+                          onClick={() =>
+                            setListingsPage((prev) =>
+                              Math.min(prev + 1, totalListingsPages),
+                            )
+                          }
+                          disabled={listingsPage === totalListingsPages}
+                          className="inline-flex items-center justify-center min-w-[110px] px-4 py-2 rounded-lg bg-primary-500 text-white font-semibold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors gap-2 text-sm"
                         >
-                          View
+                          Next
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5l7 7-7 7"
+                            />
+                          </svg>
                         </button>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  )}
+                </>
+              )}
             </div>
           )}
         </main>
