@@ -199,7 +199,7 @@ const CarDetails = () => {
       {/* Structured Data for SEO */}
       {car && (
         <>
-          <StructuredData.ProductSchema car={car} />
+          <StructuredData.VehicleSchema car={car} />
           <StructuredData.BreadcrumbSchema
             items={breadcrumbItems.map((item) => ({
               name: item.label,

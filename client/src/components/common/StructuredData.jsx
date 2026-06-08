@@ -4,6 +4,7 @@
  */
 
 import { useEffect } from "react";
+import { generateVehicleSchema } from "../../utils/schemas";
 
 /**
  * Add structured data script to document head
@@ -88,6 +89,25 @@ export const ProductSchema = ({ car }) => {
     };
 
     addStructuredData(schema);
+  }, [car]);
+
+  return null;
+};
+
+/**
+ * Enhanced Vehicle Schema (Product + Vehicle + Offer)
+ */
+export const VehicleSchema = ({ car }) => {
+  useEffect(() => {
+    if (!car || !car._id) return;
+
+    const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    const carUrl = `${baseUrl}/cars/${car._id}`;
+    const schema = generateVehicleSchema(car, carUrl);
+
+    if (schema) {
+      addStructuredData(schema);
+    }
   }, [car]);
 
   return null;
@@ -185,6 +205,7 @@ export const WebSiteSchema = () => {
 
 export default {
   ProductSchema,
+  VehicleSchema,
   OrganizationSchema,
   BreadcrumbSchema,
   WebSiteSchema,
