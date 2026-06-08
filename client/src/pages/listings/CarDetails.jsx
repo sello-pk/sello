@@ -200,12 +200,7 @@ const CarDetails = () => {
       {car && (
         <>
           <StructuredData.VehicleSchema car={car} />
-          <StructuredData.BreadcrumbSchema
-            items={breadcrumbItems.map((item) => ({
-              name: item.label,
-              url: item.path,
-            }))}
-          />
+          <StructuredData.BreadcrumbSchema car={car} />
         </>
       )}
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">

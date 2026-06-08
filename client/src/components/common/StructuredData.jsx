@@ -4,7 +4,7 @@
  */
 
 import { useEffect } from "react";
-import { generateVehicleSchema } from "../../utils/schemas";
+import { generateVehicleSchema, generateBreadcrumbSchema } from "../../utils/schemas";
 
 /**
  * Add structured data script to document head
@@ -148,8 +148,16 @@ export const OrganizationSchema = () => {
 /**
  * BreadcrumbList Schema
  */
-export const BreadcrumbSchema = ({ items }) => {
+export const BreadcrumbSchema = ({ items, car }) => {
   useEffect(() => {
+    if (car) {
+      const schema = generateBreadcrumbSchema(car);
+      if (schema) {
+        addStructuredData(schema);
+      }
+      return;
+    }
+
     if (!items || items.length === 0) return;
 
     const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
@@ -170,7 +178,7 @@ export const BreadcrumbSchema = ({ items }) => {
     };
 
     addStructuredData(schema);
-  }, [items]);
+  }, [items, car]);
 
   return null;
 };

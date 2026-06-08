@@ -1,3 +1,68 @@
+export const generateBreadcrumbSchema = (car) => {
+  if (!car) return null;
+
+  const baseUrl = import.meta.env.VITE_FRONTEND_URL || "https://sello.pk";
+
+  const items = [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Home",
+      item: baseUrl,
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Cars",
+      item: `${baseUrl}/listings`,
+    },
+  ];
+
+  let pos = 3;
+
+  if (car.city) {
+    items.push({
+      "@type": "ListItem",
+      position: pos++,
+      name: car.city,
+      item: `${baseUrl}/listings?city=${encodeURIComponent(car.city.toLowerCase())}`,
+    });
+  }
+
+  if (car.make) {
+    items.push({
+      "@type": "ListItem",
+      position: pos++,
+      name: car.make,
+      item: `${baseUrl}/listings?make=${encodeURIComponent(car.make.toLowerCase())}`,
+    });
+  }
+
+  if (car.model) {
+    const params = new URLSearchParams();
+    if (car.make) params.set("make", car.make.toLowerCase());
+    params.set("model", car.model.toLowerCase());
+    items.push({
+      "@type": "ListItem",
+      position: pos++,
+      name: car.model,
+      item: `${baseUrl}/listings?${params.toString()}`,
+    });
+  }
+
+  items.push({
+    "@type": "ListItem",
+    position: pos,
+    name: car.title || `${car.make || ""} ${car.model || ""} ${car.year || ""}`.trim(),
+  });
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items,
+  };
+};
+
 export const generateVehicleSchema = (car, carUrl) => {
   if (!car || !car._id) return null;
 
