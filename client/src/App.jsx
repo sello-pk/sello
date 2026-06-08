@@ -531,7 +531,7 @@ const App = () => {
 
     clarity.setTag("page", location.pathname);
 
-    clarity.event("page_view");
+    clarity.setEvent("page_view");
   }, [location.pathname]);
 
   const hideNavbarFooter = [
