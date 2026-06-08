@@ -63,6 +63,37 @@ export const generateBreadcrumbSchema = (car) => {
   };
 };
 
+export const generateBlogPostingSchema = (blog, blogUrl) => {
+  if (!blog) return null;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: blog.title,
+    description: blog.metaDescription || blog.excerpt || "",
+    image: blog.featuredImage ? [blog.featuredImage] : undefined,
+    author: {
+      "@type": "Organization",
+      name: "Sello.pk",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Sello.pk",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://sello.pk/logo.png",
+      },
+    },
+    datePublished: blog.publishedAt || blog.createdAt || undefined,
+    dateModified: blog.updatedAt || blog.publishedAt || blog.createdAt || undefined,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": blogUrl,
+    },
+    articleSection: blog.category?.name || undefined,
+  };
+};
+
 export const generateVehicleSchema = (car, carUrl) => {
   if (!car || !car._id) return null;
 

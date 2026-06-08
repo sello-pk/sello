@@ -4,7 +4,7 @@
  */
 
 import { useEffect } from "react";
-import { generateVehicleSchema, generateBreadcrumbSchema } from "../../utils/schemas";
+import { generateVehicleSchema, generateBreadcrumbSchema, generateBlogPostingSchema } from "../../utils/schemas";
 
 /**
  * Add structured data script to document head
@@ -114,6 +114,27 @@ export const VehicleSchema = ({ car }) => {
 };
 
 /**
+ * BlogPosting Schema
+ */
+export const BlogPostingSchema = ({ blog }) => {
+  useEffect(() => {
+    if (!blog) return;
+
+    const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    const blogUrl = blog.slug
+      ? `${baseUrl}/blog/${blog.slug}`
+      : window.location.href;
+    const schema = generateBlogPostingSchema(blog, blogUrl);
+
+    if (schema) {
+      addStructuredData(schema);
+    }
+  }, [blog]);
+
+  return null;
+};
+
+/**
  * Organization Schema
  */
 export const OrganizationSchema = () => {
@@ -214,6 +235,7 @@ export const WebSiteSchema = () => {
 export default {
   ProductSchema,
   VehicleSchema,
+  BlogPostingSchema,
   OrganizationSchema,
   BreadcrumbSchema,
   WebSiteSchema,
