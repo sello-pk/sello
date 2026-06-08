@@ -8,13 +8,14 @@ import Navbar from "./components/Navbar.jsx";
 import BottomHeader from "./components/BottomHeader.jsx";
 import Footer from "./components/Footer.jsx";
 /** Chunk filename avoids "WhatsApp" (many blockers strip that URL substring). */
-const HelpChatWidget = lazyImport(() =>
-  import("./components/features/help/HelpChatWidget.jsx"),
+const HelpChatWidget = lazyImport(
+  () => import("./components/features/help/HelpChatWidget.jsx"),
 );
 import { ThemeProvider } from "./contexts/ThemeContext.jsx";
 import AppRouter from "./routes/AppRouter.jsx";
 import SEO from "./components/common/SEO.jsx";
 import useMetaPixel from "./hooks/useMetaPixel.js";
+import { clarity } from "react-microsoft-clarity";
 
 const prettifySlug = (value = "") =>
   value
@@ -98,7 +99,8 @@ const getRouteSeo = (pathname, search) => {
     {
       path: "/filter",
       seo: {
-        title: "Filter Cars for Sale in Pakistan | Refine Your Search – Sello.pk",
+        title:
+          "Filter Cars for Sale in Pakistan | Refine Your Search – Sello.pk",
         description:
           "Use advanced filters on Sello.pk to narrow down cars for sale in Pakistan by city, make, model, year, and price.",
       },
@@ -107,9 +109,7 @@ const getRouteSeo = (pathname, search) => {
       path: "/search-results",
       seo: () => {
         const headline =
-          searchTerm ||
-          [make, model, city].filter(Boolean).join(" ") ||
-          "Cars";
+          searchTerm || [make, model, city].filter(Boolean).join(" ") || "Cars";
         return {
           title: `${headline} Search Results | Cars for Sale in Pakistan – Sello.pk`,
           description:
@@ -160,7 +160,8 @@ const getRouteSeo = (pathname, search) => {
     {
       path: "/auctions/schedule",
       seo: {
-        title: "Auction Schedule | Upcoming Car Auctions in Pakistan – Sello.pk",
+        title:
+          "Auction Schedule | Upcoming Car Auctions in Pakistan – Sello.pk",
         description:
           "Check upcoming car auction dates, schedules, and event details on Sello.pk so you never miss the next bidding opportunity.",
       },
@@ -184,7 +185,8 @@ const getRouteSeo = (pathname, search) => {
     {
       path: "/auctions/compare",
       seo: {
-        title: "Compare Auction Cars | Side-by-Side Vehicle Comparison – Sello.pk",
+        title:
+          "Compare Auction Cars | Side-by-Side Vehicle Comparison – Sello.pk",
         description:
           "Compare auction vehicles side by side on Sello.pk to make smarter bidding decisions based on specs, price, and condition.",
       },
@@ -360,7 +362,8 @@ const getRouteSeo = (pathname, search) => {
     {
       path: "/edit-auction-car/:id",
       seo: {
-        title: "Edit Auction Car Submission | Update Auction Listing – Sello.pk",
+        title:
+          "Edit Auction Car Submission | Update Auction Listing – Sello.pk",
         description:
           "Modify your auction car submission, pricing, images, and supporting details on Sello.pk.",
       },
@@ -508,6 +511,28 @@ const App = () => {
     () => getRouteSeo(location.pathname, location.search),
     [location.pathname, location.search],
   );
+
+  useEffect(() => {
+    const projectId = import.meta.env.VITE_CLARITY_PROJECT_ID;
+
+    if (!projectId) {
+      console.error("Microsoft Clarity Project ID missing");
+      return;
+    }
+
+    clarity.init(projectId);
+
+    clarity.setTag("environment", import.meta.env.MODE);
+    clarity.setTag("platform", "web");
+  }, []);
+
+  useEffect(() => {
+    if (!location?.pathname) return;
+
+    clarity.setTag("page", location.pathname);
+
+    clarity.event("page_view");
+  }, [location.pathname]);
 
   const hideNavbarFooter = [
     "/login",
