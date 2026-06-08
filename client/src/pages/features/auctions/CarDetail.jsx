@@ -42,6 +42,7 @@ import {
 import { useSocket } from "@contexts/SocketContext";
 import BidPriceChart from "@components/auction/BidPriceChart";
 import SEO from "../../../components/common/SEO";
+import StructuredData from "../../../components/common/StructuredData";
 import { trackViewContent } from "../../../utils/metaPixel.js";
 
 const Badge = ({ children, variant = "default", className = "", ...props }) => {
@@ -448,6 +449,7 @@ export default function CarDetail() {
         description={pageDescription.replace(/\s+/g, " ").trim()}
         canonical={canonicalUrl}
       />
+      <StructuredData.AuctionEventSchema auction={auction} car={car} />
       <div className="min-h-screen bg-slate-50">
       <div className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-[1320px] items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">

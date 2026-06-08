@@ -14,6 +14,7 @@ import { formatDate } from "../../utils";
 import SEO from "../../components/common/SEO";
 import StructuredData from "../../components/common/StructuredData";
 import { Spinner } from "../../components/ui/Loading";
+import { generateFAQSchema } from "../../utils/schemas";
 import { buildBlogUrl } from "../../utils/urlBuilders";
 import BlogCommentsSection from "../../components/features/blog/BlogCommentsSection";
 import { hardcodedBlogPosts } from "../../assets/blogs/blogAssets";
@@ -304,6 +305,7 @@ const BlogDetails = () => {
         }
       />
       <StructuredData.BlogPostingSchema blog={currentBlog} />
+      <StructuredData.FAQSchema items={currentBlog?.faqItems || []} />
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
           <nav aria-label="Breadcrumb" className="mb-8">

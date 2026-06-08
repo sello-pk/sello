@@ -14,6 +14,7 @@ import { HiOutlineArrowLeft } from "react-icons/hi2";
 import CarCard from "../../components/common/CarCard";
 import CategoryFilterForm from "../../components/sections/filter/CategoryFilterForm";
 import SortAndViewOptions from "../../components/listings/SortAndViewOptions";
+import StructuredData from "../../components/common/StructuredData";
 
 const sortCars = (cars, sortBy) => {
   if (!cars?.length) return cars;
@@ -209,6 +210,11 @@ const CategoryListings = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <StructuredData.CollectionPageSchema
+        name={title || `${category} for Sale in Pakistan`}
+        description={description || `Browse ${category} for sale in Pakistan`}
+      />
+      <StructuredData.ItemListSchema cars={cars} />
       {/* Hero Section */}
       <div
         className="relative min-h-[48vh] md:h-[48vh] bg-gradient-to-br from-primary-500 to-primary-500 text-white overflow-hidden"

@@ -7,6 +7,7 @@ import BlogSection from "../../components/sections/home/BlogSection";
 import ExploreBrands from "../../components/sections/listings/ExploreBrands";
 import PartnerOffersSection from "../../components/sections/listings/PartnerOffersSection";
 import SEO from "../../components/common/SEO";
+import StructuredData from "../../components/common/StructuredData";
 
 const CarListings = () => {
   return (
@@ -16,6 +17,10 @@ const CarListings = () => {
         description="Buy and sell cars in Pakistan with confidence. Explore premium brands, compare models, and connect with trusted sellers on Sello.pk."
         keywords="buy and sell cars, buy and sell cars in Pakistan"
         canonical="https://sello.pk/listings"
+      />
+      <StructuredData.CollectionPageSchema
+        name="Cars for Sale in Pakistan"
+        description="Browse cars for sale in Pakistan. Find new and used cars from trusted sellers across all major cities."
       />
       {/* Hidden H1 for SEO */}
       <h1 className="sr-only">Buy and Sell Cars in Pakistan - Trusted Brands & Best Prices</h1>

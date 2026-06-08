@@ -12,6 +12,7 @@ import CategoryFilterForm from "../../components/sections/filter/CategoryFilterF
 import ListingsCategoryBlogsSection from "../../components/sections/listings/ListingsCategoryBlogsSection";
 import SortAndViewOptions from "../../components/listings/SortAndViewOptions";
 import { vehicleCategoryConfig } from "../../config/vehicleCategoryConfig";
+import StructuredData from "../../components/common/StructuredData";
 
 const sortCars = (cars, sortBy) => {
   if (!cars?.length) return cars;
@@ -131,6 +132,11 @@ const GenericVehicleCategoryPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 overflow-x-hidden">
+      <StructuredData.CollectionPageSchema
+        name={config?.title || `${vehicleType} for Sale`}
+        description={config?.description || `Browse ${vehicleType} for sale in Pakistan`}
+      />
+      <StructuredData.ItemListSchema cars={cars} />
       {/* Hero Section */}
       <div className="relative w-full md:h-[38vh] sm:h-[30vh] h-[24vh] text-white bg-primary-500 overflow-hidden">
         <div className="relative z-10 flex min-h-[30vh] sm:min-h-[26vh] md:min-h-[24vh] w-full flex-col justify-start items-center px-2 sm:px-4 lg:px-6 py-3 sm:py-5 md:py-6">

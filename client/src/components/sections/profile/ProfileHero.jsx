@@ -46,6 +46,7 @@ import {
 import { clearAuthSession } from "../../../utils/tokenManager";
 import { useSupportChat } from "../../../contexts/SupportChatContext";
 import NotificationsSection from "./NotificationsSection";
+import StructuredData from "../../common/StructuredData";
 import DealerRequestForm from "../../features/profile/DealerRequestForm";
 import SubscriptionManagement from "../../subscriptions/SubscriptionManagement";
 import DealerProfileEditSection from "./DealerProfileEditSection";
@@ -1429,6 +1430,7 @@ const ProfileHero = () => {
           </div>
         </div>
       )}
+      {user?.dealerInfo && <StructuredData.AutoDealerSchema dealerInfo={user.dealerInfo} />}
     </div>
   );
 };

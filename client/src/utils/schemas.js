@@ -1,3 +1,103 @@
+export const generateItemListSchema = (cars, baseUrl) => {
+  if (!cars || !Array.isArray(cars) || cars.length === 0) return null;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: cars.slice(0, 50).map((car, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: `${baseUrl}/cars/${car._id}`,
+    })),
+  };
+};
+
+export const generateCollectionPageSchema = (name, description) => {
+  if (!name) return null;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name,
+    description: description || "",
+  };
+};
+
+export const generateFAQSchema = (faqItems) => {
+  if (!faqItems || !Array.isArray(faqItems) || faqItems.length === 0) return null;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
+  };
+};
+
+export const generateAuctionEventSchema = (auction, car, carUrl) => {
+  if (!auction || !car) return null;
+
+  const eventStatus = auction.status === "live"
+    ? "https://schema.org/EventScheduled"
+    : auction.status === "ended" || auction.status === "sold"
+      ? "https://schema.org/EventEnded"
+      : "https://schema.org/EventScheduled";
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: auction.title || `${car.make || ""} ${car.model || ""} ${car.year || ""} Auction`,
+    startDate: auction.startTime || auction.startDate || undefined,
+    endDate: auction.endTime || auction.endDate || undefined,
+    eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+    eventStatus,
+    location: {
+      "@type": "VirtualLocation",
+      url: carUrl,
+    },
+    organizer: {
+      "@type": "Organization",
+      name: "Sello.pk",
+      url: "https://sello.pk",
+    },
+  };
+};
+
+export const generateAutoDealerSchema = (dealerInfo, profileUrl) => {
+  if (!dealerInfo) return null;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "AutoDealer",
+    name: dealerInfo.businessName || "Dealer",
+    image: dealerInfo.logo || undefined,
+    telephone: dealerInfo.businessPhone || dealerInfo.phone || undefined,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: dealerInfo.city || undefined,
+      addressRegion: dealerInfo.state || dealerInfo.region || undefined,
+      addressCountry: "PK",
+    },
+    url: profileUrl,
+  };
+};
+
+export const generateAggregateRatingSchema = (ratingValue, reviewCount) => {
+  if (ratingValue == null || reviewCount == null) return null;
+
+  return {
+    "@type": "AggregateRating",
+    ratingValue: String(ratingValue),
+    reviewCount: reviewCount,
+  };
+};
+
 export const generateBreadcrumbSchema = (car) => {
   if (!car) return null;
 

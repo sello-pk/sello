@@ -4,7 +4,17 @@
  */
 
 import { useEffect } from "react";
-import { generateVehicleSchema, generateBreadcrumbSchema, generateBlogPostingSchema } from "../../utils/schemas";
+import {
+  generateVehicleSchema,
+  generateBreadcrumbSchema,
+  generateBlogPostingSchema,
+  generateItemListSchema,
+  generateCollectionPageSchema,
+  generateFAQSchema,
+  generateAuctionEventSchema,
+  generateAutoDealerSchema,
+  generateAggregateRatingSchema,
+} from "../../utils/schemas";
 
 /**
  * Add structured data script to document head
@@ -135,6 +145,83 @@ export const BlogPostingSchema = ({ blog }) => {
 };
 
 /**
+ * ItemList Schema
+ */
+export const ItemListSchema = ({ cars }) => {
+  useEffect(() => {
+    const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    const schema = generateItemListSchema(cars, baseUrl);
+    if (schema) addStructuredData(schema);
+  }, [cars]);
+
+  return null;
+};
+
+/**
+ * CollectionPage Schema
+ */
+export const CollectionPageSchema = ({ name, description }) => {
+  useEffect(() => {
+    const schema = generateCollectionPageSchema(name, description);
+    if (schema) addStructuredData(schema);
+  }, [name, description]);
+
+  return null;
+};
+
+/**
+ * FAQ Schema
+ */
+export const FAQSchema = ({ items }) => {
+  useEffect(() => {
+    const schema = generateFAQSchema(items);
+    if (schema) addStructuredData(schema);
+  }, [items]);
+
+  return null;
+};
+
+/**
+ * Auction Event Schema
+ */
+export const AuctionEventSchema = ({ auction, car }) => {
+  useEffect(() => {
+    if (!auction || !car) return;
+    const carUrl = window.location.href;
+    const schema = generateAuctionEventSchema(auction, car, carUrl);
+    if (schema) addStructuredData(schema);
+  }, [auction, car]);
+
+  return null;
+};
+
+/**
+ * AutoDealer Schema
+ */
+export const AutoDealerSchema = ({ dealerInfo }) => {
+  useEffect(() => {
+    if (!dealerInfo) return;
+    const profileUrl = window.location.href;
+    const schema = generateAutoDealerSchema(dealerInfo, profileUrl);
+    if (schema) addStructuredData(schema);
+  }, [dealerInfo]);
+
+  return null;
+};
+
+/**
+ * AggregateRating Schema — attach to a parent schema object or use standalone
+ */
+export const AggregateRatingSchema = ({ ratingValue, reviewCount }) => {
+  useEffect(() => {
+    const schema = generateAggregateRatingSchema(ratingValue, reviewCount);
+    if (schema) addStructuredData(schema);
+  }, [ratingValue, reviewCount]);
+
+  return null;
+};
+
+/**
  * Organization Schema
  */
 export const OrganizationSchema = () => {
@@ -236,6 +323,12 @@ export default {
   ProductSchema,
   VehicleSchema,
   BlogPostingSchema,
+  ItemListSchema,
+  CollectionPageSchema,
+  FAQSchema,
+  AuctionEventSchema,
+  AutoDealerSchema,
+  AggregateRatingSchema,
   OrganizationSchema,
   BreadcrumbSchema,
   WebSiteSchema,

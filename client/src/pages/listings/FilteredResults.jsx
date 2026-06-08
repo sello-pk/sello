@@ -5,6 +5,7 @@ import FilterResultsSection from "../../components/sections/filter/FilterResults
 import SortAndViewOptions from "../../components/listings/SortAndViewOptions";
 import { FiX, FiFilter } from "react-icons/fi";
 import Breadcrumb from "../../components/common/Breadcrumb";
+import StructuredData from "../../components/common/StructuredData";
 import { useGetFilteredCarsQuery } from "../../redux/services/api";
 import { trackSearch } from "../../utils/metaPixel.js";
 
@@ -164,6 +165,11 @@ const FilteredResults = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 min-w-0 overflow-x-hidden">
+      <StructuredData.CollectionPageSchema
+        name={searchTerm ? `Search Results for "${searchTerm}"` : "Search Results"}
+        description={`Found ${totalResults} cars matching your search`}
+      />
+      <StructuredData.ItemListSchema cars={carsData?.cars} />
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0">
         <Breadcrumb items={breadcrumbItems} />
       </div>
