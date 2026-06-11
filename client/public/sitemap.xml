@@ -8,8 +8,14 @@
     <lastmod>2026-03-31</lastmod>
     <changefreq>daily</changefreq>
   </url>
+  <url>
+    <loc>https://sello.pk/home</loc>
+    <priority>0.9</priority>
+    <lastmod>2026-03-31</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
 
-  <!-- VEHICLE CATEGORIES -->
+  <!-- VEHICLE LISTINGS -->
   <url>
     <loc>https://sello.pk/cars</loc>
     <priority>0.9</priority>
@@ -35,39 +41,45 @@
     <changefreq>weekly</changefreq>
   </url>
 
-  <!-- VEHICLE TYPES -->
+  <!-- DYNAMIC CATEGORY PAGES -->
   <url>
-    <loc>https://sello.pk/bikes</loc>
+    <loc>https://sello.pk/listings/cars</loc>
     <priority>0.8</priority>
     <lastmod>2026-03-31</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://sello.pk/buses</loc>
+    <loc>https://sello.pk/listings/bikes</loc>
     <priority>0.8</priority>
     <lastmod>2026-03-31</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://sello.pk/trucks</loc>
+    <loc>https://sello.pk/listings/trucks</loc>
     <priority>0.8</priority>
     <lastmod>2026-03-31</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://sello.pk/vans</loc>
+    <loc>https://sello.pk/listings/buses</loc>
     <priority>0.8</priority>
     <lastmod>2026-03-31</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://sello.pk/farm</loc>
+    <loc>https://sello.pk/listings/vans</loc>
     <priority>0.8</priority>
     <lastmod>2026-03-31</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://sello.pk/e-bikes</loc>
+    <loc>https://sello.pk/listings/farm</loc>
+    <priority>0.8</priority>
+    <lastmod>2026-03-31</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://sello.pk/listings/e-bikes</loc>
     <priority>0.8</priority>
     <lastmod>2026-03-31</lastmod>
     <changefreq>daily</changefreq>
@@ -174,125 +186,11 @@
     <lastmod>2026-03-31</lastmod>
     <changefreq>yearly</changefreq>
   </url>
-
-  <!-- DYNAMIC CATEGORY PAGES -->
   <url>
-    <loc>https://sello.pk/listings/cars</loc>
-    <priority>0.8</priority>
+    <loc>https://sello.pk/terms-conditions</loc>
+    <priority>0.3</priority>
     <lastmod>2026-03-31</lastmod>
-    <changefreq>daily</changefreq>
-  </url>
-  <url>
-    <loc>https://sello.pk/listings/bikes</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>daily</changefreq>
-  </url>
-  <url>
-    <loc>https://sello.pk/listings/trucks</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>daily</changefreq>
-  </url>
-  <url>
-    <loc>https://sello.pk/listings/buses</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>daily</changefreq>
-  </url>
-  <url>
-    <loc>https://sello.pk/listings/vans</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>daily</changefreq>
-  </url>
-  <url>
-    <loc>https://sello.pk/listings/farm</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>daily</changefreq>
-  </url>
-  <url>
-    <loc>https://sello.pk/listings/e-bikes</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>daily</changefreq>
-  </url>
-
-  <!-- BRAND PAGES -->
-  <url>
-    <loc>https://sello.pk/cars/toyota</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>weekly</changefreq>
-  </url>
-  <url>
-    <loc>https://sello.pk/cars/honda</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>weekly</changefreq>
-  </url>
-  <url>
-    <loc>https://sello.pk/cars/suzuki</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>weekly</changefreq>
-  </url>
-  <url>
-    <loc>https://sello.pk/cars/bmw</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>weekly</changefreq>
-  </url>
-  <url>
-    <loc>https://sello.pk/cars/mercedes</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>weekly</changefreq>
-  </url>
-  <url>
-    <loc>https://sello.pk/cars/audi</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>weekly</changefreq>
-  </url>
-  <url>
-    <loc>https://sello.pk/cars/nissan</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>weekly</changefreq>
-  </url>
-
-  <!-- BLOG EXAMPLES -->
-  <url>
-    <loc>https://sello.pk/blog/car-prices-pakistan-2024</loc>
-    <priority>0.7</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>weekly</changefreq>
-  </url>
-  <url>
-    <loc>https://sello.pk/blog/best-cars-under-30-lakh</loc>
-    <priority>0.7</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>weekly</changefreq>
-  </url>
-  <url>
-    <loc>https://sello.pk/blog/toyota-corolla-review</loc>
-    <priority>0.7</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>weekly</changefreq>
-  </url>
-  <url>
-    <loc>https://sello.pk/blog/car-maintenance-tips</loc>
-    <priority>0.7</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>weekly</changefreq>
-  </url>
-  <url>
-    <loc>https://sello.pk/blog/car-financing-guide</loc>
-    <priority>0.7</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
   </url>
 
 </urlset>

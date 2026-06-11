@@ -1,3 +1,5 @@
+# SPA fallback — all unmatched routes serve index.html
 /*  /index.html  200
+
+# Brand-specific category redirects (specific brands only, no catch-all)
 /cars/audi  /listings?make=Audi  301
-/cars/:make  /listings?make=:make  301

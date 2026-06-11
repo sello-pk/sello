@@ -190,9 +190,9 @@ const CategoryListings = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">
             Category Not Found
-          </h2>
+          </h1>
           <Link
             to="/listings"
             className="inline-block px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition"
@@ -244,9 +244,9 @@ const CategoryListings = () => {
                 </div>
               </div>
 
-              <h2 className="text-4xl md:text-5xl font-bold mb-3 text-white drop-shadow-lg">
+              <h1 className="text-4xl md:text-5xl font-bold mb-3 text-white drop-shadow-lg">
                 {title}
-              </h2>
+              </h1>
 
               <p className="text-base md:text-lg text-white/90 mb-5 max-w-xl mx-auto leading-relaxed drop-shadow-lg">
                 {description}

@@ -204,14 +204,12 @@ const FAQs = () => {
         canonical="https://sello.pk/help/faqs"
       />
       <div className="min-h-screen bg-gray-50">
-        {/* H1 for SEO */}
-        <h1 className="sr-only">Frequently Asked Questions - Sello.pk Help Center</h1>
         {/* Main Content */}
         <main className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 md:p-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
             Frequently Asked Questions
-          </h2>
+          </h1>
 
           <div className="space-y-4">
             {faqs.map((faq, index) => (

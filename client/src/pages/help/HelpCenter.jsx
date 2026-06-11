@@ -264,9 +264,10 @@ const HelpCenter = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 className="sr-only">Help Center - Sello.pk</h1>
         {/* Popular Topics Section */}
         <section className="mb-16">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">Popular Topics</h1>
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Popular Topics</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
             {popularTopics.map((topic) => {
               const IconComponent = topic.icon;

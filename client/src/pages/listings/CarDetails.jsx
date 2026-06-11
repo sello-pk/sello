@@ -17,7 +17,7 @@ import RecentlyViewed from "../../components/sections/carDetails/RecentlyViewed"
 import UserReviewSection from "../../components/reviews/UserReviewSection";
 import SEO from "../../components/common/SEO";
 import StructuredData from "../../components/common/StructuredData";
-import { extractCarIdFromSlug } from "../../utils/urlBuilders";
+import { extractCarIdFromSlug, buildCarUrl } from "../../utils/urlBuilders";
 import AuctionBidBlock from "../../components/auction/AuctionBidBlock";
 import { trackViewContent } from "../../utils/metaPixel.js";
 
@@ -193,7 +193,7 @@ const CarDetails = () => {
           car?.year || ""
         }, ${car?.condition || ""} car, ${car?.city || ""}, car for sale`}
         canonical={
-          car ? `https://sello.pk/car/${car._id}/${car.slug}` : undefined
+          car ? `https://sello.pk${buildCarUrl(car)}` : undefined
         }
       />
       {/* Structured Data for SEO */}
