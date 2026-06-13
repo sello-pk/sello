@@ -16,18 +16,19 @@ import Home from "../pages/Home.jsx";
 import Login from "../pages/auth/Login.jsx";
 import CarListings from "../pages/listings/CarListings.jsx";
 import CarDetails from "../pages/listings/CarDetails.jsx";
-import Blog from "../pages/blog/Blog.jsx";
-import AllBlog from "../pages/blog/AllBlog.jsx";
-import CarEstimator from "../pages/features/CarEstimator.jsx";
-import OurPrivacyPolicy from "../pages/ourPages/OurPrivacyPolicy.jsx";
-import TermsCondition from "../pages/ourPages/TermsCondition.jsx";
-import About from "../pages/about/About.jsx";
-import Contact from "../pages/contact/Contact.jsx";
-import HelpCenter from "../pages/help/HelpCenter.jsx";
-import FAQs from "../pages/help/FAQs.jsx";
+import AuctionsActions from "../pages/features/auctions/Actions.jsx";
 
 // Public core routes (Lazy)
 const Signup = lazyImport(() => import("../pages/auth/SignUp.jsx"));
+const Blog = lazyImport(() => import("../pages/blog/Blog.jsx"));
+const AllBlog = lazyImport(() => import("../pages/blog/AllBlog.jsx"));
+const CarEstimator = lazyImport(() => import("../pages/features/CarEstimator.jsx"));
+const OurPrivacyPolicy = lazyImport(() => import("../pages/ourPages/OurPrivacyPolicy.jsx"));
+const TermsCondition = lazyImport(() => import("../pages/ourPages/TermsCondition.jsx"));
+const About = lazyImport(() => import("../pages/about/About.jsx"));
+const Contact = lazyImport(() => import("../pages/contact/Contact.jsx"));
+const HelpCenter = lazyImport(() => import("../pages/help/HelpCenter.jsx"));
+const FAQs = lazyImport(() => import("../pages/help/FAQs.jsx"));
 const CategoryListings = lazyImport(
   () => import("../pages/listings/CategoryListings.jsx"),
 );
@@ -44,7 +45,6 @@ const AuctionGuideDetail = lazyImport(
 const CategoryGuideDetail = lazyImport(
   () => import("../pages/listings/CategoryGuideDetail.jsx"),
 );
-import AuctionsActions from "../pages/features/auctions/Actions.jsx";
 const LiveAuction = lazyImport(() => import("../pages/features/auctions/LiveAuction.jsx"));
 const AuctionSchedule = lazyImport(
   () => import("../pages/features/auctions/AuctionSchedule.jsx"),

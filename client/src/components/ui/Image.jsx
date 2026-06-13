@@ -1,10 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { optimizeCloudinaryUrl } from "../../utils/imageUtils";
+import { optimizeCloudinaryUrl, generateCloudinarySrcSet } from "../../utils/imageUtils";
 
-/**
- * Unified Image Component
- * Includes lazy loading, error handling, and Cloudinary optimization
- */
 const Image = ({
   src,
   alt = "",
@@ -16,16 +12,14 @@ const Image = ({
   placeholder = null,
   optimizeCloudinary = true,
   cloudinaryOptions = {},
+  responsive = false,
+  sizes = "100vw",
   ...props
 }) => {
-  // Lazy images use native loading="lazy" + dimensions from props/parent (CLS-safe).
-  // Non-lazy preload decode before paint to reduce flash inside fixed-aspect wrappers.
   const [isLoading, setIsLoading] = useState(() => !lazy);
   const [hasError, setHasError] = useState(false);
   const [imgSrc, setImgSrc] = useState(src);
 
-  // Inline onError / cloudinaryOptions objects change identity every render; including them in the
-  // preload effect deps was re-running preload → skeleton pulse ("ghost"/blur loop) on parents that re-render often.
   const onErrorRef = useRef(onError);
   const cloudinaryOptionsRef = useRef(cloudinaryOptions);
   onErrorRef.current = onError;
@@ -63,19 +57,23 @@ const Image = ({
       setIsLoading(false);
       try {
         onErrorRef.current?.();
-      } catch {
-        /* Optional handlers often expect a DOM event; preload path has none */
-      }
+      } catch {}
     };
     img.src = optimizedSrc;
   }, [src, lazy, optimizeCloudinary]);
 
-  // Show placeholder while loading
+  const srcSet =
+    responsive && src?.includes("cloudinary.com")
+      ? generateCloudinarySrcSet(
+          src,
+          cloudinaryOptions.responsiveSizes || [200, 300, 400, 600],
+        )
+      : undefined;
+
   if (isLoading && placeholder) {
     return placeholder;
   }
 
-  // Show error state
   if (hasError) {
     return (
       <div
@@ -88,7 +86,6 @@ const Image = ({
     );
   }
 
-  // Show loading skeleton
   if (isLoading) {
     return (
       <div
@@ -99,10 +96,11 @@ const Image = ({
     );
   }
 
-  // Show actual image
   return (
     <img
       src={imgSrc}
+      srcSet={srcSet}
+      sizes={srcSet ? sizes : undefined}
       alt={alt}
       className={className}
       width={width}

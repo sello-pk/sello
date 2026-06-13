@@ -53,11 +53,11 @@ export const optimizeCloudinaryUrl = (url, options = {}) => {
   }
 
   const {
-    width = 400,
-    height = 267,
+    width = 300,
+    height = 200,
     crop = 'fill',
-    quality = 85,
-    format = 'auto'
+    format = 'auto',
+    sharpen = false,
   } = options;
 
   // Extract the base URL and public ID
@@ -70,12 +70,22 @@ export const optimizeCloudinaryUrl = (url, options = {}) => {
   // Build transformation parameters
   const transformations = [
     `f_${format}`,
-    `q_auto:eco`, // Use eco mode for better compression
+    `q_auto:eco`,
     `c_${crop}`,
     `w_${width}`,
     `h_${height}`,
-    `e_sharpen` // Add sharpening filter for better clarity
   ];
+  if (sharpen) transformations.push(`e_sharpen`);
 
   return `${baseUrl}${transformations.join(',')}/${publicIdWithFolder}`;
+};
+
+export const generateCloudinarySrcSet = (url, sizes = [200, 300, 400, 600]) => {
+  if (!url || !url.includes('cloudinary.com')) return '';
+  return sizes
+    .map((w) => {
+      const optUrl = optimizeCloudinaryUrl(url, { width: w, height: Math.round(w * 0.667) });
+      return `${optUrl} ${w}w`;
+    })
+    .join(', ');
 };

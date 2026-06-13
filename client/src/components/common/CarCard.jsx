@@ -215,12 +215,15 @@ const CarCard = ({
               className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
               width="400"
               height="267"
+              lazy
+              responsive
               cloudinaryOptions={{
                 width: 400,
                 height: 267,
                 quality: 85,
                 crop: 'fill',
-                format: 'auto'
+                format: 'auto',
+                responsiveSizes: [200, 300, 400, 600],
               }}
             />
           ) : (
@@ -365,12 +368,15 @@ const CarCard = ({
             className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
             width="400"
             height="267"
+            lazy
+            responsive
             cloudinaryOptions={{
               width: 400,
               height: 267,
               quality: 85,
               crop: 'fill',
-              format: 'auto'
+              format: 'auto',
+              responsiveSizes: [200, 300, 400, 600],
             }}
           />
         ) : (

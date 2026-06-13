@@ -10,16 +10,9 @@ import { SocketProvider } from "./contexts/SocketContext.jsx";
 import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
 import AppRoot from "./AppRoot.jsx";
 import { logger } from "./utils/logger.js";
-import {
-  lazyImport,
-  tryReloadOnceForStaleChunk,
-} from "./utils/lazyImports.js";
-import { scheduleFacebookPixelLoad } from "./utils/metaPixel.js";
+import { tryReloadOnceForStaleChunk } from "./utils/lazyImports.js";
 import heroLcpDesktop from "./assets/images/hero.webp";
 import heroLcpMobile from "./assets/images/heroMobile.webp";
-
-// Defer Meta Pixel network (index.html only stubs fbq)
-scheduleFacebookPixelLoad();
 
 // Dev fallback: production uses /lcp/* preloads in index.html
 if (typeof document !== "undefined" && import.meta.env.DEV) {

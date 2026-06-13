@@ -514,23 +514,25 @@ const App = () => {
 
   useEffect(() => {
     const projectId = import.meta.env.VITE_CLARITY_PROJECT_ID;
+    if (!projectId) return;
 
-    if (!projectId) {
-      console.error("Microsoft Clarity Project ID missing");
-      return;
+    const initClarity = () => {
+      clarity.init(projectId);
+      clarity.setTag("environment", import.meta.env.MODE);
+      clarity.setTag("platform", "web");
+    };
+
+    if (typeof window.requestIdleCallback === "function") {
+      requestIdleCallback(initClarity, { timeout: 5000 });
+    } else {
+      setTimeout(initClarity, 3000);
     }
-
-    clarity.init(projectId);
-
-    clarity.setTag("environment", import.meta.env.MODE);
-    clarity.setTag("platform", "web");
   }, []);
 
   useEffect(() => {
     if (!location?.pathname) return;
 
     clarity.setTag("page", location.pathname);
-
     clarity.setEvent("page_view");
   }, [location.pathname]);
 

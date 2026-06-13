@@ -3,10 +3,9 @@
  * Scripts load after first interaction or ~4s idle so FCP/LCP/TBT are not blocked.
  */
 
-export const META_PIXEL_ID = "1329404792372303";
+export const META_PIXEL_ID = "1687648445884627";
 
 let pixelLoadScheduled = false;
-let pixelScriptLoading = false;
 
 /** Queue calls until fbevents.js is loaded (same pattern as Meta's snippet). */
 function ensureFbqStub() {
