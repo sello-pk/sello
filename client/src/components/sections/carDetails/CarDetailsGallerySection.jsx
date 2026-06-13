@@ -437,7 +437,7 @@ const CarDetailsGallerySection = () => {
                     ref={(el) => (thumbnailRefs.current[idx] = el)}
                     type="button"
                     onClick={() => setCurrent(idx)}
-                    className={`mb-2 flex aspect-square w-full items-center justify-center overflow-hidden rounded-lg border-2 bg-gray-100 transition-[border-color,box-shadow,opacity] duration-150 ${
+                    className={`mb-2 flex aspect-square w-full items-center justify-center overflow-hidden rounded-lg border-2 bg-gray-100 transition-[border-color,opacity] duration-150 ${
                       current === idx
                         ? "border-primary-500 opacity-100 ring-2 ring-primary-200 ring-offset-2 ring-offset-white"
                         : "border-gray-200 opacity-75 hover:border-gray-300 hover:opacity-100"
@@ -630,7 +630,7 @@ const CarDetailsGallerySection = () => {
                   key={idx}
                   type="button"
                   onClick={() => setCurrent(idx)}
-                  className={`flex h-20 w-20 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border-2 bg-gray-100 transition-[border-color,box-shadow,opacity] duration-150 ${
+                  className={`flex h-20 w-20 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border-2 bg-gray-100 transition-[border-color,opacity] duration-150 ${
                     current === idx
                       ? "border-primary-500 ring-2 ring-primary-200 ring-offset-2 ring-offset-white"
                       : "border-gray-200 opacity-90 hover:border-gray-300 hover:opacity-100"
@@ -811,7 +811,7 @@ const CarDetailsGallerySection = () => {
                               setPanPosition({ x: 0, y: 0 });
                               setIsZoomed(false);
                             }}
-                            className={`flex h-16 w-16 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border-2 bg-black/40 transition-[border-color,opacity,box-shadow] ${
+                            className={`flex h-16 w-16 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border-2 bg-black/40 transition-[border-color,opacity] ${
                               modalCurrentIndex === idx
                                 ? "border-primary-500 opacity-100 ring-2 ring-primary-200 ring-offset-2 ring-offset-black/50"
                                 : "border-white/30 opacity-60 hover:border-white/50 hover:opacity-100"

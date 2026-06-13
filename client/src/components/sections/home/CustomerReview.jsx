@@ -160,7 +160,7 @@ const CustomerReview = () => {
             {allReviews.map((review) => (
               <div
                 key={review.id}
-                className="group relative bg-gradient-to-br from-white via-white to-primary-50/30 backdrop-blur-xl rounded-3xl shadow-xl border border-white/50 p-8 h-full flex flex-col justify-between hover:shadow-2xl hover:shadow-primary-500/20 transition-[transform,box-shadow,opacity] duration-500 hover:-translate-y-2 overflow-hidden"
+                className="group relative bg-gradient-to-br from-white via-white to-primary-50/30 backdrop-blur-xl rounded-3xl shadow-xl border border-white/50 p-8 h-full flex flex-col justify-between hover:shadow-2xl hover:shadow-primary-500/20 transition-[transform,opacity] duration-500 hover:-translate-y-2 overflow-hidden"
               >
                 {/* Background decoration */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary-100/20 to-primary-200/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
@@ -428,7 +428,7 @@ const CustomerReview = () => {
                   aria-label={`Go to review ${index + 1}`}
                 >
                   <span
-                    className={`block h-3 w-3 origin-center rounded-full transition-[transform,background-color,box-shadow] duration-300 ease-out ${
+                    className={`block h-3 w-3 origin-center rounded-full transition-[transform,background-color] duration-300 ease-out ${
                       index === currentReview
                         ? "scale-x-[4] bg-gradient-to-r from-primary-500 to-primary-600 shadow-lg shadow-primary-500/25"
                         : "scale-x-100 bg-slate-300 hover:bg-slate-400"
@@ -447,7 +447,7 @@ const CustomerReview = () => {
             <button
               type="button"
               onClick={handleOpenReviewForm}
-              className="bg-primary-500 hover:opacity-90 text-white px-8 py-4 rounded font-semibold transition-[transform,opacity,box-shadow] duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-700"
+              className="bg-primary-500 hover:opacity-90 text-white px-8 py-4 rounded font-semibold transition-[transform,opacity] duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-700"
             >
               Write a Review
             </button>
@@ -459,7 +459,7 @@ const CustomerReview = () => {
               <button
                 type="button"
                 onClick={() => navigate("/login")}
-                className="bg-primary-700 hover:bg-primary-800 text-white px-8 py-4 rounded-xl font-semibold transition-[transform,opacity,box-shadow] duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-700"
+                className="bg-primary-700 hover:bg-primary-800 text-white px-8 py-4 rounded-xl font-semibold transition-[transform,opacity] duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-700"
               >
                 Login to Write a Review
               </button>

@@ -257,7 +257,7 @@ const GetAllCarsSection = () => {
               aria-label={tab.label}
               title={tab.label}
               onClick={() => handleTabChange(tab.id)}
-              className={`min-w-0 flex-1 basis-0 sm:flex-none sm:basis-auto rounded-lg font-semibold transition-[color,background-color,box-shadow] duration-200 px-2 py-2 text-xs sm:px-4 sm:py-2.5 sm:text-sm whitespace-nowrap ${
+              className={`min-w-0 flex-1 basis-0 sm:flex-none sm:basis-auto rounded-lg font-semibold transition-[color,background-color] duration-200 px-2 py-2 text-xs sm:px-4 sm:py-2.5 sm:text-sm whitespace-nowrap ${
                 activeTab === tab.id
                   ? "bg-white text-[#0B0C1E] shadow-sm"
                   : "text-gray-600 hover:text-[#0B0C1E] hover:bg-white/50"
