@@ -217,6 +217,7 @@ const CarCard = ({
               height="267"
               lazy
               responsive
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               cloudinaryOptions={{
                 width: 400,
                 height: 267,
@@ -370,6 +371,7 @@ const CarCard = ({
             height="267"
             lazy
             responsive
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             cloudinaryOptions={{
               width: 400,
               height: 267,

@@ -15,7 +15,6 @@ import { ThemeProvider } from "./contexts/ThemeContext.jsx";
 import AppRouter from "./routes/AppRouter.jsx";
 import SEO from "./components/common/SEO.jsx";
 import useMetaPixel from "./hooks/useMetaPixel.js";
-import { clarity } from "react-microsoft-clarity";
 
 const prettifySlug = (value = "") =>
   value
@@ -512,14 +511,20 @@ const App = () => {
     [location.pathname, location.search],
   );
 
+  const clarityRef = React.useRef(null);
+
   useEffect(() => {
     const projectId = import.meta.env.VITE_CLARITY_PROJECT_ID;
     if (!projectId) return;
 
-    const initClarity = () => {
-      clarity.init(projectId);
-      clarity.setTag("environment", import.meta.env.MODE);
-      clarity.setTag("platform", "web");
+    const initClarity = async () => {
+      try {
+        const mod = await import("react-microsoft-clarity");
+        clarityRef.current = mod.clarity;
+        mod.clarity.init(projectId);
+        mod.clarity.setTag("environment", import.meta.env.MODE);
+        mod.clarity.setTag("platform", "web");
+      } catch {}
     };
 
     if (typeof window.requestIdleCallback === "function") {
@@ -530,10 +535,10 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    if (!location?.pathname) return;
+    if (!location?.pathname || !clarityRef.current) return;
 
-    clarity.setTag("page", location.pathname);
-    clarity.setEvent("page_view");
+    clarityRef.current.setTag("page", location.pathname);
+    clarityRef.current.setEvent("page_view");
   }, [location.pathname]);
 
   const hideNavbarFooter = [

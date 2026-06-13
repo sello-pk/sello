@@ -6,7 +6,6 @@ import React, {
   useState,
   useCallback,
 } from "react";
-import { io } from "socket.io-client";
 import { SOCKET_BASE_URL } from "../redux/config";
 import toast from "react-hot-toast";
 
@@ -62,7 +61,7 @@ export const SocketProvider = ({ children }) => {
 
   const token = getToken();
 
-  const createSocketConnection = useCallback(() => {
+  const createSocketConnection = useCallback(async () => {
     const currentToken = getToken();
     if (!currentToken) return;
 
@@ -75,6 +74,8 @@ export const SocketProvider = ({ children }) => {
     setConnectionAttempted(true);
 
     try {
+      const { io } = await import("socket.io-client");
+
       // CSP-safe default: in production, prefer polling-only (avoids wss:// blocks when connect-src isn't set).
       const transports =
         import.meta.env.PROD ? ["polling"] : ["websocket", "polling"];

@@ -24,6 +24,21 @@ export default defineConfig({
       ],
     }),
 
+    // Non-blocking CSS: replace <link rel="stylesheet"> with preload+onload pattern
+    {
+      name: "non-blocking-css",
+      enforce: "post",
+      transformIndexHtml: {
+        enforce: "post",
+        transform(html) {
+          return html.replace(
+            /<link rel="stylesheet" crossorigin href="([^"]+\.css)">/g,
+            '<link rel="preload" as="style" crossorigin href="$1" onload="this.onload=null;this.rel=\'stylesheet\'">\n    <noscript><link rel="stylesheet" crossorigin href="$1"></noscript>'
+          );
+        },
+      },
+    },
+
     // Fast image optimization - minimal build time impact
     ViteImageOptimizer({
       webp: {
@@ -95,8 +110,8 @@ export default defineConfig({
             "react-dom",
             "react-is",
             "react-redux",
-            "@reduxjs/toolkit",
           ],
+          "redux-toolkit": ["@reduxjs/toolkit"],
           "react-router": ["react-router-dom"],
           
           // UI libraries - commonly used
