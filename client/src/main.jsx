@@ -5,6 +5,7 @@ import App from "./App.jsx";
 import { Provider } from "react-redux";
 import { store } from "./redux/store.js";
 import { BrowserRouter } from "react-router-dom";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { SupportChatProvider } from "./contexts/SupportChatContext.jsx";
 import { SocketProvider } from "./contexts/SocketContext.jsx";
 import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
@@ -50,8 +51,6 @@ window.addEventListener("unhandledrejection", (event) => {
     event.preventDefault();
   }
 });
-
-import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 

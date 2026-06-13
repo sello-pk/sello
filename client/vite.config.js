@@ -119,7 +119,7 @@ export default defineConfig({
           "forms": ["react-select"],
           
           // Heavy libraries - split and lazy loaded
-          "maps": ["leaflet", "react-leaflet", "@react-google-maps/api"],
+          "maps": ["leaflet", "react-leaflet"],
           "editors": ["@tiptap/react", "@tiptap/starter-kit", "@tinymce/tinymce-react"],
           "charts": ["recharts"],
           "documents": ["jspdf", "jspdf-autotable", "xlsx"],

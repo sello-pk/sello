@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import { ArrowRight, Clock, User } from "lucide-react";
 import carAuctionImg from "../../../assets/blogs/carAuction.svg";
 import auctionSheetVerificationImg from "../../../assets/blogs/auctionSheetVerification.svg";
@@ -318,12 +317,8 @@ export default function AuctionBlogsSection() {
           {auctionBlogPosts.map((post, index) => {
             const isImageLeft = index % 2 === 1;
             return (
-              <motion.article
+              <article
                 key={post.id}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.4, delay: index * 0.06 }}
                 className={`group flex flex-col rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#FDFBF7] lg:items-start ${isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"}`}
               >
                 <div className="relative flex-1 flex flex-col justify-between p-5 sm:p-8 lg:p-10 min-h-[260px] lg:min-h-0 lg:min-w-0">
@@ -379,7 +374,7 @@ export default function AuctionBlogsSection() {
                     <span>{post.readTime}</span>
                   </div>
                 </div>
-              </motion.article>
+              </article>
             );
           })}
         </div>

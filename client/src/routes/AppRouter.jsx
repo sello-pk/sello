@@ -13,12 +13,11 @@ import {
  * first paint, which removes the large RouteLoader → page layout swap (CLS).
  */
 import Home from "../pages/Home.jsx";
-import Login from "../pages/auth/Login.jsx";
-import CarListings from "../pages/listings/CarListings.jsx";
-import CarDetails from "../pages/listings/CarDetails.jsx";
 import AuctionsActions from "../pages/features/auctions/Actions.jsx";
 
 // Public core routes (Lazy)
+const Login = lazyImport(() => import("../pages/auth/Login.jsx"));
+const CarDetails = lazyImport(() => import("../pages/listings/CarDetails.jsx"));
 const Signup = lazyImport(() => import("../pages/auth/SignUp.jsx"));
 const Blog = lazyImport(() => import("../pages/blog/Blog.jsx"));
 const AllBlog = lazyImport(() => import("../pages/blog/AllBlog.jsx"));
@@ -73,6 +72,7 @@ const WalletDashboardAuction = lazyImport(
 const SellerAuctionDashboard = lazyImport(
   () => import("../pages/features/auctions/SellerAuctionDashboard.jsx"),
 );
+const CarListings = lazyImport(() => import("../pages/listings/CarListings.jsx"));
 const FilteredResults = lazyImport(
   () => import("../pages/listings/FilteredResults.jsx"),
 );

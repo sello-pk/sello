@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import {
   IoFlashOutline as Zap,
   IoArrowForward as ArrowRight,
@@ -192,7 +191,7 @@ export default function AuctionsActions() {
         </div>
         <div className="relative max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
           <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
-            <motion.div initial={false}>
+            <div>
               {liveAuction && (
                 <Badge className="bg-red-500 text-white border-0 mb-6 animate-pulse">
                   <Zap className="w-4 h-4 mr-1" /> Live Auction in Progress
@@ -229,8 +228,8 @@ export default function AuctionsActions() {
                   </Button>
                 </Link>
               </div>
-            </motion.div>
-            <motion.div initial={false} className="hidden lg:block">
+            </div>
+            <div className="hidden lg:block">
               <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20">
                 <div className="text-center mb-6">
                   <h3 className="text-white font-semibold text-xl mb-2">
@@ -268,7 +267,7 @@ export default function AuctionsActions() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -278,11 +277,8 @@ export default function AuctionsActions() {
         <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-5 md:gap-8">
             {stats.map((stat, i) => (
-              <motion.div
+              <div
                 key={i}
-                initial={false}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
                 className="text-center"
               >
                 <stat.icon className="w-8 h-8 mx-auto mb-2 text-primary" />
@@ -290,7 +286,7 @@ export default function AuctionsActions() {
                   {stat.value}
                 </p>
                 <p className="text-sm text-slate-500">{stat.label}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -298,9 +294,7 @@ export default function AuctionsActions() {
 
       {/* Trust Badges */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-8xl mx-auto">
-        <motion.div
-          initial={false}
-          whileInView={{ opacity: 1, y: 0 }}
+        <div
           className="text-center mb-10"
         >
           <h2 className="text-3xl md:text-4xl font-bold text-[#050B20] mb-3">
@@ -309,7 +303,7 @@ export default function AuctionsActions() {
           <p className="text-slate-500 max-w-2xl mx-auto">
             Pakistan's most transparent and trusted car auction platform
           </p>
-        </motion.div>
+        </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { icon: Shield, text: "Secure Payment" },
@@ -317,14 +311,13 @@ export default function AuctionsActions() {
             { icon: Users, text: "Verified Bidders" },
             { icon: CheckCircle, text: "Quality Checked" },
           ].map((item, i) => (
-            <motion.div
+            <div
               key={i}
-              whileHover={{ y: -5 }}
-              className="bg-white p-4 rounded-xl shadow-md text-center border border-slate-100"
+              className="bg-white p-4 rounded-xl shadow-md text-center border border-slate-100 hover:-translate-y-1 transition-transform duration-200"
             >
               <item.icon className="w-8 h-8 mx-auto text-primary mb-2" />
               <p className="font-medium text-sm">{item.text}</p>
-            </motion.div>
+            </div>
           ))}
         </div>
       </section>
@@ -338,10 +331,7 @@ export default function AuctionsActions() {
         <div className="relative bg-white py-16 md:py-20 w-full rounded-tl-[60px] md:rounded-tl-[80px] shadow-lg">
           <div className="max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8">
             <div className="max-w-full mx-auto text-center">
-              <motion.div
-                initial={false}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, amount: 0.4 }}
+              <div
                 className="group relative bg-white rounded-2xl md:rounded-3xl p-8 sm:p-10 md:p-12 shadow-lg border border-gray-100 hover:border-primary-200 hover:shadow-2xl transition-all duration-500 overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-primary-50/60 to-transparent rounded-2xl md:rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
@@ -369,7 +359,7 @@ export default function AuctionsActions() {
                     </Link>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             </div>
           </div>
         </div>
