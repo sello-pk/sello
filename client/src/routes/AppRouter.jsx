@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, lazy } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import RouteLoader from "../components/common/RouteLoader";
 import { lazyImport } from "../utils/lazyImports.js";
@@ -151,6 +151,23 @@ const BlogMediaLibrary = lazyImport(
   () => import("../pages/admin/BlogMediaLibrary.jsx"),
 );
 
+// Google OAuth provider — lazy-loaded to prevent gsi/client (97 KiB) from loading on every page
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const LazyGoogleOAuthProvider = lazy(() =>
+  import("@react-oauth/google").then((m) => ({ default: m.GoogleOAuthProvider }))
+);
+
+function AuthRouteGuard({ children }) {
+  if (!googleClientId) return <>{children}</>;
+  return (
+    <Suspense fallback={<>{children}</>}>
+      <LazyGoogleOAuthProvider clientId={googleClientId}>
+        {children}
+      </LazyGoogleOAuthProvider>
+    </Suspense>
+  );
+}
+
 const AppRouter = () => {
   const location = useLocation();
   // Force route tree to remount when location changes (fixes production bug: URL updates but view stays, e.g. after leaving /filter)
@@ -160,8 +177,8 @@ const AppRouter = () => {
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/sign-up" element={<Signup />} />
+        <Route path="/login" element={<AuthRouteGuard><Login /></AuthRouteGuard>} />
+        <Route path="/sign-up" element={<AuthRouteGuard><Signup /></AuthRouteGuard>} />
 
         {/* Listings & Categories */}
         <Route path="/listings" element={<CarListings />} />

@@ -120,9 +120,9 @@ export default defineConfig({
           
           // Heavy libraries - split and lazy loaded
           "maps": ["leaflet", "react-leaflet"],
-          "editors": ["@tiptap/react", "@tiptap/starter-kit", "@tinymce/tinymce-react"],
+          // editors removed — only used in lazy admin blog routes
           "charts": ["recharts"],
-          "documents": ["jspdf", "jspdf-autotable", "xlsx"],
+          // documents removed — only used in lazy admin routes
           "animation": ["gsap"],
           "auth": ["@react-oauth/google"],
           
@@ -132,8 +132,7 @@ export default defineConfig({
           "socket": ["socket.io-client"],
           "axios": ["axios"],
           
-          // Additional optimization chunks
-          "framer-motion": ["framer-motion"],
+          // Additional optimization chunks (removed: framer-motion — only in lazy routes)
         },
       },
     },
@@ -147,13 +146,6 @@ export default defineConfig({
   },
 
   optimizeDeps: {
-    include: [
-      "@tiptap/react",
-      "@tiptap/starter-kit",
-      "@tiptap/extension-image",
-      "@tiptap/extension-link",
-      "@tiptap/extension-text-align",
-      "@tiptap/extension-underline",
-    ],
+    include: [],
   },
 });
