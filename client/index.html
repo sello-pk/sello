@@ -307,42 +307,42 @@
     <!-- React Entry -->
     <script type="module" src="/src/main.jsx"></script>
 
-    <!-- Deferred third-party scripts (fire after window.onload + 5s to keep TBT low & avoid network contention on mobile) -->
+    <!-- Deferred third-party scripts (fire 30s after load or on first user interaction — whichever comes first) -->
     <script>
-      (function(){window._deferRun=function(cb,opts){var to=opts&&opts.timeout||5000;if(document.readyState==="complete"){setTimeout(cb,to)}else{window.addEventListener("load",function(){setTimeout(cb,to)})}}})()
+      (function(){window._deferRun=function(cb,opts){var to=opts&&opts.timeout||5000;var fired=!1;function fire(){if(fired)return;fired=!0;cb()};var evts=["click","scroll","touchstart","keydown"];for(var i=0;i<evts.length;i++)document.addEventListener(evts[i],fire,{once:!0,passive:!0});setTimeout(fire,to)}})()
     </script>
 
     <!-- Meta Pixel: stub immediate, full load deferred -->
     <script>
       !(function(f,b,e,v,n){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version="2.0";n.queue=[]})(window,document);
-      window._deferRun(function(){if(window.fbq._loaded)return;window.fbq._loaded=!0;var t=document.createElement("script");t.async=!0;t.src="https://connect.facebook.net/en_US/fbevents.js";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(t,s);fbq("init","1687648445884627");fbq("track","PageView")},{timeout:5e3})
+      window._deferRun(function(){if(window.fbq._loaded)return;window.fbq._loaded=!0;var t=document.createElement("script");t.async=!0;t.src="https://connect.facebook.net/en_US/fbevents.js";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(t,s);fbq("init","1687648445884627");fbq("track","PageView")},{timeout:30e3})
     </script>
 
     <!-- TikTok Pixel: stub immediate, full load deferred -->
     <script>
       !(function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"];ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e};ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{};ttq._i[e]=[];ttq._i[e]._u=r;ttq._t=ttq._t||{};ttq._t[e]=+new Date;ttq._o=ttq._o||{};ttq._o[e]=n||{};n=document.createElement("script");n.type="text/javascript";n.async=!0;n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};window._ttqLoad=function(){ttq.load("D8MDRHBC77UCQ7E688EG");ttq.page()}})(window,document,"ttq");
-      window._deferRun(function(){window._ttqLoad()},{timeout:5e3})
+      window._deferRun(function(){window._ttqLoad()},{timeout:30e3})
     </script>
 
     <!-- GA4: defer dynamic injection (gtag stubs already in <head>) -->
     <script>
-      window._deferRun(function(){var s=document.createElement("script");s.async=!0;s.src="https://www.googletagmanager.com/gtag/js?id=G-81SP569LXT";document.body.appendChild(s)},{timeout:5e3})
+      window._deferRun(function(){var s=document.createElement("script");s.async=!0;s.src="https://www.googletagmanager.com/gtag/js?id=G-81SP569LXT";document.body.appendChild(s)},{timeout:30e3})
     </script>
 
     <!-- Clarity: stub immediate, full load deferred -->
     <script>
       (function(c,l,a,r,i){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)}})(window,document,"clarity","script");
-      window._deferRun(function(){if(window.clarity._loaded)return;window.clarity._loaded=!0;var t=document.createElement("script");t.async=!0;t.src="https://www.clarity.ms/tag/x3oyvl4773";var y=document.getElementsByTagName("script")[0];y.parentNode.insertBefore(t,y)},{timeout:5e3})
+      window._deferRun(function(){if(window.clarity._loaded)return;window.clarity._loaded=!0;var t=document.createElement("script");t.async=!0;t.src="https://www.clarity.ms/tag/x3oyvl4773";var y=document.getElementsByTagName("script")[0];y.parentNode.insertBefore(t,y)},{timeout:30e3})
     </script>
 
     <!-- GTM: defer injection (dataLayer already defined in <head>) -->
     <script>
-      window._deferRun(function(){(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({"gtm.start":new Date().getTime(),event:"gtm.js"});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!="dataLayer"?"&l="+l:"";j.async=!0;j.src="https://www.googletagmanager.com/gtm.js?id="+i+dl;f.parentNode.insertBefore(j,f)})(window,document,"script","dataLayer","GTM-KPGZZ337")},{timeout:5e3})
+      window._deferRun(function(){(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({"gtm.start":new Date().getTime(),event:"gtm.js"});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!="dataLayer"?"&l="+l:"";j.async=!0;j.src="https://www.googletagmanager.com/gtm.js?id="+i+dl;f.parentNode.insertBefore(j,f)})(window,document,"script","dataLayer","GTM-KPGZZ337")},{timeout:30e3})
     </script>
 
     <!-- ContentSquare: defer dynamic injection -->
     <script>
-      window._deferRun(function(){var s=document.createElement("script");s.async=!0;s.src="https://t.contentsquare.net/uxa/49bee21e3b2cf.js";document.body.appendChild(s)},{timeout:5e3})
+      window._deferRun(function(){var s=document.createElement("script");s.async=!0;s.src="https://t.contentsquare.net/uxa/49bee21e3b2cf.js";document.body.appendChild(s)},{timeout:30e3})
     </script>
   </body>
 </html>
