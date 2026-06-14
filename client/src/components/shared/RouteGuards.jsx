@@ -2,23 +2,23 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useGetMeQuery, useGetMyAuctionAccessStatusQuery } from "../../redux/services/api";
 import { canAccessMenu } from "../../utils/roleAccess";
 import { useMemo } from "react";
-import { clearAuthSession } from "../../utils/tokenManager";
+import { clearAuthSession, isAuthenticated } from "../../utils/tokenManager";
 
 /**
  * Protected Route Component
  * Ensures user is authenticated
  */
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem("token");
+  const authed = isAuthenticated();
   const {
     data: user,
     isLoading,
     isError,
   } = useGetMeQuery(undefined, {
-    skip: !token,
+    skip: !authed,
   });
 
-  if (!token) {
+  if (!authed) {
     return <Navigate to="/login" replace />;
   }
 
@@ -47,7 +47,7 @@ const ProtectedRoute = ({ children }) => {
  * Ensures user is authenticated and has admin role
  */
 const AdminRoute = () => {
-  const token = localStorage.getItem("token");
+  const authed = isAuthenticated();
   const location = useLocation();
   const {
     data: currentUser,
@@ -55,15 +55,14 @@ const AdminRoute = () => {
     isError,
     error,
   } = useGetMeQuery(undefined, {
-    skip: !token,
+    skip: !authed,
   });
 
-  // Create a key for Outlet to force re-render on navigation
   const outletKey = useMemo(() => {
     return `${location.pathname}${location.search}${location.hash}`;
   }, [location.pathname, location.search, location.hash]);
 
-  if (!token) {
+  if (!authed) {
     return <Navigate to="/login" replace />;
   }
 
@@ -147,20 +146,20 @@ const AdminRoute = () => {
  * Restricts routes to users with approved auction access.
  */
 const AuctionCapabilityRoute = () => {
-  const token = localStorage.getItem("token");
+  const authed = isAuthenticated();
   const { data: user, isLoading: userLoading, isError: userError } = useGetMeQuery(
     undefined,
-    { skip: !token },
+    { skip: !authed },
   );
   const {
     data: auctionAccess,
     isLoading: accessLoading,
     isError: accessError,
   } = useGetMyAuctionAccessStatusQuery(undefined, {
-    skip: !token || !user,
+    skip: !authed || !user,
   });
 
-  if (!token) {
+  if (!authed) {
     return <Navigate to="/login" replace />;
   }
 

@@ -4,7 +4,7 @@ import User from "../models/userModel.js";
 import { Blog } from "../models/blogModel.js";
 import CustomerRequest from "../models/customerRequestModel.js";
 import AuditLog from "../models/auditLogModel.js";
-import { Logger, sendEmail, createAuditLog } from "../utils/helpers.js";
+import { Logger, sendEmail, createAuditLog, escapeRegex } from "../utils/helpers.js";
 import {
   getCarApprovedTemplate,
   getCarRejectedTemplate,
@@ -320,8 +320,8 @@ export const getAllUsers = async (req, res) => {
     if (status) query.status = status;
     if (search)
       query.$or = [
-        { name: new RegExp(search, "i") },
-        { email: new RegExp(search, "i") },
+        { name: new RegExp(escapeRegex(search), "i") },
+        { email: new RegExp(escapeRegex(search), "i") },
       ];
     if (dateFrom || dateTo) {
       query.createdAt = {};
@@ -641,7 +641,7 @@ export const getAllDealers = async (req, res) => {
 
     const [dealers, total] = await Promise.all([
       User.find(match)
-        .select("-password")
+        .select("-password -otp -otpExpiry -phoneVerificationCode -phoneVerificationExpiry -paymentHistory")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)

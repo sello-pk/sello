@@ -4,6 +4,7 @@ import { buildCarQuery } from "../../utils/parseArray.js";
 import Logger from "../../utils/logger.js";
 import mongoose from "mongoose";
 import { getPriceAnalysis } from "../../utils/valuationHelper.js";
+import { escapeRegex } from "../../utils/helpers.js";
 
 export const getAllCars = async (req, res) => {
   try {
@@ -220,7 +221,7 @@ export const getModelsByMake = async (req, res) => {
     const match = {
       status: { $nin: ["deleted", "expired"] },
       $or: [{ isApproved: true }, { isApproved: { $exists: false } }],
-      make: { $regex: new RegExp(`^${make}$`, 'i') } // case-insensitive match
+      make: { $regex: new RegExp(`^${escapeRegex(make)}$`, 'i') }
     };
     
     const models = await Car.aggregate([
@@ -308,10 +309,10 @@ export const getYears = async (req, res) => {
     };
     
     if (make) {
-      query.make = { $regex: new RegExp(make, 'i') };
+      query.make = { $regex: new RegExp(escapeRegex(make), 'i') };
     }
     if (model) {
-      query.model = { $regex: new RegExp(model, 'i') };
+      query.model = { $regex: new RegExp(escapeRegex(model), 'i') };
     }
 
     const years = await Car.distinct('year', query);

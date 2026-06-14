@@ -28,7 +28,7 @@ import { AUCTION_REQUEST_TYPES, normalizeAuctionCapabilities } from "../utils/au
 export const getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id)
-      .select("-password -otp -otpExpiry")
+      .select("-password -otp -otpExpiry -phoneVerificationCode -phoneVerificationExpiry -paymentHistory -blockedUsers")
       .populate("carsPosted", "title make model price images")
       .populate("carsPurchased", "title make model price images")
       .populate("savedCars", "title make model price images");
@@ -660,7 +660,14 @@ export const getSavedSearches = async (req, res) => {
 
 export const createSavedSearch = async (req, res) => {
   try {
-    const search = await SavedSearch.create({ ...req.body, user: req.user._id });
+    const { name, searchCriteria, emailAlerts, alertFrequency } = req.body;
+    const search = await SavedSearch.create({
+      name,
+      searchCriteria,
+      emailAlerts,
+      alertFrequency,
+      user: req.user._id,
+    });
     return res.status(201).json({ success: true, data: search });
   } catch (error) {
     Logger.error("createSavedSearch error", error);
@@ -694,7 +701,14 @@ export const addReview = async (req, res) => {
 
 export const createReport = async (req, res) => {
   try {
-    const report = await Report.create({ ...req.body, reporter: req.user._id });
+    const { targetType, targetId, reason, description } = req.body;
+    const report = await Report.create({
+      targetType,
+      targetId,
+      reason,
+      description,
+      reporter: req.user._id,
+    });
     return res.status(201).json({ success: true, message: "Reported", data: report });
   } catch (error) {
     Logger.error("createReport error", error);
