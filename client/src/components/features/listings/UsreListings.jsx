@@ -31,7 +31,7 @@ const UserListings = () => {
   const [sortBy, setSortBy] = useState("newest");
   const [viewMode, setViewMode] = useState("grid");
   const [page, setPage] = useState(1);
-  const limit = 12;
+  const limit = 24;
   const {
     data,
     isLoading,

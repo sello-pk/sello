@@ -92,7 +92,7 @@ const DealerDashboard = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [newCar, setNewCar] = useState(createEmptyAuctionForm);
   const [listingsPage, setListingsPage] = useState(1);
-  const LISTINGS_PAGE_SIZE = 12;
+  const LISTINGS_PAGE_SIZE = 24;
   const photoInputRef = useRef(null);
   const [submitCarToAuction, { isLoading: isSubmittingAuctionCar }] =
     useSubmitCarToAuctionMutation();

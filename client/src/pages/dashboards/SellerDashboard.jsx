@@ -50,7 +50,7 @@ const SellerDashboard = () => {
   const [showAddCar, setShowAddCar] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [listingsPage, setListingsPage] = useState(1);
-  const LISTINGS_PAGE_SIZE = 12;
+  const LISTINGS_PAGE_SIZE = 24;
   const [newCar, setNewCar] = useState({
     make: "",
     model: "",

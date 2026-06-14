@@ -253,7 +253,7 @@ export const getMyCars = async (req, res) => {
     if (!req.user) return res.status(401).json({ success: false, message: "Unauthorized" });
     
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 12; // Adjusted to match other endpoints
+    const limit = parseInt(req.query.limit) || 24;
     const skip = (page - 1) * limit;
 
     const query = { 
