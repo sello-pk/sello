@@ -421,7 +421,7 @@ const normalizeAuctionGeoLocation = (geoLocation) => {
     try {
       parsedGeoLocation = JSON.parse(geoLocation);
     } catch (e) {
-      console.error("Failed to parse geoLocation:", e);
+      Logger.error("Failed to parse geoLocation:", e);
       parsedGeoLocation = {
         type: "Point",
         coordinates: [67.0011, 24.8607],

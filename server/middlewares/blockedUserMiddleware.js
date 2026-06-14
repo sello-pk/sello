@@ -5,6 +5,7 @@
 
 import User from '../models/userModel.js';
 import mongoose from 'mongoose';
+import Logger from '../utils/logger.js';
 
 /**
  * Check if user is blocked
@@ -42,7 +43,7 @@ export const checkBlockedUser = async (req, res, next) => {
 
         next();
     } catch (error) {
-        console.error('Blocked user check error:', error);
+        Logger.error('Blocked user check error:', error);
         next(); // Continue on error to avoid blocking legitimate requests
     }
 };
@@ -67,7 +68,7 @@ export const filterBlockedUsers = async (userId, userList) => {
             return !blockedIds.includes(userId);
         });
     } catch (error) {
-        console.error('Filter blocked users error:', error);
+        Logger.error('Filter blocked users error:', error);
         return userList; // Return original list on error
     }
 };

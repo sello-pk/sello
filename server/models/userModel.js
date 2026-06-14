@@ -166,25 +166,28 @@ const userSchema = new mongoose.Schema(
         default: false,
       },
     },
-    paymentHistory: [
-      {
-        amount: { type: Number, required: true },
-        currency: { type: String, default: "USD" },
-        paymentMethod: { type: String },
-        transactionId: { type: String },
-        purpose: {
-          type: String,
-          enum: ["subscription", "credits"],
-          required: true,
+    paymentHistory: {
+      type: [
+        {
+          amount: { type: Number, required: true },
+          currency: { type: String, default: "USD" },
+          paymentMethod: { type: String },
+          transactionId: { type: String },
+          purpose: {
+            type: String,
+            enum: ["subscription", "credits"],
+            required: true,
+          },
+          status: {
+            type: String,
+            enum: ["pending", "completed", "failed"],
+            default: "pending",
+          },
+          createdAt: { type: Date, default: Date.now },
         },
-        status: {
-          type: String,
-          enum: ["pending", "completed", "failed"],
-          default: "pending",
-        },
-        createdAt: { type: Date, default: Date.now },
-      },
-    ],
+      ],
+      validate: { validator: v => v.length <= 500, message: "Payment history exceeds 500 entries" },
+    },
     totalSpent: {
       type: Number,
       default: 0,
@@ -290,33 +293,22 @@ const userSchema = new mongoose.Schema(
       graceUntil: { type: Date, default: null },
     },
     // 🚗 Cars posted by user (as seller)
-    carsPosted: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Car",
-      },
-    ],
-    // 🚗 Cars bought by user (as buyer)
-    carsPurchased: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Car",
-      },
-    ],
-    // 💾 Saved/Wishlist cars
-    savedCars: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Car",
-      },
-    ],
-    // 🚫 Blocked users (for chat and interactions)
-    blockedUsers: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
+    carsPosted: {
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Car" }],
+      validate: { validator: v => v.length <= 1000, message: "carsPosted exceeds 1000 entries" },
+    },
+    carsPurchased: {
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Car" }],
+      validate: { validator: v => v.length <= 1000, message: "carsPurchased exceeds 1000 entries" },
+    },
+    savedCars: {
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Car" }],
+      validate: { validator: v => v.length <= 500, message: "savedCars exceeds 500 entries" },
+    },
+    blockedUsers: {
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+      validate: { validator: v => v.length <= 500, message: "blockedUsers exceeds 500 entries" },
+    },
   },
   {
     timestamps: true,

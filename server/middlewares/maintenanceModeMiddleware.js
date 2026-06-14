@@ -1,4 +1,5 @@
 import Settings from '../models/settingsModel.js';
+import Logger from '../utils/logger.js';
 
 /**
  * Maintenance Mode Middleware
@@ -47,7 +48,7 @@ export const checkMaintenanceMode = async (req, res, next) => {
     } catch (error) {
         // If there's an error checking settings, allow the request to proceed
         // This prevents maintenance mode from breaking the site if there's a DB issue
-        console.error("Maintenance Mode Check Error:", error.message);
+        Logger.error("Maintenance Mode Check Error:", error.message);
         return next();
     }
 };

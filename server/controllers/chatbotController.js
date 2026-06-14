@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Chat, Message, QuickReply } from "../models/chatModel.js";
+import Logger from "../utils/logger.js";
 
 /**
  * Chatbot Controller
@@ -43,7 +44,7 @@ export const getChatbotConfig = async (req, res) => {
       data: config,
     });
   } catch (error) {
-    console.error("Get Chatbot Config Error:", error.message);
+            Logger.error("Get Chatbot Config Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -96,7 +97,7 @@ export const updateChatbotConfig = async (req, res) => {
       data: config,
     });
   } catch (error) {
-    console.error("Update Chatbot Config Error:", error.message);
+            Logger.error("Update Chatbot Config Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -160,7 +161,7 @@ export const getChatbotStats = async (req, res) => {
       data: stats,
     });
   } catch (error) {
-    console.error("Get Chatbot Stats Error:", error.message);
+            Logger.error("Get Chatbot Stats Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -196,7 +197,7 @@ export const getQuickReplies = async (req, res) => {
       data: quickReplies,
     });
   } catch (error) {
-    console.error("Get Quick Replies Error:", error.message);
+            Logger.error("Get Quick Replies Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -244,7 +245,7 @@ export const createQuickReply = async (req, res) => {
       data: populated,
     });
   } catch (error) {
-    console.error("Create Quick Reply Error:", error.message);
+            Logger.error("Create Quick Reply Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -301,7 +302,7 @@ export const updateQuickReply = async (req, res) => {
       data: populated,
     });
   } catch (error) {
-    console.error("Update Quick Reply Error:", error.message);
+            Logger.error("Update Quick Reply Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -344,7 +345,7 @@ export const deleteQuickReply = async (req, res) => {
       message: "Quick reply deleted successfully.",
     });
   } catch (error) {
-    console.error("Delete Quick Reply Error:", error.message);
+            Logger.error("Delete Quick Reply Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -391,7 +392,7 @@ export const useQuickReply = async (req, res) => {
       data: quickReply,
     });
   } catch (error) {
-    console.error("Use Quick Reply Error:", error.message);
+            Logger.error("Use Quick Reply Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",

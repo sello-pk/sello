@@ -2,6 +2,7 @@ import { Chat, Message } from '../models/chatModel.js';
 import User from '../models/userModel.js';
 import Car from '../models/carModel.js';
 import mongoose from 'mongoose';
+import Logger from '../utils/logger.js';
 
 /**
  * Get All Chats (Admin - Chat Monitoring)
@@ -57,7 +58,7 @@ export const getAllChats = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error("Get All Chats Error:", error.message);
+        Logger.error("Get All Chats Error:", error.message);
         return res.status(500).json({
             success: false,
             message: "Server error. Please try again later.",
@@ -112,7 +113,7 @@ export const getChatMessages = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error("Get Chat Messages Error:", error.message);
+        Logger.error("Get Chat Messages Error:", error.message);
         return res.status(500).json({
             success: false,
             message: "Server error. Please try again later.",
@@ -162,7 +163,7 @@ export const reportChat = async (req, res) => {
             data: chat
         });
     } catch (error) {
-        console.error("Report Chat Error:", error.message);
+        Logger.error("Report Chat Error:", error.message);
         return res.status(500).json({
             success: false,
             message: "Server error. Please try again later.",
@@ -203,7 +204,7 @@ export const deleteChat = async (req, res) => {
             message: "Chat and all messages deleted successfully."
         });
     } catch (error) {
-        console.error("Delete Chat Error:", error.message);
+        Logger.error("Delete Chat Error:", error.message);
         return res.status(500).json({
             success: false,
             message: "Server error. Please try again later.",
@@ -297,7 +298,7 @@ export const sendChatMessage = async (req, res) => {
             data: populatedMessage
         });
     } catch (error) {
-        console.error("Send Chat Message Error:", error.message);
+        Logger.error("Send Chat Message Error:", error.message);
         return res.status(500).json({
             success: false,
             message: "Server error. Please try again later.",
@@ -354,7 +355,7 @@ export const deleteMessage = async (req, res) => {
             message: "Message deleted successfully."
         });
     } catch (error) {
-        console.error("Delete Message Error:", error.message);
+        Logger.error("Delete Message Error:", error.message);
         return res.status(500).json({
             success: false,
             message: "Server error. Please try again later.",
@@ -424,7 +425,7 @@ export const editMessage = async (req, res) => {
             data: populatedMessage
         });
     } catch (error) {
-        console.error("Edit Message Error:", error.message);
+        Logger.error("Edit Message Error:", error.message);
         return res.status(500).json({
             success: false,
             message: "Server error. Please try again later.",
@@ -476,7 +477,7 @@ export const getChatStatistics = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error("Get Chat Statistics Error:", error.message);
+        Logger.error("Get Chat Statistics Error:", error.message);
         return res.status(500).json({
             success: false,
             message: "Server error. Please try again later.",
@@ -546,7 +547,7 @@ export const getAllMessages = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error("Get All Messages Error:", error.message);
+        Logger.error("Get All Messages Error:", error.message);
         return res.status(500).json({
             success: false,
             message: "Server error. Please try again later.",

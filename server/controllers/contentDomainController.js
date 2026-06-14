@@ -528,7 +528,7 @@ export const getAllCategories = async (req, res) => {
     return res.status(200).json({ success: true, data });
   } catch (err) {
     Logger.error("Get All Categories Error", err);
-    console.error("Get All Categories Detailed Error:", err);
+    Logger.error("Get All Categories Detailed Error:", err);
     return res.status(500).json({
       success: false,
       message: "Server error.",

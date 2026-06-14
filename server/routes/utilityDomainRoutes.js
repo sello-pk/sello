@@ -63,7 +63,7 @@ router.get('/sitemap.xml', async (req, res) => {
         const cars = await Car.find({ status: 'active', isApproved: true })
             .select('_id updatedAt')
             .lean()
-            .limit(20000);
+            .limit(5000);
 
         const parts = [
             `<?xml version="1.0" encoding="UTF-8"?>`,

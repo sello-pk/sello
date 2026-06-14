@@ -486,7 +486,7 @@ export const initializeSocket = (server) => {
           });
         }, 3000);
       } catch (error) {
-        console.error("Error handling typing:", error);
+        Logger.error("Error handling typing:", error);
       }
     });
 
@@ -506,7 +506,7 @@ export const initializeSocket = (server) => {
           isAdmin: isAdmin || socket.user.role === "admin",
         });
       } catch (error) {
-        console.error("Error handling stop typing:", error);
+        Logger.error("Error handling stop typing:", error);
       }
     });
 
@@ -701,7 +701,7 @@ export const initializeSocket = (server) => {
               }
             }
           } catch (notifError) {
-            console.error("Error creating chat notifications:", notifError);
+            Logger.error("Error creating chat notifications:", notifError);
           }
 
           // Try chatbot response only for support chats (not car chats)
@@ -737,7 +737,7 @@ export const initializeSocket = (server) => {
                   });
                 }
               } catch (error) {
-                console.error("Chatbot error:", error);
+                Logger.error("Chatbot error:", error);
               }
             }, 1000); // 1 second delay for bot response
           } else if (socket.user.role === "admin") {
@@ -755,7 +755,7 @@ export const initializeSocket = (server) => {
             await chat.save();
           }
         } catch (error) {
-          console.error("Error sending message:", error);
+          Logger.error("Error sending message:", error);
           socket.emit("error", { message: "Failed to send message" });
         }
       }
@@ -778,7 +778,7 @@ export const initializeSocket = (server) => {
           });
         }
       } catch (error) {
-        console.error("Error marking message as seen:", error);
+        Logger.error("Error marking message as seen:", error);
       }
     });
 
@@ -806,7 +806,7 @@ export const initializeSocket = (server) => {
           userId: socket.userId,
         });
       } catch (error) {
-        console.error("Error marking chat as read:", error);
+        Logger.error("Error marking chat as read:", error);
       }
     });
 
@@ -838,7 +838,7 @@ export const initializeSocket = (server) => {
           chatId,
         });
       } catch (error) {
-        console.error("Error deleting message:", error);
+        Logger.error("Error deleting message:", error);
         socket.emit("error", { message: "Failed to delete message" });
       }
     });
@@ -887,7 +887,7 @@ export const initializeSocket = (server) => {
           `Live location enabled for car ${carId} by user ${socket.userId}`
         );
       } catch (error) {
-        console.error("Error enabling live location:", error);
+        Logger.error("Error enabling live location:", error);
         socket.emit("error", { message: "Failed to enable live location" });
       }
     });
@@ -917,7 +917,7 @@ export const initializeSocket = (server) => {
           updatedAt: tracker.updatedAt,
         });
       } catch (error) {
-        console.error("Error updating live location:", error);
+        Logger.error("Error updating live location:", error);
         socket.emit("error", { message: "Failed to update live location" });
       }
     });
@@ -946,7 +946,7 @@ export const initializeSocket = (server) => {
           );
         }
       } catch (error) {
-        console.error("Error disabling live location:", error);
+        Logger.error("Error disabling live location:", error);
       }
     });
 
@@ -968,7 +968,7 @@ export const initializeSocket = (server) => {
           });
         }
       } catch (error) {
-        console.error("Error subscribing to car location:", error);
+        Logger.error("Error subscribing to car location:", error);
       }
     });
 
@@ -977,7 +977,7 @@ export const initializeSocket = (server) => {
       try {
         socket.leave(`car-location:${carId}`);
       } catch (error) {
-        console.error("Error unsubscribing from car location:", error);
+        Logger.error("Error unsubscribing from car location:", error);
       }
     });
 

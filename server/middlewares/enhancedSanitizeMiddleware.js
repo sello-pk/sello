@@ -1,6 +1,7 @@
 // Enhanced input sanitization middleware
 import DOMPurify from "isomorphic-dompurify";
 import { body, validationResult } from "express-validator";
+import Logger from "../utils/logger.js";
 
 // XSS protection configuration
 const sanitizeConfig = {
@@ -85,7 +86,7 @@ export const sanitizeInput = (excludeFields = []) => {
 
       next();
     } catch (error) {
-      console.error("Sanitization error:", error);
+      Logger.error("Sanitization error:", error);
       next(error);
     }
   };

@@ -1,6 +1,7 @@
 import Comment from "../models/commentModel.js";
 import { Blog } from "../models/blogModel.js";
 import mongoose from "mongoose";
+import Logger from "../utils/logger.js";
 
 /**
  * Create a new comment
@@ -57,7 +58,7 @@ export const createComment = async (req, res) => {
       data: populatedComment,
     });
   } catch (error) {
-    console.error("Create Comment Error:", error.message);
+            Logger.error("Create Comment Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -106,7 +107,7 @@ export const getBlogComments = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Get Blog Comments Error:", error.message);
+            Logger.error("Get Blog Comments Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -161,7 +162,7 @@ export const getAllComments = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Get All Comments Error:", error.message);
+            Logger.error("Get All Comments Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -204,7 +205,7 @@ export const updateCommentStatus = async (req, res) => {
       data: comment,
     });
   } catch (error) {
-    console.error("Update Comment Status Error:", error.message);
+            Logger.error("Update Comment Status Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -246,7 +247,7 @@ export const deleteComment = async (req, res) => {
       message: "Comment deleted successfully.",
     });
   } catch (error) {
-    console.error("Delete Comment Error:", error.message);
+            Logger.error("Delete Comment Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",

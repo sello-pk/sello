@@ -2,6 +2,7 @@ import { Chat, Message } from "../models/chatModel.js";
 import Car from "../models/carModel.js";
 import User from "../models/userModel.js";
 import mongoose from "mongoose";
+import Logger from "../utils/logger.js";
 
 /**
  * Create or Get Car Chat (Buyer-Seller)
@@ -103,7 +104,7 @@ export const createCarChat = async (req, res) => {
       data: chatData,
     });
   } catch (error) {
-    console.error("Create Car Chat Error:", error.message);
+    Logger.error("Create Car Chat Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -160,7 +161,7 @@ export const getCarChatByCarId = async (req, res) => {
       data: chatData,
     });
   } catch (error) {
-    console.error("Get Car Chat Error:", error.message);
+    Logger.error("Get Car Chat Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -204,7 +205,7 @@ export const getCarChats = async (req, res) => {
       data: chatsData,
     });
   } catch (error) {
-    console.error("Get Car Chats Error:", error.message);
+    Logger.error("Get Car Chats Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -267,7 +268,7 @@ export const getSellerBuyerChats = async (req, res) => {
       data: chatsData,
     });
   } catch (error) {
-    console.error("Get Seller Buyer Chats Error:", error.message);
+    Logger.error("Get Seller Buyer Chats Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -345,7 +346,7 @@ export const getCarChatMessages = async (req, res) => {
       data: messages,
     });
   } catch (error) {
-    console.error("Get Car Chat Messages Error:", error.message);
+    Logger.error("Get Car Chat Messages Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -458,7 +459,7 @@ export const sendCarChatMessage = async (req, res) => {
             const url = await uploadCloudinary(file.buffer || file.path);
             return url;
           } catch (err) {
-            console.error("Error uploading attachment:", err);
+            Logger.error("Error uploading attachment:", err);
             return null;
           }
         })
@@ -530,7 +531,7 @@ export const sendCarChatMessage = async (req, res) => {
           });
         }
       } catch (notifError) {
-        console.error("Error creating notification:", notifError);
+        Logger.error("Error creating notification:", notifError);
         // Don't fail the message send if notification fails
       }
     }
@@ -556,7 +557,7 @@ export const sendCarChatMessage = async (req, res) => {
       });
     } catch (analyticsError) {
       // Don't fail the request if analytics fails
-      console.error("Failed to track analytics:", analyticsError);
+      Logger.error("Failed to track analytics:", analyticsError);
     }
 
     return res.status(201).json({
@@ -565,7 +566,7 @@ export const sendCarChatMessage = async (req, res) => {
       data: populatedMessage,
     });
   } catch (error) {
-    console.error("Send Car Chat Message Error:", error.message);
+    Logger.error("Send Car Chat Message Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -678,7 +679,7 @@ export const editCarChatMessage = async (req, res) => {
       data: populatedMessage,
     });
   } catch (error) {
-    console.error("Edit Car Chat Message Error:", error.message);
+    Logger.error("Edit Car Chat Message Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -769,7 +770,7 @@ export const deleteCarChatMessage = async (req, res) => {
       message: "Message deleted successfully.",
     });
   } catch (error) {
-    console.error("Delete Car Chat Message Error:", error.message);
+    Logger.error("Delete Car Chat Message Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -836,7 +837,7 @@ export const blockUserInChat = async (req, res) => {
       data: { blocked: true },
     });
   } catch (error) {
-    console.error("Block User Error:", error.message);
+    Logger.error("Block User Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -888,7 +889,7 @@ export const unblockUser = async (req, res) => {
       data: { blocked: false },
     });
   } catch (error) {
-    console.error("Unblock User Error:", error.message);
+    Logger.error("Unblock User Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -919,7 +920,7 @@ export const getBlockedUsers = async (req, res) => {
       data: user.blockedUsers || [],
     });
   } catch (error) {
-    console.error("Get Blocked Users Error:", error.message);
+    Logger.error("Get Blocked Users Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",

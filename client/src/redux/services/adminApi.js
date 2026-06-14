@@ -186,6 +186,11 @@ export const adminApi = createApi({
     "SubscriptionPlans",
     "Valuations",
     "Auctions",
+    "AuditLogs",
+    "Comments",
+    "Payments",
+    "Subscriptions",
+    "DeletionRequests",
   ],
   endpoints: (builder) => ({
     // Dashboard

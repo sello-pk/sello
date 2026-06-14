@@ -3,6 +3,8 @@
  * Prevents XSS attacks and sanitizes user input
  */
 
+import Logger from '../utils/logger.js';
+
 /**
  * Sanitize string input - remove HTML tags and dangerous characters
  * @param {String} str - Input string
@@ -151,7 +153,7 @@ export const sanitizeInput = (excludeFields = []) => {
                 }
             }
         } catch (error) {
-            console.error("Sanitization error:", error);
+            Logger.error("Sanitization error:", error);
             // Continue even if sanitization fails to prevent breaking the request
         }
         

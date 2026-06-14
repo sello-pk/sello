@@ -1,6 +1,7 @@
 import { Chat, Message } from "../models/chatModel.js";
 import User from "../models/userModel.js";
 import mongoose from "mongoose";
+import Logger from "../utils/logger.js";
 
 /**
  * Create Support Chat (User)
@@ -28,7 +29,7 @@ export const createSupportChat = async (req, res) => {
     try {
       admin = await User.findOne({ role: "admin" });
       if (!admin) {
-        console.error(
+        Logger.error(
           "No admin user found in database. Please create an admin user."
         );
         return res.status(500).json({
@@ -40,7 +41,7 @@ export const createSupportChat = async (req, res) => {
       }
       // Found admin user successfully
     } catch (dbError) {
-      console.error("Database error finding admin user:", dbError);
+      Logger.error("Database error finding admin user:", dbError);
       return res.status(500).json({
         success: false,
         message: "Database error. Please try again later.",
@@ -113,7 +114,7 @@ export const createSupportChat = async (req, res) => {
           }
         }
       } catch (botError) {
-        console.error("Chatbot error:", botError);
+        Logger.error("Chatbot error:", botError);
       }
       */
 
@@ -189,8 +190,8 @@ export const createSupportChat = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Create Support Chat Error:", error);
-    console.error("Error stack:", error.stack);
+    Logger.error("Create Support Chat Error:", error);
+    Logger.error("Error stack:", error.stack);
 
     // Provide more specific error messages
     let errorMessage = "Server error. Please try again later.";
@@ -244,7 +245,7 @@ export const getUserSupportChats = async (req, res) => {
       data: chatsData,
     });
   } catch (error) {
-    console.error("Get User Support Chats Error:", error.message);
+    Logger.error("Get User Support Chats Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -323,7 +324,7 @@ export const getSupportChatMessages = async (req, res) => {
       data: messages,
     });
   } catch (error) {
-    console.error("Get Support Chat Messages Error:", error.message);
+    Logger.error("Get Support Chat Messages Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -465,7 +466,7 @@ export const sendSupportMessage = async (req, res) => {
       data: populatedMessage,
     });
   } catch (error) {
-    console.error("Send Support Message Error:", error.message);
+    Logger.error("Send Support Message Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -595,7 +596,7 @@ export const getAllSupportChats = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Get All Support Chats Error:", error.message);
+    Logger.error("Get All Support Chats Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -720,7 +721,7 @@ export const sendAdminResponse = async (req, res) => {
       data: populatedMessage,
     });
   } catch (error) {
-    console.error("Send Admin Response Error:", error.message);
+    Logger.error("Send Admin Response Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -774,7 +775,7 @@ export const updateSupportChatStatus = async (req, res) => {
       data: chat,
     });
   } catch (error) {
-    console.error("Update Support Chat Status Error:", error.message);
+    Logger.error("Update Support Chat Status Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -823,7 +824,7 @@ export const deleteSupportChat = async (req, res) => {
       message: "Support chat and all messages deleted successfully.",
     });
   } catch (error) {
-    console.error("Delete Support Chat Error:", error.message);
+    Logger.error("Delete Support Chat Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -919,7 +920,7 @@ export const createAdminChatWithUser = async (req, res) => {
       data: chatData,
     });
   } catch (error) {
-    console.error("Create Admin Chat Error:", error.message);
+    Logger.error("Create Admin Chat Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -968,7 +969,7 @@ export const getSupportChatMessagesAdmin = async (req, res) => {
       data: messages,
     });
   } catch (error) {
-    console.error("Get Support Chat Messages Admin Error:", error.message);
+    Logger.error("Get Support Chat Messages Admin Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -1081,7 +1082,7 @@ export const editSupportMessage = async (req, res) => {
       data: populatedMessage,
     });
   } catch (error) {
-    console.error("Edit Support Message Error:", error.message);
+    Logger.error("Edit Support Message Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
@@ -1169,7 +1170,7 @@ export const deleteSupportMessage = async (req, res) => {
       message: "Message deleted successfully.",
     });
   } catch (error) {
-    console.error("Delete Support Message Error:", error.message);
+    Logger.error("Delete Support Message Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",

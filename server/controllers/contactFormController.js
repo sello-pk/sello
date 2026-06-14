@@ -211,7 +211,7 @@ export const convertToChat = async (req, res) => {
                     verified: false
                 });
             } catch (userError) {
-                console.error("Error creating user:", userError);
+                Logger.error("Error creating user:", userError);
                 // If user creation fails (e.g., email already exists, validation error), try to find again
                 user = await User.findOne({ email: contactForm.email.toLowerCase().trim() });
                 if (!user) {
@@ -234,7 +234,7 @@ export const convertToChat = async (req, res) => {
                 unreadCount: new Map([[user._id.toString(), 0], [req.user._id.toString(), 0]])
             });
         } catch (chatError) {
-            console.error("Error creating chat:", chatError);
+            Logger.error("Error creating chat:", chatError);
             throw new Error(`Failed to create chat: ${chatError.message}`);
         }
 
@@ -247,7 +247,7 @@ export const convertToChat = async (req, res) => {
                 messageType: 'text'
             });
         } catch (messageError) {
-            console.error("Error creating message:", messageError);
+            Logger.error("Error creating message:", messageError);
             // If message creation fails, delete the chat to maintain consistency
             await Chat.findByIdAndDelete(chat._id);
             throw new Error(`Failed to create message: ${messageError.message}`);
@@ -276,8 +276,8 @@ export const convertToChat = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error("Convert to Chat Error:", error);
-        console.error("Error stack:", error.stack);
+        Logger.error("Convert to Chat Error:", error);
+        Logger.error("Error stack:", error.stack);
         
         // Provide more specific error messages
         let errorMessage = "Server error. Please try again later.";

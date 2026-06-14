@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import CustomerRequest from '../models/customerRequestModel.js';
 import ContactForm from '../models/contactFormModel.js';
 import User from '../models/userModel.js';
+import Logger from '../utils/logger.js';
 
 /**
  * Get All Customer Requests (Admin)
@@ -65,7 +66,7 @@ export const getAllCustomerRequests = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error("Get All Customer Requests Error:", error.message);
+        Logger.error("Get All Customer Requests Error:", error.message);
         return res.status(500).json({
             success: false,
             message: "Server error. Please try again later.",
@@ -114,7 +115,7 @@ export const getCustomerRequestById = async (req, res) => {
             data: request
         });
     } catch (error) {
-        console.error("Get Customer Request Error:", error.message);
+        Logger.error("Get Customer Request Error:", error.message);
         return res.status(500).json({
             success: false,
             message: "Server error. Please try again later.",
@@ -163,7 +164,7 @@ export const createCustomerRequest = async (req, res) => {
             data: populated
         });
     } catch (error) {
-        console.error("Create Customer Request Error:", error.message);
+        Logger.error("Create Customer Request Error:", error.message);
         return res.status(500).json({
             success: false,
             message: "Server error. Please try again later.",
@@ -226,7 +227,7 @@ export const updateCustomerRequest = async (req, res) => {
             data: populated
         });
     } catch (error) {
-        console.error("Update Customer Request Error:", error.message);
+        Logger.error("Update Customer Request Error:", error.message);
         return res.status(500).json({
             success: false,
             message: "Server error. Please try again later.",
@@ -295,7 +296,7 @@ export const addResponse = async (req, res) => {
             data: populated
         });
     } catch (error) {
-        console.error("Add Response Error:", error.message);
+        Logger.error("Add Response Error:", error.message);
         return res.status(500).json({
             success: false,
             message: "Server error. Please try again later.",
@@ -338,7 +339,7 @@ export const deleteCustomerRequest = async (req, res) => {
             message: "Customer request deleted successfully."
         });
     } catch (error) {
-        console.error("Delete Customer Request Error:", error.message);
+        Logger.error("Delete Customer Request Error:", error.message);
         return res.status(500).json({
             success: false,
             message: "Server error. Please try again later.",
@@ -395,7 +396,7 @@ export const getCustomerRequestStatistics = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error("Get Customer Request Statistics Error:", error.message);
+        Logger.error("Get Customer Request Statistics Error:", error.message);
         return res.status(500).json({
             success: false,
             message: "Server error. Please try again later.",

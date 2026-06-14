@@ -272,15 +272,18 @@ export const getMyCars = async (req, res) => {
       .limit(limit)
       .populate("postedBy", "name email");
 
-    const total = await Car.countDocuments(query);
-    
-    // Calculate stats
-    const stats = {
-      total: await Car.countDocuments({ postedBy: req.user._id, status: { $ne: 'deleted' } }),
-      active: await Car.countDocuments({ postedBy: req.user._id, status: 'active' }),
-      sold: await Car.countDocuments({ postedBy: req.user._id, status: 'sold' }),
-      expired: await Car.countDocuments({ postedBy: req.user._id, status: 'expired' })
-    };
+    const [total, statsRows] = await Promise.all([
+      Car.countDocuments(query),
+      Car.aggregate([
+        { $match: { postedBy: req.user._id, status: { $ne: 'deleted' } } },
+        { $group: { _id: '$status', count: { $sum: 1 } } },
+      ]),
+    ]);
+
+    const stats = { total, active: 0, sold: 0, expired: 0 };
+    for (const row of statsRows) {
+      if (row._id in stats) stats[row._id] = row.count;
+    }
 
     return res.status(200).json({ 
       success: true, 

@@ -428,6 +428,7 @@ export const api = createApi({
     "Category",
     "Listing",
     "SavedCar",
+    "Comment",
   ],
   endpoints: (builder) => ({
     registerUser: builder.mutation({
@@ -2087,10 +2088,10 @@ export const {
   useGetMyWalletQuery,
   useCreateDepositMutation,
   useGetMyDepositsQuery,
-  useCalculateMaintenanceMutation,
-  useCalculateFuelMutation,
-  useCalculateResaleMutation,
-  useCalculateOwnershipMutation,
+  useCalculateMaintenanceCostMutation,
+  useCalculateFuelCostMutation,
+  useCalculateResaleValueMutation,
+  useCalculateOwnershipCostMutation,
   useCreateRefundRequestMutation,
   useGetMyRefundRequestsQuery,
 } = api;
