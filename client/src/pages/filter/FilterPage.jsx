@@ -1,67 +1,20 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import FilterForm from "../../components/sections/filter/FilterForm";
 import GridCars from "../../components/sections/filter/GridCars";
 import BannerInFilter from "../../components/sections/filter/BannerInFilter";
 import BlogSection from "../../components/sections/home/BlogSection";
-import { useGetFilteredCarsQuery } from "../../redux/services/api";
 
 const FilterPage = () => {
-  const [searchParams] = useSearchParams();
-  const [queryParams, setQueryParams] = useState(null);
-  const [currentFilters, setCurrentFilters] = useState(null);
-  const hasNavigated = useRef(false);
-  const {
-    data: filteredCars,
-    isLoading,
-    isFetching,
-  } = useGetFilteredCarsQuery(queryParams, {
-    skip: !queryParams,
-  });
-
-  // Read URL parameters on mount and convert to filter object - optimized
-  useEffect(() => {
-    // Build backend filters directly from URL params (more efficient)
-    const backendFilters = {};
-
-    // Map URL params to backend filter format in single pass
-    const paramMap = {
-      make: "make",
-      model: "model",
-      yearMin: "yearMin",
-      yearMax: "yearMax",
-      priceMin: "priceMin",
-      priceMax: "priceMax",
-    };
-
-    searchParams.forEach((value, key) => {
-      if (value && paramMap[key]) {
-        backendFilters[paramMap[key]] = value;
-      }
-    });
-
-    // Apply filters if any exist
-    if (Object.keys(backendFilters).length > 0) {
-      setQueryParams(backendFilters);
-      setCurrentFilters(backendFilters);
-    }
-  }, [searchParams]);
-
-  // Navigation to results page is now handled directly by the FilterForm
-  // or other components, to prevent redirect loops and state issues.
+  const navigate = useNavigate();
 
   const handleFilter = (filters) => {
-    // Reset navigation flag when new filters are applied
-    hasNavigated.current = false;
-
-    // Only set query params if filters exist
     if (filters && Object.keys(filters).length > 0) {
-      setQueryParams(filters);
-      setCurrentFilters(filters);
-    } else {
-      // Clear filters if empty
-      setQueryParams(null);
-      setCurrentFilters(null);
+      const params = new URLSearchParams();
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value) params.set(key, value);
+      });
+      navigate(`/search-results?${params.toString()}`);
     }
   };
 
