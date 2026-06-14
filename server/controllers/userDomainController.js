@@ -15,6 +15,8 @@ import {
   sendEmail,
   parseArray,
   buildCarQuery,
+  parseRequestTypesInput,
+  DEALER_LICENSE_FIELDS,
 } from "../utils/helpers.js";
 import mongoose from "mongoose";
 import { AUCTION_REQUEST_TYPES, normalizeAuctionCapabilities } from "../utils/auctionAccess.js";
@@ -147,21 +149,8 @@ export const getVerificationStatus = async (req, res) => {
     const verification = await Verification.findOne({ user: req.user._id });
     return res.status(200).json({ success: true, data: verification || { status: "not_submitted" } });
   } catch (error) {
-    return res.status(500).json({ success: false });
-  }
-};
-
-const parseRequestTypesInput = (value) => {
-  if (!value) return [];
-  if (Array.isArray(value)) return value;
-  try {
-    const parsed = JSON.parse(value);
-    return Array.isArray(parsed) ? parsed : [parsed];
-  } catch {
-    return String(value)
-      .split(",")
-      .map((v) => v.trim())
-      .filter(Boolean);
+    Logger.error("getVerificationStatus error", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch verification status" });
   }
 };
 
@@ -281,9 +270,22 @@ function buildDealerInfoPatchFromAccessBody(existingPlain, bodyRest, licenseUrl,
   if (bodyRest.paymentMethods !== undefined && bodyRest.paymentMethods !== "") {
     dealerPatch.paymentMethods = parseMultipartJsonArray(bodyRest.paymentMethods);
   }
-  dealerPatch.services = [];
-  dealerPatch.specialties = [];
-  dealerPatch.languages = [];
+  // Preserve existing services, specialties, languages unless explicitly provided
+  if (bodyRest.services !== undefined && bodyRest.services !== "") {
+    dealerPatch.services = parseMultipartJsonArray(bodyRest.services);
+  } else if (!dealerPatch.services || dealerPatch.services.length === 0) {
+    dealerPatch.services = dealerPatch.services || [];
+  }
+  if (bodyRest.specialties !== undefined && bodyRest.specialties !== "") {
+    dealerPatch.specialties = parseMultipartJsonArray(bodyRest.specialties);
+  } else if (!dealerPatch.specialties || dealerPatch.specialties.length === 0) {
+    dealerPatch.specialties = dealerPatch.specialties || [];
+  }
+  if (bodyRest.languages !== undefined && bodyRest.languages !== "") {
+    dealerPatch.languages = parseMultipartJsonArray(bodyRest.languages);
+  } else if (!dealerPatch.languages || dealerPatch.languages.length === 0) {
+    dealerPatch.languages = dealerPatch.languages || [];
+  }
 
   if (
     bodyRest.facebook !== undefined ||
@@ -316,8 +318,12 @@ function buildDealerInfoPatchFromAccessBody(existingPlain, bodyRest, licenseUrl,
     dealerPatch.businessLicense = fallbackDocUrl;
   }
 
-  dealerPatch.verified = false;
-  dealerPatch.verifiedAt = null;
+  // Preserve existing verification status — never downgrade from verified to unverified
+  // on a profile update. Only new submissions (no existing businessName) start unverified.
+  if (!dealerPatch.verified && !existingPlain?.businessName) {
+    dealerPatch.verified = false;
+    dealerPatch.verifiedAt = null;
+  }
 
   return dealerPatch;
 }
@@ -356,12 +362,7 @@ export const submitAuctionAccessRequest = async (req, res) => {
 
     ensureAuctionCapabilityShell(user);
 
-    const licenseFiles = filesFromAnyField(req.files, [
-      "businessLicense",
-      "businessLicenseFile",
-      "license",
-      "cnicFile",
-    ]);
+    const licenseFiles = filesFromAnyField(req.files, DEALER_LICENSE_FIELDS);
     const documentFiles = filesFromField(req.files, "documents");
 
     let licenseUrl = null;
@@ -422,6 +423,11 @@ export const submitAuctionAccessRequest = async (req, res) => {
       user.dealerInfo = dealerPatch;
       user.markModified("dealerInfo");
 
+      // Sync owner name if provided
+      if (bodyRest.ownerFullName) {
+        user.name = String(bodyRest.ownerFullName).trim();
+      }
+
       if (user.role !== "admin") {
         user.role = "dealer";
       }
@@ -457,6 +463,28 @@ export const submitAuctionAccessRequest = async (req, res) => {
     const freshUser = await User.findById(user._id).select(
       "role dealerInfo auctionCapabilities",
     );
+
+    // Notify all admins about the new request
+    try {
+      const admins = await User.find({ role: "admin" }).select("_id");
+      const notifBody = {
+        title: "New Dealer/Auction Access Request",
+        message: `${user.name} (${user.email}) submitted a ${requestTypes.join(", ")} request.`,
+        type: "info",
+        actionUrl: "/admin/dealers",
+        actionText: "Review Request",
+        createdBy: user._id,
+      };
+      const notifications = admins.map((admin) => ({
+        ...notifBody,
+        recipient: admin._id,
+      }));
+      if (notifications.length > 0) {
+        await Notification.insertMany(notifications);
+      }
+    } catch (notifErr) {
+      Logger.warn("Failed to notify admins about dealer request", notifErr);
+    }
 
     return res.status(200).json({
       success: true,
@@ -595,7 +623,8 @@ export const saveCar = async (req, res) => {
     await User.findByIdAndUpdate(req.user._id, { $addToSet: { savedCars: req.params.carId } });
     return res.status(200).json({ success: true, message: "Saved" });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("saveCar error", error);
+    return res.status(500).json({ success: false, message: "Failed to save car" });
   }
 };
 
@@ -604,7 +633,8 @@ export const unsaveCar = async (req, res) => {
     await User.findByIdAndUpdate(req.user._id, { $pull: { savedCars: req.params.carId } });
     return res.status(200).json({ success: true, message: "Unsaved" });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("unsaveCar error", error);
+    return res.status(500).json({ success: false, message: "Failed to unsave car" });
   }
 };
 
@@ -613,7 +643,8 @@ export const getSavedCars = async (req, res) => {
     const user = await User.findById(req.user._id).populate("savedCars");
     return res.status(200).json({ success: true, data: user.savedCars || [] });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("getSavedCars error", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch saved cars" });
   }
 };
 
@@ -622,7 +653,8 @@ export const getSavedSearches = async (req, res) => {
     const searches = await SavedSearch.find({ user: req.user._id, isActive: true }).sort({ createdAt: -1 });
     return res.status(200).json({ success: true, data: searches });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("getSavedSearches error", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch saved searches" });
   }
 };
 
@@ -631,7 +663,8 @@ export const createSavedSearch = async (req, res) => {
     const search = await SavedSearch.create({ ...req.body, user: req.user._id });
     return res.status(201).json({ success: true, data: search });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("createSavedSearch error", error);
+    return res.status(500).json({ success: false, message: "Failed to save search" });
   }
 };
 
@@ -654,7 +687,8 @@ export const addReview = async (req, res) => {
     }
     return res.status(201).json({ success: true, data: review });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("addReview error", error);
+    return res.status(500).json({ success: false, message: "Failed to add review" });
   }
 };
 
@@ -663,7 +697,8 @@ export const createReport = async (req, res) => {
     const report = await Report.create({ ...req.body, reporter: req.user._id });
     return res.status(201).json({ success: true, message: "Reported", data: report });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("createReport error", error);
+    return res.status(500).json({ success: false, message: "Failed to create report" });
   }
 };
 
@@ -725,7 +760,8 @@ export const getDeletionRequestStatus = async (req, res) => {
     const request = await AccountDeletionRequest.findOne({ user: req.user._id }).sort({ createdAt: -1 });
     return res.status(200).json({ success: true, data: request });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("getDeletionRequestStatus error", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch deletion request" });
   }
 };
 
@@ -737,28 +773,40 @@ export const getAllNotifications = async (req, res) => {
   try {
     const notifications = await Notification.find().populate("recipient", "name email").sort({ createdAt: -1 });
     return res.status(200).json({ success: true, data: notifications });
-  } catch (error) { return res.status(500).json({ success: false }); }
+  } catch (error) {
+    Logger.error("getAllNotifications error", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch notifications" });
+  }
 };
 
 export const createNotification = async (req, res) => {
   try {
     const notification = await Notification.create({ ...req.body, createdBy: req.user._id });
     return res.status(201).json({ success: true, data: notification });
-  } catch (error) { return res.status(500).json({ success: false }); }
+  } catch (error) {
+    Logger.error("createNotification error", error);
+    return res.status(500).json({ success: false, message: "Failed to create notification" });
+  }
 };
 
 export const deleteNotification = async (req, res) => {
   try {
     await Notification.findByIdAndDelete(req.params.notificationId);
     return res.status(200).json({ success: true, message: "Deleted" });
-  } catch (error) { return res.status(500).json({ success: false }); }
+  } catch (error) {
+    Logger.error("deleteNotification error", error);
+    return res.status(500).json({ success: false, message: "Failed to delete notification" });
+  }
 };
 
 export const getAllVerifications = async (req, res) => {
     try {
         const verifications = await Verification.find().populate('user', 'name email role isVerified').sort({ submittedAt: -1 });
         return res.status(200).json({ success: true, data: verifications });
-    } catch (error) { return res.status(500).json({ success: false }); }
+    } catch (error) {
+        Logger.error("getAllVerifications error", error);
+        return res.status(500).json({ success: false, message: "Failed to fetch verifications" });
+    }
 };
 
 export const reviewVerification = async (req, res) => {
@@ -767,7 +815,10 @@ export const reviewVerification = async (req, res) => {
         const verification = await Verification.findByIdAndUpdate(req.params.verificationId, { status, reviewedBy: req.user._id, reviewedAt: new Date(), rejectionReason }, { new: true });
         if (status === 'approved') await User.findByIdAndUpdate(verification.user, { isVerified: true });
         return res.status(200).json({ success: true, data: verification });
-    } catch (error) { return res.status(500).json({ success: false }); }
+    } catch (error) {
+        Logger.error("reviewVerification error", error);
+        return res.status(500).json({ success: false, message: "Failed to review verification" });
+    }
 };
 
 export const getAllDeletionRequests = async (req, res) => {
@@ -850,28 +901,40 @@ export const reviewReview = async (req, res) => {
         const { isApproved } = req.body;
         const review = await Review.findByIdAndUpdate(req.params.reviewId, { isApproved, moderatedBy: req.user._id, moderatedAt: new Date() }, { new: true });
         return res.status(200).json({ success: true, data: review });
-    } catch (error) { return res.status(500).json({ success: false }); }
+    } catch (error) {
+        Logger.error("reviewReview error", error);
+        return res.status(500).json({ success: false, message: "Failed to review review" });
+    }
 };
 
 export const getReports = async (req, res) => {
     try {
         const reports = await Report.find().populate("reporter", "name email avatar").sort({ createdAt: -1 });
         return res.status(200).json({ success: true, data: reports });
-    } catch (error) { return res.status(500).json({ success: false }); }
+    } catch (error) {
+        Logger.error("getReports error", error);
+        return res.status(500).json({ success: false, message: "Failed to fetch reports" });
+    }
 };
 
 export const updateReportStatus = async (req, res) => {
     try {
         const report = await Report.findByIdAndUpdate(req.params.reportId, { ...req.body, reviewedBy: req.user._id, reviewedAt: new Date() }, { new: true });
         return res.status(200).json({ success: true, data: report });
-    } catch (error) { return res.status(500).json({ success: false }); }
+    } catch (error) {
+        Logger.error("updateReportStatus error", error);
+        return res.status(500).json({ success: false, message: "Failed to update report" });
+    }
 };
 
 export const requestSeller = async (req, res) => {
     try {
         const user = await User.findById(req.user._id);
         return res.status(200).json({ success: true, message: "Status confirmed", data: { role: user.role } });
-    } catch (error) { return res.status(500).json({ success: false }); }
+    } catch (error) {
+        Logger.error("requestSeller error", error);
+        return res.status(500).json({ success: false, message: "Failed to confirm status" });
+    }
 };
 
 // dealer methods
@@ -917,9 +980,22 @@ export const updateDealerProfile = async (req, res) => {
     if (bodyRest.paymentMethods !== undefined) {
       dealerPatch.paymentMethods = parseMultipartJsonArray(bodyRest.paymentMethods);
     }
-    dealerPatch.services = [];
-    dealerPatch.specialties = [];
-    dealerPatch.languages = [];
+    // Preserve existing services/specialties/languages unless explicitly provided
+    if (bodyRest.services !== undefined) {
+      dealerPatch.services = parseMultipartJsonArray(bodyRest.services);
+    } else {
+      dealerPatch.services = existing.services || [];
+    }
+    if (bodyRest.specialties !== undefined) {
+      dealerPatch.specialties = parseMultipartJsonArray(bodyRest.specialties);
+    } else {
+      dealerPatch.specialties = existing.specialties || [];
+    }
+    if (bodyRest.languages !== undefined) {
+      dealerPatch.languages = parseMultipartJsonArray(bodyRest.languages);
+    } else {
+      dealerPatch.languages = existing.languages || [];
+    }
 
     if (
       bodyRest.facebook !== undefined ||
@@ -964,12 +1040,7 @@ export const updateDealerProfile = async (req, res) => {
       }
     }
 
-    const licenseFiles = filesFromAnyField(req.files, [
-      "businessLicense",
-      "businessLicenseFile",
-      "license",
-      "cnicFile",
-    ]);
+    const licenseFiles = filesFromAnyField(req.files, DEALER_LICENSE_FIELDS);
     if (licenseFiles.length > 0) {
       try {
         dealerPatch.businessLicense = await uploadOneCapabilityFile(licenseFiles[0]);
@@ -1103,12 +1174,7 @@ export const requestDealer = async (req, res) => {
         ? user.dealerInfo.toObject()
         : { ...(user.dealerInfo || {}) };
 
-    const licenseFiles = filesFromAnyField(req.files, [
-      "businessLicense",
-      "businessLicenseFile",
-      "license",
-      "cnicFile",
-    ]);
+    const licenseFiles = filesFromAnyField(req.files, DEALER_LICENSE_FIELDS);
 
     let licenseUrl = null;
     if (licenseFiles.length > 0) {
@@ -1212,7 +1278,10 @@ export const getUserReviews = async (req, res) => {
     try {
         const reviews = await Review.find({ targetUser: req.params.userId, isApproved: true }).populate("reviewer", "name avatar");
         return res.status(200).json({ success: true, data: reviews });
-    } catch (error) { return res.status(500).json({ success: false }); }
+    } catch (error) {
+        Logger.error("getUserReviews error", error);
+        return res.status(500).json({ success: false, message: "Failed to fetch reviews" });
+    }
 };
 
 export const moderateReview = async (req, res) => {
@@ -1220,21 +1289,30 @@ export const moderateReview = async (req, res) => {
         const { isApproved } = req.body;
         const review = await Review.findByIdAndUpdate(req.params.reviewId, { isApproved, moderatedBy: req.user._id, moderatedAt: new Date() }, { new: true });
         return res.status(200).json({ success: true, data: review });
-    } catch (error) { return res.status(500).json({ success: false }); }
+    } catch (error) {
+        Logger.error("moderateReview error", error);
+        return res.status(500).json({ success: false, message: "Failed to moderate review" });
+    }
 };
 
 export const reportReview = async (req, res) => {
     try {
         const review = await Review.findByIdAndUpdate(req.params.reviewId, { $addToSet: { reportedBy: req.user._id }, isReported: true }, { new: true });
         return res.status(200).json({ success: true, message: "Reported" });
-    } catch (error) { return res.status(500).json({ success: false }); }
+    } catch (error) {
+        Logger.error("reportReview error", error);
+        return res.status(500).json({ success: false, message: "Failed to report review" });
+    }
 };
 
 export const getAllReviews = async (req, res) => {
     try {
         const reviews = await Review.find().populate("reviewer", "name email").populate("targetUser", "name email").sort({ createdAt: -1 });
         return res.status(200).json({ success: true, data: reviews });
-    } catch (error) { return res.status(500).json({ success: false }); }
+    } catch (error) {
+        Logger.error("getAllReviews error", error);
+        return res.status(500).json({ success: false, message: "Failed to fetch reviews" });
+    }
 };
 
 export const reviewDeletionRequest = async (req, res) => {
@@ -1271,15 +1349,24 @@ export const reviewDeletionRequest = async (req, res) => {
 };
 
 export const getSavedSearch = async (req, res) => {
-    try { return res.status(200).json({ success: true, data: await SavedSearch.findById(req.params.searchId) }); } catch (error) { return res.status(500).json({ success: false }); }
+    try { return res.status(200).json({ success: true, data: await SavedSearch.findById(req.params.searchId) }); } catch (error) {
+        Logger.error("getSavedSearch error", error);
+        return res.status(500).json({ success: false, message: "Failed to fetch saved search" });
+    }
 };
 
 export const updateSavedSearch = async (req, res) => {
-    try { return res.status(200).json({ success: true, data: await SavedSearch.findByIdAndUpdate(req.params.searchId, req.body, { new: true }) }); } catch (error) { return res.status(500).json({ success: false }); }
+    try { return res.status(200).json({ success: true, data: await SavedSearch.findByIdAndUpdate(req.params.searchId, req.body, { new: true }) }); } catch (error) {
+        Logger.error("updateSavedSearch error", error);
+        return res.status(500).json({ success: false, message: "Failed to update saved search" });
+    }
 };
 
 export const deleteSavedSearch = async (req, res) => {
-    try { await SavedSearch.findByIdAndUpdate(req.params.searchId, { isActive: false }); return res.status(200).json({ success: true }); } catch (error) { return res.status(500).json({ success: false }); }
+    try { await SavedSearch.findByIdAndUpdate(req.params.searchId, { isActive: false }); return res.status(200).json({ success: true }); } catch (error) {
+        Logger.error("deleteSavedSearch error", error);
+        return res.status(500).json({ success: false, message: "Failed to delete saved search" });
+    }
 };
 
 export const executeSavedSearch = async (req, res) => {
@@ -1288,7 +1375,10 @@ export const executeSavedSearch = async (req, res) => {
         const { filter } = buildCarQuery(search.searchCriteria);
         const cars = await Car.find(filter).limit(20).lean();
         return res.status(200).json({ success: true, data: { cars } });
-    } catch (error) { return res.status(500).json({ success: false }); }
+    } catch (error) {
+        Logger.error("executeSavedSearch error", error);
+        return res.status(500).json({ success: false, message: "Failed to execute saved search" });
+    }
 };
 
 export const logout = async (req, res) => {

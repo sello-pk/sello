@@ -55,9 +55,6 @@ export const hasApprovedAuctionBidAccess = (user) => {
   if (APPROVED_STATES.has(caps.auctionBidder.status)) return true;
   if (APPROVED_STATES.has(caps.auctionDealer.status)) return true;
 
-  // Non-breaking compatibility for already verified legacy dealers.
-  if (user.role === "dealer" && user?.dealerInfo?.verified) return true;
-
   return false;
 };
 

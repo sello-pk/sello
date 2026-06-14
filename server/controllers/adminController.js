@@ -359,7 +359,8 @@ export const getAllUsers = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("getAllUsers error", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch users" });
   }
 };
 
@@ -401,7 +402,8 @@ export const updateUser = async (req, res) => {
     const user = await AdminService.updateUser(req.params.userId, updateData);
     return res.status(200).json({ success: true, data: user });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("updateUser error", error);
+    return res.status(500).json({ success: false, message: "Failed to update user" });
   }
 };
 
@@ -410,7 +412,8 @@ export const deleteUser = async (req, res) => {
     await AdminService.deleteUser(req.params.userId);
     return res.status(200).json({ success: true, message: "Deleted" });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("deleteUser error", error);
+    return res.status(500).json({ success: false, message: "Failed to delete user" });
   }
 };
 
@@ -555,7 +558,8 @@ export const getAuditLogs = async (req, res) => {
       .limit(100);
     return res.status(200).json({ success: true, data: logs });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("getAuditLogs error", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch audit logs" });
   }
 };
 
@@ -571,7 +575,8 @@ export const getUserById = async (req, res) => {
         .json({ success: false, message: "User not found" });
     return res.status(200).json({ success: true, data: user });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("getUserById error", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch user" });
   }
 };
 
@@ -580,7 +585,8 @@ export const deleteCar = async (req, res) => {
     await Car.findByIdAndDelete(req.params.carId);
     return res.status(200).json({ success: true, message: "Car deleted" });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("deleteCar error", error);
+    return res.status(500).json({ success: false, message: "Failed to delete car" });
   }
 };
 
@@ -597,7 +603,8 @@ export const featureCar = async (req, res) => {
     );
     return res.status(200).json({ success: true, data: car });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("featureCar error", error);
+    return res.status(500).json({ success: false, message: "Failed to feature car" });
   }
 };
 
@@ -608,9 +615,14 @@ export const getAllDealers = async (req, res) => {
     const skip = (page - 1) * limit;
     const search = String(req.query.search || "").trim();
 
+    // Include both dealers and users with pending auctionDealer capability
     const match = {
-      role: "dealer",
       status: { $ne: "suspended" },
+      $or: [
+        { role: "dealer" },
+        { "auctionCapabilities.auctionDealer.status": "pending" },
+        { "auctionCapabilities.auctionBidder.status": "pending" },
+      ],
     };
 
     if (search) {
@@ -684,7 +696,8 @@ export const verifyUser = async (req, res) => {
     );
     return res.status(200).json({ success: true, data: user });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("verifyUser error", error);
+    return res.status(500).json({ success: false, message: "Failed to verify user" });
   }
 };
 
@@ -705,6 +718,9 @@ export const verifyDealer = async (req, res) => {
       : {
           "dealerInfo.verified": false,
           $unset: { "dealerInfo.verifiedAt": "" },
+          "auctionCapabilities.auctionDealer.status": "rejected",
+          "auctionCapabilities.auctionDealer.reviewedAt": reviewedAt,
+          "auctionCapabilities.auctionDealer.reviewedBy": req.user._id,
         };
 
     const user = await User.findByIdAndUpdate(req.params.userId, update, {
@@ -713,6 +729,18 @@ export const verifyDealer = async (req, res) => {
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
+
+    await createAuditLog(
+      req.user,
+      "dealer_verification",
+      {
+        action: verified ? "verified" : "unverified",
+        targetUserId: req.params.userId,
+      },
+      user._id,
+      req,
+    );
+
     return res.status(200).json({ success: true, data: user });
   } catch (error) {
     Logger.error("verifyDealer", error);
@@ -959,7 +987,8 @@ export const getListingHistory = async (req, res) => {
     });
     return res.status(200).json({ success: true, data: cars });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("getListingHistory error", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch listing history" });
   }
 };
 
@@ -972,7 +1001,8 @@ export const getAnalyticsSummary = async (req, res) => {
     const stats = await AdminService.getStats();
     return res.status(200).json({ success: true, data: stats });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("getAnalyticsSummary error", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch analytics" });
   }
 };
 
@@ -982,6 +1012,7 @@ export const trackAnalyticsEvent = async (req, res) => {
     Logger.analytics(event, req.user?._id, metadata);
     return res.status(200).json({ success: true });
   } catch (error) {
-    return res.status(500).json({ success: false });
+    Logger.error("trackAnalyticsEvent error", error);
+    return res.status(500).json({ success: false, message: "Failed to track event" });
   }
 };

@@ -468,6 +468,25 @@ export const buildCarQuery = (query) => {
   return { filter };
 };
 
+// Licensed file field names accepted across multer configs for backward compatibility
+export const DEALER_LICENSE_FIELDS = [
+  "businessLicense",
+  "businessLicenseFile",
+  "license",
+  "cnicFile",
+];
+
+export const parseRequestTypesInput = (value) => {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [parsed];
+  } catch {
+    return String(value).split(",").map((v) => v.trim()).filter(Boolean);
+  }
+};
+
 export default {
   Logger,
   createAuditLog,
@@ -481,4 +500,5 @@ export default {
   trackEvent,
   buildCarQuery,
   escapeRegex,
+  parseRequestTypesInput,
 };

@@ -592,7 +592,7 @@ const DealerDashboard = () => {
           ownerType: "Dealer",
           geoLocation: {
             type: "Point",
-            coordinates: [67.0011, 24.8607],
+            coordinates: [0, 0],
           },
           location:
             carDetails.location ||

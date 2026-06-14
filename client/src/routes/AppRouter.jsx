@@ -160,7 +160,7 @@ const LazyGoogleOAuthProvider = lazy(() =>
 function AuthRouteGuard({ children }) {
   if (!googleClientId) return <>{children}</>;
   return (
-    <Suspense fallback={<>{children}</>}>
+    <Suspense fallback={<div className="min-h-screen" />}>
       <LazyGoogleOAuthProvider clientId={googleClientId}>
         {children}
       </LazyGoogleOAuthProvider>

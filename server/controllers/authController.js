@@ -14,6 +14,8 @@ import {
     isValidEmail,
     sendVerificationCode,
     parseArray,
+    parseRequestTypesInput,
+    DEALER_LICENSE_FIELDS,
 } from "../utils/helpers.js";
 import { getPasswordResetTemplate, getWelcomeTemplate } from "../utils/emailTemplates.js";
 import client from "../config/googleClient.js";
@@ -46,17 +48,6 @@ const setAuthCookies = (res, accessToken, refreshToken, ttlDays = 7) => {
 const clearAuthCookies = (res) => {
     res.clearCookie("token", { ...getAccessCookieOptions(), maxAge: undefined });
     res.clearCookie("refreshToken", { ...getRefreshCookieOptions(7), maxAge: undefined });
-};
-
-const parseRequestTypesInput = (value) => {
-    if (!value) return [];
-    if (Array.isArray(value)) return value;
-    try {
-        const parsed = JSON.parse(value);
-        return Array.isArray(parsed) ? parsed : [parsed];
-    } catch {
-        return String(value).split(",").map((v) => v.trim()).filter(Boolean);
-    }
 };
 
 const normalizeMultipartScalar = (value) => {
@@ -348,7 +339,10 @@ export const forgotPassword = async (req, res) => {
 
         await sendEmail(user.email, "Password Reset Code", getPasswordResetTemplate(user.name, otp));
         return res.status(200).json({ success: true, message: "Password reset code sent." });
-    } catch (error) { return res.status(500).json({ success: false }); }
+    } catch (error) {
+        Logger.error("forgotPassword error", error);
+        return res.status(500).json({ success: false, message: "Failed to send reset code" });
+    }
 };
 
 export const verifyOtp = async (req, res) => {
@@ -361,7 +355,10 @@ export const verifyOtp = async (req, res) => {
         user.otpVerified = true;
         await user.save({ validateBeforeSave: false });
         return res.status(200).json({ success: true, message: "OTP verified" });
-    } catch (error) { return res.status(500).json({ success: false }); }
+    } catch (error) {
+        Logger.error("verifyOtp error", error);
+        return res.status(500).json({ success: false, message: "Failed to verify OTP" });
+    }
 };
 
 export const resetPassword = async (req, res) => {
@@ -387,7 +384,10 @@ export const resetPassword = async (req, res) => {
         await user.save();
 
         return res.status(200).json({ success: true, message: "Password updated" });
-    } catch (error) { return res.status(500).json({ success: false }); }
+    } catch (error) {
+        Logger.error("resetPassword error", error);
+        return res.status(500).json({ success: false, message: "Failed to reset password" });
+    }
 };
 
 export const logout = async (req, res) => {
@@ -457,7 +457,10 @@ export const refreshToken = async (req, res) => {
                 token: accessToken,
             },
         });
-    } catch (error) { return res.status(500).json({ success: false }); }
+    } catch (error) {
+        Logger.error("refreshToken error", error);
+        return res.status(500).json({ success: false, message: "Failed to refresh token" });
+    }
 };
 
 export const googleLogin = async (req, res) => {
@@ -474,7 +477,10 @@ export const googleLogin = async (req, res) => {
         const { accessToken, refreshToken, ttlDays } = await AuthService.generateTokens(user._id, user.email, req.headers["user-agent"], req.ip);
         setAuthCookies(res, accessToken, refreshToken, ttlDays);
         return res.status(200).json({ success: true, data: { user, token: accessToken, accessToken } });
-    } catch (error) { Logger.error("Google Login Error", error); return res.status(500).json({ success: false }); }
+    } catch (error) {
+        Logger.error("Google Login Error", error);
+        return res.status(500).json({ success: false, message: "Google login failed" });
+    }
 };
 
 export const resendOtp = async (req, res) => {

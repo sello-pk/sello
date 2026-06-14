@@ -317,7 +317,8 @@ export const getCarChatMessages = async (req, res) => {
 
     const messages = await Message.find({ chat: chatId, isDeleted: false })
       .populate("sender", "name email avatar role")
-      .sort({ createdAt: 1 });
+      .sort({ createdAt: 1 })
+      .limit(200);
 
     // Mark messages as read for current user
     await Message.updateMany(

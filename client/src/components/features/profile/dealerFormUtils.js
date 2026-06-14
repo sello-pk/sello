@@ -67,6 +67,7 @@ export const mapUserToDealerForm = (user) =>
 
 export const buildDealerPayloadFromForm = (formData) => ({
   businessName: formData.businessName?.trim() || "",
+  ownerFullName: formData.ownerFullName?.trim() || "",
   businessPhone: formData.businessPhone?.trim() || "",
   whatsappNumber: formData.whatsappNumber?.trim() || "",
   email: formData.email?.trim() || "",
