@@ -11,30 +11,40 @@ import { SERVER_CONFIG, LOG_CONFIG } from "./config/index.js";
 // Validate environment variables before starting server
 validateEnvVars({ strict: process.env.NODE_ENV === "production" });
 
+let server;
+
 // Global error handlers to prevent server crashes
 process.on("uncaughtException", (error) => {
-  Logger.error("Uncaught Exception (server will continue running)", error);
+  Logger.error("Uncaught Exception", error);
   console.error("❌ Uncaught Exception:", error.message);
 });
 
 process.on("unhandledRejection", (reason, promise) => {
-  Logger.error("Unhandled Rejection (server will continue running)", {
+  Logger.error("Unhandled Rejection", {
     reason,
     promise,
   });
   console.error("❌ Unhandled Rejection:", reason);
 });
 
-// Handle SIGTERM and SIGINT gracefully
-process.on("SIGTERM", () => {
-  Logger.info("SIGTERM received, shutting down gracefully");
+const shutdown = async (signal) => {
+  Logger.info(`${signal} received, shutting down gracefully`);
+  if (server) {
+    server.close(() => {
+      Logger.info("HTTP server closed");
+    });
+  }
+  try {
+    await mongoose.disconnect();
+    Logger.info("MongoDB disconnected");
+  } catch (err) {
+    Logger.error("Error disconnecting MongoDB", err);
+  }
   process.exit(0);
-});
+};
 
-process.on("SIGINT", () => {
-  Logger.info("SIGINT received, shutting down gracefully");
-  process.exit(0);
-});
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
 
 // Optional: Setup cron jobs for background tasks
 let cronJobs = null;
@@ -137,7 +147,7 @@ if (process.env.ENABLE_CRON_JOBS === "true") {
 const startServer = () => {
   try {
     const PORT = SERVER_CONFIG.PORT;
-    const server = http.createServer(app);
+    server = http.createServer(app);
 
     // Increase server timeout for long-running uploads and Cloudinary-backed requests.
     server.timeout = 300000; // 5 minutes

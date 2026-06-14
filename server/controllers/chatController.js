@@ -8,7 +8,7 @@ import mongoose from 'mongoose';
  */
 export const getAllChats = async (req, res) => {
     try {
-        if (req.user.role !== 'admin') {
+        if (!req.user || req.user.role !== 'admin') {
             return res.status(403).json({
                 success: false,
                 message: "Only admins can monitor chats."
@@ -71,7 +71,7 @@ export const getAllChats = async (req, res) => {
  */
 export const getChatMessages = async (req, res) => {
     try {
-        if (req.user.role !== 'admin') {
+        if (!req.user || req.user.role !== 'admin') {
             return res.status(403).json({
                 success: false,
                 message: "Only admins can view chat messages."

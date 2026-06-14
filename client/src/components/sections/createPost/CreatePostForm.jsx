@@ -442,11 +442,13 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       }
 
       if (res.data?.user) {
-        const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
-        if (currentUser) {
-          currentUser.role = res.data.user.role;
-          localStorage.setItem("user", JSON.stringify(currentUser));
-        }
+        try {
+          const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+          if (currentUser) {
+            currentUser.role = res.data.user.role;
+            localStorage.setItem("user", JSON.stringify(currentUser));
+          }
+        } catch { /* ignore corrupt user data in localStorage */ }
       }
 
       // Reset form
@@ -593,11 +595,13 @@ const CreatePostForm = ({ initialPrefill = null }) => {
 
       // Update user data if role was upgraded
       if (res.data?.user) {
-        const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
-        if (currentUser) {
-          currentUser.role = res.data.user.role;
-          localStorage.setItem("user", JSON.stringify(currentUser));
-        }
+        try {
+          const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+          if (currentUser) {
+            currentUser.role = res.data.user.role;
+            localStorage.setItem("user", JSON.stringify(currentUser));
+          }
+        } catch { /* ignore corrupt user data in localStorage */ }
       }
 
       setFormData({

@@ -816,7 +816,9 @@ export const adminApi = createApi({
 
     // Comments
     getBlogCommentsAdmin: builder.query({
-      query: (blogId) => `/blogs/${blogId}/comments`, // Public endpoint lists approved, admin needs all? Wait, we made a specific admin route
+      query: (blogId) => `/blogs/comments/all?blogId=${blogId}`,
+      providesTags: ["Comments"],
+      transformResponse: (response) => response?.data || response,
     }),
     getAllComments: builder.query({
       query: (params = {}) => {

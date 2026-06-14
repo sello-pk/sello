@@ -31,31 +31,31 @@ router.get("/cars/:id", validateObjectId('id'), cache(600, cacheKeys.car), getSi
 
 // Actions
 router.post("/cars", auth, upload.array("images", 15), async (req, res, next) => {
-    await invalidateCache("cache:cars:*");
+    try { await invalidateCache("cache:cars:*"); } catch { /* continue */ }
     next();
 }, createCar);
 
 router.put("/cars/:id", auth, validateObjectId('id'), upload.array("images", 15), async (req, res, next) => {
-    await invalidateCache(`cache:cars:${req.params.id}`);
-    await invalidateCache("cache:cars:list:*");
+    try { await invalidateCache(`cache:cars:${req.params.id}`); } catch { /* continue */ }
+    try { await invalidateCache("cache:cars:list:*"); } catch { /* continue */ }
     next();
 }, editCar);
 
 router.put("/cars/:carId/sold", auth, validateObjectId('carId'), async (req, res, next) => {
-    await invalidateCache(`cache:cars:${req.params.carId}`);
-    await invalidateCache("cache:cars:list:*");
+    try { await invalidateCache(`cache:cars:${req.params.carId}`); } catch { /* continue */ }
+    try { await invalidateCache("cache:cars:list:*"); } catch { /* continue */ }
     next();
 }, markCarAsSold);
 
 router.post("/cars/:carId/relist", auth, validateObjectId('carId'), async (req, res, next) => {
-    await invalidateCache(`cache:cars:${req.params.carId}`);
-    await invalidateCache("cache:cars:list:*");
+    try { await invalidateCache(`cache:cars:${req.params.carId}`); } catch { /* continue */ }
+    try { await invalidateCache("cache:cars:list:*"); } catch { /* continue */ }
     next();
 }, relistCar);
 
 router.delete("/cars/:id", auth, validateObjectId('id'), async (req, res, next) => {
-    await invalidateCache(`cache:cars:${req.params.id}`);
-    await invalidateCache("cache:cars:list:*");
+    try { await invalidateCache(`cache:cars:${req.params.id}`); } catch { /* continue */ }
+    try { await invalidateCache("cache:cars:list:*"); } catch { /* continue */ }
     next();
 }, deleteCar);
 
