@@ -5,7 +5,7 @@ import React, {
   useRef,
   useCallback,
 } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, Navigate } from "react-router-dom";
 import { buildCarUrl } from "../../utils/urlBuilders";
 import { clearAuthSession } from "../../utils/tokenManager.js";
 import { getErrorMessage } from "../../utils/errorHandler";
@@ -699,9 +699,9 @@ const DealerDashboard = () => {
     );
   }
 
-  // Only verified dealers can access - if not verified, redirect (handled in useEffect)
+  // Only verified dealers can access - redirect immediately
   if (!isVerified) {
-    return null; // Will redirect in useEffect
+    return <Navigate to="/seller/dashboard" replace />;
   }
 
   return (
