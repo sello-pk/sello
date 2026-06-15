@@ -58,7 +58,7 @@ export const getAllCars = async (req, res) => {
 
     const carsDocuments = await Car.find(query)
       .select(
-        "title make model year price images city location status featured condition fuelType transmission mileage postedBy createdAt views geoLocation vehicleType features carDoors horsepower engineCapacity contactNumber whatsappNumber isSold listingType",
+        "title make model year price images city location status featured condition fuelType transmission mileage postedBy createdAt views geoLocation vehicleType features carDoors horsepower engineCapacity contactNumber whatsappNumber isSold listingType batteryRange motorPower",
       )
       .skip(skip)
       .limit(limit)
