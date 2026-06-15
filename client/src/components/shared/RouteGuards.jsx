@@ -207,6 +207,45 @@ const AuctionCapabilityRoute = () => {
   return <Outlet />;
 };
 
+/**
+ * Dealer Route Component
+ * Ensures user is authenticated, is a dealer, and is verified.
+ */
+const DealerRoute = () => {
+  const authed = isAuthenticated();
+  const { data: user, isLoading, isError } = useGetMeQuery(undefined, { skip: !authed });
+
+  if (!authed) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError || !user) {
+    clearAuthSession();
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user.role !== "dealer") {
+    return <Navigate to="/" replace />;
+  }
+
+  if (!user.dealerInfo?.verified) {
+    return <Navigate to="/seller/dashboard" replace />;
+  }
+
+  return <Outlet />;
+};
+
 // Re-export both names unchanged for backward compatibility
-export { ProtectedRoute, AdminRoute, AuctionCapabilityRoute };
+export { ProtectedRoute, AdminRoute, AuctionCapabilityRoute, DealerRoute };
 export default ProtectedRoute;

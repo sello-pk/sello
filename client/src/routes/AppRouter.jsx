@@ -6,6 +6,7 @@ import {
   ProtectedRoute,
   AdminRoute,
   AuctionCapabilityRoute,
+  DealerRoute,
 } from "../components/shared/RouteGuards.jsx";
 
 /**
@@ -233,7 +234,9 @@ const AppRouter = () => {
           <Route path="/saved-cars" element={<SavedCars />} />
           <Route path="/my-chats" element={<MyChats />} />
           <Route path="/seller/chats" element={<SellerChats />} />
-          <Route path="/dealer/dashboard" element={<DealerDashboard />} />
+          <Route element={<DealerRoute />}>
+            <Route path="/dealer/dashboard" element={<DealerDashboard />} />
+          </Route>
           <Route path="/seller/dashboard" element={<SellerDashboard />} />
           {/* Auction — Authenticated User Pages */}
           <Route path="/auctions/token-payment" element={<TokenPayment />} />
