@@ -3,6 +3,7 @@ import { useGetSimilarListingsQuery } from "../../../redux/services/api";
 import { Link } from "react-router-dom";
 import { FaCar, FaMapMarkerAlt, FaCalendarAlt } from "react-icons/fa";
 import { Image as LazyImage } from "../../ui/Image";
+import { buildCarUrl } from "../../../utils/urlBuilders";
 
 const SimilarListings = ({ carId }) => {
   const { data, isLoading, error } = useGetSimilarListingsQuery(carId, {
@@ -54,7 +55,7 @@ const SimilarListings = ({ carId }) => {
         {similarCars.map((car) => (
           <Link
             key={car._id}
-            to={`/cars/${car._id}`}
+            to={buildCarUrl(car)}
             className="bg-white rounded-xl shadow-sm hover:shadow-xl border border-gray-200 transition-all duration-300 overflow-hidden group transform hover:-translate-y-1"
           >
             <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100">
@@ -84,9 +85,11 @@ const SimilarListings = ({ carId }) => {
                 <span className="flex items-center gap-1">
                   <FaCalendarAlt /> {car.year}
                 </span>
-                <span className="flex items-center gap-1">
-                  <FaCar /> {car.mileage?.toLocaleString() || "0"} km
-                </span>
+                {(!car.vehicleType || ["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"].includes(car.vehicleType)) && car.mileage != null && (
+                  <span className="flex items-center gap-1">
+                    <FaCar /> {car.mileage?.toLocaleString() || "0"} km
+                  </span>
+                )}
               </div>
               <div className="flex items-center gap-1 text-sm text-gray-600 mb-3">
                 <FaMapMarkerAlt />

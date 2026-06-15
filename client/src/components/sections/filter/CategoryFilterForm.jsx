@@ -539,35 +539,37 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
           />
         </div>
 
-        {/* Mileage */}
-        <div className="field space-y-2">
-          <div className="flex flex-col sm:flex-row w-full gap-3 sm:gap-4 items-start">
-            <div className="w-full sm:w-1/2">
-              <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-700">Mileage From</label>
-              <Input
-                inputType="number"
-                value={filters.minMileage}
-                onChange={(e) => handleChange("minMileage", e.target.value)}
-                placeholder="Min"
-              />
+        {/* Mileage - only for vehicle types where relevant */}
+        {["Car", "Bus", "Truck", "Van", "Bike", "Farm"].includes(vehicleType) && (
+          <div className="field space-y-2">
+            <div className="flex flex-col sm:flex-row w-full gap-3 sm:gap-4 items-start">
+              <div className="w-full sm:w-1/2">
+                <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-700">Mileage From</label>
+                <Input
+                  inputType="number"
+                  value={filters.minMileage}
+                  onChange={(e) => handleChange("minMileage", e.target.value)}
+                  placeholder="Min"
+                />
+              </div>
+              <div className="w-full sm:w-1/2">
+                <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-700">To</label>
+                <Input
+                  inputType="number"
+                  value={filters.maxMileage}
+                  onChange={(e) => handleChange("maxMileage", e.target.value)}
+                  placeholder="Max"
+                />
+              </div>
             </div>
-            <div className="w-full sm:w-1/2">
-              <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-700">To</label>
-              <Input
-                inputType="number"
-                value={filters.maxMileage}
-                onChange={(e) => handleChange("maxMileage", e.target.value)}
-                placeholder="Max"
-              />
-            </div>
+            <RangeFilter
+              type="mileage"
+              min={0}
+              max={300000}
+              onChange={(values) => handleRangeChange("mileage", values)}
+            />
           </div>
-          <RangeFilter
-            type="mileage"
-            min={0}
-            max={300000}
-            onChange={(values) => handleRangeChange("mileage", values)}
-          />
-        </div>
+        )}
 
         {/* Battery Range - Only show for electric vehicles */}
         {isFieldVisible(vehicleType, "batteryRange") && (

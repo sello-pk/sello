@@ -172,13 +172,13 @@ const CarDetails = () => {
       } - PKR ${car.price?.toLocaleString() || "0"}`.trim()
     : "Car Details";
   const carDescription = car
-    ? `View details for ${car.year || ""} ${car.make || ""} ${
-        car.model || ""
-      } in ${car.city || ""}. ${car.condition || ""} car with ${
-        car.mileage?.toLocaleString() || "N/A"
-      } km. Price: PKR ${car.price?.toLocaleString() || "0"}. ${
-        car.description || ""
-      }`
+    ? (() => {
+        const vt = car.vehicleType || "Car";
+        const base = `View details for ${car.year || ""} ${car.make || ""} ${car.model || ""} in ${car.city || ""}. ${car.condition || ""} vehicle.`;
+        const mileage = (["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"].includes(vt) && car.mileage != null)
+          ? ` ${car.mileage?.toLocaleString() || "N/A"} km.` : "";
+        return `${base}${mileage} Price: PKR ${car.price?.toLocaleString() || "0"}. ${car.description || ""}`;
+      })()
     : "View car details on Sello";
   const carImage = car?.images?.[0] || "/logo.png";
 

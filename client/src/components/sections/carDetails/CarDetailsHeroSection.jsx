@@ -29,7 +29,11 @@ const CarDetailsHeroSection = () => {
   const carTitle = `${car.year || ""} ${car.make || ""} ${
     car.model || ""
   }`.trim();
-  const carSubtitle = `${car.transmission || ""} ${car.bodyType || ""}`.trim();
+  const vehicleType = car.vehicleType || "Car";
+  const subtitleParts = [];
+  if (vehicleType === "Car" && car.transmission) subtitleParts.push(car.transmission);
+  if (["Car", "Bus", "Truck", "Van"].includes(vehicleType) && car.bodyType) subtitleParts.push(car.bodyType);
+  const carSubtitle = subtitleParts.join(" ").trim();
 
   return (
     <div className="bg-white border-b border-gray-200">

@@ -17,6 +17,7 @@ import {
 } from "../../utils/notifications";
 import { Spinner } from "../../components/ui/Loading";
 import toast from "react-hot-toast";
+
 import {
   FiSearch,
   FiGrid,
@@ -27,6 +28,13 @@ import {
   FiX,
   FiTrash2,
 } from "react-icons/fi";
+
+const getDocType = (url) => {
+  if (!url) return "unknown";
+  if (/\.(jpg|jpeg|png|gif|webp|bmp|svg)/i.test(url)) return "image";
+  if (/\.pdf/i.test(url)) return "pdf";
+  return "other";
+};
 
 const Dealers = () => {
   const navigate = useNavigate();
@@ -800,27 +808,37 @@ const Dealers = () => {
                             Business License / CNIC
                           </p>
                           {dealerDetails.dealerInfo?.businessLicense ? (
-                            <div className="flex items-center gap-4">
-                              <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-                                <span className="text-2xl">📄</span>
-                              </div>
-                              <div>
-                                <a
-                                  href={
-                                    dealerDetails.dealerInfo.businessLicense
-                                  }
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-blue-600 hover:underline font-medium"
-                                >
-                                  View License Document
-                                </a>
-                                <p className="text-xs text-gray-500 mt-1">
-                                  {dealerDetails.dealerInfo.businessLicense
-                                    .split("/")
-                                    .pop()}
-                                </p>
-                              </div>
+                            <div className="space-y-3">
+                              {(getDocType(dealerDetails.dealerInfo.businessLicense) === "image") ? (
+                                <img
+                                  src={dealerDetails.dealerInfo.businessLicense}
+                                  alt="Business License"
+                                  className="w-full max-h-80 rounded-lg border border-gray-200 object-contain bg-gray-50"
+                                />
+                              ) : getDocType(dealerDetails.dealerInfo.businessLicense) === "pdf" ? (
+                                <embed
+                                  src={dealerDetails.dealerInfo.businessLicense}
+                                  type="application/pdf"
+                                  className="w-full h-64 rounded-lg border border-gray-200 bg-gray-50"
+                                />
+                              ) : (
+                                <div className="flex items-center gap-4">
+                                  <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                                    <span className="text-2xl">📄</span>
+                                  </div>
+                                  <a
+                                    href={dealerDetails.dealerInfo.businessLicense}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:underline font-medium"
+                                  >
+                                    View License Document
+                                  </a>
+                                </div>
+                              )}
+                              <p className="text-xs text-gray-400">
+                                {dealerDetails.dealerInfo.businessLicense.split("/").pop()}
+                              </p>
                             </div>
                           ) : (
                             <p className="text-sm text-gray-500">
@@ -874,64 +892,49 @@ const Dealers = () => {
                           Auction access
                         </h4>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                          <div className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
-                            <p className="font-medium text-gray-800 dark:text-gray-200">
-                              Bidder
-                            </p>
-                            <p className="text-gray-600 dark:text-gray-300 mt-1">
-                              Status:{" "}
-                              {dealerDetails.auctionCapabilities?.auctionBidder
-                                ?.status || "—"}
-                            </p>
-                            {dealerDetails.auctionCapabilities?.auctionBidder?.documents
-                              ?.length > 0 && (
-                              <ul className="mt-2 space-y-1 list-disc list-inside">
-                                {dealerDetails.auctionCapabilities.auctionBidder.documents.map(
-                                  (d, i) => (
-                                    <li key={i}>
-                                      <a
-                                        href={d.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-600 dark:text-primary-400 hover:underline break-all"
-                                      >
-                                        {d.name || "Document"}
-                                      </a>
-                                    </li>
-                                  ),
+                          {(["auctionBidder", "auctionDealer"]).map((capKey) => {
+                            const cap = dealerDetails.auctionCapabilities?.[capKey];
+                            const label = capKey === "auctionBidder" ? "Bidder" : "Auction dealer";
+                            return (
+                              <div key={capKey} className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
+                                <p className="font-medium text-gray-800 dark:text-gray-200">{label}</p>
+                                <p className="text-gray-600 dark:text-gray-300 mt-1">Status: {cap?.status || "—"}</p>
+                                {cap?.documents?.length > 0 && (
+                                  <div className="mt-2 space-y-3">
+                                    {cap.documents.map((d, i) => {
+                                      const docType = getDocType(d.url);
+                                      return (
+                                        <div key={i}>
+                                          {docType === "image" ? (
+                                            <img
+                                              src={d.url}
+                                              alt={d.name || "Document"}
+                                              className="w-full h-32 object-cover rounded-lg border border-gray-200"
+                                            />
+                                          ) : docType === "pdf" ? (
+                                            <embed
+                                              src={d.url}
+                                              type="application/pdf"
+                                              className="w-full h-40 rounded-lg border border-gray-200 bg-gray-50"
+                                            />
+                                          ) : (
+                                            <a
+                                              href={d.url}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="text-primary-600 dark:text-primary-400 hover:underline break-all"
+                                            >
+                                              {d.name || "Document"}
+                                            </a>
+                                          )}
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
                                 )}
-                              </ul>
-                            )}
-                          </div>
-                          <div className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
-                            <p className="font-medium text-gray-800 dark:text-gray-200">
-                              Auction dealer
-                            </p>
-                            <p className="text-gray-600 dark:text-gray-300 mt-1">
-                              Status:{" "}
-                              {dealerDetails.auctionCapabilities?.auctionDealer
-                                ?.status || "—"}
-                            </p>
-                            {dealerDetails.auctionCapabilities?.auctionDealer?.documents
-                              ?.length > 0 && (
-                              <ul className="mt-2 space-y-1 list-disc list-inside">
-                                {dealerDetails.auctionCapabilities.auctionDealer.documents.map(
-                                  (d, i) => (
-                                    <li key={i}>
-                                      <a
-                                        href={d.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-600 dark:text-primary-400 hover:underline break-all"
-                                      >
-                                        {d.name || "Document"}
-                                      </a>
-                                    </li>
-                                  ),
-                                )}
-                              </ul>
-                            )}
-                          </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     )}

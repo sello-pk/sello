@@ -187,6 +187,13 @@ const CarCard = ({
           ? displayMileage
           : `${displayMileage} km`;
 
+  const vehicleType = car?.vehicleType || "Car";
+  const showMileage = ["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"].includes(vehicleType);
+  const showFuelType = ["Car", "Bus", "Truck", "Van"].includes(vehicleType);
+  const showTransmission = ["Car"].includes(vehicleType);
+  const showBatteryRange = ["E-bike"].includes(vehicleType);
+  const showMotorPower = ["E-bike"].includes(vehicleType);
+
   // List variant: horizontal row — image left, content right
   if (variant === "list") {
     return (
@@ -263,24 +270,40 @@ const CarCard = ({
               <p className="text-[#6b7280] text-xs sm:text-sm mt-0.5">{displayYear}</p>
             )}
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-2 text-[#6b7280] text-xs sm:text-sm">
-              <span className="flex items-center gap-1.5">
-                {images.milesIcon && (
-                  <img src={images.milesIcon} alt="" width={16} height={16} className="w-4 h-4 object-contain opacity-80" />
-                )}
-                {mileageText}
-              </span>
-              <span className="flex items-center gap-1.5">
-                {images.fuelTypeIcon && (
-                  <img src={images.fuelTypeIcon} alt="" width={16} height={16} className="w-4 h-4 object-contain opacity-80" />
-                )}
-                {displayFuel}
-              </span>
-              <span className="flex items-center gap-1.5">
-                {images.transmissionIcon && (
-                  <img src={images.transmissionIcon} alt="" width={16} height={16} className="w-4 h-4 object-contain opacity-80" />
-                )}
-                {displayTransmission}
-              </span>
+              {showMileage && (
+                <span className="flex items-center gap-1.5">
+                  {images.milesIcon && (
+                    <img src={images.milesIcon} alt="" width={16} height={16} className="w-4 h-4 object-contain opacity-80" />
+                  )}
+                  {mileageText}
+                </span>
+              )}
+              {showFuelType && (
+                <span className="flex items-center gap-1.5">
+                  {images.fuelTypeIcon && (
+                    <img src={images.fuelTypeIcon} alt="" width={16} height={16} className="w-4 h-4 object-contain opacity-80" />
+                  )}
+                  {displayFuel}
+                </span>
+              )}
+              {showTransmission && (
+                <span className="flex items-center gap-1.5">
+                  {images.transmissionIcon && (
+                    <img src={images.transmissionIcon} alt="" width={16} height={16} className="w-4 h-4 object-contain opacity-80" />
+                  )}
+                  {displayTransmission}
+                </span>
+              )}
+              {showBatteryRange && car?.batteryRange != null && (
+                <span className="flex items-center gap-1.5">
+                  {car.batteryRange} km range
+                </span>
+              )}
+              {showMotorPower && car?.motorPower != null && (
+                <span className="flex items-center gap-1.5">
+                  {car.motorPower}W
+                </span>
+              )}
             </div>
           </div>
           <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-2 sm:gap-3 mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-[#e5e7eb]">
@@ -444,50 +467,62 @@ const CarCard = ({
         </div>
         <div className="border-t border-[#e5e7eb] my-1.5 sm:my-2" />
         <div className="flex flex-wrap items-center justify-between gap-1 text-[#6b7280] text-xs">
-          <span className="flex items-center gap-2 min-w-0">
-            {images.milesIcon && (
-              <img
-                src={images.milesIcon}
-                alt=""
-                width={14}
-                height={14}
-                className="w-3.5 h-3.5 flex-shrink-0 object-contain opacity-80"
-              />
-            )}
-            <span className="truncate">
-              {displayMileage === "—" || displayMileage == null
-                ? "—"
-                : typeof displayMileage === "number"
-                  ? `${displayMileage.toLocaleString()} km`
-                  : String(displayMileage).endsWith("km")
-                    ? displayMileage
-                    : `${displayMileage} km`}
+          {showMileage && (
+            <span className="flex items-center gap-2 min-w-0">
+              {images.milesIcon && (
+                <img
+                  src={images.milesIcon}
+                  alt=""
+                  width={14}
+                  height={14}
+                  className="w-3.5 h-3.5 flex-shrink-0 object-contain opacity-80"
+                />
+              )}
+              <span className="truncate">
+                {displayMileage === "—" || displayMileage == null
+                  ? "—"
+                  : typeof displayMileage === "number"
+                    ? `${displayMileage.toLocaleString()} km`
+                    : String(displayMileage).endsWith("km")
+                      ? displayMileage
+                      : `${displayMileage} km`}
+              </span>
             </span>
-          </span>
-          <span className="flex items-center gap-2 min-w-0">
-            {images.fuelTypeIcon && (
-              <img
-                src={images.fuelTypeIcon}
-                alt=""
-                width={14}
-                height={14}
-                className="w-3.5 h-3.5 flex-shrink-0 object-contain opacity-80"
-              />
-            )}
-            <span className="truncate">{displayFuel}</span>
-          </span>
-          <span className="flex items-center gap-2 min-w-0">
-            {images.transmissionIcon && (
-              <img
-                src={images.transmissionIcon}
-                alt=""
-                width={14}
-                height={14}
-                className="w-3.5 h-3.5 flex-shrink-0 object-contain opacity-80"
-              />
-            )}
-            <span className="truncate">{displayTransmission}</span>
-          </span>
+          )}
+          {showFuelType && (
+            <span className="flex items-center gap-2 min-w-0">
+              {images.fuelTypeIcon && (
+                <img
+                  src={images.fuelTypeIcon}
+                  alt=""
+                  width={14}
+                  height={14}
+                  className="w-3.5 h-3.5 flex-shrink-0 object-contain opacity-80"
+                />
+              )}
+              <span className="truncate">{displayFuel}</span>
+            </span>
+          )}
+          {showTransmission && (
+            <span className="flex items-center gap-2 min-w-0">
+              {images.transmissionIcon && (
+                <img
+                  src={images.transmissionIcon}
+                  alt=""
+                  width={14}
+                  height={14}
+                  className="w-3.5 h-3.5 flex-shrink-0 object-contain opacity-80"
+                />
+              )}
+              <span className="truncate">{displayTransmission}</span>
+            </span>
+          )}
+          {showBatteryRange && car?.batteryRange != null && (
+            <span className="truncate">{car.batteryRange} km range</span>
+          )}
+          {showMotorPower && car?.motorPower != null && (
+            <span className="truncate">{car.motorPower}W</span>
+          )}
         </div>
 
         <div className="mt-1.5 sm:mt-2 pt-1.5 sm:pt-2 flex items-center justify-between gap-1 border-t border-[#e5e7eb]">

@@ -24,6 +24,7 @@ import {
   FaShieldAlt,
   FaUser,
   FaStar,
+  FaPlug,
 } from "react-icons/fa";
 import { extractCarIdFromSlug } from "../../../utils/urlBuilders";
 
@@ -76,34 +77,56 @@ const CarDetailsEtc = () => {
       ? [car.geoLocation.coordinates[1], car.geoLocation.coordinates[0]]
       : [25.217136, 55.284207];
 
-  const specs = [
-    {
+  const vehicleType = car.vehicleType || "Car";
+
+  const specs = [];
+  if (["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"].includes(vehicleType)) {
+    specs.push({
       icon: FaTachometerAlt,
       label: "Mileage",
       value: `${car.mileage?.toLocaleString() || "N/A"} km`,
-    },
-    { icon: FaGasPump, label: "Fuel Type", value: car.fuelType || "N/A" },
-    { icon: FaCog, label: "Transmission", value: car.transmission || "N/A" },
-    { icon: FaCar, label: "Body Type", value: car.bodyType || "N/A" },
-    { icon: FaCalendarAlt, label: "Year", value: car.year || "N/A" },
-    { icon: FaShieldAlt, label: "Condition", value: car.condition || "N/A" },
-  ];
+    });
+  }
+  if (["Car", "Bus", "Truck", "Van", "Farm"].includes(vehicleType)) {
+    specs.push({ icon: FaGasPump, label: "Fuel Type", value: car.fuelType || "N/A" });
+  }
+  if (vehicleType === "Car") {
+    specs.push({ icon: FaCog, label: "Transmission", value: car.transmission || "N/A" });
+  }
+  if (["Car", "Bus", "Truck", "Van"].includes(vehicleType)) {
+    specs.push({ icon: FaCar, label: "Body Type", value: car.bodyType || "N/A" });
+  }
+  if (vehicleType === "E-bike") {
+    if (car.batteryRange != null) {
+      specs.push({ icon: FaPlug, label: "Battery Range", value: `${car.batteryRange} km` });
+    }
+    if (car.motorPower != null) {
+      specs.push({ icon: FaCog, label: "Motor Power", value: `${car.motorPower}W` });
+    }
+  }
+  specs.push({ icon: FaCalendarAlt, label: "Year", value: car.year || "N/A" });
+  specs.push({ icon: FaShieldAlt, label: "Condition", value: car.condition || "N/A" });
 
-  const additionalSpecs = [
-    {
+  const additionalSpecs = [];
+  if (vehicleType === "Car") {
+    additionalSpecs.push({
       label: "Interior Color",
       value: car.colorInterior,
       color: car.colorInterior,
-    },
-    {
+    });
+    additionalSpecs.push({
       label: "Exterior Color",
       value: car.colorExterior,
       color: car.colorExterior,
-    },
-    { label: "Seats", value: car.seats || "4" },
-    { label: "Seller Type", value: car.ownerType },
-    { label: "Warranty", value: car.warranty },
-  ];
+    });
+    additionalSpecs.push({ label: "Seats", value: car.seats || "4" });
+    additionalSpecs.push({ label: "Seller Type", value: car.ownerType });
+    additionalSpecs.push({ label: "Warranty", value: car.warranty });
+  }
+  if (vehicleType === "E-bike") {
+    additionalSpecs.push({ label: "Battery Range", value: car.batteryRange ? `${car.batteryRange} km` : "N/A" });
+    additionalSpecs.push({ label: "Motor Power", value: car.motorPower ? `${car.motorPower}W` : "N/A" });
+  }
 
   return (
     <div className="bg-gray-50">
@@ -172,15 +195,17 @@ const CarDetailsEtc = () => {
                 </div>
               )}
 
-              <div className="mt-6 flex justify-center">
-                <button
-                  onClick={() => setShowMore(!showMore)}
-                  className="text-primary-500 hover:text-primary-500 font-medium text-sm flex items-center gap-1"
-                >
-                  {showMore ? "Show Less" : "Show More Details"}
-                  <span className="text-lg">{showMore ? "↑" : "↓"}</span>
-                </button>
-              </div>
+              {additionalSpecs.length > 0 && (
+                <div className="mt-6 flex justify-center">
+                  <button
+                    onClick={() => setShowMore(!showMore)}
+                    className="text-primary-500 hover:text-primary-500 font-medium text-sm flex items-center gap-1"
+                  >
+                    {showMore ? "Show Less" : "Show More Details"}
+                    <span className="text-lg">{showMore ? "↑" : "↓"}</span>
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Description Card */}

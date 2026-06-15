@@ -151,7 +151,7 @@ const SavedCars = () => {
                     </h3>
 
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 py-3 text-xs text-gray-600 border-b border-gray-100">
-                      {images?.milesIcon && (
+                      {(!car.vehicleType || ["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"].includes(car.vehicleType)) && images?.milesIcon && (
                         <span className="flex items-center gap-1.5">
                           <img
                             src={images.milesIcon}
@@ -161,7 +161,7 @@ const SavedCars = () => {
                           {carMileage}
                         </span>
                       )}
-                      {images?.fuelTypeIcon && (
+                      {(!car.vehicleType || ["Car", "Bus", "Truck", "Van", "Farm"].includes(car.vehicleType)) && images?.fuelTypeIcon && (
                         <span className="flex items-center gap-1.5">
                           <img
                             src={images.fuelTypeIcon}
@@ -171,7 +171,7 @@ const SavedCars = () => {
                           {carFuelType}
                         </span>
                       )}
-                      {images?.transmissionIcon && (
+                      {(!car.vehicleType || car.vehicleType === "Car") && images?.transmissionIcon && (
                         <span className="flex items-center gap-1.5">
                           <img
                             src={images.transmissionIcon}
