@@ -209,7 +209,7 @@ const BannerCarousal = () => {
               type="button"
               aria-label={`Go to banner slide ${index + 1} of ${activeSlides.length}`}
               title={`Slide ${index + 1}`}
-              className="inline-flex min-h-11 min-w-11 items-center justify-center p-0 rounded-full focus-visible:outline focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-gray-600"
+              className="inline-flex min-h-[28px] min-w-[28px] md:min-h-11 md:min-w-11 items-center justify-center p-0 rounded-full focus-visible:outline focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-gray-600"
             >
               <span
                 className={`block h-3 w-3 md:h-3.5 md:w-3.5 rounded-full bg-white shadow-sm transition-[transform,opacity] duration-300 ease-out origin-center ${
