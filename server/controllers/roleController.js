@@ -523,8 +523,11 @@ export const inviteUser = async (req, res) => {
       // Continue with invite creation even if audit log fails
     }
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    // Check if user already exists (only active users block invites)
+    const existingUser = await User.findOne({
+      email: email.toLowerCase(),
+      status: "active",
+    });
     if (existingUser) {
       // Check if the user already has the requested role
       const hasRole =
@@ -1749,9 +1752,72 @@ export const acceptInvite = async (req, res) => {
       email: invite.email.toLowerCase(),
     });
     if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: "A user with this email already exists. Please login instead.",
+      if (existingUser.status === "active") {
+        return res.status(400).json({
+          success: false,
+          message:
+            "A user with this email already exists. Please login instead.",
+        });
+      }
+      // Inactive/suspended user — reactivate and update with invite data
+      existingUser.name = invite.fullName;
+      existingUser.phone = invite.phone;
+      existingUser.password = await bcrypt.hash(password, 12);
+      existingUser.role = "admin";
+      existingUser.adminRole = normalizeRoleLabel(invite.role);
+      existingUser.roleId = invite.roleId || null;
+      existingUser.permissions = sanitizePermissionsInput(
+        invite.permissions || {},
+      );
+      existingUser.status = "active";
+      existingUser.verified = true;
+      existingUser.isEmailVerified = true;
+      existingUser.avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        invite.fullName,
+      )}&background=4F46E5&color=fff`;
+
+      const user = await existingUser.save();
+
+      invite.status = "accepted";
+      invite.acceptedAt = new Date();
+      invite.acceptedBy = user._id;
+      await invite.save({ validateBeforeSave: false });
+
+      const jwtToken = jwt.sign(
+        { id: user._id, email: user.email },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES_IN || "7d" },
+      );
+
+      await createAuditLog(
+        user,
+        "invite_accepted",
+        {
+          inviteId: invite._id,
+          role: invite.role,
+          reactivated: true,
+        },
+        null,
+        req,
+      );
+
+      return res.status(200).json({
+        success: true,
+        message:
+          "Invitation accepted successfully. Your account has been reactivated.",
+        data: {
+          user: {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            avatar: user.avatar,
+            role: user.role,
+            adminRole: user.adminRole,
+            permissions: user.permissions,
+            status: user.status,
+          },
+          token: jwtToken,
+        },
       });
     }
 
