@@ -523,49 +523,173 @@ export const inviteUser = async (req, res) => {
       // Continue with invite creation even if audit log fails
     }
 
-    // Check if user already exists (only active users block invites)
+    // Resolve role data and permissions (used for both existing user update and new invite)
+    let roleData = null;
+    let rolePermissions = sanitizePermissionsInput(permissions || {});
+    let finalRole = normalizeRoleLabel(role);
+    let resolvedRoleId = requestedRoleId;
+
+    if (resolvedRoleId) {
+      try {
+        roleData = await Role.findById(resolvedRoleId);
+        if (roleData) {
+          rolePermissions = sanitizePermissionsInput(roleData.permissions || {});
+          finalRole = normalizeRoleLabel(
+            roleData.displayName || roleData.name || finalRole,
+          );
+        }
+      } catch (roleError) {
+        Logger.error("Error fetching role", roleError, { roleId: resolvedRoleId });
+      }
+    }
+
+    if (!roleData && finalRole && finalRole !== "Custom") {
+      try {
+        roleData = await Role.findOne({
+          $or: [{ name: finalRole }, { displayName: finalRole }],
+        });
+        if (roleData) {
+          rolePermissions = sanitizePermissionsInput(roleData.permissions || {});
+          finalRole = normalizeRoleLabel(
+            roleData.displayName || roleData.name || finalRole,
+          );
+          if (!resolvedRoleId) {
+            resolvedRoleId = roleData._id;
+          }
+        } else {
+          const preset = ROLE_PRESETS[finalRole];
+          if (preset) {
+            rolePermissions = sanitizePermissionsInput(preset.permissions);
+          }
+        }
+      } catch (roleError) {
+        Logger.error("Error finding role", roleError, { role: finalRole });
+        const preset = ROLE_PRESETS[finalRole];
+        if (preset) {
+          rolePermissions = sanitizePermissionsInput(preset.permissions);
+        }
+      }
+    }
+
+    // Check if user already exists
     const existingUser = await User.findOne({
       email: email.toLowerCase(),
-      status: "active",
     });
-    if (existingUser) {
-      // Check if the user already has the requested role
-      const hasRole =
-        existingUser.role === role ||
-        (existingUser.roleId &&
-          requestedRoleId &&
-          existingUser.roleId.toString() === requestedRoleId.toString());
 
-      if (hasRole) {
-        return res.status(409).json({
-          success: false,
-          message: `User already exists with the "${role}" role.`,
-          code: "USER_EXISTS_WITH_ROLE",
-          data: {
-            userId: existingUser._id,
-            email: existingUser.email,
-            fullName: existingUser.fullName,
-            currentRole: existingUser.role,
-            status: existingUser.status,
+    if (existingUser) {
+      if (existingUser.status === "active") {
+        const hasRole =
+          existingUser.role === role ||
+          (existingUser.roleId &&
+            requestedRoleId &&
+            existingUser.roleId.toString() === requestedRoleId.toString());
+
+        if (hasRole) {
+          return res.status(409).json({
+            success: false,
+            message: `User already exists with the "${role}" role.`,
+            code: "USER_EXISTS_WITH_ROLE",
+            data: {
+              userId: existingUser._id,
+              email: existingUser.email,
+              fullName: existingUser.fullName,
+              currentRole: existingUser.role,
+              status: existingUser.status,
+            },
+          });
+        }
+
+        // Active user with different role — update their role directly
+        const prevRole = existingUser.role;
+        existingUser.role = "admin";
+        existingUser.adminRole = finalRole;
+        existingUser.roleId = resolvedRoleId || null;
+        existingUser.permissions = sanitizePermissionsInput(rolePermissions);
+        if (fullName) existingUser.name = fullName;
+        if (phone) existingUser.phone = phone;
+        await existingUser.save();
+
+        await createAuditLog(
+          req.user,
+          "user_role_updated_via_invite",
+          {
+            targetUserId: existingUser._id,
+            targetEmail: existingUser.email,
+            previousRole: prevRole,
+            newRole: "admin",
+            newAdminRole: finalRole,
           },
-        });
-      } else {
-        return res.status(409).json({
-          success: false,
-          message: `User already exists. Please update their role from user management instead of inviting.`,
-          code: "USER_EXISTS_DIFFERENT_ROLE",
+          null,
+          req,
+        );
+
+        const siteName = process.env.SITE_NAME || "Sello";
+        const notifMessage = `${existingUser.name}'s role has been updated to ${finalRole} in the ${siteName} Admin Panel.`;
+
+        try {
+          const notification = await Notification.create({
+            title: "User Role Updated",
+            message: notifMessage,
+            type: "success",
+            recipient: req.user._id,
+          });
+          const io = req.app.get("io");
+          if (io) {
+            io.to(`user:${req.user._id}`).emit("new-notification", notification);
+          }
+        } catch (notifError) {
+          Logger.error("Notification error (non-blocking)", notifError);
+        }
+
+        return res.status(200).json({
+          success: true,
+          message: `${existingUser.name}'s role has been updated to ${finalRole}.`,
           data: {
             userId: existingUser._id,
             email: existingUser.email,
-            fullName: existingUser.fullName,
-            currentRole: existingUser.role,
-            requestedRole: normalizeRoleLabel(role),
-            status: existingUser.status,
-            suggestion:
-              "You can update this user's role from the user management page.",
+            fullName: existingUser.name,
+            role: "admin",
+            adminRole: finalRole,
+            updated: true,
           },
         });
       }
+
+      // Inactive/suspended user — reactivate with the requested role
+      existingUser.status = "active";
+      existingUser.role = "admin";
+      existingUser.adminRole = finalRole;
+      existingUser.roleId = resolvedRoleId || null;
+      existingUser.permissions = sanitizePermissionsInput(rolePermissions);
+      if (fullName) existingUser.name = fullName;
+      if (phone) existingUser.phone = phone;
+      await existingUser.save();
+
+      await createAuditLog(
+        req.user,
+        "user_reactivated_via_invite",
+        {
+          targetUserId: existingUser._id,
+          targetEmail: existingUser.email,
+          newRole: "admin",
+          newAdminRole: finalRole,
+        },
+        null,
+        req,
+      );
+
+      return res.status(200).json({
+        success: true,
+        message: `User ${existingUser.name} has been reactivated with role ${finalRole}.`,
+        data: {
+          userId: existingUser._id,
+          email: existingUser.email,
+          fullName: existingUser.name,
+          role: "admin",
+          adminRole: finalRole,
+          reactivated: true,
+        },
+      });
     }
 
     // Check if pending invite exists
@@ -605,63 +729,6 @@ export const inviteUser = async (req, res) => {
       });
     }
 
-    // Get role data and permissions
-    let roleData = null;
-    let rolePermissions = sanitizePermissionsInput(permissions || {});
-    let finalRole = normalizeRoleLabel(role);
-    let roleId = requestedRoleId;
-
-    // If roleId is provided, fetch the role from database
-    if (roleId) {
-      try {
-        roleData = await Role.findById(roleId);
-        if (roleData) {
-          rolePermissions = sanitizePermissionsInput(roleData.permissions || {});
-          // Use the role's displayName or name for the invite
-          finalRole = normalizeRoleLabel(
-            roleData.displayName || roleData.name || finalRole,
-          );
-        }
-      } catch (roleError) {
-        Logger.error("Error fetching role", roleError, { roleId });
-        // Continue with provided role
-      }
-    }
-
-    // If no roleId but role name provided, try to find role by name
-    if (!roleData && finalRole && finalRole !== "Custom") {
-      try {
-        roleData = await Role.findOne({
-          $or: [{ name: finalRole }, { displayName: finalRole }],
-        });
-        if (roleData) {
-          rolePermissions = sanitizePermissionsInput(roleData.permissions || {});
-          finalRole = normalizeRoleLabel(
-            roleData.displayName || roleData.name || finalRole,
-          );
-          // Update roleId if found
-          if (!roleId) {
-            roleId = roleData._id;
-          }
-        } else {
-          // Use preset permissions if role not found in DB
-          const preset = ROLE_PRESETS[finalRole];
-          if (preset) {
-            rolePermissions = sanitizePermissionsInput(preset.permissions);
-          }
-        }
-      } catch (roleError) {
-        Logger.error("Error finding role", roleError, { role: finalRole });
-        // Use preset permissions as fallback
-        const preset = ROLE_PRESETS[finalRole];
-        if (preset) {
-          rolePermissions = sanitizePermissionsInput(preset.permissions);
-        }
-      }
-    }
-
-    // Keep requested role display name as-is for custom/team roles.
-
     // Generate token
     const token = Invite.generateToken();
     const expiresAt = new Date();
@@ -675,7 +742,7 @@ export const inviteUser = async (req, res) => {
         fullName,
         phone: phone || null, // Phone is optional
         role: finalRole,
-        roleId: roleId || null,
+        roleId: resolvedRoleId || null,
         permissions: rolePermissions,
         token,
         expiresAt,
