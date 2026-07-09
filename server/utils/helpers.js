@@ -340,18 +340,26 @@ export async function uploadListingImagesToCloudinary(files, options = {}) {
 /*                                EMAIL UTILITY                               */
 /* -------------------------------------------------------------------------- */
 
+let _transporter = null;
+
+const getTransporter = () => {
+  if (_transporter) return _transporter;
+  _transporter = nodemailer.createTransport({
+    host: EMAIL_CONFIG.HOST,
+    port: EMAIL_CONFIG.PORT,
+    secure: process.env.SMTP_SECURE === "true" ? true : EMAIL_CONFIG.PORT === 465,
+    auth: { user: EMAIL_CONFIG.MAIL, pass: EMAIL_CONFIG.PASSWORD },
+  });
+  return _transporter;
+};
+
 export const sendEmail = async (to, subject, html) => {
   if (process.env.ENABLE_EMAIL_NOTIFICATIONS === "false")
     return { actuallySent: false };
-  const transporter = nodemailer.createTransport({
-    host: EMAIL_CONFIG.HOST,
-    port: EMAIL_CONFIG.PORT,
-    secure: EMAIL_CONFIG.PORT === 465,
-    auth: { user: EMAIL_CONFIG.MAIL, pass: EMAIL_CONFIG.PASSWORD },
-  });
   try {
+    const transporter = getTransporter();
     const info = await transporter.sendMail({
-      from: EMAIL_CONFIG.MAIL,
+      from: `"${process.env.SITE_NAME || "Sello"}" <${EMAIL_CONFIG.MAIL}>`,
       to,
       subject,
       html,
@@ -359,6 +367,7 @@ export const sendEmail = async (to, subject, html) => {
     return { actuallySent: true, messageId: info.messageId };
   } catch (e) {
     Logger.error("Email failed", e);
+    _transporter = null;
     throw e;
   }
 };

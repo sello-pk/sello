@@ -3,6 +3,7 @@ import Car from "../models/carModel.js";
 import User from "../models/userModel.js";
 import { Blog } from "../models/blogModel.js";
 import CustomerRequest from "../models/customerRequestModel.js";
+import Invite from "../models/inviteModel.js";
 import AuditLog from "../models/auditLogModel.js";
 import { Logger, sendEmail, createAuditLog, escapeRegex } from "../utils/helpers.js";
 import {
@@ -197,7 +198,14 @@ const AdminService = {
   },
 
   deleteUser: async (userId) => {
+    const user = await User.findById(userId);
     await Car.deleteMany({ postedBy: userId });
+    if (user) {
+      await Invite.updateMany(
+        { email: user.email.toLowerCase() },
+        { status: "cancelled" },
+      );
+    }
     return await User.findByIdAndDelete(userId);
   },
 

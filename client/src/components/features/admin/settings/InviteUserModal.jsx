@@ -98,11 +98,13 @@ const InviteUserModal = ({ isOpen, onClose, onInviteSuccess, roles }) => {
       );
 
       if (response.data.success) {
-        // Always show invite URL if available
-        if (response.data.inviteUrl) {
-          // Copy to clipboard
+        const inviteUrl = response.data.data?.inviteUrl;
+        const emailSent = response.data.emailSent;
+        const warning = response.data.warning;
+
+        if (inviteUrl) {
           try {
-            await navigator.clipboard.writeText(response.data.inviteUrl);
+            await navigator.clipboard.writeText(inviteUrl);
             toast.success("Invite URL copied to clipboard!", {
               duration: 3000,
             });
@@ -110,24 +112,17 @@ const InviteUserModal = ({ isOpen, onClose, onInviteSuccess, roles }) => {
             // Failed to copy to clipboard
           }
 
-          // Show different messages based on email status
-          if (response.data.emailSent) {
+          if (emailSent) {
             toast.success(
               "Invitation sent successfully! Invite URL copied to clipboard.",
-              {
-                duration: 5000,
-              },
+              { duration: 5000 },
             );
           } else {
             toast.error(
               "Email was NOT sent. Invite URL copied to clipboard - please share it manually.",
-              {
-                duration: 8000,
-                icon: "⚠️",
-              },
+              { duration: 8000, icon: "⚠️" },
             );
 
-            // Also show the URL in a more visible way
             setTimeout(() => {
               toast(
                 <div>
@@ -135,20 +130,15 @@ const InviteUserModal = ({ isOpen, onClose, onInviteSuccess, roles }) => {
                     Invite URL (copied to clipboard):
                   </p>
                   <p className="text-xs break-all bg-gray-100 p-2 rounded">
-                    {response.data.inviteUrl}
+                    {inviteUrl}
                   </p>
                 </div>,
-                {
-                  duration: 15000,
-                  style: { maxWidth: "500px" },
-                  icon: "ℹ️",
-                },
+                { duration: 15000, style: { maxWidth: "500px" }, icon: "ℹ️" },
               );
             }, 1000);
           }
         } else {
-          // Fallback if no URL in response
-          if (response.data.warning) {
+          if (warning) {
             toast.error(response.data.message || "Email could not be sent", {
               duration: 5000,
             });

@@ -112,17 +112,6 @@ const userSchema = new mongoose.Schema(
     },
     adminRole: {
       type: String,
-      enum: [
-        "Super Admin",
-        "Moderator",
-        "Support Agent",
-        "Content Manager",
-        "Dealer Manager",
-        "Marketing Team",
-        "Blogs/Content Agent",
-        "Custom",
-        null,
-      ],
       default: null,
     },
     roleId: {

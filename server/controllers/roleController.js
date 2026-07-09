@@ -578,8 +578,11 @@ export const inviteUser = async (req, res) => {
 
     if (existingUser) {
       if (existingUser.status === "active") {
+        const existingAdminRole = resolveCanonicalRoleName(
+          existingUser.adminRole || "",
+        );
         const hasRole =
-          existingUser.role === role ||
+          existingAdminRole === finalRole ||
           (existingUser.roleId &&
             requestedRoleId &&
             existingUser.roleId.toString() === requestedRoleId.toString());
@@ -692,42 +695,11 @@ export const inviteUser = async (req, res) => {
       });
     }
 
-    // Check if pending invite exists
-    const existingInvite = await Invite.findOne({
-      email: email.toLowerCase(),
-      status: "pending",
-    });
-    if (existingInvite && !existingInvite.isExpired()) {
-      const timeRemaining = existingInvite.expiresAt - new Date();
-      const hoursRemaining = Math.floor(timeRemaining / (1000 * 60 * 60));
-      const daysRemaining = Math.floor(hoursRemaining / 24);
-
-      let timeText = "";
-      if (daysRemaining > 0) {
-        timeText = `${daysRemaining} day${daysRemaining > 1 ? "s" : ""}`;
-      } else if (hoursRemaining > 0) {
-        timeText = `${hoursRemaining} hour${hoursRemaining > 1 ? "s" : ""}`;
-      } else {
-        timeText = "less than an hour";
-      }
-
-      return res.status(409).json({
-        success: false,
-        message: `An active invite already exists for this email.`,
-        code: "INVITE_ALREADY_EXISTS",
-        data: {
-          inviteId: existingInvite._id,
-          email: existingInvite.email,
-          role: existingInvite.role,
-          expiresAt: existingInvite.expiresAt,
-          timeRemaining: timeText,
-          actions: [
-            "Resend the existing invite",
-            "Cancel the existing invite and create a new one",
-          ],
-        },
-      });
-    }
+    // Cancel any existing pending invites for this email
+    await Invite.updateMany(
+      { email: email.toLowerCase(), status: "pending" },
+      { status: "cancelled" },
+    );
 
     // Generate token
     const token = Invite.generateToken();
