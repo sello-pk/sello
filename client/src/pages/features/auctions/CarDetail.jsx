@@ -219,13 +219,13 @@ export default function CarDetail() {
     hasVerifiedToken &&
     walletBalance >= buyNowPrice;
   const pageTitle =
-    car?.title || (car?.make && car?.model
-      ? `${car.year || ""} ${car.make} ${car.model} Auction Details | Sello.pk`
-      : "Auction Car Details | Sello.pk");
+    car?.make && car?.model
+      ? `${car.year || ""} ${car.make} ${car.model}${car.variant && car.variant !== "N/A" ? " " + car.variant : ""} for sale${car.city ? " in " + car.city : ""} | Sello`
+      : "Auction Car Details | Sello";
   const pageDescription =
     car?.make && car?.model
-      ? `View auction details for the ${car.year || ""} ${car.make} ${car.model} on Sello.pk. Check bidding activity, inspection info, pricing, and vehicle specifications before you bid.`
-      : "View auction car details on Sello.pk including current bid, inspection information, pricing, and vehicle specifications before placing your bid.";
+      ? `${car.year || ""} ${car.make} ${car.model} Used for sale${car.city ? " in " + car.city : ""} for PKR ${car.price?.toLocaleString() || "0"}. Buy this ${car.engineCapacity || ""}${car.engineCapacity ? " cc, " : ""}${car.colorExterior || ""} ${car.mileage?.toLocaleString() || "N/A"} KM Driven, ${car.transmission || ""} ${car.vehicleType || "Car"}. Contact Seller Now!`
+      : "View auction car details on Sello including current bid, inspection information, pricing, and vehicle specifications before placing your bid.";
   const canonicalUrl = `https://sello.pk${location.pathname}${location.search}`;
 
   useEffect(() => {

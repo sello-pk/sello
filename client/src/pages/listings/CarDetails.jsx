@@ -167,17 +167,62 @@ const CarDetails = () => {
   }
 
   const carTitle = car
-    ? (car.title || `${car.year || ""} ${car.make || ""} ${car.model || ""} - ${car.condition || ""} - PKR ${car.price?.toLocaleString() || "0"}`).trim()
+    ? (() => {
+        const make = car.make || "";
+        const model = car.model || "";
+        const year = car.year || "";
+        const city = car.city || "";
+        const variant = car.variant && car.variant !== "N/A" ? car.variant : "";
+        const parts = [year, make, model, variant].filter(Boolean);
+        parts.push("for sale");
+        if (city) parts.push("in", city);
+        return parts.join(" ");
+      })()
     : "Car Details";
   const carDescription = car
     ? (() => {
-        const vt = car.vehicleType || "Car";
-        const base = `View details for ${car.year || ""} ${car.make || ""} ${car.model || ""} in ${car.city || ""}. ${car.condition || ""} vehicle.`;
-        const mileage = (["Car", "Bus", "Truck", "Van", "Bike", "E-bike", "Farm"].includes(vt) && car.mileage != null)
-          ? ` ${car.mileage?.toLocaleString() || "N/A"} km.` : "";
-        return `${base}${mileage} Price: PKR ${car.price?.toLocaleString() || "0"}. ${car.description || ""}`;
+        const make = car.make || "";
+        const model = car.model || "";
+        const year = car.year || "";
+        const city = car.city || "";
+        const price = car.price?.toLocaleString() || "0";
+        const cc = car.engineCapacity || "";
+        const color = car.colorExterior || "";
+        const mileage = car.mileage?.toLocaleString() || "N/A";
+        const transmission = car.transmission || "";
+        const vehicleType = car.vehicleType || "Car";
+        const parts = [year, make, model];
+        if (city) parts.push("Used for sale in", city);
+        else parts.push("Used for sale");
+        parts.push(`for PKR ${price}.`);
+        const specs = [];
+        if (cc) specs.push(`${cc} cc`);
+        if (color) specs.push(color);
+        specs.push(`${mileage} KM Driven`);
+        if (transmission) specs.push(transmission);
+        if (vehicleType) specs.push(vehicleType);
+        if (specs.length) parts.push(`Buy this ${specs.join(", ")}.`);
+        parts.push("Contact Seller Now!");
+        return parts.join(" ");
       })()
     : "View car details on Sello";
+  const carKeywords = car
+    ? (() => {
+        const make = (car.make || "").toLowerCase();
+        const model = (car.model || "").toLowerCase();
+        const year = car.year || "";
+        const city = (car.city || "").toLowerCase();
+        const keywords = [
+          `${make} ${model} ${year} for sale`,
+          `${make} ${model} ${year}`,
+          `${make} ${model} ${year} ${city}`,
+          `${year} ${make} ${model}`,
+          `${make} ${model} for sale`,
+          `used ${make} ${model} ${year}`,
+        ];
+        return keywords.join(", ");
+      })()
+    : "cars, buy cars, sell cars, used cars, new cars, Pakistan";
   const carImage = car?.images?.[0] || "/logo.png";
 
   return (
@@ -187,9 +232,7 @@ const CarDetails = () => {
         description={carDescription}
         image={carImage}
         type="product"
-        keywords={`${car?.make || ""} ${car?.model || ""}, ${
-          car?.year || ""
-        }, ${car?.condition || ""} car, ${car?.city || ""}, car for sale`}
+        keywords={carKeywords}
         canonical={
           car ? `https://sello.pk${buildCarUrl(car)}` : undefined
         }

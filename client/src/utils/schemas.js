@@ -279,15 +279,35 @@ export const generateVehicleSchema = (car, carUrl) => {
     });
   }
 
+  const make = car.make || "";
+  const model = car.model || "";
+  const year = car.year || "";
+  const city = car.city || "";
+  const variant = car.variant && car.variant !== "N/A" ? car.variant : "";
+  const titleParts = [year, make, model, variant].filter(Boolean);
+  titleParts.push("for sale");
+  if (city) titleParts.push("in", city);
+  const schemaTitle = car.title || titleParts.join(" ");
+
+  const descParts = [year, make, model];
+  if (city) descParts.push("Used for sale in", city);
+  else descParts.push("Used for sale");
+  descParts.push(`for PKR ${car.price?.toLocaleString() || "0"}.`);
+  const specs = [];
+  if (car.engineCapacity) specs.push(`${car.engineCapacity} cc`);
+  if (car.colorExterior) specs.push(car.colorExterior);
+  specs.push(`${car.mileage?.toLocaleString() || "N/A"} KM Driven`);
+  if (car.transmission) specs.push(car.transmission);
+  if (car.vehicleType) specs.push(car.vehicleType);
+  if (specs.length) descParts.push(`Buy this ${specs.join(", ")}.`);
+  descParts.push("Contact Seller Now!");
+  const schemaDescription = car.description || descParts.join(" ");
+
   return {
     "@context": "https://schema.org",
     "@type": "Product",
-    name:
-      car.title ||
-      `${car.year || ""} ${car.make || ""} ${car.model || ""}`.trim(),
-    description:
-      car.description ||
-      `${car.make || ""} ${car.model || ""} ${car.year || ""} ${car.condition || ""} car for sale${car.city ? ` in ${car.city}` : ""}`,
+    name: schemaTitle,
+    description: schemaDescription,
     image: car.images && car.images.length > 0 ? car.images : undefined,
     sku: car._id,
     brand: {
