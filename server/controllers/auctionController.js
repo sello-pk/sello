@@ -50,6 +50,26 @@ import { SecurityEvent } from "../models/securityEventModel.js";
 const MIN_BID_INCREMENT = AUCTION_CONFIG.MIN_BID_INCREMENT;
 const MAX_PROXY_BID = AUCTION_CONFIG.MAX_PROXY_BID ?? 100_000_000;
 
+const normalizeAuctionString = (str) => {
+  if (!str || typeof str !== "string") return str;
+  return str.trim().split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
+};
+
+/**
+ * Auto-generate listing title from vehicle fields.
+ * Format: "Make Model Year for Sale" (PakWheels style)
+ */
+const generateCarTitle = (data) => {
+  const make = normalizeAuctionString(data.make) || "";
+  const model = normalizeAuctionString(data.model) || "";
+  const year = data.year || "";
+  const variant = normalizeAuctionString(data.variant);
+  const parts = [make, model, year].filter(Boolean);
+  if (variant && variant !== "N/A") parts.push(variant);
+  parts.push("for Sale");
+  return parts.join(" ");
+};
+
 const sanitizeBidsForPublic = (bids = []) => {
   const map = new Map();
   return bids.map((bid) => {
@@ -2235,9 +2255,7 @@ export const submitCarToAuction = async (req, res) => {
         parsedFeatures = [];
       }
 
-      const normalizedAuctionTitle = String(
-        title || `${make} ${model} ${year}`,
-      ).trim();
+      const normalizedAuctionTitle = generateCarTitle({ make, model, year, city });
       const normalizedYear = Number(year);
       const normalizedMileage = Number(mileage || 0);
       const normalizedStartingBid = Number(startingBid || price || 0);
@@ -2283,7 +2301,7 @@ export const submitCarToAuction = async (req, res) => {
 
       // Create new car (listingType auction for hybrid model)
       car = await Car.create({
-        title: title || `${make} ${model} ${year}`,
+        title: generateCarTitle({ make, model, year, city }),
         description:
           description ||
           `Vehicle submitted for auction: ${make} ${model} ${year}`,
@@ -2636,7 +2654,7 @@ export const updateMyAuctionSubmissionByCar = async (req, res) => {
         ? normalizeAuctionGeoLocation(geoLocation)
         : car.geoLocation;
 
-    car.title = title || car.title;
+    car.title = generateCarTitle({ make: make || car.make, model: model || car.model, year: year || car.year, city: city || car.city });
     car.description = description ?? car.description;
     car.make = make || car.make;
     car.model = model || car.model;

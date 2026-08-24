@@ -1694,7 +1694,6 @@ export const api = createApi({
             "startingBid",
             "reservePrice",
             "buyNowPrice",
-            "title",
             "description",
             "make",
             "model",

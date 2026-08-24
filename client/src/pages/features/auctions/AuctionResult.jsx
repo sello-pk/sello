@@ -57,8 +57,8 @@ export default function AuctionResult() {
   });
   const car = result?.car || {};
   const pageTitle =
-    result?.status === "sold" && car?.make && car?.model
-      ? `Auction Result for ${car.year || ""} ${car.make} ${car.model} | Sello.pk`
+    result?.status === "sold" && (car?.title || (car?.make && car?.model))
+      ? `Auction Result for ${car.title || `${car.year || ""} ${car.make} ${car.model}`} | Sello.pk`
       : "Auction Result | Sello.pk";
   const pageDescription =
     result?.status === "sold"
@@ -179,7 +179,7 @@ export default function AuctionResult() {
               </div>
               <div className="p-6 flex flex-col justify-center">
                 <h2 className="text-xl font-bold text-slate-900 mb-2">
-                  {car.year} {car.make} {car.model}
+                  {car.title || `${car.year} ${car.make} ${car.model}`}
                 </h2>
                 <div className="space-y-2 text-sm text-slate-600 mb-4">
                   <p>

@@ -12,7 +12,7 @@ function CompareCard({ id }) {
   return (
     <div className="border border-slate-200 rounded-xl p-4 bg-white">
       <h3 className="font-semibold text-slate-900">
-        {car.year} {car.make} {car.model}
+        {car.title || `${car.year} ${car.make} ${car.model}`}
       </h3>
       <p className="text-sm text-slate-500 mt-1">
         {car.mileage?.toLocaleString?.() || car.mileage || 0} km • {car.fuelType || "—"} •{" "}

@@ -254,7 +254,7 @@ const Btns = () => {
       {showChat && car && currentUser && (
         <CarChatWidget
           carId={car._id}
-          carTitle={`${car.make} ${car.model} - ${car.year}`}
+          carTitle={car.title || `${car.make} ${car.model} - ${car.year}`}
           onClose={() => setShowChat(false)}
         />
       )}

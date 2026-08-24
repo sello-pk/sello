@@ -215,7 +215,7 @@ const CarCard = ({ auctionCar, compact = false, auctionLocation, auctionEndTime 
         </div>
         <div className="p-4">
           <h3 className="font-semibold text-2xl text-slate-900 leading-tight line-clamp-1">
-            {car.year} {car.make} {car.model}
+            {car.title || `${car.year} ${car.make} ${car.model}`}
           </h3>
           <div className="flex items-center gap-4 mt-2 text-slate-500 text-sm">
             <span>{mileage} km</span>

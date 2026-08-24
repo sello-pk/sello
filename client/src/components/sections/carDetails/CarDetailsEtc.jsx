@@ -454,7 +454,7 @@ const CarDetailsEtc = () => {
         currentUser._id !== car.postedBy?._id && (
           <CarChatWidget
             carId={car._id}
-            carTitle={`${car.make} ${car.model} - ${car.year}`}
+            carTitle={car.title || `${car.make} ${car.model} - ${car.year}`}
             onClose={() => setShowChat(false)}
           />
         )}

@@ -11,7 +11,7 @@ const listingHistorySchema = new mongoose.Schema(
     },
 
     // Snapshot of important listing fields (no images)
-    title: { type: String, required: true },
+    title: { type: String, default: "" },
     make: { type: String, required: true },
     model: { type: String, required: true },
     year: { type: Number, required: true },

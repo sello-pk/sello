@@ -50,6 +50,21 @@ const normalizeString = (str) => {
   return str.trim().split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
 };
 
+/**
+ * Auto-generate listing title from vehicle fields.
+ * Format: "Make Model Year for Sale" (PakWheels style)
+ */
+const generateCarTitle = (data) => {
+  const make = normalizeString(data.make) || "";
+  const model = normalizeString(data.model) || "";
+  const year = data.year || "";
+  const variant = normalizeString(data.variant);
+  const parts = [make, model, year].filter(Boolean);
+  if (variant && variant !== "N/A") parts.push(variant);
+  parts.push("for Sale");
+  return parts.join(" ");
+};
+
 const parseNumericField = (value) => {
   if (value === null || value === undefined || value === "") return undefined;
   if (typeof value === "number" && Number.isFinite(value)) return value;
@@ -135,6 +150,7 @@ const scrubVehicleData = (vehicleType, data) => {
   const allowed = new Set([
     ...required, 
     ...optional, 
+    "title",
     "vehicleType", 
     "vehicleTypeCategory", 
     "postedBy", 
@@ -200,6 +216,7 @@ export const createCar = async (req, res) => {
 
     const carData = {
       ...req.body,
+      title: generateCarTitle(req.body),
       make: normalizeString(req.body.make),
       model: normalizeString(req.body.model),
       horsepower: normalizedHorsepower ?? 0,
@@ -329,6 +346,7 @@ export const editCar = async (req, res) => {
 
     const updateData = {
       ...req.body,
+      title: generateCarTitle({ make: req.body.make || car.make, model: req.body.model || car.model, year: req.body.year || car.year, city: req.body.city || car.city }),
       make: normalizeString(req.body.make),
       model: normalizeString(req.body.model),
       year: Number.isFinite(yearNum) ? yearNum : car.year,

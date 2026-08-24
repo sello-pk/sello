@@ -49,9 +49,10 @@ export const ProductSchema = ({ car }) => {
       "@context": "https://schema.org",
       "@type": "Product",
       name:
-        car.make && car.model && car.year
+        car.title ||
+        (car.make && car.model && car.year
           ? `${car.make} ${car.model} ${car.year}`
-          : "Car",
+          : "Car"),
       description:
         car.description ||
         (car.make && car.model && car.year && car.city

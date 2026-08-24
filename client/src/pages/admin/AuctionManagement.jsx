@@ -624,7 +624,7 @@ export default function AuctionManagement() {
                   const hoursLeft = Math.max(0, Math.round((new Date(esc.paymentDeadline) - new Date()) / 3600000));
                   return (
                     <tr key={esc._id} className={`border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 ${isOverdue ? "bg-red-50 dark:bg-red-900/20" : ""}`}>
-                      <td className="p-4 font-medium text-slate-900 dark:text-slate-100">{car.year} {car.make} {car.model}</td>
+                      <td className="p-4 font-medium text-slate-900 dark:text-slate-100">{car.title || `${car.year} ${car.make} ${car.model}`}</td>
                       <td className="p-4"><div><p className="font-medium text-slate-900 dark:text-slate-100">{esc.buyer?.name}</p><p className="text-xs text-slate-500 dark:text-slate-300">{esc.buyer?.email}</p></div></td>
                       <td className="p-4 font-semibold text-slate-900 dark:text-slate-100">PKR {esc.amount?.toLocaleString()}</td>
                       <td className="p-4 font-semibold text-[#FFA602]">PKR {esc.amountDue?.toLocaleString()}</td>

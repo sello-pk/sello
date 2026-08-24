@@ -167,9 +167,7 @@ const CarDetails = () => {
   }
 
   const carTitle = car
-    ? `${car.year || ""} ${car.make || ""} ${car.model || ""} - ${
-        car.condition || ""
-      } - PKR ${car.price?.toLocaleString() || "0"}`.trim()
+    ? (car.title || `${car.year || ""} ${car.make || ""} ${car.model || ""} - ${car.condition || ""} - PKR ${car.price?.toLocaleString() || "0"}`).trim()
     : "Car Details";
   const carDescription = car
     ? (() => {

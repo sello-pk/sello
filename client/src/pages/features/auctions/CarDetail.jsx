@@ -219,9 +219,9 @@ export default function CarDetail() {
     hasVerifiedToken &&
     walletBalance >= buyNowPrice;
   const pageTitle =
-    car?.make && car?.model
+    car?.title || (car?.make && car?.model
       ? `${car.year || ""} ${car.make} ${car.model} Auction Details | Sello.pk`
-      : "Auction Car Details | Sello.pk";
+      : "Auction Car Details | Sello.pk");
   const pageDescription =
     car?.make && car?.model
       ? `View auction details for the ${car.year || ""} ${car.make} ${car.model} on Sello.pk. Check bidding activity, inspection info, pricing, and vehicle specifications before you bid.`
@@ -579,7 +579,7 @@ export default function CarDetail() {
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <h1 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tight text-slate-900 mb-2 break-words">
-                    {car.year} {car.make} {car.model}
+                    {car.title || `${car.year} ${car.make} ${car.model}`}
                   </h1>
                   <div className="flex flex-wrap items-center gap-4 text-base text-slate-500 mb-4">
                     <span className="flex items-center gap-1">

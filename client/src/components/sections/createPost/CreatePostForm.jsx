@@ -62,7 +62,6 @@ const CreatePostForm = ({ initialPrefill = null }) => {
   const [duplicateInfo, setDuplicateInfo] = useState(null);
 
   const [formData, setFormData] = useState({
-    title: "",
     description: "",
     vehicleType: "Car", // Default to Car
     vehicleTypeCategory: "", // Category ID reference
@@ -325,7 +324,6 @@ const CreatePostForm = ({ initialPrefill = null }) => {
 
     // Add all other fields efficiently
     const fieldsToAppend = [
-      "title",
       "description",
       "vehicleType",
       "make",
@@ -453,7 +451,6 @@ const CreatePostForm = ({ initialPrefill = null }) => {
 
       // Reset form
       setFormData({
-        title: "",
         description: "",
         vehicleType: "Car",
         vehicleTypeCategory: "",
@@ -605,7 +602,6 @@ const CreatePostForm = ({ initialPrefill = null }) => {
       }
 
       setFormData({
-        title: "",
         description: "",
         vehicleType: "Car",
         vehicleTypeCategory: "",
@@ -817,18 +813,6 @@ const CreatePostForm = ({ initialPrefill = null }) => {
         <div className="my-2">
           <ImagesUpload
             onImagesChange={(files) => handleChange("images", files)}
-          />
-        </div>
-
-        {/* Title - Full Width */}
-        <div className="mb-2 pl-0 sm:pl-2">
-          <label className="block mb-1">Title</label>
-          <Input
-            inputType="text"
-            value={formData.title}
-            onChange={(e) => handleChange("title", e.target.value)}
-            placeholder="e.g., 2017 Toyota Fortuner V8"
-            required
           />
         </div>
 

@@ -6,7 +6,6 @@
 export const VEHICLE_FIELD_CONFIG = {
   Car: {
     required: [
-      "title",
       "make",
       "model",
       "year",
@@ -35,7 +34,6 @@ export const VEHICLE_FIELD_CONFIG = {
   },
   Bus: {
     required: [
-      "title",
       "make",
       "model",
       "year",
@@ -62,7 +60,6 @@ export const VEHICLE_FIELD_CONFIG = {
   },
   Truck: {
     required: [
-      "title",
       "make",
       "model",
       "year",
@@ -89,7 +86,6 @@ export const VEHICLE_FIELD_CONFIG = {
   },
   Van: {
     required: [
-      "title",
       "make",
       "model",
       "year",
@@ -116,7 +112,6 @@ export const VEHICLE_FIELD_CONFIG = {
   },
   Bike: {
     required: [
-      "title",
       "make",
       "model",
       "year",
@@ -142,7 +137,6 @@ export const VEHICLE_FIELD_CONFIG = {
   },
   "E-bike": {
     required: [
-      "title",
       "make",
       "model",
       "year",
@@ -173,7 +167,6 @@ export const VEHICLE_FIELD_CONFIG = {
   },
   Farm: {
     required: [
-      "title",
       "make",
       "model",
       "year",

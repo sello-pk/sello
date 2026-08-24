@@ -80,8 +80,7 @@ const CarCard = ({
   }, [savedCarsData]);
 
   const id = car?._id;
-  const rawTitle = car && `${car.make || ""} ${car.model || ""} ${car.year || ""}`.trim();
-  const displayTitle = (rawTitle && rawTitle !== "undefined") ? rawTitle : (car?.title || "Car Listing");
+  const displayTitle = car?.title || `${car.make || ""} ${car.model || ""} ${car.year || ""}`.trim() || "Car Listing";
   const isAuction = car?.listingType === "auction";
   const displayPrice = isAuction ? (car?.currentBid || car?.price) : car?.price;
   const priceFormatted =
@@ -239,11 +238,6 @@ const CarCard = ({
               No image
             </div>
           )}
-          <span
-            className={`absolute top-2 left-2 px-2 py-1 rounded-lg text-xs font-bold uppercase ${tagStyles[displayTag] || tagStyles.for_sale}`}
-          >
-            {tagLabel}
-          </span>
           {showSaveButton && id && (
             <button
               type="button"
@@ -263,7 +257,7 @@ const CarCard = ({
 
         <div className="flex-1 flex flex-col justify-between p-3 sm:p-4 min-w-0">
           <div>
-            <h3 className="text-[#111827] font-bold text-sm sm:text-base lg:text-lg leading-tight line-clamp-1">
+            <h3 className="text-[#111827] font-bold text-xs sm:text-sm lg:text-base leading-tight line-clamp-1">
               {displayTitleShort}
             </h3>
             {displayYear != null && displayYear !== "" && (
@@ -307,12 +301,9 @@ const CarCard = ({
             </div>
           </div>
           <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-2 sm:gap-3 mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-[#e5e7eb]">
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <p className="text-xs text-gray-500 truncate">{priceLabel}</p>
-                {isAuction && <CountdownTimer targetDate={car?.auctionEndTime} />}
-              </div>
+            <div className="min-w-0 flex-1">
               <p className="text-base sm:text-lg font-bold text-primary-500 truncate">PKR {priceFormatted}</p>
+              {isAuction && <CountdownTimer targetDate={car?.auctionEndTime} />}
             </div>
             {(showPhone || showWhatsAppBtn || showViewCta) && (
               <div className="flex items-center justify-between gap-1 sm:gap-2 flex-wrap min-w-0">
@@ -451,7 +442,6 @@ const CarCard = ({
           <h3 className="text-[#111827] font-bold text-xs sm:text-sm md:text-base leading-tight line-clamp-2 flex-1 min-w-0">
             {displayTitle}
           </h3>
-          <p className="text-xs text-gray-500 shrink-0 ml-1 mt-0.5">{priceLabel}</p>
         </div>
         <div className="flex items-center gap-1 mt-1 text-[#6b7280] text-xs">
           {images.location && (

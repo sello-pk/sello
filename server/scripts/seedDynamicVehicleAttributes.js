@@ -27,7 +27,7 @@ const seed = async () => {
         name: "title",
         label: "Ad Title",
         type: "text",
-        required: true,
+        required: false,
         order: 1,
       },
       {
@@ -259,7 +259,7 @@ const seed = async () => {
         name: "title",
         label: "Ad Title",
         type: "text",
-        required: true,
+        required: false,
         order: 1,
       },
       {

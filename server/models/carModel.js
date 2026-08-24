@@ -14,7 +14,7 @@ const carSchema = new mongoose.Schema(
       default: "normal",
       index: true,
     },
-    title: { type: String, required: true },
+    title: { type: String, default: "" },
     description: { type: String, default: "" },
     make: { type: String, required: true },
     model: { type: String, required: true },

@@ -66,7 +66,6 @@ const EditCarForm = () => {
   const { data: currentUser } = useGetMeQuery(undefined, { skip: !token });
 
   const [formData, setFormData] = useState({
-    title: "",
     description: "",
     vehicleType: "Car",
     make: "",
@@ -212,7 +211,6 @@ const EditCarForm = () => {
           : "");
 
       setFormData({
-        title: activeCar.title || "",
         description: activeCar.description || "",
         vehicleType: isAuction ? "Car" : (activeCar.vehicleType || "Car"),
         make: activeCar.make || "",
@@ -367,7 +365,6 @@ const EditCarForm = () => {
     }
 
     const scalarFields = [
-      "title",
       "description",
       "vehicleType",
       "make",
@@ -422,8 +419,8 @@ const EditCarForm = () => {
   };
 
   const handleAuctionSubmit = async (contactNorm, waNorm) => {
-    if (!formData.title || !formData.make || !formData.model || !formData.year) {
-      toast.error("Title, make, model, and year are required.");
+    if (!formData.make || !formData.model || !formData.year) {
+      toast.error("Make, model, and year are required.");
       return false;
     }
     if (!formData.city || !formData.contactNumber || !formData.startingBid) {
@@ -449,7 +446,6 @@ const EditCarForm = () => {
     }
 
     [
-      ["title", formData.title],
       ["description", formData.description],
       ["make", formData.make],
       ["model", formData.model],
@@ -614,11 +610,6 @@ const EditCarForm = () => {
         <div
           className={`grid min-w-0 [&>div]:min-w-0 ${isAuction ? "md:grid-cols-2" : "md:grid-cols-1"} gap-4`}
         >
-          <div>
-            <label className="block mb-1">Title</label>
-            <Input inputType="text" value={formData.title} onChange={(e) => handleChange("title", e.target.value)} placeholder="Title" required />
-          </div>
-          
           <div>
             <label className="block mb-1">{isAuction ? "Price / Buy Now Value (PKR)" : "Price (PKR)"}</label>
             <Input inputType="number" value={formData.price} onChange={(e) => handleChange("price", e.target.value)} placeholder="Enter price" required />
