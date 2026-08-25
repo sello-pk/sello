@@ -9,6 +9,7 @@ export const ROUTES = {
   cars: "/cars",
   carDetails: (id) => `/cars/${id}`,
   carEstimator: "/car-estimator",
+  vehicleVerification: "/vehicle-verification",
   blog: "/blog",
   blogDetails: (id) => `/blog/${id}`,
   about: "/about",

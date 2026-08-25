@@ -190,6 +190,10 @@ export const menuLinks = [
     name: "Ai Car Estimator",
   },
   {
+    path: "/vehicle-verification",
+    name: "Vehicle Verification",
+  },
+  {
     path: "/blog",
     name: "Blog",
   },
