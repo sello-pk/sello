@@ -1,475 +1,731 @@
 import React, { useState } from "react";
-import {
-  FaShieldAlt,
-  FaCheckCircle,
-  FaFileAlt,
-  FaCar,
-  FaUserCheck,
-  FaClipboardCheck,
-  FaLock,
-  FaSearch,
-  FaArrowRight,
-  FaChevronDown,
-  FaChevronUp,
-  FaIndustry,
-  FaIdCard,
-  FaReceipt,
-  FaExchangeAlt,
-  FaMedal,
-  FaCarSide,
-  FaFileContract,
-  FaHandshake,
-} from "react-icons/fa";
-import { FiZap, FiShield, FiLock } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import {
+  ArrowRight,
+  BookOpen,
+  Building2,
+  Car,
+  Castle,
+  CheckCircle2,
+  ChevronDown,
+  ClipboardCheck,
+  ExternalLink,
+  FileText,
+  IdCard,
+  Landmark,
+  Lock,
+  MapPin,
+  Mountain,
+  Receipt,
+  Search,
+  Shield,
+  ShieldCheck,
+  Sparkles,
+  Wrench,
+  Zap,
+} from "lucide-react";
 import SEO from "../../common/SEO";
 import NewsLatter from "../../utils/NewsLatter";
+import listingHero from "../../../assets/images/listingHero.png";
 
 const provinces = [
-  { name: "Punjab", desc: "Verify Punjab Vehicle Registration Records", url: "https://mtmis.excise.punjab.gov.pk/" },
-  { name: "Islamabad", desc: "Verify Islamabad Vehicle Ownership Records", url: "https://islamabadexcise.gov.pk/" },
-  { name: "Sindh", desc: "Check Sindh Vehicle Registration Details", url: "https://excise.gos.pk/vehicle/vehicle_search" },
-  { name: "KPK", desc: "Access KPK Vehicle Verification Services", url: "https://www.kpexcise.gov.pk/mvrecords/" },
+  {
+    name: "Punjab",
+    desc: "Verify Punjab vehicle registration records",
+    portal: "MTMIS Punjab",
+    url: "https://mtmis.excise.punjab.gov.pk/",
+    Icon: Landmark,
+  },
+  {
+    name: "Islamabad",
+    desc: "Verify Islamabad vehicle ownership records",
+    portal: "Islamabad Excise",
+    url: "https://islamabadexcise.gov.pk/",
+    Icon: Building2,
+  },
+  {
+    name: "Sindh",
+    desc: "Check Sindh vehicle registration details",
+    portal: "Sindh Excise",
+    url: "https://excise.gos.pk/vehicle/vehicle_search",
+    Icon: Castle,
+  },
+  {
+    name: "KPK",
+    desc: "Access KPK vehicle verification services",
+    portal: "KPK Excise",
+    url: "https://www.kpexcise.gov.pk/mvrecords/",
+    Icon: Mountain,
+  },
 ];
 
 const whyVerify = [
-  { icon: FaUserCheck, title: "Ownership Verification", desc: "Ensure the seller is the registered owner" },
-  { icon: FaClipboardCheck, title: "Registration Confirmation", desc: "Confirm official registration records" },
-  { icon: FaShieldAlt, title: "Fraud Prevention", desc: "Avoid stolen or fraudulent vehicles" },
-  { icon: FaLock, title: "Buyer Protection", desc: "Make informed and secure purchasing decisions" },
-];
-
-const buyingTips = [
-  "Always verify vehicle registration and ownership details",
-  "Match chassis number, engine number and registration documents",
-  "Check token tax, transfer history and tax payment status",
-  "Meet the seller in a safe and public location",
-  "Inspect the vehicle condition physically before payment",
-  "Take a test drive and check all mechanical & electrical systems",
-  "Use trusted platforms like Sello for safe transactions",
+  {
+    icon: ShieldCheck,
+    title: "Ownership verification",
+    desc: "Confirm the seller matches the registered owner before you pay.",
+  },
+  {
+    icon: ClipboardCheck,
+    title: "Registration check",
+    desc: "Match make, model, engine, and chassis with official records.",
+  },
+  {
+    icon: Shield,
+    title: "Fraud prevention",
+    desc: "Spot stolen, cloned, or mismatched vehicles early.",
+  },
+  {
+    icon: Lock,
+    title: "Buyer protection",
+    desc: "Decide with documents and records, not just listing photos.",
+  },
 ];
 
 const steps = [
-  { icon: FaSearch, title: "Enter Details", desc: "Provide vehicle registration number." },
-  { icon: FaFileAlt, title: "We Check Records", desc: "We verify information from official sources." },
-  { icon: FaCar, title: "Get Report", desc: "Receive complete verification report instantly." },
-  { icon: FaShieldAlt, title: "Buy with Confidence", desc: "Make a safe and informed buying decision." },
+  {
+    step: "01",
+    icon: Search,
+    title: "Choose province",
+    desc: "Open the official portal for where the vehicle is registered.",
+  },
+  {
+    step: "02",
+    icon: FileText,
+    title: "Enter details",
+    desc: "Submit the registration number and any required vehicle info.",
+  },
+  {
+    step: "03",
+    icon: ClipboardCheck,
+    title: "Compare records",
+    desc: "Check owner, chassis, engine, and tax status against the car.",
+  },
+  {
+    step: "04",
+    icon: ShieldCheck,
+    title: "Buy with confidence",
+    desc: "Inspect in person, then complete a legal ownership transfer.",
+  },
 ];
 
 const verifyInfo = [
-  "Owner Name", "Registration Number", "Chassis Number", "Engine Number",
-  "Make / Model", "Model Year", "Color", "Registration Date",
-  "Token Tax Status", "Tax Payment History", "Transfer History",
-  "Fitness Certificate", "Insurance Status", "Legal Record Check",
+  "Owner name",
+  "Registration number",
+  "Chassis number",
+  "Engine number",
+  "Make / model / year",
+  "Color",
+  "Registration date & city",
+  "Token tax status",
+  "Transfer history",
+  "Fitness certificate",
+  "Insurance status",
+  "Legal record check",
 ];
 
 const documents = [
-  { icon: FaFileContract, title: "Registration Book", desc: "Original registration issued by Excise." },
-  { icon: FaReceipt, title: "Token Tax Paid", desc: "Valid token tax receipt." },
-  { icon: FaIdCard, title: "CNIC of Seller", desc: "Match CNIC with registration." },
-  { icon: FaExchangeAlt, title: "Transfer Letter", desc: "Check transfer history and letters." },
-  { icon: FaCarSide, title: "Chassis Plate", desc: "Verify chassis number." },
-  { icon: FaIndustry, title: "Engine Number", desc: "Match engine number." },
-  { icon: FaMedal, title: "Insurance (If Any)", desc: "Check valid insurance." },
-  { icon: FaCheckCircle, title: "Fitness Certificate", desc: "Ensure vehicle is fitness approved." },
+  { icon: FileText, title: "Registration book", desc: "Original book issued by Excise." },
+  { icon: Receipt, title: "Token tax receipt", desc: "Valid token tax payment proof." },
+  { icon: IdCard, title: "Seller CNIC", desc: "Must match the registered owner." },
+  { icon: FileText, title: "Transfer letter", desc: "Check transfer history and letters." },
+  { icon: Car, title: "Chassis plate", desc: "Match the number on the vehicle." },
+  { icon: Wrench, title: "Engine number", desc: "Confirm it matches the documents." },
+  { icon: Shield, title: "Insurance", desc: "Check if a policy is still valid." },
+  { icon: CheckCircle2, title: "Fitness certificate", desc: "Required where applicable." },
+];
+
+const buyingTips = [
+  "Verify registration and ownership on the official provincial portal",
+  "Match chassis number, engine number, and registration documents in person",
+  "Check token tax, transfer history, and tax payment status",
+  "Inspect the vehicle physically and take a test drive before payment",
+  "Meet in a public place and complete a proper ownership transfer",
+];
+
+const inspectItems = [
+  "Engine performance",
+  "Transmission",
+  "Suspension",
+  "AC and electrics",
+  "Paint and body",
+  "Tires",
+  "Accident repairs",
+  "Interior",
+];
+
+const guideSections = [
+  {
+    title: "What is online vehicle verification?",
+    body: [
+      "Online vehicle verification checks registration details through authorized provincial sources. Records can include registration info, vehicle specs, tax status, and other key data that varies by province.",
+      "A car can look fine in photos and still have mismatched papers. Use an official registration check to confirm the seller's claims before you buy, sell, or transfer a vehicle in Pakistan.",
+    ],
+  },
+  {
+    title: "Why is car verification important before buying?",
+    body: [
+      "Used-car listings are easy to browse, but each deal still needs a records check. Verification helps you catch issues the seller did not mention, including mismatched engine or chassis numbers and unclear ownership history.",
+      "Online records are a starting point. They do not replace a physical inspection or original document review.",
+    ],
+  },
+  {
+    title: "Punjab vehicle verification & Excise records",
+    body: [
+      "For Punjab-registered vehicles, use official Punjab Excise / MTMIS services to confirm registration details. Sello helps you know what to check, but official records still come from the authorized government portal.",
+      "Compare the registration document, vehicle number, engine details, chassis details, and available ownership information before you pay. If anything looks off, contact Excise and Taxation first.",
+    ],
+  },
+  {
+    title: "Vehicle verification in Lahore and other cities",
+    body: [
+      "Verification follows where the vehicle is registered, not where it is currently parked. A Lahore-registered car should be checked through Punjab records even if it is now in another city.",
+      "The same rule applies in Karachi, Islamabad, Rawalpindi, Faisalabad, and other cities. Always use the correct provincial portal for that registration.",
+    ],
+  },
+  {
+    title: "Online bike registration check",
+    body: [
+      "The same process applies to motorcycles. Before buying a used bike, check registration online where available, then match engine and frame numbers with the documents in person.",
+      "Mechanical condition, accident damage, and missing paperwork can change both value and safety. A bike registration check is especially important when buying from an individual seller.",
+    ],
+  },
+  {
+    title: "Can you check the vehicle owner?",
+    body: [
+      "Public owner details vary by province, privacy rules, and what each authority publishes. Only use authorized channels for genuine purchase or transfer needs.",
+      "The key step is confirming the seller has the right to sell and that ownership transfer will be completed legally. Do not rely on verbal claims alone.",
+    ],
+  },
+  {
+    title: "Registration book and smart card verification",
+    body: [
+      "Registration may be a book, smart card, or another government document. Before you buy, match the registration number, engine number, and chassis number on the document with the vehicle.",
+      "If details do not add up, stop the transaction until they are cleared. It is easier to resolve issues before payment than after.",
+    ],
+  },
+  {
+    title: "Why physical inspection still matters",
+    body: [
+      "A clean registration history does not mean the car is mechanically sound. Inspect engine performance, suspension, transmission, electrics, paint, tires, accident repairs, and interior condition.",
+      "For higher-value cars, a professional inspection is a smart extra step.",
+    ],
+  },
 ];
 
 const faqs = [
-  { q: "How does vehicle verification work on Sello?", a: "Sello connects to official provincial databases (MTMIS/Excise) to retrieve vehicle registration, ownership, and tax records. Simply enter your vehicle's registration number and we fetch the verified data for you." },
-  { q: "Is vehicle verification free?", a: "Basic vehicle verification on Sello is completely free. You can check registration status, ownership details, and token tax information at no cost." },
-  { q: "Which provinces are currently supported?", a: "We currently support vehicle verification for Punjab, Islamabad, Sindh, and KPK. We are actively working on adding more provinces and regions." },
-  { q: "Can I verify vehicle ownership details?", a: "Yes, our verification service provides ownership details including the registered owner's name, registration date, and transfer history where available from official sources." },
-  { q: "What information do I need to verify a vehicle?", a: "You need the vehicle's registration number (e.g., LEA-1234) to start the verification. Additional details like chassis or engine number can provide more comprehensive results." },
-  { q: "How accurate is the verification information?", a: "Our data comes directly from official government sources and MTMIS databases. While we strive for accuracy, we recommend using this as one of multiple verification steps before purchasing." },
-  { q: "Can I get a printed verification report?", a: "Yes, you can download and print your verification report as a PDF document for your records or to share with potential buyers/sellers." },
-  { q: "How long does it take to get the verification report?", a: "Most verification reports are generated instantly. In some cases where additional verification is needed, it may take up to 24 hours." },
+  {
+    q: "What is vehicle online verification?",
+    a: "It is a check against authorized databases for registration and history details before you buy, sell, or transfer a vehicle.",
+  },
+  {
+    q: "How do I check my car registration in Pakistan?",
+    a: "Each province has its own portal. Use the official service for the province where the vehicle is registered, then compare the result with the physical documents.",
+  },
+  {
+    q: "Is online verification enough before buying a used car?",
+    a: "No. Online verification is the first step. Also inspect the car in person and match engine and chassis numbers with the original documents.",
+  },
+  {
+    q: "Is it possible to do bike registration online?",
+    a: "Some provinces publish bike records online. Always use authorized sources, then confirm numbers on the bike itself.",
+  },
+  {
+    q: "Why do I need to verify a car before purchase?",
+    a: "It lets you compare the seller's claims with official records and catch ownership, tax, or identity issues before you pay.",
+  },
+  {
+    q: "Which provinces are currently supported?",
+    a: "Punjab, Islamabad, Sindh, and KPK. Each card above opens that province's official verification service.",
+  },
+  {
+    q: "Can I verify vehicle ownership details?",
+    a: "Where the authority publishes them, you can review owner name, registration date, and transfer history through official sources.",
+  },
+  {
+    q: "How long does a verification check take?",
+    a: "Most official portals return results immediately. If a record is missing or delayed, confirm with the relevant Excise office.",
+  },
 ];
 
 const stats = [
-  { value: "150K+", label: "Verified Listings" },
-  { value: "80K+", label: "Real Sellers" },
-  { value: "1M+", label: "Happy Users" },
-  { value: "25+", label: "Cities Covered" },
+  { value: "150K+", label: "Verified listings" },
+  { value: "80K+", label: "Real sellers" },
+  { value: "1M+", label: "Happy users" },
+  { value: "25+", label: "Cities covered" },
   { value: "4.8/5", label: "Rated" },
 ];
 
+const exploreLinks = [
+  {
+    to: "/car-estimator",
+    icon: Zap,
+    title: "AI Car Estimator",
+    desc: "Get an instant market range for a used car in Pakistan.",
+    cta: "Try estimator",
+  },
+  {
+    to: "/listings",
+    icon: Car,
+    title: "Car listings",
+    desc: "Browse cars for sale across major cities and brands.",
+    cta: "Browse cars",
+  },
+  {
+    to: "/blog",
+    icon: BookOpen,
+    title: "Buying guides",
+    desc: "Checks, tips, and guides to help you buy with more confidence.",
+    cta: "Read guides",
+  },
+];
+
+const SectionHeader = ({ eyebrow, title, subtitle, id }) => (
+  <div id={id} className="text-center mb-12 scroll-mt-24">
+    {eyebrow ? (
+      <p className="text-xs font-semibold tracking-[0.18em] uppercase text-primary-500 mb-3">
+        {eyebrow}
+      </p>
+    ) : null}
+    <h2 className="text-3xl font-bold text-slate-900 mb-3">{title}</h2>
+    {subtitle ? (
+      <p className="text-base text-slate-600 max-w-2xl mx-auto">{subtitle}</p>
+    ) : null}
+  </div>
+);
+
+const AccordionItem = ({ title, children, open, onToggle, headingAs = "h3" }) => {
+  const Heading = headingAs;
+  return (
+    <div
+      className={`rounded-xl bg-white overflow-hidden border transition-all ${
+        open
+          ? "border-primary-500 shadow-sm"
+          : "border-slate-200 hover:border-slate-300"
+      }`}
+    >
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 hover:bg-slate-50 transition-colors"
+        aria-expanded={open}
+      >
+        <Heading className="text-base sm:text-lg font-semibold text-slate-900">
+          {title}
+        </Heading>
+        <span
+          className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all ${
+            open ? "bg-primary-500 text-white" : "bg-slate-100 text-slate-500"
+          }`}
+        >
+          <ChevronDown
+            className={`w-4 h-4 transition-transform ${open ? "rotate-180" : ""}`}
+          />
+        </span>
+      </button>
+      {open ? (
+        <div className="px-5 pb-5 text-slate-600 text-sm leading-relaxed space-y-3 border-t border-slate-100 pt-4">
+          {children}
+        </div>
+      ) : null}
+    </div>
+  );
+};
+
+const scrollToId = (id) => (event) => {
+  event.preventDefault();
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
 const VehicleVerificationPage = () => {
+  const [openGuide, setOpenGuide] = useState(0);
   const [openFaq, setOpenFaq] = useState(null);
 
   return (
-    <>
+    <div className="w-full min-w-0 max-w-full overflow-x-hidden bg-gray-50">
       <SEO
-        title="Vehicle Verification Pakistan - MTMIS | Sello"
-        description="Verify vehicle ownership, registration details and records before making a purchase. Stay protected from fraud and buy with confidence on Sello.pk."
-        keywords="vehicle verification, MTMIS, car verification Pakistan, vehicle registration check, ownership verification"
+        title="Online Vehicle Verification in Pakistan | Check Car Details"
+        description="Verify your car or bike online through Sello. Check vehicle registration info and key details before you buy or sell a vehicle in Pakistan."
+        keywords="online vehicle verification Pakistan, car verification Pakistan, vehicle registration check, MTMIS, bike registration check"
       />
 
-      {/* Hero */}
-      <section className="relative bg-gradient-to-br from-[#0B1437] via-[#111d45] to-[#0B1437] overflow-hidden">
-        <div className="absolute inset-0 opacity-50" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-          <div className="grid md:grid-cols-2 gap-10 items-center">
-            <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-4 py-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
-                </span>
-                <span className="text-xs text-gray-300 font-medium">Official MTMIS Data Sources</span>
-              </div>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.1]">
-                Vehicle <br />
-                <span className="text-[#FFA602]">Verification</span>
-              </h1>
-              <p className="text-gray-400 text-base sm:text-lg leading-relaxed max-w-md">
-                Verify vehicle ownership, registration details and records before making a purchase. Stay protected from fraud.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <button className="bg-[#FFA602] text-white px-7 py-3.5 rounded-xl font-semibold flex items-center gap-2 hover:bg-[#e69500] transition-all shadow-lg shadow-[#FFA602]/25 hover:shadow-[#FFA602]/40 hover:-translate-y-0.5">
-                  <FaSearch /> Verify Vehicle
-                </button>
-                <button className="bg-white/5 backdrop-blur-sm border border-white/10 text-white px-7 py-3.5 rounded-xl font-semibold hover:bg-white/10 transition-all hover:-translate-y-0.5">
-                  Learn More
-                </button>
-              </div>
+      <section className="relative w-full overflow-hidden min-h-[52vh] md:h-[52vh] bg-gray-200">
+        <img
+          src={listingHero}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+          fetchPriority="high"
+          decoding="async"
+          width="1200"
+          height="600"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/55 via-slate-900/70 to-slate-900/80" />
+        <div className="relative z-10 flex min-h-[52vh] md:h-[52vh] flex-col justify-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-2 bg-white text-primary-500 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium mb-5 shadow-sm">
+              <Sparkles className="w-4 h-4" />
+              Official MTMIS data sources
             </div>
-            <div className="hidden md:flex justify-center lg:justify-end">
-              <div className="relative">
-                <div className="w-80 h-56 bg-gradient-to-br from-white/[0.07] to-transparent rounded-3xl border border-white/10 backdrop-blur-sm flex items-center justify-center overflow-hidden">
-                  <FaCar className="text-8xl text-white/10" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B1437]/50 to-transparent" />
-                </div>
-                <div className="absolute -right-6 top-10 bg-white/95 backdrop-blur rounded-2xl p-5 shadow-2xl shadow-black/20 border border-gray-100">
-                  <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Verification Status</div>
-                  <div className="space-y-2.5">
-                    {["Owner Verified", "Registration Confirmed", "Clear Legal History"].map((t) => (
-                      <div key={t} className="flex items-center gap-2.5 text-sm text-gray-700">
-                        <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
-                          <FaCheckCircle size={10} className="text-green-600" />
-                        </div>
-                        {t}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 leading-tight">
+              Online Vehicle Verification in Pakistan
+            </h1>
+            <p className="text-base sm:text-lg text-gray-100 mb-8">
+              Check car or bike registration details before you buy or sell.
+              Open the official portal for your province, then compare records
+              with the vehicle in person.
+            </p>
+            <div className="flex flex-wrap justify-center gap-3 mb-8">
+              <a
+                href="#select-province"
+                onClick={scrollToId("select-province")}
+                className="inline-flex items-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 hover:-translate-y-0.5 transition-all shadow-lg shadow-primary-500/25"
+              >
+                <Search className="w-4 h-4" />
+                Verify vehicle
+              </a>
+              <a
+                href="#how-it-works"
+                onClick={scrollToId("how-it-works")}
+                className="inline-flex items-center gap-2 bg-white text-slate-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 hover:-translate-y-0.5 transition-all"
+              >
+                How it works
+              </a>
             </div>
-          </div>
-        </div>
-        <div className="border-t border-white/5 bg-white/[0.02]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex flex-wrap justify-center gap-8 text-sm text-gray-400">
-              <div className="flex items-center gap-2"><FiShield className="text-green-400" /> <span className="text-gray-300">Secure</span></div>
-              <div className="flex items-center gap-2"><FaIndustry className="text-green-400" /> <span className="text-gray-300">Official Data Sources</span></div>
-              <div className="flex items-center gap-2"><FiLock className="text-green-400" /> <span className="text-gray-300">100% Confidential</span></div>
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-100">
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-sm">
+                <Shield className="w-4 h-4 text-primary-500" /> Secure
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-sm">
+                <Building2 className="w-4 h-4 text-green-400" /> Official sources
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-sm">
+                <Lock className="w-4 h-4 text-blue-300" /> Confidential
+              </span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Province Selection */}
-      <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
+      <section
+        id="select-province"
+        className="scroll-mt-24 py-16 bg-white"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">Select Your Province</h2>
-            <p className="text-gray-500 text-sm sm:text-base">Choose your province to verify vehicle details and ownership records</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {provinces.map((p) => (
-              <a key={p.name} href={p.url} target="_blank" rel="noopener noreferrer" className="group relative bg-white rounded-2xl border border-gray-200 p-6 hover:border-[#FFA602]/40 hover:shadow-xl hover:shadow-[#FFA602]/10 transition-all duration-300 overflow-hidden block">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#FFA602]/5 to-transparent rounded-bl-[100px] opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative">
-                  <div className="w-14 h-14 bg-gradient-to-br from-[#FFF8E7] to-[#FFF3D6] rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <svg width="28" height="28" viewBox="0 0 48 48" fill="none">
-                      {p.name === "Punjab" && <><rect x="14" y="6" width="20" height="34" rx="3" fill="#FFA602" opacity="0.8" /><rect x="10" y="37" width="28" height="5" rx="2" fill="#FFA602" opacity="0.5" /></>}
-                      {p.name === "Islamabad" && <><polygon points="24,4 38,42 10,42" fill="#FFA602" opacity="0.8" /><rect x="21" y="18" width="6" height="24" rx="1" fill="white" opacity="0.6" /></>}
-                      {p.name === "Sindh" && <><rect x="8" y="20" width="32" height="22" rx="3" fill="#FFA602" opacity="0.7" /><rect x="12" y="10" width="24" height="14" rx="2" fill="#FFA602" opacity="0.5" /><rect x="18" y="26" width="5" height="10" rx="1" fill="white" opacity="0.5" /><rect x="25" y="26" width="5" height="10" rx="1" fill="white" opacity="0.5" /></>}
-                      {p.name === "KPK" && <><path d="M6,42 L18,10 L24,26 L30,8 L42,42 Z" fill="#FFA602" opacity="0.7" /></>}
-                    </svg>
+          <SectionHeader
+            eyebrow="Start here"
+            title="Select your province"
+            subtitle="Choose the province where the vehicle is registered to open the official verification portal."
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {provinces.map((province) => (
+              <a
+                key={province.name}
+                href={province.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex flex-col bg-white rounded-xl border border-slate-200 shadow-sm p-6 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-500/10 hover:border-primary-300 transition-all duration-200"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center group-hover:bg-primary-500 transition-colors">
+                    <province.Icon className="w-6 h-6 text-primary-500 group-hover:text-white transition-colors" strokeWidth={1.75} />
                   </div>
-                  <h3 className="text-base font-bold text-gray-900 mb-1">Verify {p.name}</h3>
-                  <p className="text-xs text-gray-500 leading-relaxed mb-4">{p.desc}</p>
-                  <span className="text-xs font-semibold text-[#FFA602] flex items-center gap-1.5 group-hover:gap-2.5 transition-all">
-                    Verify Vehicle <FaArrowRight size={10} />
+                  <span className="text-[11px] font-medium text-slate-500 bg-slate-50 border border-slate-200 rounded-full px-2.5 py-1">
+                    {province.portal}
                   </span>
                 </div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-1.5">
+                  Verify {province.name}
+                </h3>
+                <p className="text-sm text-slate-600 leading-relaxed mb-5 flex-1">
+                  {province.desc}
+                </p>
+                <span className="text-sm font-semibold text-primary-500 inline-flex items-center gap-1.5 group-hover:gap-2.5 transition-all">
+                  Open official portal <ExternalLink className="w-4 h-4" />
+                </span>
               </a>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Why Verify */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">Why Vehicle Verification Matters</h2>
-            <p className="text-gray-500 text-sm sm:text-base">Protect yourself from fraud and make informed decisions</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {whyVerify.map((item) => (
-              <div key={item.title} className="group relative bg-gradient-to-b from-gray-50 to-white rounded-2xl p-6 text-center hover:from-[#FFF8E7] hover:to-white border border-gray-100 hover:border-[#FFA602]/20 hover:shadow-lg transition-all duration-300">
-                <div className="w-14 h-14 mx-auto mb-4 bg-gradient-to-br from-[#FFF8E7] to-[#FFF3D6] rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <item.icon className="text-xl text-[#FFA602]" />
-                </div>
-                <h3 className="text-sm font-bold text-gray-900 mb-2">{item.title}</h3>
-                <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Smart Buying Tips */}
-      <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-8">Smart Buying Tips</h2>
-              <div className="space-y-4">
-                {buyingTips.map((tip, i) => (
-                  <div key={i} className="flex items-start gap-4 group">
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#0B1437] to-[#1a2a5e] flex items-center justify-center shrink-0 shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all">
-                      <span className="text-white text-[11px] font-bold">{String(i + 1).padStart(2, "0")}</span>
-                    </div>
-                    <span className="text-sm text-gray-600 leading-relaxed pt-1">{tip}</span>
+      <section id="how-it-works" className="scroll-mt-24 py-16 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-primary-50/30" aria-hidden />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            eyebrow="Process"
+            title="How vehicle verification works"
+            subtitle="Four simple steps before you finalize a used car or bike deal."
+          />
+          <div className="relative">
+            <div
+              className="hidden lg:block absolute top-7 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-primary-300 to-transparent"
+              aria-hidden
+            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {steps.map((item) => (
+                <div key={item.step} className="relative text-center">
+                  <div className="w-14 h-14 bg-gradient-to-br from-primary-500 to-amber-500 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary-500/20 text-white relative z-10">
+                    <item.icon className="w-6 h-6" />
                   </div>
-                ))}
-              </div>
-            </div>
-            <div className="hidden md:block">
-              <div className="relative rounded-3xl overflow-hidden bg-[#0B1437] aspect-[4/3] shadow-2xl shadow-black/10">
-                <img
-                  src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=600&q=80"
-                  alt="Car"
-                  className="w-full h-full object-cover opacity-40"
-                  onError={(e) => { e.target.style.display = "none"; }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0B1437] via-[#0B1437]/40 to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6">
-                  <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/10">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-[#FFA602]/20 rounded-xl flex items-center justify-center">
-                        <FaShieldAlt className="text-[#FFA602]" />
-                      </div>
-                      <div>
-                        <div className="text-white font-semibold text-sm">Trusted Verification</div>
-                        <div className="text-gray-400 text-xs">Official government sources</div>
-                      </div>
-                    </div>
-                  </div>
+                  <p className="text-xs font-semibold tracking-wide uppercase text-primary-500 mb-2">
+                    Step {item.step}
+                  </p>
+                  <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-slate-600">{item.desc}</p>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* How It Works */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">How Vehicle Verification Works?</h2>
-            <p className="text-gray-500 text-sm sm:text-base">Four simple steps to verify any vehicle</p>
-          </div>
+          <SectionHeader
+            eyebrow="Why it matters"
+            title="Why vehicle verification matters"
+            subtitle="Protect yourself from fraud and make a clearer buying decision."
+          />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {steps.map((step, i) => (
-              <div key={step.title} className="relative group">
-                <div className="relative bg-gradient-to-b from-gray-50 to-white rounded-2xl p-6 text-center border border-gray-100 group-hover:border-[#FFA602]/30 group-hover:from-[#FFF8E7] group-hover:to-white group-hover:shadow-lg transition-all duration-300">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#FFF8E7] to-[#FFF3D6] rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
-                    <step.icon className="text-xl text-[#FFA602]" />
-                  </div>
-                  <div className="absolute -top-3 -right-3 w-7 h-7 bg-[#0B1437] rounded-lg flex items-center justify-center shadow-md">
-                    <span className="text-white text-[10px] font-bold">{i + 1}</span>
-                  </div>
-                  <h3 className="text-sm font-bold text-gray-900 mb-2">{step.title}</h3>
-                  <p className="text-xs text-gray-500 leading-relaxed">{step.desc}</p>
+            {whyVerify.map((item) => (
+              <div
+                key={item.title}
+                className="group bg-white rounded-xl border border-slate-200 shadow-sm p-6 text-center hover:-translate-y-1 hover:shadow-lg hover:border-primary-300 transition-all"
+              >
+                <div className="w-14 h-14 mx-auto mb-4 bg-primary-50 rounded-xl flex items-center justify-center group-hover:bg-primary-500 transition-colors">
+                  <item.icon className="w-6 h-6 text-primary-500 group-hover:text-white transition-colors" />
                 </div>
-                {i < steps.length - 1 && (
-                  <div className="hidden lg:flex absolute top-1/2 -right-3 w-6 h-6 text-gray-300 items-center justify-center z-10">
-                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
-                      <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" />
-                    </svg>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-center gap-6 mt-10">
-            {["Fast", "Secure", "Accurate", "Official"].map((t, i) => (
-              <div key={t} className="flex items-center gap-2 text-xs text-gray-500">
-                <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
-                  <FaCheckCircle size={10} className="text-green-600" />
-                </div>
-                {t}
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                  {item.title}
+                </h3>
+                <p className="text-sm text-slate-600 leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Information You Can Verify */}
-      <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
+      <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-3 gap-10">
-            <div className="lg:col-span-2">
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-8">Information You Can Verify</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
-                {verifyInfo.map((item) => (
-                  <div key={item} className="flex items-center gap-3 py-2 group">
-                    <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center shrink-0 group-hover:bg-green-500 transition-colors">
-                      <FaCheckCircle className="text-green-600 group-hover:text-white transition-colors" size={10} />
-                    </div>
-                    <span className="text-sm text-gray-600">{item}</span>
-                  </div>
-                ))}
-              </div>
+          <SectionHeader
+            eyebrow="Records"
+            title="What you can verify"
+            subtitle="Compare official records with the vehicle and the seller's documents."
+          />
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+              <h3 className="text-lg font-semibold text-slate-900">
+                Information from official records
+              </h3>
+              <span className="inline-flex items-center gap-2 text-sm text-slate-500">
+                <Lock className="w-4 h-4 text-green-600" />
+                Checks stay on official provincial portals
+              </span>
             </div>
-            <div className="flex items-center">
-              <div className="w-full bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-8 text-center border border-green-100/50">
-                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-5 shadow-sm mx-auto">
-                  <FaShieldAlt className="text-2xl text-green-600" />
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3">
+              {verifyInfo.map((item) => (
+                <div key={item} className="flex items-center gap-3">
+                  <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+                  <span className="text-sm text-slate-600">{item}</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">100% Confidential</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">
-                  Your information is safe with us. We never share your data with anyone.
-                </p>
-              </div>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Documents */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-10">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">Documents You Should Check</h2>
-            <p className="text-gray-500 text-sm sm:text-base">Always review these documents before finalizing any vehicle purchase.</p>
-          </div>
+          <h3 className="text-lg font-semibold text-slate-900 mt-12 mb-6">
+            Documents you should check
+          </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {documents.map((doc) => (
-              <div key={doc.title} className="group bg-gradient-to-b from-gray-50 to-white rounded-2xl p-5 hover:from-blue-50 hover:to-white border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all duration-300">
-                <div className="w-11 h-11 bg-blue-50 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                  <doc.icon className="text-base text-blue-500" />
+              <div
+                key={doc.title}
+                className="group bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:-translate-y-0.5 hover:shadow-md hover:border-primary-300 transition-all"
+              >
+                <div className="w-11 h-11 bg-primary-50 rounded-lg flex items-center justify-center mb-3 group-hover:bg-primary-500 transition-colors">
+                  <doc.icon className="w-5 h-5 text-primary-500 group-hover:text-white transition-colors" />
                 </div>
-                <h4 className="text-sm font-bold text-gray-900 mb-1">{doc.title}</h4>
-                <p className="text-xs text-gray-500 leading-relaxed">{doc.desc}</p>
+                <h4 className="text-sm font-semibold text-slate-900 mb-1">
+                  {doc.title}
+                </h4>
+                <p className="text-sm text-slate-600 leading-relaxed">{doc.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start">
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8">
+              <p className="text-xs font-semibold tracking-[0.18em] uppercase text-primary-500 mb-3">
+                Before you pay
+              </p>
+              <h2 className="text-3xl font-bold text-slate-900 mb-3">
+                Smart buying checklist
+              </h2>
+              <p className="text-base text-slate-600 mb-8">
+                Use this list with the official portal check. Online records do
+                not replace seeing the vehicle.
+              </p>
+              <div className="space-y-4">
+                {buyingTips.map((tip, i) => (
+                  <div key={tip} className="flex items-start gap-4">
+                    <div className="w-8 h-8 rounded-lg bg-[#050B20] flex items-center justify-center shrink-0">
+                      <span className="text-white text-[11px] font-bold">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+                    <span className="text-sm text-slate-600 leading-relaxed pt-1">
+                      {tip}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="bg-[#050B20] rounded-xl p-6 sm:p-8 text-white">
+              <div className="flex items-center gap-2 mb-5">
+                <Wrench className="w-5 h-5 text-primary-500" />
+                <h3 className="text-lg font-semibold">
+                  Inspect in person
+                </h3>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {inspectItems.map((item) => (
+                  <div key={item} className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary-500 shrink-0" />
+                    <span className="text-sm text-slate-200">{item}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-sm text-slate-400 mt-6">
+                For higher-value cars, get a professional inspection before you
+                transfer ownership.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="what-is-verification" className="scroll-mt-24 py-16 bg-gray-50">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-10 text-center">Frequently Asked Questions</h2>
+          <SectionHeader
+            eyebrow="Learn more"
+            title="Vehicle verification guide"
+            subtitle="How registration checks work across provinces, cities, cars, and bikes."
+          />
+          <div className="space-y-3">
+            {guideSections.map((section, i) => (
+              <AccordionItem
+                key={section.title}
+                title={section.title}
+                open={openGuide === i}
+                onToggle={() => setOpenGuide(openGuide === i ? null : i)}
+                headingAs="h3"
+              >
+                {section.body.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+              </AccordionItem>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 bg-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeader eyebrow="Help" title="Frequently asked questions" />
           <div className="space-y-3">
             {faqs.map((faq, i) => (
-              <div key={i} className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-gray-300 hover:shadow-sm transition-all">
-                <button
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between p-5 text-left gap-4"
-                >
-                  <span className="text-sm font-medium text-gray-800">{faq.q}</span>
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all ${openFaq === i ? "bg-[#FFA602] rotate-180" : "bg-gray-100"}`}>
-                    <FaChevronDown size={12} className={openFaq === i ? "text-white" : "text-gray-500"} />
-                  </div>
-                </button>
-                <div className={`overflow-hidden transition-all duration-300 ${openFaq === i ? "max-h-40" : "max-h-0"}`}>
-                  <div className="px-5 pb-5 text-gray-500 text-sm leading-relaxed border-t border-gray-100 pt-4">
-                    {faq.a}
-                  </div>
-                </div>
-              </div>
+              <AccordionItem
+                key={faq.q}
+                title={faq.q}
+                open={openFaq === i}
+                onToggle={() => setOpenFaq(openFaq === i ? null : i)}
+                headingAs="h3"
+              >
+                <p>{faq.a}</p>
+              </AccordionItem>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="py-16 bg-[#0B1437]">
+      <section className="py-16 bg-[#050B20]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white">Why Millions Trust Sello</h2>
-            <p className="text-gray-500 text-sm mt-2">Pakistan&apos;s #1 Automotive Marketplace</p>
+            <h2 className="text-3xl font-bold text-white">Why people use Sello</h2>
+            <p className="text-slate-400 text-base mt-2">
+              Pakistan's automotive marketplace
+            </p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
-            {stats.map((s) => (
-              <div key={s.label} className="text-center">
-                <div className="text-2xl sm:text-3xl font-bold text-[#FFA602]">{s.value}</div>
-                <div className="text-white font-medium text-sm mt-2">{s.label}</div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-6 divide-y md:divide-y-0 md:divide-x divide-white/20">
+            {stats.map((stat) => (
+              <div key={stat.label} className="text-center pt-4 md:pt-0 md:px-2">
+                <div className="text-2xl sm:text-3xl font-bold text-primary-500">
+                  {stat.value}
+                </div>
+                <div className="text-white text-sm mt-2">{stat.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Explore More */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">Explore More Services on Sello</h2>
-          </div>
-          <div className="grid md:grid-cols-3 gap-5">
-            {[
-              { to: "/car-estimator", icon: FiZap, title: "AI Car Estimator", desc: "Get instant market value of your car using AI technology.", cta: "Try Estimator" },
-              { to: "/listings", icon: FaCar, title: "Car Listings", desc: "Browse thousands of verified cars for sale across Pakistan.", cta: "Browse Cars" },
-              { to: "/blog", icon: FaFileAlt, title: "Car Buying Guides", desc: "Expert tips, checks and guides to help you buy smarter.", cta: "Read Guides" },
-            ].map((s) => (
-              <Link key={s.title} to={s.to} className="group relative bg-gradient-to-b from-gray-50 to-white rounded-2xl p-6 hover:from-[#FFF8E7] hover:to-white border border-gray-200 hover:border-[#FFA602]/30 hover:shadow-lg transition-all duration-300 overflow-hidden">
+          <SectionHeader eyebrow="More from Sello" title="Explore more on Sello" />
+          <div className="grid md:grid-cols-3 gap-6">
+            {exploreLinks.map((item) => (
+              <Link
+                key={item.title}
+                to={item.to}
+                className="group bg-white rounded-xl border border-slate-200 shadow-sm p-6 hover:-translate-y-1 hover:shadow-lg hover:border-primary-300 transition-all"
+              >
                 <div className="flex items-start gap-4 mb-5">
-                  <div className="w-12 h-12 bg-gradient-to-br from-[#FFF8E7] to-[#FFF3D6] rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                    <s.icon className="text-xl text-[#FFA602]" />
+                  <div className="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-primary-500 transition-colors">
+                    <item.icon className="w-5 h-5 text-primary-500 group-hover:text-white transition-colors" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-gray-900 group-hover:text-[#FFA602] transition-colors">{s.title}</h3>
-                    <p className="text-sm text-gray-500 mt-1">{s.desc}</p>
+                    <h3 className="text-lg font-semibold text-slate-900 group-hover:text-primary-500 transition-colors">
+                      {item.title}
+                    </h3>
+                    <p className="text-sm text-slate-600 mt-1">{item.desc}</p>
                   </div>
                 </div>
-                <span className="text-sm font-semibold text-[#FFA602] flex items-center gap-1.5 group-hover:gap-2.5 transition-all">
-                  {s.cta} <FaArrowRight size={10} />
+                <span className="text-sm font-semibold text-primary-500 inline-flex items-center gap-1.5 group-hover:gap-2.5 transition-all">
+                  {item.cta} <ArrowRight className="w-4 h-4" />
                 </span>
               </Link>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* Disclaimer */}
-      <section className="py-10 bg-gray-50 border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-2xl p-6 md:p-8 mb-8 border border-gray-100">
+          <div className="mt-10 bg-white rounded-xl border border-slate-200 p-5 sm:p-6">
             <div className="flex items-start gap-3">
-              <div className="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
-                <span className="text-blue-600 font-bold text-xs">i</span>
+              <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
+                <MapPin className="w-4 h-4 text-slate-600" />
               </div>
               <div>
-                <h4 className="font-bold text-gray-900 mb-1.5 text-sm">Disclaimer</h4>
-                <p className="text-xs text-gray-500 leading-relaxed">
-                  Vehicle verification information is provided through official provincial data sources where available. Sello does not guarantee the accuracy, completeness, or real-time availability of third-party records. Users should independently verify all vehicle information before making any purchase decisions.
+                <h4 className="font-semibold text-slate-900 mb-1 text-sm">
+                  Disclaimer
+                </h4>
+                <p className="text-sm text-slate-500 leading-relaxed">
+                  Vehicle verification information is provided through official
+                  provincial data sources where available. Sello does not
+                  guarantee the accuracy, completeness, or real-time
+                  availability of third-party records. Independently verify all
+                  vehicle information before making a purchase.
                 </p>
               </div>
             </div>
-          </div>
-          <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 text-xs text-gray-400">
-            {[
-              { icon: FaCheckCircle, text: "Official & Verified Data Sources" },
-              { icon: FaShieldAlt, text: "Bank-level Data Security" },
-              { icon: FaLock, text: "100% Confidential Information" },
-              { icon: FaHandshake, text: "Dedicated 24/7 Support" },
-            ].map((b) => (
-              <div key={b.text} className="flex items-center gap-1.5">
-                <b.icon className="text-[#FFA602]" size={10} /> {b.text}
-              </div>
-            ))}
           </div>
         </div>
       </section>
 
       <NewsLatter />
-    </>
+    </div>
   );
 };
 
