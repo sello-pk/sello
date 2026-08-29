@@ -7,7 +7,6 @@ import {
   Building2,
   Car,
   CheckCircle2,
-  ClipboardCheck,
   FileText,
   Headset,
   IdCard,
@@ -37,6 +36,10 @@ import serviceListingsImg from "../../../assets/images/verification/1.png";
 import serviceAuctionsImg from "../../../assets/images/verification/2.png";
 import serviceEstimatorImg from "../../../assets/images/verification/3.png";
 import serviceGuidesImg from "../../../assets/images/verification/4.png";
+import ownershipIcon from "../../../assets/images/verification/ownership.png";
+import registrationIcon from "../../../assets/images/verification/registration.png";
+import fraudIcon from "../../../assets/images/verification/fraud.png";
+import buyerProtectionIcon from "../../../assets/images/verification/buyerProtection.png";
 
 const provinces = [
   {
@@ -73,24 +76,28 @@ const provinces = [
 
 const whyVerify = [
   {
-    icon: Users,
+    icon: ownershipIcon,
     title: "Ownership Verification",
     desc: "Ensure the seller is the registered owner before you pay.",
+    circle: "bg-green-50",
   },
   {
-    icon: ClipboardCheck,
+    icon: registrationIcon,
     title: "Registration Confirmation",
     desc: "Confirm official registration records with the vehicle.",
+    circle: "bg-sky-50",
   },
   {
-    icon: Shield,
+    icon: fraudIcon,
     title: "Fraud Prevention",
     desc: "Avoid stolen, cloned, or fraudulent vehicles.",
+    circle: "bg-green-50",
   },
   {
-    icon: ShieldCheck,
+    icon: buyerProtectionIcon,
     title: "Buyer Protection",
     desc: "Make informed and secure purchasing decisions.",
+    circle: "bg-sky-50",
   },
 ];
 
@@ -464,8 +471,14 @@ const VehicleVerificationPage = () => {
                 key={item.title}
                 className="bg-white rounded-2xl border border-slate-200 p-6 text-center"
               >
-                <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-primary-50 flex items-center justify-center">
-                  <item.icon className="w-9 h-9 text-primary-500" />
+                <div
+                  className={`w-20 h-20 mx-auto mb-5 rounded-full flex items-center justify-center ${item.circle}`}
+                >
+                  <img
+                    src={item.icon}
+                    alt=""
+                    className="w-12 h-12 object-contain"
+                  />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 mb-2">
                   {item.title}
