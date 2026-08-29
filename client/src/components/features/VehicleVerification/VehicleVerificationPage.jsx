@@ -3,26 +3,20 @@ import { Link } from "react-router-dom";
 import {
   ArrowRight,
   BadgeCheck,
-  BookOpen,
   Building2,
-  Car,
   CheckCircle2,
-  FileText,
   Headset,
-  IdCard,
   Info,
   Lock,
   MapPin,
   Minus,
   Plus,
-  Receipt,
   Search,
   Shield,
   ShieldCheck,
   Sparkles,
   Star,
   Users,
-  Wrench,
 } from "lucide-react";
 import SEO from "../../common/SEO";
 import NewsLatter from "../../utils/NewsLatter";
@@ -36,10 +30,23 @@ import serviceListingsImg from "../../../assets/images/verification/1.png";
 import serviceAuctionsImg from "../../../assets/images/verification/2.png";
 import serviceEstimatorImg from "../../../assets/images/verification/3.png";
 import serviceGuidesImg from "../../../assets/images/verification/4.png";
+import guestPostsImg from "../../../assets/images/verification/post.jpeg";
 import ownershipIcon from "../../../assets/images/verification/ownership.png";
 import registrationIcon from "../../../assets/images/verification/registration.png";
 import fraudIcon from "../../../assets/images/verification/fraud.png";
 import buyerProtectionIcon from "../../../assets/images/verification/buyerProtection.png";
+import enterDetailsIcon from "../../../assets/images/verification/enter_details.png";
+import recordIcon from "../../../assets/images/verification/record.png";
+import reportIcon from "../../../assets/images/verification/report.png";
+import confidenceIcon from "../../../assets/images/verification/confidence.png";
+import registrationBookIcon from "../../../assets/images/verification/registerationBook.png";
+import tokenIcon from "../../../assets/images/verification/token.png";
+import cnicIcon from "../../../assets/images/verification/cnic.png";
+import transferLetterIcon from "../../../assets/images/verification/tansferlater.png";
+import chassisPlateIcon from "../../../assets/images/verification/chassisPlate.png";
+import engineNumberIcon from "../../../assets/images/verification/engineNumber.png";
+import insuranceIcon from "../../../assets/images/verification/insurance.png";
+import fitnessCertificateIcon from "../../../assets/images/verification/fitnessCertificate.png";
 
 const provinces = [
   {
@@ -103,125 +110,304 @@ const whyVerify = [
 
 const steps = [
   {
-    icon: IdCard,
+    icon: enterDetailsIcon,
     title: "Enter Details",
     desc: "Provide the vehicle registration number on the official portal.",
+    circle: "bg-green-50",
   },
   {
-    icon: Search,
+    icon: recordIcon,
     title: "We Check Records",
     desc: "Information is verified from official government sources.",
+    circle: "bg-sky-50",
   },
   {
-    icon: FileText,
+    icon: reportIcon,
     title: "Get Report",
     desc: "Review the official verification result instantly.",
+    circle: "bg-violet-50",
   },
   {
-    icon: ShieldCheck,
+    icon: confidenceIcon,
     title: "Buy with Confidence",
     desc: "Make a safe and informed buying decision.",
+    circle: "bg-green-50",
   },
 ];
 
 const verifyInfo = [
-  "Owner Name",
-  "Registration Number",
-  "Chassis Number",
-  "Engine Number",
-  "Make / Model",
-  "Model Year",
+  "Vehicle registration number",
+  "Registration date",
+  "Vehicle make and model",
+  "Manufacturing or model year",
+  "Engine information",
+  "Chassis information",
+  "Vehicle body type",
+  "Registration city",
+  "Available ownership information",
+  "Token fees or tax status",
+  "Registration document details",
   "Color",
-  "Registration Date",
-  "Token Tax Status",
-  "Tax Payment History",
-  "Transfer History",
-  "Fitness Certificate",
-  "Insurance Status",
-  "Legal Record Check",
+  "Fitness certificate",
+  "Insurance status",
 ];
 
 const documents = [
-  { icon: FileText, title: "Registration Book", desc: "Original registration issued by Excise." },
-  { icon: Receipt, title: "Token Tax Paid", desc: "Valid token tax receipt." },
-  { icon: IdCard, title: "CNIC of Seller", desc: "Match CNIC with registration." },
-  { icon: FileText, title: "Transfer Letter", desc: "Check transfer history and letters." },
-  { icon: Car, title: "Chassis Plate", desc: "Verify chassis number." },
-  { icon: Wrench, title: "Engine Number", desc: "Match engine number." },
-  { icon: Shield, title: "Insurance (If Any)", desc: "Check valid insurance." },
-  { icon: BadgeCheck, title: "Fitness Certificate", desc: "Ensure vehicle is fitness approved." },
+  { icon: registrationBookIcon, title: "Registration Book", desc: "Original registration issued by Excise." },
+  { icon: tokenIcon, title: "Token Tax Paid", desc: "Valid token tax receipt." },
+  { icon: cnicIcon, title: "CNIC of Seller", desc: "Match CNIC with registration." },
+  { icon: transferLetterIcon, title: "Transfer Letter", desc: "Check transfer history and letters." },
+  { icon: chassisPlateIcon, title: "Chassis Plate", desc: "Verify chassis number." },
+  { icon: engineNumberIcon, title: "Engine Number", desc: "Match engine number." },
+  { icon: insuranceIcon, title: "Insurance (If Any)", desc: "Check valid insurance." },
+  { icon: fitnessCertificateIcon, title: "Fitness Certificate", desc: "Ensure vehicle is fitness approved." },
 ];
 
 const buyingTips = [
-  "Verify registration and ownership on the official provincial portal",
-  "Match chassis number and engine number with the original documents",
-  "Check token tax, transfer history, and tax payment status",
-  "Meet the seller in a public, safe location",
-  "Inspect the vehicle physically before any payment",
-  "Take a test drive and review mechanical condition",
-  "Complete the transfer through a trusted, legal process",
+  "Check available registration information on the official portal",
+  "Match engine and chassis numbers with the original documents",
+  "Inspect the original registration book or smart card",
+  "Review the vehicle's physical condition before any payment",
+  "Ask about accident, repair, and maintenance history",
+  "Compare the asking price with similar models on Sello",
+  "Complete a proper legal ownership transfer",
 ];
 
 const guideSections = [
   {
     title: "What is online vehicle verification?",
     body: [
-      "Online vehicle verification checks registration details through authorized provincial sources. Records can include registration info, vehicle specs, tax status, and other key data that varies by province.",
-      "A car can look fine in photos and still have mismatched papers. Use an official registration check to confirm the seller's claims before you buy, sell, or transfer a vehicle in Pakistan.",
+      "Online vehicle verification reviews available vehicle information through relevant, authorized sources. What is published may include registration info, vehicle specs, registration status, and other key records that vary by province.",
+      "Before you buy a car, do not base your decision only on what the seller tells you. A car may look great in pictures or pass a brief inspection, but you should also check the registration and other details to rule out issues.",
+      "An online car registration check is especially useful when you are buying a used car. It lets buyers compare what the seller says with what is on record.",
+    ],
+  },
+  {
+    title: "What is MTMIS and how does it relate to vehicle verification?",
+    body: [
+      "MTMIS, which stands for Motor Transport Management Information System, is an online vehicle verification tool used to obtain vehicle registration and related information. Through provincial vehicle registration and Excise boards, users can check details of a registered car or motorcycle.",
+      "The information published can vary by province and authority. A typical vehicle check may include make and model, registration date, engine information, chassis information, and tax or token status.",
+      "For a used-car buyer, this is a research tool: compare the seller's claims with registration records before you buy. Online verification is only the start of the purchase process. A full picture also needs a physical inspection, document check, price comparison, and a proper ownership transfer.",
+    ],
+  },
+  {
+    title: "What information can be checked through vehicle verification?",
+    body: [
+      "Depending on the provincial system and what authorized channels publish, records may include the items listed below. Use this information to catch issues before you buy. Engine and chassis numbers in the records should match the vehicle and its registration documents.",
+    ],
+    items: [
+      "Vehicle registration number",
+      "Registration date",
+      "Vehicle make and model",
+      "Manufacturing or model year",
+      "Engine information",
+      "Chassis information",
+      "Vehicle body type",
+      "Available ownership-related information",
+      "Token fees or other related listing details",
+      "Other information provided by the relevant authority",
+    ],
+  },
+  {
+    title: "Why MTMIS and online vehicle verification are important",
+    body: [
+      "When you buy a used car or motorcycle, it is a risk to rely only on what the seller says. A vehicle may pass a visual inspection and still have registration issues. Online tools like MTMIS add transparency so you can review available information before you proceed.",
+      "Online checks are a useful tool when buying cars in Pakistan, but they are only one step. Also inspect the car in person, review documents, compare market prices, and complete a legal ownership transfer.",
+    ],
+    items: [
+      "Display vehicle registration information",
+      "Compare records with vehicle documents",
+      "Help identify possible inconsistencies",
+      "Add transparency during vehicle transactions",
+      "Give buyers access to tax and registration information",
+      "Reduce time spent searching basic registration details",
     ],
   },
   {
     title: "Why is car verification important before buying?",
     body: [
-      "Used-car listings are easy to browse, but each deal still needs a records check. Verification helps you catch issues the seller did not mention, including mismatched engine or chassis numbers and unclear ownership history.",
-      "Online records are a starting point. They do not replace a physical inspection or original document review.",
+      "The used-car market offers a wide choice, but every buyer should review the car carefully before finalizing a deal. Verification can surface issues that do not match what the seller reported, including chassis number, engine details, registration history, and other available records.",
+      "Online records are a useful resource. They do not replace a physical inspection of the vehicle itself.",
+    ],
+    items: [
+      "Vehicle registration details",
+      "Registration city or province",
+      "Vehicle make and model",
+      "Engine and chassis information",
+      "Available ownership details through authorized sources",
+      "Token tax or related vehicle charges",
+      "Registration documents",
+      "Smart card or registration book details",
     ],
   },
   {
-    title: "Punjab vehicle verification & Excise records",
+    title: "How Sello helps with vehicle verification",
     body: [
-      "For Punjab-registered vehicles, use official Punjab Excise / MTMIS services to confirm registration details. Sello helps you know what to check, but official records still come from the authorized government portal.",
-      "Compare the registration document, vehicle number, engine details, chassis details, and available ownership information before you pay. If anything looks off, contact Excise and Taxation first.",
+      "Sello makes buying and selling vehicles clearer by providing tools, vehicle information, and resources so you can make a more informed decision. Before you buy a used car, use listings, buying guides, and pricing tools together with official registration checks.",
+      "Choosing a car is about more than photos and price. Slow down and think through registration information, inspection, and comparison. Browse used cars for sale in Pakistan on Sello and compare options before you decide.",
+    ],
+  },
+  {
+    title: "What information should you check during vehicle verification?",
+    body: [
+      "A proper vehicle verification in Pakistan differs by province and by what the relevant authorities publish. Always compare official information with what the seller is offering.",
+      "Pay close attention that engine and chassis serial numbers on the vehicle match the official documentation. If anything is inconsistent, look into it before you pay.",
+    ],
+    items: [
+      "Vehicle registration number",
+      "Make and model",
+      "Manufacturing year",
+      "Engine number",
+      "Chassis number",
+      "Registration date",
+      "Registration city",
+      "Available ownership information",
+      "Applicable tax or token status",
+      "Registration document details",
+    ],
+  },
+  {
+    title: "Punjab vehicle verification",
+    body: [
+      "For Punjab-registered vehicles, use official government vehicle verification services. Punjab vehicle verification helps confirm a vehicle's details. Use only authorized official sources for registration information.",
+      "Government database information can change. Verify key details with the right authority when needed. Sello helps you know what to check, but official registration information should still come from the authorized government channel.",
+    ],
+  },
+  {
+    title: "Car registration check before buying a used car",
+    body: [
+      "A used-car registration check should be near the top of your list. Before you pay or finalize the deal, compare the seller's documents with the vehicle information in front of you.",
+      "Check registration information against the vehicle at inspection, including chassis and engine numbers. In Punjab, a proper registration check through the relevant provincial authority adds extra assurance.",
+      "Records are only part of the picture. Also look at mechanical condition, bodywork, maintenance history, and available ownership documents.",
+    ],
+  },
+  {
+    title: "How to check car details before buying",
+    body: [
+      "Start with the information the seller has. Ask for the registration number and go over the registration documents. Then use the authorized vehicle check for the province where the car is registered, and compare the result with the car and its paperwork.",
+      "Also inspect the car in person. Look for accident damage, paint retouches, engine issues, suspension problems, or chassis changes. Taking these related steps together reduces the chance of a bad purchase.",
+    ],
+    items: [
+      "Checking available registration information",
+      "Matching the engine and chassis details",
+      "Inspecting the original documents",
+      "Reviewing the vehicle's physical condition",
+      "Checking maintenance records, if available",
+      "Asking about accident or repair history",
+      "Comparing the asking price with similar models",
     ],
   },
   {
     title: "Vehicle verification in Lahore and other cities",
     body: [
-      "Verification follows where the vehicle is registered, not where it is currently parked. A Lahore-registered car should be checked through Punjab records even if it is now in another city.",
-      "The same rule applies in Karachi, Islamabad, Rawalpindi, Faisalabad, and other cities. Always use the correct provincial portal for that registration.",
+      "For vehicle verification in Lahore, the process follows where the vehicle is registered, not where it currently sits. A car registered in Lahore should be checked through the relevant Punjab records even if it is now in another city.",
+      "The same rule applies to vehicles in Karachi, Islamabad, Rawalpindi, Faisalabad, and other cities in Pakistan. Always review the registration information and use the correct official portal for that registration.",
+    ],
+  },
+  {
+    title: "Punjab Excise vehicle verification",
+    body: [
+      "Many buyers looking at a car or bike in Punjab use Punjab Excise vehicle verification. Registration information is held by the appropriate government bodies, so use official sources.",
+      "If you have questions about a document's authenticity or title status, contact the relevant Excise and Taxation authority before you purchase.",
+    ],
+    items: [
+      "The registration document",
+      "The vehicle number",
+      "Engine details",
+      "Chassis details",
+      "Available registration information",
     ],
   },
   {
     title: "Online bike registration check",
     body: [
-      "The same process applies to motorcycles. Before buying a used bike, check registration online where available, then match engine and frame numbers with the documents in person.",
-      "Mechanical condition, accident damage, and missing paperwork can change both value and safety. A bike registration check is especially important when buying from an individual seller.",
+      "Vehicle checks go beyond cars. An online bike registration check is useful when you buy or sell a used motorcycle. Before you buy, check registration information, engine and frame numbers, and the registration documents in person.",
+      "Also review the bike's physical condition. Mechanical issues, accident damage, and missing documentation can affect value and how well it runs. A bike registration check is especially important when buying from an individual seller.",
     ],
   },
   {
     title: "Can you check the vehicle owner?",
     body: [
-      "Public owner details vary by province, privacy rules, and what each authority publishes. Only use authorized channels for genuine purchase or transfer needs.",
-      "The key step is confirming the seller has the right to sell and that ownership transfer will be completed legally. Do not rely on verbal claims alone.",
+      "Many users want to check the vehicle owner before buying a car or bike. What is available to the public varies by law, privacy rules, and what official registration authorities publish.",
+      "Use authorized channels only, and only for genuine purchase or transfer needs. The most important step is confirming the seller has the right to sell and that ownership transfer is completed correctly. Never rely on verbal claims alone.",
     ],
   },
   {
-    title: "Registration book and smart card verification",
+    title: "Vehicle registration and smart card verification",
     body: [
-      "Registration may be a book, smart card, or another government document. Before you buy, match the registration number, engine number, and chassis number on the document with the vehicle.",
-      "If details do not add up, stop the transaction until they are cleared. It is easier to resolve issues before payment than after.",
+      "Registration may be a book, smart card, or another government-recognized document, depending on the vehicle and authority. Before you buy, check the documents against the physical vehicle.",
+      "For a bike smart-card check or a car document review, verify the registration number, engine number, and chassis number. If details do not add up, do not complete the transaction. It is easier to resolve issues before payment than after.",
     ],
   },
   {
-    title: "Why physical inspection still matters",
+    title: "Why physical inspection is also important",
     body: [
-      "A clean registration history does not mean the car is mechanically sound. Inspect engine performance, suspension, transmission, electrics, paint, tires, accident repairs, and interior condition.",
-      "For higher-value cars, a professional inspection is a smart extra step.",
+      "Online vehicle verification usually gives registration information, not mechanical condition. A car may have a clean registration history and still have accident repairs or other problems that only show up at inspection. For higher-value cars, a professional inspection is a smart extra step.",
+    ],
+    items: [
+      "Engine performance",
+      "Suspension condition",
+      "Transmission operation",
+      "AC and electrical systems",
+      "Paint and body panels",
+      "Tire condition",
+      "Signs of accident repairs",
+      "Interior condition",
+    ],
+  },
+  {
+    title: "Buy and sell vehicles with more confidence",
+    body: [
+      "Vehicle checks are one piece of a smart purchase. Also look at market prices, inspect the vehicle, review documents, and research ownership transfer.",
+      "Sello lets you browse used cars for sale in Pakistan and use resources to buy and sell with more confidence. Take time to compare cars and what they are worth in the market. If you are buying or selling, Sello's AI car estimator can give a market range before you agree on a price.",
+    ],
+  },
+  {
+    title: "Why choose Sello?",
+    body: [
+      "Buying or selling a car is more than connecting a buyer and a seller. You need to understand the car, review available information, check its condition, and see its price. Sello brings together vehicle tools that support that process.",
+      "Whether you are buying your first car or trading in your current one, research and due diligence make the process safer and easier.",
+    ],
+    items: [
+      "Vehicle listings",
+      "Used-car buying resources",
+      "Vehicle comparison guides",
+      "Car pricing insights",
+      "AI car estimation tools",
+      "Information about buying and selling vehicles",
+    ],
+  },
+  {
+    title: "Final thoughts",
+    body: [
+      "Online vehicle verification is a key step when you buy a used car or bike in Pakistan. Review registration information, compare documents with the vehicle, and do a thorough physical inspection so you can decide with more confidence.",
+      "For official checks and registration, use only authorized sources. Online verification supports a physical inspection and document review; it does not replace them. Before you finalize a deal, verify the information, inspect the vehicle, and complete ownership transfer correctly.",
+      "Sello provides tools, information, resources, and listings that make buying and selling vehicles clearer so you can make a better decision.",
     ],
   },
 ];
 
 const faqs = [
+  {
+    q: "What is vehicle online verification?",
+    a: "Online vehicle verification checks authorized databases for registration and history details before you buy, sell, or transfer a vehicle.",
+  },
+  {
+    q: "How do I check my car registration in Pakistan?",
+    a: "Each province has its own process. Use the official government registration or verification service for the province where the vehicle is registered, then compare the result with your documents.",
+  },
+  {
+    q: "Is online verification enough before buying a used car?",
+    a: "No. Online verification is a starting point. Also inspect the car in person, review the documents, and match engine and chassis numbers.",
+  },
+  {
+    q: "Is it possible to do bike registration online?",
+    a: "In some provinces, bike registration information is available online through government services. Always use authorized sources, then confirm numbers on the bike itself.",
+  },
+  {
+    q: "Why do I need to verify a car before purchase?",
+    a: "Verification lets you compare the seller's claims with registration records and catch issues before you buy.",
+  },
   {
     q: "How does vehicle verification work on Sello?",
     a: "Choose the province where the vehicle is registered. Sello opens that province's official Excise / MTMIS portal so you can check records, then compare them with the car and documents in person.",
@@ -286,29 +472,25 @@ const stats = [
 const exploreLinks = [
   {
     to: "/car-estimator",
-    title: "AI Car Estimator",
-    desc: "Get an instant market range for a used car in Pakistan.",
+    title: "AI Car Price Estimator",
     cta: "Try Estimator",
     image: serviceEstimatorImg,
   },
   {
     to: "/listings",
-    title: "Car Listings",
-    desc: "Browse cars for sale across major cities and brands.",
+    title: "Buy & Sell Cars",
     cta: "Browse Cars",
     image: serviceListingsImg,
   },
   {
     to: "/auctions",
-    title: "Live Auctions",
-    desc: "Bid on inspected cars with a transparent, live process.",
+    title: "Online Car Auctions",
     cta: "View Auctions",
     image: serviceAuctionsImg,
   },
   {
     to: "/blog",
-    title: "Car Buying Guides",
-    desc: "Checks, tips, and guides to help you buy with more confidence.",
+    title: "Vehicle Inspection",
     cta: "Read Guides",
     image: serviceGuidesImg,
   },
@@ -359,7 +541,7 @@ const VehicleVerificationPage = () => {
       <SEO
         title="Online Vehicle Verification in Pakistan | Check Car Details"
         description="Verify your car or bike online through Sello. Check vehicle registration info and key details before you buy or sell a vehicle in Pakistan."
-        keywords="online vehicle verification Pakistan, car verification Pakistan, vehicle registration check, MTMIS, bike registration check"
+        keywords="online vehicle verification Pakistan, car verification Pakistan, vehicle registration check, MTMIS, Punjab vehicle verification, Punjab Excise, bike registration check, Lahore vehicle verification"
       />
 
       <section className="relative w-full overflow-hidden min-h-[52vh] md:h-[52vh] bg-gray-200">
@@ -380,7 +562,7 @@ const VehicleVerificationPage = () => {
               Official MTMIS data sources
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 leading-tight">
-              Online Vehicle Verification in Pakistan
+              Online Vehicle Verification in Pakistan – Check Your Car Details
             </h1>
             <p className="text-base sm:text-lg text-gray-100 mb-8">
               Check car or bike registration details before you buy or sell.
@@ -533,8 +715,14 @@ const VehicleVerificationPage = () => {
                     aria-hidden
                   />
                 ) : null}
-                <div className="w-20 h-20 rounded-full bg-primary-50 flex items-center justify-center mx-auto mb-4">
-                  <item.icon className="w-9 h-9 text-primary-500" />
+                <div
+                  className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 ${item.circle}`}
+                >
+                  <img
+                    src={item.icon}
+                    alt=""
+                    className="w-12 h-12 object-contain"
+                  />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 mb-2">
                   {item.title}
@@ -554,7 +742,7 @@ const VehicleVerificationPage = () => {
             </h2>
             <div className="grid lg:grid-cols-[1fr_1fr_minmax(220px,280px)] gap-8 items-start">
               <div className="space-y-3">
-                {verifyInfo.slice(0, 7).map((item) => (
+                {verifyInfo.slice(0, Math.ceil(verifyInfo.length / 2)).map((item) => (
                   <div key={item} className="flex items-center gap-3">
                     <CheckCircle2 className="w-5 h-5 text-primary-500 shrink-0" />
                     <span className="text-sm text-slate-600">{item}</span>
@@ -562,7 +750,7 @@ const VehicleVerificationPage = () => {
                 ))}
               </div>
               <div className="space-y-3">
-                {verifyInfo.slice(7).map((item) => (
+                {verifyInfo.slice(Math.ceil(verifyInfo.length / 2)).map((item) => (
                   <div key={item} className="flex items-center gap-3">
                     <CheckCircle2 className="w-5 h-5 text-primary-500 shrink-0" />
                     <span className="text-sm text-slate-600">{item}</span>
@@ -600,8 +788,12 @@ const VehicleVerificationPage = () => {
                 key={doc.title}
                 className="bg-white rounded-2xl border border-slate-200 p-4 flex items-start gap-3"
               >
-                <div className="w-11 h-11 rounded-xl bg-primary-50 flex items-center justify-center shrink-0">
-                  <doc.icon className="w-5 h-5 text-primary-500" />
+                <div className="w-11 h-11 rounded-xl bg-slate-50 flex items-center justify-center shrink-0">
+                  <img
+                    src={doc.icon}
+                    alt=""
+                    className="w-7 h-7 object-contain"
+                  />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-slate-900 mb-0.5">
@@ -617,9 +809,27 @@ const VehicleVerificationPage = () => {
 
       <section id="what-is-verification" className="scroll-mt-24 py-16 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-slate-900 mb-8">
-            Vehicle Verification Guide
+          <h2 className="text-3xl font-bold text-slate-900 mb-4">
+            Check Vehicle Details Before You Buy or Sell
           </h2>
+          <div className="space-y-4 text-slate-600 leading-relaxed mb-10">
+            <p>
+              Buying a used car or bike is a big decision, which is why it is
+              best to do your due diligence before you complete a sale. Online
+              vehicle verification helps buyers and sellers review important
+              vehicle and registration information before they proceed.
+            </p>
+            <p>
+              Whether you are purchasing a used car, trading in your present
+              vehicle, or looking up registration information, car verification
+              is a key step in the process.
+            </p>
+            <p>
+              Sello makes buying and selling vehicles easier by providing useful
+              tools, vehicle information, and resources that help you make a
+              more informed decision.
+            </p>
+          </div>
           <div className="space-y-3">
             {guideSections.map((section, i) => (
               <AccordionItem
@@ -627,11 +837,18 @@ const VehicleVerificationPage = () => {
                 title={section.title}
                 open={openGuide === i}
                 onToggle={() => setOpenGuide(openGuide === i ? null : i)}
-                headingAs="h3"
+                headingAs="h2"
               >
                 {section.body.map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
                 ))}
+                {section.items ? (
+                  <ul className="list-disc pl-5 space-y-1">
+                    {section.items.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                ) : null}
               </AccordionItem>
             ))}
           </div>
@@ -709,34 +926,40 @@ const VehicleVerificationPage = () => {
           <h2 className="text-3xl font-bold text-slate-900 text-center mb-10">
             Explore More Services on Sello
           </h2>
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-5">
             {exploreLinks.map((item) => (
               <Link
                 key={item.title}
                 to={item.to}
-                className="group flex items-stretch bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden min-h-[170px] hover:shadow-md transition-shadow"
+                aria-label={item.title}
+                className="group relative block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow"
               >
-                <div className="flex-1 p-5 sm:p-6 flex flex-col justify-center">
-                  <h3 className="text-lg font-bold text-slate-900 mb-2">
-                    {item.title}
-                  </h3>
-                  <p className="text-sm text-slate-500 leading-relaxed mb-4">
-                    {item.desc}
-                  </p>
-                  <span className="inline-flex items-center gap-1.5 self-start bg-primary-500 text-white text-sm font-semibold rounded-lg px-4 py-2 group-hover:opacity-90 transition-opacity">
-                    {item.cta} <ArrowRight className="w-4 h-4" />
-                  </span>
-                </div>
-                <div className="w-[42%] sm:w-[46%] bg-slate-50 relative">
-                  <img
-                    src={item.image}
-                    alt=""
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                </div>
+                <img
+                  src={item.image}
+                  alt=""
+                  className="block w-full h-auto"
+                />
+                <span className="absolute left-5 bottom-6 inline-flex items-center gap-1.5 bg-primary-500 text-white text-sm font-semibold rounded-lg px-4 py-2.5 group-hover:opacity-90 transition-opacity">
+                  {item.cta} <ArrowRight className="w-4 h-4" />
+                </span>
               </Link>
             ))}
           </div>
+
+          <Link
+            to="/blog/all"
+            aria-label="Read guest posts"
+            className="group relative mt-5 block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow"
+          >
+            <img
+              src={guestPostsImg}
+              alt=""
+              className="block w-full h-auto"
+            />
+            <span className="absolute left-8 bottom-8 inline-flex items-center gap-1.5 bg-primary-500 text-white text-sm font-semibold rounded-lg px-4 py-2.5 group-hover:opacity-90 transition-opacity">
+              Read Posts <ArrowRight className="w-4 h-4" />
+            </span>
+          </Link>
         </div>
       </section>
 
