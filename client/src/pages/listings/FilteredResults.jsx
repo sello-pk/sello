@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useParams } from "react-router-dom";
 import FilterResultsSection from "../../components/sections/filter/FilterResultsSection";
 import SortAndViewOptions from "../../components/listings/SortAndViewOptions";
 import { FiX, FiFilter } from "react-icons/fi";
@@ -8,42 +7,54 @@ import Breadcrumb from "../../components/common/Breadcrumb";
 import StructuredData from "../../components/common/StructuredData";
 import { useGetFilteredCarsQuery } from "../../redux/services/api";
 import { trackSearch } from "../../utils/metaPixel.js";
+import {
+  unslugify,
+  buildListingsSearchUrl,
+  getListingsPageCopy,
+} from "../../utils/urlBuilders";
 
 const FilteredResults = () => {
   const navigate = useNavigate();
+  const { citySlug } = useParams();
   const [searchParams] = useSearchParams();
   const [sortBy, setSortBy] = useState("newest");
   const [viewMode, setViewMode] = useState("grid");
   const searchTrackedKey = useRef("");
 
-  // Get search term from URL params (navbar search)
+  const cityFromPath = citySlug ? unslugify(citySlug) : "";
   const searchTerm = searchParams.get("search") || "";
+  const make = searchParams.get("make") || "";
+  const model = searchParams.get("model") || "";
+  const city = cityFromPath || searchParams.get("city") || "";
+
+  const pageCopy = getListingsPageCopy({
+    city,
+    make,
+    model,
+    searchTerm,
+  });
 
   // Build query parameters based on URL params only
   const queryParams = useMemo(() => {
-    // Build filters from URL params
     const urlFilters = {};
     searchParams.forEach((value, key) => {
       if (value && value.trim() !== "") {
         urlFilters[key] = value;
       }
     });
+    if (cityFromPath) {
+      urlFilters.city = cityFromPath;
+    }
 
-    // Debug: Log the URL parameters
-    console.log('FilteredResults - URL params:', Object.fromEntries(searchParams));
-    console.log('FilteredResults - Built filters:', urlFilters);
-
-    // If we have any URL params, use them
     if (Object.keys(urlFilters).length > 0) {
       return { ...urlFilters, limit: 50, page: 1 };
     }
 
-    // No filters
     return null;
-  }, [searchParams]);
+  }, [searchParams, cityFromPath]);
 
   // Fetch data using the correct query parameters
-  const { data: apiResults, isLoading: apiLoading, error: apiError } = useGetFilteredCarsQuery(
+  const { data: apiResults, isLoading: apiLoading, isFetching, error: apiError } = useGetFilteredCarsQuery(
     queryParams,
     { skip: !queryParams },
   );
@@ -57,15 +68,8 @@ const FilteredResults = () => {
     trackSearch(q);
   }, [searchTerm, apiLoading, apiError, apiResults, searchParams]);
 
-  // Debug: Log API results
-  console.log('FilteredResults - API Query:', queryParams);
-  console.log('FilteredResults - API Results:', apiResults);
-  console.log('FilteredResults - API Loading:', apiLoading);
-  console.log('FilteredResults - API Error:', apiError);
-
-  // Use API results only (ignore state to fix navigation issues)
   const carsData = apiResults;
-  const carsLoading = apiLoading;
+  const carsLoading = apiLoading || (isFetching && !apiResults);
 
   // Sort cars based on selected option
   const sortedCars = useMemo(() => {
@@ -101,94 +105,95 @@ const FilteredResults = () => {
   const activeFilters = useMemo(() => {
     const filters = [];
     searchParams.forEach((value, key) => {
-      if (value && value !== "") {
+      if (value && value !== "" && key !== "city") {
         filters.push([key, value]);
       }
     });
+    if (city) {
+      filters.unshift(["city", city]);
+    }
     return filters;
-  }, [searchParams]);
+  }, [searchParams, city]);
 
   const totalResults = carsData?.total || 0;
+  const shownCount = sortedCars.length;
+  const rangeLabel =
+    totalResults > 0
+      ? `1 - ${shownCount} of ${totalResults} Results`
+      : "0 Results";
 
-  // Show loading while search is loading (for direct navigation)
-  if (carsLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading search results...</p>
-        </div>
-      </div>
-    );
-  }
+  const breadcrumbItems = city
+    ? [
+        { label: "Home", path: "/" },
+        { label: "Used Cars", path: "/listings" },
+        { label: pageCopy.title, path: citySlug ? `/used-cars/${citySlug}` : "/search-results" },
+      ]
+    : [
+        { label: "Home", path: "/" },
+        { label: "Used Cars", path: "/listings" },
+        { label: pageCopy.title, path: "/search-results" },
+      ];
 
-  // Show API error if present
-  if (apiError) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="text-center">
-          <div className="text-red-500 mb-4">
-            <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Error Loading Results</h3>
-          <p className="text-gray-600 mb-4">{apiError.message || 'Failed to load search results. Please try again.'}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const breadcrumbItems = [
-    { label: "Home", path: "/" },
-    { label: "Search Results", path: "/search-results" },
-  ];
+  const navigateWithFilters = (nextFilters) => {
+    navigate(buildListingsSearchUrl(nextFilters));
+  };
 
   const removeFilter = (keyToRemove) => {
-    // Remove filter from URL params
-    const newParams = new URLSearchParams(searchParams);
-    newParams.delete(keyToRemove);
-
-    // Navigate with updated params
-    const newUrl = newParams.toString()
-      ? `/search-results?${newParams.toString()}`
-      : `/search-results`;
-
-    navigate(newUrl);
+    const next = {};
+    searchParams.forEach((value, key) => {
+      if (value && key !== keyToRemove && key !== "city") {
+        next[key] = value;
+      }
+    });
+    if (city && keyToRemove !== "city") {
+      next.city = city;
+    }
+    navigateWithFilters(next);
   };
 
   return (
     <div className="min-h-screen bg-gray-50 min-w-0 overflow-x-hidden">
       <StructuredData.CollectionPageSchema
-        name={searchTerm ? `Search Results for "${searchTerm}"` : "Search Results"}
-        description={`Found ${totalResults} cars matching your search`}
+        name={pageCopy.title}
+        description={pageCopy.description}
       />
       <StructuredData.ItemListSchema cars={carsData?.cars} />
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0">
-        <Breadcrumb items={breadcrumbItems} />
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0 pt-4">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">
+          {pageCopy.title}
+        </h1>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+          <Breadcrumb items={breadcrumbItems} hideHome />
+          <p className="text-sm text-gray-500 shrink-0 pb-3 sm:pb-0">
+            {rangeLabel}
+          </p>
+        </div>
       </div>
 
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-6 min-w-0">
-        {/* Header */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            {searchTerm
-              ? `Search Results for "${searchTerm}"`
-              : "Search Results"}
-          </h2>
-          {searchTerm && (
-            <p className="text-gray-600">
-              Found {totalResults} {totalResults === 1 ? "car" : "cars"}{" "}
-              matching your search
+        {carsLoading ? (
+          <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-4" />
+            <p className="text-gray-600">Loading search results...</p>
+          </div>
+        ) : apiError ? (
+          <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Error Loading Results
+            </h3>
+            <p className="text-gray-600 mb-4">
+              {apiError.message || "Failed to load search results. Please try again."}
             </p>
-          )}
-        </div>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        ) : (
+          <>
 
         {/* Active Filters */}
         {activeFilters.length > 0 && (
@@ -199,7 +204,7 @@ const FilteredResults = () => {
                 Active Filters
               </h3>
               <button
-                onClick={() => navigate("/filter")}
+                onClick={() => navigate("/listings")}
                 className="text-sm text-primary-500 hover:text-primary-500 font-medium"
               >
                 Clear All
@@ -280,25 +285,19 @@ const FilteredResults = () => {
             {activeFilters.length > 0 && (
               <div className="flex gap-3 justify-center mb-4">
                 <button
-                  onClick={() => navigate("/search-results")}
+                  onClick={() => navigate("/listings")}
                   className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors"
                 >
                   Clear All Filters
                 </button>
-                <button
-                  onClick={() => {
-                    // Remove just the model filter to show all models for the make
-                    const newParams = new URLSearchParams(searchParams);
-                    newParams.delete('model');
-                    const newUrl = newParams.toString()
-                      ? `/search-results?${newParams.toString()}`
-                      : `/search-results`;
-                    navigate(newUrl);
-                  }}
-                  className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors"
-                >
-                  Show All Models
-                </button>
+                {make || model ? (
+                  <button
+                    onClick={() => removeFilter("model")}
+                    className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+                  >
+                    Show All Models
+                  </button>
+                ) : null}
               </div>
             )}
             
@@ -311,6 +310,8 @@ const FilteredResults = () => {
               </button>
             )}
           </div>
+        )}
+          </>
         )}
       </div>
     </div>

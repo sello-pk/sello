@@ -15,6 +15,7 @@ import { ThemeProvider } from "./contexts/ThemeContext.jsx";
 import AppRouter from "./routes/AppRouter.jsx";
 import SEO from "./components/common/SEO.jsx";
 import useMetaPixel from "./hooks/useMetaPixel.js";
+import { getListingsPageCopy } from "./utils/urlBuilders.js";
 
 const prettifySlug = (value = "") =>
   value
@@ -107,12 +108,27 @@ const getRouteSeo = (pathname, search) => {
     {
       path: "/search-results",
       seo: () => {
-        const headline =
-          searchTerm || [make, model, city].filter(Boolean).join(" ") || "Cars";
+        const copy = getListingsPageCopy({
+          city,
+          make,
+          model,
+          searchTerm,
+        });
         return {
-          title: `${headline} Search Results | Cars for Sale in Pakistan – Sello.pk`,
-          description:
-            "Browse filtered car search results on Sello.pk and compare listings by price, make, model, location, and condition.",
+          title: `${copy.title} | Cars for Sale in Pakistan – Sello.pk`,
+          description: copy.description,
+        };
+      },
+    },
+    {
+      path: "/used-cars/:citySlug",
+      seo: ({ citySlug }) => {
+        const cityName = prettifySlug(citySlug);
+        return {
+          title: `Cars for sale in ${cityName} | Used Cars – Sello.pk`,
+          description: `Find used cars for sale in ${cityName} on Sello.pk. Compare prices, mileage, and trusted sellers across Pakistan.`,
+          keywords: `cars for sale in ${cityName}, used cars ${cityName}, ${cityName} cars`,
+          canonical: `https://sello.pk/used-cars/${citySlug}`,
         };
       },
     },

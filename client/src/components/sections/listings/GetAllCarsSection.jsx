@@ -184,6 +184,7 @@ const GetAllCarsSection = () => {
   // Prevent rendering on search-results page to avoid conflicts
   if (
     location.pathname === "/search-results" ||
+    location.pathname.startsWith("/used-cars/") ||
     location.pathname.startsWith("/admin")
   ) {
     return null;

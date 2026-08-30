@@ -11,6 +11,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { useCarCategories } from "../../../hooks/useCarCategories";
 import { isFieldVisible } from "../../../utils/vehicleFieldConfig";
 import { fixImageUrl } from "../../../utils/imageUtils";
+import { buildListingsSearchUrl } from "../../../utils/urlBuilders";
 
 // Helper function to get dynamic labels based on vehicle type
 const getVehicleLabel = (vehicleType, fieldType) => {
@@ -434,12 +435,7 @@ const FilterForm = ({ onFilter, simplifiedFields = false }) => {
         toast.success("Filters applied successfully!");
       } else {
         // Standalone mode - navigate to search results
-        const params = new URLSearchParams();
-        Object.entries(cleanFilters).forEach(([key, value]) => {
-          if (value) params.set(key, value);
-        });
-
-        navigate(`/search-results?${params.toString()}`);
+        navigate(buildListingsSearchUrl(cleanFilters));
         toast.success("Filters applied successfully!");
       }
     } else {

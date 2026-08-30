@@ -198,6 +198,7 @@ const AppRouter = () => {
         <Route path="/cars/:id" element={<CarDetails />} />
         <Route path="/filter" element={<FilterPage />} />
         <Route path="/search-results" element={<FilteredResults />} />
+        <Route path="/used-cars/:citySlug" element={<FilteredResults />} />
         <Route path="/view-all-brands" element={<AllBrands />} />
 
         {/* Features — Public Auction Pages */}

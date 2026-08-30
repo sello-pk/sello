@@ -10,6 +10,11 @@ const Footer = () => {
   const resolveFooterPath = (path) => {
     if (!path) return path;
     if (path.startsWith("/filter?")) {
+      const params = new URLSearchParams(path.slice("/filter?".length));
+      const city = params.get("city");
+      if (city && [...params.keys()].length === 1) {
+        return `/used-cars/${city.toLowerCase().replace(/\s+/g, "-")}`;
+      }
       return path.replace("/filter?", "/search-results?");
     }
     if (path === "/help/buying-cars") return "/help-center";

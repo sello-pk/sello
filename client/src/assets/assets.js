@@ -208,91 +208,36 @@ export const menuLinks = [
 ];
 
 // Footer Data like links etc
+const footerCities = [
+  "Karachi",
+  "Lahore",
+  "Islamabad",
+  "Rawalpindi",
+  "Peshawar",
+  "Faisalabad",
+  "Multan",
+  "Gujranwala",
+  "Sialkot",
+  "Sargodha",
+  "Hyderabad",
+  "Abbottabad",
+  "Quetta",
+  "Bahawalpur",
+  "Mardan",
+  "Wah Cantt",
+  "Gujrat",
+  "Sahiwal",
+  "Mansehra",
+  "Attock",
+];
+
 export const footerData = [
   {
     title: "VIEW CARS BY CITY",
-    links: [
-      {
-        name: "Cars for sale in Karachi",
-        path: "/filter?city=Karachi",
-      },
-      {
-        name: "Cars for sale in Lahore",
-        path: "/filter?city=Lahore",
-      },
-      {
-        name: "Cars for sale in Islamabad",
-        path: "/filter?city=Islamabad",
-      },
-      {
-        name: "Cars for sale in Rawalpindi",
-        path: "/filter?city=Rawalpindi",
-      },
-      {
-        name: "Cars for sale in Peshawar",
-        path: "/filter?city=Peshawar",
-      },
-      {
-        name: "Cars for sale in Faisalabad",
-        path: "/filter?city=Faisalabad",
-      },
-      {
-        name: "Cars for sale in Multan",
-        path: "/filter?city=Multan",
-      },
-      {
-        name: "Cars for sale in Gujranwala",
-        path: "/filter?city=Gujranwala",
-      },
-      {
-        name: "Cars for sale in Sialkot",
-        path: "/filter?city=Sialkot",
-      },
-      {
-        name: "Cars for sale in Sargodha",
-        path: "/filter?city=Sargodha",
-      },
-      {
-        name: "Cars for sale in Hyderabad",
-        path: "/filter?city=Hyderabad",
-      },
-      {
-        name: "Cars for sale in Abbottabad",
-        path: "/filter?city=Abbottabad",
-      },
-      {
-        name: "Cars for sale in Quetta",
-        path: "/filter?city=Quetta",
-      },
-      {
-        name: "Cars for sale in Bahawalpur",
-        path: "/filter?city=Bahawalpur",
-      },
-      {
-        name: "Cars for sale in Mardan",
-        path: "/filter?city=Mardan",
-      },
-      {
-        name: "Cars for sale in Wah Cantt",
-        path: "/filter?city=Wah Cantt",
-      },
-      {
-        name: "Cars for sale in Gujrat",
-        path: "/filter?city=Gujrat",
-      },
-      {
-        name: "Cars for sale in Sahiwal",
-        path: "/filter?city=Sahiwal",
-      },
-      {
-        name: "Cars for sale in Mansehra",
-        path: "/filter?city=Mansehra",
-      },
-      {
-        name: "Cars for sale in Attock",
-        path: "/filter?city=Attock",
-      },
-    ],
+    links: footerCities.map((city) => ({
+      name: `Cars for sale in ${city}`,
+      path: `/used-cars/${city.toLowerCase().replace(/\s+/g, "-")}`,
+    })),
   },
   {
     title: "VIEW CARS BY MAKE",

@@ -5,6 +5,7 @@ import { useCarCategories } from "../../hooks/useCarCategories";
 import { useGetFilteredCarsQuery } from "../../redux/services/api";
 import toast from "react-hot-toast";
 import { capitalize } from "../../utils/formatters";
+import { buildListingsSearchUrl } from "../../utils/urlBuilders";
 import { FiSearch } from "react-icons/fi";
 import { VscChevronDown } from "react-icons/vsc";
 
@@ -157,8 +158,7 @@ const HeroFilter = () => {
 
   useEffect(() => {
     if (filteredCars && queryParams) {
-      const params = new URLSearchParams(queryParams);
-      navigate(`/search-results?${params.toString()}`);
+      navigate(buildListingsSearchUrl(queryParams));
     }
   }, [filteredCars, queryParams, navigate]);
 

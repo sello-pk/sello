@@ -4,17 +4,14 @@ import FilterForm from "../../components/sections/filter/FilterForm";
 import GridCars from "../../components/sections/filter/GridCars";
 import BannerInFilter from "../../components/sections/filter/BannerInFilter";
 import BlogSection from "../../components/sections/home/BlogSection";
+import { buildListingsSearchUrl } from "../../utils/urlBuilders";
 
 const FilterPage = () => {
   const navigate = useNavigate();
 
   const handleFilter = (filters) => {
     if (filters && Object.keys(filters).length > 0) {
-      const params = new URLSearchParams();
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value) params.set(key, value);
-      });
-      navigate(`/search-results?${params.toString()}`);
+      navigate(buildListingsSearchUrl(filters));
     }
   };
 
