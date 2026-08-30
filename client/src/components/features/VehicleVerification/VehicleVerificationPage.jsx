@@ -20,12 +20,14 @@ import {
 } from "lucide-react";
 import SEO from "../../common/SEO";
 import NewsLatter from "../../utils/NewsLatter";
-import listingHero from "../../../assets/images/listingHero.png";
+import listingHero from "../../../assets/images/verification/vehicleVerificationHeroSection.jpeg";
 import punjabIcon from "../../../assets/images/verification/punjab.png";
 import islamabadIcon from "../../../assets/images/verification/islamabad.png";
 import sindhIcon from "../../../assets/images/verification/sindh.png";
 import kpkIcon from "../../../assets/images/verification/kpk.png";
 import balochistanIcon from "../../../assets/images/verification/blochistan.png";
+import gilgitBaltistan from "../../../assets/images/verification/gilgitBaltistan.png";
+import azadKashmir from "../../../assets/images/verification/azadKashmir.png";
 import serviceListingsImg from "../../../assets/images/verification/1.png";
 import serviceAuctionsImg from "../../../assets/images/verification/2.png";
 import serviceEstimatorImg from "../../../assets/images/verification/3.png";
@@ -78,6 +80,23 @@ const provinces = [
     desc: "Open Balochistan Excise vehicle records",
     url: "https://excise.balochistan.gov.pk/home/online-vehicle-verification/",
     icon: balochistanIcon,
+  },
+  {
+    name: "Gilgit-Baltistan",
+    desc: "Check Gilgit-Baltistan vehicle registration details",
+    url: "https://gbexcise.gov.pk/vehsearch/vehicle-search.php",
+    icon: gilgitBaltistan,
+  },
+  {
+    name: "Azad Kashmir",
+    desc: "Access Azad Kashmir vehicle verification services",
+    url: "https://ird.ajk.gov.pk/tokentax/verification.php",
+    icon: azadKashmir,
+  },
+  {
+    name: "Browse Vehicles",
+    desc: "Explore a wide range of vehicles for sale",
+    url: "https://sello.pk/listings",
   },
 ];
 
@@ -153,14 +172,46 @@ const verifyInfo = [
 ];
 
 const documents = [
-  { icon: registrationBookIcon, title: "Registration Book", desc: "Original registration issued by Excise." },
-  { icon: tokenIcon, title: "Token Tax Paid", desc: "Valid token tax receipt." },
-  { icon: cnicIcon, title: "CNIC of Seller", desc: "Match CNIC with registration." },
-  { icon: transferLetterIcon, title: "Transfer Letter", desc: "Check transfer history and letters." },
-  { icon: chassisPlateIcon, title: "Chassis Plate", desc: "Verify chassis number." },
-  { icon: engineNumberIcon, title: "Engine Number", desc: "Match engine number." },
-  { icon: insuranceIcon, title: "Insurance (If Any)", desc: "Check valid insurance." },
-  { icon: fitnessCertificateIcon, title: "Fitness Certificate", desc: "Ensure vehicle is fitness approved." },
+  {
+    icon: registrationBookIcon,
+    title: "Registration Book",
+    desc: "Original registration issued by Excise.",
+  },
+  {
+    icon: tokenIcon,
+    title: "Token Tax Paid",
+    desc: "Valid token tax receipt.",
+  },
+  {
+    icon: cnicIcon,
+    title: "CNIC of Seller",
+    desc: "Match CNIC with registration.",
+  },
+  {
+    icon: transferLetterIcon,
+    title: "Transfer Letter",
+    desc: "Check transfer history and letters.",
+  },
+  {
+    icon: chassisPlateIcon,
+    title: "Chassis Plate",
+    desc: "Verify chassis number.",
+  },
+  {
+    icon: engineNumberIcon,
+    title: "Engine Number",
+    desc: "Match engine number.",
+  },
+  {
+    icon: insuranceIcon,
+    title: "Insurance (If Any)",
+    desc: "Check valid insurance.",
+  },
+  {
+    icon: fitnessCertificateIcon,
+    title: "Fitness Certificate",
+    desc: "Ensure vehicle is fitness approved.",
+  },
 ];
 
 const buyingTips = [
@@ -503,7 +554,13 @@ const trustBar = [
   { icon: Headset, label: "Dedicated 24/7 Support" },
 ];
 
-const AccordionItem = ({ title, children, open, onToggle, headingAs = "h3" }) => {
+const AccordionItem = ({
+  title,
+  children,
+  open,
+  onToggle,
+  headingAs = "h3",
+}) => {
   const Heading = headingAs;
   return (
     <div className="rounded-2xl bg-white shadow-sm border border-slate-100 overflow-hidden">
@@ -513,7 +570,9 @@ const AccordionItem = ({ title, children, open, onToggle, headingAs = "h3" }) =>
         className="w-full px-5 py-4 text-left flex items-center justify-between gap-4"
         aria-expanded={open}
       >
-        <Heading className="text-base font-semibold text-slate-900">{title}</Heading>
+        <Heading className="text-base font-semibold text-slate-900">
+          {title}
+        </Heading>
         <span className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center shrink-0">
           {open ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
         </span>
@@ -529,7 +588,9 @@ const AccordionItem = ({ title, children, open, onToggle, headingAs = "h3" }) =>
 
 const scrollToId = (id) => (event) => {
   event.preventDefault();
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  document
+    .getElementById(id)
+    ?.scrollIntoView({ behavior: "smooth", block: "start" });
 };
 
 const VehicleVerificationPage = () => {
@@ -591,7 +652,8 @@ const VehicleVerificationPage = () => {
                 <Shield className="w-4 h-4 text-primary-500" /> Secure
               </span>
               <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-sm">
-                <Building2 className="w-4 h-4 text-green-400" /> Official sources
+                <Building2 className="w-4 h-4 text-green-400" /> Official
+                sources
               </span>
               <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-sm">
                 <Lock className="w-4 h-4 text-blue-300" /> Confidential
@@ -608,17 +670,18 @@ const VehicleVerificationPage = () => {
               Select Your Province
             </h2>
             <p className="text-base text-slate-600 max-w-2xl mx-auto">
-              Choose your province to verify vehicle details and ownership records
+              Choose your province to verify vehicle details and ownership
+              records
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {provinces.map((province) => (
               <a
                 key={province.name}
                 href={province.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex flex-col items-center text-center bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg transition-shadow"
+                className="group flex flex-col items-center text-center bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg transition-shadow hover:bg-green-200"
               >
                 <div className="w-24 h-24 mb-5 flex items-center justify-center">
                   <img
@@ -665,7 +728,9 @@ const VehicleVerificationPage = () => {
                 <h3 className="text-lg font-bold text-slate-900 mb-2">
                   {item.title}
                 </h3>
-                <p className="text-sm text-slate-500 leading-relaxed">{item.desc}</p>
+                <p className="text-sm text-slate-500 leading-relaxed">
+                  {item.desc}
+                </p>
               </div>
             ))}
           </div>
@@ -727,7 +792,9 @@ const VehicleVerificationPage = () => {
                 <h3 className="text-lg font-bold text-slate-900 mb-2">
                   {item.title}
                 </h3>
-                <p className="text-sm text-slate-500 leading-relaxed">{item.desc}</p>
+                <p className="text-sm text-slate-500 leading-relaxed">
+                  {item.desc}
+                </p>
               </div>
             ))}
           </div>
@@ -742,20 +809,24 @@ const VehicleVerificationPage = () => {
             </h2>
             <div className="grid lg:grid-cols-[1fr_1fr_minmax(220px,280px)] gap-8 items-start">
               <div className="space-y-3">
-                {verifyInfo.slice(0, Math.ceil(verifyInfo.length / 2)).map((item) => (
-                  <div key={item} className="flex items-center gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-primary-500 shrink-0" />
-                    <span className="text-sm text-slate-600">{item}</span>
-                  </div>
-                ))}
+                {verifyInfo
+                  .slice(0, Math.ceil(verifyInfo.length / 2))
+                  .map((item) => (
+                    <div key={item} className="flex items-center gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-primary-500 shrink-0" />
+                      <span className="text-sm text-slate-600">{item}</span>
+                    </div>
+                  ))}
               </div>
               <div className="space-y-3">
-                {verifyInfo.slice(Math.ceil(verifyInfo.length / 2)).map((item) => (
-                  <div key={item} className="flex items-center gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-primary-500 shrink-0" />
-                    <span className="text-sm text-slate-600">{item}</span>
-                  </div>
-                ))}
+                {verifyInfo
+                  .slice(Math.ceil(verifyInfo.length / 2))
+                  .map((item) => (
+                    <div key={item} className="flex items-center gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-primary-500 shrink-0" />
+                      <span className="text-sm text-slate-600">{item}</span>
+                    </div>
+                  ))}
               </div>
               <div className="rounded-2xl bg-primary-50 px-6 py-8 text-center">
                 <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-white flex items-center justify-center">
@@ -765,8 +836,8 @@ const VehicleVerificationPage = () => {
                   100% Confidential
                 </h3>
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  Your information is safe with us. We never share your data with
-                  anyone.
+                  Your information is safe with us. We never share your data
+                  with anyone.
                 </p>
               </div>
             </div>
@@ -780,7 +851,8 @@ const VehicleVerificationPage = () => {
             Documents You Should Check
           </h2>
           <p className="text-base text-slate-500 mb-8">
-            Always review these documents before finalizing any vehicle purchase.
+            Always review these documents before finalizing any vehicle
+            purchase.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {documents.map((doc) => (
@@ -799,7 +871,9 @@ const VehicleVerificationPage = () => {
                   <h3 className="text-sm font-bold text-slate-900 mb-0.5">
                     {doc.title}
                   </h3>
-                  <p className="text-xs text-slate-500 leading-relaxed">{doc.desc}</p>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    {doc.desc}
+                  </p>
                 </div>
               </div>
             ))}
@@ -807,7 +881,10 @@ const VehicleVerificationPage = () => {
         </div>
       </section>
 
-      <section id="what-is-verification" className="scroll-mt-24 py-16 bg-white">
+      <section
+        id="what-is-verification"
+        className="scroll-mt-24 py-16 bg-white"
+      >
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-slate-900 mb-4">
             Check Vehicle Details Before You Buy or Sell
@@ -896,7 +973,9 @@ const VehicleVerificationPage = () => {
                   <div className="text-2xl sm:text-3xl font-bold text-primary-500">
                     {stat.value}
                   </div>
-                  <div className="text-white font-semibold mt-1">{stat.title}</div>
+                  <div className="text-white font-semibold mt-1">
+                    {stat.title}
+                  </div>
                   <p className="text-slate-400 text-xs mt-1 leading-relaxed">
                     {stat.desc}
                   </p>
@@ -926,7 +1005,7 @@ const VehicleVerificationPage = () => {
           <h2 className="text-3xl font-bold text-slate-900 text-center mb-10">
             Explore More Services on Sello
           </h2>
-          <div className="grid md:grid-cols-2 gap-5">
+          <div className="grid md:grid-cols-4 gap-5">
             {exploreLinks.map((item) => (
               <Link
                 key={item.title}
@@ -934,12 +1013,8 @@ const VehicleVerificationPage = () => {
                 aria-label={item.title}
                 className="group relative block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow"
               >
-                <img
-                  src={item.image}
-                  alt=""
-                  className="block w-full h-auto"
-                />
-                <span className="absolute left-5 bottom-6 inline-flex items-center gap-1.5 bg-primary-500 text-white text-sm font-semibold rounded-lg px-4 py-2.5 group-hover:opacity-90 transition-opacity">
+                <img src={item.image} alt="" className="block w-full h-full" />
+                <span className="absolute left-5 bottom-2 inline-flex items-center gap-1.5 bg-primary-500 text-white text-xs font-semibold rounded-lg px-3 py-2 group-hover:opacity-90 transition-opacity">
                   {item.cta} <ArrowRight className="w-4 h-4" />
                 </span>
               </Link>
@@ -951,12 +1026,8 @@ const VehicleVerificationPage = () => {
             aria-label="Read guest posts"
             className="group relative mt-5 block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow"
           >
-            <img
-              src={guestPostsImg}
-              alt=""
-              className="block w-full h-auto"
-            />
-            <span className="absolute left-8 bottom-8 inline-flex items-center gap-1.5 bg-primary-500 text-white text-sm font-semibold rounded-lg px-4 py-2.5 group-hover:opacity-90 transition-opacity">
+            <img src={guestPostsImg} alt="" className="block w-full" />
+            <span className="absolute left-20 bottom-8 inline-flex items-center gap-1.5 bg-primary-500 text-white text-sm font-semibold rounded-lg px-4 py-2.5 group-hover:opacity-90 transition-opacity">
               Read Posts <ArrowRight className="w-4 h-4" />
             </span>
           </Link>
@@ -979,9 +1050,9 @@ const VehicleVerificationPage = () => {
                 <p className="text-sm text-slate-600 leading-relaxed">
                   Vehicle verification information is provided through official
                   provincial data sources where available. Sello does not
-                  guarantee the accuracy, completeness, or real-time availability
-                  of third-party records. Independently verify all vehicle
-                  information before making a purchase.
+                  guarantee the accuracy, completeness, or real-time
+                  availability of third-party records. Independently verify all
+                  vehicle information before making a purchase.
                 </p>
               </div>
             </div>
