@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams, useParams } from "react-router-dom";
 import FilterResultsSection from "../../components/sections/filter/FilterResultsSection";
 import SortAndViewOptions from "../../components/listings/SortAndViewOptions";
+import CarInspectionContent from "../../components/features/CarInspection/CarInspectionContent";
 import { FiX, FiFilter } from "react-icons/fi";
 import Breadcrumb from "../../components/common/Breadcrumb";
 import StructuredData from "../../components/common/StructuredData";
@@ -314,6 +315,9 @@ const FilteredResults = () => {
           </>
         )}
       </div>
+
+      {/* Car Inspection Content */}
+      <CarInspectionContent />
     </div>
   );
 };
