@@ -58,7 +58,7 @@ export default function AuctionResult() {
   const car = result?.car || {};
   const pageTitle =
     result?.status === "sold" && (car?.title || (car?.make && car?.model))
-      ? `Auction Result for ${car.title || `${car.year || ""} ${car.make} ${car.model}`} | Sello.pk`
+      ? `Auction Result for ${car.title || `${car.make || ""} ${car.model || ""} ${car.year || ""}${car.condition ? " " + car.condition : ""} for sale${car.city ? " in " + car.city : ""}`} | Sello.pk`
       : "Auction Result | Sello.pk";
   const pageDescription =
     result?.status === "sold"

@@ -220,11 +220,11 @@ export default function CarDetail() {
     walletBalance >= buyNowPrice;
   const pageTitle =
     car?.make && car?.model
-      ? `${car.year || ""} ${car.make} ${car.model}${car.variant && car.variant !== "N/A" ? " " + car.variant : ""} for sale${car.city ? " in " + car.city : ""} | Sello`
+      ? `${car.make || ""} ${car.model || ""} ${car.year || ""}${car.condition ? " " + car.condition : ""} for sale${car.city ? " in " + car.city : ""} | Sello`
       : "Auction Car Details | Sello";
   const pageDescription =
     car?.make && car?.model
-      ? `${car.year || ""} ${car.make} ${car.model} Used for sale${car.city ? " in " + car.city : ""} for PKR ${car.price?.toLocaleString() || "0"}. Buy this ${car.engineCapacity || ""}${car.engineCapacity ? " cc, " : ""}${car.colorExterior || ""} ${car.mileage?.toLocaleString() || "N/A"} KM Driven, ${car.transmission || ""} ${car.vehicleType || "Car"}. Contact Seller Now!`
+      ? `${car.make || ""} ${car.model || ""} ${car.year || ""}${car.condition ? " " + car.condition : ""} Used for sale${car.city ? " in " + car.city : ""} for PKR ${car.price?.toLocaleString() || "0"}. Buy this ${car.engineCapacity || ""}${car.engineCapacity ? " cc, " : ""}${car.colorExterior || ""} ${car.mileage?.toLocaleString() || "N/A"} KM Driven, ${car.transmission || ""} ${car.vehicleType || "Car"}. Contact Seller Now!`
       : "View auction car details on Sello including current bid, inspection information, pricing, and vehicle specifications before placing your bid.";
   const canonicalUrl = `https://sello.pk${location.pathname}${location.search}`;
 

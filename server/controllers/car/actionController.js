@@ -59,9 +59,12 @@ const generateCarTitle = (data) => {
   const model = normalizeString(data.model) || "";
   const year = data.year || "";
   const variant = normalizeString(data.variant);
-  const parts = [make, model, year].filter(Boolean);
-  if (variant && variant !== "N/A") parts.push(variant);
-  parts.push("for Sale");
+  const condition = normalizeString(data.condition);
+  const city = normalizeString(data.city);
+  const parts = [make, model, year];
+  if (condition) parts.push(condition);
+  parts.push("for sale");
+  if (city) parts.push("in", city);
   return parts.join(" ");
 };
 

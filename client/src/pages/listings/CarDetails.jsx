@@ -173,7 +173,9 @@ const CarDetails = () => {
         const year = car.year || "";
         const city = car.city || "";
         const variant = car.variant && car.variant !== "N/A" ? car.variant : "";
-        const parts = [year, make, model, variant].filter(Boolean);
+        const condition = car.condition || "";
+        const parts = [make, model, year].filter(Boolean);
+        if (condition) parts.push(condition);
         parts.push("for sale");
         if (city) parts.push("in", city);
         return parts.join(" ");
