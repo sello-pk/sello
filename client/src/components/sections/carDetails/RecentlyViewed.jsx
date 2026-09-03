@@ -3,6 +3,7 @@ import { useGetRecentlyViewedQuery } from "../../../redux/services/api";
 import { Link } from "react-router-dom";
 import { FaCalendarAlt } from "react-icons/fa";
 import { Image as LazyImage } from "../../ui/Image";
+import { buildCarUrl } from "../../../utils/urlBuilders";
 
 const PAGE_SIZE = 6; // show 6 at a time for a nice grid
 const MAX_LIMIT = 48; // hard cap from backend to avoid huge payloads
@@ -116,7 +117,7 @@ const RecentlyViewed = () => {
         {visibleItems.map((car) => (
           <Link
             key={car._id}
-            to={`/cars/${car._id}`}
+            to={buildCarUrl(car)}
             className="bg-white rounded-lg shadow-sm hover:shadow-lg border border-gray-200 transition-all duration-300 overflow-hidden group transform hover:-translate-y-1"
           >
             <div className="relative h-32 overflow-hidden">

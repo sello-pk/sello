@@ -5,6 +5,7 @@ import { Image as LazyImage } from "../../ui/Image";
 import { images } from "../../../assets/assets";
 import { FaCar } from "react-icons/fa6";
 import { formatPrice } from "../../../utils";
+import { buildCarUrl } from "../../../utils/urlBuilders";
 
 const RecentlyViewedCars = () => {
   const navigate = useNavigate();
@@ -146,7 +147,7 @@ const RecentlyViewedCars = () => {
               return (
                 <div
                   key={carId}
-                  onClick={() => navigate(`/cars/${carId}`)}
+                  onClick={() => navigate(buildCarUrl(car))}
                   className="group  rounded-2xl shadow-sm border border-gray-200 overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl hover:border-primary-300 hover:-translate-y-1"
                 >
                   {/* Car Image */}

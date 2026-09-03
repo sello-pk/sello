@@ -73,7 +73,17 @@ router.get('/sitemap.xml', async (req, res) => {
 
         for (const car of cars) {
             const lastmod = car.updatedAt ? new Date(car.updatedAt).toISOString() : now;
-            parts.push(`<url><loc>${baseUrl}/cars/${car._id}</loc><lastmod>${lastmod}</lastmod><priority>0.7</priority></url>`);
+            const slugify = (v) => String(v || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+            const make = slugify(car.make);
+            const model = slugify(car.model);
+            const year = car.year || "";
+            const city = slugify(car.city || car.location || "");
+            let carPath = `/cars/${car._id}`;
+            if (make || model || year) {
+                const slugParts = [make, model, year, "for-sale-in", city].filter(Boolean);
+                carPath = `/cars/${slugParts.join("-")}-${car._id}`;
+            }
+            parts.push(`<url><loc>${baseUrl}${carPath}</loc><lastmod>${lastmod}</lastmod><priority>0.7</priority></url>`);
         }
 
         parts.push(`</urlset>`);

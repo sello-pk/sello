@@ -15,6 +15,7 @@ import {
   generateAutoDealerSchema,
   generateAggregateRatingSchema,
 } from "../../utils/schemas";
+import { buildCarUrl } from "../../utils/urlBuilders";
 
 /**
  * Add structured data script to document head
@@ -42,7 +43,7 @@ export const ProductSchema = ({ car }) => {
     if (!car || !car._id) return;
 
     const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
-    const carUrl = `${baseUrl}/cars/${car._id}`;
+    const carUrl = `${baseUrl}${buildCarUrl(car)}`;
     const imageUrl = car.images?.[0] || `${baseUrl}/logo.png`;
 
     const make = car.make || "";
@@ -129,7 +130,7 @@ export const VehicleSchema = ({ car }) => {
     if (!car || !car._id) return;
 
     const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
-    const carUrl = `${baseUrl}/cars/${car._id}`;
+    const carUrl = `${baseUrl}${buildCarUrl(car)}`;
     const schema = generateVehicleSchema(car, carUrl);
 
     if (schema) {

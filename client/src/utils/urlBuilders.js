@@ -2,32 +2,28 @@
 // Centralizing this keeps URLs consistent across the app.
 
 /**
- * Build a SEO-friendly car details URL.
+ * Build a SEO-friendly car details URL (PakWheels style).
  *
  * Examples:
- * - "/cars/2020-toyota-corolla-lahore-<id>"
+ * - "/cars/suzuki-wagon-2017-for-sale-in-lahore-<id>"
  * - Falls back to "/cars/<id>" if we can't generate a slug.
  */
 export const buildCarUrl = (car) => {
   if (!car || !car._id) return "/cars";
 
-  const parts = [
-    car.year,
-    car.make,
-    car.model,
-    car.city || car.location || car.region,
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
+  const make = car.make ? slugify(car.make) : "";
+  const model = car.model ? slugify(car.model) : "";
+  const year = car.year || "";
+  const city = car.city || car.location || car.region || "";
+  const citySlug = city ? slugify(city) : "";
 
-  if (!parts) {
+  if (!make && !model && !year) {
     return `/cars/${car._id}`;
   }
 
-  return `/cars/${parts}-${car._id}`;
+  // PakWheels style: {make}-{model}-{year}-for-sale-in-{city}-{id}
+  const slugParts = [make, model, year, "for-sale-in", citySlug].filter(Boolean);
+  return `/cars/${slugParts.join("-")}-${car._id}`;
 };
 
 /**

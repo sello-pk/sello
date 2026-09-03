@@ -1,3 +1,5 @@
+import { buildCarUrl } from "./urlBuilders";
+
 export const generateItemListSchema = (cars, baseUrl) => {
   if (!cars || !Array.isArray(cars) || cars.length === 0) return null;
 
@@ -7,7 +9,7 @@ export const generateItemListSchema = (cars, baseUrl) => {
     itemListElement: cars.slice(0, 50).map((car, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      url: `${baseUrl}/cars/${car._id}`,
+      url: `${baseUrl}${buildCarUrl(car)}`,
     })),
   };
 };

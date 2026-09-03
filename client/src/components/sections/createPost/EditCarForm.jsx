@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { extractCarIdFromSlug } from "../../../utils/urlBuilders";
+import { extractCarIdFromSlug, buildCarUrl } from "../../../utils/urlBuilders";
 import {
   useEditCarMutation,
   useGetSingleCarQuery,
@@ -411,7 +411,7 @@ const EditCarForm = () => {
     try {
       await editCar({ carId: extractedCarId, formData: data }).unwrap();
       toast.success("Car updated successfully!");
-      navigate(`/cars/${extractedCarId}`);
+      navigate(buildCarUrl(regularCar));
     } catch (err) {
       toast.error(getErrorMessage(err));
     }

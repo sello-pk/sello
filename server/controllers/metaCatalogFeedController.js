@@ -5,14 +5,14 @@ import Logger from "../utils/logger.js";
 function buildCarPath(car) {
   if (!car?._id) return "/cars";
   const id = String(car._id);
-  const parts = [car.year, car.make, car.model, car.city || car.location]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-  if (!parts) return `/cars/${id}`;
-  return `/cars/${parts}-${id}`;
+  const slugify = (v) => String(v || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const make = slugify(car.make);
+  const model = slugify(car.model);
+  const year = car.year || "";
+  const city = slugify(car.city || car.location || "");
+  if (!make && !model && !year) return `/cars/${id}`;
+  const slugParts = [make, model, year, "for-sale-in", city].filter(Boolean);
+  return `/cars/${slugParts.join("-")}-${id}`;
 }
 
 function getPublicSiteOrigin() {
