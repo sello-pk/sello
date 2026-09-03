@@ -316,7 +316,7 @@ const FilteredResults = () => {
         )}
       </div>
 
-      {/* Car Inspection Content */}
+      {/* Car Inspection Content - Full Width */}
       <CarInspectionContent />
     </div>
   );

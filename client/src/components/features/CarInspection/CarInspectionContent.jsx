@@ -97,10 +97,10 @@ const reportIncludes = [
 ];
 
 const whoNeeds = [
-  { icon: FaUserGraduate, title: "Individual Buyers", desc: "Stay away from issues and buy with confidence." },
-  { icon: FaStore, title: "Used Car Dealers", desc: "Verify vehicle condition before resale." },
-  { icon: FaTruck, title: "Fleet Owners", desc: "Maintain vehicle quality and safety standards." },
-  { icon: FaUserGraduate, title: "First-Time Buyers", desc: "Get professional advice on your first car." },
+  { icon: FaUserGraduate, title: "Individual Buyers", desc: "Buy with confidence." },
+  { icon: FaStore, title: "Used Car Dealers", desc: "Verify before resale." },
+  { icon: FaTruck, title: "Fleet Owners", desc: "Maintain quality standards." },
+  { icon: FaUserGraduate, title: "First-Time Buyers", desc: "Get expert advice." },
 ];
 
 const whySello = [
@@ -117,27 +117,25 @@ const faqs = [
   { q: "What is included in a car inspection report?", a: "The report contains mechanical issues, body condition, accident signs, safety checks, and expert recommendations." },
   { q: "Is your pre-purchase car inspection worth it?", a: "Yes. Before you buy, a pre purchase inspection will bring to light issues which may end up costing you thousands in repairs." },
   { q: "Do I have to book a car inspection prior to purchase?", a: "Absolutely. Our pre purchase service is for buyers of used cars." },
-  { q: "What makes Sello a good choice for vehicle inspection?", a: "Sello does thorough inspections, we present you with clear reports, we have experienced evaluators, and we give you unbiased recommendations which in turn will aid you in making informed buying decisions." },
+  { q: "What makes Sello a good choice for vehicle inspection?", a: "Sello does thorough inspections, we present you with clear reports, we have experienced evaluators, and we give you unbiased recommendations." },
 ];
 
 const inspectionServices = [
-  { icon: FaSearch, title: "Pre-Purchase", desc: "Complete assessment before you buy any used vehicle." },
-  { icon: FaWrench, title: "Mechanical", desc: "Deep dive into engine, transmission, and drivetrain." },
-  { icon: FaCarCrash, title: "Accident Check", desc: "Detect previous accident damage and repairs." },
-  { icon: FaCogs, title: "Full Assessment", desc: "Comprehensive bumper-to-bumper evaluation." },
+  { icon: FaSearch, title: "Pre-Purchase", desc: "Complete assessment before you buy." },
+  { icon: FaWrench, title: "Mechanical", desc: "Engine, transmission, drivetrain deep dive." },
+  { icon: FaCarCrash, title: "Accident Check", desc: "Detect previous accident damage." },
+  { icon: FaCogs, title: "Full Assessment", desc: "Bumper-to-bumper evaluation." },
 ];
 
 const CarInspectionContent = () => {
   const [openFaq, setOpenFaq] = useState(null);
 
   return (
-    <section className="py-20 bg-white border-t border-gray-100 mt-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        {/* Hero */}
-        <div className="bg-[#0B1437] rounded-3xl p-10 md:p-14 mb-20 relative overflow-hidden">
-          <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2l2 3-2 3z'/%3E%3C/g%3E%3C/svg%3E\")" }} />
-          <div className="relative grid md:grid-cols-2 gap-12 items-center">
+    <section className="bg-white">
+      {/* Hero */}
+      <div className="bg-[#0B1437]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
+          <div className="grid md:grid-cols-2 gap-10 items-center">
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2">
                 <span className="relative flex h-2 w-2">
@@ -162,55 +160,68 @@ const CarInspectionContent = () => {
               </div>
             </div>
             <div className="hidden md:flex justify-end">
-              <div className="relative">
-                <div className="w-72 h-52 bg-white/5 rounded-3xl border border-white/10 flex items-center justify-center">
-                  <FaTools className="text-7xl text-white/10" />
-                </div>
-                <div className="absolute -right-5 top-10 bg-white rounded-2xl p-5 shadow-2xl shadow-black/20">
-                  <div className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-3">Verification Status</div>
-                  <div className="space-y-2.5">
-                    {["Engine Verified", "Body Checked", "Clear History"].map((t) => (
-                      <div key={t} className="flex items-center gap-2.5 text-xs text-gray-700">
-                        <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
-                          <FaCheckCircle size={9} className="text-green-600" />
-                        </div>
-                        {t}
+              <div className="relative w-80">
+                {/* Main card */}
+                <div className="bg-white/10 backdrop-blur-sm rounded-3xl border border-white/10 p-8">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-16 h-16 bg-[#FFA602]/20 rounded-2xl flex items-center justify-center">
+                      <FaTools className="text-3xl text-[#FFA602]" />
+                    </div>
+                    <div>
+                      <div className="text-white font-bold text-lg">Sello</div>
+                      <div className="text-gray-400 text-xs">Inspection Service</div>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    {[
+                      { label: "Engine", status: "Verified", color: "text-green-400" },
+                      { label: "Body", status: "Checked", color: "text-green-400" },
+                      { label: "History", status: "Clear", color: "text-green-400" },
+                    ].map((item) => (
+                      <div key={item.label} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                        <span className="text-gray-300 text-sm">{item.label}</span>
+                        <span className={`${item.color} text-xs font-medium flex items-center gap-1.5`}>
+                          <FaCheckCircle size={10} /> {item.status}
+                        </span>
                       </div>
                     ))}
                   </div>
+                </div>
+                {/* Floating badge */}
+                <div className="absolute -bottom-4 -right-4 bg-[#FFA602] text-white px-4 py-2 rounded-xl shadow-lg shadow-[#FFA602]/30 text-xs font-bold">
+                  100% Trusted
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Why Choose + Benefits */}
-        <div className="mb-20 grid lg:grid-cols-2 gap-14 items-start">
+        <div className="py-16 grid lg:grid-cols-2 gap-14 items-start">
           <div>
-            <div className="mb-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Why Choose Sello?</h3>
-              <p className="text-gray-500 text-sm">Trusted by thousands of car buyers across Pakistan</p>
-            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Why Choose Sello?</h3>
+            <p className="text-gray-500 text-sm mb-5">Trusted by thousands of car buyers across Pakistan</p>
             <p className="text-gray-600 text-sm leading-relaxed mb-6">
               Buying a preowned car without a full inspection may result in getting some unseen mechanical issues, former accidents in its history, or high repair bills. Our team of experts will present an unbiased report so you know exactly what you are going for.
             </p>
             <div className="flex flex-wrap gap-2">
               {[
-                { icon: FaShieldAlt, text: "Trusted Service", color: "green" },
-                { icon: FaClipboardCheck, text: "Certified Inspectors", color: "blue" },
-                { icon: FaFileAlt, text: "Detailed Reports", color: "purple" },
+                { icon: FaShieldAlt, text: "Trusted Service", bg: "bg-green-50", textc: "text-green-700" },
+                { icon: FaClipboardCheck, text: "Certified Inspectors", bg: "bg-blue-50", textc: "text-blue-700" },
+                { icon: FaFileAlt, text: "Detailed Reports", bg: "bg-purple-50", textc: "text-purple-700" },
               ].map((b) => (
-                <span key={b.text} className={`inline-flex items-center gap-1.5 bg-${b.color}-50 text-${b.color}-700 px-3 py-1.5 rounded-lg text-xs font-medium`}>
+                <span key={b.text} className={`inline-flex items-center gap-1.5 ${b.bg} ${b.textc} px-3 py-1.5 rounded-lg text-xs font-medium`}>
                   <b.icon size={11} /> {b.text}
                 </span>
               ))}
             </div>
           </div>
           <div>
-            <div className="mb-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Key Benefits</h3>
-              <p className="text-gray-500 text-sm">What our inspection service covers</p>
-            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Key Benefits</h3>
+            <p className="text-gray-500 text-sm mb-5">What our inspection service covers</p>
             <div className="grid sm:grid-cols-2 gap-x-6 gap-y-2">
               {benefits.map((item) => (
                 <div key={item} className="flex items-center gap-2.5 py-1.5">
@@ -223,7 +234,7 @@ const CarInspectionContent = () => {
         </div>
 
         {/* Inspection Services */}
-        <div className="mb-20">
+        <div className="pb-16">
           <div className="text-center mb-10">
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Our Inspection Services</h3>
             <p className="text-gray-500 text-sm">Professional inspection for every type of buyer</p>
@@ -242,7 +253,7 @@ const CarInspectionContent = () => {
         </div>
 
         {/* Complete Vehicle Inspection */}
-        <div className="mb-20">
+        <div className="pb-16">
           <div className="text-center mb-10">
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Complete Vehicle Inspection</h3>
             <p className="text-gray-500 text-sm">Our inspection covers all major components</p>
@@ -278,7 +289,7 @@ const CarInspectionContent = () => {
         </div>
 
         {/* Used Car + Pre Purchase */}
-        <div className="mb-20 grid lg:grid-cols-2 gap-6">
+        <div className="pb-16 grid lg:grid-cols-2 gap-6">
           <div className="p-7 rounded-2xl border border-gray-100">
             <h3 className="text-xl font-bold text-gray-900 mb-2">Used Car Inspection</h3>
             <p className="text-gray-500 text-xs mb-4">Protect yourself from unexpected repair charges</p>
@@ -313,7 +324,7 @@ const CarInspectionContent = () => {
         </div>
 
         {/* Detailed Report */}
-        <div className="mb-20 bg-[#0B1437] rounded-3xl p-8 md:p-12 relative overflow-hidden">
+        <div className="pb-16 bg-[#0B1437] rounded-3xl p-8 md:p-12 relative overflow-hidden">
           <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2l2 3-2 3z'/%3E%3C/g%3E%3C/svg%3E\")" }} />
           <div className="relative grid md:grid-cols-2 gap-10 items-center">
             <div>
@@ -341,12 +352,10 @@ const CarInspectionContent = () => {
         </div>
 
         {/* Who Needs + Why Sello */}
-        <div className="mb-20 grid lg:grid-cols-2 gap-10">
+        <div className="py-16 grid lg:grid-cols-2 gap-10">
           <div>
-            <div className="mb-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Who Needs This?</h3>
-              <p className="text-gray-500 text-sm">Our services are ideal for</p>
-            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Who Needs This?</h3>
+            <p className="text-gray-500 text-sm mb-6">Our services are ideal for</p>
             <div className="grid grid-cols-2 gap-4">
               {whoNeeds.map((item) => (
                 <div key={item.title} className="text-center p-5 rounded-xl border border-gray-100 hover:border-[#FFA602]/30 hover:shadow-md transition-all duration-300">
@@ -360,10 +369,8 @@ const CarInspectionContent = () => {
             </div>
           </div>
           <div>
-            <div className="mb-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Why Sello?</h3>
-              <p className="text-gray-500 text-sm">Dedicated to safer car purchases</p>
-            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Why Sello?</h3>
+            <p className="text-gray-500 text-sm mb-5">Dedicated to safer car purchases</p>
             <p className="text-gray-600 text-sm leading-relaxed mb-5">
               Sello is dedicated to bringing you safer and smarter car purchases in Pakistan. We have an independent, transparent and accurate inspection process which reports the true state of the vehicle.
             </p>
@@ -379,25 +386,27 @@ const CarInspectionContent = () => {
         </div>
 
         {/* CTA */}
-        <div className="mb-20 bg-gradient-to-r from-[#FFF8E7] to-[#FFF3D6] rounded-3xl p-8 md:p-10">
-          <div className="max-w-2xl">
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">Book Your Car Inspection Today</h3>
-            <p className="text-gray-600 text-sm leading-relaxed mb-6">
-              Don't put yourself at risk when you buy a car. At Sello we provide professional car inspection services which will give you all the info you need before you decide to buy.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <button className="bg-[#FFA602] text-white px-7 py-3.5 rounded-xl font-semibold flex items-center gap-2 hover:bg-[#e69500] transition-all shadow-lg shadow-[#FFA602]/20 text-sm">
-                <FaPhoneAlt /> Contact Us
-              </button>
-              <Link to="/listings" className="bg-white border border-gray-200 text-gray-700 px-7 py-3.5 rounded-xl font-semibold hover:bg-gray-50 transition-all text-sm flex items-center gap-2 shadow-sm">
-                <FaCar /> Browse Cars
-              </Link>
+        <div className="pb-16">
+          <div className="bg-gradient-to-r from-[#FFF8E7] to-[#FFF3D6] rounded-3xl p-8 md:p-10">
+            <div className="max-w-2xl">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">Book Your Car Inspection Today</h3>
+              <p className="text-gray-600 text-sm leading-relaxed mb-6">
+                Don't put yourself at risk when you buy a car. At Sello we provide professional car inspection services which will give you all the info you need before you decide to buy.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <button className="bg-[#FFA602] text-white px-7 py-3.5 rounded-xl font-semibold flex items-center gap-2 hover:bg-[#e69500] transition-all shadow-lg shadow-[#FFA602]/20 text-sm">
+                  <FaPhoneAlt /> Contact Us
+                </button>
+                <Link to="/listings" className="bg-white border border-gray-200 text-gray-700 px-7 py-3.5 rounded-xl font-semibold hover:bg-gray-50 transition-all text-sm flex items-center gap-2 shadow-sm">
+                  <FaCar /> Browse Cars
+                </Link>
+              </div>
             </div>
           </div>
         </div>
 
         {/* FAQ */}
-        <div>
+        <div className="pb-16">
           <div className="text-center mb-10">
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Frequently Asked Questions</h3>
             <p className="text-gray-500 text-sm">Got questions? We've got answers.</p>
