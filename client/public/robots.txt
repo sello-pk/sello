@@ -28,10 +28,6 @@ Disallow: /auctions/buyer-dashboard
 Disallow: /auctions/seller-dashboard
 Disallow: /auctions/wallet
 
-# Filters (SEO fix)
-Disallow: /filter
-Disallow: /search-results
-
 # Sitemap
 Sitemap: https://sello.pk/sitemap.xml
 
