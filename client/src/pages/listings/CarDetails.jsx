@@ -193,10 +193,12 @@ const CarDetails = () => {
         const mileage = car.mileage?.toLocaleString() || "N/A";
         const transmission = car.transmission || "";
         const vehicleType = car.vehicleType || "Car";
-        const parts = [year, make, model];
-        if (city) parts.push("Used for sale in", city);
-        else parts.push("Used for sale");
-        parts.push(`for PKR ${price}.`);
+        const condition = car.condition || "";
+        const parts = [make, model, year];
+        if (condition) parts.push(condition);
+        if (city) parts.push("for sale in", city);
+        else parts.push("for sale");
+        parts.push(`PKR ${price}.`);
         const specs = [];
         if (cc) specs.push(`${cc} cc`);
         if (color) specs.push(color);
