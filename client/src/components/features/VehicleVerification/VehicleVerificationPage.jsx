@@ -605,60 +605,62 @@ const VehicleVerificationPage = () => {
         keywords="online vehicle verification Pakistan, car verification Pakistan, vehicle registration check, MTMIS, Punjab vehicle verification, Punjab Excise, bike registration check, Lahore vehicle verification"
       />
 
-      <section className="relative w-full overflow-hidden min-h-[52vh] md:h-[52vh] bg-gray-200">
+      <section className="relative w-full overflow-hidden min-h-[52vh] bg-gray-200">
         <img
           src={listingHero}
           alt=""
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover object-center"
           fetchPriority="high"
           decoding="async"
           width="1200"
           height="600"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-slate-900/25 via-slate-900/40 to-slate-900/50" />
-        <div className="relative z-10 flex min-h-[52vh] md:h-[52vh] flex-col justify-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 bg-white text-primary-500 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium mb-5 shadow-sm">
-              <Sparkles className="w-4 h-4" />
-              Official MTMIS data sources
+        <div className="relative z-10 flex min-h-[52vh] flex-col justify-center w-full min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          <div className="text-center w-full min-w-0 max-w-3xl mx-auto">
+            <div className="inline-flex max-w-full items-center gap-2 bg-white text-primary-500 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium mb-3 sm:mb-5 shadow-sm">
+              <Sparkles className="w-4 h-4 shrink-0" />
+              <span className="truncate">Official MTMIS data sources</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 leading-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 sm:mb-4 leading-tight text-balance">
               Online Vehicle Verification in Pakistan – Check Your Car Details
             </h1>
-            <p className="text-base sm:text-lg text-gray-100 mb-8">
+            <p className="text-sm sm:text-base lg:text-lg text-gray-100 mb-5 sm:mb-8 text-pretty">
               Check car or bike registration details before you buy or sell.
               Open the official portal for your province, then compare records
               with the vehicle in person.
             </p>
-            <div className="flex flex-wrap justify-center gap-3 mb-8">
+            <div className="flex flex-col min-[420px]:flex-row flex-wrap justify-center items-stretch min-[420px]:items-center gap-2.5 sm:gap-3 mb-5 sm:mb-8">
               <a
                 href="#select-province"
                 onClick={scrollToId("select-province")}
-                className="inline-flex items-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 hover:-translate-y-0.5 transition-all shadow-lg shadow-primary-500/25"
+                className="inline-flex items-center justify-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 hover:-translate-y-0.5 transition-all shadow-lg shadow-primary-500/25"
               >
-                <Search className="w-4 h-4" />
+                <Search className="w-4 h-4 shrink-0" />
                 Verify vehicle
               </a>
               <a
                 href="#how-it-works"
                 onClick={scrollToId("how-it-works")}
-                className="inline-flex items-center gap-2 bg-white text-slate-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 hover:-translate-y-0.5 transition-all"
+                className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 hover:-translate-y-0.5 transition-all"
               >
                 How it works
               </a>
             </div>
-            <div className="flex flex-wrap justify-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-100">
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-sm">
-                <Shield className="w-4 h-4 text-primary-500" /> Secure
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-sm">
-                <Building2 className="w-4 h-4 text-green-400" /> Official
-                sources
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-sm">
-                <Lock className="w-4 h-4 text-blue-300" /> Confidential
-              </span>
-            </div>
+            <ul className="flex flex-wrap justify-center gap-1.5 sm:gap-3 text-[10px] sm:text-sm text-gray-100">
+              <li className="inline-flex items-center gap-1 sm:gap-2 whitespace-nowrap rounded-full bg-white/10 px-2 sm:px-3.5 py-1 sm:py-1.5 backdrop-blur-sm">
+                <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-primary-500 shrink-0" />
+                Secure
+              </li>
+              <li className="inline-flex items-center gap-1 sm:gap-2 whitespace-nowrap rounded-full bg-white/10 px-2 sm:px-3.5 py-1 sm:py-1.5 backdrop-blur-sm">
+                <Building2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-400 shrink-0" />
+                Official sources
+              </li>
+              <li className="inline-flex items-center gap-1 sm:gap-2 whitespace-nowrap rounded-full bg-white/10 px-2 sm:px-3.5 py-1 sm:py-1.5 backdrop-blur-sm">
+                <Lock className="w-3 h-3 sm:w-4 sm:h-4 text-blue-300 shrink-0" />
+                Confidential
+              </li>
+            </ul>
           </div>
         </div>
       </section>
