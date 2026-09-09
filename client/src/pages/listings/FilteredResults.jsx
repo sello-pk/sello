@@ -5,8 +5,10 @@ import SortAndViewOptions from "../../components/listings/SortAndViewOptions";
 import { FiX, FiFilter } from "react-icons/fi";
 import Breadcrumb from "../../components/common/Breadcrumb";
 import StructuredData from "../../components/common/StructuredData";
+import SEO from "../../components/common/SEO";
 import { useGetFilteredCarsQuery } from "../../redux/services/api";
 import { trackSearch } from "../../utils/metaPixel.js";
+import { getListingsSeo } from "../../utils/listingsSeo";
 import {
   unslugify,
   buildListingsSearchUrl,
@@ -33,6 +35,11 @@ const FilteredResults = () => {
     model,
     searchTerm,
   });
+
+  // Curated SEO title/description for make & model landings (footer links)
+  const curatedSeo = getListingsSeo({ make, model });
+  const seoTitle = curatedSeo?.seoTitle || pageCopy.title;
+  const seoDescription = curatedSeo?.seoDescription || pageCopy.description;
 
   // Build query parameters based on URL params only
   const queryParams = useMemo(() => {
@@ -153,6 +160,11 @@ const FilteredResults = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 min-w-0 overflow-x-hidden">
+      <SEO
+        title={seoTitle}
+        description={seoDescription}
+        canonical={`${window.location.pathname}${window.location.search}`}
+      />
       <StructuredData.CollectionPageSchema
         name={pageCopy.title}
         description={pageCopy.description}

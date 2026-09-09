@@ -1,0 +1,235 @@
+/**
+ * Landing-page SEO copy for make- and model-filtered listings on FilteredResults.
+ * Keyed by the normalized URL params so title/description stay in sync with the
+ * footer links ("VIEW CARS BY MAKE", "VIEW CARS BY MODEL").
+ */
+
+const norm = (v) =>
+  String(v || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+
+ /** make + model landings — `/search-results?make=X&model=Y` */
+export const modelSeo = {
+  "toyota corolla": {
+    title: "Toyota Corolla for Sale | New & Used Cars in Pakistan",
+    description:
+      "Browse Toyota Corolla for sale in Pakistan. Find new and used Corolla cars with prices, specifications, photos, and seller details in one place.",
+  },
+  "honda city": {
+    title: "Honda City for Sale in Pakistan | Great Deals & Prices",
+    description:
+      "Explore Honda City for sale in Pakistan with updated listings, prices, photos, specifications, and seller details. Find your ideal Honda City today.",
+  },
+  "toyota raize": {
+    title: "Toyota Raize for Sale Pakistan | Buy New & Used Cars",
+    description:
+      "Find Toyota Raize for sale in Pakistan. Browse new and used Raize cars, compare prices, check specifications, and connect with sellers easily.",
+  },
+  "toyota prado": {
+    title: "Toyota Prado for Sale | Toyota Prado Prices in Pakistan",
+    description:
+      "Search Toyota Prado for sale in Pakistan. Discover available Prado SUVs, compare prices and features, check specifications, and find your ideal vehicle.",
+  },
+  "toyota passo": {
+    title: "Toyota Passo for Sale in Pakistan | Prices & Models",
+    description:
+      "Search Toyota Passo for sale in Pakistan and explore different models, prices, specifications, photos, and seller information to make your car search easier.",
+  },
+  "suzuki mehran": {
+    title: "Suzuki Mehran for Sale in Pakistan | Affordable Cars",
+    description:
+      "Find Suzuki Mehran for sale in Pakistan at affordable prices. Browse listings, compare model years, specifications, photos, and seller details with ease.",
+  },
+  "suzuki alto": {
+    title: "Suzuki Alto for Sale in Pakistan | Used Alto Cars",
+    description:
+      "Suzuki Alto for sale in Pakistan and discover used Alto cars with detailed prices, specifications, model years, photos, and seller information.",
+  },
+  "suzuki swift": {
+    title: "Suzuki Swift for Sale in Pakistan | Find Your Ideal Car",
+    description:
+      "Suzuki Swift for sale in Pakistan and find cars that fit your budget. Compare prices, model years, specifications, features, and seller details.",
+  },
+  "kia sportage": {
+    title: "KIA Sportage for Sale in Pakistan | Latest Car Deals",
+    description:
+      "Discover KIA Sportage for sale in Pakistan with updated listings. Compare prices, model years, specifications, features, photos, and seller details.",
+  },
+  "toyota land cruiser": {
+    title: "Toyota Land Cruiser for Sale in Pakistan | New & Used",
+    description:
+      "Find Toyota Land Cruiser for sale in Pakistan. Browse new and used Land Cruiser SUVs, compare prices, check specifications, photos, and seller details.",
+  },
+  "honda civic": {
+    title: "Honda Civic for Sale in Pakistan | Find Your Ideal Car",
+    description:
+      "Search Honda Civic for sale in Pakistan and find cars that match your budget. Compare prices, model years, specifications, features, and seller details.",
+  },
+  "suzuki wagon r": {
+    title: "Suzuki Wagon R for Sale | Best Prices in Pakistan",
+    description:
+      "Looking for Suzuki Wagon R for sale in Pakistan? Explore available cars, compare prices, model years, specifications, features, and seller details.",
+  },
+  "suzuki bolan": {
+    title: "Suzuki Bolan for Sale in Pakistan | Best Car Deals",
+    description:
+      "Discover Suzuki Bolan for sale in Pakistan through detailed listings. Compare prices, specifications, model years, features, photos, and seller information.",
+  },
+  "daihatsu cuore": {
+    title: "Daihatsu Cuore for Sale | Buy Used Cars in Pakistan",
+    description:
+      "Looking for Daihatsu Cuore for sale? Browse used Cuore cars in Pakistan, compare prices and specifications, and find the right car for your budget.",
+  },
+  "toyota yaris sedan": {
+    title: "Toyota Yaris Sedan for Sale in Pakistan | Top Car Deals",
+    description:
+      "Discover Toyota Yaris Sedan for sale in Pakistan with updated listings, competitive prices, detailed features, photos, and seller information.",
+  },
+  "suzuki cultus": {
+    title: "Suzuki Cultus for Sale in Pakistan | Car Prices & Models",
+    description:
+      "Explore Suzuki Cultus for sale in Pakistan with prices, model details, specifications, features, photos, and updated seller listings.",
+  },
+  "toyota vitz": {
+    title: "Toyota Vitz for Sale in Pakistan | Best Deals & Latest Car",
+    description:
+      "Find Toyota Vitz for sale in Pakistan with updated listings and prices. Compare models, specifications, photos, features, and seller details.",
+  },
+  "daihatsu mira": {
+    title: "Daihatsu Mira for Sale in Pakistan | Compare Car Prices",
+    description:
+      "Discover Daihatsu Mira for sale in Pakistan. Compare car prices, model years, features, specifications, photos, and available seller listings.",
+  },
+  "toyota hilux": {
+    title: "Toyota Hilux for Sale in Pakistan | Buy & Sell in Pakistan",
+    description:
+      "Looking for Toyota Hilux for sale in Pakistan? Explore available listings, compare prices, check vehicle details, view photos, and connect with sellers.",
+  },
+  "honda vezel": {
+    title: "Honda Vezel for Sale in Pakistan | Buy & Sell Cars",
+    description:
+      "Looking for Honda Vezel for sale in Pakistan? Explore listings, compare prices, view specifications and photos, and connect with sellers easily.",
+  },
+};
+
+/** make-only landings — `/search-results?make=X` */
+export const makeSeo = {
+  suzuki: {
+    title: "Buy Certified Used Suzuki Cars in Excellent Condition Today",
+    description:
+      "Looking for used Suzuki cars? Browse our inspected, reliable, budget friendly vehicles. Book a test drive today or visit our showroom now.",
+  },
+  toyota: {
+    title: "Used Toyota Cars for Sale in Pakistan | Best Prices",
+    description:
+      "Our used Toyota cars are inspected for quality, priced to fit your budget, ready for the road. Visit our showroom or call us today.",
+  },
+  honda: {
+    title: "Buy Used Honda Cars in Pakistan With Trusted Dealers",
+    description:
+      "Explore our collection of used Honda cars for sale in Pakistan, built for reliability, comfort, performance. Book your visit now.",
+  },
+  daihatsu: {
+    title: "Used Daihatsu Cars in Pakistan | Book a Test Drive",
+    description:
+      "Shop used Daihatsu cars for sale in Pakistan at our trusted showroom. Inspected, affordable, ready to drive. Book your visit today.",
+  },
+  nissan: {
+    title: "Used Nissan Cars in Pakistan | Reliable & Affordable Prices",
+    description:
+      "Our showroom offers used Nissan cars for sale in Pakistan, all inspected for quality and priced to fit your budget. Visit us today.",
+  },
+  hyundai: {
+    title: "Used Hyundai Cars for Sale in Pakistan | Great Deals With Sello",
+    description:
+      "Find your perfect used Hyundai car in Pakistan at unbeatable prices. Reliable, budget friendly, ready for the road. Book your visit or call us now.",
+  },
+  kia: {
+    title: "Used KIA Cars in Pakistan | Genuine Inspected Vehicles",
+    description:
+      "We verify mileage, engine health, and documents on every used KIA car we sell in Pakistan. Reach out to our team for a hassle free buying experience!",
+  },
+  mitsubishi: {
+    title: "Buy Used Mitsubishi Cars in Pakistan | Best Value Used Cars",
+    description:
+      "Each used Mitsubishi car listed here has been carefully inspected for safety and reliability. Contact us now to schedule a viewing at your convenience.",
+  },
+  changan: {
+    title: "Used Changan Cars for Sale in Pakistan | Drive Home Today",
+    description:
+      "Every used Changan car in our Pakistan showroom passes a strict quality check before listing. Browse the stock now and book your test drive today.",
+  },
+  haval: {
+    title: "Used Haval Cars in Pakistan | Quality You Can Trust",
+    description:
+      "Looking to upgrade your ride? Our used Haval cars for sale in Pakistan offer great value and dependable performance. Visit our showroom today.",
+  },
+  "mercedes benz": {
+    title: "Buy Used Mercedes Benz Cars | Best Deals in Pakistan",
+    description:
+      "Each used Mercedes Benz car listed here has been carefully inspected for safety and reliability. Contact us now to schedule a viewing at your convenience.",
+  },
+  mg: {
+    title: "Used MG Cars for Sale in Pakistan | Buy Used Cars in Pakistan",
+    description:
+      "Compare models, check prices, and find your ideal used MG car in Pakistan all in one place. Our sales team is ready to help you decide today.",
+  },
+  faw: {
+    title: "Buy Quality Used FAW Cars at in Pakistan Best Prices at Sello",
+    description:
+      "Explore our wide range of used FAW cars for sale in Pakistan, all inspected for quality and priced to fit your budget. Find the perfect ride and visit us today.",
+  },
+  audi: {
+    title: "Used Audi Cars for Sale in Pakistan | Latest Car Deals",
+    description:
+      "Each used Audi car listed here has been carefully inspected for safety and reliability. Contact us now to schedule a viewing at your convenience.",
+  },
+  bmw: {
+    title: "Used BMW Cars in Pakistan | Reliable and Affordable Prices",
+    description:
+      "Get exceptional value with our used BMW cars for sale in Pakistan, all backed by thorough inspections and fair pricing. Visit our showroom or call us today.",
+  },
+  mazda: {
+    title: "Used Mazda Cars for Sale in Pakistan | Book a Test Drive",
+    description:
+      "Looking to upgrade your ride? Our used Mazda cars for sale in Pakistan offer great value and dependable performance. Visit our showroom today.",
+  },
+  lexus: {
+    title: "Buy Used Lexus Cars in Pakistan | Used Cars Deals in Pakistan",
+    description:
+      "Each used Lexus car listed here has been carefully inspected for safety and reliability. Contact us now to schedule a viewing at your convenience.",
+  },
+  dfsk: {
+    title: "Used DFSK Cars for Sale in Pakistan | Best Deals & Prices",
+    description:
+      "Every used DFSK car in our Pakistan showroom passes a strict quality check before listing. Browse the stock now and book your test drive today.",
+  },
+  chevrolet: {
+    title: "Buy Used Chevrolet Cars in Pakistan | Top Best Deals at Sello",
+    description:
+      "Get exceptional value with our used Chevrolet cars for sale in Pakistan, all backed by thorough inspections and fair pricing. Visit us today!",
+  },
+  peugeot: {
+    title: "Used Peugeot Cars for Sale in Pakistan | Find Your Ideal Car",
+    description:
+      "Looking to upgrade your ride? Our used Peugeot cars for sale in Pakistan offer great value and dependable performance. Visit our showroom today.",
+  },
+};
+
+/**
+ * Resolve curated SEO copy for a make+model or make-only landing.
+ * Returns null when no curated copy matches (caller falls back to generic).
+ */
+export const getListingsSeo = ({ make, model } = {}) => {
+  if (make && model) {
+    const entry = modelSeo[norm(`${make} ${model}`)];
+    if (entry) return { seoTitle: entry.title, seoDescription: entry.description };
+  }
+  if (make) {
+    const entry = makeSeo[norm(make)];
+    if (entry) return { seoTitle: entry.title, seoDescription: entry.description };
+  }
+  return null;
+};
