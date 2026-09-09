@@ -6,7 +6,7 @@ import managingDirectorImage from "../../../assets/images/team/managingDirector.
 import generalManagerImage from "../../../assets/images/team/generalManager.jpeg";
 import developerImage from "../../../assets/images/team/developer.png";
 import seoExpertImage from "../../../assets/images/team/seoExpert.jpg";
-import socialMediaMarketerImage from "../../../assets/images/team/socialMediaMarketer.jpg";
+import socialMediaMarketerImage from "../../../assets/images/team/socialMediaMarketer.jpeg";
 
 const OurTeam = () => {
   const teamMembers = [
