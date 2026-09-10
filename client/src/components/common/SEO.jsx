@@ -15,7 +15,7 @@ const SEO = ({
   author = "Sello",
   url,
   canonical,
-  robots = "index, follow",
+  robots = "index, follow, max-image-preview:large",
 }) => {
   const location = useLocation();
   const siteUrl = (FRONTEND_CONFIG.SITE_URL || "https://sello.pk").replace(
@@ -100,7 +100,7 @@ const SEO = ({
   const safeKeywords = normalizeText(keywords, "");
   const safeAuthor = normalizeText(author, "Sello");
   const safeType = normalizeText(type, "website");
-  const safeRobots = normalizeText(robots, "index, follow");
+  const safeRobots = normalizeText(robots, "index, follow, max-image-preview:large");
   const fullTitle = safeTitle.includes("Sello")
     ? safeTitle
     : `${safeTitle} | Sello`;
