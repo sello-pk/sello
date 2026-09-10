@@ -40,6 +40,7 @@ const getRouteSeo = (pathname, search) => {
   const configs = [
     {
       path: "/",
+      skipAppSeo: true,
       seo: {
         title: "Car for Sale in Pakistan | Buy & Sell Used Cars – Sello.pk",
         description:
@@ -50,6 +51,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/home",
+      skipAppSeo: true,
       seo: {
         title: "Car for Sale in Pakistan | Buy & Sell Used Cars – Sello.pk",
         description:
@@ -60,6 +62,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/listings",
+      skipAppSeo: true,
       seo: {
         title: "Buy and Sell Cars in Pakistan | Trusted Brands – Sello.pk",
         description:
@@ -70,6 +73,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/cars",
+      skipAppSeo: true,
       seo: {
         title: "Buy and Sell Cars in Pakistan | Trusted Brands – Sello.pk",
         description:
@@ -142,6 +146,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/car-estimator",
+      skipAppSeo: true,
       seo: {
         title: "AI Car Estimator - Find Your Car's Real Value | Sello.pk",
         description:
@@ -150,6 +155,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/auctions",
+      skipAppSeo: true,
       seo: {
         title: "Car Auctions in Pakistan | Bid on Verified Cars – Sello.pk",
         description:
@@ -158,6 +164,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/auctions/live",
+      skipAppSeo: true,
       seo: {
         title: "Live Car Auction in Pakistan | Bid Online – Sello.pk",
         description:
@@ -174,6 +181,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/auctions/schedule",
+      skipAppSeo: true,
       seo: {
         title:
           "Auction Schedule | Upcoming Car Auctions in Pakistan – Sello.pk",
@@ -183,6 +191,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/auctions/trust-legal",
+      skipAppSeo: true,
       seo: {
         title: "Auction Trust & Legal Information | Secure Bidding – Sello.pk",
         description:
@@ -199,6 +208,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/auctions/compare",
+      skipAppSeo: true,
       seo: {
         title:
           "Compare Auction Cars | Side-by-Side Vehicle Comparison – Sello.pk",
@@ -208,6 +218,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/auctions/buyer-dashboard",
+      skipAppSeo: true,
       seo: {
         title: "Buyer Dashboard - Live Auctions & Bidding | Sello.pk",
         description:
@@ -216,6 +227,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/auctions/wallet",
+      skipAppSeo: true,
       seo: {
         title: "Auction Wallet Dashboard | Manage Auction Funds – Sello.pk",
         description:
@@ -224,6 +236,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/auctions/seller-dashboard",
+      skipAppSeo: true,
       seo: {
         title: "Seller Auction Dashboard | Manage Auction Listings – Sello.pk",
         description:
@@ -232,6 +245,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/auctions/token-payment",
+      skipAppSeo: true,
       seo: {
         title: "Auction Token Payment | Activate Bidding Access – Sello.pk",
         description:
@@ -240,6 +254,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/auctions/transactions",
+      skipAppSeo: true,
       seo: {
         title: "Auction Transactions | Payment History & Activity – Sello.pk",
         description:
@@ -256,6 +271,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/auctions/watchlist",
+      skipAppSeo: true,
       seo: {
         title: "Auction Watchlist | Track Cars You Want to Bid On – Sello.pk",
         description:
@@ -264,6 +280,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/blog",
+      skipAppSeo: true,
       seo: {
         title: "Car Blog in Pakistan | News, Guides & Insights – Sello.pk",
         description:
@@ -272,6 +289,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/blog/all",
+      skipAppSeo: true,
       seo: {
         title: "All Blog Posts | Car News & Buying Guides – Sello.pk",
         description:
@@ -280,6 +298,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/about",
+      skipAppSeo: true,
       seo: {
         title: "About Us | Buy & Sell Cars Online in Pakistan – Sello.pk",
         description:
@@ -288,6 +307,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/contact",
+      skipAppSeo: true,
       seo: {
         title: "Contact Us | 24/7 Car Marketplace Support – Sello.pk",
         description:
@@ -296,6 +316,16 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/help-center",
+      skipAppSeo: true,
+      seo: {
+        title: "Help Center | Support for Buying & Selling Cars – Sello.pk",
+        description:
+          "Get support for listings, auctions, payments, and account issues through the Sello.pk Help Center.",
+      },
+    },
+    {
+      path: "/help",
+      skipAppSeo: true,
       seo: {
         title: "Help Center | Support for Buying & Selling Cars – Sello.pk",
         description:
@@ -304,6 +334,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/help/faqs",
+      skipAppSeo: true,
       seo: {
         title: "FAQs | Common Questions About Cars & Auctions – Sello.pk",
         description:
@@ -486,18 +517,22 @@ const getRouteSeo = (pathname, search) => {
       pathname,
     );
     if (!match) continue;
-    return typeof config.seo === "function"
+    const seo = typeof config.seo === "function"
       ? config.seo(match.params || {})
       : config.seo;
+    return { seo, skipAppSeo: !!config.skipAppSeo };
   }
 
   return pathname === "*"
     ? {
-        title: "Page Not Found | Sello.pk",
-        description:
-          "The page you’re looking for could not be found on Sello.pk.",
+        seo: {
+          title: "Page Not Found | Sello.pk",
+          description:
+            "The page you're looking for could not be found on Sello.pk.",
+        },
+        skipAppSeo: false,
       }
-    : defaultSeo;
+    : { seo: defaultSeo, skipAppSeo: false };
 };
 
 const ScrollToTop = () => {
@@ -522,7 +557,7 @@ const App = () => {
   useMetaPixel();
   const location = useLocation();
   const [showHelpChat, setShowHelpChat] = useState(false);
-  const fallbackSeo = useMemo(
+  const { seo: fallbackSeo, skipAppSeo } = useMemo(
     () => getRouteSeo(location.pathname, location.search),
     [location.pathname, location.search],
   );
@@ -597,7 +632,7 @@ const App = () => {
 
   return (
     <ThemeProvider>
-      {fallbackSeo && <SEO {...fallbackSeo} />}
+      {!skipAppSeo && fallbackSeo && <SEO {...fallbackSeo} />}
       <ScrollToTop />
       <Toaster containerStyle={{ zIndex: 100001 }} />
 
