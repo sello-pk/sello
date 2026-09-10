@@ -37,6 +37,39 @@ const SEO = ({
     }
   };
 
+  const TRACKING_PARAMS = new Set([
+    "utm_source",
+    "utm_medium",
+    "utm_campaign",
+    "utm_term",
+    "utm_content",
+    "fbclid",
+    "gclid",
+    "gclsrc",
+    "dclid",
+    "gbraid",
+    "wbraid",
+    "msclkid",
+    "twclid",
+    "li_fat_id",
+    "mc_cid",
+    "mc_eid",
+    "ref",
+    "sessionid",
+    "_ga",
+    "_gl",
+  ]);
+
+  const stripTrackingParams = (search) => {
+    if (!search) return "";
+    const params = new URLSearchParams(search);
+    for (const key of TRACKING_PARAMS) {
+      params.delete(key);
+    }
+    const cleaned = params.toString();
+    return cleaned ? `?${cleaned}` : "";
+  };
+
   const toAbsoluteUrl = (value) => {
     const normalizedValue = normalizeText(value, "");
     if (!normalizedValue) return "";
@@ -47,9 +80,17 @@ const SEO = ({
     return `${siteUrl}${normalizedPath}`;
   };
 
+  const derivedPath =
+    location.pathname + stripTrackingParams(location.search || "");
   const canonicalUrl = toAbsoluteUrl(
-    canonical || url || `${location.pathname}${location.search || ""}`,
+    canonical || url || derivedPath || "/",
   );
+
+  if (import.meta.env.DEV && !canonical && !url && !derivedPath) {
+    console.warn(
+      "[SEO] Could not derive canonical URL — no canonical, url prop, or location available.",
+    );
+  }
   const siteName = "Sello";
   const safeTitle = normalizeText(title, "Sello - Buy and Sell Cars in Pakistan");
   const safeDescription = normalizeText(
