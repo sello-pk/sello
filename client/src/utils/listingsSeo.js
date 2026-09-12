@@ -114,6 +114,105 @@ export const modelSeo = {
   },
 };
 
+/** version/variant landings — `/filter?model=X` */
+export const versionSeo = {
+  "mehran vxr": {
+    title: "Used Suzuki Mehran VXR for Sale in Pakistan | Top Best Deals",
+    description:
+      "Every used Mehran VXR in our Pakistan showroom passes a strict quality check before listing. Browse the stock now and book your test drive today.",
+  },
+  gli: {
+    title: "Buy Used Corolla GLi in Pakistan | Best Prices Guaranteed",
+    description:
+      "Each used Corolla GLi listed here has been carefully inspected for safety and reliability. Contact us now to schedule a viewing at your convenience.",
+  },
+  "civic exi": {
+    title: "Used Civic EXi for Sale in Pakistan | Reliable & Affordable",
+    description:
+      "Choose from a curated selection of used Civic EXi cars for sale in Pakistan, each one road tested and quality approved. Drive home this weekend enjoy.",
+  },
+  "corolla altis x": {
+    title: "Used Corolla Altis X for Sale in Pakistan | Book Test Drive",
+    description:
+      "Looking for a reliable sedan? Our used Corolla Altis X cars for sale in Pakistan offer comfort and dependable performance. Visit our showroom today.",
+  },
+  "swift dlx": {
+    title: "Buy Certified Used Swift DLX Cars in Excellent Condition Today",
+    description:
+      "Looking for a sporty hatchback? Our used Swift DLX cars for sale in Pakistan offer style and dependable performance. Visit our showroom today!",
+  },
+  "mehran vx": {
+    title: "Mehran VX for Sale in Pakistan | Best Value Deals at Sello",
+    description:
+      "Trusted Mehran VX cars for sale in Pakistan are waiting for you at our showroom. Reliable, affordable, and ready for the road. Schedule a visit now!",
+  },
+  altis: {
+    title: "Toyota Altis for Sale in Pakistan | Best Prices & Deals",
+    description:
+      "Each used Corolla Altis listed here has been carefully inspected for safety and reliability. Contact us now to schedule a viewing at your convenience!",
+  },
+  "vitz f": {
+    title: "Toyota Vitz F Price in Pakistan | Used Cars & Best Deals",
+    description:
+      "Check Toyota Vitz F prices in Pakistan and explore used cars available for sale. Compare features, models, and prices to find your ideal Vitz F.",
+  },
+  "city prosmatec": {
+    title: "Honda City Prosmatec Cars for Sale in Pakistan | Best Deals",
+    description:
+      "Explore used Honda City Prosmatec cars for sale in Pakistan. Compare prices, models, features, and available options to find your ideal car.",
+  },
+  "cuore cx": {
+    title: "Buy Daihatsu Cuore CX Price in Pakistan | Cars for Sale",
+    description:
+      "Explore Daihatsu Cuore CX prices in Pakistan and find cars available for sale. Compare models and features to make an informed buying decision.",
+  },
+  "civic 1.8": {
+    title: "Buy Honda Civic 1.8 in Pakistan | Used Car Prices & Deals",
+    description:
+      "Looking for a Honda Civic 1.8 in Pakistan? Browse used cars, compare prices and features, and discover suitable options for your next purchase.",
+  },
+  "civic vti": {
+    title: "Honda Civic VTi for Sale | Used Cars & Prices in Pakistan",
+    description:
+      "Browse Honda Civic VTi cars for sale in Pakistan. Compare used car prices, features, and available models to find an option that fits your budget.",
+  },
+  "passo x": {
+    title: "Toyota Passo X in Pakistan | Used Cars at Best Prices",
+    description:
+      "Explore Toyota Passo X used cars in Pakistan with competitive prices. Compare available models, features, and options to find the right Passo X.",
+  },
+  "city aspire i-vtec": {
+    title: "Honda City Aspire i-VTEC for Sale in Pakistan | Car Deals",
+    description:
+      "Explore Honda City Aspire i-VTEC cars for sale in Pakistan. Compare used models, prices, features, and available options to find your next car.",
+  },
+  "cultus vxl": {
+    title: "Suzuki Cultus VXL Price & Used Cars for Sale in Pakistan",
+    description:
+      "Check Suzuki Cultus VXL prices in Pakistan and browse used cars for sale. Compare available models, features, and prices to find the right car.",
+  },
+  "civic vti oriel": {
+    title: "Honda Civic VTi Oriel Cars for Sale | Pakistan Prices",
+    description:
+      "Discover Honda Civic VTi Oriel cars for sale in Pakistan. Explore used models, compare prices and features, and find a car that suits your needs.",
+  },
+  xli: {
+    title: "Toyota Corolla XLi for Sale in Pakistan | Find Your Ideal Car",
+    description:
+      "Find Toyota Corolla XLi cars for sale in Pakistan. Explore used models, compare prices and features, and discover great options for your next car.",
+  },
+  "city idsi": {
+    title: "Honda City iDSI Price in Pakistan | Used Cars & Deals",
+    description:
+      "Check Honda City iDSI prices in Pakistan and explore used cars for sale. Compare models, features, and prices to find a great deal.",
+  },
+  "cultus vxri": {
+    title: "Used Suzuki Cultus VXRi for Sale | Used Cars Deals in Pakistan",
+    description:
+      "Looking for a used Suzuki Cultus VXRi in Pakistan? Browse cars for sale, compare prices and features, and find a suitable option for your needs.",
+  },
+};
+
 /** make-only landings — `/search-results?make=X` */
 export const makeSeo = {
   suzuki: {
@@ -219,12 +318,16 @@ export const makeSeo = {
 };
 
 /**
- * Resolve curated SEO copy for a make+model or make-only landing.
+ * Resolve curated SEO copy for a make+model, version, or make-only landing.
  * Returns null when no curated copy matches (caller falls back to generic).
  */
 export const getListingsSeo = ({ make, model } = {}) => {
   if (make && model) {
     const entry = modelSeo[norm(`${make} ${model}`)];
+    if (entry) return { seoTitle: entry.title, seoDescription: entry.description };
+  }
+  if (model) {
+    const entry = versionSeo[norm(model)];
     if (entry) return { seoTitle: entry.title, seoDescription: entry.description };
   }
   if (make) {
