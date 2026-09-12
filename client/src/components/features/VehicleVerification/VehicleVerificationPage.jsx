@@ -594,7 +594,6 @@ const scrollToId = (id) => (event) => {
 };
 
 const VehicleVerificationPage = () => {
-  const [openGuide, setOpenGuide] = useState(0);
   const [openFaq, setOpenFaq] = useState(null);
 
   return (
@@ -888,49 +887,109 @@ const VehicleVerificationPage = () => {
         className="scroll-mt-24 py-16 bg-white"
       >
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-slate-900 mb-4">
-            Check Vehicle Details Before You Buy or Sell
-          </h2>
-          <div className="space-y-4 text-slate-600 leading-relaxed mb-10">
-            <p>
-              Buying a used car or bike is a big decision, which is why it is
-              best to do your due diligence before you complete a sale. Online
-              vehicle verification helps buyers and sellers review important
-              vehicle and registration information before they proceed.
-            </p>
-            <p>
-              Whether you are purchasing a used car, trading in your present
-              vehicle, or looking up registration information, car verification
-              is a key step in the process.
-            </p>
-            <p>
-              Sello makes buying and selling vehicles easier by providing useful
-              tools, vehicle information, and resources that help you make a
-              more informed decision.
-            </p>
+          <div className="text-center mb-12 sm:mb-16 relative">
+            <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+              <div className="w-72 h-72 sm:w-96 sm:h-96 bg-primary-500 rounded-full blur-3xl" />
+            </div>
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-2 bg-primary-50 text-primary-500 px-4 py-2 rounded-full text-xs sm:text-sm font-semibold mb-6">
+                <span className="w-2 h-2 bg-primary-500 rounded-full animate-pulse" />
+                Complete Buyer's Guide
+              </div>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+                Check Vehicle Details{" "}
+                <span className="text-primary-500">
+                  Before You Buy or Sell
+                </span>
+              </h2>
+              <div className="flex items-center justify-center gap-3 mb-8">
+                <div className="w-24 h-1.5 bg-primary-200 rounded-full" />
+                <div className="w-3 h-3 bg-primary-500 rounded-full" />
+                <div className="w-24 h-1.5 bg-primary-200 rounded-full" />
+              </div>
+              <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed mb-4">
+                Buying a used car or bike is a big decision, which is why it is
+                best to do your due diligence before you complete a sale.
+                Online vehicle verification helps buyers and sellers review
+                important vehicle and registration information before they
+                proceed.
+              </p>
+              <div className="relative z-10 text-sm sm:text-base text-gray-500 max-w-3xl mx-auto space-y-2">
+                <p>
+                  Whether you are purchasing a used car, trading in your
+                  present vehicle, or looking up registration information, car
+                  verification is a key step in the process.
+                </p>
+                <p>
+                  Sello makes buying and selling vehicles easier by providing
+                  useful tools, vehicle information, and resources that help
+                  you make a more informed decision.
+                </p>
+              </div>
+            </div>
           </div>
-          <div className="space-y-3">
-            {guideSections.map((section, i) => (
-              <AccordionItem
-                key={section.title}
-                title={section.title}
-                open={openGuide === i}
-                onToggle={() => setOpenGuide(openGuide === i ? null : i)}
-                headingAs="h2"
-              >
-                {section.body.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
+
+          <article className="bg-[#FDFBF7] rounded-3xl shadow-lg border border-gray-100 overflow-hidden">
+            <div className="p-6 sm:p-10 lg:p-12">
+              <div className="pb-6 mb-10 border-b border-gray-200 flex items-center gap-4">
+                <div className="w-11 h-11 rounded-full bg-primary-500/10 flex items-center justify-center border border-primary-500/20">
+                  <ShieldCheck className="w-6 h-6 text-primary-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    The Complete Guide
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    {guideSections.length} steps to verify any vehicle in
+                    Pakistan
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                {guideSections.map((section, i) => (
+                  <div
+                    key={section.title}
+                    className="relative py-8 first:pt-0 last:pb-0 border-b border-gray-100 last:border-0 group"
+                  >
+                    <span
+                      className="absolute top-4 right-0 text-7xl font-bold text-primary-500/[0.06] select-none pointer-events-none"
+                      aria-hidden
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <h3 className="flex items-center gap-3 text-xl sm:text-2xl font-bold text-gray-900 mb-5 pr-16">
+                      <span className="w-10 h-10 shrink-0 rounded-xl bg-gradient-to-br from-[#FFA602] to-amber-500 text-white text-sm font-bold flex items-center justify-center shadow-md shadow-primary-500/25 group-hover:scale-110 transition-transform">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span className="leading-snug">{section.title}</span>
+                    </h3>
+                    <div className="space-y-4 text-gray-700 leading-relaxed">
+                      {section.body.map((paragraph) => (
+                        <p key={paragraph}>{paragraph}</p>
+                      ))}
+                      {section.items ? (
+                        <ul
+                          className={`mt-5 grid gap-x-8 gap-y-2.5 ${
+                            section.items.length >= 6
+                              ? "sm:grid-cols-2"
+                              : ""
+                          }`}
+                        >
+                          {section.items.map((item) => (
+                            <li key={item} className="flex items-start gap-3">
+                              <span className="w-2 h-2 rounded-full bg-primary-500 flex-shrink-0 mt-2.5" />
+                              <span className="text-gray-700">{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null}
+                    </div>
+                  </div>
                 ))}
-                {section.items ? (
-                  <ul className="list-disc pl-5 space-y-1">
-                    {section.items.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                ) : null}
-              </AccordionItem>
-            ))}
-          </div>
+              </div>
+            </div>
+          </article>
         </div>
       </section>
 
