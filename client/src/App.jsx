@@ -129,9 +129,10 @@ const getRouteSeo = (pathname, search) => {
       path: "/used-cars/:citySlug",
       seo: ({ citySlug }) => {
         const cityName = prettifySlug(citySlug);
+        const copy = getListingsPageCopy({ city: cityName });
         return {
-          title: `Cars for sale in ${cityName} | Used Cars – Sello.pk`,
-          description: `Find used cars for sale in ${cityName} on Sello.pk. Compare prices, mileage, and trusted sellers across Pakistan.`,
+          title: copy.title,
+          description: copy.description,
           keywords: `cars for sale in ${cityName}, used cars ${cityName}, ${cityName} cars`,
           canonical: `https://sello.pk/used-cars/${citySlug}`,
         };
