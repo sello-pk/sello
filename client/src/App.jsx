@@ -173,6 +173,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/auctions/betting",
+      skipAppSeo: true,
       seo: {
         title: "Live Car Auction in Pakistan | Bid Online – Sello.pk",
         description:
@@ -263,6 +264,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/auctions/result",
+      skipAppSeo: true,
       seo: {
         title: "Auction Results | View Winning Bids & Outcomes – Sello.pk",
         description:
@@ -342,7 +344,17 @@ const getRouteSeo = (pathname, search) => {
       },
     },
     {
+      path: "/help/*",
+      skipAppSeo: true,
+      seo: {
+        title: "Help Center | Support for Buying & Selling Cars – Sello.pk",
+        description:
+          "Get support for listings, auctions, payments, and account issues through the Sello.pk Help Center.",
+      },
+    },
+    {
       path: "/privacy-policy",
+      skipAppSeo: true,
       seo: {
         title: "Privacy Policy - Your Data Protection Rights | Sello.pk",
         description:
@@ -351,6 +363,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/terms-condition",
+      skipAppSeo: true,
       seo: {
         title: "Terms & Conditions - Sello.pk Marketplace Rules",
         description:
@@ -359,6 +372,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/terms-conditions",
+      skipAppSeo: true,
       seo: {
         title: "Terms & Conditions - Sello.pk Marketplace Rules",
         description:
@@ -367,6 +381,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/saved-cars",
+      skipAppSeo: true,
       seo: {
         title: "My Saved Cars - Track Your Favorite Listings | Sello.pk",
         description:
@@ -375,6 +390,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/profile",
+      skipAppSeo: true,
       seo: {
         title: "My Profile - Account Settings & Preferences | Sello.pk",
         description:
@@ -448,6 +464,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/login",
+      skipAppSeo: true,
       seo: {
         title: "Login | Sello.pk",
         description:
@@ -456,6 +473,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/sign-up",
+      skipAppSeo: true,
       seo: {
         title: "Sign Up - Create Your Free Sello Account",
         description:
@@ -464,6 +482,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/forgot-password",
+      skipAppSeo: true,
       seo: {
         title: "Forgot Password - Reset Your Account Password | Sello.pk",
         description:
@@ -472,6 +491,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/verify-otp",
+      skipAppSeo: true,
       seo: {
         title: "Verify OTP - Confirm Your Identity | Sello.pk",
         description:
