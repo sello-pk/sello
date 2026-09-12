@@ -122,17 +122,17 @@ export const makeSeo = {
       "Looking for used Suzuki cars? Browse our inspected, reliable, budget friendly vehicles. Book a test drive today or visit our showroom now.",
   },
   toyota: {
-    title: "Used Toyota Cars for Sale in Pakistan | Best Prices",
+    title: "Used Toyota Cars in Pakistan | Best Prices & Great Car Deals",
     description:
       "Our used Toyota cars are inspected for quality, priced to fit your budget, ready for the road. Visit our showroom or call us today.",
   },
   honda: {
-    title: "Buy Used Honda Cars in Pakistan With Trusted Dealers",
+    title: "Find Used Honda Cars in Pakistan | Trusted Dealers & Great Deals",
     description:
       "Explore our collection of used Honda cars for sale in Pakistan, built for reliability, comfort, performance. Book your visit now.",
   },
   daihatsu: {
-    title: "Used Daihatsu Cars in Pakistan | Book a Test Drive",
+    title: "Used Daihatsu Cars in Pakistan | Best Prices & Test Drive Deals",
     description:
       "Shop used Daihatsu cars for sale in Pakistan at our trusted showroom. Inspected, affordable, ready to drive. Book your visit today.",
   },
@@ -147,7 +147,7 @@ export const makeSeo = {
       "Find your perfect used Hyundai car in Pakistan at unbeatable prices. Reliable, budget friendly, ready for the road. Book your visit or call us now.",
   },
   kia: {
-    title: "Used KIA Cars in Pakistan | Genuine Inspected Vehicles",
+    title: "Used KIA Cars Pakistan | Explore Models, Prices & Great Deals",
     description:
       "We verify mileage, engine health, and documents on every used KIA car we sell in Pakistan. Reach out to our team for a hassle free buying experience!",
   },
@@ -162,12 +162,12 @@ export const makeSeo = {
       "Every used Changan car in our Pakistan showroom passes a strict quality check before listing. Browse the stock now and book your test drive today.",
   },
   haval: {
-    title: "Used Haval Cars in Pakistan | Quality You Can Trust",
+    title: "Find Used Haval Cars in Pakistan | Best Deals & Latest Prices",
     description:
       "Looking to upgrade your ride? Our used Haval cars for sale in Pakistan offer great value and dependable performance. Visit our showroom today.",
   },
   "mercedes benz": {
-    title: "Buy Used Mercedes Benz Cars | Best Deals in Pakistan",
+    title: "Buy Used Mercedes Benz Cars in Pakistan | Best Deals & Prices",
     description:
       "Each used Mercedes Benz car listed here has been carefully inspected for safety and reliability. Contact us now to schedule a viewing at your convenience.",
   },
@@ -182,7 +182,7 @@ export const makeSeo = {
       "Explore our wide range of used FAW cars for sale in Pakistan, all inspected for quality and priced to fit your budget. Find the perfect ride and visit us today.",
   },
   audi: {
-    title: "Used Audi Cars for Sale in Pakistan | Latest Car Deals",
+    title: "Used Audi Cars for Sale in Pakistan | Best Prices & Great Deals",
     description:
       "Each used Audi car listed here has been carefully inspected for safety and reliability. Contact us now to schedule a viewing at your convenience.",
   },
