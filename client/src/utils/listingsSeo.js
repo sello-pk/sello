@@ -233,3 +233,40 @@ export const getListingsSeo = ({ make, model } = {}) => {
   }
   return null;
 };
+
+const toTitleCase = (value) =>
+  String(value || "")
+    .trim()
+    .replace(/\w\S*/g, (word) => word.charAt(0).toUpperCase() + word.slice(1));
+
+/** Layer a city into a curated title without rewriting the curated entries. */
+const layerCityInTitle = (title, city) => {
+  const cityName = toTitleCase(city);
+  const forSaleInPakistan = /for\s+Sale\s+(?:in\s+)?Pakistan/i;
+  if (forSaleInPakistan.test(title)) {
+    return title.replace(forSaleInPakistan, `for Sale in ${cityName}`);
+  }
+  const forSale = /for\s+Sale/i;
+  if (forSale.test(title)) {
+    return title.replace(forSale, `for Sale in ${cityName}`);
+  }
+  return title;
+};
+
+const layerCityInDescription = (description, city) =>
+  description.replace(/\bin Pakistan\b/i, `in ${toTitleCase(city)}`);
+
+/**
+ * Curated SEO for make/model landings, with the city layered in when present.
+ * Used by both FilteredResults (/search-results, /used-cars/:citySlug) and
+ * FilterPage (/filter) so the two stay consistent.
+ */
+export const getListingsSeoForParams = ({ make, model, city } = {}) => {
+  const base = getListingsSeo({ make, model });
+  if (!base) return null;
+  if (!city) return base;
+  return {
+    seoTitle: layerCityInTitle(base.seoTitle, city),
+    seoDescription: layerCityInDescription(base.seoDescription, city),
+  };
+};

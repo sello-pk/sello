@@ -9,24 +9,22 @@
 export const API_CONFIG = {
   // Base API URL (must include /api in your backend)
   // Priority:
-  // 1. VITE_API_URL from environment (REQUIRED in production)
-  // 2. localhost API for dev only
+  // 1. VITE_API_URL when explicitly provided — keeps the existing separate
+  //    API deploy working (e.g. https://api.sello.pk).
+  // 2. localhost API for dev only.
+  // 3. Production without VITE_API_URL: same-origin "/api" (single-service mode).
   BASE_URL:
     import.meta.env.VITE_API_URL ||
-    (import.meta.env.DEV
-      ? "http://localhost:4002/api"
-      : (() => {
-          console.error("VITE_API_URL is required in production!");
-          return ""; // Fail fast in production if not configured
-        })()),
+    (import.meta.env.DEV ? "http://localhost:4002/api" : "/api"),
 
   // Socket base URL (same host as API but without /api)
   SOCKET_URL: (() => {
     const baseUrl =
       import.meta.env.VITE_API_URL ||
-      (import.meta.env.DEV ? "http://localhost:4002/api" : "");
+      (import.meta.env.DEV ? "http://localhost:4002/api" : "/api");
 
-    if (!baseUrl) return "";
+    // Same-origin single-service mode: connect sockets to the current host.
+    if (baseUrl === "/api") return "/";
 
     // Remove /api suffix if present
     const socketUrl = baseUrl.endsWith("/api") ? baseUrl.slice(0, -4) : baseUrl;

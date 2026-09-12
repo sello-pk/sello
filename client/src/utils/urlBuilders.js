@@ -96,12 +96,18 @@ export const buildListingsSearchUrl = (filters = {}) => {
   return `/search-results${qs ? `?${qs}` : ""}`;
 };
 
+export const toTitleCase = (value) =>
+  String(value || "")
+    .trim()
+    .replace(/\w\S*/g, (word) => word.charAt(0).toUpperCase() + word.slice(1));
+
 export const getListingsPageCopy = ({ city, make, model, searchTerm } = {}) => {
   if (city) {
-    const title = `Cars for sale in ${city}`;
+    const cityName = toTitleCase(city);
+    const title = `Used Cars for Sale in ${cityName} | Verified Listings – Sello.pk`;
     return {
       title,
-      description: `Browse used cars for sale in ${city} on Sello. Compare prices, specs, and sellers before you buy.`,
+      description: `Browse used cars for sale in ${cityName} on Sello. Compare prices, specs, and sellers before you buy.`,
     };
   }
   if (make && model) {
@@ -139,4 +145,5 @@ export default {
   unslugify,
   buildListingsSearchUrl,
   getListingsPageCopy,
+  toTitleCase,
 };

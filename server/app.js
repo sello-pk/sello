@@ -6,6 +6,8 @@ import helmet from "helmet";
 import compression from "compression";
 import mongoose from "mongoose";
 import path from "path"; // Added for safe path resolving
+import fs from "node:fs"; // For detecting the built client (single-service mode)
+import { fileURLToPath } from "node:url"; // Resolves server dir regardless of cwd
 
 import Logger from "./utils/logger.js";
 import { performanceMonitor } from "./middlewares/performanceMiddleware.js";
@@ -32,6 +34,16 @@ import { apiLimiter } from "./middlewares/securityMiddleware.js";
 dotenv.config();
 
 export const app = express();
+
+/* ------------------------ SINGLE-SERVICE CLIENT (STATIC) ------------------------ */
+// When the built React client exists (../client/dist), Express serves it on the
+// same origin as the API so the whole app runs as one Render Web Service.
+// Path is resolved from THIS file, not process.cwd(), so it works no matter how
+// the process is launched (Render, PM2, foreground, etc.).
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const clientDist = path.resolve(__dirname, "../client/dist");
+const clientIndex = path.join(clientDist, "index.html");
+const servesClient = fs.existsSync(clientIndex);
 
 /* ---------------------------- SECURITY (HELMET) --------------------------- */
 app.use(
@@ -200,13 +212,28 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-app.get("/", (req, res) => {
+app.get("/", (req, res, next) => {
+  // In single-service mode the built client answers the root route.
+  if (servesClient) return next();
   res.json({
     message: `🚀 ${SITE_CONFIG.NAME} API Server`,
     version: "2.0.0",
     environment: SERVER_CONFIG.NODE_ENV,
   });
 });
+
+/* ------------------ SINGLE-SERVICE STATIC + SPA FALLBACK ------------------ */
+if (servesClient) {
+  Logger.info(`Serving built client from ${clientDist}`);
+  app.use(express.static(clientDist));
+  // SPA fallback: every non-API GET returns the app shell.
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api")) return next();
+    res.sendFile(clientIndex);
+  });
+} else {
+  Logger.info("Client build not found at ../client/dist — running API-only mode");
+}
 
 /* ---------------------- ERROR HANDLERS ---------------------- */
 app.use(notFoundHandler);

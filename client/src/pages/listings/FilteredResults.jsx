@@ -8,7 +8,7 @@ import StructuredData from "../../components/common/StructuredData";
 import SEO from "../../components/common/SEO";
 import { useGetFilteredCarsQuery } from "../../redux/services/api";
 import { trackSearch } from "../../utils/metaPixel.js";
-import { getListingsSeo } from "../../utils/listingsSeo";
+import { getListingsSeoForParams } from "../../utils/listingsSeo";
 import {
   unslugify,
   buildListingsSearchUrl,
@@ -37,7 +37,7 @@ const FilteredResults = () => {
   });
 
   // Curated SEO title/description for make & model landings (footer links)
-  const curatedSeo = getListingsSeo({ make, model });
+  const curatedSeo = getListingsSeoForParams({ make, model, city });
   const seoTitle = curatedSeo?.seoTitle || pageCopy.title;
   const seoDescription = curatedSeo?.seoDescription || pageCopy.description;
 

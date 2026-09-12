@@ -102,6 +102,7 @@ const getRouteSeo = (pathname, search) => {
     },
     {
       path: "/filter",
+      skipAppSeo: true,
       seo: {
         title:
           "Filter Cars for Sale in Pakistan | Refine Your Search – Sello.pk",

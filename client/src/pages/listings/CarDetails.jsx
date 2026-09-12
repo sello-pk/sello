@@ -183,31 +183,46 @@ const CarDetails = () => {
     : "Car Details";
   const carDescription = car
     ? (() => {
-        const make = car.make || "";
-        const model = car.model || "";
+        const clean = (value) =>
+          value && value !== "N/A" ? value.trim() : "";
+        const make = clean(car.make) || "";
+        const model = clean(car.model) || "";
         const year = car.year || "";
-        const city = car.city || "";
+        const city = clean(car.city) || "";
         const price = car.price?.toLocaleString() || "0";
-        const cc = car.engineCapacity || "";
-        const color = car.colorExterior || "";
-        const mileage = car.mileage?.toLocaleString() || "N/A";
-        const transmission = car.transmission || "";
-        const vehicleType = car.vehicleType || "Car";
-        const condition = car.condition || "";
-        const parts = [make, model, year];
-        if (condition) parts.push(condition);
-        if (city) parts.push("for sale in", city);
-        else parts.push("for sale");
-        parts.push(`PKR ${price}.`);
-        const specs = [];
-        if (cc) specs.push(`${cc} cc`);
-        if (color) specs.push(color);
-        specs.push(`${mileage} KM Driven`);
-        if (transmission) specs.push(transmission);
-        if (vehicleType) specs.push(vehicleType);
-        if (specs.length) parts.push(`Buy this ${specs.join(", ")}.`);
-        parts.push("Contact Seller Now!");
-        return parts.join(" ");
+        const cc = clean(car.engineCapacity);
+        const color = clean(car.colorExterior);
+        const mileage = car.mileage?.toLocaleString() || "";
+        const transmission = clean(car.transmission);
+        const vehicleType = clean(car.vehicleType);
+        const condition = clean(car.condition);
+
+        const headline = [make, model, year].filter(Boolean).join(" ") || "Car";
+        const core = condition ? `${headline} ${condition}` : headline;
+        const cityPart = city ? `Listed in ${city}. ` : "";
+        const pricePart = `Price: PKR ${price}. `;
+        const mileagePart = mileage ? `${mileage} KM driven. ` : "";
+        const tail = "View details and contact seller on Sello.pk.";
+
+        // Priority order: engine capacity, transmission, exterior color, vehicle type.
+        // Lower-priority fields are dropped first when the description is too long.
+        const extras = [];
+        if (cc) extras.push(`${cc} cc.`);
+        if (transmission) extras.push(`${transmission}.`);
+        if (color) extras.push(`${color} color.`);
+        if (vehicleType) extras.push(`${vehicleType}.`);
+
+        const build = (parts) =>
+          `${core} for sale. ${cityPart}${pricePart}${mileagePart}${parts.join(" ")}${parts.length ? " " : ""}${tail}`;
+
+        const fitParts = [...extras];
+        while (fitParts.length > 0 && build(fitParts).length > 158) {
+          fitParts.pop();
+        }
+        const description = build(fitParts);
+        return description.length > 158
+          ? `${description.slice(0, 155)}...`
+          : description;
       })()
     : "View car details on Sello";
   const carKeywords = car
