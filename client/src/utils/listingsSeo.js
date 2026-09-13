@@ -440,4 +440,51 @@ export const cityLandingContent = {
       },
     ],
   },
+  karachi: {
+    priceTable: {
+      title: "Used Cars Price in Karachi",
+      rows: [
+        { model: "Suzuki Alto", priceRange: "Varies by model, year and condition" },
+        { model: "Honda City", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Corolla", priceRange: "Varies by model, year and condition" },
+        { model: "Honda Civic", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Yaris", priceRange: "Varies by model, year and condition" },
+      ],
+    },
+    intro:
+      "In Karachi car prices used to fluctuate based on the model, year of manufacture, mileage, variant and overall condition. As a buyer you may choose from various options in terms of your budget and daily driving requirements.",
+    sections: [
+      {
+        heading: "Used Cars for Sale in Karachi",
+        paragraphs: [
+          "In Karachi, shopping for cars is made easy for you. We present to you a large selection of used cars that include many brands and types. If you are looking for fuel economy on which to run in the city, a spacious car for your family or a high end model we have it all. Also, you may compare as many choices as you like to find what best fits your needs.",
+          "In Karachi buyers have a choice of hatchbacks, sedans, SUVs and imported cars as per your requirements. Prior to purchase, check the car's condition, documents, ownership history and maintenance record.",
+        ],
+      },
+      {
+        heading: "Find the Right Used Car in Karachi",
+        paragraphs: [
+          "In Karachi buying a used car is made easy by price comparison of different options and what each car has to offer. Before you shortlist a car, consider your budget, what model you prefer, type of transmission, fuel type and how you intend to use it.",
+          "When also do price out and check the car out and verify its papers before you finalize the deal. In Karachi when you buy a used car these steps may also prove very useful for you to make a better decision.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Which types of used cars can be found in Karachi?",
+        answer:
+          "In different price ranges you will find hatchbreaks, sedans, SUV's, crossovers and import models.",
+      },
+      {
+        question: "What car models are popular in Karachi?",
+        answer:
+          "Popular choices of which to go for are Suzuki Alto, Honda City, Toyota Corolla, Honda Civic and Toyota Yaris.",
+      },
+      {
+        question: "What to look for when buying a used car in Karachi?",
+        answer:
+          "Check over the vehicle's body, engine, transmission, mileage, registration and title documents.",
+      },
+    ],
+  },
 };
