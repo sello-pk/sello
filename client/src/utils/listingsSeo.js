@@ -1286,4 +1286,51 @@ export const cityLandingContent = {
       },
     ],
   },
+  attock: {
+    priceTable: {
+      title: "Used Cars Price in Attock",
+      rows: [
+        { model: "Suzuki Alto", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Corolla", priceRange: "Varies by model, year and condition" },
+        { model: "Honda City", priceRange: "Varies by model, year and condition" },
+        { model: "Suzuki Cultus", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Yaris", priceRange: "Varies by model, year and condition" },
+      ],
+    },
+    intro:
+      "In Attock used car prices vary by model, year of manufacture, mileage, variant and overall condition. Buy what fits your budget and driving requirements.",
+    sections: [
+      {
+        heading: "Used Cars for Sale in Attock",
+        paragraphs: [
+          "In Attock looking for cars for sale? We have a variety of used cars from many different brands and price ranges. If you are looking for a car for daily commute, family travel or business we have that option for you to look at and choose what is right for you.",
+          "Attock buyers have a choice between hatchbacks, sedans and SUVs as per their requirements. Also check the vehicle's condition, documents, ownership details and maintenance history before you purchase.",
+        ],
+      },
+      {
+        heading: "Find the Right Used Car in Attock",
+        paragraphs: [
+          "In Attock buying a used car is made easier when you go through different listings and see what they have to offer. Before you decide which cars to put on your short list, pay attention to your budget, the model you prefer, fuel type, transmission type and how you intend to use the car.",
+          "Carefully check out the car and go over the documentation before we finalize the deal. A good comparison will help you make a better informed buying decision.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Which cars are popular in Attock?",
+        answer:
+          "Sure. Here is the paraphrased version of the text: Popular choices are the Suzuki Alto, Toyota Corolla, Honda City, Suzuki Cultus and Toyota Yaris.",
+      },
+      {
+        question: "What to look for in a used car?",
+        answer:
+          "Check out the engine, transmission, the mileage, and the condition as well as the ownership documents.",
+      },
+      {
+        question: "What range of prices for cars do I find?",
+        answer:
+          "Buyers may shop around for what fits their budget and requirements in used cars.",
+      },
+    ],
+  },
 };
