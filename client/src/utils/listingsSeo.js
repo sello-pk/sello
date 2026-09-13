@@ -957,4 +957,51 @@ export const cityLandingContent = {
       },
     ],
   },
+  quetta: {
+    priceTable: {
+      title: "Used Cars Price in Quetta",
+      rows: [
+        { model: "Suzuki Alto", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Corolla", priceRange: "Varies by model, year and condition" },
+        { model: "Honda City", priceRange: "Varies by model, year and condition" },
+        { model: "Suzuki Cultus", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Yaris", priceRange: "Varies by model, year and condition" },
+      ],
+    },
+    intro:
+      "Used car prices in Quetta depend on the model, year, mileage, variant and overall condition. Buyers can compare different vehicles to find an option that suits their budget and driving requirements.",
+    sections: [
+      {
+        heading: "Used Cars for Sale in Quetta",
+        paragraphs: [
+          "Looking for cars for sale in Quetta? Explore a variety of used cars from different brands and price categories. Whether you need a fuel-efficient car for daily travel, a family vehicle or a car for longer journeys, you can compare available options.",
+          "Quetta buyers can explore hatchbacks, sedans and SUVs according to their needs. Check the vehicle's condition, documents, registration and ownership details before purchasing.",
+        ],
+      },
+      {
+        heading: "Find the Right Used Car in Quetta",
+        paragraphs: [
+          "Choosing a used car in Quetta starts with understanding your budget and requirements. Consider the model year, mileage, fuel type, transmission and maintenance needs before shortlisting a vehicle.",
+          "You can also compare different listings, inspect the car and verify its documents before finalizing a deal. These steps can help you choose a suitable used car.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "What types of used cars are available in Quetta?",
+        answer:
+          "You can find hatchbacks, sedans, SUVs and other used cars in different price categories.",
+      },
+      {
+        question: "How can I choose the right used car?",
+        answer:
+          "Compare the price, model year, mileage, condition and documents according to your needs.",
+      },
+      {
+        question: "What documents should I check before buying?",
+        answer:
+          "Check the registration, ownership details and other relevant vehicle documents.",
+      },
+    ],
+  },
 };
