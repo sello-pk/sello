@@ -534,4 +534,51 @@ export const cityLandingContent = {
       },
     ],
   },
+  rawalpindi: {
+    priceTable: {
+      title: "Used Cars Price in Rawalpindi",
+      rows: [
+        { model: "Suzuki Alto", priceRange: "Varies by model, year and condition" },
+        { model: "Honda City", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Corolla", priceRange: "Varies by model, year and condition" },
+        { model: "Honda Civic", priceRange: "Varies by model, year and condition" },
+        { model: "Suzuki Cultus", priceRange: "Varies by model, year and condition" },
+      ],
+    },
+    intro:
+      "In Rawalpindi used cars' prices are based on the model, manufacturing year, mileage, variant and also the car's overall condition. Also buyers may compare different options to find what fits their budget.",
+    sections: [
+      {
+        heading: "Used Cars for Sale in Rawalpindi",
+        paragraphs: [
+          "Looking for a car in Rawalpindi? We have a large range of used vehicles across many brands and at various prices. From daily run around cars to family wagons and long distance runners we have what you are looking for. You can also compare models which best suit your needs.",
+          "In Rawalpindi there is a variety of cars from economical hatchbacks to SUVs which you can look at. Before you buy, check the car's condition, registration, owner history and maintenance.",
+        ],
+      },
+      {
+        heading: "Find the Right Used Car in Rawalpindi",
+        paragraphs: [
+          "In Rawalpindi buying a used car is made easy when you compare different options out there and see what they have to offer. Before you choose which car to buy, consider your budget, the make and model you prefer, fuel type, transmission type and how you intend to use the car.",
+          "Inspect your car in detail and check out the documentation before we finalize the deal. Careful comparison will help you make a better informed purchase decision.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Which cars are popular in Rawalpindi?",
+        answer:
+          "Popular choices are Suzuki Alto, Honda City, Toyota Corolla, Honda Civic and Suzuki Cultus.",
+      },
+      {
+        question: "What to look for in a used car?",
+        answer:
+          "Check out the engine, transmission, do a mile count, and review the condition and ownership docs.",
+      },
+      {
+        question: "Do I have access to a variety of price ranges for cars?",
+        answer:
+          "Sure, used car prices vary by model and condition.",
+      },
+    ],
+  },
 };
