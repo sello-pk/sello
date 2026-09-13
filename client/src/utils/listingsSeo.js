@@ -863,4 +863,51 @@ export const cityLandingContent = {
       },
     ],
   },
+  hyderabad: {
+    priceTable: {
+      title: "Used Cars Price in Hyderabad",
+      rows: [
+        { model: "Suzuki Alto", priceRange: "Varies by model, year and condition" },
+        { model: "Honda City", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Corolla", priceRange: "Varies by model, year and condition" },
+        { model: "Suzuki Cultus", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Yaris", priceRange: "Varies by model, year and condition" },
+      ],
+    },
+    intro:
+      "Used car prices in Hyderabad depend on the model, year, mileage, variant and overall condition. Buyers can compare different options according to their budget and driving requirements.",
+    sections: [
+      {
+        heading: "Used Cars for Sale in Hyderabad",
+        paragraphs: [
+          "Looking for cars for sale in Hyderabad? Explore a variety of used cars from different brands and price categories. Whether you need a fuel-efficient car for daily travel, a comfortable family vehicle or a car for longer journeys, you can compare available options.",
+          "Hyderabad buyers can explore hatchbacks, sedans and SUVs according to their needs. Check the vehicle's condition, documents, registration and ownership details before purchasing.",
+        ],
+      },
+      {
+        heading: "Find the Right Used Car in Hyderabad",
+        paragraphs: [
+          "Choosing a used car in Hyderabad starts with understanding your budget and requirements. Consider the model year, mileage, fuel type, transmission and maintenance needs before shortlisting a vehicle.",
+          "You can also compare different listings, inspect the car and verify its documents before finalizing a deal. These steps can help you choose a suitable used car.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "What types of used cars are available in Hyderabad?",
+        answer:
+          "You can find hatchbacks, sedans, SUVs and other used cars in different price categories.",
+      },
+      {
+        question: "How can I choose the right used car?",
+        answer:
+          "Compare the price, model year, mileage, condition and documents according to your needs.",
+      },
+      {
+        question: "What should I check before buying a used car?",
+        answer:
+          "Check the vehicle's condition, engine, transmission, mileage and ownership documents.",
+      },
+    ],
+  },
 };
