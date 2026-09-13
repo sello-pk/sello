@@ -487,4 +487,51 @@ export const cityLandingContent = {
       },
     ],
   },
+  islamabad: {
+    priceTable: {
+      title: "Used Cars Price in Islamabad",
+      rows: [
+        { model: "Suzuki Alto", priceRange: "Varies by model, year and condition" },
+        { model: "Honda City", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Corolla", priceRange: "Varies by model, year and condition" },
+        { model: "Honda Civic", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Yaris", priceRange: "Varies by model, year and condition" },
+      ],
+    },
+    intro:
+      "In Islamabad used car prices are a function of car model, year, mileage, variant and condition. Buyers which are to put together a purchase which fits their budget and driving needs may compare many options.",
+    sections: [
+      {
+        heading: "Used Cars for Sale in Islamabad",
+        paragraphs: [
+          "In Islamabad looking to buy a car? We have a variety of used cars from many different brands and price ranges. For daily commute, family trips or long distance travel you can compare what is available and choose the vehicle which best fits your requirements.",
+          "In Islamabad from compact cars that won't break the bank to large sedans and SUVs which will see you through all your travels we have what you are looking for. Also before you buy, do check out the car's history, the documents and the owner's past to avoid any future issues.",
+        ],
+      },
+      {
+        heading: "Find the Right Used Car in Islamabad",
+        paragraphs: [
+          "In Islamabad when it comes to buying a used car know your budget and what you want. Look at the model year, mileage, fuel type, transmission and maintenance requirements before you decide which cars to include in your search.",
+          "A correct due diligence and documentation check will help you to avoid unexpected issues. Also compare between different listings and check the car's overall health before you finalize your purchase.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Where do I find used cars in Islamabad?",
+        answer:
+          "In a variety of price points you will find hatchbacks, sedans, SUVs and imports.",
+      },
+      {
+        question: "What is the best way to buy a used car in Islamabad?",
+        answer:
+          "Compare the car's price, trade in value, age of the model, condition and documentation to what you are looking for.",
+      },
+      {
+        question: "Are affordable cars available in Islamabad?",
+        answer:
+          "Sure, check out a variety of used cars which fit your budget.",
+      },
+    ],
+  },
 };
