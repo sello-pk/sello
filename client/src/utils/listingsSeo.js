@@ -1192,4 +1192,51 @@ export const cityLandingContent = {
       },
     ],
   },
+  sahiwal: {
+    priceTable: {
+      title: "Used Cars Price in Sahiwal",
+      rows: [
+        { model: "Suzuki Alto", priceRange: "Varies by model, year and condition" },
+        { model: "Honda City", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Corolla", priceRange: "Varies by model, year and condition" },
+        { model: "Suzuki Cultus", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Yaris", priceRange: "Varies by model, year and condition" },
+      ],
+    },
+    intro:
+      "Used car prices in Sahiwal vary according to the model, manufacturing year, mileage, variant and overall condition. Buyers can explore different options according to their budget and driving needs.",
+    sections: [
+      {
+        heading: "Used Cars for Sale in Sahiwal",
+        paragraphs: [
+          "Looking for cars for sale in Sahiwal? Explore a range of used cars from different brands and price categories. Whether you need a car for daily commuting, family travel or business use, you can compare available options and find a suitable vehicle.",
+          "Sahiwal buyers can explore hatchbacks, sedans and SUVs according to their requirements. Check the car's condition, documents and ownership details before finalizing a purchase.",
+        ],
+      },
+      {
+        heading: "Find the Right Used Car in Sahiwal",
+        paragraphs: [
+          "Buying a used car in Sahiwal becomes easier when you compare different listings and understand their features. Consider your budget, preferred model, fuel type, transmission and intended use before shortlisting a car.",
+          "Inspect the vehicle carefully and verify its documents before making a deal. A proper comparison can help you make a more informed decision.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Which cars are popular in Sahiwal?",
+        answer:
+          "Popular options include Suzuki Alto, Honda City, Toyota Corolla, Suzuki Cultus and Toyota Yaris.",
+      },
+      {
+        question: "What should I check before buying a used car?",
+        answer:
+          "Check the engine, transmission, mileage, condition and ownership documents.",
+      },
+      {
+        question: "Can I find affordable cars in Sahiwal?",
+        answer:
+          "Yes, buyers can explore used cars in different price categories according to their budget.",
+      },
+    ],
+  },
 };
