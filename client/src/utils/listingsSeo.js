@@ -1239,4 +1239,51 @@ export const cityLandingContent = {
       },
     ],
   },
+  mansehra: {
+    priceTable: {
+      title: "Used Cars Price in Mansehra",
+      rows: [
+        { model: "Suzuki Alto", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Corolla", priceRange: "Varies by model, year and condition" },
+        { model: "Honda City", priceRange: "Varies by model, year and condition" },
+        { model: "Suzuki Cultus", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Yaris", priceRange: "Varies by model, year and condition" },
+      ],
+    },
+    intro:
+      "In Mansehra used car prices vary based on the model, year, mileage, variant and overall condition. Buyers which in turn can check out different options to find what fits their budget and driving needs.",
+    sections: [
+      {
+        heading: "Used Cars for Sale in Mansehra",
+        paragraphs: [
+          "In Mansehra looking to buy a car? We have a large choice of used cars from all the top brands and at various price points. If you are looking for a fuel efficient car for your day to day travel, a large family car or a vehicle better suited to longer trips you can compare our wide range.",
+          "Mansehra car buyers have a choice between hatchbacks, sedans and SUVs as per your requirements. Before you buy, do check the vehicle's condition, documents, registration and ownership details.",
+        ],
+      },
+      {
+        heading: "Find the Right Used Car in Mansehra",
+        paragraphs: [
+          "In Manseera when it comes to buying a used car we start out by looking at your budget and what you need. Also think of the model year, the mileage, fuel type, transmission and maintenance as you narrow down your choices.",
+          "You also able to compare between listings, check out the car and verify its documents before finalizing a deal. Out of which these actions may help you pick a right used car.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Which kinds of used cars are in Mansehra?",
+        answer:
+          "You will find a wide variety of used cars from hatchbacks to SUVs in all price ranges.",
+      },
+      {
+        question: "What is the best way to pick out a used car?",
+        answer:
+          "Compare by price, model year, mileage, condition and documents which are of importance to you.",
+      },
+      {
+        question: "What should I look for in documents before purchase?",
+        answer:
+          "Check out the registration, ownership info and other related vehicle docs.",
+      },
+    ],
+  },
 };
