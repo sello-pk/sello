@@ -722,4 +722,51 @@ export const cityLandingContent = {
       },
     ],
   },
+  gujranwala: {
+    priceTable: {
+      title: "Used Cars Price in Gujranwala",
+      rows: [
+        { model: "Suzuki Alto", priceRange: "Varies by model, year and condition" },
+        { model: "Honda City", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Corolla", priceRange: "Varies by model, year and condition" },
+        { model: "Suzuki Cultus", priceRange: "Varies by model, year and condition" },
+        { model: "Honda Civic", priceRange: "Varies by model, year and condition" },
+      ],
+    },
+    intro:
+      "In Gujranwala used car prices range based on the model, year of manufacture, mileage, variant and overall condition. Buyers may compare different options according to their budget and what they require in a vehicle.",
+    sections: [
+      {
+        heading: "Used Cars for Sale in Gujranwala",
+        paragraphs: [
+          "Looking for cars for sale in Gujranwala? Check out a large choice of used cars from many different brands and price ranges. For daily commute, family travel or business use, what you are looking for may just be listed. As you browse you will find which vehicle is right for you.",
+          "In the world of cars from economical hatchbacks to SUVs Gujranwala has what you are looking for. Before you buy, check the car's condition, documents and ownership.",
+        ],
+      },
+      {
+        heading: "Find the Right Used Car in Gujranwala",
+        paragraphs: [
+          "In Gujranwala buying a used car becomes easy when you go over different listings and see what each car has to offer. Before you decide which cars to put on your short list, consider your budget, what model you prefer, type of fuel and transmission you require and how you intend to use the car.",
+          "Inspect your vehicle in detail and go over the documentation prior to finalizing a deal. For a better decision on which to buy, get a proper comparison.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Which cars are popular in Gujranwala?",
+        answer:
+          "Popular choices are Suzuki Alto, Honda City, Toyota Corolla, Suzuki Cultus and Honda Civic.",
+      },
+      {
+        question: "What do I look out for when purchasing a used car?",
+        answer:
+          "Check over the vehicle's condition, engine, transmission, and ownership documents.",
+      },
+      {
+        question: "Can I find a price point car?",
+        answer:
+          "Yes, buyers may peruse used cars as per their budget.",
+      },
+    ],
+  },
 };
