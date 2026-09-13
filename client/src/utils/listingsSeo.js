@@ -675,4 +675,51 @@ export const cityLandingContent = {
       },
     ],
   },
+  multan: {
+    priceTable: {
+      title: "Used Cars Price in Multan",
+      rows: [
+        { model: "Suzuki Alto", priceRange: "Varies by model, year and condition" },
+        { model: "Honda City", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Corolla", priceRange: "Varies by model, year and condition" },
+        { model: "Suzuki Cultus", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Yaris", priceRange: "Varies by model, year and condition" },
+      ],
+    },
+    intro:
+      "In Multan used car prices depend on the model, year, mileage, variant and overall condition. Buyers may compare different vehicles in which case they have to find a fit within their budget and driving needs.",
+    sections: [
+      {
+        heading: "Used Cars for Sale in Multan",
+        paragraphs: [
+          "In Multan, which cars are for sale? We have a large selection of used vehicles from many brands and price ranges. If what you are looking for is a fuel efficient car for every day use, a spacious family wagon, or a car better for longer distance travels we have that and more. Also to choose from.",
+          "In Multan buyers have a choice of hatchbacks, sedans and SUVs as per your requirements. Also check the vehicle's condition, registration, ownership details and maintenance history before you buy.",
+        ],
+      },
+      {
+        heading: "Find the Right Used Car in Multan",
+        paragraphs: [
+          "In Multan when you go car shopping begin by determining your budget and what you need. Look at the model year, mileage, fuel type, transmission and maintenance requirements before you decide which cars to put on your short list.",
+          "When also you can check out different listings, look at the car in person and go over its documents before you finalize the deal. These actions may help you choose a suitable used car.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "What kind of used cars do we have in Multan?",
+        answer:
+          "We have a variety of hatchbacks, sedans, SUVs and other used cars in different price ranges.",
+      },
+      {
+        question: "What do I check for when buying a used car?",
+        answer:
+          "Check out the engine, transmission, do some research on the mileage, and go over the condition and ownership documents.",
+      },
+      {
+        question: "What is the best way to find a used car?",
+        answer:
+          "Compare among various listings based on your budget, preferred model and driving requirements.",
+      },
+    ],
+  },
 };
