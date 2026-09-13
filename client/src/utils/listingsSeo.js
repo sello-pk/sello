@@ -581,4 +581,51 @@ export const cityLandingContent = {
       },
     ],
   },
+  peshawar: {
+    priceTable: {
+      title: "Used Cars Price in Peshawar",
+      rows: [
+        { model: "Suzuki Alto", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Corolla", priceRange: "Varies by model, year and condition" },
+        { model: "Honda City", priceRange: "Varies by model, year and condition" },
+        { model: "Suzuki Cultus", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Yaris", priceRange: "Varies by model, year and condition" },
+      ],
+    },
+    intro:
+      "In Peshawar used car prices depend on the model, year, mileage, variant and overall condition. Buyers may compare different options according to their budget and what they require out of a vehicle.",
+    sections: [
+      {
+        heading: "Used Cars for Sale in Peshawar",
+        paragraphs: [
+          "In Peshawar looking to buy a car? We have a large choice of used cars from various brands, and also a variety of price groups. You will find here what you are looking for, be it a fuel efficient car for daily commuting, a large family car or a car for long distance travel, we provide you with a choice between what is available.",
+          "Peshawar car buyers have a choice of hatchbacks, sedans and SUVs which fit their requirements. Before you buy, check the car's condition, documents, ownership details and maintenance history.",
+        ],
+      },
+      {
+        heading: "Find the Right Used Car in Peshawar",
+        paragraphs: [
+          "In Peshawar to choose a used car you must determine your budget and what you need. Look at the model year, mileage, fuel type, transmission and maintenance requirements before you decide which vehicles to include.",
+          "Also check out various listings, look at the car in person and go over the documentation before you finalize the deal. These actions will help you to choose a great used car with confidence.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "What varieties of cars can you choose from in Peshawar?",
+        answer:
+          "We have a wide range of used cars including hatchbacks, sedans, SUVs and more which are priced out of a variety of categories.",
+      },
+      {
+        question: "What is the best way to pick out a used car?",
+        answer:
+          "Compare the features of price, model year, mileage, condition and documents as per your requirements.",
+      },
+      {
+        question: "What documents should I check?",
+        answer:
+          "Before purchase check out the registration, ownership details and related vehicle documents.",
+      },
+    ],
+  },
 };
