@@ -8,7 +8,11 @@ import StructuredData from "../../components/common/StructuredData";
 import SEO from "../../components/common/SEO";
 import { useGetFilteredCarsQuery } from "../../redux/services/api";
 import { trackSearch } from "../../utils/metaPixel.js";
-import { getListingsSeoForParams } from "../../utils/listingsSeo";
+import {
+  getListingsSeoForParams,
+  cityLandingContent,
+} from "../../utils/listingsSeo";
+import CityLandingContent from "../../components/common/CityLandingContent";
 import {
   unslugify,
   buildListingsSearchUrl,
@@ -28,6 +32,8 @@ const FilteredResults = () => {
   const make = searchParams.get("make") || "";
   const model = searchParams.get("model") || "";
   const city = cityFromPath || searchParams.get("city") || "";
+
+  const cityContent = citySlug ? cityLandingContent[citySlug] : null;
 
   const pageCopy = getListingsPageCopy({
     city,
@@ -326,6 +332,10 @@ const FilteredResults = () => {
           </>
         )}
       </div>
+
+      {cityContent ? (
+        <CityLandingContent content={cityContent} cityName={cityFromPath} />
+      ) : null}
     </div>
   );
 };

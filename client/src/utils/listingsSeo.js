@@ -373,3 +373,71 @@ export const getListingsSeoForParams = ({ make, model, city } = {}) => {
     seoDescription: layerCityInDescription(base.seoDescription, city),
   };
 };
+
+/**
+ * SEO landing content shown on /used-cars/:citySlug pages.
+ * Keyed by the city slug (e.g. "lahore"). Each entry mirrors the
+ * PakWheels-style city landing pages: a price table, intro paragraph,
+ * content sections, and FAQs for the given city.
+ *
+ * Add a new city by appending an entry keyed by its slug.
+ */
+export const cityLandingContent = {
+  lahore: {
+    priceTable: {
+      title: "Used Cars Price in Lahore",
+      rows: [
+        { model: "Honda Civic", priceRange: "Varies by model, year and condition" },
+        { model: "Honda City", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Corolla", priceRange: "Varies by model, year and condition" },
+        { model: "Suzuki Cultus", priceRange: "Varies by model, year and condition" },
+        { model: "Suzuki Mehran", priceRange: "Varies by model, year and condition" },
+      ],
+    },
+    intro:
+      "Used car prices in Lahore depend on the model, variant, manufacturing year, mileage, registration and overall condition.",
+    sections: [
+      {
+        heading: "Used Cars for Sale in Lahore",
+        paragraphs: [
+          "In Lahore looking to buy a car? We have a large selection of used cars from all brands and models and price ranges. If you are after a fuel efficient car for your daily commute, a spacious family car or a premium ride, come in and we will help you out in finding the right car for you.",
+          "From which you can choose between the likes of Honda City, Toyota Corolla and Suzuki Alto as well as SUVs and imported cars based on your budget and what you require. Prior to purchase, check the car's condition, mileage, documents and ownership details.",
+        ],
+      },
+      {
+        heading: "Find the Right Used Car in Lahore",
+        paragraphs: [
+          "In Lahore buying a used car is made easier when you go through different options and see what each car has to offer. Before you decide which cars to put on your short list, consider your budget, the make and model you prefer, type of transmission, fuel type and how you intend to use the car.",
+          "When you shop around, also take time to look at different prices, check out the car yourself and go over the documentation which comes with the vehicle before you finalize a deal. Doing this will help you to make a more informed decision when you buy a used car in Lahore.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "What kind of used cars can be found in Lahore?",
+        answer:
+          "In different price ranges you can find sedans, hatchbacks, SUVs, crossovers and imported cars.",
+      },
+      {
+        question: "Which cars are in demand in Lahore?",
+        answer:
+          "Popular choices of which are Honda City, Honda Civic, Toyota Corolla, Suzuki Alto and Suzuki Cultus.",
+      },
+      {
+        question: "What is the best way to pick out a used car in Lahore?",
+        answer:
+          "Compare the car's price, trade in value, age, condition and documentation in terms of what you can afford and what you need.",
+      },
+      {
+        question: "What to look for in a used car?",
+        answer:
+          "Check out the car's condition, engine, transmission, mileage, registration and ownership documents before you buy.",
+      },
+      {
+        question: "Do I have options for cheap cars in Lahore?",
+        answer:
+          "Yes we see a large range of prices for used cars which gives buyers a great choice based on budget.",
+      },
+    ],
+  },
+};
