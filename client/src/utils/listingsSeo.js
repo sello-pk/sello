@@ -628,4 +628,51 @@ export const cityLandingContent = {
       },
     ],
   },
+  faisalabad: {
+    priceTable: {
+      title: "Used Cars Price in Faisalabad",
+      rows: [
+        { model: "Suzuki Alto", priceRange: "Varies by model, year and condition" },
+        { model: "Honda City", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Corolla", priceRange: "Varies by model, year and condition" },
+        { model: "Suzuki Cultus", priceRange: "Varies by model, year and condition" },
+        { model: "Toyota Yaris", priceRange: "Varies by model, year and condition" },
+      ],
+    },
+    intro:
+      "In Faisalabad used car prices range based on the model, year of manufacture, mileage, variant and condition. Buy what fits your budget and daily driving requirements.",
+    sections: [
+      {
+        heading: "Used Cars for Sale in Faisalabad",
+        paragraphs: [
+          "In Faisalabad looking to buy a car? We have a large choice of used cars from many different brands and price groups. For daily commute, family trips or business we have what you are looking for, you may also look through our wide range of options to find your perfect fit.",
+          "In Faisalabad from compact cars to full size SUVs we have a wide range of models for you to choose from. Also check the car's history, documents and ownership before you buy.",
+        ],
+      },
+      {
+        heading: "Find the Right Used Car in Faisalabad",
+        paragraphs: [
+          "Buying into a used car in Faisalabad is made easy when you go through different options and see what they have to offer. Before you decide which cars to put on your short list, pay attention to your budget, favorite make and model, fuel type, transmission type and how you will be using the car.",
+          "Carefully check out the vehicle and it's documentation before you agree to anything. Doing a proper comparison will help you make a better informed decision.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Which cars are popular in Faisalabad?",
+        answer:
+          "Popular choices are Suzuki Alto, Honda City, Toyota Corolla, Suzuki Cultus and Toyota Yaris.",
+      },
+      {
+        question: "How do I compare used cars?",
+        answer:
+          "Compare the following vehicle attributes: price, model year, mileage, condition and documents.",
+      },
+      {
+        question: "Do I find budget friendly cars in Faisalabad?",
+        answer:
+          "Yes, we have a variety of used cars to suit your budget.",
+      },
+    ],
+  },
 };
