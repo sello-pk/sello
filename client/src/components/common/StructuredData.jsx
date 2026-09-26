@@ -465,6 +465,233 @@ export const HomePageSchema = () => {
   return null;
 };
 
+const toAbsoluteMediaUrl = (value, baseUrl) => {
+  if (!value || typeof value !== "string") return undefined;
+  if (/^https?:\/\//i.test(value)) return value;
+  return `${baseUrl}${value.startsWith("/") ? value : `/${value}`}`;
+};
+
+const normalizeFuelType = (value) => {
+  const raw = (value || "").toString().trim().toLowerCase();
+  if (!raw) return undefined;
+  if (raw.includes("electric")) return "Electric";
+  if (raw.includes("hybrid")) return "Hybrid";
+  if (raw.includes("diesel")) return "Diesel";
+  if (raw.includes("petrol") || raw.includes("gasoline")) return "Gasoline";
+  return undefined;
+};
+
+const normalizeTransmission = (value) => {
+  const raw = (value || "").toString().trim().toLowerCase();
+  if (!raw) return undefined;
+  if (raw.includes("auto")) return "Automatic";
+  if (raw.includes("manual")) return "Manual";
+  return undefined;
+};
+
+const toNumeric = (value) => {
+  if (value == null || value === "") return undefined;
+  const num = Number(String(value).replace(/[^0-9.]/g, ""));
+  return Number.isFinite(num) && num > 0 ? num : undefined;
+};
+
+/**
+ * Listings Page Schema — single @graph combining WebSite (with publisher),
+ * BreadcrumbList, SearchResultsPage and an ItemList of the real cars on the page.
+ */
+export const ListingsPageSchema = ({ cars = [] }) => {
+  useEffect(() => {
+    const baseUrl =
+      import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    const listUrl = `${baseUrl}/listings`;
+    const listItems = (Array.isArray(cars) ? cars : [])
+      .filter((car) => car && car._id)
+      .slice(0, 10)
+      .map((car, index) => {
+        const carPath = buildCarUrl(car);
+        const carUrl = `${baseUrl}${carPath}`;
+        const titleParts = [car.year, car.make, car.model, car.variant].filter(
+          Boolean,
+        );
+        const name =
+          car.title || `${titleParts.join(" ")} for sale`.trim() || "Vehicle";
+        const displacement = toNumeric(car.engineCapacity ?? car.engine);
+        const power = toNumeric(car.horsepower);
+        // Odometer readings are whole numbers; round away seller data-entry decimals.
+        const mileageRaw = toNumeric(car.mileage);
+        const mileage = mileageRaw ? Math.round(mileageRaw) : undefined;
+        const priceValue = toNumeric(car.price);
+        const vehicleType = (car.vehicleType || "").toString().trim();
+        const isTwoWheeler =
+          /e-?bike|scooter|motorcycle|cycle|rickshaw/i.test(vehicleType);
+        const sellerRole = (car.postedBy?.role || car.ownerType || "")
+          .toString()
+          .trim()
+          .toLowerCase();
+        const isDealer = sellerRole === "dealer" || sellerRole === "dealership";
+
+        return {
+          "@type": "ListItem",
+          position: index + 1,
+          item: {
+            "@type": isTwoWheeler ? "Motorcycle" : "Car",
+            "@id": `${carUrl}#car`,
+            name,
+            url: carUrl,
+            image: toAbsoluteMediaUrl(car.images?.[0], baseUrl),
+            brand: car.make
+              ? { "@type": "Brand", name: car.make }
+              : undefined,
+            model: car.model || undefined,
+            modelDate: car.year ? String(car.year) : undefined,
+            vehicleConfiguration: car.variant || undefined,
+            vehicleEngine: displacement || power
+              ? {
+                  "@type": "EngineSpecification",
+                  ...(displacement
+                    ? {
+                        engineDisplacement: {
+                          "@type": "QuantitativeValue",
+                          value: displacement,
+                          unitCode: "CMQ",
+                        },
+                      }
+                    : {}),
+                  ...(power
+                    ? {
+                        enginePower: {
+                          "@type": "QuantitativeValue",
+                          value: power,
+                          unitCode: "BHP",
+                        },
+                      }
+                    : {}),
+                }
+              : undefined,
+            fuelType: normalizeFuelType(car.fuelType),
+            vehicleTransmission: normalizeTransmission(car.transmission),
+            mileageFromOdometer: mileage
+              ? {
+                  "@type": "QuantitativeValue",
+                  value: mileage,
+                  unitCode: "KMT",
+                }
+              : undefined,
+            itemCondition:
+              (car.condition || "").toString().trim().toLowerCase() === "new"
+                ? "https://schema.org/NewCondition"
+                : "https://schema.org/UsedCondition",
+            offers: {
+              "@type": "Offer",
+              price:
+                priceValue != null
+                  ? String(priceValue)
+                  : car.price != null
+                    ? String(car.price)
+                    : undefined,
+              priceCurrency: "PKR",
+              availability:
+                car.isSold || car.status === "sold"
+                  ? "https://schema.org/SoldOut"
+                  : "https://schema.org/InStock",
+              priceValidUntil:
+                car.expiryDate ||
+                new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+              areaServed: car.city
+                ? { "@type": "AdministrativeArea", name: car.city }
+                : undefined,
+              seller: {
+                "@type": isDealer ? "AutoDealer" : "Person",
+                name:
+                  car.postedBy?.name ||
+                  (isDealer ? "Sello Verified Dealer" : "Direct Owner"),
+              },
+            },
+          },
+        };
+      });
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": `${baseUrl}/#website`,
+          url: baseUrl,
+          name: "Sello.pk",
+          publisher: {
+            "@type": "AutomotiveBusiness",
+            "@id": `${baseUrl}/#organization`,
+            name: "Sello.pk",
+            url: baseUrl,
+            logo: `${baseUrl}/assets/logo.png`,
+            sameAs: [
+              "https://www.facebook.com/people/Sello/61584930269294/",
+              "https://www.instagram.com/sello.pk",
+              "https://www.youtube.com/@sello.pakistan",
+              "https://www.tiktok.com/@sello.pk",
+            ],
+          },
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": `${listUrl}/#breadcrumb`,
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: baseUrl,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Car Listings",
+              item: listUrl,
+            },
+          ],
+        },
+        {
+          "@type": "SearchResultsPage",
+          "@id": `${listUrl}/#webpage`,
+          url: listUrl,
+          name: "Verified Used & New Cars for Sale in Pakistan | Sello.pk",
+          description:
+            "Browse verified used and new cars for sale across Pakistan. Compare prices, check AI valuations, verify vehicle history, or bid on live vehicle auctions.",
+          isPartOf: {
+            "@id": `${baseUrl}/#website`,
+          },
+          breadcrumb: {
+            "@id": `${listUrl}/#breadcrumb`,
+          },
+          potentialAction: {
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate: `${baseUrl}/listings?q={search_term_string}`,
+            },
+            "query-input": "required name=search_term_string",
+          },
+          inLanguage: "en-PK",
+        },
+        {
+          "@type": "ItemList",
+          "@id": `${listUrl}/#itemlist`,
+          name: "Verified Vehicles for Sale in Pakistan",
+          description: "Latest verified cars listed on Sello.pk",
+          itemListOrder: "https://schema.org/ItemListOrderDescending",
+          numberOfItems: listItems.length,
+          itemListElement: listItems,
+        },
+      ],
+    };
+
+    addStructuredData(schema);
+  }, [cars]);
+
+  return null;
+};
+
 export default {
   ProductSchema,
   VehicleSchema,
@@ -479,4 +706,5 @@ export default {
   BreadcrumbSchema,
   WebSiteSchema,
   HomePageSchema,
+  ListingsPageSchema,
 };

@@ -4,6 +4,7 @@ import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { useGetCarsQuery } from "../../../redux/services/api";
 import CarCard from "../../common/CarCard";
 import SortAndViewOptions from "../../listings/SortAndViewOptions";
+import StructuredData from "../../common/StructuredData";
 
 const sortCars = (cars, sortBy) => {
   if (!cars?.length) return cars;
@@ -190,10 +191,17 @@ const GetAllCarsSection = () => {
     return null;
   }
 
+  // Listings-page JSON-LD (WebSite + BreadcrumbList + SearchResultsPage + ItemList)
+  // is emitted from here so it reflects the exact cars rendered below.
+  const listingsStructuredData = isHomePage ? null : (
+    <StructuredData.ListingsPageSchema cars={sortedCars} />
+  );
+
   // Show skeleton loaders while loading
   if (isLoading) {
     return (
       <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-10 md:py-12">
+        {listingsStructuredData}
         <div className="max-w-8xl mx-auto w-full">
           <h2 className="text-2xl md:text-3xl font-bold text-[#0B0C1E] mb-2">
             Explore All Vehicles
@@ -221,6 +229,7 @@ const GetAllCarsSection = () => {
 
     return (
       <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-10 md:py-12">
+        {listingsStructuredData}
         <div className="max-w-8xl mx-auto w-full">
           <div className="rounded-xl border border-[#e5e7eb] bg-white py-12 px-6 text-center">
             <h2 className="text-xl font-semibold text-red-600 mb-2">Error loading vehicles</h2>
@@ -239,6 +248,7 @@ const GetAllCarsSection = () => {
 
   return (
     <section className="px-3 max-w-8xl mx-auto sm:px-4 md:px-6 lg:px-8 py-10 md:py-12 min-w-0 overflow-x-hidden">
+      {listingsStructuredData}
       <div className="min-w-0 max-w-full">
         <h2 className="text-2xl md:text-3xl font-bold text-[#0B0C1E]">
           Explore All Vehicles
