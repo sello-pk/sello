@@ -1527,6 +1527,128 @@ export const AboutPageSchema = () => {
   return null;
 };
 
+/**
+ * Contact Page Schema — single @graph with WebSite, the AutomotiveBusiness
+ * contact details, BreadcrumbList and the ContactPage.
+ */
+export const ContactPageSchema = () => {
+  useEffect(() => {
+    const baseUrl =
+      import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    const pageUrl = `${baseUrl}/contact`;
+    const orgId = `${baseUrl}/#organization`;
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": `${baseUrl}/#website`,
+          url: baseUrl,
+          name: "Sello.pk",
+          publisher: { "@id": orgId },
+        },
+        {
+          "@type": "AutomotiveBusiness",
+          "@id": orgId,
+          name: "Sello.pk",
+          url: baseUrl,
+          logo: `${baseUrl}/assets/logo.png`,
+          telephone: "+923122221474",
+          email: "info@sello.pk",
+          sameAs: [
+            "https://www.facebook.com/people/Sello/61584930269294/",
+            "https://www.instagram.com/sello.pk",
+            "https://www.youtube.com/@sello.pakistan",
+            "https://www.tiktok.com/@sello.pk",
+          ],
+          contactPoint: [
+            {
+              "@type": "ContactPoint",
+              telephone: "+923122221474",
+              contactType: "customer support",
+              email: "support@sello.pk",
+              areaServed: "PK",
+              availableLanguage: ["en", "ur"],
+            },
+            {
+              "@type": "ContactPoint",
+              telephone: "+923134211023",
+              contactType: "WhatsApp Support",
+              // No contactOption: this is a regular mobile number, not a
+              // toll-free line, so "TollFree" would be inaccurate.
+              areaServed: "PK",
+              availableLanguage: ["en", "ur"],
+            },
+          ],
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: "Okara",
+            addressRegion: "Punjab",
+            addressCountry: "PK",
+          },
+          // Saturday is deliberately absent — the contact page states the
+          // office is closed on Saturdays.
+          openingHoursSpecification: [
+            {
+              "@type": "OpeningHoursSpecification",
+              dayOfWeek: [
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+              ],
+              opens: "09:00",
+              closes: "18:00",
+            },
+            {
+              "@type": "OpeningHoursSpecification",
+              dayOfWeek: "Friday",
+              opens: "09:00",
+              closes: "13:00",
+            },
+          ],
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": `${pageUrl}/#breadcrumb`,
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: baseUrl,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Contact Us",
+              item: pageUrl,
+            },
+          ],
+        },
+        {
+          "@type": "ContactPage",
+          "@id": `${pageUrl}/#webpage`,
+          url: pageUrl,
+          name: "Contact Us | 24/7 Car Marketplace Support - Sello.pk",
+          description:
+            "Get in touch with Sello.pk for support regarding used car listings, vehicle verification, live auctions, or AI price estimation. Phone, email, and WhatsApp help available.",
+          isPartOf: { "@id": `${baseUrl}/#website` },
+          breadcrumb: { "@id": `${pageUrl}/#breadcrumb` },
+          mainEntity: { "@id": orgId },
+          inLanguage: "en-PK",
+        },
+      ],
+    };
+
+    addStructuredData(schema);
+  }, []);
+
+  return null;
+};
+
 export default {
   ProductSchema,
   VehicleSchema,
@@ -1547,4 +1669,5 @@ export default {
   AuctionsPageSchema,
   LiveAuctionPageSchema,
   AboutPageSchema,
+  ContactPageSchema,
 };
