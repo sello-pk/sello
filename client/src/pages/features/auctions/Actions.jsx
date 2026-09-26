@@ -17,12 +17,14 @@ import { GiGavel as Gavel } from "react-icons/gi";
 import {
   useGetLiveAuctionQuery,
   useGetAuctionsQuery,
+  useGetAuctionCarsQuery,
   useGetMeQuery,
   useGetMyAuctionAccessStatusQuery,
 } from "@redux/services/api";
 import HowAuctionsWork from "../../../components/auction/HowAuctionsWork";
 import AuctionBlogsSection from "../../../components/features/auctions/AuctionBlogsSection";
 import SEO from "../../../components/common/SEO";
+import StructuredData from "../../../components/common/StructuredData";
 
 const CountdownTimer = ({ targetDate }) => {
   const [time, setTime] = React.useState({ d: 0, h: 0, m: 0, s: 0 });
@@ -102,6 +104,10 @@ const Button = ({
 export default function AuctionsActions() {
   const { data: liveAuction } = useGetLiveAuctionQuery();
   const { data: recentAuctions } = useGetAuctionsQuery({ limit: 6 });
+  const { data: liveAuctionCars } = useGetAuctionCarsQuery(
+    { auctionId: liveAuction?._id, limit: 10 },
+    { skip: !liveAuction?._id }
+  );
   const token = localStorage.getItem("token");
   const { data: user } = useGetMeQuery(undefined, { skip: !token });
   const { data: auctionAccess } = useGetMyAuctionAccessStatusQuery(undefined, {
@@ -173,6 +179,10 @@ export default function AuctionsActions() {
         title="Online Auctions in Pakistan | Bid & Win Deals – Sello.pk"
         description="Explore online auctions on Sello.pk. Bid on cars, electronics & more. Get the best deals with secure bidding and verified listings across Pakistan."
         canonical="https://sello.pk/auctions"
+      />
+      <StructuredData.AuctionsPageSchema
+        auction={liveAuction}
+        cars={liveAuctionCars?.data || []}
       />
       <div className="min-h-screen w-full bg-slate-50">
       {/* Hero */}

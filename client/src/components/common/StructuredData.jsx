@@ -982,6 +982,216 @@ export const VehicleVerificationPageSchema = () => {
   return null;
 };
 
+// Fallback window for the weekly live auction when the API has no upcoming
+// auction (or the only "live" auction has already finished).
+const AUCTION_EVENT_FALLBACK = {
+  startDate: "2026-09-25T10:00:00+05:00",
+  endDate: "2026-09-28T22:00:00+05:00",
+};
+
+const AUCTION_HOW_TO_STEPS = [
+  {
+    "@type": "HowToStep",
+    position: 1,
+    name: "Create an Account & Verify Identity",
+    text: "Register on Sello.pk and complete basic CNIC phone verification to become an eligible bidder.",
+  },
+  {
+    "@type": "HowToStep",
+    position: 2,
+    name: "Review Vehicle Inspection Report",
+    text: "Examine physical evaluation scores, photos, and verified auction sheet details attached to each lot.",
+  },
+  {
+    "@type": "HowToStep",
+    position: 3,
+    name: "Place Your Bids Live",
+    text: "Submit competitive increments above the reserve price before the timer expires.",
+  },
+  {
+    "@type": "HowToStep",
+    position: 4,
+    name: "Win & Complete Payment",
+    text: "If yours is the highest winning bid, clear the balance and schedule doorstep delivery or regional pickup.",
+  },
+];
+
+/**
+ * Auctions Landing Page Schema — single @graph with WebSite (publisher),
+ * BreadcrumbList, CollectionPage, the live Event, an ItemList of the real
+ * cars currently in that auction, and the bidding HowTo.
+ */
+export const AuctionsPageSchema = ({ auction, cars = [] }) => {
+  useEffect(() => {
+    const baseUrl =
+      import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    const pageUrl = `${baseUrl}/auctions`;
+
+    // Only trust API dates when that auction has not already finished,
+    // otherwise the Event would advertise a window that has already passed.
+    const apiEnd = auction?.endTime ? new Date(auction.endTime) : null;
+    const apiStart = auction?.startTime ? new Date(auction.startTime) : null;
+    const hasCurrentAuction =
+      apiEnd && apiEnd.getTime() > Date.now() && !Number.isNaN(apiEnd.getTime());
+    const eventDates = hasCurrentAuction
+      ? {
+          startDate: (
+            apiStart && !Number.isNaN(apiStart.getTime())
+              ? apiStart
+              : new Date()
+          ).toISOString(),
+          endDate: apiEnd.toISOString(),
+        }
+      : AUCTION_EVENT_FALLBACK;
+
+    // Auction lots are returned as { car, startingBid, currentBid, ... } rows.
+    const lots = (Array.isArray(cars) ? cars : [])
+      .filter((lot) => lot && (lot.car?._id || lot._id))
+      .slice(0, 10);
+
+    const itemListElement = lots.map((lot, index) => {
+      const car = lot.car || lot;
+      const carUrl = `${baseUrl}${buildCarUrl(car)}`;
+      const startingBid = toNumeric(lot.startingBid);
+      const currentBid = toNumeric(lot.currentBid);
+      const buyNowPrice = toNumeric(lot.buyNowPrice);
+      const offerCount = toNumeric(lot.bidCount);
+      // Spread of the bidding range: opening bid up to the best live bid,
+      // falling back to the buy-now ceiling when nobody has bid yet.
+      const lowPrice = startingBid ?? toNumeric(car.price);
+      const highPrice = currentBid ?? buyNowPrice ?? lowPrice;
+      const nameParts = [car.year, car.make, car.model].filter(Boolean);
+      const name =
+        car.title || nameParts.join(" ") || "Auction vehicle";
+
+      return {
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@type": "Car",
+          "@id": `${carUrl}#car`,
+          name,
+          url: carUrl,
+          image: toAbsoluteMediaUrl(car.images?.[0], baseUrl),
+          ...(car.make ? { brand: { "@type": "Brand", name: car.make } } : {}),
+          ...(car.model ? { model: car.model } : {}),
+          ...(car.year ? { modelDate: String(car.year) } : {}),
+          ...(car.transmission
+            ? { vehicleTransmission: normalizeTransmission(car.transmission) }
+            : {}),
+          itemCondition: "https://schema.org/UsedCondition",
+          offers: {
+            "@type": "AggregateOffer",
+            priceCurrency: "PKR",
+            ...(lowPrice ? { lowPrice: String(Math.round(lowPrice)) } : {}),
+            ...(highPrice ? { highPrice: String(Math.round(highPrice)) } : {}),
+            ...(offerCount ? { offerCount } : {}),
+            availability: "https://schema.org/InStock",
+            priceValidThrough: eventDates.endDate,
+            seller: { "@id": `${baseUrl}/#organization` },
+          },
+        },
+      };
+    });
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": `${baseUrl}/#website`,
+          url: baseUrl,
+          name: "Sello.pk",
+          publisher: {
+            "@type": "AutomotiveBusiness",
+            "@id": `${baseUrl}/#organization`,
+            name: "Sello.pk",
+            url: baseUrl,
+            logo: `${baseUrl}/assets/logo.png`,
+            sameAs: [
+              "https://www.facebook.com/people/Sello/61584930269294/",
+              "https://www.instagram.com/sello.pk",
+              "https://www.youtube.com/@sello.pakistan",
+              "https://www.tiktok.com/@sello.pk",
+            ],
+          },
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": `${pageUrl}/#breadcrumb`,
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: baseUrl,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Live Car Auctions",
+              item: pageUrl,
+            },
+          ],
+        },
+        {
+          "@type": "CollectionPage",
+          "@id": `${pageUrl}/#webpage`,
+          url: pageUrl,
+          name: "Live Car Auctions in Pakistan | Bid & Buy Verified Used Cars - Sello.pk",
+          description:
+            "Participate in live online vehicle auctions across Pakistan. Bid on verified used cars, inspected Japanese imports, and bank-leased vehicles with real-time price updates.",
+          isPartOf: { "@id": `${baseUrl}/#website` },
+          breadcrumb: { "@id": `${pageUrl}/#breadcrumb` },
+          inLanguage: "en-PK",
+        },
+        {
+          "@type": "Event",
+          "@id": `${pageUrl}/#live-auction-event`,
+          name: "Sello.pk Weekly Live Vehicle Auction",
+          description:
+            "Pakistan's verified digital car auction featuring inspected sedan, SUV, and hatchback listings open for live competitive bidding.",
+          eventStatus: "https://schema.org/EventScheduled",
+          eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+          startDate: eventDates.startDate,
+          endDate: eventDates.endDate,
+          location: {
+            "@type": "VirtualLocation",
+            url: pageUrl,
+          },
+          organizer: { "@id": `${baseUrl}/#organization` },
+        },
+        ...(itemListElement.length
+          ? [
+              {
+                "@type": "ItemList",
+                "@id": `${pageUrl}/#itemlist`,
+                name: "Active Auction Vehicle Listings",
+                description: "Cars currently open for live bidding on Sello.pk",
+                itemListOrder:
+                  "https://schema.org/ItemListOrderDescending",
+                numberOfItems: itemListElement.length,
+                itemListElement,
+              },
+            ]
+          : []),
+        {
+          "@type": "HowTo",
+          "@id": `${pageUrl}/#howto`,
+          name: "How to Participate in Sello.pk Online Car Auctions",
+          description:
+            "Step-by-step guide to register, place live bids, and complete payment for auctioned cars in Pakistan.",
+          step: AUCTION_HOW_TO_STEPS,
+        },
+      ],
+    };
+
+    addStructuredData(schema);
+  }, [auction, cars]);
+
+  return null;
+};
+
 export default {
   ProductSchema,
   VehicleSchema,
@@ -999,4 +1209,5 @@ export default {
   ListingsPageSchema,
   CarEstimatorPageSchema,
   VehicleVerificationPageSchema,
+  AuctionsPageSchema,
 };
