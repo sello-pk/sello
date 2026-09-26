@@ -15,7 +15,7 @@ import {
   generateAutoDealerSchema,
   generateAggregateRatingSchema,
 } from "../../utils/schemas";
-import { buildCarUrl } from "../../utils/urlBuilders";
+import { buildCarUrl, buildBlogUrl } from "../../utils/urlBuilders";
 import { teamMembers } from "../sections/about/teamData";
 
 /**
@@ -1649,6 +1649,150 @@ export const ContactPageSchema = () => {
   return null;
 };
 
+/**
+ * Blog Page Schema — single @graph with WebSite, BreadcrumbList, the Blog
+ * itself, a CollectionPage and an ItemList of the real published posts.
+ */
+export const BlogPageSchema = ({ posts = [] }) => {
+  useEffect(() => {
+    const baseUrl =
+      import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    const pageUrl = `${baseUrl}/blog`;
+    const orgId = `${baseUrl}/#organization`;
+
+    const items = (Array.isArray(posts) ? posts : [])
+      .filter((post) => post && post.slug)
+      .slice(0, 10);
+
+    const itemListElement = items.map((post, index) => {
+      const postUrl = `${baseUrl}${buildBlogUrl(post)}`;
+      // publishedAt is null on drafts-imported posts, so fall back to createdAt.
+      const datePublished = post.publishedAt || post.createdAt;
+      const dateModified = post.updatedAt || datePublished;
+
+      return {
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@type": "BlogPosting",
+          "@id": `${postUrl}#article`,
+          url: postUrl,
+          headline: post.title || undefined,
+          description: post.excerpt || undefined,
+          image: toAbsoluteMediaUrl(post.featuredImage, baseUrl),
+          ...(datePublished
+            ? { datePublished: new Date(datePublished).toISOString() }
+            : {}),
+          ...(dateModified
+            ? { dateModified: new Date(dateModified).toISOString() }
+            : {}),
+          // The author is credited by name on the post itself; the team roster
+          // lives on /about, which is a real page (no dead #anchor here).
+          ...(post.author?.name
+            ? {
+                author: {
+                  "@type": "Person",
+                  name: post.author.name,
+                  url: `${baseUrl}/about`,
+                },
+              }
+            : {}),
+          publisher: { "@id": orgId },
+        },
+      };
+    });
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": `${baseUrl}/#website`,
+          url: baseUrl,
+          name: "Sello.pk",
+          publisher: {
+            "@type": "AutomotiveBusiness",
+            "@id": orgId,
+            name: "Sello.pk",
+            url: baseUrl,
+            logo: `${baseUrl}/assets/logo.png`,
+            sameAs: [
+              "https://www.facebook.com/people/Sello/61584930269294/",
+              "https://www.instagram.com/sello.pk",
+              "https://www.youtube.com/@sello.pakistan",
+              "https://www.tiktok.com/@sello.pk",
+            ],
+          },
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": `${pageUrl}/#breadcrumb`,
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: baseUrl,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Automotive Blog & News",
+              item: pageUrl,
+            },
+          ],
+        },
+        {
+          "@type": "Blog",
+          "@id": `${pageUrl}/#blog`,
+          url: pageUrl,
+          name: "Sello.pk Automotive Blog",
+          description:
+            "Latest Pakistani automotive news, car buying guides, vehicle inspection tips, auction strategies, and market price updates.",
+          publisher: { "@id": orgId },
+          inLanguage: "en-PK",
+          genre: [
+            "Car Reviews",
+            "Automotive News",
+            "Car Buying & Selling Guides",
+            "Vehicle Auctions Pakistan",
+            "Car Price Trends",
+          ],
+        },
+        {
+          "@type": "CollectionPage",
+          "@id": `${pageUrl}/#webpage`,
+          url: pageUrl,
+          name: "Pakistani Car Blog & News | Latest Guides & Market Updates - Sello.pk",
+          description:
+            "Read expert car reviews, automotive news, vehicle registration guides, and live auction tips tailored for Pakistani car buyers and sellers.",
+          isPartOf: { "@id": `${baseUrl}/#website` },
+          breadcrumb: { "@id": `${pageUrl}/#breadcrumb` },
+          mainEntity: { "@id": `${pageUrl}/#blog` },
+          inLanguage: "en-PK",
+        },
+        ...(itemListElement.length
+          ? [
+              {
+                "@type": "ItemList",
+                "@id": `${pageUrl}/#recent-posts`,
+                name: "Latest Automotive Articles",
+                description: "Recent blog articles published on Sello.pk",
+                itemListOrder: "https://schema.org/ItemListOrderDescending",
+                numberOfItems: itemListElement.length,
+                itemListElement,
+              },
+            ]
+          : []),
+      ],
+    };
+
+    addStructuredData(schema);
+  }, [posts]);
+
+  return null;
+};
+
 export default {
   ProductSchema,
   VehicleSchema,
@@ -1670,4 +1814,5 @@ export default {
   LiveAuctionPageSchema,
   AboutPageSchema,
   ContactPageSchema,
+  BlogPageSchema,
 };

@@ -8,10 +8,16 @@ import NewTechnology from "../../components/features/blog/NewTechnology";
 import ReviewSliderBanner from "../../components/features/blog/ReviewSliderBanner";
 import NewsLatter from "../../components/utils/NewsLatter";
 import SEO from "../../components/common/SEO";
+import StructuredData from "../../components/common/StructuredData";
+import { useGetBlogsQuery } from "../../redux/services/api";
 
 const Blog = () => {
+  const { data } = useGetBlogsQuery({ page: 1, limit: 12, status: "published" });
+  const posts = data?.blogs || data?.data?.blogs || (Array.isArray(data) ? data : []);
+
   return (
     <div>
+      <StructuredData.BlogPageSchema posts={posts} />
       <SEO
         title="Blog | Sello"
         description="Read our latest blog posts about cars, automotive news, buying guides, maintenance tips, and more."
