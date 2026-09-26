@@ -6,10 +6,12 @@ import OurTeam from "../../components/sections/about/OurTeam";
 import ReviewsAnalysis from "../../components/sections/about/ReviewsAnalysis";
 import CustomerReviews from "../../components/sections/about/CustomerReviews";
 import SEO from "../../components/common/SEO";
+import StructuredData from "../../components/common/StructuredData";
 
 const About = () => {
   return (
     <div>
+      <StructuredData.AboutPageSchema />
       <SEO
         title="About Us | Buy & Sell Cars Online in Pakistan – Sello.pk"
         description="Sello.pk is a secure and transparent platform to buy and sell cars in Pakistan. Discover our mission, values, and commitment to trusted car trading."

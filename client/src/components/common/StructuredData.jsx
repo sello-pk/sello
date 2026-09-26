@@ -16,6 +16,7 @@ import {
   generateAggregateRatingSchema,
 } from "../../utils/schemas";
 import { buildCarUrl } from "../../utils/urlBuilders";
+import { teamMembers } from "../sections/about/teamData";
 
 /**
  * Add structured data script to document head
@@ -446,7 +447,7 @@ export const HomePageSchema = () => {
               "@type": "ListItem",
               position: 4,
               name: "AI Car Estimator",
-              url: `${baseUrl}/ai-car-estimator`,
+              url: `${baseUrl}/car-estimator`,
             },
             {
               "@type": "ListItem",
@@ -1368,6 +1369,164 @@ export const LiveAuctionPageSchema = ({ auction, cars = [] }) => {
   return null;
 };
 
+/**
+ * About Page Schema — single @graph with WebSite, the full AutomotiveBusiness
+ * organization (founder + team as real Person nodes), BreadcrumbList and the
+ * AboutPage itself.
+ */
+export const AboutPageSchema = () => {
+  useEffect(() => {
+    const baseUrl =
+      import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    const pageUrl = `${baseUrl}/about`;
+    const orgId = `${baseUrl}/#organization`;
+
+    // Founder is the first roster entry; the rest are employees. Keeping the
+    // ids on /about/#<slug> matches the anchors used elsewhere on the site.
+    const slugifyName = (name) =>
+      name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+
+    const people = teamMembers.map((member) => ({
+      "@type": "Person",
+      "@id": `${pageUrl}/#${slugifyName(member.name)}`,
+      name: member.name,
+      jobTitle: member.position,
+    }));
+
+    const founder = people[0];
+    const founderRef = founder ? { "@id": founder["@id"] } : undefined;
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": `${baseUrl}/#website`,
+          url: baseUrl,
+          name: "Sello.pk",
+          publisher: { "@id": orgId },
+        },
+        {
+          "@type": "AutomotiveBusiness",
+          "@id": orgId,
+          name: "Sello.pk",
+          legalName: "Sello Group",
+          url: baseUrl,
+          logo: {
+            "@type": "ImageObject",
+            url: `${baseUrl}/assets/logo.png`,
+            caption: "Sello.pk Logo",
+          },
+          description:
+            "Sello.pk is Pakistan's digital automotive marketplace providing verified car listings, AI price estimation, vehicle registration verification, and live online auctions.",
+          foundingDate: "2024",
+          areaServed: {
+            "@type": "Country",
+            name: "Pakistan",
+          },
+          sameAs: [
+            "https://www.facebook.com/people/Sello/61584930269294/",
+            "https://www.instagram.com/sello.pk",
+            "https://www.youtube.com/@sello.pakistan",
+            "https://www.tiktok.com/@sello.pk",
+          ],
+          ...(founderRef ? { founder: founderRef } : {}),
+          ...(people.length
+            ? { employee: people.map((person) => ({ "@id": person["@id"] })) }
+            : {}),
+          // NOTE: aggregateRating is intentionally omitted. The only ratings on
+          // this page are hardcoded marketing copy plus three static
+          // testimonials, so publishing ratingValue/ratingCount here would be
+          // fabricated review data. See the comment on the component below.
+          hasOfferCatalog: {
+            "@type": "OfferCatalog",
+            name: "Automotive Services",
+            itemListElement: [
+              {
+                "@type": "Offer",
+                itemOffered: {
+                  "@type": "Service",
+                  name: "Verified Used Car Marketplace",
+                  url: `${baseUrl}/listings`,
+                },
+              },
+              {
+                "@type": "Offer",
+                itemOffered: {
+                  "@type": "Service",
+                  name: "AI Car Price Estimator",
+                  url: `${baseUrl}/car-estimator`,
+                },
+              },
+              {
+                "@type": "Offer",
+                itemOffered: {
+                  "@type": "Service",
+                  name: "Online Vehicle Verification (MTMIS)",
+                  url: `${baseUrl}/vehicle-verification`,
+                },
+              },
+              {
+                "@type": "Offer",
+                itemOffered: {
+                  "@type": "Service",
+                  name: "Live Vehicle Auctions",
+                  url: `${baseUrl}/auctions`,
+                },
+              },
+            ],
+          },
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": `${pageUrl}/#breadcrumb`,
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: baseUrl,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "About Us",
+              item: pageUrl,
+            },
+          ],
+        },
+        {
+          "@type": "AboutPage",
+          "@id": `${pageUrl}/#webpage`,
+          url: pageUrl,
+          name: "About Us | Buy & Sell Cars Online in Pakistan - Sello.pk",
+          description:
+            "Learn about Sello.pk, Pakistan's trusted digital automotive portal. Discover our leadership team, vision for transparent car trading, verified listings, and auction platform.",
+          isPartOf: { "@id": `${baseUrl}/#website` },
+          breadcrumb: { "@id": `${pageUrl}/#breadcrumb` },
+          mainEntity: { "@id": orgId },
+          inLanguage: "en-PK",
+        },
+        // Top-level so the founder/employee @id references above resolve
+        // within this graph rather than pointing at nothing.
+        ...people.map((person) => ({
+          ...person,
+          ...(founder && person["@id"] === founder["@id"]
+            ? { worksFor: { "@id": orgId } }
+            : {}),
+        })),
+      ],
+    };
+
+    addStructuredData(schema);
+  }, []);
+
+  return null;
+};
+
 export default {
   ProductSchema,
   VehicleSchema,
@@ -1387,4 +1546,5 @@ export default {
   VehicleVerificationPageSchema,
   AuctionsPageSchema,
   LiveAuctionPageSchema,
+  AboutPageSchema,
 };
