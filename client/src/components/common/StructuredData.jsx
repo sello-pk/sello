@@ -337,6 +337,134 @@ export const WebSiteSchema = () => {
   return null;
 };
 
+/**
+ * Home Page Schema — single @graph combining Organization (AutoDealer),
+ * WebSite, WebPage and key-features ItemList. Injects the full home page
+ * JSON-LD in one script tag so nothing is left out.
+ */
+export const HomePageSchema = () => {
+  useEffect(() => {
+    const baseUrl =
+      import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": ["AutomotiveBusiness", "AutoDealer"],
+          "@id": `${baseUrl}/#organization`,
+          name: "Sello.pk",
+          legalName: "Sello Group",
+          url: baseUrl,
+          logo: {
+            "@type": "ImageObject",
+            "@id": `${baseUrl}/#logo`,
+            url: `${baseUrl}/assets/logo.png`,
+            caption: "Sello.pk Logo",
+          },
+          image: {
+            "@id": `${baseUrl}/#logo`,
+          },
+          description:
+            "Find the best car for sale in Pakistan on Sello.pk. Buy or sell used cars in Karachi, Lahore, Islamabad & beyond with verified sellers and fair pricing.  .",
+          email: "info@sello.pk",
+          priceRange: "PKR",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "Sello Head Office, Gulberg",
+            addressLocality: "Lahore",
+            addressRegion: "Punjab",
+            addressCountry: "PK",
+          },
+          areaServed: {
+            "@type": "Country",
+            name: "Pakistan",
+          },
+          sameAs: [
+            "https://www.facebook.com/people/Sello/61584930269294/",
+            "https://www.instagram.com/sello.pk",
+            "https://www.youtube.com/@sello.pakistan",
+            "https://www.tiktok.com/@sello.pk",
+          ],
+        },
+        {
+          "@type": "WebSite",
+          "@id": `${baseUrl}/#website`,
+          url: baseUrl,
+          name: "Sello.pk - Buy & Sell Cars in Pakistan",
+          description:
+            "Buy, sell, or bid on verified cars in Pakistan. Explore AI Car Estimator, Vehicle Verification, and hybrid auctions on Sello.pk.",
+          publisher: {
+            "@id": `${baseUrl}/#organization`,
+          },
+          potentialAction: {
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate: `${baseUrl}/listings/car?q={search_term_string}`,
+            },
+            "query-input": "required name=search_term_string",
+          },
+        },
+        {
+          "@type": "WebPage",
+          "@id": `${baseUrl}/#webpage`,
+          url: baseUrl,
+          name: "Sello.pk | Buy, Sell & Auction Cars in Pakistan",
+          isPartOf: {
+            "@id": `${baseUrl}/#website`,
+          },
+          about: {
+            "@id": `${baseUrl}/#organization`,
+          },
+          inLanguage: "en-PK",
+        },
+        {
+          "@type": "ItemList",
+          "@id": `${baseUrl}/#key-features`,
+          name: "Sello Core Features & Services",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Cars for Sale",
+              url: `${baseUrl}/listings/car`,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Sell Your Car",
+              url: `${baseUrl}/sell-car`,
+            },
+            {
+              "@type": "ListItem",
+              position: 3,
+              name: "Online & Live Hybrid Car Auctions",
+              url: `${baseUrl}/auctions`,
+            },
+            {
+              "@type": "ListItem",
+              position: 4,
+              name: "AI Car Estimator",
+              url: `${baseUrl}/ai-car-estimator`,
+            },
+            {
+              "@type": "ListItem",
+              position: 5,
+              name: "Vehicle Verification",
+              url: `${baseUrl}/vehicle-verification`,
+            },
+          ],
+        },
+      ],
+    };
+
+    addStructuredData(schema);
+  }, []);
+
+  return null;
+};
+
 export default {
   ProductSchema,
   VehicleSchema,
@@ -350,4 +478,5 @@ export default {
   OrganizationSchema,
   BreadcrumbSchema,
   WebSiteSchema,
+  HomePageSchema,
 };

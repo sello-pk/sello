@@ -64,8 +64,7 @@ const Home = () => {
         keywords="cars for sale, cars for sale in Pakistan"
         canonical="https://sello.pk/"
       />
-      <StructuredData.OrganizationSchema />
-      <StructuredData.WebSiteSchema />
+      <StructuredData.HomePageSchema />
       <div className="w-full min-w-0">
         <Hero />
         <BelowFold minHeight="10rem">
