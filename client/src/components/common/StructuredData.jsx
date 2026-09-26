@@ -824,6 +824,164 @@ export const CarEstimatorPageSchema = () => {
   return null;
 };
 
+/**
+ * Vehicle Verification Page Schema — single @graph combining WebSite (with publisher),
+ * BreadcrumbList, Service, WebPage and FAQPage.
+ */
+export const VehicleVerificationPageSchema = () => {
+  useEffect(() => {
+    const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    const pageUrl = `${baseUrl}/vehicle-verification`;
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": `${baseUrl}/#website`,
+          url: baseUrl,
+          name: "Sello.pk",
+          publisher: {
+            "@type": "AutomotiveBusiness",
+            "@id": `${baseUrl}/#organization`,
+            name: "Sello.pk",
+            url: baseUrl,
+            logo: `${baseUrl}/assets/logo.png`,
+            sameAs: [
+              "https://www.facebook.com/people/Sello/61584930269294/",
+              "https://www.instagram.com/sello.pk",
+              "https://www.youtube.com/@sello.pakistan",
+              "https://www.tiktok.com/@sello.pk",
+            ],
+          },
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": `${pageUrl}/#breadcrumb`,
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: baseUrl,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Vehicle Verification",
+              item: pageUrl,
+            },
+          ],
+        },
+        {
+          "@type": "Service",
+          "@id": `${pageUrl}/#service`,
+          name: "Online Vehicle & Registration Verification Pakistan",
+          serviceType: "Vehicle Verification Service",
+          provider: {
+            "@id": `${baseUrl}/#organization`,
+          },
+          areaServed: [
+            { "@type": "AdministrativeArea", name: "Punjab" },
+            { "@type": "AdministrativeArea", name: "Sindh" },
+            { "@type": "AdministrativeArea", name: "Islamabad Capital Territory" },
+            { "@type": "AdministrativeArea", name: "Khyber Pakhtunkhwa" },
+          ],
+          description:
+            "Instant online vehicle verification in Pakistan. Verify MTMIS vehicle registration details, owner records, engine/chassis numbers, tax payment status, and CPLC clearance across Punjab, Sindh, Islamabad, and KPK.",
+          hasOfferCatalog: {
+            "@type": "OfferCatalog",
+            name: "Verification Checks",
+            itemListElement: [
+              {
+                "@type": "Offer",
+                itemOffered: {
+                  "@type": "Service",
+                  name: "MTMIS Registration Record Check",
+                },
+              },
+              {
+                "@type": "Offer",
+                itemOffered: {
+                  "@type": "Service",
+                  name: "Token Tax Clearance Verification",
+                },
+              },
+              {
+                "@type": "Offer",
+                itemOffered: {
+                  "@type": "Service",
+                  name: "CPLC & Stolen Vehicle Record Check",
+                },
+              },
+            ],
+          },
+        },
+        {
+          "@type": "WebPage",
+          "@id": `${pageUrl}/#webpage`,
+          url: pageUrl,
+          name: "Online Vehicle Verification Pakistan | MTMIS Car Check - Sello.pk",
+          description:
+            "Verify any car or motorcycle registration online in Pakistan. Check Excise tax records, owner details, engine number, and CPLC clearance for Punjab, Sindh, Islamabad & KPK.",
+          isPartOf: {
+            "@id": `${baseUrl}/#website`,
+          },
+          breadcrumb: {
+            "@id": `${pageUrl}/#breadcrumb`,
+          },
+          mainEntity: {
+            "@id": `${pageUrl}/#service`,
+          },
+          potentialAction: {
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate: `${pageUrl}?reg_no={registration_number}`,
+            },
+            "query-input": "required name=registration_number",
+          },
+          inLanguage: "en-PK",
+        },
+        {
+          "@type": "FAQPage",
+          "@id": `${pageUrl}/#faq`,
+          mainEntity: [
+            {
+              "@type": "Question",
+              name: "How can I verify car ownership online in Pakistan?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "You can verify car ownership online on Sello.pk by entering the vehicle's registration number. The lookup checks official MTMIS Excise databases for Punjab, Sindh, Islamabad, and KPK to display the current owner name, registration date, and vehicle specs.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "What details are displayed in an MTMIS vehicle check?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "An MTMIS online check displays the vehicle owner name, make/model, engine and chassis numbers, vehicle body type, registration date, token tax payment status, and CPLC clearance status (for Sindh).",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "Can I check token tax payment history on Sello.pk?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Yes, Sello.pk vehicle verification provides token tax payment status directly from provincial Excise and Taxation databases to verify if any tax dues remain unpaid.",
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    addStructuredData(schema);
+  }, []);
+
+  return null;
+};
+
 export default {
   ProductSchema,
   VehicleSchema,
@@ -840,4 +998,5 @@ export default {
   HomePageSchema,
   ListingsPageSchema,
   CarEstimatorPageSchema,
+  VehicleVerificationPageSchema,
 };
