@@ -1,6 +1,7 @@
 import React from "react";
 import CarEstimatorPage from "../../components/features/CarEstimator/CarEstimatorPage";
 import SEO from "../../components/common/SEO";
+import StructuredData from "../../components/common/StructuredData";
 
 const CarEstimator = () => {
   return (
@@ -11,6 +12,7 @@ const CarEstimator = () => {
         keywords="car estimator, car value calculator, AI car price, used car valuation, car price Pakistan"
         canonical="https://sello.pk/car-estimator"
       />
+      <StructuredData.CarEstimatorPageSchema />
       <CarEstimatorPage />
     </>
   );

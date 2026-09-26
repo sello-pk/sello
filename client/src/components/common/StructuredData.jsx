@@ -692,6 +692,138 @@ export const ListingsPageSchema = ({ cars = [] }) => {
   return null;
 };
 
+/**
+ * AI Car Estimator Page Schema — single @graph combining WebSite (with publisher),
+ * BreadcrumbList, WebApplication, WebPage and FAQPage.
+ */
+export const CarEstimatorPageSchema = () => {
+  useEffect(() => {
+    const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    const pageUrl = `${baseUrl}/car-estimator`;
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": `${baseUrl}/#website`,
+          url: baseUrl,
+          name: "Sello.pk",
+          publisher: {
+            "@type": "AutomotiveBusiness",
+            "@id": `${baseUrl}/#organization`,
+            name: "Sello.pk",
+            url: baseUrl,
+            logo: `${baseUrl}/assets/logo.png`,
+            sameAs: [
+              "https://www.facebook.com/people/Sello/61584930269294/",
+              "https://www.instagram.com/sello.pk",
+              "https://www.youtube.com/@sello.pakistan",
+              "https://www.tiktok.com/@sello.pk",
+            ],
+          },
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": `${pageUrl}/#breadcrumb`,
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: baseUrl,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "AI Car Estimator",
+              item: pageUrl,
+            },
+          ],
+        },
+        {
+          "@type": "WebApplication",
+          "@id": `${pageUrl}/#webapp`,
+          name: "Sello.pk AI Car Estimator",
+          url: pageUrl,
+          applicationCategory: "BusinessApplication",
+          operatingSystem: "All",
+          browserRequirements: "Requires JavaScript. Requires HTML5.",
+          description:
+            "AI-powered used car price estimator tool for Pakistan. Instantly calculate accurate market resale values for cars based on make, model, year, mileage, city, and vehicle condition.",
+          offers: {
+            "@type": "Offer",
+            price: "0",
+            priceCurrency: "PKR",
+            availability: "https://schema.org/InStock",
+          },
+          provider: {
+            "@id": `${baseUrl}/#organization`,
+          },
+          featureList: [
+            "Instant AI Market Valuation",
+            "Pakistan Local Market Data Analysis",
+            "Condition & Mileage Adjustment",
+            "City-Wise Registration Valuation",
+          ],
+        },
+        {
+          "@type": "WebPage",
+          "@id": `${pageUrl}/#webpage`,
+          url: pageUrl,
+          name: "AI Car Estimator | Free Used Car Valuation Tool in Pakistan - Sello.pk",
+          description:
+            "Calculate accurate resale values for any car in Pakistan with Sello's AI Estimator. Instant valuation based on real-time market trends, mileage, and condition.",
+          isPartOf: {
+            "@id": `${baseUrl}/#website`,
+          },
+          breadcrumb: {
+            "@id": `${pageUrl}/#breadcrumb`,
+          },
+          about: {
+            "@id": `${pageUrl}/#webapp`,
+          },
+          inLanguage: "en-PK",
+        },
+        {
+          "@type": "FAQPage",
+          "@id": `${pageUrl}/#faq`,
+          mainEntity: [
+            {
+              "@type": "Question",
+              name: "How does the Sello AI Car Estimator calculate vehicle prices?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "The AI Car Estimator analyzes live Pakistani market data, recent sales, dealer trade trends, vehicle mileage, year, city registration, and physical condition to generate an accurate valuation range.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "Is the car price valuation free on Sello.pk?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Yes, Sello.pk provides 100% free car valuations for buyers and sellers across Pakistan.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "Which factors reduce a used car's value in Pakistan?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Factors such as high mileage, repaint/accident history, missing service records, unverified documentation, and out-of-city registration can reduce a vehicle's estimated market value.",
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    addStructuredData(schema);
+  }, []);
+
+  return null;
+};
+
 export default {
   ProductSchema,
   VehicleSchema,
@@ -707,4 +839,5 @@ export default {
   WebSiteSchema,
   HomePageSchema,
   ListingsPageSchema,
+  CarEstimatorPageSchema,
 };
