@@ -26,6 +26,7 @@ import SearchableSelect from "@components/common/SearchableSelect";
 import LiveAuctionUpdates from "@components/auction/LiveAuctionUpdates";
 import AuctionSavedSearches from "@components/auction/AuctionSavedSearches";
 import SEO from "../../../components/common/SEO";
+import StructuredData from "../../../components/common/StructuredData";
 
 // Shared tiny components
 
@@ -461,6 +462,10 @@ export default function LiveAuction() {
         title="Live Auctions in Pakistan | Bid in Real-Time – Sello.pk"
         description="Join live auctions on Sello.pk and bid in real-time on cars, electronics & more. Secure platform, fast bidding, and exciting deals across Pakistan."
         canonical="https://sello.pk/auctions/live"
+      />
+      <StructuredData.LiveAuctionPageSchema
+        auction={liveAuction}
+        cars={displayCars}
       />
       <div className="min-h-screen bg-slate-50">
       {/* Live Header */}

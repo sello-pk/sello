@@ -989,6 +989,31 @@ const AUCTION_EVENT_FALLBACK = {
   endDate: "2026-09-28T22:00:00+05:00",
 };
 
+// Same idea for the /auctions/live broadcast session.
+const LIVE_EVENT_FALLBACK = {
+  startDate: "2026-09-21T15:00:00+05:00",
+  endDate: "2026-09-21T21:00:00+05:00",
+};
+
+/**
+ * Resolve an Event window: prefer the real auction times, but only while that
+ * auction is still ahead of us. A stale "live" auction would otherwise publish
+ * an Event for a session that ended months ago.
+ */
+const resolveEventWindow = (auction, fallback) => {
+  const end = auction?.endTime ? new Date(auction.endTime) : null;
+  const start = auction?.startTime ? new Date(auction.startTime) : null;
+  if (end && !Number.isNaN(end.getTime()) && end.getTime() > Date.now()) {
+    return {
+      startDate: (
+        start && !Number.isNaN(start.getTime()) ? start : new Date()
+      ).toISOString(),
+      endDate: end.toISOString(),
+    };
+  }
+  return fallback;
+};
+
 const AUCTION_HOW_TO_STEPS = [
   {
     "@type": "HowToStep",
@@ -1029,20 +1054,7 @@ export const AuctionsPageSchema = ({ auction, cars = [] }) => {
 
     // Only trust API dates when that auction has not already finished,
     // otherwise the Event would advertise a window that has already passed.
-    const apiEnd = auction?.endTime ? new Date(auction.endTime) : null;
-    const apiStart = auction?.startTime ? new Date(auction.startTime) : null;
-    const hasCurrentAuction =
-      apiEnd && apiEnd.getTime() > Date.now() && !Number.isNaN(apiEnd.getTime());
-    const eventDates = hasCurrentAuction
-      ? {
-          startDate: (
-            apiStart && !Number.isNaN(apiStart.getTime())
-              ? apiStart
-              : new Date()
-          ).toISOString(),
-          endDate: apiEnd.toISOString(),
-        }
-      : AUCTION_EVENT_FALLBACK;
+    const eventDates = resolveEventWindow(auction, AUCTION_EVENT_FALLBACK);
 
     // Auction lots are returned as { car, startingBid, currentBid, ... } rows.
     const lots = (Array.isArray(cars) ? cars : [])
@@ -1192,6 +1204,170 @@ export const AuctionsPageSchema = ({ auction, cars = [] }) => {
   return null;
 };
 
+/**
+ * Live Auction Page Schema — single @graph with WebSite (publisher),
+ * BreadcrumbList, WebPage, the live Event (plus its BroadcastEvent) and an
+ * ItemList of the lots currently on the bidding block.
+ */
+export const LiveAuctionPageSchema = ({ auction, cars = [] }) => {
+  useEffect(() => {
+    const baseUrl =
+      import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    const pageUrl = `${baseUrl}/auctions/live`;
+
+    const eventDates = resolveEventWindow(auction, LIVE_EVENT_FALLBACK);
+
+    // Only advertise the stream as live while the session window is open.
+    const startMs = new Date(eventDates.startDate).getTime();
+    const endMs = new Date(eventDates.endDate).getTime();
+    const isLiveBroadcast =
+      !Number.isNaN(startMs) && !Number.isNaN(endMs) && Date.now() >= startMs && Date.now() <= endMs;
+
+    const lots = (Array.isArray(cars) ? cars : [])
+      .filter((lot) => lot && (lot.car?._id || lot._id))
+      .slice(0, 10);
+
+    const itemListElement = lots.map((lot, index) => {
+      const car = lot.car || lot;
+      const carUrl = `${baseUrl}${buildCarUrl(car)}`;
+      const currentBid = toNumeric(lot.currentBid);
+      const startingBid = toNumeric(lot.startingBid);
+      const price = currentBid ?? startingBid ?? toNumeric(car.price);
+      const nameParts = [car.year, car.make, car.model].filter(Boolean);
+      const name = car.title || nameParts.join(" ") || "Auction vehicle";
+
+      return {
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@type": "Car",
+          "@id": `${carUrl}#car`,
+          name,
+          url: carUrl,
+          image: toAbsoluteMediaUrl(car.images?.[0], baseUrl),
+          ...(car.make ? { brand: { "@type": "Brand", name: car.make } } : {}),
+          ...(car.model ? { model: car.model } : {}),
+          ...(car.year ? { modelDate: String(car.year) } : {}),
+          ...(car.transmission
+            ? { vehicleTransmission: normalizeTransmission(car.transmission) }
+            : {}),
+          itemCondition: "https://schema.org/UsedCondition",
+          offers: {
+            "@type": "Offer",
+            ...(price ? { price: String(Math.round(price)) } : {}),
+            priceCurrency: "PKR",
+            priceValidUntil: eventDates.endDate,
+            availability: "https://schema.org/InStock",
+            seller: { "@id": `${baseUrl}/#organization` },
+          },
+        },
+      };
+    });
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": `${baseUrl}/#website`,
+          url: baseUrl,
+          name: "Sello.pk",
+          publisher: {
+            "@type": "AutomotiveBusiness",
+            "@id": `${baseUrl}/#organization`,
+            name: "Sello.pk",
+            url: baseUrl,
+            logo: `${baseUrl}/assets/logo.png`,
+            sameAs: [
+              "https://www.facebook.com/people/Sello/61584930269294/",
+              "https://www.instagram.com/sello.pk",
+              "https://www.youtube.com/@sello.pakistan",
+              "https://www.tiktok.com/@sello.pk",
+            ],
+          },
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": `${pageUrl}/#breadcrumb`,
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: baseUrl,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Auctions",
+              item: `${baseUrl}/auctions`,
+            },
+            {
+              "@type": "ListItem",
+              position: 3,
+              name: "Live Streaming Bidding",
+              item: pageUrl,
+            },
+          ],
+        },
+        {
+          "@type": "WebPage",
+          "@id": `${pageUrl}/#webpage`,
+          url: pageUrl,
+          name: "Live Online Car Bidding Arena | Sello.pk Digital Auctions",
+          description:
+            "Join Sello's live car auction broadcast. Watch real-time inspection walkthroughs, submit live bids on verified Pakistani cars, and track real-time price increments.",
+          isPartOf: { "@id": `${baseUrl}/#website` },
+          breadcrumb: { "@id": `${pageUrl}/#breadcrumb` },
+          inLanguage: "en-PK",
+        },
+        {
+          "@type": "Event",
+          "@id": `${pageUrl}/#live-event`,
+          name: "Sello Live Online Car Bidding Session",
+          description:
+            "Real-time car bidding arena for verified vehicles in Pakistan. Watch live stream, check real-time bidding updates, and place bids.",
+          // schema.org has no "EventLive" member; EventScheduled is the valid
+          // enumeration value and the dates below convey the live window.
+          eventStatus: "https://schema.org/EventScheduled",
+          eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+          startDate: eventDates.startDate,
+          endDate: eventDates.endDate,
+          location: {
+            "@type": "VirtualLocation",
+            url: pageUrl,
+          },
+          organizer: { "@id": `${baseUrl}/#organization` },
+          workFeatured: {
+            "@type": "BroadcastEvent",
+            name: "Sello Live Bidding Video Stream",
+            isLiveBroadcast,
+            startDate: eventDates.startDate,
+          },
+        },
+        ...(itemListElement.length
+          ? [
+              {
+                "@type": "ItemList",
+                "@id": `${pageUrl}/#live-lots`,
+                name: "Cars Currently on Live Bidding Block",
+                description:
+                  "Vehicles receiving real-time bids right now on Sello.pk",
+                itemListOrder: "https://schema.org/ItemListOrderDescending",
+                numberOfItems: itemListElement.length,
+                itemListElement,
+              },
+            ]
+          : []),
+      ],
+    };
+
+    addStructuredData(schema);
+  }, [auction, cars]);
+
+  return null;
+};
+
 export default {
   ProductSchema,
   VehicleSchema,
@@ -1210,4 +1386,5 @@ export default {
   CarEstimatorPageSchema,
   VehicleVerificationPageSchema,
   AuctionsPageSchema,
+  LiveAuctionPageSchema,
 };
