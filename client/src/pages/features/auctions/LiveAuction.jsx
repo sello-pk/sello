@@ -27,6 +27,7 @@ import LiveAuctionUpdates from "@components/auction/LiveAuctionUpdates";
 import AuctionSavedSearches from "@components/auction/AuctionSavedSearches";
 import SEO from "../../../components/common/SEO";
 import StructuredData from "../../../components/common/StructuredData";
+import { AdSenseSlot } from "../../../components/ads";
 
 // Shared tiny components
 
@@ -744,6 +745,9 @@ export default function LiveAuction() {
             </Link>
           </div>
         </div>
+      </div>
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <AdSenseSlot slot="auctionLive" />
       </div>
       </div>
     </>

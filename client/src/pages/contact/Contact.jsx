@@ -3,6 +3,7 @@ import ContactForm from "../../components/sections/contact/ContactForm";
 import ContactMap from "../../components/features/listings/ContactMap";
 import SEO from "../../components/common/SEO";
 import StructuredData from "../../components/common/StructuredData";
+import { AdSenseSlot } from "../../components/ads";
 
 const Contact = () => {
   return (
@@ -15,6 +16,9 @@ const Contact = () => {
       />
       <div className="max-w-8xl mx-auto">
         <ContactForm />
+      </div>
+      <div className="px-4 sm:px-6 lg:px-8">
+        <AdSenseSlot slot="contact" />
       </div>
       <ContactMap />
     </div>

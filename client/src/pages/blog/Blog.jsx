@@ -10,6 +10,7 @@ import NewsLatter from "../../components/utils/NewsLatter";
 import SEO from "../../components/common/SEO";
 import StructuredData from "../../components/common/StructuredData";
 import { useGetBlogsQuery } from "../../redux/services/api";
+import { AdSenseSlot } from "../../components/ads";
 
 const Blog = () => {
   const { data } = useGetBlogsQuery({ page: 1, limit: 12, status: "published" });
@@ -42,6 +43,7 @@ const Blog = () => {
         </div>
       </div>
       <LatestBlogsSection />
+      <AdSenseSlot slot="blogIndex" />
       {/* Blog Categories section (uses NewTechnology layout but shows dynamic categories) */}
       <NewTechnology />
       <ReviewSliderBanner />

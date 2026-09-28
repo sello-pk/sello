@@ -25,6 +25,7 @@ import HowAuctionsWork from "../../../components/auction/HowAuctionsWork";
 import AuctionBlogsSection from "../../../components/features/auctions/AuctionBlogsSection";
 import SEO from "../../../components/common/SEO";
 import StructuredData from "../../../components/common/StructuredData";
+import { AdSenseSlot } from "../../../components/ads";
 
 const CountdownTimer = ({ targetDate }) => {
   const [time, setTime] = React.useState({ d: 0, h: 0, m: 0, s: 0 });
@@ -333,6 +334,8 @@ export default function AuctionsActions() {
       </section>
 
       <HowAuctionsWork />
+
+      <AdSenseSlot slot="auctionsIndex" />
 
       <AuctionBlogsSection />
 

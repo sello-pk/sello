@@ -7,6 +7,7 @@ import BlogSection from "../../components/sections/home/BlogSection";
 import ExploreBrands from "../../components/sections/listings/ExploreBrands";
 import PartnerOffersSection from "../../components/sections/listings/PartnerOffersSection";
 import SEO from "../../components/common/SEO";
+import { AdSenseSlot } from "../../components/ads";
 
 const CarListings = () => {
   return (
@@ -23,6 +24,7 @@ const CarListings = () => {
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0">
         <BrowsByTypeSection />
         <GetAllCarsSection />
+        <AdSenseSlot slot="listingFeed" />
         <NeedInspiration />
         <BlogSection />
         <ExploreBrands />

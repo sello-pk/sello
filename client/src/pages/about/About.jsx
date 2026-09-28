@@ -7,6 +7,7 @@ import ReviewsAnalysis from "../../components/sections/about/ReviewsAnalysis";
 import CustomerReviews from "../../components/sections/about/CustomerReviews";
 import SEO from "../../components/common/SEO";
 import StructuredData from "../../components/common/StructuredData";
+import { AdSenseSlot } from "../../components/ads";
 
 const About = () => {
   return (
@@ -19,6 +20,9 @@ const About = () => {
       />
       <AboutHeroSection />
       <OutStorySection />
+      <div className="px-4 sm:px-6 lg:px-8">
+        <AdSenseSlot slot="about" />
+      </div>
       <JoinUsSection />
       <OurTeam />
       <ReviewsAnalysis />

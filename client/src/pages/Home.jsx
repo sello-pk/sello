@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import Hero from "../components/sections/home/Hero";
 import SEO from "../components/common/SEO";
 import StructuredData from "../components/common/StructuredData";
+import { AdSenseSlot } from "../components/ads";
 import { lazyImport } from "../utils/lazyImports.js";
 
 /** Below-fold sections — separate chunks so homepage initial JS stays smaller (LCP/TBT). */
@@ -79,6 +80,9 @@ const Home = () => {
         <BelowFold minHeight="22rem">
           <FeaturedCarsCarousel />
         </BelowFold>
+        <BelowFold minHeight="18rem">
+          <AdSenseSlot slot="homepageTop" />
+        </BelowFold>
         <BelowFold minHeight="14rem">
           <HowAuctionsWork />
         </BelowFold>
@@ -87,6 +91,9 @@ const Home = () => {
         </BelowFold>
         <BelowFold minHeight="14rem">
           <BlogSection />
+        </BelowFold>
+        <BelowFold minHeight="16rem">
+          <AdSenseSlot slot="homepageFeed" />
         </BelowFold>
         <BelowFold minHeight="12rem">
           <BuySellCards />

@@ -7,6 +7,7 @@ import { lazyImport } from "./utils/lazyImports.js";
 import Navbar from "./components/Navbar.jsx";
 import BottomHeader from "./components/BottomHeader.jsx";
 import Footer from "./components/Footer.jsx";
+import { AdSenseSlot } from "./components/ads";
 /** Chunk filename avoids "WhatsApp" (many blockers strip that URL substring). */
 const HelpChatWidget = lazyImport(
   () => import("./components/features/help/HelpChatWidget.jsx"),
@@ -674,6 +675,13 @@ const App = () => {
       >
         <AppRouter />
       </main>
+
+      {/* Global ad slot: public pages only, above the footer. */}
+      {shouldShowNavbarFooter && (
+        <div className="w-full max-w-full px-4 sm:px-6 lg:px-8">
+          <AdSenseSlot slot="globalFooter" minHeight={200} />
+        </div>
+      )}
 
       {/* Show Footer except for auth pages & admin */}
       {shouldShowNavbarFooter && <Footer />}

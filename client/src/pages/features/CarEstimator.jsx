@@ -2,6 +2,7 @@ import React from "react";
 import CarEstimatorPage from "../../components/features/CarEstimator/CarEstimatorPage";
 import SEO from "../../components/common/SEO";
 import StructuredData from "../../components/common/StructuredData";
+import { AdSenseSlot } from "../../components/ads";
 
 const CarEstimator = () => {
   return (
@@ -14,6 +15,9 @@ const CarEstimator = () => {
       />
       <StructuredData.CarEstimatorPageSchema />
       <CarEstimatorPage />
+      <div className="px-4 sm:px-6 lg:px-8">
+        <AdSenseSlot slot="estimator" />
+      </div>
     </>
   );
 };

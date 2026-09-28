@@ -8,7 +8,7 @@ import Btns from "../../components/sections/carDetails/Btns";
 import CarDetailsEtc from "../../components/sections/carDetails/CarDetailsEtc";
 import BrandMarquee from "../../components/BrandMarquee";
 import { Link } from "react-router-dom";
-import Ads from "../../components/utils/Ads";
+import { AdSenseSlot } from "../../components/ads";
 import BlogSection from "../../components/sections/home/BlogSection";
 import CustomerReviews from "../../components/sections/carDetails/CustomerReviews";
 import Breadcrumb from "../../components/common/Breadcrumb";
@@ -324,6 +324,12 @@ const CarDetails = () => {
         <CustomerReviews />
       </div>
 
+      {/* Ad slot: kept clear of the buy/bid buttons and the seller contact
+          block so an ad is never mistaken for part of the Sello UI. */}
+      <div className="bg-white">
+        <AdSenseSlot slot="carDetailBottom" />
+      </div>
+
       {/* Similar Listings Section */}
       {extractedCarId && <SimilarListings carId={extractedCarId} />}
 
@@ -366,7 +372,7 @@ const CarDetails = () => {
 
       {/* Ads Section */}
       <div className="bg-gray-50">
-        <Ads />
+        <AdSenseSlot slot="carDetail" />
       </div>
 
       {/* Blog Section */}

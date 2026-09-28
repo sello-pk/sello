@@ -18,6 +18,7 @@ import { generateFAQSchema } from "../../utils/schemas";
 import { buildBlogUrl } from "../../utils/urlBuilders";
 import BlogCommentsSection from "../../components/features/blog/BlogCommentsSection";
 import { hardcodedBlogPosts } from "../../assets/blogs/blogAssets";
+import { AdSenseSlot } from "../../components/ads";
 
 /** CLS: reserve aspect ratio for inline <img> in CMS HTML (browser-only). */
 function parseBlogImageDimensionsFromUrl(src) {
@@ -451,6 +452,10 @@ const BlogDetails = () => {
                   ))}
                 </div>
               )}
+
+              {/* Mid-article ad, after the content body and before the
+                  related-articles block. */}
+              <AdSenseSlot slot="blogArticle" />
 
               {relatedBlogs.length > 0 && (
                 <section className="mt-10 pt-8 border-t border-gray-200" aria-label="Related articles">
