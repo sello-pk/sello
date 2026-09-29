@@ -4,6 +4,7 @@
  */
 
 import { useEffect } from "react";
+import { SOCIAL_SAME_AS } from "../../config/socialLinks";
 import {
   generateVehicleSchema,
   generateBreadcrumbSchema,
@@ -261,9 +262,7 @@ export const OrganizationSchema = () => {
         contactType: "Customer Service",
         email: supportEmail,
       },
-      sameAs: [
-        // Add social media links if available
-      ],
+      sameAs: SOCIAL_SAME_AS,
     };
 
     addStructuredData(schema);
@@ -381,12 +380,7 @@ export const HomePageSchema = () => {
             "@type": "Country",
             name: "Pakistan",
           },
-          sameAs: [
-            "https://www.facebook.com/people/Sello/61584930269294/",
-            "https://www.instagram.com/sello.pk",
-            "https://www.youtube.com/@sello.pakistan",
-            "https://www.tiktok.com/@sello.pk",
-          ],
+          sameAs: SOCIAL_SAME_AS,
         },
         {
           "@type": "WebSite",
@@ -626,12 +620,7 @@ export const ListingsPageSchema = ({ cars = [] }) => {
             name: "Sello.pk",
             url: baseUrl,
             logo: `${baseUrl}/assets/logo.png`,
-            sameAs: [
-              "https://www.facebook.com/people/Sello/61584930269294/",
-              "https://www.instagram.com/sello.pk",
-              "https://www.youtube.com/@sello.pakistan",
-              "https://www.tiktok.com/@sello.pk",
-            ],
+            sameAs: SOCIAL_SAME_AS,
           },
         },
         {
@@ -716,12 +705,7 @@ export const CarEstimatorPageSchema = () => {
             name: "Sello.pk",
             url: baseUrl,
             logo: `${baseUrl}/assets/logo.png`,
-            sameAs: [
-              "https://www.facebook.com/people/Sello/61584930269294/",
-              "https://www.instagram.com/sello.pk",
-              "https://www.youtube.com/@sello.pakistan",
-              "https://www.tiktok.com/@sello.pk",
-            ],
+            sameAs: SOCIAL_SAME_AS,
           },
         },
         {
@@ -848,12 +832,7 @@ export const VehicleVerificationPageSchema = () => {
             name: "Sello.pk",
             url: baseUrl,
             logo: `${baseUrl}/assets/logo.png`,
-            sameAs: [
-              "https://www.facebook.com/people/Sello/61584930269294/",
-              "https://www.instagram.com/sello.pk",
-              "https://www.youtube.com/@sello.pakistan",
-              "https://www.tiktok.com/@sello.pk",
-            ],
+            sameAs: SOCIAL_SAME_AS,
           },
         },
         {
@@ -1121,12 +1100,7 @@ export const AuctionsPageSchema = ({ auction, cars = [] }) => {
             name: "Sello.pk",
             url: baseUrl,
             logo: `${baseUrl}/assets/logo.png`,
-            sameAs: [
-              "https://www.facebook.com/people/Sello/61584930269294/",
-              "https://www.instagram.com/sello.pk",
-              "https://www.youtube.com/@sello.pakistan",
-              "https://www.tiktok.com/@sello.pk",
-            ],
+            sameAs: SOCIAL_SAME_AS,
           },
         },
         {
@@ -1279,12 +1253,7 @@ export const LiveAuctionPageSchema = ({ auction, cars = [] }) => {
             name: "Sello.pk",
             url: baseUrl,
             logo: `${baseUrl}/assets/logo.png`,
-            sameAs: [
-              "https://www.facebook.com/people/Sello/61584930269294/",
-              "https://www.instagram.com/sello.pk",
-              "https://www.youtube.com/@sello.pakistan",
-              "https://www.tiktok.com/@sello.pk",
-            ],
+            sameAs: SOCIAL_SAME_AS,
           },
         },
         {
@@ -1427,12 +1396,7 @@ export const AboutPageSchema = () => {
             "@type": "Country",
             name: "Pakistan",
           },
-          sameAs: [
-            "https://www.facebook.com/people/Sello/61584930269294/",
-            "https://www.instagram.com/sello.pk",
-            "https://www.youtube.com/@sello.pakistan",
-            "https://www.tiktok.com/@sello.pk",
-          ],
+          sameAs: SOCIAL_SAME_AS,
           ...(founderRef ? { founder: founderRef } : {}),
           ...(people.length
             ? { employee: people.map((person) => ({ "@id": person["@id"] })) }
@@ -1556,12 +1520,7 @@ export const ContactPageSchema = () => {
           logo: `${baseUrl}/assets/logo.png`,
           telephone: "+923122221474",
           email: "info@sello.pk",
-          sameAs: [
-            "https://www.facebook.com/people/Sello/61584930269294/",
-            "https://www.instagram.com/sello.pk",
-            "https://www.youtube.com/@sello.pakistan",
-            "https://www.tiktok.com/@sello.pk",
-          ],
+          sameAs: SOCIAL_SAME_AS,
           contactPoint: [
             {
               "@type": "ContactPoint",
@@ -1716,12 +1675,7 @@ export const BlogPageSchema = ({ posts = [] }) => {
             name: "Sello.pk",
             url: baseUrl,
             logo: `${baseUrl}/assets/logo.png`,
-            sameAs: [
-              "https://www.facebook.com/people/Sello/61584930269294/",
-              "https://www.instagram.com/sello.pk",
-              "https://www.youtube.com/@sello.pakistan",
-              "https://www.tiktok.com/@sello.pk",
-            ],
+            sameAs: SOCIAL_SAME_AS,
           },
         },
         {

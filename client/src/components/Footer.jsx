@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import { apple, android, facebook, instagram } from "../assets/assets";
 import { trackContact } from "../utils/metaPixel.js";
 import { FaYoutube, FaWhatsapp } from "react-icons/fa";
-import { FaTiktok } from "react-icons/fa6";
+import { FaTiktok, FaXTwitter } from "react-icons/fa6";
+import { SOCIAL_LINKS } from "../config/socialLinks";
 
 const Footer = () => {
   const resolveFooterPath = (path) => {
@@ -215,11 +216,12 @@ const Footer = () => {
               </div>
               <div className="flex items-center gap-3">
                 <a
-                  href="https://web.facebook.com/profile.php?id=61584930269294&mibextid=wwXIfr&rdid=6QUy9q5xMtmsDjOi&share_url=https%3A%2F%2Fweb.facebook.com%2Fshare%2F19jao3GFzS%2F%3Fmibextid%3DwwXIfr%26_rdc%3D1%26_rdr"
+                  href={SOCIAL_LINKS.facebook}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-11 h-11 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition-[background-color,transform] duration-300 hover:scale-110 border border-white/10 group"
                   title="Facebook"
+                  aria-label="Sello on Facebook"
                 >
                   <img
                     src={facebook}
@@ -232,11 +234,12 @@ const Footer = () => {
                 </a>
 
                 <a
-                  href="https://www.instagram.com/sello.p.k"
+                  href={SOCIAL_LINKS.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-11 h-11 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition-[background-color,transform] duration-300 hover:scale-110 border border-white/10 group"
                   title="Instagram"
+                  aria-label="Sello on Instagram"
                 >
                   <img
                     src={instagram}
@@ -247,21 +250,36 @@ const Footer = () => {
                     className="w-5 h-5 brightness-0 invert opacity-80 group-hover:opacity-100 transition-opacity"
                   />
                 </a>
+
                 <a
-                  href="https://youtube.com/@sello.p.k?si=OxPdwNCh2HLERIt8"
+                  href={SOCIAL_LINKS.x}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-11 h-11 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition-[background-color,transform] duration-300 hover:scale-110 border border-white/10 group"
-                  title="LinkedIn"
+                  title="X"
+                  aria-label="Sello on X"
+                >
+                  <FaXTwitter className="w-5 h-5 brightness-0 invert opacity-80 group-hover:opacity-100 transition-opacity" />
+                </a>
+
+                <a
+                  href={SOCIAL_LINKS.youtube}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-11 h-11 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition-[background-color,transform] duration-300 hover:scale-110 border border-white/10 group"
+                  title="YouTube"
+                  aria-label="Sello on YouTube"
                 >
                   <FaYoutube className="w-5 h-5 brightness-0 invert opacity-80 group-hover:opacity-100 transition-opacity" />
                 </a>
+
                 <a
-                  href="https://www.tiktok.com/@sello..pk?_r=1&_t=ZS-92DrKceCaAi"
+                  href={SOCIAL_LINKS.tiktok}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-11 h-11 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition-[background-color,transform] duration-300 hover:scale-110 border border-white/10 group"
-                  title="LinkedIn"
+                  title="TikTok"
+                  aria-label="Sello on TikTok"
                 >
                   <FaTiktok className="w-5 h-5 brightness-0 invert opacity-80 group-hover:opacity-100 transition-opacity" />
                 </a>
