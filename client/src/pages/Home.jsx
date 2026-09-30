@@ -39,11 +39,7 @@ const NewsLatter = lazyImport(
 const BelowFold = ({ children, minHeight = "8rem" }) => (
   <Suspense
     fallback={
-      <div
-        aria-hidden="true"
-        className="w-full"
-        style={{ minHeight }}
-      />
+      <div aria-hidden="true" className="w-full" style={{ minHeight }} />
     }
   >
     {children}
@@ -71,15 +67,16 @@ const Home = () => {
         <BelowFold minHeight="10rem">
           <BrandsSection />
         </BelowFold>
+        <BelowFold minHeight="22rem">
+          <FeaturedCarsCarousel />
+        </BelowFold>
         <BelowFold minHeight="16rem">
           <Video />
         </BelowFold>
         <BelowFold minHeight="14rem">
           <BannerCarousal />
         </BelowFold>
-        <BelowFold minHeight="22rem">
-          <FeaturedCarsCarousel />
-        </BelowFold>
+
         <BelowFold minHeight="18rem">
           <AdSenseSlot slot="homepageTop" />
         </BelowFold>
