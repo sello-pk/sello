@@ -20,6 +20,8 @@ const SLOT_ENV_KEYS = {
   // Homepage: below the hero-adjacent content, and further down the feed.
   homepageTop: "VITE_ADSENSE_SLOT_HOMEPAGE_TOP",
   homepageFeed: "VITE_ADSENSE_SLOT_HOMEPAGE_FEED",
+  // Homepage brands block: square unit beside the brand grid, not the marquee.
+  brandsSection: "VITE_ADSENSE_SLOT_BRANDS_SECTION",
   // Listings: between the vehicle grid and the pagination controls.
   listingFeed: "VITE_ADSENSE_SLOT_LISTING_FEED",
   // Car detail: mid page, and again before the similar-vehicles block.
