@@ -1,0 +1,4 @@
+# ads.txt - authorized digital sellers, required by Google AdSense.
+# Sello uses only Google's own AdSense, so the single line below is Google's.
+# Must be served as text/plain at https://sello.pk/ads.txt.
+google.com, pub-5923513384592431, DIRECT, f08c47fec0942fa0

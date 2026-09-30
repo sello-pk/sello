@@ -13,3 +13,8 @@
 # Vite hashed assets
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
+
+# ads.txt: Google AdSense reads this as plain text
+/ads.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=86400
