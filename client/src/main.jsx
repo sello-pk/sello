@@ -14,35 +14,41 @@ import { tryReloadOnceForStaleChunk } from "./utils/lazyImports.js";
 import heroLcpDesktop from "./assets/images/hero.webp";
 import heroLcpMobile from "./assets/images/heroMobile.webp";
 
-// Dev fallback: production uses /lcp/* preloads in index.html
-if (typeof document !== "undefined" && import.meta.env.DEV) {
+// Homepage-only hero LCP preload. In dev the hrefs are the bundled hashed
+// assets; in production the stable /lcp/* URLs (copied at build time) are
+// preloaded so the hero is discoverable before the main chunk. Blog/article
+// pages intentionally skip these so they don't fetch the hero image.
+function injectHomeHeroPreloads() {
   const path = window.location.pathname || "/";
   const isHome = path === "/" || path === "/home";
-  if (isHome) {
-    const preloads = [
-      {
-        id: "sello-preload-hero-lcp-mobile",
-        href: heroLcpMobile,
-        media: "(max-width: 767px)",
-      },
-      {
-        id: "sello-preload-hero-lcp-desktop",
-        href: heroLcpDesktop,
-        media: "(min-width: 768px)",
-      },
-    ];
-    for (const { id, href, media } of preloads) {
-      if (document.getElementById(id)) continue;
-      const link = document.createElement("link");
-      link.id = id;
-      link.rel = "preload";
-      link.as = "image";
-      link.href = href;
-      link.media = media;
-      link.setAttribute("fetchpriority", "high");
-      document.head.appendChild(link);
-    }
+  if (!isHome) return;
+  const preloads = [
+    {
+      id: "sello-preload-hero-lcp-mobile",
+      href: import.meta.env.PROD ? "/lcp/heroMobile.webp" : heroLcpMobile,
+      media: "(max-width: 767px)",
+    },
+    {
+      id: "sello-preload-hero-lcp-desktop",
+      href: import.meta.env.PROD ? "/lcp/hero.webp" : heroLcpDesktop,
+      media: "(min-width: 768px)",
+    },
+  ];
+  for (const { id, href, media } of preloads) {
+    if (document.getElementById(id)) continue;
+    const link = document.createElement("link");
+    link.id = id;
+    link.rel = "preload";
+    link.as = "image";
+    link.href = href;
+    link.media = media;
+    link.setAttribute("fetchpriority", "high");
+    document.head.appendChild(link);
   }
+}
+
+if (typeof document !== "undefined" && typeof window !== "undefined") {
+  injectHomeHeroPreloads();
 }
 
 window.addEventListener("unhandledrejection", (event) => {

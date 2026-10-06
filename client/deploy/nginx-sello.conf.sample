@@ -1,0 +1,107 @@
+# Sello client — Nginx static site config (sample).
+# Copy your built dist/ (from `npm run build`) to /var/www/sello on the Hostinger
+# VPS, then point the sello.pk server block at this config. Adjust paths, TLS
+# (certbot), and server_name to your actual setup.
+#
+# Why this layout:
+#   * App (SPA) routes fall back to /index.html so client-side routing works.
+#   * /blog/* is special: unknown blog slugs must return a REAL 404 (HTTP 404,
+#     not a 200 SPA fallback) so Google Search Console never flags a soft 404.
+#     Valid articles are static prerendered HTML files under dist/blog/<slug>/,
+#     so `try_files $uri $uri/` serves them directly; anything else 404s.
+#   * Never return 200 for a missing /blog/* URL.
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name sello.pk www.sello.pk;
+
+    root /var/www/sello;
+    index index.html;
+
+    # --- Security headers (keep in sync with public/_headers) ---
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    # Pick one: the app runs an AdSense cross-origin script; a strict CSP needs
+    # to allow googleads/cloudinary/facebook/pixel endpoints:
+    # add_header Content-Security-Policy "default-src 'self' https://*.sello.pk https://*.google.com https://*.googlesyndication.com https://*.cloudinary.com https://connect.facebook.net https://*.tiktokcdn.com https://*.gtagmanager.com https://*.google-analytics.com https://t.contentsquare.net https://*.clarity.ms data: blob: 'unsafe-inline' 'unsafe-eval';" always;
+
+    # --- Compression ---
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css application/json application/javascript
+               image/svg+xml text/xml application/xml application/xml+rss;
+
+    # --- Hashed build assets: cache forever ---
+    location ~* ^/assets/.*\.(js|css|mjs|woff2?)$ {
+        add_header Cache-Control "public, max-age=31536000, immutable";
+        try_files $uri =404;
+    }
+
+    # --- LCP hero images (stable URLs, regenerated per build) ---
+    location ^~ /lcp/ {
+        add_header Cache-Control "public, max-age=31536000, immutable";
+        try_files $uri =404;
+    }
+
+    # --- Blog articles: static prerendered pages; unknown slugs = real 404 ---
+    # Matches /blog/anything, INCLUDING /blog/all and /blog/<slug>.
+    location ^~ /blog/ {
+        # Serve dist/blog/<slug>/index.html automatically (index directive above).
+        try_files $uri $uri/ =404;
+    }
+
+    # --- /blog exactly: prerendered page dist/blog/index.html ---
+    location = /blog {
+        try_files $uri $uri/ =404;
+    }
+
+    # --- AdSense txt, Google site verification, favicon, manifest ---
+    location = /ads.txt          { add_header Cache-Control "public, max-age=86400"; }
+    location = /favicon.png      { add_header Cache-Control "public, max-age=86400"; }
+    location = /manifest.json    { add_header Cache-Control "public, max-age=86400"; }
+    location = /google133c439ec0fff6fc.html {
+        add_header Content-Type "text/html; charset=utf-8";
+        add_header Cache-Control "public, max-age=86400";
+    }
+
+    # --- robots.txt + sitemap.xml: short cache so updates are picked up ---
+    location = /robots.txt      { add_header Cache-Control "public, max-age=86400"; }
+    location = /sitemap.xml     { add_header Cache-Control "public, max-age=86400"; }
+
+    # --- Prerendered content pages (initial HTML holds real content) ---
+    # Serve files directly; fall back to the SPA only for app routes below.
+    location /about/        { try_files $uri $uri/ =404; }
+    location /contact/      { try_files $uri $uri/ =404; }
+    location /privacy-policy/ { try_files $uri $uri/ =404; }
+    location /terms-condition/ { try_files $uri $uri/ =404; }
+    location /terms-conditions/ { try_files $uri $uri/ =404; }
+
+    location = /about         { try_files $uri $uri/ /index.html; }
+    location = /contact       { try_files $uri $uri/ /index.html; }
+    location = /privacy-policy { try_files $uri $uri/ /index.html; }
+    location = /terms-condition { try_files $uri $uri/ /index.html; }
+    location = /terms-conditions { try_files $uri $uri/ /index.html; }
+
+    # --- HTML pages (index.html + prerendered pages): revalidate every time ---
+    location ~* \.html$ {
+        add_header Cache-Control "no-cache";
+        try_files $uri =404;
+    }
+
+    # --- SPA fallback for all remaining app routes ---
+    location / {
+        add_header Cache-Control "no-cache";
+        try_files $uri $uri/ /index.html;
+    }
+
+    # --- 404 page ---
+    error_page 404 /404.html;
+    location = /404.html {
+        internal;
+        default_type text/html;
+        return 404 "<html><head><title>404 Not Found</title></head><body><h1>404 Not Found</h1><p>The page you're looking for doesn't exist.</p></body></html>";
+    }
+}

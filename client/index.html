@@ -17,21 +17,9 @@
     <link rel="dns-prefetch" href="https://connect.facebook.net" />
     <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
 
-    <!-- LCP: stable URLs (copied to /lcp/ at build) — discoverable before JS bundle -->
-    <link
-      rel="preload"
-      as="image"
-      href="/lcp/heroMobile.webp"
-      fetchpriority="high"
-      media="(max-width: 767px)"
-    />
-    <link
-      rel="preload"
-      as="image"
-      href="/lcp/hero.webp"
-      fetchpriority="high"
-      media="(min-width: 768px)"
-    />
+    <!-- LCP: stable URLs (copied to /lcp/ at build). Preloads are injected at
+         runtime for the homepage only (src/main.jsx) so blog article pages do
+         not fetch the hero image. -->
 
     <!-- Critical shell CSS before Tailwind bundle — reduces mobile CLS/LCP snap -->
     <style>

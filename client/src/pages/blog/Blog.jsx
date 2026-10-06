@@ -20,8 +20,8 @@ const Blog = () => {
     <div>
       <StructuredData.BlogPageSchema posts={posts} />
       <SEO
-        title="Blog | Sello"
-        description="Read our latest blog posts about cars, automotive news, buying guides, maintenance tips, and more."
+        title="Car Blog in Pakistan | News, Guides & Insights - Sello.pk"
+        description="Read the latest automotive news, buying guides, selling tips, and market insights on the Sello.pk car blog."
         keywords="blog, car blog, automotive news, buy cars Pakistan, sell cars, car tips, car guides, Sello blog"
       />
       <BlogsHeroSection />

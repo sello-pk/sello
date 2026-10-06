@@ -14,8 +14,8 @@ import { formatDate } from "../../utils";
 import SEO from "../../components/common/SEO";
 import StructuredData from "../../components/common/StructuredData";
 import { Spinner } from "../../components/ui/Loading";
-import { generateFAQSchema } from "../../utils/schemas";
 import { buildBlogUrl } from "../../utils/urlBuilders";
+import { getPrerenderedBlog } from "../../utils/prerenderedBlog";
 import BlogCommentsSection from "../../components/features/blog/BlogCommentsSection";
 import { hardcodedBlogPosts } from "../../assets/blogs/blogAssets";
 import { AdSenseSlot } from "../../components/ads";
@@ -121,7 +121,14 @@ const BlogDetails = () => {
     error: errorBySlug,
   } = useGetBlogBySlugQuery(id, { skip: isObjectId });
 
-  const blog = isObjectId ? blogById : blogBySlug;
+  const prerenderedBlog = React.useMemo(() => getPrerenderedBlog(id), [id]);
+
+  // Prerendered article (embedded in the static HTML) is a fallback: it paints
+  // the article immediately and wins when the live API call errors or returns
+  // nothing momentarily. Live API data still takes precedence when it arrives.
+  const blog = isObjectId
+    ? blogById || prerenderedBlog
+    : blogBySlug || prerenderedBlog;
   const isLoading = isObjectId ? isLoadingById : isLoadingBySlug;
   const isError = isObjectId ? isErrorById : isErrorBySlug;
 
@@ -201,15 +208,19 @@ const BlogDetails = () => {
   }
 
   if (isError && !hardcodedBlog && !currentBlog) {
+    // Only a genuine 404 (unknown slug/id) should look like a missing post.
+    // Network/CORS hiccups get a neutral message instead of a soft-404.
+    const isGenuine404 = is404;
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Blog Post Not Found
+            {isGenuine404 ? "Blog Post Not Found" : "Blog Post Unavailable"}
           </h1>
           <p className="text-gray-600 mb-6 max-w-md mx-auto">
-            The blog post you&apos;re looking for doesn&apos;t exist or has been
-            removed.
+            {isGenuine404
+              ? "The blog post you're looking for doesn't exist or has been removed."
+              : "We couldn't load this blog post right now. Please try again in a moment."}
           </p>
           <Link
             to="/blog"

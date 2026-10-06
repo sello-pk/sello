@@ -266,9 +266,14 @@ export const api = createApi({
           if (token) {
             headers.set("Authorization", `Bearer ${token}`);
           }
-          // Don't set Content-Type for FormData - browser will set it with boundary
-          // Check if body is FormData instance
-          if (!(args?.body instanceof FormData)) {
+          // Only set Content-Type for requests that actually carry a JSON body.
+          // Setting it on bodyless GET/HEAD requests turns them into CORS
+          // preflights and made public blog/auction reads fail when a preflight
+          // was interrupted. Browser sets its own boundary for FormData.
+          const method = String(args?.method || "GET").toUpperCase();
+          const isFormBody = args?.body instanceof FormData;
+          const isBodyless = method === "GET" || method === "HEAD";
+          if (!isFormBody && !isBodyless) {
             headers.set("Content-Type", "application/json");
           }
           return headers;
