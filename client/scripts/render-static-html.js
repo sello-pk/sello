@@ -107,6 +107,36 @@ function injectScript(html, scriptType, id, content) {
   );
 }
 
+// ------------------------------------------------------------- index.html hero preloads
+
+const INDEX_HERO_PRELOADS = [
+  {
+    id: "sello-preload-hero-lcp-mobile",
+    href: "/lcp/heroMobile.webp",
+    media: "(max-width: 767px)",
+  },
+  {
+    id: "sello-preload-hero-lcp-desktop",
+    href: "/lcp/hero.webp",
+    media: "(min-width: 768px)",
+  },
+];
+
+function injectIndexHtmlHeroPreloads(distRoot) {
+  const indexPath = path.join(distRoot, "index.html");
+  if (!fs.existsSync(indexPath)) return;
+  let html = fs.readFileSync(indexPath, "utf8");
+  if (INDEX_HERO_PRELOADS.every((p) => html.includes(`id="${p.id}"`))) return;
+  const headTag = /<head[^>]*>/i.exec(html);
+  if (!headTag) return;
+  const tags = INDEX_HERO_PRELOADS.map(
+    (p) =>
+      `    <link id="${p.id}" rel="preload" as="image" fetchpriority="high" media="${p.media}" href="${p.href}" />`,
+  ).join("\n");
+  html = html.replace(headTag[0], `${headTag[0]}\n${tags}`);
+  fs.writeFileSync(indexPath, html, "utf8");
+}
+
 // ------------------------------------------------------------- head builders
 
 const PRIVACY_TERMS_COMMON = {
@@ -483,6 +513,10 @@ async function main() {
 
   const ok = results.filter((r) => !r.error);
   log(`wrote ${ok.length} static pages, ${errors.length} errors`);
+
+  // Homepage-only hero LCP preloads, statically present at parse time. The
+  // client (src/main.jsx) id-guards the same tags, so no duplicates on hydration.
+  injectIndexHtmlHeroPreloads(DIST_ROOT);
 
   if (!SKIP_BLOG_PAGES) {
     const manifestPath = path.join(
