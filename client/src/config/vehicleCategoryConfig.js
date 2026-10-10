@@ -7,7 +7,7 @@ export const vehicleCategoryConfig = {
     title: "Cars",
     description: "Cars, sedans, SUVs, and other passenger vehicles",
     icon: FaCar,
-    bgImage: "/assets/categories/carCat.svg",
+    bgImage: "/assets/categories/carCat.webp",
     blogImage: categoriesBlogsImages.carCatBlog,
     blogImage2: categoriesBlogsImages.carCatBlog2,
     blogs: [
@@ -72,7 +72,7 @@ Use Sello to reach verified buyers. Respond quickly and allow test drives in a s
     title: "Buses",
     description: "Buses and commercial passenger vehicles",
     icon: FaBus,
-    bgImage: "/assets/categories/busCat.svg",
+    bgImage: "/assets/categories/busCat.webp",
     blogImage: categoriesBlogsImages.busCatBlog,
     blogImage2: categoriesBlogsImages.busCatBlog2,
     blogs: [
@@ -137,7 +137,7 @@ Stick to authorised or reputed workshops. Use Sello to compare buses and list yo
     title: "Trucks",
     description: "Trucks, haulers, and heavy commercial vehicles",
     icon: FaTruck,
-    bgImage: "/assets/categories/truckCat.svg",
+    bgImage: "/assets/categories/truckCat.webp",
     blogImage: categoriesBlogsImages.truckCatBlog,
     blogImage2: categoriesBlogsImages.truckCatBlog2,
     blogs: [
@@ -201,7 +201,7 @@ Plan for these when pricing your services or buying another truck. Use Sello to 
     title: "Vans",
     description: "Vans, minivans, and small cargo vehicles",
     icon: FaVanShuttle,
-    bgImage: "/assets/categories/vanCat.svg",
+    bgImage: "/assets/categories/vanCat.webp",
     blogImage: categoriesBlogsImages.vanCatBlog,
     blogImage2: categoriesBlogsImages.vanCatBlog2,
     blogs: [
@@ -266,7 +266,7 @@ Use Sello to reach buyers. Allow test drives safely. Complete transfer and payme
     title: "Bikes",
     description: "Motorcycles, scooters, and two-wheelers",
     icon: FaMotorcycle,
-    bgImage: "/assets/categories/bikeCat.svg",
+    bgImage: "/assets/categories/bikeCat.webp",
     blogImage: categoriesBlogsImages.bikeCatBlog,
     blogImage2: categoriesBlogsImages.bikeCatBlog2,
     blogs: [
@@ -329,7 +329,7 @@ Find a mechanic you trust. Keep receipts for major work—they help at resale. U
     title: "E-bikes",
     description: "Electric bikes, scooters, and eco-friendly rides",
     icon: FaPlug,
-    bgImage: "/assets/categories/ebikeCat.svg",
+    bgImage: "/assets/categories/ebikeCat.webp",
     blogImage: categoriesBlogsImages.ebikeCatBlog,
     blogImage2: categoriesBlogsImages.ebikeCatBlog2,
     blogs: [
@@ -394,7 +394,7 @@ When it's time for a new e-bike, use Sello to compare models and list your curre
     title: "Farm Vehicles",
     description: "Tractors, harvesters, and agricultural equipment",
     icon: FaTractor,
-    bgImage: "/assets/categories/farmCat.svg",
+    bgImage: "/assets/categories/farmCat.webp",
     blogImage: categoriesBlogsImages.farmCatBlog,
     blogImage2: categoriesBlogsImages.farmCatBlog2,
     blogs: [

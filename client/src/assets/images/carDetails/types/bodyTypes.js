@@ -34,11 +34,6 @@ import g2 from "../../../images/g2.png";
 import g3 from "../../../images/g3.png";
 import g4 from "../../../images/g4.png";
 
-import suvType from '../types/suvType.svg';
-import sedanType from '../types/sedanType.svg';
-import hatchbackType from '../types/hatchbackType.svg';
-import coupeType from '../types/coupeType.svg';
-import hybirdType from '../types/hybirdType.svg';
 import reviewBoyImg from '../types/reviewBoyImg.png';
 import reviewGirlImg from '../types/reviewGirlImg.png';
 
@@ -282,14 +277,6 @@ export const filterGridCars = [
   { id: 2, image: g2 },
   { id: 3, image: g3 },
   { id: 4, image: g4 },
-];
-
-export const usersBrowseByCarType = [
-  { id: 1, image: suvType, titleValue: "SUV", category: "carType" },
-  { id: 2, image: sedanType, titleValue: "Sedan", category: "carType" },
-  { id: 3, image: hatchbackType, titleValue: "Hatchback", category: "carType" },
-  { id: 4, image: coupeType, titleValue: "Coupe", category: "carType" },
-  { id: 5, image: hybirdType, titleValue: "Hybrid", category: "carType" },
 ];
 
 export const customersReviews = [

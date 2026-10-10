@@ -97,19 +97,19 @@ const categoryVehicleTypes = {
 };
 
 const categoryBackgrounds = {
-  cars: "/assets/categories/carCat.svg",
-  car: "/assets/categories/carCat.svg",
-  buses: "/assets/categories/busCat.svg",
-  bus: "/assets/categories/busCat.svg",
-  trucks: "/assets/categories/truckCat.svg",
-  truck: "/assets/categories/truckCat.svg",
-  vans: "/assets/categories/vanCat.svg",
-  van: "/assets/categories/vanCat.svg",
-  bikes: "/assets/categories/bikeCat.svg",
-  bike: "/assets/categories/bikeCat.svg",
-  "e-bikes": "/assets/categories/ebikeCat.svg",
-  "e-bike": "/assets/categories/ebikeCat.svg",
-  farm: "/assets/categories/farmCat.svg",
+  cars: "/assets/categories/carCat.webp",
+  car: "/assets/categories/carCat.webp",
+  buses: "/assets/categories/busCat.webp",
+  bus: "/assets/categories/busCat.webp",
+  trucks: "/assets/categories/truckCat.webp",
+  truck: "/assets/categories/truckCat.webp",
+  vans: "/assets/categories/vanCat.webp",
+  van: "/assets/categories/vanCat.webp",
+  bikes: "/assets/categories/bikeCat.webp",
+  bike: "/assets/categories/bikeCat.webp",
+  "e-bikes": "/assets/categories/ebikeCat.webp",
+  "e-bike": "/assets/categories/ebikeCat.webp",
+  farm: "/assets/categories/farmCat.webp",
 };
 
 const CategoryListings = () => {
@@ -219,7 +219,7 @@ const CategoryListings = () => {
       <div
         className="relative min-h-[48vh] md:h-[48vh] bg-gradient-to-br from-primary-500 to-primary-500 text-white overflow-hidden"
         style={{
-          backgroundImage: `url(${categoryBackgrounds[category] || "/assets/categories/carCat.svg"})`,
+          backgroundImage: `url(${categoryBackgrounds[category] || "/assets/categories/carCat.webp"})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",

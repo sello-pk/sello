@@ -40,6 +40,11 @@ server {
         try_files $uri =404;
     }
 
+    # --- Old category background SVGs (5-22 MB) were replaced by WebP ---
+    location ~ ^/assets/categories/(\w+Cat)\.svg$ {
+        return 301 /assets/categories/$1.webp;
+    }
+
     # --- LCP hero images (stable URLs, regenerated per build) ---
     location ^~ /lcp/ {
         add_header Cache-Control "public, max-age=31536000, immutable";

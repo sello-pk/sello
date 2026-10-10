@@ -1,5 +1,14 @@
-# SPA fallback — all unmatched routes serve index.html
-/*  /index.html  200
+# Old 5-22 MB category backgrounds were replaced by WebP (keep old URLs working)
+/assets/categories/carCat.svg  /assets/categories/carCat.webp  301
+/assets/categories/busCat.svg  /assets/categories/busCat.webp  301
+/assets/categories/truckCat.svg  /assets/categories/truckCat.webp  301
+/assets/categories/vanCat.svg  /assets/categories/vanCat.webp  301
+/assets/categories/bikeCat.svg  /assets/categories/bikeCat.webp  301
+/assets/categories/ebikeCat.svg  /assets/categories/ebikeCat.webp  301
+/assets/categories/farmCat.svg  /assets/categories/farmCat.webp  301
 
 # Brand-specific category redirects (specific brands only, no catch-all)
 /cars/audi  /listings?make=Audi  301
+
+# SPA fallback (must stay last: first matching rule wins) — all unmatched routes serve index.html
+/*  /index.html  200

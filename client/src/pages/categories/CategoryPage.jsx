@@ -57,13 +57,13 @@ const categoryIcons = {
 };
 
 const categoryBackgrounds = {
-  Car: "/assets/categories/carCat.svg",
-  Bus: "/assets/categories/busCat.svg",
-  Truck: "/assets/categories/truckCat.svg",
-  Van: "/assets/categories/vanCat.svg",
-  Bike: "/assets/categories/bikeCat.svg",
-  "E-bike": "/assets/categories/ebikeCat.svg",
-  Farm: "/assets/categories/farmCat.svg",
+  Car: "/assets/categories/carCat.webp",
+  Bus: "/assets/categories/busCat.webp",
+  Truck: "/assets/categories/truckCat.webp",
+  Van: "/assets/categories/vanCat.webp",
+  Bike: "/assets/categories/bikeCat.webp",
+  "E-bike": "/assets/categories/ebikeCat.webp",
+  Farm: "/assets/categories/farmCat.webp",
 };
 
 const CategoryPage = () => {
@@ -156,7 +156,7 @@ const CategoryPage = () => {
       <div
         className="relative bg-gradient-to-br from-primary-500 to-primary-500 text-white py-20"
         style={{
-          backgroundImage: `url(${isShowingAllCategories ? "/assets/categories/carCat.svg" : categoryBackgrounds[currentCategory?.name] || "/assets/categories/carCat.svg"})`,
+          backgroundImage: `url(${isShowingAllCategories ? "/assets/categories/carCat.webp" : categoryBackgrounds[currentCategory?.name] || "/assets/categories/carCat.webp"})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",

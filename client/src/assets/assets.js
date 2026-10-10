@@ -1,10 +1,6 @@
-import searchIcon from "./images/searchIcon.png";
 import userIcon from "./images/userIcon.png";
-import google from "./images/google.webp";
 import verified from "./images/verified.png";
 import logo from "./images/logo.svg";
-import headerLogo from "./images/headerLogo.svg";
-import bell from "./images/bell.svg";
 
 import br1 from "./images/br1.webp";
 import br2 from "./images/br2.webp";
@@ -26,66 +22,25 @@ import electricSvg2 from "./images/electricSvg2.svg";
 import android from "./images/android.svg";
 import apple from "./images/apple.svg";
 import facebook from "./images/facebook.svg";
-import twitter from "./images/twitter.svg";
 import instagram from "./images/instagram.svg";
-import linkedin from "./images/linkedin.svg";
 import avatarIcon from "./images/avatarIcon.png";
 import blackLogo from "./images/blackLogo.svg";
-import cabriolet from "./images/carDetails/types/cabriolet.svg";
-import convertible from "./images/carDetails/types/convertible.svg";
-import coupe from "./images/carDetails/types/coupe.svg";
-import hatchback from "./images/carDetails/types/hatchback.svg";
-import hybird from "./images/carDetails/types/hybird.svg";
-import micro from "./images/carDetails/types/micro.svg";
-import muscle from "./images/carDetails/types/muscle.svg";
-import roadster from "./images/carDetails/types/roadster.svg";
-import sedan from "./images/carDetails/types/sedan.svg";
-import sports from "./images/carDetails/types/sports.svg";
-import suv from "./images/carDetails/types/suv.svg";
-import superType from "./images/carDetails/types/superType.svg";
-import station from "./images/carDetails/types/station.svg";
-import van from "./images/carDetails/types/van.svg";
-import targa from "./images/carDetails/types/targa.svg";
-import truck from "./images/carDetails/types/truck.svg";
 import mutlipleBrandsLogo from "./images/mutlipleBrandsLogo.webp";
-import callIcon from "./images/carDetails/callIcon.svg";
-import chatIcon from "./images/carDetails/chatIcon.svg";
-import shareIcon from "./images/carDetails/shareIcon.svg";
-import fuelIcon from "./images/carDetails/specs/fuelIcon.svg";
-import hybrid from "./images/carDetails/specs/hybird.svg";
-import electric from "./images/carDetails/specs/electric.svg";
-import manual from "./images/carDetails/specs/manual.svg";
 import auto from "./images/carDetails/specs/auto.svg";
-import door from "./images/carDetails/specs/door.svg";
-import hp from "./images/carDetails/specs/hp.svg";
 import cc from "./images/carDetails/specs/cc.svg";
 import location from "./images/carDetails/specs/location.svg";
-import wheel from "./images/carDetails/specs/wheel.svg";
-import loan from "./images/loan.webp";
 import findOutMore from "./images/findOutMore.webp";
 import userHeroSectionImg from "./images/userHeroSectionImg.webp";
 import searchSvg from "./images/searchSvg.svg";
 import comma from "./images/comma.svg";
-import loanPlanHeroImg from "./images/loanPlanHeroImg.webp";
-import mailbox from "./images/mailbox.svg";
 import electricSvg3 from "./images/electricSvg3.png";
 
 // Partener Logos
 import amingarageLogo from "./images/amingarage.png";
-import wbDigitalLogo from "./images/wbDigital.svg";
 import mianMotors from "./images/mianMotors.png";
 
 // SELLO VIDEO
 import selloVideo from "./selloVideo.webp";
-
-// Category Images
-import carCat from "./categories/carCat.webp";
-import busCat from "./categories/busCat.webp";
-import vanCat from "./categories/vanCat.webp";
-import farmCat from "./categories/farmCat.webp";
-import bikeCat from "./categories/bikeCat.webp";
-import ebikeCat from "./categories/ebikeCat.webp";
-import truckCat from "./categories/truckCat.webp";
 
 // Categories Blogs Images
 import bikeCatBlog from "./categories/catBlogs/bikeCatBlog.webp";
@@ -117,13 +72,9 @@ const review4 =
   "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face&auto=format";
 
 export const images = {
-  searchIcon,
   userIcon,
-  google,
   verified,
-  headerLogo,
   logo,
-  bell,
 
   transmissionIcon,
   fuelTypeIcon,
@@ -131,33 +82,17 @@ export const images = {
   avatarIcon,
   blackLogo,
   mutlipleBrandsLogo,
-  fuelIcon,
-  hybrid,
-  electric,
-  manual,
   auto,
-  door,
-  hp,
   cc,
   location,
-  wheel,
-  callIcon,
-  chatIcon,
-  shareIcon,
-  // Car Types
-  sedan,
-  loan,
   findOutMore,
   userHeroSectionImg,
   searchSvg,
   comma,
-  loanPlanHeroImg,
-  mailbox,
   selloVideo,
   electricSvg3,
   // Partener Logos
   amingarageLogo,
-  wbDigitalLogo,
   mianMotors,
   auctionSchedule,
   trustLegal,
@@ -168,7 +103,7 @@ export const images = {
 };
 
 // Export app and social media icons for footer
-export { apple, android, facebook, twitter, instagram, linkedin };
+export { apple, android, facebook, instagram };
 
 // DATA
 
@@ -739,74 +674,6 @@ export const goThemBuyOrSell = [
   },
 ];
 
-// Car Types
-export const carTypes = [
-  {
-    title: "Cabriolet",
-    image: cabriolet,
-  },
-  {
-    title: "Convertible",
-    image: convertible,
-  },
-  {
-    title: "Coupe",
-    image: coupe,
-  },
-  {
-    title: "Hatchback",
-    image: hatchback,
-  },
-  {
-    title: "Hybird",
-    image: hybird,
-  },
-  {
-    title: "Micro",
-    image: micro,
-  },
-  {
-    title: "Muscle",
-    image: muscle,
-  },
-  {
-    title: "Roadster",
-    image: roadster,
-  },
-  {
-    title: "Sedan",
-    image: sedan,
-  },
-  {
-    title: "Sports",
-    image: sports,
-  },
-  {
-    title: "Station",
-    image: station,
-  },
-  {
-    title: "Super",
-    image: superType,
-  },
-  {
-    title: "SUV",
-    image: suv,
-  },
-  {
-    title: "Targa",
-    image: targa,
-  },
-  {
-    title: "Truck",
-    image: truck,
-  },
-  {
-    title: "Van",
-    image: van,
-  },
-];
-
 // Dummy Cars Data
 export const dummyCars = [
   {
@@ -978,36 +845,6 @@ export const dummyCars = [
     ],
   },
 ];
-
-// Three button like => share , chat , call
-export const threeBtns = [
-  {
-    id: 1,
-    name: "call",
-    image: callIcon,
-  },
-  {
-    id: 2,
-    name: "chat",
-    image: chatIcon,
-  },
-  {
-    id: 3,
-    name: "share",
-    image: shareIcon,
-  },
-];
-
-// Categories Image
-export const categories = {
-  carCat,
-  busCat,
-  truckCat,
-  bikeCat,
-  ebikeCat,
-  vanCat,
-  farmCat,
-};
 
 // Categories Blogs Images
 export const categoriesBlogsImages = {
