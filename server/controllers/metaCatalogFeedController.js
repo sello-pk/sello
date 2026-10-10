@@ -173,3 +173,77 @@ export async function sendMetaCarsCsvFeed(req, res) {
     return res.status(500).send("feed_error");
   }
 }
+
+/* ------------------------------------------------------------------------ */
+/* XML sitemap of live car listings                                          */
+/* ------------------------------------------------------------------------ */
+
+const SITEMAP_MAX_URLS = 50000; // sitemaps.org hard limit per file
+let sitemapBody = null;
+let sitemapExpiresAt = 0;
+const SITEMAP_CACHE_MS = 60 * 60 * 1000; // 1 hour
+
+function escapeXml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+/**
+ * GET /sitemap-cars.xml
+ * Every public, unsold car detail page (same visibility rules as /api/cars),
+ * with the same slug URLs the SPA uses as canonical. Referenced from
+ * https://sello.pk/robots.txt (cross-host sitemap submission is allowed when
+ * the sitemap is listed in the target site's robots.txt).
+ */
+export async function sendCarsSitemap(req, res) {
+  try {
+    const now = Date.now();
+    if (!sitemapBody || now >= sitemapExpiresAt) {
+      // Sitemap URLs must be on the canonical host that lists this sitemap in
+      // its robots.txt, never on CLIENT_URL (which may include localhost).
+      const origin = (process.env.SITEMAP_SITE_URL || "https://sello.pk").replace(/\/$/, "");
+      const query = {
+        $and: [
+          { $or: [{ isApproved: true }, { isApproved: { $exists: false } }] },
+          { status: { $nin: ["deleted", "expired", "sold"] } },
+          { isSold: { $ne: true } },
+        ],
+      };
+
+      const cursor = Car.find(query)
+        .select("make model year city location updatedAt createdAt images")
+        .sort({ updatedAt: -1 })
+        .limit(SITEMAP_MAX_URLS)
+        .lean()
+        .cursor();
+
+      const parts = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">',
+      ];
+      for await (const car of cursor) {
+        const lastmod = new Date(car.updatedAt || car.createdAt || Date.now()).toISOString();
+        const image = absolutizeImage(car.images?.[0]);
+        parts.push(
+          `  <url><loc>${escapeXml(`${origin}${buildCarPath(car)}`)}</loc><lastmod>${lastmod}</lastmod>${
+            image ? `<image:image><image:loc>${escapeXml(image)}</image:loc></image:image>` : ""
+          }</url>`,
+        );
+      }
+      parts.push("</urlset>");
+      sitemapBody = parts.join("\n");
+      sitemapExpiresAt = Date.now() + SITEMAP_CACHE_MS;
+    }
+
+    res.setHeader("Content-Type", "application/xml; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    return res.send(sitemapBody);
+  } catch (error) {
+    Logger.error("Cars sitemap failed", error);
+    return res.status(500).type("text/plain").send("sitemap_error");
+  }
+}

@@ -18,6 +18,7 @@ const DIST_ROOT = path.join(CLIENT_ROOT, "dist");
 const SKIP_BLOG_PAGES = process.env.SKIP_BLOG_PAGES === "1";
 const ONLY = process.env.ONLY_ROUTE ? String(process.env.ONLY_ROUTE) : null;
 const CONCURRENCY = Math.max(1, Number(process.env.SELLO_CONCURRENCY || 4));
+const VERBOSE = process.env.SELLO_VERBOSE === "1";
 
 function log(...args) {
   
@@ -135,6 +136,13 @@ function injectIndexHtmlHeroPreloads(distRoot) {
   ).join("\n");
   html = html.replace(headTag[0], `${headTag[0]}\n${tags}`);
   fs.writeFileSync(indexPath, html, "utf8");
+}
+
+function stripHeroPreloads(html) {
+  return html.replace(
+    /<link\b[^>]*id="sello-preload-hero-lcp-[^"]*"[^>]*\/?>/gi,
+    "",
+  );
 }
 
 // ------------------------------------------------------------- head builders
@@ -322,7 +330,7 @@ async function renderOne(renderer, entry, route) {
       `${shellPath} not found - run "vite build" before render-static-html`,
     );
   }
-  const shell = fs.readFileSync(shellPath, "utf8");
+  const shell = stripHeroPreloads(fs.readFileSync(shellPath, "utf8"));
   const finalHtml = route.head(shell).replace(
     "</body>",
     `<!-- prerendered:${route.path} -->\n${body}\n  </body>`,
@@ -335,9 +343,13 @@ async function renderOne(renderer, entry, route) {
     .split(/\s+/)
     .filter(Boolean)
     .length;
-  log(
-    `OK ${route.path} -> ${path.relative(DIST_ROOT, outPath)} body=${bodyWords}w ${Date.now() - start}ms`,
-  );
+  // One line per page only when SELLO_VERBOSE=1; otherwise the summary
+  // ("wrote N static pages, 0 errors") is enough and the log stays short.
+  if (VERBOSE) {
+    log(
+      `OK ${route.path} -> ${path.relative(DIST_ROOT, outPath)} body=${bodyWords}w ${Date.now() - start}ms`,
+    );
+  }
   return { route, outPath };
 }
 
@@ -428,15 +440,29 @@ async function main() {
   if (!SKIP_BLOG_PAGES) {
     log("fetching published blog list (route discovery)…");
     const { blogs } = await fetchAllPublishedBlogs();
-    for (const blog of blogs || []) {
-      if (!blog?.slug) continue;
-      if (!isSubstantialArticle(blog)) continue;
-      let article = blog;
-      try {
-        article = await fetchPublishedBlogBySlug(blog.slug);
-      } catch (error) {
-        log(`warn: deep fetch failed for ${blog.slug} (${error.message}); using list item`);
-      }
+    // Deep-fetch articles in parallel (was one-by-one: ~50s for 71 posts).
+    // Results keep the API's list order so routes/sitemap stay stable.
+    const candidates = (blogs || []).filter(
+      (blog) => blog?.slug && isSubstantialArticle(blog),
+    );
+    const deep = new Array(candidates.length);
+    let next = 0;
+    await Promise.all(
+      Array.from({ length: Math.min(CONCURRENCY * 2, candidates.length) }, async () => {
+        while (next < candidates.length) {
+          const i = next++;
+          const blog = candidates[i];
+          let article = blog;
+          try {
+            article = await fetchPublishedBlogBySlug(blog.slug);
+          } catch (error) {
+            log(`warn: deep fetch failed for ${blog.slug} (${error.message}); using list item`);
+          }
+          deep[i] = { blog, article };
+        }
+      }),
+    );
+    for (const { blog, article } of deep) {
       if (article && isSubstantialArticle(article)) {
         blogsBySlug.set(article.slug || blog.slug, article);
       }
@@ -512,7 +538,7 @@ async function main() {
   }
 
   const ok = results.filter((r) => !r.error);
-  log(`wrote ${ok.length} static pages, ${errors.length} errors`);
+  log(`✓ wrote ${ok.length} static pages, ${errors.length} errors (set SELLO_VERBOSE=1 to list each page)`);
 
   // Homepage-only hero LCP preloads, statically present at parse time. The
   // client (src/main.jsx) id-guards the same tags, so no duplicates on hydration.
@@ -541,7 +567,13 @@ async function main() {
   log("done");
 }
 
-main().catch((error) => {
+main()
+  .then(() => {
+    // Exit explicitly: open keep-alive sockets / timers from the SSR bundle
+    // kept Node alive ~60s after "done", delaying the sitemap step.
+    process.exit(0);
+  })
+  .catch((error) => {
   
   console.error(`[render-static] FATAL: ${error.stack || error}`);
   process.exit(1);

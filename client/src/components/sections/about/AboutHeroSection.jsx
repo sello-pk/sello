@@ -54,7 +54,7 @@ const AboutHeroSection = () => {
           width="960"
           height="720"
           decoding="async"
-          fetchPriority="high"
+          fetchpriority="high"
           className="h-full rounded-bl-[155px] w-full object-cover"
         />
       </div>

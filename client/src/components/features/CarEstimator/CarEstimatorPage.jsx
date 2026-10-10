@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import CarEstimatorForm from "./CarEstimatorForm";
 import CarEstimatorResult from "./CarEstimatorResult";
-import estimatorHero from "../../../assets/images/estimatorHero.png";
+import estimatorHero from "../../../assets/images/estimatorHero.webp";
 import EstimatorBlogsSection from "./EstimatorBlogsSection";
 import { API_CONFIG } from "../../../config/index.js";
 import { useCarCategories } from "../../../hooks/useCarCategories";
@@ -1009,7 +1009,7 @@ const CarEstimatorPage = () => {
             src={estimatorHero}
             alt="car estimator hero image"
             className="absolute inset-0 h-full w-full object-cover"
-            fetchPriority="high"
+            fetchpriority="high"
             decoding="async"
             width="1200"
             height="600"

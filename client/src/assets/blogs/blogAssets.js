@@ -1,4 +1,4 @@
-import latestSectionCarImg from "./latestSectionCarImg.png";
+import latestSectionCarImg from "./latestSectionCarImg.webp";
 import newTech from "./newTech.png";
 import newTech2 from "./newTech2.png";
 import newTech3 from "./newTech3.png";
@@ -10,8 +10,8 @@ import cate2 from "./cate2.png";
 import cate3 from "./cate3.png";
 import cate4 from "./cate4.png";
 
-import bottomRevCar from "./bottomRevCar.png";
-import bottomRevCar2 from "./bottomRevCar2.png";
+import bottomRevCar from "./bottomRevCar.webp";
+import bottomRevCar2 from "./bottomRevCar2.webp";
 
 export const blogAssets = {
   latestSectionCarImg,

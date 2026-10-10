@@ -609,7 +609,7 @@ const VehicleVerificationPage = () => {
           src={listingHero}
           alt=""
           className="absolute inset-0 h-full w-full object-cover object-center"
-          fetchPriority="high"
+          fetchpriority="high"
           decoding="async"
           width="1200"
           height="600"

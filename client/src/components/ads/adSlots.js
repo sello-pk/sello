@@ -42,13 +42,26 @@ const SLOT_ENV_KEYS = {
 
 const env = import.meta.env || {};
 
-const readSlot = (key) => {
-  const value = env[SLOT_ENV_KEYS[key]];
-  return typeof value === "string" ? value.trim() : "";
+/**
+ * Public, non-secret ids used when the build has no client/.env (the file is
+ * gitignored, so CI/server builds often lack it, which silently disabled
+ * every ad). Env values always win. Add a unit id here once it is created in
+ * AdSense > Ads > By ad unit, or set the matching VITE_ADSENSE_SLOT_* var.
+ */
+const DEFAULT_ADSENSE_CLIENT = "ca-pub-5923513384592431";
+const DEFAULT_SLOT_IDS = {
+  brandsSection: "3538634723",
 };
 
-/** Publisher id, e.g. "ca-pub-5923513384592431". Empty until configured. */
-export const ADSENSE_CLIENT = (env.VITE_ADSENSE_CLIENT || "").trim();
+const readSlot = (key) => {
+  const value = env[SLOT_ENV_KEYS[key]];
+  const fromEnv = typeof value === "string" ? value.trim() : "";
+  return fromEnv || DEFAULT_SLOT_IDS[key] || "";
+};
+
+/** Publisher id, e.g. "ca-pub-5923513384592431". */
+export const ADSENSE_CLIENT =
+  (env.VITE_ADSENSE_CLIENT || "").trim() || DEFAULT_ADSENSE_CLIENT;
 
 /**
  * Resolved slot ids keyed by name. Only slots with a real id are "enabled";

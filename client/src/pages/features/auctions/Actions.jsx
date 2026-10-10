@@ -195,7 +195,7 @@ export default function AuctionsActions() {
             width="1920"
             height="1080"
             decoding="async"
-            fetchPriority="high"
+            fetchpriority="high"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/80 to-slate-900/60" />

@@ -19,22 +19,53 @@ import {
 import { buildCarUrl, buildBlogUrl } from "../../utils/urlBuilders";
 import { teamMembers } from "../sections/about/teamData";
 
+/** Canonical production origin for every URL inside JSON-LD. */
+const SITE_URL = (import.meta.env.VITE_SITE_URL || "https://sello.pk").replace(
+  /\/+$/,
+  "",
+);
+/** Organization logo: stable, crawlable PNG copied to dist root at build. */
+const LOGO_URL = `${SITE_URL}/logo.png`;
+
+const LD_ATTR = "data-sello-jsonld";
+
+const schemaKey = (data) => {
+  const type = data?.["@type"];
+  if (type) return Array.isArray(type) ? type.join("-") : String(type);
+  if (Array.isArray(data?.["@graph"])) return "graph";
+  return "schema";
+};
+
 /**
- * Add structured data script to document head
+ * Add structured data script to document head.
+ *
+ * Each schema type gets its own <script> so a page can carry several blocks
+ * (e.g. Product + BreadcrumbList, BlogPosting + FAQPage). Previously every
+ * call replaced one shared #structured-data tag, so the last component to
+ * mount silently deleted the others. Blocks left over from a previous SPA
+ * route are removed, as is the prerendered #structured-data blob once the
+ * client re-emits its own schema.
  */
 const addStructuredData = (data) => {
-  // Remove existing script if any
-  const existingScript = document.getElementById("structured-data");
-  if (existingScript) {
-    existingScript.remove();
-  }
+  if (!data || typeof document === "undefined") return;
+  const path = window.location.pathname;
 
-  // Create new script
-  const script = document.createElement("script");
-  script.id = "structured-data";
-  script.type = "application/ld+json";
+  document.querySelectorAll(`script[${LD_ATTR}]`).forEach((el) => {
+    if (el.getAttribute("data-path") !== path) el.remove();
+  });
+  const prerendered = document.getElementById("structured-data");
+  if (prerendered && !prerendered.hasAttribute(LD_ATTR)) prerendered.remove();
+
+  const key = schemaKey(data);
+  let script = document.querySelector(`script[${LD_ATTR}="${key}"]`);
+  if (!script) {
+    script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.setAttribute(LD_ATTR, key);
+    document.head.appendChild(script);
+  }
+  script.setAttribute("data-path", path);
   script.text = JSON.stringify(data);
-  document.head.appendChild(script);
 };
 
 /**
@@ -44,9 +75,9 @@ export const ProductSchema = ({ car }) => {
   useEffect(() => {
     if (!car || !car._id) return;
 
-    const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    const baseUrl = SITE_URL;
     const carUrl = `${baseUrl}${buildCarUrl(car)}`;
-    const imageUrl = car.images?.[0] || `${baseUrl}/logo.png`;
+    const imageUrl = car.images?.[0] || LOGO_URL;
 
     const make = car.make || "";
     const model = car.model || "";
@@ -131,7 +162,7 @@ export const VehicleSchema = ({ car }) => {
   useEffect(() => {
     if (!car || !car._id) return;
 
-    const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    const baseUrl = SITE_URL;
     const carUrl = `${baseUrl}${buildCarUrl(car)}`;
     const schema = generateVehicleSchema(car, carUrl);
 
@@ -150,7 +181,7 @@ export const BlogPostingSchema = ({ blog }) => {
   useEffect(() => {
     if (!blog) return;
 
-    const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    const baseUrl = SITE_URL;
     const blogUrl = blog.slug
       ? `${baseUrl}/blog/${blog.slug}`
       : window.location.href;
@@ -169,7 +200,7 @@ export const BlogPostingSchema = ({ blog }) => {
  */
 export const ItemListSchema = ({ cars }) => {
   useEffect(() => {
-    const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    const baseUrl = SITE_URL;
     const schema = generateItemListSchema(cars, baseUrl);
     if (schema) addStructuredData(schema);
   }, [cars]);
@@ -246,7 +277,7 @@ export const AggregateRatingSchema = ({ ratingValue, reviewCount }) => {
  */
 export const OrganizationSchema = () => {
   useEffect(() => {
-    const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    const baseUrl = SITE_URL;
     const siteName = "Sello";
     const supportEmail =
       import.meta.env.VITE_SUPPORT_EMAIL || "support@example.com";
@@ -256,7 +287,7 @@ export const OrganizationSchema = () => {
       "@type": "Organization",
       name: siteName,
       url: baseUrl,
-      logo: `${baseUrl}/logo.png`,
+      logo: LOGO_URL,
       contactPoint: {
         "@type": "ContactPoint",
         contactType: "Customer Service",
@@ -286,7 +317,7 @@ export const BreadcrumbSchema = ({ items, car }) => {
 
     if (!items || items.length === 0) return;
 
-    const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    const baseUrl = SITE_URL;
 
     const schema = {
       "@context": "https://schema.org",
@@ -314,7 +345,7 @@ export const BreadcrumbSchema = ({ items, car }) => {
  */
 export const WebSiteSchema = () => {
   useEffect(() => {
-    const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    const baseUrl = SITE_URL;
 
     const schema = {
       "@context": "https://schema.org",
@@ -345,7 +376,7 @@ export const WebSiteSchema = () => {
 export const HomePageSchema = () => {
   useEffect(() => {
     const baseUrl =
-      import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+      SITE_URL;
 
     const schema = {
       "@context": "https://schema.org",
@@ -359,14 +390,14 @@ export const HomePageSchema = () => {
           logo: {
             "@type": "ImageObject",
             "@id": `${baseUrl}/#logo`,
-            url: `${baseUrl}/assets/logo.png`,
+            url: LOGO_URL,
             caption: "Sello.pk Logo",
           },
           image: {
             "@id": `${baseUrl}/#logo`,
           },
           description:
-            "Find the best car for sale in Pakistan on Sello.pk. Buy or sell used cars in Karachi, Lahore, Islamabad & beyond with verified sellers and fair pricing.  .",
+            "Find the best car for sale in Pakistan on Sello.pk. Buy or sell used cars in Karachi, Lahore, Islamabad & beyond with verified sellers and fair pricing.",
           email: "info@sello.pk",
           priceRange: "PKR",
           address: {
@@ -396,7 +427,7 @@ export const HomePageSchema = () => {
             "@type": "SearchAction",
             target: {
               "@type": "EntryPoint",
-              urlTemplate: `${baseUrl}/listings/car?q={search_term_string}`,
+              urlTemplate: `${baseUrl}/search-results?search={search_term_string}`,
             },
             "query-input": "required name=search_term_string",
           },
@@ -423,29 +454,23 @@ export const HomePageSchema = () => {
               "@type": "ListItem",
               position: 1,
               name: "Cars for Sale",
-              url: `${baseUrl}/listings/car`,
+              url: `${baseUrl}/listings/cars`,
             },
             {
               "@type": "ListItem",
               position: 2,
-              name: "Sell Your Car",
-              url: `${baseUrl}/sell-car`,
-            },
-            {
-              "@type": "ListItem",
-              position: 3,
               name: "Online & Live Hybrid Car Auctions",
               url: `${baseUrl}/auctions`,
             },
             {
               "@type": "ListItem",
-              position: 4,
+              position: 3,
               name: "AI Car Estimator",
               url: `${baseUrl}/car-estimator`,
             },
             {
               "@type": "ListItem",
-              position: 5,
+              position: 4,
               name: "Vehicle Verification",
               url: `${baseUrl}/vehicle-verification`,
             },
@@ -497,7 +522,7 @@ const toNumeric = (value) => {
 export const ListingsPageSchema = ({ cars = [] }) => {
   useEffect(() => {
     const baseUrl =
-      import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+      SITE_URL;
     const listUrl = `${baseUrl}/listings`;
     const listItems = (Array.isArray(cars) ? cars : [])
       .filter((car) => car && car._id)
@@ -619,7 +644,7 @@ export const ListingsPageSchema = ({ cars = [] }) => {
             "@id": `${baseUrl}/#organization`,
             name: "Sello.pk",
             url: baseUrl,
-            logo: `${baseUrl}/assets/logo.png`,
+            logo: LOGO_URL,
             sameAs: SOCIAL_SAME_AS,
           },
         },
@@ -658,7 +683,7 @@ export const ListingsPageSchema = ({ cars = [] }) => {
             "@type": "SearchAction",
             target: {
               "@type": "EntryPoint",
-              urlTemplate: `${baseUrl}/listings?q={search_term_string}`,
+              urlTemplate: `${baseUrl}/search-results?search={search_term_string}`,
             },
             "query-input": "required name=search_term_string",
           },
@@ -688,7 +713,7 @@ export const ListingsPageSchema = ({ cars = [] }) => {
  */
 export const CarEstimatorPageSchema = () => {
   useEffect(() => {
-    const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    const baseUrl = SITE_URL;
     const pageUrl = `${baseUrl}/car-estimator`;
 
     const schema = {
@@ -704,7 +729,7 @@ export const CarEstimatorPageSchema = () => {
             "@id": `${baseUrl}/#organization`,
             name: "Sello.pk",
             url: baseUrl,
-            logo: `${baseUrl}/assets/logo.png`,
+            logo: LOGO_URL,
             sameAs: SOCIAL_SAME_AS,
           },
         },
@@ -815,7 +840,7 @@ export const CarEstimatorPageSchema = () => {
  */
 export const VehicleVerificationPageSchema = () => {
   useEffect(() => {
-    const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    const baseUrl = SITE_URL;
     const pageUrl = `${baseUrl}/vehicle-verification`;
 
     const schema = {
@@ -831,7 +856,7 @@ export const VehicleVerificationPageSchema = () => {
             "@id": `${baseUrl}/#organization`,
             name: "Sello.pk",
             url: baseUrl,
-            logo: `${baseUrl}/assets/logo.png`,
+            logo: LOGO_URL,
             sameAs: SOCIAL_SAME_AS,
           },
         },
@@ -1029,7 +1054,7 @@ const AUCTION_HOW_TO_STEPS = [
 export const AuctionsPageSchema = ({ auction, cars = [] }) => {
   useEffect(() => {
     const baseUrl =
-      import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+      SITE_URL;
     const pageUrl = `${baseUrl}/auctions`;
 
     // Only trust API dates when that auction has not already finished,
@@ -1099,7 +1124,7 @@ export const AuctionsPageSchema = ({ auction, cars = [] }) => {
             "@id": `${baseUrl}/#organization`,
             name: "Sello.pk",
             url: baseUrl,
-            logo: `${baseUrl}/assets/logo.png`,
+            logo: LOGO_URL,
             sameAs: SOCIAL_SAME_AS,
           },
         },
@@ -1187,7 +1212,7 @@ export const AuctionsPageSchema = ({ auction, cars = [] }) => {
 export const LiveAuctionPageSchema = ({ auction, cars = [] }) => {
   useEffect(() => {
     const baseUrl =
-      import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+      SITE_URL;
     const pageUrl = `${baseUrl}/auctions/live`;
 
     const eventDates = resolveEventWindow(auction, LIVE_EVENT_FALLBACK);
@@ -1252,7 +1277,7 @@ export const LiveAuctionPageSchema = ({ auction, cars = [] }) => {
             "@id": `${baseUrl}/#organization`,
             name: "Sello.pk",
             url: baseUrl,
-            logo: `${baseUrl}/assets/logo.png`,
+            logo: LOGO_URL,
             sameAs: SOCIAL_SAME_AS,
           },
         },
@@ -1346,7 +1371,7 @@ export const LiveAuctionPageSchema = ({ auction, cars = [] }) => {
 export const AboutPageSchema = () => {
   useEffect(() => {
     const baseUrl =
-      import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+      SITE_URL;
     const pageUrl = `${baseUrl}/about`;
     const orgId = `${baseUrl}/#organization`;
 
@@ -1386,7 +1411,7 @@ export const AboutPageSchema = () => {
           url: baseUrl,
           logo: {
             "@type": "ImageObject",
-            url: `${baseUrl}/assets/logo.png`,
+            url: LOGO_URL,
             caption: "Sello.pk Logo",
           },
           description:
@@ -1498,7 +1523,7 @@ export const AboutPageSchema = () => {
 export const ContactPageSchema = () => {
   useEffect(() => {
     const baseUrl =
-      import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+      SITE_URL;
     const pageUrl = `${baseUrl}/contact`;
     const orgId = `${baseUrl}/#organization`;
 
@@ -1517,7 +1542,7 @@ export const ContactPageSchema = () => {
           "@id": orgId,
           name: "Sello.pk",
           url: baseUrl,
-          logo: `${baseUrl}/assets/logo.png`,
+          logo: LOGO_URL,
           telephone: "+923122221474",
           email: "info@sello.pk",
           sameAs: SOCIAL_SAME_AS,
@@ -1615,7 +1640,7 @@ export const ContactPageSchema = () => {
 export const BlogPageSchema = ({ posts = [] }) => {
   useEffect(() => {
     const baseUrl =
-      import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+      SITE_URL;
     const pageUrl = `${baseUrl}/blog`;
     const orgId = `${baseUrl}/#organization`;
 
@@ -1674,7 +1699,7 @@ export const BlogPageSchema = ({ posts = [] }) => {
             "@id": orgId,
             name: "Sello.pk",
             url: baseUrl,
-            logo: `${baseUrl}/assets/logo.png`,
+            logo: LOGO_URL,
             sameAs: SOCIAL_SAME_AS,
           },
         },

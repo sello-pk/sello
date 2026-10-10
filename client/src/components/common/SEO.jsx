@@ -1,10 +1,22 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { FRONTEND_CONFIG } from "../../config";
+import {
+  DEFAULT_ROBOTS,
+  NOINDEX_ROBOTS,
+  getRobotsForPath,
+  isNoindexRobots,
+  cleanCanonicalSearch,
+  blockAdsForPage,
+} from "../../utils/seoPolicy";
 
 /**
  * SEO Component for dynamic meta tags
  * Usage: <SEO title="Page Title" description="Page description" image="image-url" canonical="canonical-url" />
+ *
+ * Robots: private/utility routes (see utils/seoPolicy.js) are always
+ * `noindex, follow`, whatever the page passes. Pages can also opt in to
+ * noindex explicitly (404, "listing not found"). Noindex pages never show ads.
  */
 const SEO = ({
   title = "Sello - Buy and Sell Cars in Pakistan",
@@ -15,7 +27,7 @@ const SEO = ({
   author = "Sello",
   url,
   canonical,
-  robots = "index, follow, max-image-preview:large",
+  robots,
 }) => {
   const location = useLocation();
   const siteUrl = (FRONTEND_CONFIG.SITE_URL || "https://sello.pk").replace(
@@ -80,8 +92,11 @@ const SEO = ({
     return `${siteUrl}${normalizedPath}`;
   };
 
+  // Canonical defaults to the path plus whitelisted landing params only
+  // (make/model/city/page); sort, view, search and tracking params are dropped.
   const derivedPath =
-    location.pathname + stripTrackingParams(location.search || "");
+    location.pathname +
+    cleanCanonicalSearch(stripTrackingParams(location.search || ""));
   const canonicalUrl = toAbsoluteUrl(
     canonical || url || derivedPath || "/",
   );
@@ -100,7 +115,15 @@ const SEO = ({
   const safeKeywords = normalizeText(keywords, "");
   const safeAuthor = normalizeText(author, "Sello");
   const safeType = normalizeText(type, "website");
-  const safeRobots = normalizeText(robots, "index, follow, max-image-preview:large");
+  const pathRobots = getRobotsForPath(location.pathname, location.search);
+  const explicitRobots = normalizeText(robots, "");
+  const safeRobots =
+    isNoindexRobots(explicitRobots) || isNoindexRobots(pathRobots)
+      ? isNoindexRobots(explicitRobots)
+        ? explicitRobots
+        : NOINDEX_ROBOTS
+      : explicitRobots || DEFAULT_ROBOTS;
+  const isNoindex = isNoindexRobots(safeRobots);
   const fullTitle = safeTitle.includes("Sello")
     ? safeTitle
     : `${safeTitle} | Sello`;
@@ -165,6 +188,13 @@ const SEO = ({
     fullTitle,
     safeRobots,
   ]);
+
+  // Pages that are not indexable do not carry ads either (AdSense policy:
+  // no ads on screens without publisher content).
+  useEffect(() => {
+    if (!isNoindex) return undefined;
+    return blockAdsForPage();
+  }, [isNoindex]);
 
   return null; // This component doesn't render anything
 };

@@ -19,7 +19,7 @@ const OurPrivacyPolicy = () => {
         </h1>
         <section className="mb-8">
           <p className="mb-4 text-sm text-gray-500 text-center">
-            Last updated: July 21, 2025
+            Last updated: October 10, 2026
           </p>
         </section>
         <section className="mb-8">
@@ -93,6 +93,56 @@ const OurPrivacyPolicy = () => {
             These tools collect data only when it is clearly put forth by the
             user.
           </p>
+          <h3 className="text-xl font-semibold mt-6 mb-3">
+            Advertising (Google AdSense)
+          </h3>
+          <p className="mb-2">
+            Sello.pk shows ads served by Google. Third-party vendors, including
+            Google, use cookies to serve ads based on your prior visits to this
+            website or other websites. Google&apos;s use of advertising cookies
+            enables it and its partners to serve ads to you based on your visits
+            to Sello.pk and/or other sites on the Internet.
+          </p>
+          <ul className="list-disc list-inside mb-2">
+            <li>
+              You may opt out of personalised advertising by visiting{" "}
+              <a
+                href="https://adssettings.google.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-500 underline"
+              >
+                Google Ads Settings
+              </a>
+              .
+            </li>
+            <li>
+              Learn how Google uses information from sites that use its
+              services:{" "}
+              <a
+                href="https://policies.google.com/technologies/partner-sites"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-500 underline"
+              >
+                How Google uses data
+              </a>
+              .
+            </li>
+            <li>
+              You can also opt out of some third-party vendors&apos; use of
+              cookies for personalised advertising at{" "}
+              <a
+                href="https://www.aboutads.info/choices/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-500 underline"
+              >
+                www.aboutads.info
+              </a>
+              .
+            </li>
+          </ul>
         </section>
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">

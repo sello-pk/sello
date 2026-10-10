@@ -478,7 +478,7 @@ const CarDetailsGallerySection = () => {
                 className="h-full w-full select-none object-contain object-center [backface-visibility:hidden] transform-gpu"
                 draggable={false}
                 decoding="async"
-                fetchPriority="high"
+                fetchpriority="high"
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = placeholderImages.carPlaceholder;
@@ -571,7 +571,7 @@ const CarDetailsGallerySection = () => {
                 className="h-full w-full select-none object-contain object-center [backface-visibility:hidden] transform-gpu"
                 draggable={false}
                 decoding="async"
-                fetchPriority="high"
+                fetchpriority="high"
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = placeholderImages.carPlaceholder;

@@ -17,7 +17,12 @@ export function createAppStore() {
       [adminApi.reducerPath]: adminApi.reducer,
     },
     middleware: (getDefaultMiddleware) => {
-      return getDefaultMiddleware().concat(api.middleware, adminApi.middleware);
+      // Dev-only state checks are pointless in the build-time prerender and
+      // print "SerializableStateInvariantMiddleware took …ms" warnings.
+      return getDefaultMiddleware({
+        serializableCheck: false,
+        immutableCheck: false,
+      }).concat(api.middleware, adminApi.middleware);
     },
   });
 }

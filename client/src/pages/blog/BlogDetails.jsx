@@ -364,7 +364,7 @@ const BlogDetails = () => {
                   className="absolute inset-0 size-full block object-cover object-center"
                   loading="eager"
                   decoding="async"
-                  fetchPriority="high"
+                  fetchpriority="high"
                   sizes="(max-width: 768px) 100vw, 896px"
                   onError={() => setHeroImgFailed(true)}
                 />

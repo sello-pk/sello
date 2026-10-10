@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Clock, User } from "lucide-react";
-import carAuctionImg from "../../../assets/blogs/carAuction.svg";
-import auctionSheetVerificationImg from "../../../assets/blogs/auctionSheetVerification.svg";
+import carAuctionImg from "../../../assets/blogs/carAuction.webp";
+import auctionSheetVerificationImg from "../../../assets/blogs/auctionSheetVerification.webp";
 
 /** True if the line is ONLY # / ＃ characters (broken markdown), no title text. */
 function isHashOnlyLine(line) {

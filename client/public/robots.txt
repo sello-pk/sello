@@ -1,24 +1,35 @@
+# robots.txt - https://sello.pk
+#
+# Public content (home, listings, car pages, city/make landings, blog,
+# auctions, tools) is crawlable. Private, auth, internal-search and
+# filter/sort/tracking parameter URLs are blocked.
+# Never block JS, CSS, images or the API: Google needs them to render pages.
+
 User-agent: *
+Allow: /
 
-# Admin & API
-Disallow: /admin/
-Disallow: /api/
+# Admin
+Disallow: /admin
 
-# Auth صفحات
+# Auth pages
 Disallow: /login
-Disallow: /login/
 Disallow: /sign-up
 Disallow: /forgot-password
 Disallow: /reset-password
+Disallow: /reset-success
 Disallow: /verify-otp
+Disallow: /accept-invite/
 
-# User dashboards
+# User account & dashboards
 Disallow: /profile
 Disallow: /my-listings
 Disallow: /saved-cars
 Disallow: /my-chats
+Disallow: /create-post
+Disallow: /edit-car/
+Disallow: /edit-auction-car/
 Disallow: /dealer/dashboard
-Disallow: /seller/dashboard
+Disallow: /seller/
 
 # Auction private pages
 Disallow: /auctions/token-payment
@@ -27,7 +38,31 @@ Disallow: /auctions/watchlist
 Disallow: /auctions/buyer-dashboard
 Disallow: /auctions/seller-dashboard
 Disallow: /auctions/wallet
+Disallow: /auctions/result
 
-# Sitemap
+# Search: free-text internal search results
+# (make/model/city landings like /search-results?make=Toyota stay crawlable)
+Disallow: /*?search=
+Disallow: /*&search=
+Disallow: /search-results$
+
+# Filter: parameter combinations of the filter tool (base /filter stays open)
+Disallow: /filter?
+Disallow: /*?sort=
+Disallow: /*&sort=
+
+# Tracking parameters (duplicate URLs)
+Disallow: /*?utm_
+Disallow: /*&utm_
+Disallow: /*?fbclid=
+Disallow: /*&fbclid=
+Disallow: /*?gclid=
+Disallow: /*&gclid=
+
+# AdSense crawler: allowed everywhere so ads can be matched to page content
+User-agent: Mediapartners-Google
+Allow: /
+
+# Sitemaps
 Sitemap: https://sello.pk/sitemap.xml
-
+Sitemap: https://api.sello.pk/sitemap-cars.xml

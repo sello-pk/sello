@@ -1,4 +1,4 @@
-import { buildCarUrl } from "./urlBuilders";
+import { buildCarUrl, buildListingsSearchUrl } from "./urlBuilders";
 
 export const generateItemListSchema = (cars, baseUrl) => {
   if (!cars || !Array.isArray(cars) || cars.length === 0) return null;
@@ -103,7 +103,7 @@ export const generateAggregateRatingSchema = (ratingValue, reviewCount) => {
 export const generateBreadcrumbSchema = (car) => {
   if (!car) return null;
 
-  const baseUrl = import.meta.env.VITE_FRONTEND_URL || "https://sello.pk";
+  const baseUrl = (import.meta.env.VITE_SITE_URL || "https://sello.pk").replace(/\/+$/, "");
 
   const items = [
     {
@@ -127,7 +127,8 @@ export const generateBreadcrumbSchema = (car) => {
       "@type": "ListItem",
       position: pos++,
       name: car.city,
-      item: `${baseUrl}/listings?city=${encodeURIComponent(car.city.toLowerCase())}`,
+      // Indexable city landing, e.g. /used-cars/lahore
+      item: `${baseUrl}${buildListingsSearchUrl({ city: car.city })}`,
     });
   }
 
@@ -136,19 +137,18 @@ export const generateBreadcrumbSchema = (car) => {
       "@type": "ListItem",
       position: pos++,
       name: car.make,
-      item: `${baseUrl}/listings?make=${encodeURIComponent(car.make.toLowerCase())}`,
+      // Indexable make landing, e.g. /search-results?make=Toyota
+      item: `${baseUrl}${buildListingsSearchUrl({ make: car.make })}`,
     });
   }
 
   if (car.model) {
-    const params = new URLSearchParams();
-    if (car.make) params.set("make", car.make.toLowerCase());
-    params.set("model", car.model.toLowerCase());
     items.push({
       "@type": "ListItem",
       position: pos++,
       name: car.model,
-      item: `${baseUrl}/listings?${params.toString()}`,
+      // Indexable make+model landing, e.g. /search-results?make=Toyota&model=Corolla
+      item: `${baseUrl}${buildListingsSearchUrl({ make: car.make, model: car.model })}`,
     });
   }
 

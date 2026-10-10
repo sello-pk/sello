@@ -70,6 +70,15 @@ app.use(
           "https://www.facebook.com",
           "https://cdn.tiny.cloud",
           "https://*.tiny.cloud",
+          // Google AdSense (loader + ad rendering)
+          "https://pagead2.googlesyndication.com",
+          "https://*.googlesyndication.com",
+          "https://*.adtrafficquality.google",
+          "https://*.doubleclick.net",
+          "https://www.googletagservices.com",
+          "https://adservice.google.com",
+          "https://www.google.com",
+          "https://www.googletagmanager.com",
         ],
         connectSrc: [
           "'self'",
@@ -86,6 +95,12 @@ app.use(
           "ws://localhost:4002",
           "http://localhost:4002",
           "https://localhost:4002",
+          // Google AdSense
+          "https://pagead2.googlesyndication.com",
+          "https://*.googlesyndication.com",
+          "https://*.adtrafficquality.google",
+          "https://*.doubleclick.net",
+          "https://*.google.com",
         ],
         frameSrc: [
           "'self'",
@@ -94,6 +109,10 @@ app.use(
           "https://accounts.google.com",
           "https://*.google.com",
           "https://www.facebook.com",
+          // Google AdSense ad iframes
+          "https://*.googlesyndication.com",
+          "https://*.doubleclick.net",
+          "https://*.adtrafficquality.google",
         ],
         styleSrc: [
           "'self'",

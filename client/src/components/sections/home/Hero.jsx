@@ -16,7 +16,7 @@ const Hero = () => {
           src={heroMobile}
           alt="hero image"
           className="absolute inset-0 h-full w-full object-cover"
-          fetchPriority="high"
+          fetchpriority="high"
           loading="eager"
           decoding="async"
           width="768"

@@ -1,5 +1,5 @@
-import ourStoryImg from "./ourStoryImg.png";
-import selloGroupImg from "./selloGroupImg.png";
+import ourStoryImg from "./ourStoryImg.webp";
+import selloGroupImg from "./selloGroupImg.webp";
 
 export const ourStoryData = {
   title: "Your Trusted Car Marketplace in Pakistan",

@@ -47,7 +47,7 @@ import station from "./images/carDetails/types/station.svg";
 import van from "./images/carDetails/types/van.svg";
 import targa from "./images/carDetails/types/targa.svg";
 import truck from "./images/carDetails/types/truck.svg";
-import mutlipleBrandsLogo from "./images/mutlipleBrandsLogo.gif";
+import mutlipleBrandsLogo from "./images/mutlipleBrandsLogo.webp";
 import callIcon from "./images/carDetails/callIcon.svg";
 import chatIcon from "./images/carDetails/chatIcon.svg";
 import shareIcon from "./images/carDetails/shareIcon.svg";
@@ -61,12 +61,12 @@ import hp from "./images/carDetails/specs/hp.svg";
 import cc from "./images/carDetails/specs/cc.svg";
 import location from "./images/carDetails/specs/location.svg";
 import wheel from "./images/carDetails/specs/wheel.svg";
-import loan from "./images/loan.png";
-import findOutMore from "./images/findOutMore.jpg";
-import userHeroSectionImg from "./images/userHeroSectionImg.png";
+import loan from "./images/loan.webp";
+import findOutMore from "./images/findOutMore.webp";
+import userHeroSectionImg from "./images/userHeroSectionImg.webp";
 import searchSvg from "./images/searchSvg.svg";
 import comma from "./images/comma.svg";
-import loanPlanHeroImg from "./images/loanPlanHeroImg.png";
+import loanPlanHeroImg from "./images/loanPlanHeroImg.webp";
 import mailbox from "./images/mailbox.svg";
 import electricSvg3 from "./images/electricSvg3.png";
 
@@ -76,7 +76,7 @@ import wbDigitalLogo from "./images/wbDigital.svg";
 import mianMotors from "./images/mianMotors.png";
 
 // SELLO VIDEO
-import selloVideo from "./selloVideo.png";
+import selloVideo from "./selloVideo.webp";
 
 // Category Images
 import carCat from "./categories/carCat.webp";
@@ -103,8 +103,8 @@ import truckCatBlog2 from "./categories/catBlogs/truckCatBlog2.webp";
 import vanCatBlog from "./categories/catBlogs/vanCatBlog.webp";
 import vanCatBlog2 from "./categories/catBlogs/vanCatBlog2.webp";
 
-import trustLegal from "./images/trustLegal.png";
-import auctionSchedule from "./images/auctionSchedule.png";
+import trustLegal from "./images/trustLegal.webp";
+import auctionSchedule from "./images/auctionSchedule.webp";
 
 // Review images for CustomerReviews component - using professional Unsplash people photos
 const review1 =

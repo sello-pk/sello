@@ -1,5 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useSyncExternalStore } from "react";
+import { useLocation } from "react-router-dom";
 import { ADSENSE_CLIENT, AD_SLOTS } from "./adSlots";
+import {
+  isPrivatePath,
+  isInternalSearch,
+  subscribeAdsBlock,
+  getAdsBlocked,
+} from "../../utils/seoPolicy";
 
 /**
  * AdSenseSlot — the single AdSense entry point for the whole app.
@@ -16,6 +23,11 @@ import { ADSENSE_CLIENT, AD_SLOTS } from "./adSlots";
  *   and does not shift layout when it fills in.
  * - The push happens only once the block is close to the viewport, which keeps
  *   ads out of the way of LCP/TBT and matches Google's lazy-loading guidance.
+ * - AdSense policy: no Google ads on screens without publisher content (login,
+ *   sign-up, dashboards, payment/wallet, chats, admin, 404 / "not found",
+ *   empty internal-search pages). Those routes are listed once in
+ *   utils/seoPolicy.js and any page rendering <SEO robots="noindex..."> also
+ *   blocks ads while mounted.
  */
 const AdSenseSlot = ({
   slot,
@@ -25,13 +37,27 @@ const AdSenseSlot = ({
   className = "",
   label = "Advertisement",
 }) => {
-  const adSlotId = AD_SLOTS[slot];
+  const location = useLocation();
+  const pageBlocksAds = useSyncExternalStore(
+    subscribeAdsBlock,
+    getAdsBlocked,
+    () => false,
+  );
+  const routeAllowsAds =
+    !isPrivatePath(location.pathname) &&
+    !isInternalSearch(location.pathname, location.search) &&
+    !pageBlocksAds;
+  const adSlotId = routeAllowsAds ? AD_SLOTS[slot] : "";
   const containerRef = useRef(null);
   const pushedRef = useRef(false);
 
   useEffect(() => {
-    // Not configured yet -> stay invisible.
-    if (!adSlotId) return undefined;
+    // Not configured yet, or ad-ineligible page -> stay invisible. Reset so a
+    // fresh <ins> is pushed when the slot comes back on an eligible page.
+    if (!adSlotId) {
+      pushedRef.current = false;
+      return undefined;
+    }
 
     const node = containerRef.current;
     if (!node) return undefined;

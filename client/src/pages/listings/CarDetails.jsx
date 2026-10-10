@@ -100,6 +100,15 @@ const CarDetails = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
+          {/* Only a real "gone" response is noindexed. Temporary API errors must
+              not deindex a live listing. */}
+          {(error?.status === 404 || error?.status === 400 || error?.originalStatus === 404) && (
+            <SEO
+              title="Car Listing Not Available | Sello.pk"
+              description="This car listing is no longer available on Sello.pk. Browse other cars for sale in Pakistan."
+              robots="noindex, follow"
+            />
+          )}
           <p className="text-red-500 text-lg mb-2">Error loading car details</p>
           <p className="text-gray-600 text-sm mb-4">
             {error?.data?.message || error?.message || "Please try again later"}
@@ -119,6 +128,11 @@ const CarDetails = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
+          <SEO
+            title="Car Listing Not Available | Sello.pk"
+            description="This car listing is no longer available on Sello.pk. Browse other cars for sale in Pakistan."
+            robots="noindex, follow"
+          />
           <p className="text-red-500 text-lg mb-2">Invalid car URL</p>
           <p className="text-gray-600 text-sm mb-4">
             The car ID is missing or invalid.
@@ -138,6 +152,11 @@ const CarDetails = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
+          <SEO
+            title="Car Listing Not Available | Sello.pk"
+            description="This car listing is no longer available on Sello.pk. Browse other cars for sale in Pakistan."
+            robots="noindex, follow"
+          />
           <p className="text-red-500 text-lg mb-2">Car not found</p>
           <p className="text-gray-600 text-sm mb-4">
             The car listing you're looking for doesn't exist or has been

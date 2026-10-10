@@ -14,6 +14,11 @@ import {
   MdOutlineKeyboardArrowRight,
 } from "react-icons/md";
 
+// useLayoutEffect warns during the static prerender (SSR); fall back to
+// useEffect on the server so the build log stays clean.
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
 const KF_ID = "brand-marquee-keyframes";
 /** Lower = slower scroll. Min/max seconds cap how fast/slow a loop feels in prod. */
 const PX_PER_SEC = 12;
@@ -134,7 +139,7 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
     };
   }, []);
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const el = trackRef.current;
     if (!el || row.length < 2 || reducedMotion) return;
 

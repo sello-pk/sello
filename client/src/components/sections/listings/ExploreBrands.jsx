@@ -42,6 +42,10 @@ const ExploreBrands = () => {
             src={images.mutlipleBrandsLogo}
             alt="Multiple Brands"
             className="w-full max-w-[500px] object-contain"
+            loading="lazy"
+            decoding="async"
+            width="500"
+            height="500"
           />
         </div>
       </div>

@@ -129,6 +129,24 @@ const FilteredResults = () => {
   }, [searchParams, city]);
 
   const totalResults = carsData?.total || 0;
+
+  // Indexing: only clean make/model/city landings are indexable. Free-text
+  // search, extra facet params, and empty result pages are noindex,follow.
+  // Canonical never carries search/facet/sort params.
+  const LANDING_KEYS = ["make", "model", "city", "page"];
+  const isTrackingParam = (key) =>
+    /^utm_/i.test(key) || ["fbclid", "gclid", "msclkid", "ttclid"].includes(key);
+  const hasNonLandingParams = [...searchParams.keys()].some(
+    (key) => !LANDING_KEYS.includes(key) && !isTrackingParam(key),
+  );
+  const hasLanding = Boolean(cityFromPath || make || model || city);
+  const isEmptyResults =
+    !carsLoading && !apiError && totalResults === 0 && !cityContent && !curatedSeo;
+  const seoRobots =
+    searchTerm.trim() || hasNonLandingParams || !hasLanding || isEmptyResults
+      ? "noindex, follow"
+      : undefined;
+  const canonicalPath = buildListingsSearchUrl({ city, make, model });
   const shownCount = sortedCars.length;
   const rangeLabel =
     totalResults > 0
@@ -169,7 +187,8 @@ const FilteredResults = () => {
       <SEO
         title={seoTitle}
         description={seoDescription}
-        canonical={`${window.location.pathname}${window.location.search}`}
+        canonical={canonicalPath}
+        robots={seoRobots}
       />
       <StructuredData.CollectionPageSchema
         name={pageCopy.title}

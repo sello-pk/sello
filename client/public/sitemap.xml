@@ -1,196 +1,300 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Static URLs only. Every <loc> must be the canonical URL of its page
+  (no /home, /cars, /auctions/betting or /terms-condition: those canonicalise
+  elsewhere). Blog articles are appended at build by scripts/generate-sitemap.js;
+  car listings are served by the API at https://api.sello.pk/sitemap-cars.xml.
+-->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <!-- CORE PAGES -->
   <url>
     <loc>https://sello.pk/</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>daily</changefreq>
-  </url>
-  <url>
-    <loc>https://sello.pk/home</loc>
-    <priority>0.9</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>daily</changefreq>
   </url>
 
   <!-- VEHICLE LISTINGS -->
   <url>
-    <loc>https://sello.pk/cars</loc>
-    <priority>0.9</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>daily</changefreq>
-  </url>
-  <url>
     <loc>https://sello.pk/listings</loc>
-    <priority>0.9</priority>
-    <lastmod>2026-03-31</lastmod>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>daily</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://sello.pk/listings/categories</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://sello.pk/view-all-brands</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
-
-  <!-- DYNAMIC CATEGORY PAGES -->
   <url>
     <loc>https://sello.pk/listings/cars</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>daily</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://sello.pk/listings/bikes</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>daily</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://sello.pk/listings/trucks</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>daily</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://sello.pk/listings/buses</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>daily</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://sello.pk/listings/vans</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>daily</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://sello.pk/listings/farm</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>daily</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://sello.pk/listings/e-bikes</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>daily</changefreq>
+    <priority>0.7</priority>
   </url>
 
-  <!-- FEATURES -->
+  <!-- CITY LANDINGS -->
+  <url>
+    <loc>https://sello.pk/used-cars/karachi</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sello.pk/used-cars/lahore</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sello.pk/used-cars/islamabad</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sello.pk/used-cars/rawalpindi</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sello.pk/used-cars/peshawar</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sello.pk/used-cars/faisalabad</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sello.pk/used-cars/multan</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sello.pk/used-cars/gujranwala</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sello.pk/used-cars/sialkot</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sello.pk/used-cars/sargodha</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sello.pk/used-cars/hyderabad</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sello.pk/used-cars/abbottabad</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sello.pk/used-cars/quetta</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sello.pk/used-cars/bahawalpur</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sello.pk/used-cars/mardan</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sello.pk/used-cars/wah-cantt</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sello.pk/used-cars/gujrat</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sello.pk/used-cars/sahiwal</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sello.pk/used-cars/mansehra</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sello.pk/used-cars/attock</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- TOOLS -->
   <url>
     <loc>https://sello.pk/car-estimator</loc>
-    <priority>0.9</priority>
-    <lastmod>2026-03-31</lastmod>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sello.pk/vehicle-verification</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
 
   <!-- AUCTIONS -->
   <url>
     <loc>https://sello.pk/auctions</loc>
-    <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>daily</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://sello.pk/auctions/live</loc>
-    <priority>0.9</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>daily</changefreq>
-  </url>
-  <url>
-    <loc>https://sello.pk/auctions/betting</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>hourly</changefreq>
     <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://sello.pk/auctions/schedule</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.7</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>weekly</changefreq>
   </url>
   <url>
     <loc>https://sello.pk/auctions/trust-legal</loc>
-    <priority>0.5</priority>
-    <lastmod>2026-03-31</lastmod>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://sello.pk/auctions/compare</loc>
-    <priority>0.6</priority>
-    <lastmod>2026-03-31</lastmod>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.4</priority>
   </url>
 
   <!-- BLOG -->
   <url>
     <loc>https://sello.pk/blog</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>weekly</changefreq>
   </url>
   <url>
     <loc>https://sello.pk/blog/all</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.7</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>weekly</changefreq>
   </url>
 
-  <!-- INFO PAGES -->
+  <!-- COMPANY & SUPPORT -->
   <url>
     <loc>https://sello.pk/about</loc>
-    <priority>0.6</priority>
-    <lastmod>2026-03-31</lastmod>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://sello.pk/contact</loc>
-    <priority>0.6</priority>
-    <lastmod>2026-03-31</lastmod>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
-
-  <!-- HELP CENTER -->
   <url>
     <loc>https://sello.pk/help-center</loc>
-    <priority>0.5</priority>
-    <lastmod>2026-03-31</lastmod>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://sello.pk/help/faqs</loc>
-    <priority>0.5</priority>
-    <lastmod>2026-03-31</lastmod>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
-
-  <!-- LEGAL PAGES -->
   <url>
     <loc>https://sello.pk/privacy-policy</loc>
-    <priority>0.3</priority>
-    <lastmod>2026-03-31</lastmod>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>yearly</changefreq>
-  </url>
-  <url>
-    <loc>https://sello.pk/terms-condition</loc>
     <priority>0.3</priority>
-    <lastmod>2026-03-31</lastmod>
-    <changefreq>yearly</changefreq>
   </url>
   <url>
     <loc>https://sello.pk/terms-conditions</loc>
-    <priority>0.3</priority>
-    <lastmod>2026-03-31</lastmod>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
 
 </urlset>

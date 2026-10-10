@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation, Link } from "react-router-dom";
-import createPost from "../../../assets/createPost.gif";
+import createPost from "../../../assets/createPost.webp";
 import { MdArrowOutward } from "react-icons/md";
 
 const BannerInFilter = ({ skipOuterGutter = false }) => {
@@ -44,6 +44,8 @@ const BannerInFilter = ({ skipOuterGutter = false }) => {
             <img
               src={createPost}
               alt="Create listing preview"
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-contain drop-shadow-lg"
             />
           </div>

@@ -1,6 +1,6 @@
 import React from "react";
 import HeroFilter from "../../utils/HeroFilter";
-import listingHero from "../../../assets/images/listingHero.png";
+import listingHero from "../../../assets/images/listingHero.webp";
 import listingHeroMobile from "../../../assets/images/listingHeroMobile.webp";
 
 const ListingHeroSection = () => {
@@ -12,7 +12,7 @@ const ListingHeroSection = () => {
           src={listingHeroMobile}
           alt="listing hero image"
           className="absolute inset-0 h-full w-full object-cover"
-          fetchPriority="high"
+          fetchpriority="high"
           loading="eager"
           decoding="async"
           width="768"

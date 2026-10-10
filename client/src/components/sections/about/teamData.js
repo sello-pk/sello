@@ -2,7 +2,7 @@ import ceoImage from "../../../assets/images/team/ceo.jpg";
 import contentWriterImage from "../../../assets/images/team/contentWriter.jpeg";
 import managingDirectorImage from "../../../assets/images/team/managingDirector.jpeg";
 import generalManagerImage from "../../../assets/images/team/generalManager.jpeg";
-import developerImage from "../../../assets/images/team/developer.png";
+import developerImage from "../../../assets/images/team/developer.webp";
 import seoExpertImage from "../../../assets/images/team/seoExpert.jpg";
 import socialMediaMarketerImage from "../../../assets/images/team/socialMediaMarketer.jpeg";
 

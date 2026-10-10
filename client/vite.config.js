@@ -21,6 +21,10 @@ export default defineConfig({
         { src: "public/_headers", dest: "." },
         { src: "src/assets/images/hero.webp", dest: "lcp" },
         { src: "src/assets/images/heroMobile.webp", dest: "lcp" },
+        // Stable /logo.png for og:image, twitter:image and schema.org logo
+        // (many pages reference https://sello.pk/logo.png; it did not exist,
+        // so the SPA fallback answered with HTML and Google saw no image).
+        { src: "public/favicon.png", dest: ".", rename: "logo.png" },
       ],
     }),
 

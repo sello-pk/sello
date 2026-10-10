@@ -54,7 +54,7 @@ const BlogsHeroSection = () => {
           alt="Blog hero section image"
           width="960"
           height="720"
-          fetchPriority="high"
+          fetchpriority="high"
           decoding="async"
           className="h-full rounded-bl-[155px] w-full object-cover"
         />
