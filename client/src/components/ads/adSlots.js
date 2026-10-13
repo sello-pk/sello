@@ -50,7 +50,8 @@ const env = import.meta.env || {};
  */
 const DEFAULT_ADSENSE_CLIENT = "ca-pub-9074113020959790";
 const DEFAULT_SLOT_IDS = {
-  // Slot ids from the new account (ca-pub-9074113020959790) go here once created.
+  // Ad units from ca-pub-9074113020959790 (AdSense > Ads > By ad unit).
+  brandsSection: "8356018574", // ADSENSE_SLOT_BRANDS_SECTION
 };
 
 const readSlot = (key) => {
