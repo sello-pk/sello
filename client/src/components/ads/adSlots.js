@@ -48,9 +48,9 @@ const env = import.meta.env || {};
  * every ad). Env values always win. Add a unit id here once it is created in
  * AdSense > Ads > By ad unit, or set the matching VITE_ADSENSE_SLOT_* var.
  */
-const DEFAULT_ADSENSE_CLIENT = "ca-pub-5923513384592431";
+const DEFAULT_ADSENSE_CLIENT = "ca-pub-9074113020959790";
 const DEFAULT_SLOT_IDS = {
-  brandsSection: "3538634723",
+  // Slot ids from the new account (ca-pub-9074113020959790) go here once created.
 };
 
 const readSlot = (key) => {
@@ -59,7 +59,7 @@ const readSlot = (key) => {
   return fromEnv || DEFAULT_SLOT_IDS[key] || "";
 };
 
-/** Publisher id, e.g. "ca-pub-5923513384592431". */
+/** Publisher id, e.g. "ca-pub-9074113020959790". */
 export const ADSENSE_CLIENT =
   (env.VITE_ADSENSE_CLIENT || "").trim() || DEFAULT_ADSENSE_CLIENT;
 
