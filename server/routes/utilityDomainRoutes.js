@@ -102,8 +102,31 @@ router.get('/sitemap.xml', async (req, res) => {
 });
 
 router.get('/robots.txt', (req, res) => {
-    const baseUrl = process.env.FRONTEND_URL || process.env.PRODUCTION_URL || 'https://yourdomain.com';
-    const robots = `User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: ${baseUrl}/sitemap.xml`;
+    const baseUrl = (process.env.FRONTEND_URL || process.env.PRODUCTION_URL || 'https://sello.pk').replace(/\/+$/, '');
+    const robots = [
+        '# Major search and AI crawlers. Same rules as https://sello.pk/robots.txt',
+        'User-agent: *',
+        'User-agent: Googlebot',
+        'User-agent: Google-Extended',
+        'User-agent: Bingbot',
+        'User-agent: Applebot',
+        'User-agent: Applebot-Extended',
+        'User-agent: GPTBot',
+        'User-agent: ChatGPT-User',
+        'User-agent: OAI-SearchBot',
+        'User-agent: ClaudeBot',
+        'User-agent: Claude-SearchBot',
+        'User-agent: anthropic-ai',
+        'User-agent: PerplexityBot',
+        'User-agent: Amazonbot',
+        'User-agent: Meta-ExternalAgent',
+        'User-agent: CCBot',
+        'Allow: /',
+        'Disallow: /admin',
+        'Disallow: /private/',
+        `Sitemap: ${baseUrl}/sitemap.xml`,
+        'Sitemap: https://api.sello.pk/sitemap-cars.xml',
+    ].join('\n');
     res.set('Content-Type', 'text/plain');
     res.send(robots);
 });
