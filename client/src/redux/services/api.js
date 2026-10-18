@@ -484,14 +484,22 @@ export const api = createApi({
       },
     }),
     googleLogin: builder.mutation({
-      query: (token) => {
-        if (!token || typeof token !== "string") {
+      query: (payload) => {
+        // Desktop sends the ID token string. Phone sends { token, tokenType: "access" }.
+        const body =
+          typeof payload === "string"
+            ? { token: payload }
+            : {
+                token: payload?.token,
+                ...(payload?.tokenType ? { tokenType: payload.tokenType } : {}),
+              };
+        if (!body.token || typeof body.token !== "string") {
           throw new Error("Invalid Google token provided");
         }
         return {
           url: "/auth/google",
           method: "POST",
-          body: { token: token },
+          body,
         };
       },
       invalidatesTags: ["User"],

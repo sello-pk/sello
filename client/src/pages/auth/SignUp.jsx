@@ -5,7 +5,7 @@ import { images } from "../../assets/assets";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { GoogleLogin } from "@react-oauth/google";
+import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
 import {
   useRegisterUserMutation,
   useGoogleLoginMutation,
@@ -97,12 +97,15 @@ const SignUp = () => {
     try {
       setGoogleLoading(true);
       
-      if (!credentialResponse?.credential) {
+      const idToken = credentialResponse?.credential;
+      const googleAccessToken = credentialResponse?.accessToken;
+      if (!idToken && !googleAccessToken) {
         throw new Error("No credential received from Google");
       }
-      
-      const token = credentialResponse.credential;
-      const res = await googleLogin(token).unwrap();
+
+      const res = await googleLogin(
+        idToken ? idToken : { token: googleAccessToken, tokenType: "access" },
+      ).unwrap();
 
       // Check response structure - handle both transformed and raw responses
       const responseToken = res?.token || res?.accessToken || res?.data?.token;
@@ -342,11 +345,10 @@ const SignUp = () => {
 
               {/* Google Sign Up Button */}
               <div className="mb-4 w-full">
-                <div className="googleBtn">
-                  <GoogleLogin
-                    onSuccess={handleGoogleSuccess}
-                    disabled={googleLoading}
-                    onError={(error) => {
+                <GoogleAuthButton
+                  onSuccess={handleGoogleSuccess}
+                  disabled={googleLoading}
+                  onError={(error) => {
                       // Handle configuration errors gracefully - don't show errors for unconfigured OAuth
                       if (!hasGoogleClientId) {
                         return;
@@ -375,14 +377,8 @@ const SignUp = () => {
                       
                       toast.error(errorMsg);
                     }}
-                    useOneTap={false}
-                    theme="outline"
-                    shape="rectangular"
-                    size="large"
-                    text="signup_with"
-                    auto_select={false}
-                  />
-                </div>
+                  text="signup_with"
+                />
               </div>
 
              

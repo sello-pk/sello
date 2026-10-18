@@ -463,12 +463,52 @@ export const refreshToken = async (req, res) => {
     }
 };
 
+// Phone sign-in uses an access token from Google's account window.
+// Desktop still sends the ID token. The access token must belong to this app.
+const verifyGoogleAccessToken = async (accessToken) => {
+    const info = await client.getTokenInfo(accessToken);
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const audience = info.aud || info.azp || info.audience || info.issued_to;
+    if (!clientId || audience !== clientId) {
+        throw new Error("Google token audience mismatch");
+    }
+
+    const userRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    if (!userRes.ok) {
+        throw new Error("Google userinfo failed");
+    }
+    const profile = await userRes.json();
+    const emailVerified = profile.email_verified === true || profile.email_verified === "true";
+    if (!profile?.email || !emailVerified) {
+        throw new Error("Google email not verified");
+    }
+
+    const fallbackName = String(profile.email).split("@")[0];
+    return {
+        email: profile.email,
+        name: profile.name || profile.given_name || fallbackName,
+        picture: profile.picture || "",
+    };
+};
+
 export const googleLogin = async (req, res) => {
     try {
-        const { token } = req.body;
-        const ticket = await client.verifyIdToken({ idToken: token, audience: process.env.GOOGLE_CLIENT_ID });
-        const { email, name, picture } = ticket.getPayload();
-        
+        const token = typeof req.body?.token === "string" ? req.body.token.trim() : "";
+        if (!token) {
+            return res.status(400).json({ success: false, message: "Google login failed" });
+        }
+
+        // Desktop button: ID token. Phone button: access token (tokenType "access").
+        const profile = req.body?.tokenType === "access"
+            ? await verifyGoogleAccessToken(token)
+            : (await client.verifyIdToken({ idToken: token, audience: process.env.GOOGLE_CLIENT_ID })).getPayload();
+        const { email, name, picture } = profile;
+        if (!email) {
+            return res.status(401).json({ success: false, message: "Google login failed" });
+        }
+
         let user = await User.findOne({ email: email.toLowerCase() });
         if (!user) {
             user = await User.create({ name, email: email.toLowerCase(), avatar: picture, password: crypto.randomBytes(32).toString("hex"), isEmailVerified: true, status: "active", role: "individual" });
