@@ -95,7 +95,7 @@ const BrandsSection = () => {
 
         {/* Grid + side ad. Stacks on mobile, becomes a 70/30 row from md up. */}
         <div className="w-full flex flex-col md:flex-row md:items-start gap-4 md:gap-5">
-          <div className="py-4 w-full md:w-[70%]">
+          <div className="py-4 w-full md:w-[62%] md:min-w-0">
             <div className="grid md:grid-cols-4 grid-cols-2 gap-4 md:gap-5">
               {brandsCategory.map((brand, index) => {
                 const isLastItem = index === brandsCategory.length - 1;
@@ -150,14 +150,8 @@ const BrandsSection = () => {
             </div>
           </div>
 
-          {/*
-            Ad slot: square display unit beside the brand grid. Sticky on
-            desktop so it stays beside the grid while scrolling. The width is
-            capped at 300px on desktop so the square unit is never squeezed
-            or cropped; on mobile it goes full width.
-          */}
-          <div className="w-full md:w-[30%] md:max-w-[300px] md:self-start md:sticky md:top-20">
-            <AdSenseSlot slot="brandsSection" minHeight={250} />
+          <div className="w-full md:w-[38%] md:min-w-[340px] md:max-w-[420px] md:shrink-0 md:self-start md:sticky md:top-20">
+            <AdSenseSlot slot="brandsSection" minHeight={380} />
           </div>
         </div>
 
