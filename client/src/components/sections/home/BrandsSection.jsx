@@ -151,7 +151,7 @@ const BrandsSection = () => {
           </div>
 
           <div className="w-full md:w-[38%] md:min-w-[340px] md:max-w-[420px] md:shrink-0 md:self-start md:sticky md:top-20">
-            <AdSenseSlot slot="brandsSection" minHeight={380} />
+            <AdSenseSlot slot="brandsSection" width={250} height={250} />
           </div>
         </div>
 

@@ -34,6 +34,8 @@ const AdSenseSlot = ({
   format = "auto",
   fullWidthResponsive = true,
   minHeight = 280,
+  width,
+  height,
   className = "",
   label = "Advertisement",
 }) => {
@@ -122,12 +124,26 @@ const AdSenseSlot = ({
       <ins
         key={`${slot}-${adSlotId}`}
         ref={containerRef}
-        className="adsbygoogle w-full overflow-hidden"
-        style={{ display: "block", minHeight: `${minHeight}px` }}
+        className="adsbygoogle"
+        style={
+          width && height
+            ? {
+                display: "inline-block",
+                width: `${width}px`,
+                height: `${height}px`,
+              }
+            : { display: "block", width: "100%", minHeight: `${minHeight}px` }
+        }
         data-ad-client={ADSENSE_CLIENT}
         data-ad-slot={adSlotId}
-        data-ad-format={format}
-        data-full-width-responsive={fullWidthResponsive ? "true" : "false"}
+        {...(width && height
+          ? {}
+          : {
+              "data-ad-format": format,
+              "data-full-width-responsive": fullWidthResponsive
+                ? "true"
+                : "false",
+            })}
       />
     </aside>
   );
