@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import SEO from "../../common/SEO";
 import NewsLatter from "../../utils/NewsLatter";
+import { AdSenseSlot } from "../../ads";
 import listingHero from "../../../assets/images/verification/vehicleVerificationHeroSection.jpeg";
 import punjabIcon from "../../../assets/images/verification/punjab.png";
 import islamabadIcon from "../../../assets/images/verification/islamabad.png";
@@ -706,6 +707,17 @@ const VehicleVerificationPage = () => {
         </div>
       </section>
 
+      <div className="bg-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AdSenseSlot
+            slot="vehicleVerificationTop"
+            format="auto"
+            fullWidthResponsive
+            minHeight={100}
+          />
+        </div>
+      </div>
+
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-slate-900 text-center mb-12">
@@ -992,6 +1004,17 @@ const VehicleVerificationPage = () => {
           </article>
         </div>
       </section>
+
+      <div className="bg-white pt-4">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AdSenseSlot
+            slot="vehicleVerificationBottom"
+            format="auto"
+            fullWidthResponsive
+            minHeight={100}
+          />
+        </div>
+      </div>
 
       <section className="py-16 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">

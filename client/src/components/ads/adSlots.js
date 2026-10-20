@@ -36,6 +36,10 @@ const SLOT_ENV_KEYS = {
   // Feature pages.
   estimator: "VITE_ADSENSE_SLOT_ESTIMATOR",
   vehicleVerification: "VITE_ADSENSE_SLOT_VEHICLE_VERIFICATION",
+  // /vehicle-verification horizontal banners. Paste each numeric ad unit id
+  // into DEFAULT_SLOT_IDS below (AdSense > Ads > By ad unit).
+  vehicleVerificationTop: "VITE_ADSENSE_SLOT_VEHICLE_VERIFICATION_TOP",
+  vehicleVerificationBottom: "VITE_ADSENSE_SLOT_VEHICLE_VERIFICATION_BOTTOM",
   contact: "VITE_ADSENSE_SLOT_CONTACT",
   about: "VITE_ADSENSE_SLOT_ABOUT",
 };
@@ -52,6 +56,8 @@ const DEFAULT_ADSENSE_CLIENT = "ca-pub-9074113020959790";
 const DEFAULT_SLOT_IDS = {
   // Ad units from ca-pub-9074113020959790 (AdSense > Ads > By ad unit).
   brandsSection: "8356018574", // ADSENSE_SLOT_BRANDS_SECTION
+  vehicleVerificationTop: "3793170615",
+  vehicleVerificationBottom: "4559632387",
 };
 
 const readSlot = (key) => {
