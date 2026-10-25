@@ -102,9 +102,11 @@ router.get('/sitemap.xml', async (req, res) => {
 });
 
 router.get('/robots.txt', (req, res) => {
-    const baseUrl = (process.env.FRONTEND_URL || process.env.PRODUCTION_URL || 'https://sello.pk').replace(/\/+$/, '');
+    // Mirror client/public/robots.txt crawler policy (canonical host is sello.pk).
     const robots = [
         '# Same policy as https://sello.pk/robots.txt',
+        '# OpenAI: OAI-SearchBot/OAI-AdsBot/ChatGPT-User allowed; GPTBot blocked (training)',
+        '# Perplexity + Bingbot allowed for answer engines / Copilot via Bing',
         'User-agent: GPTBot',
         'User-agent: ClaudeBot',
         'User-agent: anthropic-ai',
@@ -130,6 +132,7 @@ router.get('/robots.txt', (req, res) => {
         'User-agent: Applebot',
         'User-agent: facebookexternalhit',
         'User-agent: OAI-SearchBot',
+        'User-agent: OAI-AdsBot',
         'User-agent: ChatGPT-User',
         'User-agent: Claude-SearchBot',
         'User-agent: Claude-User',
@@ -138,7 +141,7 @@ router.get('/robots.txt', (req, res) => {
         'Allow: /',
         'Disallow: /admin',
         'Disallow: /private/',
-        `Sitemap: ${baseUrl}/sitemap.xml`,
+        'Sitemap: https://sello.pk/sitemap.xml',
         'Sitemap: https://api.sello.pk/sitemap-cars.xml',
     ].join('\n');
     res.set('Content-Type', 'text/plain');
