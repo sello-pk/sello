@@ -115,17 +115,11 @@
     <meta name="twitter:image" content="https://sello.pk/logo.png" />
     <meta name="msvalidate.01" content="22F35109D5706F037DFCCC8692C1450F" />
 
-    <!-- Google AdSense: account verification + loader (Google asks for the
-         code inside <head>). The publisher id is public and hardcoded on
-         purpose: a build without client/.env (it is gitignored) used to ship
-         "client=%VITE_ADSENSE_CLIENT%", which made every ad request fail.
+    <!-- Google AdSense: account meta stays in <head> for site verification.
+         The adsbygoogle.js loader is injected only after cookie consent
+         (CookieConsent + loadAdSenseScript) so ads never fire before disclosure.
          Ad units are pushed by src/components/ads/AdSenseSlot.jsx. -->
     <meta name="google-adsense-account" content="ca-pub-9074113020959790" />
-    <script
-      async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9074113020959790"
-      crossorigin="anonymous"
-    ></script>
     <style>
       /* Collapse ad blocks Google could not fill (no empty boxes / labels). */
       ins.adsbygoogle[data-ad-status="unfilled"] {

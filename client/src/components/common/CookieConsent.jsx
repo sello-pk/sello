@@ -1,31 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
-const STORAGE_KEY = "sello-cookie-consent-v1";
+import {
+  hasCookieConsent,
+  setCookieConsent,
+} from "../ads/consent";
+import { loadAdSenseScript } from "../ads/loadAdSenseScript";
 
 /**
  * Lightweight cookie notice for AdSense / analytics disclosure.
- * Does not block the site; records acknowledgment in localStorage.
+ * Does not block the site; records acknowledgment, then allows AdSense to load.
  */
 const CookieConsent = () => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    try {
-      if (localStorage.getItem(STORAGE_KEY) === "1") return;
-    } catch {
-      /* private mode — still show once per session */
+    if (hasCookieConsent()) {
+      // Returning visitor — warm the AdSense loader without showing the banner.
+      loadAdSenseScript();
+      return;
     }
     setVisible(true);
   }, []);
 
   const accept = () => {
-    try {
-      localStorage.setItem(STORAGE_KEY, "1");
-    } catch {
-      /* ignore */
-    }
+    setCookieConsent();
     setVisible(false);
+    loadAdSenseScript();
   };
 
   if (!visible) return null;

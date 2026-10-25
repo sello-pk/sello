@@ -1,6 +1,11 @@
-import React, { useEffect, useRef, useSyncExternalStore } from "react";
+import React, { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useLocation } from "react-router-dom";
 import { ADSENSE_CLIENT, AD_SLOTS } from "./adSlots";
+import {
+  hasCookieConsent,
+  subscribeCookieConsent,
+} from "./consent";
+import { loadAdSenseScript } from "./loadAdSenseScript";
 import {
   isPrivatePath,
   isInternalSearch,
@@ -18,11 +23,7 @@ import {
  *   page; add a slot to adSlots.js and render this component instead.
  * - Renders nothing until `slot` has a real ad unit id in env, so an
  *   unconfigured deployment produces a clean page instead of broken ad units.
- * - Space is reserved up front (minHeight) and the "Advertisement" label is
- *   always rendered, so the ad block is visually separated from Sello's own UI
- *   and does not shift layout when it fills in.
- * - The push happens only once the block is close to the viewport, which keeps
- *   ads out of the way of LCP/TBT and matches Google's lazy-loading guidance.
+ * - AdSense script loads only after cookie consent (see CookieConsent.jsx).
  * - AdSense policy: no Google ads on screens without publisher content (login,
  *   sign-up, dashboards, payment/wallet, chats, admin, 404 / "not found",
  *   empty internal-search pages). Those routes are listed once in
@@ -45,18 +46,38 @@ const AdSenseSlot = ({
     getAdsBlocked,
     () => false,
   );
+  const consentOk = useSyncExternalStore(
+    subscribeCookieConsent,
+    hasCookieConsent,
+    () => false,
+  );
   const routeAllowsAds =
     !isPrivatePath(location.pathname) &&
     !isInternalSearch(location.pathname, location.search) &&
     !pageBlocksAds;
-  const adSlotId = routeAllowsAds ? AD_SLOTS[slot] : "";
+  const adSlotId = routeAllowsAds && consentOk ? AD_SLOTS[slot] : "";
   const containerRef = useRef(null);
   const pushedRef = useRef(false);
+  const [scriptReady, setScriptReady] = useState(false);
+
+  useEffect(() => {
+    if (!adSlotId || !consentOk) {
+      setScriptReady(false);
+      return undefined;
+    }
+    let cancelled = false;
+    loadAdSenseScript().then((ok) => {
+      if (!cancelled) setScriptReady(Boolean(ok));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [adSlotId, consentOk]);
 
   useEffect(() => {
     // Not configured yet, or ad-ineligible page -> stay invisible. Reset so a
     // fresh <ins> is pushed when the slot comes back on an eligible page.
-    if (!adSlotId) {
+    if (!adSlotId || !scriptReady) {
       pushedRef.current = false;
       return undefined;
     }
@@ -102,7 +123,7 @@ const AdSenseSlot = ({
       cancelled = true;
       observer?.disconnect();
     };
-  }, [adSlotId]);
+  }, [adSlotId, scriptReady]);
 
   // A publisher id and a slot id are both required before we emit ad markup.
   if (!ADSENSE_CLIENT || !adSlotId) return null;
