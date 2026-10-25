@@ -30,6 +30,7 @@ import requestIdMiddleware from "./middlewares/requestIdMiddleware.js";
 import { requestTimeout } from "./middlewares/requestTimeout.js";
 import { sanitizeInput } from "./middlewares/sanitizeMiddleware.js";
 import { apiLimiter } from "./middlewares/securityMiddleware.js";
+import { INDEXNOW_KEY } from "./utils/indexNow.js";
 
 dotenv.config();
 
@@ -241,13 +242,30 @@ app.get("/", (req, res, next) => {
   });
 });
 
+/* ------------------ INDEXNOW KEY (also copied to client/public for nginx) ------------------ */
+app.get(`/${INDEXNOW_KEY}.txt`, (_req, res) => {
+  res.type("text/plain").send(INDEXNOW_KEY);
+});
+
 /* ------------------ SINGLE-SERVICE STATIC + SPA FALLBACK ------------------ */
 if (servesClient) {
   Logger.info(`Serving built client from ${clientDist}`);
   app.use(express.static(clientDist));
   // SPA fallback: every non-API GET returns the app shell.
-  app.get("*", (req, res, next) => {
+  // Car detail paths get meta + Product JSON-LD injected when a build-time
+  // shell is missing (new listings between deploys).
+  app.get("*", async (req, res, next) => {
     if (req.path.startsWith("/api")) return next();
+    const carMatch = req.path.match(/^\/cars\/([^/]+)\/?$/);
+    if (carMatch) {
+      try {
+        const { buildCarDetailHtml } = await import("./utils/seoHtmlInject.js");
+        const html = await buildCarDetailHtml(clientIndex, carMatch[1]);
+        if (html) return res.type("html").send(html);
+      } catch (error) {
+        Logger.warn("Car SEO HTML inject skipped", { message: error?.message });
+      }
+    }
     res.sendFile(clientIndex);
   });
 } else {

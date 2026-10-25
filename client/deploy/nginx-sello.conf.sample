@@ -75,6 +75,11 @@ server {
         add_header Content-Type "text/html; charset=utf-8";
         add_header Cache-Control "public, max-age=86400";
     }
+    # IndexNow key (Bing / IndexNow engines)
+    location = /e20510d020aa752081a5b5691c75e110.txt {
+        add_header Content-Type "text/plain; charset=utf-8";
+        add_header Cache-Control "public, max-age=86400";
+    }
 
     # --- robots.txt + sitemap.xml: short cache so updates are picked up ---
     location = /robots.txt      { add_header Cache-Control "public, max-age=86400"; }

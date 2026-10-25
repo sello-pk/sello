@@ -1,18 +1,11 @@
 import Car from "../models/carModel.js";
 import Logger from "../utils/logger.js";
+import { buildCarPath } from "../utils/carUrls.js";
 
-/** Matches client/src/utils/urlBuilders.js — keep listing links consistent with the SPA */
-function buildCarPath(car) {
-  if (!car?._id) return "/cars";
-  const id = String(car._id);
-  const slugify = (v) => String(v || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-  const make = slugify(car.make);
-  const model = slugify(car.model);
-  const year = car.year || "";
-  const city = slugify(car.city || car.location || "");
-  if (!make && !model && !year) return `/cars/${id}`;
-  const slugParts = [make, model, year, "for-sale-in", city].filter(Boolean);
-  return `/cars/${slugParts.join("-")}-${id}`;
+/** Invalidate cached cars sitemap after listing publish/update/remove. */
+export function invalidateCarsSitemapCache() {
+  sitemapBody = null;
+  sitemapExpiresAt = 0;
 }
 
 function getPublicSiteOrigin() {
