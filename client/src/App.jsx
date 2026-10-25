@@ -592,21 +592,47 @@ const App = () => {
     const projectId = import.meta.env.VITE_CLARITY_PROJECT_ID;
     if (!projectId) return;
 
+    let cancelled = false;
+    let unsubscribe = () => {};
+
     const initClarity = async () => {
       try {
+        const { hasCookieConsent } = await import("./components/ads/consent.js");
+        if (cancelled || !hasCookieConsent() || clarityRef.current) return;
         const mod = await import("react-microsoft-clarity");
+        if (cancelled) return;
         clarityRef.current = mod.clarity;
         mod.clarity.init(projectId);
         mod.clarity.setTag("environment", import.meta.env.MODE);
         mod.clarity.setTag("platform", "web");
-      } catch {}
+      } catch {
+        /* ignore */
+      }
     };
 
-    if (typeof window.requestIdleCallback === "function") {
-      requestIdleCallback(initClarity, { timeout: 5000 });
-    } else {
-      setTimeout(initClarity, 3000);
-    }
+    const scheduleInit = () => {
+      if (typeof window.requestIdleCallback === "function") {
+        requestIdleCallback(initClarity, { timeout: 5000 });
+      } else {
+        setTimeout(initClarity, 3000);
+      }
+    };
+
+    (async () => {
+      try {
+        const consent = await import("./components/ads/consent.js");
+        if (cancelled) return;
+        if (consent.hasCookieConsent()) scheduleInit();
+        unsubscribe = consent.subscribeCookieConsent(scheduleInit);
+      } catch {
+        /* ignore */
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      unsubscribe();
+    };
   }, []);
 
   useEffect(() => {

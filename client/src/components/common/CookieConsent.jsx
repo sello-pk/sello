@@ -5,18 +5,19 @@ import {
   setCookieConsent,
 } from "../ads/consent";
 import { loadAdSenseScript } from "../ads/loadAdSenseScript";
+import { loadMarketingScripts } from "../ads/loadMarketingScripts";
 
 /**
- * Lightweight cookie notice for AdSense / analytics disclosure.
- * Does not block the site; records acknowledgment, then allows AdSense to load.
+ * Cookie notice for AdSense / analytics disclosure.
+ * Non-essential tags load only after acknowledgment.
  */
 const CookieConsent = () => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     if (hasCookieConsent()) {
-      // Returning visitor — warm the AdSense loader without showing the banner.
       loadAdSenseScript();
+      loadMarketingScripts();
       return;
     }
     setVisible(true);
@@ -26,6 +27,7 @@ const CookieConsent = () => {
     setCookieConsent();
     setVisible(false);
     loadAdSenseScript();
+    loadMarketingScripts();
   };
 
   if (!visible) return null;

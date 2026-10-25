@@ -5,5 +5,10 @@ export {
   ADSENSE_POLICY_SAFE,
   isAdSenseConfigured,
 } from "./adSlots";
-export { hasCookieConsent, setCookieConsent } from "./consent";
+export {
+  hasCookieConsent,
+  setCookieConsent,
+  subscribeCookieConsent,
+} from "./consent";
 export { loadAdSenseScript } from "./loadAdSenseScript";
+export { loadMarketingScripts } from "./loadMarketingScripts";

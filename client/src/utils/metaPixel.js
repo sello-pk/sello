@@ -1,11 +1,15 @@
 /**
- * Meta Pixel (Facebook) — deferred load + safe event helpers.
- * Scripts load after first interaction or ~4s idle so FCP/LCP/TBT are not blocked.
+ * Meta Pixel (Facebook) — consent-gated load + safe event helpers.
+ * Script inject happens after cookie consent (loadMarketingScripts / scheduleFacebookPixelLoad).
+ * Event helpers queue on the fbq stub until the real script is present.
  */
+
+import { hasCookieConsent } from "../components/ads/consent.js";
 
 export const META_PIXEL_ID = "1687648445884627";
 
 let pixelLoadScheduled = false;
+let pixelScriptLoading = false;
 
 /** Queue calls until fbevents.js is loaded (same pattern as Meta's snippet). */
 function ensureFbqStub() {
@@ -35,6 +39,7 @@ export function loadFacebookPixel() {
   if (typeof window === "undefined" || typeof document === "undefined") {
     return;
   }
+  if (!hasCookieConsent()) return;
 
   ensureFbqStub();
 
@@ -81,36 +86,13 @@ export function loadFacebookPixel() {
 }
 
 /**
- * Schedule pixel: first scroll/pointer/touch/key OR 4s — whichever comes first.
+ * Prefer loadMarketingScripts after consent. Kept for callers that still schedule Meta alone.
  */
 export function scheduleFacebookPixelLoad() {
   if (pixelLoadScheduled || typeof window === "undefined") return;
+  if (!hasCookieConsent()) return;
   pixelLoadScheduled = true;
-  ensureFbqStub();
-
-  let fired = false;
-  const run = () => {
-    if (fired) return;
-    fired = true;
-    clearTimeout(idleTimer);
-    interactionEvents.forEach((ev) =>
-      window.removeEventListener(ev, run, listenerOpts),
-    );
-    loadFacebookPixel();
-  };
-
-  const idleTimer = setTimeout(run, 4000);
-  const listenerOpts = { passive: true, capture: true };
-  const interactionEvents = [
-    "scroll",
-    "pointerdown",
-    "keydown",
-    "touchstart",
-    "click",
-  ];
-  interactionEvents.forEach((ev) =>
-    window.addEventListener(ev, run, listenerOpts),
-  );
+  loadFacebookPixel();
 }
 
 export const trackMetaEvent = (event, data = {}) => {

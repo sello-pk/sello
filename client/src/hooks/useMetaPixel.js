@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 
 /**
  * PageView on SPA navigations after deferred pixel has loaded.
- * Initial PageView is fired from loadFacebookPixel() — not duplicated here.
+ * Initial PageView is fired from loadMarketingScripts (after consent) — not duplicated here.
  */
 export default function useMetaPixel() {
   const location = useLocation();
