@@ -93,7 +93,7 @@ const OurPrivacyPolicy = () => {
             These tools collect data only when it is clearly put forth by the
             user.
           </p>
-          <h3 className="text-xl font-semibold mt-6 mb-3">
+          <h3 id="advertising" className="text-xl font-semibold mt-6 mb-3 scroll-mt-24">
             Advertising (Google AdSense)
           </h3>
           <p className="mb-2">

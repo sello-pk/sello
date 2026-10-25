@@ -303,6 +303,8 @@ const AppRouter = () => {
         <Route path="/privacy-policy" element={<OurPrivacyPolicy />} />
         <Route path="/terms-condition" element={<TermsCondition />} />
         <Route path="/terms-conditions" element={<TermsCondition />} />
+        {/* Legacy footer path — keep so old links never 404 for AdSense reviewers */}
+        <Route path="/terms-and-conditions" element={<TermsCondition />} />
 
         <Route path="/help-center" element={<HelpCenter />} />
         <Route path="/help" element={<HelpCenter />} />

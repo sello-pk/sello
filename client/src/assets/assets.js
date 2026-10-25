@@ -450,7 +450,7 @@ export const footerData = [
       },
       {
         name: "Terms & Conditions",
-        path: "/terms-and-conditions",
+        path: "/terms-conditions",
       },
       {
         name: "Privacy Policy",

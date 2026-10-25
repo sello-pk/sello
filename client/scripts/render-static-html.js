@@ -182,6 +182,7 @@ const STATIC_META = {
   "/privacy-policy": PRIVACY_TERMS_COMMON,
   "/terms-condition": TERMS_COMMON,
   "/terms-conditions": TERMS_COMMON,
+  "/terms-and-conditions": TERMS_COMMON,
   "/blog": {
     title: "Car Blog in Pakistan | News, Guides & Insights - Sello.pk",
     description:
@@ -376,7 +377,14 @@ async function mapLimit(items, limit, worker) {
 
 function buildRoutes({ entry, categories, listData, blogsBySlug, relatedDataBySlug }) {
   const routes = [];
-  for (const routePath of ["/about", "/contact", "/privacy-policy", "/terms-condition", "/terms-conditions"]) {
+  for (const routePath of [
+    "/about",
+    "/contact",
+    "/privacy-policy",
+    "/terms-condition",
+    "/terms-conditions",
+    "/terms-and-conditions",
+  ]) {
     routes.push({
       path: routePath,
       head: buildStaticHead(STATIC_META[routePath]),

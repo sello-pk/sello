@@ -260,6 +260,18 @@ const LISTING_HUBS = [
     description:
       "See upcoming Sello.pk car auction dates and lots. Plan your bids and inspect vehicles before the live sale.",
   },
+  {
+    path: "/help-center",
+    title: "Help Center | Sello.pk Support",
+    description:
+      "Get help buying or selling cars on Sello.pk. Find answers about listings, auctions, payments, and account support.",
+  },
+  {
+    path: "/help/faqs",
+    title: "FAQs | Buy & Sell Cars on Sello.pk",
+    description:
+      "Frequently asked questions about buying, selling, and auctioning cars on Sello.pk in Pakistan.",
+  },
 ];
 
 const CITY_SLUGS = [

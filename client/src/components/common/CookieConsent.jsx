@@ -42,7 +42,7 @@ const CookieConsent = () => {
           We use cookies for site functionality, analytics, and to show relevant
           ads (including Google AdSense). See our{" "}
           <Link
-            to="/privacy-policy"
+            to="/privacy-policy#advertising"
             className="text-[#ff8a00] font-medium underline-offset-2 hover:underline"
           >
             Privacy Policy

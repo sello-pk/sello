@@ -21,7 +21,9 @@ const Footer = () => {
     if (path === "/help/buying-cars") return "/help-center";
     if (path === "/help/selling-cars") return "/help/faqs";
     if (path === "/loan-plans") return "/contact";
-    if (path === "/terms-condition") return "/terms-conditions";
+    if (path === "/terms-condition" || path === "/terms-and-conditions") {
+      return "/terms-conditions";
+    }
     return path;
   };
 
@@ -302,12 +304,19 @@ const Footer = () => {
             </a>
             . All rights reserved.
           </p>
-          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-sm">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:gap-x-6 text-sm">
             <Link
-              to="/terms-conditions"
+              to="/about"
               className="text-gray-400 hover:text-white transition-colors duration-200"
             >
-              Terms & Conditions
+              About
+            </Link>
+            <span className="text-gray-600 hidden sm:inline">•</span>
+            <Link
+              to="/contact"
+              className="text-gray-400 hover:text-white transition-colors duration-200"
+            >
+              Contact
             </Link>
             <span className="text-gray-600 hidden sm:inline">•</span>
             <Link
@@ -322,6 +331,13 @@ const Footer = () => {
               className="text-gray-400 hover:text-white transition-colors duration-200"
             >
               Privacy Policy
+            </Link>
+            <span className="text-gray-600 hidden sm:inline">•</span>
+            <Link
+              to="/terms-conditions"
+              className="text-gray-400 hover:text-white transition-colors duration-200"
+            >
+              Terms & Conditions
             </Link>
           </div>
         </div>
