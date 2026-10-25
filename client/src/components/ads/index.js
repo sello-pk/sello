@@ -1,2 +1,7 @@
 export { default as AdSenseSlot } from "./AdSenseSlot";
-export { AD_SLOTS, ADSENSE_CLIENT, isAdSenseConfigured } from "./adSlots";
+export {
+  AD_SLOTS,
+  ADSENSE_CLIENT,
+  ADSENSE_POLICY_SAFE,
+  isAdSenseConfigured,
+} from "./adSlots";

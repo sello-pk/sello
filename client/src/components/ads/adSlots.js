@@ -12,6 +12,12 @@
  *
  * A slot with no env value is treated as "not configured yet" and renders
  * nothing, so the site never pushes an empty/invalid ad unit to Google.
+ *
+ * Policy-safe mode (default ON until AdSense approves the site):
+ *   Only content-rich placements render. Tool pages, stacked homepage units,
+ *   and the global footer unit stay off so reviewers don't see ad-heavy /
+ *   low-content screens. After approval set:
+ *     VITE_ADSENSE_POLICY_SAFE=false
  */
 
 const SLOT_ENV_KEYS = {
@@ -47,20 +53,44 @@ const SLOT_ENV_KEYS = {
 const env = import.meta.env || {};
 
 /**
+ * Default ON. Keeps AdSense review inventory limited to pages with real
+ * publisher content. Flip to false only after the site is approved.
+ */
+export const ADSENSE_POLICY_SAFE =
+  String(env.VITE_ADSENSE_POLICY_SAFE ?? "true").toLowerCase() !== "false";
+
+/**
+ * Slots allowed while ADSENSE_POLICY_SAFE is true.
+ * Excludes: tools (estimator/verification), contact, live auction UI,
+ * stacked homepage/detail units, and the every-page footer unit.
+ */
+const POLICY_SAFE_SLOTS = new Set([
+  "homepageFeed",
+  "listingFeed",
+  "carDetail",
+  "blogIndex",
+  "blogArticle",
+  "auctionsIndex",
+  "about",
+]);
+
+/**
  * Public, non-secret ids used when the build has no client/.env (the file is
- * gitignored, so CI/server builds often lack it, which silently disabled
- * every ad). Env values always win. Add a unit id here once it is created in
- * AdSense > Ads > By ad unit, or set the matching VITE_ADSENSE_SLOT_* var.
+ * gitignored, so CI/server builds often lack it). Env values always win.
+ *
+ * Do NOT put tool-page unit ids in defaults while seeking AdSense approval —
+ * those placements are blocked in policy-safe mode anyway.
  */
 const DEFAULT_ADSENSE_CLIENT = "ca-pub-9074113020959790";
 const DEFAULT_SLOT_IDS = {
-  // Ad units from ca-pub-9074113020959790 (AdSense > Ads > By ad unit).
-  brandsSection: "8356018574", // ADSENSE_SLOT_BRANDS_SECTION
+  // Kept for post-approval (VITE_ADSENSE_POLICY_SAFE=false). Not served in safe mode.
+  brandsSection: "8356018574",
   vehicleVerificationTop: "3793170615",
   vehicleVerificationBottom: "4559632387",
 };
 
 const readSlot = (key) => {
+  if (ADSENSE_POLICY_SAFE && !POLICY_SAFE_SLOTS.has(key)) return "";
   const value = env[SLOT_ENV_KEYS[key]];
   const fromEnv = typeof value === "string" ? value.trim() : "";
   return fromEnv || DEFAULT_SLOT_IDS[key] || "";
@@ -84,4 +114,4 @@ export const isAdSenseConfigured = () =>
   Boolean(ADSENSE_CLIENT) &&
   Object.values(AD_SLOTS).some((id) => Boolean(id));
 
-export { SLOT_ENV_KEYS };
+export { SLOT_ENV_KEYS, POLICY_SAFE_SLOTS };

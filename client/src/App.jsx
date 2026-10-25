@@ -8,6 +8,7 @@ import Navbar from "./components/Navbar.jsx";
 import BottomHeader from "./components/BottomHeader.jsx";
 import Footer from "./components/Footer.jsx";
 import { AdSenseSlot } from "./components/ads";
+import CookieConsent from "./components/common/CookieConsent.jsx";
 /** Chunk filename avoids "WhatsApp" (many blockers strip that URL substring). */
 const HelpChatWidget = lazyImport(
   () => import("./components/features/help/HelpChatWidget.jsx"),
@@ -685,6 +686,9 @@ const App = () => {
 
       {/* Show Footer except for auth pages & admin */}
       {shouldShowNavbarFooter && <Footer />}
+
+      {/* Cookie / AdSense disclosure — public pages only */}
+      {shouldShowNavbarFooter && <CookieConsent />}
 
       {/* Support chat — lazy chunk; filename HelpChatWidget avoids ad-block false blocks */}
       {shouldShowNavbarFooter && showHelpChat && (

@@ -5,6 +5,7 @@ import { useGetCarsQuery } from "../../../redux/services/api";
 import CarCard from "../../common/CarCard";
 import SortAndViewOptions from "../../listings/SortAndViewOptions";
 import StructuredData from "../../common/StructuredData";
+import { blockAdsForPage } from "../../../utils/seoPolicy";
 
 const sortCars = (cars, sortBy) => {
   if (!cars?.length) return cars;
@@ -132,6 +133,15 @@ const GetAllCarsSection = () => {
     () => (Array.isArray(carsData?.cars) ? carsData.cars : []),
     [carsData?.cars],
   );
+
+  // AdSense: never show ads beside an empty or failed inventory block.
+  useEffect(() => {
+    if (isLoading) return undefined;
+    if (error || (activeTab === "all" && cars.length === 0)) {
+      return blockAdsForPage();
+    }
+    return undefined;
+  }, [isLoading, error, activeTab, cars.length]);
 
   const totalPages = carsData?.pages || 1;
   const shouldShowPagination = !isHomePage && totalPages > 1;
