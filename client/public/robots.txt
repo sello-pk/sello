@@ -74,7 +74,7 @@ Disallow: /edit-auction-car/
 Disallow: /dealer/dashboard
 Disallow: /seller/
 
-# Auction private pages
+# Auction private / ephemeral pages
 Disallow: /auctions/token-payment
 Disallow: /auctions/transactions
 Disallow: /auctions/watchlist
@@ -82,6 +82,8 @@ Disallow: /auctions/buyer-dashboard
 Disallow: /auctions/seller-dashboard
 Disallow: /auctions/wallet
 Disallow: /auctions/result
+Disallow: /auctions/car-detail
+Disallow: /auctions/compare
 
 # Search: free-text internal search results
 # (make/model/city landings like /search-results?make=Toyota stay crawlable)

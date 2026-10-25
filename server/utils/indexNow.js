@@ -93,12 +93,20 @@ async function postBatch(urls) {
   let lastError;
   for (const endpoint of ENDPOINTS) {
     try {
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json; charset=utf-8" },
-        body: JSON.stringify(body),
-      });
-      // 200 / 202 accepted; 422 invalid; treat 2xx as success
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 8000);
+      let res;
+      try {
+        res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json; charset=utf-8" },
+          body: JSON.stringify(body),
+          signal: controller.signal,
+        });
+      } finally {
+        clearTimeout(timer);
+      }
+      // 200 / 202 accepted; treat 2xx as success
       if (res.status >= 200 && res.status < 300) {
         Logger.info("IndexNow submitted", {
           count: body.urlList.length,

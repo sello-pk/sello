@@ -36,18 +36,29 @@ export function tryReloadOnceForStaleChunk(err) {
   }
 }
 
-/** React.lazy wrapper: reload once on stale chunk, then load fresh entry */
+/** React.lazy wrapper: soft-retry once, then one full reload on stale chunks */
 export function lazyImport(factory) {
   return lazy(async () => {
     try {
       const mod = await factory();
       clearChunkRetryFlag();
       return mod;
-    } catch (error) {
-      if (tryReloadOnceForStaleChunk(error)) {
-        return new Promise(() => {});
+    } catch (firstError) {
+      // Transient network / race: retry the import once before a hard reload
+      if (isStaleChunkLoadError(firstError)) {
+        try {
+          await new Promise((r) => setTimeout(r, 400));
+          const mod = await factory();
+          clearChunkRetryFlag();
+          return mod;
+        } catch (secondError) {
+          if (tryReloadOnceForStaleChunk(secondError)) {
+            return new Promise(() => {});
+          }
+          throw secondError;
+        }
       }
-      throw error;
+      throw firstError;
     }
   });
 }

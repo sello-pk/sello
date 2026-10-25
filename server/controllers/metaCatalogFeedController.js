@@ -2,12 +2,6 @@ import Car from "../models/carModel.js";
 import Logger from "../utils/logger.js";
 import { buildCarPath } from "../utils/carUrls.js";
 
-/** Invalidate cached cars sitemap after listing publish/update/remove. */
-export function invalidateCarsSitemapCache() {
-  sitemapBody = null;
-  sitemapExpiresAt = 0;
-}
-
 function getPublicSiteOrigin() {
   const raw =
     process.env.META_CATALOG_SITE_URL ||
@@ -175,6 +169,12 @@ const SITEMAP_MAX_URLS = 50000; // sitemaps.org hard limit per file
 let sitemapBody = null;
 let sitemapExpiresAt = 0;
 const SITEMAP_CACHE_MS = 60 * 60 * 1000; // 1 hour
+
+/** Bust cars sitemap cache after listing publish/update/remove. */
+export function invalidateCarsSitemapCache() {
+  sitemapBody = null;
+  sitemapExpiresAt = 0;
+}
 
 function escapeXml(value) {
   return String(value ?? "")

@@ -92,9 +92,12 @@ export async function buildCarDetailHtml(shellPath, slugSegment) {
     .select(
       "title make model year price images city location status condition fuelType transmission mileage isSold vehicleType bodyType description isApproved",
     )
+    .maxTimeMS(2000)
     .lean();
   if (!car) return null;
   if (car.isApproved === false) return null;
+  // Sold/deleted cars still get a shell so crawlers see SoldOut, not a soft 200 SPA
+  // with wrong generic title — Product availability reflects status below.
 
   const origin = getPublicSiteOrigin();
   const path = buildCarPath(car);

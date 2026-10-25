@@ -141,6 +141,9 @@ router.get('/robots.txt', (req, res) => {
         'Allow: /',
         'Disallow: /admin',
         'Disallow: /private/',
+        'Disallow: /auctions/car-detail',
+        'Disallow: /auctions/compare',
+        'Disallow: /auctions/result',
         'Sitemap: https://sello.pk/sitemap.xml',
         'Sitemap: https://api.sello.pk/sitemap-cars.xml',
     ].join('\n');

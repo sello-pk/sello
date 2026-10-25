@@ -11,6 +11,7 @@ import {
   getCarRejectedTemplate,
 } from "../utils/emailTemplates.js";
 import { normalizeAuctionCapabilities } from "../utils/auctionAccess.js";
+import { onListingSeoChange } from "../utils/listingSeoNotify.js";
 
 /* -------------------------------------------------------------------------- */
 /*                                ADMIN SERVICE                               */
@@ -536,14 +537,7 @@ export const approveCar = async (req, res) => {
       rejectionReason,
       req.user._id,
     );
-    try {
-      const { notifyIndexNowForCar } = await import("../utils/indexNow.js");
-      const { invalidateCarsSitemapCache } = await import("./metaCatalogFeedController.js");
-      notifyIndexNowForCar(car, { removed: !isApproved });
-      invalidateCarsSitemapCache();
-    } catch (_) {
-      /* SEO notify must never block approve */
-    }
+    onListingSeoChange(car, { removed: !isApproved });
     return res.status(200).json({ success: true, data: car });
   } catch (error) {
     Logger.error("Approve Car Error", error);
@@ -600,16 +594,7 @@ export const deleteCar = async (req, res) => {
   try {
     const existing = await Car.findById(req.params.carId).lean();
     await Car.findByIdAndDelete(req.params.carId);
-    if (existing) {
-      try {
-        const { notifyIndexNowForCar } = await import("../utils/indexNow.js");
-        const { invalidateCarsSitemapCache } = await import("./metaCatalogFeedController.js");
-        notifyIndexNowForCar(existing, { removed: true });
-        invalidateCarsSitemapCache();
-      } catch (_) {
-        /* SEO notify must never block delete */
-      }
-    }
+    if (existing) onListingSeoChange(existing, { removed: true });
     return res.status(200).json({ success: true, message: "Car deleted" });
   } catch (error) {
     Logger.error("deleteCar error", error);

@@ -252,15 +252,23 @@ if (servesClient) {
   Logger.info(`Serving built client from ${clientDist}`);
   app.use(express.static(clientDist));
   // SPA fallback: every non-API GET returns the app shell.
-  // Car detail paths get meta + Product JSON-LD injected when a build-time
-  // shell is missing (new listings between deploys).
+  // Prefer a build-time SEO shell when present; otherwise inject meta quickly
+  // (hard timeout) so DB slowness never blocks the SPA.
   app.get("*", async (req, res, next) => {
     if (req.path.startsWith("/api")) return next();
     const carMatch = req.path.match(/^\/cars\/([^/]+)\/?$/);
     if (carMatch) {
+      const slug = carMatch[1];
+      const shellFile = path.join(clientDist, "cars", slug, "index.html");
+      if (fs.existsSync(shellFile)) {
+        return res.sendFile(shellFile);
+      }
       try {
         const { buildCarDetailHtml } = await import("./utils/seoHtmlInject.js");
-        const html = await buildCarDetailHtml(clientIndex, carMatch[1]);
+        const html = await Promise.race([
+          buildCarDetailHtml(clientIndex, slug),
+          new Promise((resolve) => setTimeout(() => resolve(null), 2500)),
+        ]);
         if (html) return res.type("html").send(html);
       } catch (error) {
         Logger.warn("Car SEO HTML inject skipped", { message: error?.message });

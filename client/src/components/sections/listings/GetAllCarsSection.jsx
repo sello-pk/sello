@@ -107,7 +107,12 @@ const GetAllCarsSection = () => {
   );
 
   // Call backend with pagination and filtering
-  const { data: carsData, isLoading, error } = useGetCarsQuery(queryParams);
+  const {
+    data: carsData,
+    isLoading,
+    error,
+    refetch,
+  } = useGetCarsQuery(queryParams);
 
   // Reset to first page and clear loaded cars when changing tabs
   useEffect(() => {
@@ -219,23 +224,26 @@ const GetAllCarsSection = () => {
     );
   }
 
-  if (error && carsData?.cars?.length > 0) {
-    // Extract error message from RTK Query error structure
-    const errorMessage =
-      error?.data?.message ||
-      error?.message ||
-      error?.error ||
-      "Unknown error occurred";
-
+  // API failure with empty data must NOT look like “no inventory” — Google
+  // previously indexed that empty-state copy when the listings request failed.
+  if (error && cars.length === 0) {
     return (
       <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-10 md:py-12">
         {listingsStructuredData}
         <div className="max-w-8xl mx-auto w-full">
           <div className="rounded-xl border border-[#e5e7eb] bg-white py-12 px-6 text-center">
-            <h2 className="text-xl font-semibold text-red-600 mb-2">Error loading vehicles</h2>
-            <p className="text-gray-600 mb-6">{errorMessage}</p>
+            <h2 className="text-xl font-semibold text-[#0B0C1E] mb-2">
+              Vehicles temporarily unavailable
+            </h2>
+            <p className="text-gray-600 mb-6">
+              We could not load listings right now. Please try again — inventory
+              is updated throughout the day on Sello.pk.
+            </p>
             <button
-              onClick={() => navigate(0)}
+              type="button"
+              onClick={() => {
+                refetch();
+              }}
               className="px-6 py-2.5 bg-[#ff8a00] text-white rounded-xl font-semibold hover:brightness-110 transition-colors"
             >
               Retry
@@ -306,11 +314,27 @@ const GetAllCarsSection = () => {
             <div className="col-span-full rounded-xl border border-[#e5e7eb] bg-white py-16 px-6 text-center">
               <p className="text-gray-500 text-lg">
                 {activeTab === "all"
-                  ? "No vehicles available at the moment."
-                  : `No ${activeTab} vehicles found.`}
+                  ? "No vehicles match this view right now."
+                  : `No ${activeTab} vehicles found for this filter.`}
               </p>
               <p className="text-gray-400 text-sm mt-2">
-                Try another tab or check back later.
+                Try another tab, browse{" "}
+                <button
+                  type="button"
+                  className="text-[#ff8a00] font-medium underline-offset-2 hover:underline"
+                  onClick={() => navigate("/listings")}
+                >
+                  all listings
+                </button>
+                , or check city pages like{" "}
+                <button
+                  type="button"
+                  className="text-[#ff8a00] font-medium underline-offset-2 hover:underline"
+                  onClick={() => navigate("/used-cars/lahore")}
+                >
+                  Lahore
+                </button>
+                .
               </p>
             </div>
           ) : (

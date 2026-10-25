@@ -18,12 +18,13 @@ import Login from "../pages/auth/Login.jsx";
 import CarListings from "../pages/listings/CarListings.jsx";
 import CarDetails from "../pages/listings/CarDetails.jsx";
 import AuctionsActions from "../pages/features/auctions/Actions.jsx";
+// Eager like listings/auctions — avoids post-deploy chunk 404s Google indexed on this URL
+import CarEstimator from "../pages/features/CarEstimator.jsx";
 
 // Public core routes (Lazy)
 const Signup = lazyImport(() => import("../pages/auth/SignUp.jsx"));
 const Blog = lazyImport(() => import("../pages/blog/Blog.jsx"));
 const AllBlog = lazyImport(() => import("../pages/blog/AllBlog.jsx"));
-const CarEstimator = lazyImport(() => import("../pages/features/CarEstimator.jsx"));
 const VehicleVerification = lazyImport(() => import("../pages/features/VehicleVerification.jsx"));
 const OurPrivacyPolicy = lazyImport(() => import("../pages/ourPages/OurPrivacyPolicy.jsx"));
 const TermsCondition = lazyImport(() => import("../pages/ourPages/TermsCondition.jsx"));

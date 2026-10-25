@@ -12,6 +12,7 @@ import {
   LISTING_MAX_TOTAL_BYTES,
   MSG_IMAGE_TOTAL_EXCEEDED,
 } from "../../constants/listingUpload.js";
+import { onListingSeoChange } from "../../utils/listingSeoNotify.js";
 
 /**
  * Upload listing images with size check + bounded Cloudinary concurrency
@@ -273,14 +274,7 @@ export const createCar = async (req, res) => {
     const car = await Car.create(scrubbedData);
     await User.findByIdAndUpdate(req.user._id, { $push: { carsPosted: car._id } });
 
-    try {
-      const { notifyIndexNowForCar } = await import("../../utils/indexNow.js");
-      const { invalidateCarsSitemapCache } = await import("../metaCatalogFeedController.js");
-      notifyIndexNowForCar(car);
-      invalidateCarsSitemapCache();
-    } catch (_) {
-      /* SEO notify must never block listing create */
-    }
+    onListingSeoChange(car);
 
     Logger.info("Create car completed", {
       userId: req.user._id,
@@ -396,14 +390,7 @@ export const editCar = async (req, res) => {
     }
 
     const updated = await Car.findByIdAndUpdate(id, finalUpdateData, { new: true, runValidators: true });
-    try {
-      const { notifyIndexNowForCar } = await import("../../utils/indexNow.js");
-      const { invalidateCarsSitemapCache } = await import("../metaCatalogFeedController.js");
-      notifyIndexNowForCar(updated);
-      invalidateCarsSitemapCache();
-    } catch (_) {
-      /* SEO notify must never block listing edit */
-    }
+    onListingSeoChange(updated);
     return res.status(200).json({ success: true, data: updated });
   } catch (error) {
     Logger.error("Edit Car Error", error);
@@ -473,14 +460,7 @@ export const markCarAsSold = async (req, res) => {
     }
 
     await car.save();
-    try {
-      const { notifyIndexNowForCar } = await import("../../utils/indexNow.js");
-      const { invalidateCarsSitemapCache } = await import("../metaCatalogFeedController.js");
-      notifyIndexNowForCar(car, { removed: markSold });
-      invalidateCarsSitemapCache();
-    } catch (_) {
-      /* SEO notify must never block sold toggle */
-    }
+    onListingSeoChange(car, { removed: markSold });
     return res.status(200).json({ success: true, data: car });
   } catch (error) {
     Logger.error("Mark Car As Sold Error", error);
@@ -527,14 +507,7 @@ export const relistCar = async (req, res) => {
     // car.expiryDate = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
 
     await car.save();
-    try {
-      const { notifyIndexNowForCar } = await import("../../utils/indexNow.js");
-      const { invalidateCarsSitemapCache } = await import("../metaCatalogFeedController.js");
-      notifyIndexNowForCar(car);
-      invalidateCarsSitemapCache();
-    } catch (_) {
-      /* SEO notify must never block relist */
-    }
+    onListingSeoChange(car);
     return res.status(200).json({ success: true, data: car });
   } catch (error) {
     Logger.error("Relist Car Error", error);
@@ -554,14 +527,7 @@ export const deleteCar = async (req, res) => {
 
     car.status = "deleted";
     await car.save();
-    try {
-      const { notifyIndexNowForCar } = await import("../../utils/indexNow.js");
-      const { invalidateCarsSitemapCache } = await import("../metaCatalogFeedController.js");
-      notifyIndexNowForCar(car, { removed: true });
-      invalidateCarsSitemapCache();
-    } catch (_) {
-      /* SEO notify must never block delete */
-    }
+    onListingSeoChange(car, { removed: true });
     return res.status(200).json({ success: true, message: "Deleted" });
   } catch (error) {
     return res.status(500).json({ success: false, message: "Server error" });

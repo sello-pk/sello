@@ -208,9 +208,9 @@ async function mapLimit(items, limit, worker) {
 const LISTING_HUBS = [
   {
     path: "/listings",
-    title: "Used Cars for Sale in Pakistan | Sello.pk",
+    title: "Buy and Sell Cars in Pakistan | Trusted Brands – Sello.pk",
     description:
-      "Browse used cars, bikes, and vehicles for sale across Pakistan. Compare prices, photos, and seller details on Sello.pk.",
+      "Buy and sell cars in Pakistan with confidence. Explore premium brands, compare models, and connect with trusted sellers on Sello.pk.",
   },
   {
     path: "/listings/cars",
@@ -235,6 +235,30 @@ const LISTING_HUBS = [
     title: "Car Brands in Pakistan | Browse by Make - Sello.pk",
     description:
       "Explore car brands available on Sello.pk and jump to make and model listings across Pakistan.",
+  },
+  {
+    path: "/car-estimator",
+    title: "AI Car Estimator - Find Your Car's Real Value | Sello.pk",
+    description:
+      "Get instant AI-powered car valuations for Pakistani market. Estimate your car's price based on make, model, year, condition, and location.",
+  },
+  {
+    path: "/auctions",
+    title: "Bid & Win Deals – Live Car Auctions | Sello.pk",
+    description:
+      "Join Sello.pk live car auctions. Browse upcoming lots, learn how bidding works, and win vehicles at competitive prices in Pakistan.",
+  },
+  {
+    path: "/auctions/live",
+    title: "Live Car Auction | Bid Now on Sello.pk",
+    description:
+      "Watch and bid on live vehicle auctions on Sello.pk. Real-time bidding for cars across Pakistan.",
+  },
+  {
+    path: "/auctions/schedule",
+    title: "Auction Schedule | Upcoming Car Auctions - Sello.pk",
+    description:
+      "See upcoming Sello.pk car auction dates and lots. Plan your bids and inspect vehicles before the live sale.",
   },
 ];
 

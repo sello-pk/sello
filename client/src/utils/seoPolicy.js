@@ -35,6 +35,9 @@ const PRIVATE_PATH_PATTERNS = [
   /^\/seller(\/|$)/,
   // Auction account / payment pages
   /^\/auctions\/(token-payment|transactions|watchlist|buyer-dashboard|seller-dashboard|wallet|result)\/?$/,
+  // Query-param auction detail/compare — not stable SEO URLs (use hub + live instead)
+  /^\/auctions\/car-detail\/?$/,
+  /^\/auctions\/compare\/?$/,
 ];
 
 /**

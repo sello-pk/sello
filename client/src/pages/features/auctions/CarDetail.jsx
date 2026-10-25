@@ -448,6 +448,7 @@ export default function CarDetail() {
         title={pageTitle.replace(/\s+/g, " ").trim()}
         description={pageDescription.replace(/\s+/g, " ").trim()}
         canonical={canonicalUrl}
+        robots="noindex, follow"
       />
       <StructuredData.AuctionEventSchema auction={auction} car={car} />
       <div className="min-h-screen bg-slate-50">

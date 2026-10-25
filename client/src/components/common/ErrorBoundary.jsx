@@ -83,17 +83,18 @@ class ErrorBoundaryClass extends React.Component {
                 />
               </svg>
             </div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-2">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Something went wrong
             </h2>
             <p className="text-gray-600 mb-6">
               We're sorry, but something unexpected happened. Please try
               refreshing the page.
             </p>
-            {this.state.error?.message && (
-              <p className="text-xs text-gray-500 mb-4 break-words">
-                Error: {this.state.error.message}
-                {this.state.errorRef ? ` (${this.state.errorRef})` : ""}
+            {/* Never surface raw chunk/network errors in the DOM — crawlers
+                indexed “Failed to fetch dynamically imported module” from here. */}
+            {this.state.errorRef && (
+              <p className="text-xs text-gray-400 mb-4">
+                Ref: {this.state.errorRef}
               </p>
             )}
             <div className="space-y-3">
