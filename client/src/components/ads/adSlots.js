@@ -66,6 +66,7 @@ export const ADSENSE_POLICY_SAFE =
  */
 const POLICY_SAFE_SLOTS = new Set([
   "homepageFeed",
+  "brandsSection",
   "listingFeed",
   "carDetail",
   "blogIndex",
@@ -78,15 +79,26 @@ const POLICY_SAFE_SLOTS = new Set([
  * Public, non-secret ids used when the build has no client/.env (the file is
  * gitignored, so CI/server builds often lack it). Env values always win.
  *
- * Do NOT put tool-page unit ids in defaults while seeking AdSense approval —
- * those placements are blocked in policy-safe mode anyway.
+ * Until dedicated units exist per placement, reuse the account's real ad unit
+ * ids so policy-safe pages still request ads (empty DEFAULT_SLOT_IDS + safe
+ * mode previously rendered zero units).
  */
 const DEFAULT_ADSENSE_CLIENT = "ca-pub-9074113020959790";
+const UNIT_SQUARE = "8356018574";
+const UNIT_BANNER_A = "3793170615";
+const UNIT_BANNER_B = "4559632387";
 const DEFAULT_SLOT_IDS = {
-  // Kept for post-approval (VITE_ADSENSE_POLICY_SAFE=false). Not served in safe mode.
-  brandsSection: "8356018574",
-  vehicleVerificationTop: "3793170615",
-  vehicleVerificationBottom: "4559632387",
+  brandsSection: UNIT_SQUARE,
+  homepageFeed: UNIT_BANNER_A,
+  listingFeed: UNIT_BANNER_A,
+  carDetail: UNIT_BANNER_B,
+  blogIndex: UNIT_BANNER_A,
+  blogArticle: UNIT_BANNER_B,
+  auctionsIndex: UNIT_BANNER_A,
+  about: UNIT_BANNER_B,
+  // Post-approval only (blocked while ADSENSE_POLICY_SAFE=true).
+  vehicleVerificationTop: UNIT_BANNER_A,
+  vehicleVerificationBottom: UNIT_BANNER_B,
 };
 
 const readSlot = (key) => {
