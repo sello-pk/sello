@@ -63,6 +63,31 @@ server {
         try_files $uri $uri/ =404;
     }
 
+    # --- Car detail SEO shells: unknown /cars/<slug> must be HTTP 404 (not SPA 200) ---
+    # Valid listings are written at build to dist/cars/<slug>/index.html.
+    location ^~ /cars/ {
+        try_files $uri $uri/ =404;
+    }
+
+    # --- City landing shells ---
+    location ^~ /used-cars/ {
+        try_files $uri $uri/ =404;
+    }
+
+    # --- Auth / account shells (build writes noindex HTML under these paths) ---
+    location ^~ /login            { try_files $uri $uri/ /login/index.html; }
+    location ^~ /sign-up          { try_files $uri $uri/ /sign-up/index.html; }
+    location ^~ /forgot-password  { try_files $uri $uri/ /forgot-password/index.html; }
+    location ^~ /reset-password   { try_files $uri $uri/ /reset-password/index.html; }
+    location ^~ /reset-success    { try_files $uri $uri/ /reset-success/index.html; }
+    location ^~ /verify-otp       { try_files $uri $uri/ /verify-otp/index.html; }
+    location ^~ /profile          { try_files $uri $uri/ /profile/index.html; }
+    location ^~ /my-listings      { try_files $uri $uri/ /my-listings/index.html; }
+    location ^~ /saved-cars       { try_files $uri $uri/ /saved-cars/index.html; }
+    location ^~ /my-chats         { try_files $uri $uri/ /my-chats/index.html; }
+    location ^~ /create-post      { try_files $uri $uri/ /create-post/index.html; }
+    location ^~ /dealer/dashboard { try_files $uri $uri/ /dealer/dashboard/index.html; }
+
     # --- AdSense txt, Google site verification, favicon, manifest ---
     location = /ads.txt          { add_header Cache-Control "public, max-age=86400"; }
     location = /favicon.png      { add_header Cache-Control "public, max-age=86400"; }
@@ -111,11 +136,10 @@ server {
         try_files $uri $uri/ /index.html;
     }
 
-    # --- 404 page ---
+    # --- 404 page (built dist/404.html includes noindex) ---
     error_page 404 /404.html;
     location = /404.html {
         internal;
-        default_type text/html;
-        return 404 "<html><head><title>404 Not Found</title></head><body><h1>404 Not Found</h1><p>The page you're looking for doesn't exist.</p></body></html>";
+        add_header Cache-Control "no-cache";
     }
 }

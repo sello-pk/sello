@@ -264,12 +264,25 @@ if (servesClient) {
         return res.sendFile(shellFile);
       }
       try {
-        const { buildCarDetailHtml } = await import("./utils/seoHtmlInject.js");
+        const { buildCarDetailHtml, listingNotFoundHtml } = await import(
+          "./utils/seoHtmlInject.js"
+        );
+        let timedOut = false;
         const html = await Promise.race([
           buildCarDetailHtml(clientIndex, slug),
-          new Promise((resolve) => setTimeout(() => resolve(null), 2500)),
+          new Promise((resolve) =>
+            setTimeout(() => {
+              timedOut = true;
+              resolve(undefined);
+            }, 2500),
+          ),
         ]);
         if (html) return res.type("html").send(html);
+        // Inject finished with null → invalid/missing listing. Do not soft-404.
+        if (!timedOut) {
+          return res.status(404).type("html").send(listingNotFoundHtml(slug));
+        }
+        // DB/inject slow: fall back to SPA so real listings still open.
       } catch (error) {
         Logger.warn("Car SEO HTML inject skipped", { message: error?.message });
       }

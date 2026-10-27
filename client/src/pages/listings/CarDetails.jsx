@@ -49,6 +49,19 @@ const CarDetails = () => {
     }
   }, [car, addRecentlyViewed]);
 
+  // Canonicalize legacy /car-details/* and short /cars/<id> to the SEO slug URL.
+  // replace: true avoids breaking back-button / bookmark history stacks.
+  useEffect(() => {
+    if (!car?._id) return;
+    const canonicalPath = buildCarUrl(car);
+    if (!canonicalPath || canonicalPath === "/cars") return;
+    if (location.pathname === canonicalPath) return;
+    const isLegacyDetails = location.pathname.startsWith("/car-details/");
+    const isCarsPath = location.pathname.startsWith("/cars/");
+    if (!isLegacyDetails && !isCarsPath) return;
+    navigate(`${canonicalPath}${location.search || ""}`, { replace: true });
+  }, [car, location.pathname, location.search, navigate]);
+
   useEffect(() => {
     if (!car?._id) return;
     if (viewContentTrackedId.current === car._id) return;
