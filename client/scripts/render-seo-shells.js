@@ -76,16 +76,19 @@ function carDescription(car) {
   if (car.description && String(car.description).trim().length > 40) {
     return String(car.description).replace(/\s+/g, " ").trim().slice(0, 300);
   }
-  const price = car.price != null ? `PKR ${Number(car.price).toLocaleString()}` : "";
-  const bits = [
-    carTitle(car),
-    price && `priced at ${price}`,
-    car.city && `in ${car.city}`,
-    car.mileage != null && `${Number(car.mileage).toLocaleString()} KM`,
-    car.transmission,
-    car.fuelType,
-  ].filter(Boolean);
-  return `${bits.join(". ")}. Buy or contact the seller on Sello.pk.`.slice(0, 320);
+  const price =
+    car.price != null ? `PKR ${Number(car.price).toLocaleString()}` : "";
+  const parts = [carTitle(car)];
+  if (price) parts.push(price);
+  if (car.mileage != null) {
+    parts.push(`${Number(car.mileage).toLocaleString()} KM`);
+  }
+  if (car.transmission) parts.push(String(car.transmission));
+  if (car.fuelType) parts.push(String(car.fuelType));
+  return `${parts.join(" · ")}. Buy or contact the seller on Sello.pk.`.slice(
+    0,
+    320,
+  );
 }
 
 function vehicleJsonLd(car, canonical) {
@@ -149,12 +152,14 @@ function outputPathFor(routePath) {
   return path.join(DIST_ROOT, clean, "index.html");
 }
 
-function writeShell(routePath, transform) {
+function writeShell(routePath, transform, { keepHeroPreloads = false } = {}) {
   const shellPath = path.join(DIST_ROOT, "index.html");
   if (!fs.existsSync(shellPath)) {
     throw new Error("dist/index.html missing — run vite build first");
   }
-  let html = stripHeroPreloads(fs.readFileSync(shellPath, "utf8"));
+  let html = fs.readFileSync(shellPath, "utf8");
+  // Non-home shells must not inherit homepage LCP preloads (wastes bandwidth).
+  if (!keepHeroPreloads) html = stripHeroPreloads(html);
   html = transform(html);
   const outPath = outputPathFor(routePath);
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
@@ -383,6 +388,136 @@ function writeCarShell(car) {
   });
 }
 
+/** Auth / account paths: first HTML must be noindex (SPA meta alone is too late). */
+const NOINDEX_SHELLS = [
+  {
+    path: "/login",
+    title: "Login | Sello.pk",
+    description: "Sign in to your Sello.pk account.",
+  },
+  {
+    path: "/sign-up",
+    title: "Sign Up | Sello.pk",
+    description: "Create a Sello.pk account to buy or sell cars.",
+  },
+  {
+    path: "/forgot-password",
+    title: "Forgot Password | Sello.pk",
+    description: "Reset your Sello.pk account password.",
+  },
+  {
+    path: "/reset-password",
+    title: "Reset Password | Sello.pk",
+    description: "Choose a new password for your Sello.pk account.",
+  },
+  {
+    path: "/reset-success",
+    title: "Password Updated | Sello.pk",
+    description: "Your Sello.pk password was updated.",
+  },
+  {
+    path: "/verify-otp",
+    title: "Verify OTP | Sello.pk",
+    description: "Verify your Sello.pk account with a one-time code.",
+  },
+  {
+    path: "/profile",
+    title: "My Profile | Sello.pk",
+    description: "Manage your Sello.pk profile.",
+  },
+  {
+    path: "/my-listings",
+    title: "My Listings | Sello.pk",
+    description: "Manage your vehicle listings on Sello.pk.",
+  },
+  {
+    path: "/saved-cars",
+    title: "Saved Cars | Sello.pk",
+    description: "View cars you saved on Sello.pk.",
+  },
+  {
+    path: "/my-chats",
+    title: "My Chats | Sello.pk",
+    description: "Your Sello.pk conversations.",
+  },
+  {
+    path: "/create-post",
+    title: "Create Listing | Sello.pk",
+    description: "Create a vehicle listing on Sello.pk.",
+  },
+  {
+    path: "/dealer/dashboard",
+    title: "Dealer Dashboard | Sello.pk",
+    description: "Dealer tools on Sello.pk.",
+  },
+];
+
+function writeNoindexShell({ path: routePath, title, description }) {
+  const canonical = `${SITE_URL}${routePath}`;
+  writeShell(routePath, (html) => {
+    let out = applyPageHead(html, {
+      title,
+      description,
+      canonical,
+      robots: "noindex, follow",
+    });
+    out = injectNoscriptBlock(
+      out,
+      `      <p>${escapeHtml(title)}</p>
+      <p><a href="${SITE_URL}/">Back to Sello.pk</a></p>`,
+    );
+    return out.replace(
+      "</body>",
+      `<!-- seo-shell-noindex:${routePath} -->\n  </body>`,
+    );
+  });
+}
+
+function writeHomeShell() {
+  const title = "Car for Sale in Pakistan | Buy & Sell Used Cars – Sello.pk";
+  const description =
+    "Find the best car for sale in Pakistan on Sello.pk. Buy or sell used cars in Karachi, Lahore, Islamabad & beyond with verified sellers and fair pricing.";
+  const canonical = `${SITE_URL}/`;
+  // Patch dist/index.html in place (path "/" → dist/index.html).
+  // keepHeroPreloads: homepage owns the LCP image preloads from render-static.
+  writeShell(
+    "/",
+    (html) => {
+      let out = applyPageHead(html, { title, description, canonical });
+      out = injectNoscriptBlock(
+        out,
+        `      <h1>Buy and Sell Cars in Pakistan</h1>
+      <p>${escapeHtml(description)}</p>
+      <p><a href="${SITE_URL}/listings">Browse listings</a> · <a href="${SITE_URL}/used-cars/karachi">Used cars in Karachi</a> · <a href="${SITE_URL}/blog">Blog</a></p>`,
+      );
+      return out.replace("</body>", `<!-- seo-shell:/ -->\n  </body>`);
+    },
+    { keepHeroPreloads: true },
+  );
+}
+
+function writeNotFoundPage() {
+  const html = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, follow" />
+  <title>Page not found | Sello.pk</title>
+  <link rel="canonical" href="${SITE_URL}/" />
+  <meta name="description" content="This page is not available on Sello.pk." />
+</head>
+<body>
+  <main>
+    <h1>Page not found</h1>
+    <p>The page you requested does not exist.</p>
+    <p><a href="${SITE_URL}/listings">Browse cars for sale</a> · <a href="${SITE_URL}/">Home</a></p>
+  </main>
+</body>
+</html>`;
+  fs.writeFileSync(path.join(DIST_ROOT, "404.html"), html, "utf8");
+}
+
 async function main() {
   if (SKIP) {
     log("SKIP_SEO_SHELLS=1 — skipping");
@@ -435,6 +570,16 @@ async function main() {
       `[seo-shells] WARN: car shells skipped (${error.message}). Hubs/cities still written.`,
     );
   }
+
+  // After car shells (they copy index.html): homepage + private noindex + 404.
+  writeHomeShell();
+  for (const shell of NOINDEX_SHELLS) {
+    writeNoindexShell(shell);
+  }
+  writeNotFoundPage();
+  log(
+    `✓ home + ${NOINDEX_SHELLS.length} noindex shells + 404.html`,
+  );
 }
 
 main().catch((error) => {

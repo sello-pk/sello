@@ -11,6 +11,34 @@ import {
   getPublicSiteOrigin,
 } from "./carUrls.js";
 
+/**
+ * Minimal HTML for unknown /cars/:slug when no shell and DB miss.
+ * Must be noindex and HTTP 404 at the Express layer (see app.js).
+ */
+export function listingNotFoundHtml(slugSegment = "") {
+  const origin = getPublicSiteOrigin();
+  const safeSlug = escapeAttr(String(slugSegment || "").slice(0, 120));
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, follow" />
+  <title>Listing not found | Sello.pk</title>
+  <link rel="canonical" href="${escapeAttr(origin)}/listings" />
+  <meta name="description" content="This vehicle listing is unavailable on Sello.pk." />
+</head>
+<body>
+  <main>
+    <h1>Listing not found</h1>
+    <p>This vehicle is not available. It may have been removed or the link is incorrect.</p>
+    <p><a href="${escapeAttr(origin)}/listings">Browse cars for sale</a></p>
+    <!-- slug=${safeSlug} -->
+  </main>
+</body>
+</html>`;
+}
+
 function escapeAttr(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -72,9 +100,19 @@ function carTitle(car) {
 }
 
 function carDescription(car) {
+  if (car.description && String(car.description).trim().length > 40) {
+    return String(car.description).replace(/\s+/g, " ").trim().slice(0, 300);
+  }
   const price =
     car.price != null ? `PKR ${Number(car.price).toLocaleString()}` : "";
-  return `${carTitle(car)}${price ? ` — ${price}` : ""}. View details on Sello.pk.`.slice(
+  const parts = [carTitle(car)];
+  if (price) parts.push(price);
+  if (car.mileage != null) {
+    parts.push(`${Number(car.mileage).toLocaleString()} KM`);
+  }
+  if (car.transmission) parts.push(String(car.transmission));
+  if (car.fuelType) parts.push(String(car.fuelType));
+  return `${parts.join(" · ")}. Buy or contact the seller on Sello.pk.`.slice(
     0,
     320,
   );
