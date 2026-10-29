@@ -14,8 +14,8 @@
  * nothing, so the site never pushes an empty/invalid ad unit to Google.
  *
  * Policy-safe mode (default ON until AdSense approves the site):
- *   Only content-rich placements render. Tool pages, stacked homepage units,
- *   and the global footer unit stay off so reviewers don't see ad-heavy /
+ *   Only content-rich placements render. Utility/tool screens, live-auction
+ *   UI, and the global footer unit stay off so reviewers don't see ad-heavy /
  *   low-content screens. After approval set:
  *     VITE_ADSENSE_POLICY_SAFE=false
  */
@@ -61,10 +61,15 @@ export const ADSENSE_POLICY_SAFE =
 
 /**
  * Slots allowed while ADSENSE_POLICY_SAFE is true.
- * Excludes: tools (estimator/verification), contact, live auction UI,
- * stacked homepage/detail units, and the every-page footer unit.
+ * Excludes: thin/utility screens (estimator), contact, live auction UI,
+ * secondary detail units, and the every-page footer unit.
+ *
+ * `homepageTop` and the two vehicle-verification banners are included on
+ * purpose: they sit between real content blocks (homepage feed sections,
+ * long-form verification copy) rather than inside a bare tool screen.
  */
 const POLICY_SAFE_SLOTS = new Set([
+  "homepageTop",
   "homepageFeed",
   "brandsSection",
   "listingFeed",
@@ -73,6 +78,8 @@ const POLICY_SAFE_SLOTS = new Set([
   "blogArticle",
   "auctionsIndex",
   "about",
+  "vehicleVerificationTop",
+  "vehicleVerificationBottom",
 ]);
 
 /**
@@ -89,6 +96,7 @@ const UNIT_BANNER_A = "3793170615";
 const UNIT_BANNER_B = "4559632387";
 const DEFAULT_SLOT_IDS = {
   brandsSection: UNIT_SQUARE,
+  homepageTop: UNIT_BANNER_B,
   homepageFeed: UNIT_BANNER_A,
   listingFeed: UNIT_BANNER_A,
   carDetail: UNIT_BANNER_B,
@@ -96,7 +104,7 @@ const DEFAULT_SLOT_IDS = {
   blogArticle: UNIT_BANNER_B,
   auctionsIndex: UNIT_BANNER_A,
   about: UNIT_BANNER_B,
-  // Post-approval only (blocked while ADSENSE_POLICY_SAFE=true).
+  // Banners between the long-form verification copy.
   vehicleVerificationTop: UNIT_BANNER_A,
   vehicleVerificationBottom: UNIT_BANNER_B,
 };
