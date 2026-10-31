@@ -117,7 +117,7 @@
 
     <!-- Google AdSense: account meta stays in <head> for site verification.
          The adsbygoogle.js loader is injected only after cookie consent
-         (CookieConsent + loadAdSenseScript) so ads never fire before disclosure.
+         (PrivacyNotice + loadAdSenseScript) so ads never fire before disclosure.
          Ad units are pushed by src/components/ads/AdSenseSlot.jsx. -->
     <meta name="google-adsense-account" content="ca-pub-9074113020959790" />
     <style>
@@ -131,7 +131,7 @@
     </style>
 
     <!-- Analytics/ads tags (GA, GTM, Meta, TikTok, Clarity, ContentSquare)
-         load only after cookie consent — see CookieConsent + loadMarketingScripts.
+         load only after cookie consent - see PrivacyNotice + loadMarketingScripts.
          dataLayer stub kept so early events can queue if needed. -->
     <script>
       window.dataLayer = window.dataLayer || [];

@@ -10,8 +10,13 @@ import { loadMarketingScripts } from "../ads/loadMarketingScripts";
 /**
  * Cookie notice for AdSense / analytics disclosure.
  * Non-essential tags load only after acknowledgment.
+ *
+ * The file is named PrivacyNotice.jsx on purpose: cookie-blocker lists match
+ * URL fragments like "cookieconsent" / "cookie-consent" and would otherwise
+ * abort the whole module graph in dev (Vite serves source paths) and blank
+ * the page. Keep the filename free of those words.
  */
-const CookieConsent = () => {
+const PrivacyNotice = () => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -63,4 +68,4 @@ const CookieConsent = () => {
   );
 };
 
-export default CookieConsent;
+export default PrivacyNotice;

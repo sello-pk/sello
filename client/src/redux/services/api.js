@@ -15,6 +15,57 @@ let isRefreshing = false;
 let refreshPromise = null;
 
 /**
+ * The public API is rate limited per IP (300 requests / 15 min in production).
+ * Polling components (live auction, notifications) can burn that budget fast,
+ * and every rejected call prints a 429 in the browser console. After one 429 we
+ * stop sending read requests for the cooldown window instead of retrying.
+ */
+const RATE_LIMIT_FALLBACK_MS = 60 * 1000;
+// Never block reads longer than one full production rate-limit window.
+const RATE_LIMIT_MAX_MS = 15 * 60 * 1000;
+let rateLimitedUntil = 0;
+let rateLimitStreak = 0;
+
+/** How long the server asked us to wait (0 when the headers are absent). */
+function readRateLimitDelayMs(response) {
+  try {
+    const headers = response?.headers;
+    if (!headers || typeof headers.get !== "function") return 0;
+
+    const retryAfter = headers.get("retry-after");
+    if (retryAfter) {
+      const seconds = Number(retryAfter);
+      if (Number.isFinite(seconds) && seconds > 0) return seconds * 1000;
+      const retryAt = Date.parse(retryAfter);
+      if (Number.isFinite(retryAt)) return Math.max(0, retryAt - Date.now());
+    }
+
+    // express-rate-limit standardHeaders: seconds until the window resets
+    for (const header of ["ratelimit-reset", "x-ratelimit-reset"]) {
+      const seconds = Number(headers.get(header));
+      if (Number.isFinite(seconds) && seconds > 0) return seconds * 1000;
+    }
+  } catch {
+    /* opaque/blocked responses can throw on header access */
+  }
+  return 0;
+}
+
+function rateLimitedResult(message) {
+  return {
+    error: {
+      status: 429,
+      data: {
+        message:
+          message || "Too many requests. Please try again in a moment.",
+        code: "RATE_LIMITED",
+      },
+      originalStatus: 429,
+    },
+  };
+}
+
+/**
  * Multipart uploads that can be large (listings, dealer docs, auction access).
  * Used for 413 / failed-fetch messages. Nginx default client_max_body_size (1m)
  * rejects even a single phone photo — browser may show CORS + Failed to fetch.
@@ -258,6 +309,16 @@ export const api = createApi({
   refetchOnReconnect: true, // Refetch on reconnect
   baseQuery: async (args, api, extraOptions) => {
     try {
+      const httpMethod = String(args?.method || "GET").toUpperCase();
+      const isRead = httpMethod === "GET" || httpMethod === "HEAD";
+
+      // Cooling down after a 429: fail reads locally so pollers don't keep
+      // firing requests (each would log another 429). Mutations still go out —
+      // they are user-initiated and must not silently disappear.
+      if (isRead && Date.now() < rateLimitedUntil) {
+        return rateLimitedResult();
+      }
+
       const baseResult = await fetchBaseQuery({
         baseUrl: API_BASE_URL,
         credentials: "include",
@@ -279,6 +340,9 @@ export const api = createApi({
           return headers;
         },
       })(args, api, extraOptions);
+
+      // Any successful call clears the backoff streak.
+      if (!baseResult.error) rateLimitStreak = 0;
 
       // Handle 401 errors - try to refresh token
       if (baseResult.error && baseResult.error.status === 401) {
@@ -339,6 +403,31 @@ export const api = createApi({
           clearAuthSession();
         }
         // Don't redirect automatically - let components handle it
+      }
+
+      // 429 Too Many Requests — back off instead of letting pollers retry in a
+      // loop. Honour Retry-After / RateLimit-Reset when the proxy forwards it.
+      if (
+        baseResult.error &&
+        (baseResult.error.status === 429 ||
+          baseResult.error.originalStatus === 429)
+      ) {
+        const serverDelay = readRateLimitDelayMs(baseResult.meta?.response);
+        rateLimitStreak += 1;
+        // Exponential backoff: 60s, 2m, 4m… capped at the full window.
+        const backoff = RATE_LIMIT_FALLBACK_MS * 2 ** (rateLimitStreak - 1);
+        const cooldown = Math.min(
+          RATE_LIMIT_MAX_MS,
+          Math.max(serverDelay, backoff),
+        );
+        rateLimitedUntil = Date.now() + cooldown;
+        logApiErrorSafely("http_429", baseResult.error, args);
+        return rateLimitedResult(
+          getBestErrorMessage(
+            baseResult.error,
+            "Too many requests. Please try again in a moment.",
+          ),
+        );
       }
 
       // 413 Request Entity Too Large (often from proxy/nginx) — suggest fewer/smaller images

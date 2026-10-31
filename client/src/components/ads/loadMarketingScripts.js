@@ -1,11 +1,36 @@
 /**
  * Loads non-essential analytics / ads tags only after cookie consent.
  * Mirrors the previous index.html deferred loaders, without firing before disclosure.
+ *
+ * Only runs on the production hostnames. Marketing tags are third-party
+ * requests that browsers/blockers kill on dev, preview and localhost; the
+ * browser logs every blocked request as ERR_BLOCKED_BY_CLIENT, so not making
+ * the request is the only way to keep the console clean. Analytics also has no
+ * business counting dev/preview page views.
  */
 
 import { hasCookieConsent } from "./consent";
 
+/** Live hostnames. VITE_SITE_URL keeps this in sync if the domain ever changes. */
+const ANALYTICS_HOSTS = ["sello.pk", "www.sello.pk"];
+try {
+  const configured = new URL(import.meta.env.VITE_SITE_URL || "").hostname;
+  if (configured) ANALYTICS_HOSTS.push(configured);
+} catch {
+  /* no/invalid VITE_SITE_URL */
+}
+
 let started = false;
+
+/** True on the live site only (see ANALYTICS_HOSTS). */
+export function isAnalyticsEnabled() {
+  try {
+    const host = window.location.hostname.toLowerCase();
+    return ANALYTICS_HOSTS.includes(host);
+  } catch {
+    return false;
+  }
+}
 
 function injectScript(src, { id, crossOrigin } = {}) {
   if (id && document.getElementById(id)) return null;
@@ -135,13 +160,15 @@ function loadContentSquare() {
 }
 
 /**
- * Idempotent. Safe to call from CookieConsent and App bootstrap.
+ * Idempotent. Safe to call from PrivacyNotice and App bootstrap.
  */
 export function loadMarketingScripts() {
   if (typeof window === "undefined" || typeof document === "undefined") {
     return false;
   }
   if (!hasCookieConsent()) return false;
+  // Dev / preview / localhost: skip third-party tags entirely (see file header).
+  if (!isAnalyticsEnabled()) return false;
   if (started) return true;
   started = true;
 

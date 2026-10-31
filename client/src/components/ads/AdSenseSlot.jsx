@@ -23,7 +23,7 @@ import {
  *   page; add a slot to adSlots.js and render this component instead.
  * - Renders nothing until `slot` has a real ad unit id in env, so an
  *   unconfigured deployment produces a clean page instead of broken ad units.
- * - AdSense script loads only after cookie consent (see CookieConsent.jsx).
+ * - AdSense script loads only after cookie consent (see PrivacyNotice.jsx).
  * - AdSense policy: no Google ads on screens without publisher content (login,
  *   sign-up, dashboards, payment/wallet, chats, admin, 404 / "not found",
  *   empty internal-search pages). Those routes are listed once in
@@ -58,16 +58,21 @@ const AdSenseSlot = ({
   const adSlotId = routeAllowsAds && consentOk ? AD_SLOTS[slot] : "";
   const containerRef = useRef(null);
   const pushedRef = useRef(false);
-  const [scriptReady, setScriptReady] = useState(false);
+  // idle | loading | ready | blocked
+  // `blocked` means the loader could not be fetched (ad blocker, Brave
+  // Shields, extension, offline) — in that case we render nothing at all
+  // instead of leaving an empty "Advertisement" box on the page forever.
+  const [scriptState, setScriptState] = useState("idle");
 
   useEffect(() => {
     if (!adSlotId || !consentOk) {
-      setScriptReady(false);
+      setScriptState("idle");
       return undefined;
     }
     let cancelled = false;
+    setScriptState("loading");
     loadAdSenseScript().then((ok) => {
-      if (!cancelled) setScriptReady(Boolean(ok));
+      if (!cancelled) setScriptState(ok ? "ready" : "blocked");
     });
     return () => {
       cancelled = true;
@@ -77,7 +82,7 @@ const AdSenseSlot = ({
   useEffect(() => {
     // Not configured yet, or ad-ineligible page -> stay invisible. Reset so a
     // fresh <ins> is pushed when the slot comes back on an eligible page.
-    if (!adSlotId || !scriptReady) {
+    if (!adSlotId || scriptState !== "ready") {
       pushedRef.current = false;
       return undefined;
     }
@@ -123,10 +128,14 @@ const AdSenseSlot = ({
       cancelled = true;
       observer?.disconnect();
     };
-  }, [adSlotId, scriptReady]);
+  }, [adSlotId, scriptState]);
 
   // A publisher id and a slot id are both required before we emit ad markup.
   if (!ADSENSE_CLIENT || !adSlotId) return null;
+
+  // Loader blocked (ad blocker / Brave Shields / extension / offline): emit
+  // nothing so the page keeps no empty, labelled ad placeholder.
+  if (scriptState === "blocked") return null;
 
   return (
     <aside

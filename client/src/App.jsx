@@ -8,7 +8,9 @@ import Navbar from "./components/Navbar.jsx";
 import BottomHeader from "./components/BottomHeader.jsx";
 import Footer from "./components/Footer.jsx";
 import { AdSenseSlot } from "./components/ads";
-import CookieConsent from "./components/common/CookieConsent.jsx";
+import { isAnalyticsEnabled } from "./components/ads/loadMarketingScripts";
+/** Filename avoids "cookieconsent" (cookie-blocker lists match that URL substring). */
+import PrivacyNotice from "./components/common/PrivacyNotice.jsx";
 /** Chunk filename avoids "WhatsApp" (many blockers strip that URL substring). */
 const HelpChatWidget = lazyImport(
   () => import("./components/features/help/HelpChatWidget.jsx"),
@@ -598,7 +600,13 @@ const App = () => {
     const initClarity = async () => {
       try {
         const { hasCookieConsent } = await import("./components/ads/consent.js");
-        if (cancelled || !hasCookieConsent() || clarityRef.current) return;
+        if (
+          cancelled ||
+          !hasCookieConsent() ||
+          !isAnalyticsEnabled() ||
+          clarityRef.current
+        )
+          return;
         const mod = await import("react-microsoft-clarity");
         if (cancelled) return;
         clarityRef.current = mod.clarity;
@@ -611,6 +619,8 @@ const App = () => {
     };
 
     const scheduleInit = () => {
+      // Session replay is production-only, same as the other analytics tags.
+      if (!isAnalyticsEnabled()) return;
       if (typeof window.requestIdleCallback === "function") {
         requestIdleCallback(initClarity, { timeout: 5000 });
       } else {
@@ -714,7 +724,7 @@ const App = () => {
       {shouldShowNavbarFooter && <Footer />}
 
       {/* Cookie / AdSense disclosure — public pages only */}
-      {shouldShowNavbarFooter && <CookieConsent />}
+      {shouldShowNavbarFooter && <PrivacyNotice />}
 
       {/* Support chat — lazy chunk; filename HelpChatWidget avoids ad-block false blocks */}
       {shouldShowNavbarFooter && showHelpChat && (
