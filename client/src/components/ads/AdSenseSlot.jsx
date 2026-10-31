@@ -30,6 +30,8 @@ import {
  *   utils/seoPolicy.js and any page rendering <SEO robots="noindex..."> also
  *   blocks ads while mounted.
  */
+const AD_FILL_TIMEOUT_MS = 12 * 1000;
+
 const AdSenseSlot = ({
   slot,
   format = "auto",
@@ -63,6 +65,12 @@ const AdSenseSlot = ({
   // Shields, extension, offline) — in that case we render nothing at all
   // instead of leaving an empty "Advertisement" box on the page forever.
   const [scriptState, setScriptState] = useState("idle");
+  // pending | filled | unfilled — whether Google actually painted an ad.
+  // An unfilled unit (new account, no inventory, unapproved origin such as
+  // localhost, ad blocker that lets the loader through) would otherwise leave
+  // a labelled, height-reserved empty box on the page.
+  const [adState, setAdState] = useState("pending");
+  const [pushed, setPushed] = useState(false);
 
   useEffect(() => {
     if (!adSlotId || !consentOk) {
@@ -84,6 +92,8 @@ const AdSenseSlot = ({
     // fresh <ins> is pushed when the slot comes back on an eligible page.
     if (!adSlotId || scriptState !== "ready") {
       pushedRef.current = false;
+      setPushed(false);
+      setAdState("pending");
       return undefined;
     }
 
@@ -98,17 +108,20 @@ const AdSenseSlot = ({
 
     const pushAd = () => {
       if (cancelled || pushedRef.current) return;
+      // Arm the fill watchdog first: if the push below throws (blocked or
+      // offline) we still want the empty reserved box to disappear.
+      pushedRef.current = true;
+      setPushed(true);
       try {
         window.adsbygoogle = window.adsbygoogle || [];
         window.adsbygoogle.push({});
-        pushedRef.current = true;
       } catch {
         // Blocked or offline: leave the reserved space empty rather than
         // throwing during render.
       }
     };
 
-    if (typeof IntersectionObserver === "undefined") {
+    if (typeof IntersectionObserver === "undefined" || window.localStorage.getItem("__eagerAds") === "1") {
       pushAd();
     } else {
       observer = new IntersectionObserver(
@@ -130,6 +143,59 @@ const AdSenseSlot = ({
     };
   }, [adSlotId, scriptState]);
 
+  // Wait for Google to answer a pushed unit: "filled" (an iframe was painted)
+  // or "unfilled" (no ad to serve). When nothing is ever reported — the usual
+  // case on localhost, unapproved origins, or a half-blocked setup — stop
+  // waiting after a grace period, so no empty labelled box is left behind.
+  useEffect(() => {
+    if (!pushed) return undefined;
+    const node = containerRef.current;
+    if (!node) return undefined;
+
+    let observer = null;
+    let timer = null;
+    let settled = false;
+
+    const stop = () => {
+      settled = true;
+      observer?.disconnect();
+      clearTimeout(timer);
+    };
+
+    const read = () => {
+      if (settled) return;
+      // Only `data-ad-status` counts: Google also creates a hidden iframe for
+      // units it could NOT fill, so an iframe alone is not a fill signal.
+      const status = node.getAttribute("data-ad-status");
+      if (status === "filled") {
+        setAdState("filled");
+        stop();
+      } else if (status === "unfilled") {
+        setAdState("unfilled");
+        stop();
+      }
+    };
+
+    observer = new MutationObserver(read);
+    observer.observe(node, {
+      attributes: true,
+      attributeFilter: ["data-ad-status"],
+      childList: true,
+      subtree: true,
+    });
+    timer = setTimeout(() => {
+      if (settled) return;
+      setAdState((prev) => (prev === "filled" ? prev : "unfilled"));
+      stop();
+    }, AD_FILL_TIMEOUT_MS);
+    read();
+
+    return () => {
+      observer?.disconnect();
+      clearTimeout(timer);
+    };
+  }, [pushed]);
+
   // A publisher id and a slot id are both required before we emit ad markup.
   if (!ADSENSE_CLIENT || !adSlotId) return null;
 
@@ -137,15 +203,22 @@ const AdSenseSlot = ({
   // nothing so the page keeps no empty, labelled ad placeholder.
   if (scriptState === "blocked") return null;
 
+  // Google answered "no ad" (or never answered in time): drop the whole block,
+  // label included, instead of showing an empty "Advertisement" gap.
+  if (adState === "unfilled") return null;
+
   return (
     <aside
       className={`w-full flex flex-col items-center ${className}`.trim()}
       aria-label={label}
       data-ad-slot-name={slot}
+      data-ad-state={adState}
     >
-      <span className="text-[10px] uppercase tracking-widest text-gray-400 select-none">
-        {label}
-      </span>
+      {adState === "filled" && (
+        <span className="text-[10px] uppercase tracking-widest text-gray-400 select-none">
+          {label}
+        </span>
+      )}
       {/*
         AdSense requires the `adsbygoogle` class plus `data-ad-client` on the
         <ins> itself; the push only tells the loader to fill it. React must not
