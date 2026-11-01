@@ -247,6 +247,11 @@ app.get(`/${INDEXNOW_KEY}.txt`, (_req, res) => {
   res.type("text/plain").send(INDEXNOW_KEY);
 });
 
+/* ------------------ ADS.TXT (Google AdSense authorized seller) ------------------ */
+app.get("/ads.txt", (_req, res) => {
+  res.type("text/plain").send("google.com, pub-9074113020959790, DIRECT, f08c47fec0942fa0\n");
+});
+
 /* ------------------ SINGLE-SERVICE STATIC + SPA FALLBACK ------------------ */
 if (servesClient) {
   Logger.info(`Serving built client from ${clientDist}`);
