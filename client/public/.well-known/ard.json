@@ -3,5 +3,11 @@
   "name": "Sello PK",
   "description": "Agentic discovery manifest for Sello.pk",
   "version": "1.0.0",
-  "resources": []
+  "entries": [
+    {
+      "type": "website",
+      "name": "Sello PK Main Site",
+      "url": "https://sello.pk/"
+    }
+  ]
 }
