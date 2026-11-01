@@ -1,0 +1,7 @@
+# Sello PK
+
+> Sello PK is an online marketplace in Pakistan.
+
+## Explore
+- [Home](https://sello.pk/): Main marketplace listings and categories.
+- [Sitemap](https://sello.pk/sitemap.xml): Complete index of marketplace pages.

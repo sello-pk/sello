@@ -1,0 +1,7 @@
+{
+  "$schema": "https://agenticresource.org/schema/v1/ard.json",
+  "name": "Sello PK",
+  "description": "Agentic discovery manifest for Sello.pk",
+  "version": "1.0.0",
+  "resources": []
+}
