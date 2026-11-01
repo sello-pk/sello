@@ -5,14 +5,9 @@
   "version": "1.0.0",
   "entries": [
     {
-      "identifier": "sello-main-site",
-      "displayName": "Sello PK Marketplace",
-      "type": "text/html",
-      "url": "https://sello.pk/",
-      "representativeQueries": [
-        "online shopping Pakistan",
-        "buy and sell products"
-      ]
+      "type": "website",
+      "name": "Sello PK Main Site",
+      "url": "https://sello.pk/"
     }
   ]
 }
