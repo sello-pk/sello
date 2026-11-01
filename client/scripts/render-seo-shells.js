@@ -486,9 +486,20 @@ function writeHomeShell() {
       let out = applyPageHead(html, { title, description, canonical });
       out = injectNoscriptBlock(
         out,
-        `      <h1>Buy and Sell Cars in Pakistan</h1>
+        `      <h1>Buy and Sell Used Cars in Pakistan – Sello.pk</h1>
       <p>${escapeHtml(description)}</p>
-      <p><a href="${SITE_URL}/listings">Browse listings</a> · <a href="${SITE_URL}/used-cars/karachi">Used cars in Karachi</a> · <a href="${SITE_URL}/blog">Blog</a></p>`,
+      <h2>Pakistan's Trusted Automotive Marketplace &amp; Live Auctions</h2>
+      <p>Sello is a verified digital car marketplace connecting buyers and sellers across Pakistan with authentic listings, algorithmic car valuation, live auctions, and vehicle verification guides. Browse verified inventory from private sellers and registered dealerships in major cities:</p>
+      <ul>
+        <li><a href="${SITE_URL}/used-cars/karachi">Used cars in Karachi</a></li>
+        <li><a href="${SITE_URL}/used-cars/lahore">Used cars in Lahore</a></li>
+        <li><a href="${SITE_URL}/used-cars/islamabad">Used cars in Islamabad</a></li>
+        <li><a href="${SITE_URL}/used-cars/rawalpindi">Used cars in Rawalpindi</a></li>
+        <li><a href="${SITE_URL}/used-cars/faisalabad">Used cars in Faisalabad</a></li>
+      </ul>
+      <h2>Automotive Tools &amp; Guides</h2>
+      <p>Explore our automotive tools and editorial guides to make smart, informed decisions:</p>
+      <p><a href="${SITE_URL}/listings">Browse all car listings</a> · <a href="${SITE_URL}/blog">Automotive Blog &amp; Guides</a> · <a href="${SITE_URL}/vehicle-verification">Online Vehicle Verification Guide</a> · <a href="${SITE_URL}/car-estimator">AI Car Price Estimator</a> · <a href="${SITE_URL}/auctions">Live Auctions</a> · <a href="${SITE_URL}/about">About Sello</a> · <a href="${SITE_URL}/contact">Contact Support</a></p>`,
       );
       return out.replace("</body>", `<!-- seo-shell:/ -->\n  </body>`);
     },

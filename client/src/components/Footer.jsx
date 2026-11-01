@@ -133,82 +133,59 @@ const Footer = () => {
 
             {/* Mobile App Downloads — disabled until store listings go live */}
             <div>
-              <div className="flex flex-wrap items-center gap-2 mb-2">
-                <div className="text-sm font-semibold text-white tracking-wide">
-                  Download Our App
-                </div>
-                <span
-                  className="inline-flex items-center rounded-full bg-amber-500/15 text-amber-200/95 border border-amber-400/25 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
-                  aria-hidden="true"
-                >
-                  Coming soon
-                </span>
+              <div className="text-sm font-semibold text-white mb-5 tracking-wide">
+                Helpful Resources
               </div>
-              <p className="text-xs text-gray-400 mb-4 max-w-[260px]">
-                Native iOS and Android apps are in development. Store links will
-                appear here when they launch.
-              </p>
-              <div className="flex flex-col gap-3 w-full max-w-sm">
-                <button
-                  type="button"
-                  disabled
-                  aria-disabled="true"
-                  aria-label="App Store download — coming soon, not available yet"
-                  className="flex items-center gap-3 bg-white/5 backdrop-blur-sm rounded-xl px-4 py-3.5 w-full border border-white/10 opacity-55 cursor-not-allowed grayscale-[0.35] text-left"
-                >
-                  <div className="flex-shrink-0 pointer-events-none">
-                    <img
-                      src={apple}
-                      alt=""
-                      width={32}
-                      height={32}
-                      decoding="async"
-                      className="w-8 h-8 object-contain brightness-0 invert opacity-90"
-                    />
-                  </div>
-                  <div className="text-left flex-1 min-w-0 pointer-events-none">
-                    <p className="text-[10px] text-white/55 font-medium uppercase tracking-wide leading-tight mb-0.5">
-                      Download on the
-                    </p>
-                    <p className="text-sm font-semibold text-white/85 leading-tight">
-                      App Store
-                    </p>
-                  </div>
-                  <span className="text-[10px] font-medium text-white/45 uppercase tracking-wide shrink-0 hidden sm:inline">
-                    Soon
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  disabled
-                  aria-disabled="true"
-                  aria-label="Google Play download — coming soon, not available yet"
-                  className="flex items-center gap-3 bg-white/5 backdrop-blur-sm rounded-xl px-4 py-3.5 w-full border border-white/10 opacity-55 cursor-not-allowed grayscale-[0.35] text-left"
-                >
-                  <div className="flex-shrink-0 pointer-events-none">
-                    <img
-                      src={android}
-                      alt=""
-                      width={32}
-                      height={32}
-                      decoding="async"
-                      className="w-8 h-8 object-contain brightness-0 invert opacity-90"
-                    />
-                  </div>
-                  <div className="text-left flex-1 min-w-0 pointer-events-none">
-                    <p className="text-[10px] text-white/55 font-medium uppercase tracking-wide leading-tight mb-0.5">
-                      Get it on
-                    </p>
-                    <p className="text-sm font-semibold text-white/85 leading-tight">
-                      Google Play
-                    </p>
-                  </div>
-                  <span className="text-[10px] font-medium text-white/45 uppercase tracking-wide shrink-0 hidden sm:inline">
-                    Soon
-                  </span>
-                </button>
-              </div>
+              <ul className="space-y-3">
+                <li>
+                  <Link
+                    to="/listings"
+                    className="text-sm text-gray-300 hover:text-white transition-colors duration-200 inline-block"
+                  >
+                    Browse Cars for Sale
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/blog"
+                    className="text-sm text-gray-300 hover:text-white transition-colors duration-200 inline-block"
+                  >
+                    Car Buying Guides & News
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/vehicle-verification"
+                    className="text-sm text-gray-300 hover:text-white transition-colors duration-200 inline-block"
+                  >
+                    Online Vehicle Verification
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/car-estimator"
+                    className="text-sm text-gray-300 hover:text-white transition-colors duration-200 inline-block"
+                  >
+                    AI Car Price Estimator
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/auctions"
+                    className="text-sm text-gray-300 hover:text-white transition-colors duration-200 inline-block"
+                  >
+                    Live Vehicle Auctions
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/about"
+                    className="text-sm text-gray-300 hover:text-white transition-colors duration-200 inline-block"
+                  >
+                    About Sello Platform
+                  </Link>
+                </li>
+              </ul>
             </div>
 
             {/* Social Media */}

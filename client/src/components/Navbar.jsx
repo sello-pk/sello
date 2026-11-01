@@ -140,7 +140,7 @@ const Navbar = () => {
   ];
   const primaryDesktopLinks = menuLinks.filter(
     (link) =>
-      !["About Us", "Contact Us", "Blog", "Live Auctions"].includes(link.name),
+      !["About Us", "Contact Us", "Live Auctions"].includes(link.name),
   );
   const mobileMenuLinks = [...menuLinks, { path: "/help/faqs", name: "FAQs" }];
   const mobilePrimaryLinks = mobileMenuLinks.filter(
