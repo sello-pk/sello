@@ -25,10 +25,15 @@ export function loadAdSenseScript() {
   if (typeof window === "undefined" || typeof document === "undefined") {
     return Promise.resolve(false);
   }
-  if (!ADSENSE_CLIENT || !hasCookieConsent()) {
+  if (!ADSENSE_CLIENT) {
     return Promise.resolve(false);
   }
-  if (document.getElementById(SCRIPT_ID)) {
+  // Check if AdSense is already loaded or present in <head>
+  if (
+    window.adsbygoogle ||
+    document.getElementById(SCRIPT_ID) ||
+    document.querySelector('script[src*="adsbygoogle.js"]')
+  ) {
     return Promise.resolve(true);
   }
   if (loadPromise) return loadPromise;

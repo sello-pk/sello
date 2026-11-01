@@ -57,7 +57,7 @@ const AdSenseSlot = ({
     !isPrivatePath(location.pathname) &&
     !isInternalSearch(location.pathname, location.search) &&
     !pageBlocksAds;
-  const adSlotId = routeAllowsAds && consentOk ? AD_SLOTS[slot] : "";
+  const adSlotId = routeAllowsAds ? AD_SLOTS[slot] : "";
   const containerRef = useRef(null);
   const pushedRef = useRef(false);
   // idle | loading | ready | blocked
@@ -73,7 +73,7 @@ const AdSenseSlot = ({
   const [pushed, setPushed] = useState(false);
 
   useEffect(() => {
-    if (!adSlotId || !consentOk) {
+    if (!adSlotId) {
       setScriptState("idle");
       return undefined;
     }
@@ -85,7 +85,7 @@ const AdSenseSlot = ({
     return () => {
       cancelled = true;
     };
-  }, [adSlotId, consentOk]);
+  }, [adSlotId]);
 
   useEffect(() => {
     // Not configured yet, or ad-ineligible page -> stay invisible. Reset so a
