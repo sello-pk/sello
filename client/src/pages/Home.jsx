@@ -64,10 +64,6 @@ const Home = () => {
       <StructuredData.HomePageSchema />
       <div className="w-full min-w-0">
         <Hero />
-        {/* Homepage top banner: first block under the hero. */}
-        <BelowFold minHeight="18rem">
-          <AdSenseSlot slot="homepageTop" />
-        </BelowFold>
         <BelowFold minHeight="10rem">
           <BrandsSection />
         </BelowFold>

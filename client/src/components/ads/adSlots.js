@@ -61,22 +61,16 @@ export const ADSENSE_POLICY_SAFE =
 
 /**
  * Slots allowed while ADSENSE_POLICY_SAFE is true.
- * Excludes: thin/utility screens (estimator), contact, live auction UI,
- * secondary detail units, and the every-page footer unit.
- *
- * `homepageTop` and the two vehicle-verification banners are included on
- * purpose: they sit between real content blocks (homepage feed sections,
- * long-form verification copy) rather than inside a bare tool screen.
+ * Excludes: thin/utility screens (estimator, contact, live auction UI),
+ * above-the-fold intrusive units (homepageTop), and empty listing feeds.
+ * Focuses strictly on high-value publisher content: blog articles, blog directory,
+ * about page, and natural mid-feed content placements.
  */
 const POLICY_SAFE_SLOTS = new Set([
-  "homepageTop",
   "homepageFeed",
-  "brandsSection",
-  "listingFeed",
   "carDetail",
   "blogIndex",
   "blogArticle",
-  "auctionsIndex",
   "about",
   "vehicleVerificationTop",
   "vehicleVerificationBottom",
