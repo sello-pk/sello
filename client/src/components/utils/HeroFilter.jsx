@@ -229,7 +229,7 @@ const HeroFilter = () => {
 
             <button
               type="submit"
-              className="flex h-12 items-center justify-center gap-2 rounded-xl bg-primary-500 font-semibold text-white hover:bg-opacity-90 focus-visible:outline focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2"
+              className="flex h-12 items-center justify-center gap-2 rounded-xl bg-primary-500 font-bold text-gray-950 hover:bg-opacity-90 focus-visible:outline focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2"
             >
               <FiSearch aria-hidden />
               Search
@@ -240,21 +240,21 @@ const HeroFilter = () => {
             <button
               onClick={() => navigate("/listings")}
               type="button"
-              className="h-12 rounded-lg border border-primary-500 px-4 font-medium text-primary-500 hover:bg-primary-500 hover:text-white"
+              className="h-12 rounded-lg border border-primary-500 px-4 font-semibold text-primary-500 hover:bg-primary-500 hover:text-gray-950"
             >
               Browse Listings
             </button>
             <button
               onClick={() => navigate("/create-post")}
               type="button"
-              className="h-12 rounded-lg border border-primary-500 px-4 font-medium text-primary-500 hover:bg-primary-500 hover:text-white"
+              className="h-12 rounded-lg border border-primary-500 px-4 font-semibold text-primary-500 hover:bg-primary-500 hover:text-gray-950"
             >
               Sell Your Car
             </button>
             <button
               onClick={() => navigate("/auctions/live")}
               type="button"
-              className="h-12 rounded-lg border border-primary-500 px-4 font-medium text-primary-500 hover:bg-primary-500 hover:text-white"
+              className="h-12 rounded-lg border border-primary-500 px-4 font-semibold text-primary-500 hover:bg-primary-500 hover:text-gray-950"
             >
               Live Auction
             </button>

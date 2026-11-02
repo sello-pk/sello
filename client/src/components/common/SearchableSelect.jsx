@@ -247,6 +247,7 @@ const SearchableSelect = ({
             {value && !disabled && !isLoading && (
               <button
                 type="button"
+                aria-label="Clear selection"
                 onClick={handleClear}
                 className="p-1 hover:bg-gray-100 rounded-full transition-colors"
                 tabIndex={-1}

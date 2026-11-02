@@ -10,12 +10,13 @@
     <link rel="icon" href="/favicon.png" />
     <link rel="manifest" href="/manifest.json" />
 
-    <!-- Performance: API + Meta CAPI gateway early; Facebook only dns-prefetch until deferred pixel loads -->
+    <!-- Performance: API + Meta CAPI gateway; Facebook only dns-prefetch until deferred pixel loads -->
     <link rel="preconnect" href="https://api.sello.pk" crossorigin />
-    <link rel="preconnect" href="https://capig.stape.vip" crossorigin />
+    <link rel="dns-prefetch" href="https://capig.stape.vip" />
     <link rel="dns-prefetch" href="https://maps.googleapis.com" />
     <link rel="dns-prefetch" href="https://connect.facebook.net" />
     <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+    <link rel="ard" href="/.well-known/ard.json" type="application/json" />
 
     <!-- LCP: stable URLs (copied to /lcp/ at build). Preloads are injected at
          runtime for the homepage only (src/main.jsx) so blog article pages do

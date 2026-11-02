@@ -248,6 +248,7 @@ const Navbar = () => {
       </div>
       <button
         type="button"
+        aria-label="Open search"
         onClick={() => setShowHeaderSearch(true)}
         className={`absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg border transition-[opacity,transform] duration-300 flex items-center justify-center ${
           showHeaderSearch
@@ -531,7 +532,7 @@ const Navbar = () => {
                 <button
                   type="button"
                   onClick={() => navigate("/login")}
-                  className="px-3 py-1.5 sm:px-3.5 sm:py-2 md:px-4 md:py-2 bg-primary-500 rounded-lg text-white text-xs sm:text-sm font-medium hover:opacity-90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2"
+                  className="px-3 py-1.5 sm:px-3.5 sm:py-2 md:px-4 md:py-2 bg-primary-500 rounded-lg text-gray-950 font-bold text-xs sm:text-sm hover:opacity-90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2"
                 >
                   Login
                 </button>

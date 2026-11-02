@@ -252,6 +252,29 @@ app.get("/ads.txt", (_req, res) => {
   res.type("text/plain").send("google.com, pub-9074113020959790, DIRECT, f08c47fec0942fa0\n");
 });
 
+/* ------------------ AGENTIC RESOURCE DISCOVERY & LLMS.TXT ------------------ */
+app.get("/.well-known/ard.json", (_req, res) => {
+  const ardPath = servesClient
+    ? path.join(clientDist, ".well-known/ard.json")
+    : path.resolve(__dirname, "../client/public/.well-known/ard.json");
+  if (fs.existsSync(ardPath)) {
+    res.type("application/json").sendFile(ardPath);
+  } else {
+    res.status(404).end();
+  }
+});
+
+app.get("/llms.txt", (_req, res) => {
+  const llmsPath = servesClient
+    ? path.join(clientDist, "llms.txt")
+    : path.resolve(__dirname, "../client/public/llms.txt");
+  if (fs.existsSync(llmsPath)) {
+    res.type("text/plain; charset=utf-8").sendFile(llmsPath);
+  } else {
+    res.status(404).end();
+  }
+});
+
 /* ------------------ SINGLE-SERVICE STATIC + SPA FALLBACK ------------------ */
 if (servesClient) {
   Logger.info(`Serving built client from ${clientDist}`);

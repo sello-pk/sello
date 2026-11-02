@@ -2,7 +2,7 @@
   "clean_urls": false,
   "routes": [
     {
-      "src": "/(ads\\.txt|robots\\.txt|sitemap.*|.*\\.xml|.*\\.png|.*\\.json|.*\\.ico|.*\\.webp|.*\\.jpg|.*\\.svg)",
+      "src": "/(ads\\.txt|robots\\.txt|llms\\.txt|.*\\.txt|sitemap.*|.*\\.xml|.*\\.png|.*\\.json|.*\\.ico|.*\\.webp|.*\\.jpg|.*\\.svg)",
       "dest": "/$1"
     },
     {

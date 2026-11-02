@@ -145,6 +145,9 @@ const CarCard = ({
   const callSellerLabel = contactNumber?.trim()
     ? `Call seller at ${contactNumber.trim()}`
     : "Call seller";
+  const whatsappSellerLabel = displayTitle
+    ? `WhatsApp seller about ${displayTitle}`
+    : "Chat on WhatsApp";
   const showPhone = showContactButtons && !car?.isSold && !!phoneUrl;
   const showWhatsAppBtn = showContactButtons && !car?.isSold && !!whatsappUrl;
 
@@ -329,15 +332,15 @@ const CarCard = ({
                         e.stopPropagation();
                       }}
                       className="p-2.5 rounded-lg bg-[#25D366] text-white hover:opacity-90 transition-colors"
-                      title="WhatsApp"
-                      aria-label="WhatsApp"
+                      title={whatsappSellerLabel}
+                      aria-label={whatsappSellerLabel}
                     >
                       <FaWhatsapp className="w-4 h-4" />
                     </a>
                   )}
                 </div>
                 {showViewCta && (
-                  <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-primary-500 text-white text-xs sm:text-sm font-semibold hover:bg-primary-600 transition-colors shrink-0">
+                  <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-primary-500 text-gray-950 text-xs sm:text-sm font-bold hover:bg-primary-600 transition-colors shrink-0">
                     <span className="sr-only">{`View ${displayTitle}`}</span>
                     <span aria-hidden>VIEW</span>
                     <IoIosArrowRoundUp className="w-3 h-3 sm:w-4 sm:h-4 rotate-[43deg]" aria-hidden />
@@ -538,8 +541,8 @@ const CarCard = ({
                   e.stopPropagation();
                 }}
                 className="p-1.5 rounded-lg bg-[#25D366] text-white hover:opacity-90 transition-colors"
-                title="WhatsApp"
-                aria-label="WhatsApp"
+                title={whatsappSellerLabel}
+                aria-label={whatsappSellerLabel}
               >
                 <FaWhatsapp className="w-3.5 h-3.5" />
               </a>

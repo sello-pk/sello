@@ -9,7 +9,11 @@ const Video = () => {
         <div className="video h-full lg:w-1/2 md:w-full border-2 border-primary/70 rounded overflow-hidden">
           <img
             src={images.selloVideo}
-            alt="Sello Video"
+            alt="A Smarter Way to Sell Your Car with Sello"
+            width="672"
+            height="383"
+            loading="lazy"
+            decoding="async"
             className="w-full h-full rounded object-cover"
           />
         </div>

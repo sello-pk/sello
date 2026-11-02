@@ -441,6 +441,8 @@ const WhatsAppChatWidget = () => {
           </div>
         </div>
         <button
+          type="button"
+          aria-label="Close support chat"
           onClick={() => {
             setIsOpen(false);
             setSelectedChat(null);

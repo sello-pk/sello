@@ -18,3 +18,13 @@
 /ads.txt
   Content-Type: text/plain; charset=utf-8
   Cache-Control: public, max-age=86400
+
+# llms.txt: AI discovery
+/llms.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=86400
+
+# Agentic Resource Discovery manifest
+/.well-known/ard.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=86400

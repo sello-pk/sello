@@ -72,11 +72,13 @@ const SearchBar = ({
         className="outline-none flex-1 text-sm bg-transparent"
         type="text"
         placeholder={placeholder}
+        aria-label={placeholder || "Search"}
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
       <button
         type="submit"
+        aria-label={placeholder || "Search"}
         className={`focus:outline-none flex items-center justify-center ${
           compact
             ? "w-6 h-6 text-primary-500 hover:text-primary-600"

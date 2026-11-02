@@ -168,6 +168,8 @@ const CarChatWidget = ({ carId, carTitle, onClose }) => {
         </div>
         <div className="flex gap-2">
           <button
+            type="button"
+            aria-label="Close chat"
             onClick={() => {
               setIsOpen(false);
               if (onClose) onClose();

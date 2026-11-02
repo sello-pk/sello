@@ -1,13 +1,64 @@
 {
   "$schema": "https://agenticresource.org/schema/v1/ard.json",
   "name": "Sello PK",
-  "description": "Agentic discovery manifest for Sello.pk",
+  "description": "Agentic discovery manifest for Sello.pk - Pakistan's verified vehicle marketplace and online car auctions.",
   "version": "1.0.0",
   "entries": [
     {
-      "type": "website",
-      "name": "Sello PK Main Site",
-      "url": "https://sello.pk/"
+      "identifier": "sello-main-site",
+      "displayName": "Sello PK Marketplace",
+      "type": "text/html",
+      "url": "https://sello.pk/",
+      "representativeQueries": [
+        "buy and sell cars Pakistan",
+        "used cars for sale Pakistan",
+        "live car auctions Pakistan",
+        "car price valuation Pakistan"
+      ]
+    },
+    {
+      "identifier": "sello-car-listings",
+      "displayName": "Used Cars for Sale in Pakistan",
+      "type": "text/html",
+      "url": "https://sello.pk/listings",
+      "representativeQueries": [
+        "used cars Pakistan",
+        "buy Toyota Civic Suzuki Pakistan",
+        "verified car listings"
+      ]
+    },
+    {
+      "identifier": "sello-live-auctions",
+      "displayName": "Live Car Auctions Pakistan",
+      "type": "text/html",
+      "url": "https://sello.pk/auctions",
+      "representativeQueries": [
+        "live car auctions",
+        "online vehicle bidding Pakistan",
+        "auction sheet verification"
+      ]
+    },
+    {
+      "identifier": "sello-car-estimator",
+      "displayName": "Sello AI Car Price Estimator",
+      "type": "text/html",
+      "url": "https://sello.pk/car-estimator",
+      "representativeQueries": [
+        "car price estimator Pakistan",
+        "used car valuation",
+        "Pakistani car market prices"
+      ]
+    },
+    {
+      "identifier": "sello-blog",
+      "displayName": "Sello Automotive Blog & Guides",
+      "type": "text/html",
+      "url": "https://sello.pk/blog",
+      "representativeQueries": [
+        "Pakistan driving license guide",
+        "used car inspection guide",
+        "automotive news Pakistan"
+      ]
     }
   ]
 }

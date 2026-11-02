@@ -146,9 +146,9 @@ const BlogSection = () => {
                       {formatDate(blog.publishedAt || blog.createdAt)}
                     </p>
                   </div>
-                  <h4 className="text-lg font-bold text-gray-900 leading-snug line-clamp-2">
+                  <h3 className="text-lg font-bold text-gray-900 leading-snug line-clamp-2">
                     {blog.title}
-                  </h4>
+                  </h3>
                   <p className="mt-3 text-gray-600 line-clamp-2">
                     {blog.excerpt ||
                       blog.content?.replace(/<[^>]*>/g, "").substring(0, 150) +

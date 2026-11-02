@@ -28,7 +28,7 @@ const BottomHeader = () => {
   return (
     <div
       style={{ zIndex: 1000 }}
-      className="sello-bottom-bar bg-[#050B20] border-y border-gray-200/80 w-full flex items-center px-3 sm:px-4 md:px-8 lg:px-20 text-sm text-white"
+      className="sello-bottom-bar bg-[#050B20] border-y border-gray-200/80 w-full flex items-center px-3 sm:px-4 md:px-8 lg:px-20 text-sm text-white h-[52px] md:h-[56px]"
       aria-busy={isLoading}
     >
       <div className="flex w-full h-full items-center gap-2 sm:gap-3">
@@ -76,7 +76,7 @@ const BottomHeader = () => {
         {/* RIGHT — always visible */}
         <div className="flex items-center gap-1.5 sm:gap-3 ml-auto shrink-0">
           {/* Countdown pill — tighter on mobile */}
-          <div className="flex items-center gap-1 rounded-xl bg-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1">
+          <div className="flex items-center gap-1 rounded-xl bg-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 min-w-[66px] sm:min-w-[85px] justify-center">
             <span className="hidden md:inline text-[9px] uppercase tracking-widest text-white/60 whitespace-nowrap mr-1">
               Ends In
             </span>

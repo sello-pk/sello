@@ -1,7 +1,18 @@
 # Sello PK
 
-> Sello PK is an online marketplace in Pakistan.
+> Sello is Pakistan's premier automotive marketplace and live vehicle auction platform.
 
-## Explore
-- [Home](https://sello.pk/): Main marketplace listings and categories.
-- [Sitemap](https://sello.pk/sitemap.xml): Complete index of marketplace pages.
+Sello connects car buyers and sellers across Pakistan, providing verified vehicle listings, real-time live car auctions, AI-assisted price estimation, certified condition reports, and comprehensive automotive guides.
+
+## Core Services
+- [Home](https://sello.pk/): Pakistan's verified automotive marketplace and auction hub.
+- [Car Listings](https://sello.pk/listings): Search and filter verified used cars by make, model, year, and city.
+- [Live Vehicle Auctions](https://sello.pk/auctions): Bid in real-time on verified cars with authentic inspection sheets.
+- [Car Price Estimator](https://sello.pk/car-estimator): AI-driven used car valuation and price trends across Pakistan.
+- [Automotive Blog](https://sello.pk/blog): Expert car reviews, driving licensing guides, vehicle maintenance, and market news.
+- [About Sello](https://sello.pk/about): Learn about the Sello platform, trust and safety standards, and team.
+- [Contact Support](https://sello.pk/contact): Customer service, dealer verification, and user inquiries.
+
+## Technical & Discovery
+- [Agentic Resource Discovery (ARD)](https://sello.pk/.well-known/ard.json): Machine-readable resource manifest for AI agents.
+- [Sitemap](https://sello.pk/sitemap.xml): Complete XML index of marketplace listings and content pages.

@@ -418,6 +418,8 @@ const MapView = ({ coordinates = [25.203, 55.2719], carLocation = null }) => {
             </div>
             <div className="flex items-center gap-2">
               <button
+                type="button"
+                aria-label="Clear route"
                 onClick={() => {
                   setUserLocation(null);
                   setRoute(null);
@@ -538,6 +540,8 @@ const MapView = ({ coordinates = [25.203, 55.2719], carLocation = null }) => {
             )}
             {searchQuery && !isSearching && (
               <button
+                type="button"
+                aria-label="Clear route"
                 onClick={() => {
                   setSearchQuery("");
                   setSearchResults([]);

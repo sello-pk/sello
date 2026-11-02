@@ -175,7 +175,7 @@ const RecentlyViewedCars = () => {
 
                     {/* Vehicle Type Badge */}
                     {car.vehicleType && (
-                      <div className="absolute top-3 left-3 bg-primary-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                      <div className="absolute top-3 left-3 bg-primary-500 text-gray-950 px-3 py-1 rounded-full text-xs font-bold">
                         {car.vehicleType}
                       </div>
                     )}
@@ -183,7 +183,11 @@ const RecentlyViewedCars = () => {
                     {/* Quick Actions */}
                     <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <div className="flex gap-2">
-                        <button className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white transition-colors">
+                        <button
+                          type="button"
+                          aria-label={`Save ${carTitle}`}
+                          className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white transition-colors"
+                        >
                           <svg
                             className="w-4 h-4 text-gray-600"
                             fill="none"
@@ -198,7 +202,11 @@ const RecentlyViewedCars = () => {
                             />
                           </svg>
                         </button>
-                        <button className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white transition-colors">
+                        <button
+                          type="button"
+                          aria-label={`Share ${carTitle}`}
+                          className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white transition-colors"
+                        >
                           <svg
                             className="w-4 h-4 text-gray-600"
                             fill="none"
@@ -219,9 +227,9 @@ const RecentlyViewedCars = () => {
 
                   {/* Car Details */}
                   <div className="p-5">
-                    <h4 className="font-semibold text-gray-900 mb-2 line-clamp-1 text-lg group-hover:text-primary-600 transition-colors">
+                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1 text-lg group-hover:text-primary-600 transition-colors">
                       {carTitle}
-                    </h4>
+                    </h3>
 
                     <div className="flex items-center gap-4 mb-3 text-sm text-gray-600">
                       {car.year && (
