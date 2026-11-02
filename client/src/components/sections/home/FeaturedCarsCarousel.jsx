@@ -161,7 +161,7 @@ const FeaturedCarsCarousel = () => {
               <button
                 onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
                 disabled={page === totalPages}
-                className="inline-flex min-w-[120px] items-center justify-center gap-2 rounded-xl bg-primary-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex min-w-[120px] items-center justify-center gap-2 rounded-xl bg-primary-500 px-4 py-2.5 text-sm font-bold text-gray-950 transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>

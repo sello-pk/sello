@@ -447,7 +447,7 @@ const CustomerReview = () => {
             <button
               type="button"
               onClick={handleOpenReviewForm}
-              className="bg-primary-500 hover:opacity-90 text-white px-8 py-4 rounded font-semibold transition-[transform,opacity] duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-700"
+              className="bg-primary-500 hover:opacity-90 text-gray-950 font-bold px-8 py-4 rounded transition-[transform,opacity] duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-700"
             >
               Write a Review
             </button>
@@ -459,7 +459,7 @@ const CustomerReview = () => {
               <button
                 type="button"
                 onClick={() => navigate("/login")}
-                className="bg-primary-500 hover:opacity-90 text-white px-8 py-4 rounded-xl font-semibold transition-[transform,opacity] duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-700"
+                className="bg-primary-500 hover:opacity-90 text-gray-950 font-bold px-8 py-4 rounded-xl transition-[transform,opacity] duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-700"
               >
                 Login to Write a Review
               </button>
@@ -607,7 +607,7 @@ const CustomerReview = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-primary-500 hover:bg-primary-600 text-gray-950 font-bold px-6 py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
                     <span className="flex items-center justify-center gap-2">

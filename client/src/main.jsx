@@ -22,29 +22,24 @@ function injectHomeHeroPreloads() {
   const path = window.location.pathname || "/";
   const isHome = path === "/" || path === "/home";
   if (!isHome) return;
-  const preloads = [
-    {
-      id: "sello-preload-hero-lcp-mobile",
-      href: import.meta.env.PROD ? "/lcp/heroMobile.webp" : heroLcpMobile,
-      media: "(max-width: 767px)",
-    },
-    {
-      id: "sello-preload-hero-lcp-desktop",
-      href: import.meta.env.PROD ? "/lcp/hero.webp" : heroLcpDesktop,
-      media: "(min-width: 768px)",
-    },
-  ];
-  for (const { id, href, media } of preloads) {
-    if (document.getElementById(id)) continue;
-    const link = document.createElement("link");
-    link.id = id;
-    link.rel = "preload";
-    link.as = "image";
-    link.href = href;
-    link.media = media;
-    link.setAttribute("fetchpriority", "high");
-    document.head.appendChild(link);
-  }
+  const isMobile = window.matchMedia("(max-width: 767px)").matches;
+  const target = isMobile
+    ? {
+        id: "sello-preload-hero-lcp-mobile",
+        href: import.meta.env.PROD ? "/lcp/heroMobile.webp" : heroLcpMobile,
+      }
+    : {
+        id: "sello-preload-hero-lcp-desktop",
+        href: import.meta.env.PROD ? "/lcp/hero.webp" : heroLcpDesktop,
+      };
+  if (document.getElementById(target.id)) return;
+  const link = document.createElement("link");
+  link.id = target.id;
+  link.rel = "preload";
+  link.as = "image";
+  link.href = target.href;
+  link.setAttribute("fetchpriority", "high");
+  document.head.appendChild(link);
 }
 
 if (typeof document !== "undefined" && typeof window !== "undefined") {

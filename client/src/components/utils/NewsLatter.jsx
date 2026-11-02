@@ -64,7 +64,7 @@ const NewsLatter = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-primary-500 text-white text-xs sm:text-sm md:text-base py-1.5 px-3 sm:py-2 sm:px-4 md:py-3 md:px-6 rounded-full hover:opacity-90 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#050B20]"
+            className="bg-primary-500 text-gray-950 font-bold text-xs sm:text-sm md:text-base py-1.5 px-3 sm:py-2 sm:px-4 md:py-3 md:px-6 rounded-full hover:opacity-90 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#050B20]"
           >
             {isLoading ? "Subscribing..." : "Subscribe"}
           </button>

@@ -34,7 +34,7 @@ const BlogSection = () => {
           {blogs.length > 0 && (
             <Link
               to="/blog/all"
-              className="text-primary-500 font-medium flex items-center gap-1 hover:gap-2 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded px-2 py-1"
+              className="text-amber-800 font-semibold flex items-center gap-1 hover:gap-2 hover:text-amber-900 transition-all focus:outline-none focus:ring-2 focus:ring-amber-700 focus:ring-offset-2 rounded px-2 py-1"
               aria-label="View all blog posts"
             >
               View All

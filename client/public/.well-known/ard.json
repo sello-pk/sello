@@ -5,10 +5,10 @@
   "version": "1.0.0",
   "entries": [
     {
-      "identifier": "sello-main-site",
-      "displayName": "Sello PK Marketplace",
-      "type": "text/html",
-      "url": "https://sello.pk/",
+      "identifier": "urn:air:sello.pk:marketplace:agent",
+      "displayName": "Sello PK Agent Card",
+      "type": "application/agent-card+json",
+      "url": "https://sello.pk/.well-known/ard.json",
       "representativeQueries": [
         "buy and sell cars Pakistan",
         "used cars for sale Pakistan",
@@ -17,9 +17,9 @@
       ]
     },
     {
-      "identifier": "sello-car-listings",
-      "displayName": "Used Cars for Sale in Pakistan",
-      "type": "text/html",
+      "identifier": "urn:air:sello.pk:catalog:vehicles",
+      "displayName": "Sello PK Vehicle Catalog",
+      "type": "application/ai-catalog+json",
       "url": "https://sello.pk/listings",
       "representativeQueries": [
         "used cars Pakistan",
@@ -28,36 +28,14 @@
       ]
     },
     {
-      "identifier": "sello-live-auctions",
-      "displayName": "Live Car Auctions Pakistan",
-      "type": "text/html",
-      "url": "https://sello.pk/auctions",
-      "representativeQueries": [
-        "live car auctions",
-        "online vehicle bidding Pakistan",
-        "auction sheet verification"
-      ]
-    },
-    {
-      "identifier": "sello-car-estimator",
-      "displayName": "Sello AI Car Price Estimator",
-      "type": "text/html",
-      "url": "https://sello.pk/car-estimator",
-      "representativeQueries": [
-        "car price estimator Pakistan",
-        "used car valuation",
-        "Pakistani car market prices"
-      ]
-    },
-    {
-      "identifier": "sello-blog",
-      "displayName": "Sello Automotive Blog & Guides",
-      "type": "text/html",
-      "url": "https://sello.pk/blog",
+      "identifier": "urn:air:sello.pk:skills:guides",
+      "displayName": "Sello PK Agent Instructions & Guides",
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
+      "url": "https://sello.pk/llms.txt",
       "representativeQueries": [
         "Pakistan driving license guide",
         "used car inspection guide",
-        "automotive news Pakistan"
+        "car price estimator Pakistan"
       ]
     }
   ]
