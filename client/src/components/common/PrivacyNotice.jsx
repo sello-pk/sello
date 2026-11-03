@@ -45,12 +45,12 @@ const PrivacyNotice = () => {
       className="fixed bottom-0 inset-x-0 z-[60] p-3 sm:p-4 pointer-events-none"
     >
       <div className="pointer-events-auto mx-auto max-w-3xl rounded-xl border border-slate-200 bg-white shadow-lg px-4 py-3 sm:px-5 sm:py-4 flex flex-col sm:flex-row sm:items-center gap-3">
-        <p className="text-sm text-slate-900 flex-1 leading-relaxed">
+        <p className="text-sm text-slate-700 flex-1 leading-relaxed">
           We use cookies for site functionality, analytics, and to show relevant
           ads (including Google AdSense). See our{" "}
           <Link
             to="/privacy-policy#advertising"
-            className="text-amber-800 font-semibold underline-offset-2 hover:underline"
+            className="text-[#ff8a00] font-medium underline-offset-2 hover:underline"
           >
             Privacy Policy
           </Link>{" "}

@@ -501,11 +501,6 @@ function writeHomeShell() {
       <p>Explore our automotive tools and editorial guides to make smart, informed decisions:</p>
       <p><a href="${SITE_URL}/listings">Browse all car listings</a> · <a href="${SITE_URL}/blog">Automotive Blog &amp; Guides</a> · <a href="${SITE_URL}/vehicle-verification">Online Vehicle Verification Guide</a> · <a href="${SITE_URL}/car-estimator">AI Car Price Estimator</a> · <a href="${SITE_URL}/auctions">Live Auctions</a> · <a href="${SITE_URL}/about">About Sello</a> · <a href="${SITE_URL}/contact">Contact Support</a></p>`,
       );
-      // Pre-render the Hero shell inside #root so browser paints LCP on initial HTML parse
-      out = out.replace(
-        '<div id="root"></div>',
-        '<div id="root"><section class="sello-hero-shell relative w-full overflow-hidden min-h-[48vh] md:h-[48vh]"><picture class="absolute inset-0 block h-full w-full"><source media="(min-width: 768px)" srcset="/lcp/hero.webp" /><img src="/lcp/heroMobile.webp" alt="hero image" class="absolute inset-0 h-full w-full object-cover" fetchpriority="high" loading="eager" decoding="async" width="768" height="600" sizes="100vw" /></picture><div class="bg-slate-900/70 absolute inset-0"></div><div class="relative z-10 flex min-h-[48vh] md:h-[48vh] flex-col items-center justify-center px-2 py-6 sm:py-8 md:py-10"><h1 class="mb-4 text-center text-2xl font-bold text-white md:text-5xl">Buy and Sell Cars in Pakistan</h1></div></section></div>',
-      );
       return out.replace("</body>", `<!-- seo-shell:/ -->\n  </body>`);
     },
     { keepHeroPreloads: true },
