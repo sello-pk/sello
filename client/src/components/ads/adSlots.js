@@ -67,11 +67,14 @@ export const ADSENSE_POLICY_SAFE =
  * about page, and natural mid-feed content placements.
  */
 const POLICY_SAFE_SLOTS = new Set([
+  // Homepage: square unit beside brands (directly under hero) + mid-feed unit.
+  "brandsSection",
   "homepageFeed",
   "carDetail",
   "blogIndex",
   "blogArticle",
   "about",
+  // Vehicle verification page banners (between long-form content).
   "vehicleVerificationTop",
   "vehicleVerificationBottom",
 ]);
