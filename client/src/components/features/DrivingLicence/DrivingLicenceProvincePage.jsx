@@ -17,6 +17,7 @@ import {
 import SEO from "../../common/SEO";
 import { AdSenseSlot } from "../../ads";
 import { DrivingLicenceProvinceSchema } from "../../common/StructuredData";
+import listingHero from "../../../assets/images/verification/drivingLicenceHero.jpg";
 import {
   getGuideBySlug,
   PROVINCE_META,
@@ -188,7 +189,7 @@ const DrivingLicenceProvincePage = () => {
   const canonical = `https://sello.pk/driving-licence/${slug}`;
 
   return (
-    <div className="w-full min-w-0 overflow-x-hidden bg-slate-50 text-slate-800 pb-24 lg:pb-0">
+    <div className="w-full min-w-0 overflow-x-hidden bg-white text-slate-800 pb-24 lg:pb-0">
       <SEO
         title={guide.seoTitle}
         description={guide.seoDescription}
@@ -197,15 +198,18 @@ const DrivingLicenceProvincePage = () => {
       />
       <DrivingLicenceProvinceSchema guide={guide} />
 
-      <section className="relative overflow-hidden bg-slate-950 text-white">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-35"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 15% 20%, rgba(16,185,129,0.35), transparent 40%), radial-gradient(circle at 85% 30%, rgba(56,189,248,0.22), transparent 35%)",
-          }}
+      <section className="relative w-full overflow-hidden min-h-[42vh] bg-gray-200 text-white">
+        <img
+          src={listingHero}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover object-right"
+          fetchpriority="high"
+          decoding="async"
+          width="1600"
+          height="400"
         />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/30 via-slate-900/45 to-slate-900/55" />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
           <nav className="text-sm text-white/70 mb-5" aria-label="Breadcrumb">
             <ol className="flex flex-wrap items-center gap-2">
               <li>
@@ -229,7 +233,7 @@ const DrivingLicenceProvincePage = () => {
               <div className="flex items-start gap-4 mb-4">
                 {meta.icon ? (
                   <div
-                    className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl ${meta.accent || "bg-white/10"} flex items-center justify-center ring-1 ring-white/10 shrink-0`}
+                    className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/95 flex items-center justify-center shrink-0 shadow-sm`}
                   >
                     <img
                       src={meta.icon}
@@ -247,17 +251,17 @@ const DrivingLicenceProvincePage = () => {
                   </h1>
                 </div>
               </div>
-              <p className="text-white/80 leading-relaxed text-pretty mb-4">
+              <p className="text-white/90 leading-relaxed text-pretty mb-4">
                 {guide.shortDescription}
               </p>
-              <div className="flex flex-wrap gap-2 text-xs text-white/70">
-                <span className="rounded-full bg-white/10 px-3 py-1.5">
+              <div className="flex flex-wrap gap-2 text-xs text-white/80">
+                <span className="rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-sm">
                   Last verified: {formatVerifiedDate(guide.lastVerifiedAt)}
                 </span>
-                <span className="rounded-full bg-white/10 px-3 py-1.5">
+                <span className="rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-sm">
                   {PORTAL_LABELS[slug]}
                 </span>
-                <span className="rounded-full bg-white/10 px-3 py-1.5">
+                <span className="rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-sm">
                   No CNIC collected on Sello
                 </span>
               </div>
@@ -268,13 +272,13 @@ const DrivingLicenceProvincePage = () => {
                 href={guide.officialPortalUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-500 text-slate-950 font-bold px-5 py-3 hover:opacity-90"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-500 text-white font-semibold px-5 py-3 hover:opacity-90 shadow-lg shadow-primary-500/25"
               >
                 Visit Official Portal <ExternalLink className="w-4 h-4" />
               </a>
               <a
                 href="#official-actions"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white text-slate-900 font-semibold px-5 py-3 hover:bg-slate-100"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-white text-slate-900 font-semibold px-5 py-3 hover:bg-gray-100"
               >
                 View action buttons
               </a>
@@ -566,7 +570,7 @@ const DrivingLicenceProvincePage = () => {
           href={guide.officialPortalUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-500 text-slate-950 font-bold px-4 py-3"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-500 text-white font-semibold px-4 py-3"
         >
           Open {PORTAL_LABELS[slug] || "official portal"}
           <ExternalLink className="w-4 h-4" />
