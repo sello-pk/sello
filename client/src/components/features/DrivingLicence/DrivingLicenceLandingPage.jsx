@@ -15,7 +15,7 @@ import SEO from "../../common/SEO";
 import NewsLatter from "../../utils/NewsLatter";
 import { AdSenseSlot } from "../../ads";
 import { DrivingLicenceLandingSchema } from "../../common/StructuredData";
-import listingHero from "../../../assets/images/verification/drivingLicenceHero.jpg";
+import listingHero from "../../../assets/images/driving_licence.jpg";
 import serviceListingsImg from "../../../assets/images/verification/1.png";
 import serviceAuctionsImg from "../../../assets/images/verification/2.png";
 import serviceEstimatorImg from "../../../assets/images/verification/3.png";
@@ -181,8 +181,8 @@ const DrivingLicenceLandingPage = () => {
           width="1600"
           height="400"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-900/55 to-slate-900/15 sm:from-slate-950/80 sm:via-slate-900/45 sm:to-transparent" />
-        <div className="relative z-10 flex min-h-[62vh] sm:min-h-[68vh] flex-col justify-center w-full min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/40 via-slate-900/10 to-transparent sm:from-slate-950/25 sm:via-transparent" />
+        <div className="relative z-10 flex min-h-[62vh] sm:min-h-[68vh] flex-col justify-start w-full min-w-0 max-w-8xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 pt-5 sm:pt-6 pb-10 sm:pb-14">
           <div className="text-left w-full min-w-0 max-w-xl lg:max-w-2xl">
             <div className="inline-flex max-w-full items-center gap-2 bg-white text-primary-500 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium mb-3 sm:mb-5 shadow-sm">
               <Sparkles className="w-4 h-4 shrink-0" />

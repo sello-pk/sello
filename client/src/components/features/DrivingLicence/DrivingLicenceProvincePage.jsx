@@ -17,7 +17,7 @@ import {
 import SEO from "../../common/SEO";
 import { AdSenseSlot } from "../../ads";
 import { DrivingLicenceProvinceSchema } from "../../common/StructuredData";
-import listingHero from "../../../assets/images/verification/drivingLicenceHero.jpg";
+import listingHero from "../../../assets/images/driving_licence.jpg";
 import {
   getGuideBySlug,
   PROVINCE_META,
