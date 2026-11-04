@@ -163,6 +163,14 @@ const Footer = () => {
                 </li>
                 <li>
                   <Link
+                    to="/driving-licence"
+                    className="text-sm text-gray-300 hover:text-white transition-colors duration-200 inline-block"
+                  >
+                    Driving Licence Guides
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     to="/car-estimator"
                     className="text-sm text-gray-300 hover:text-white transition-colors duration-200 inline-block"
                   >

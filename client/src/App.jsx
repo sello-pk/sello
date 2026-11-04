@@ -160,6 +160,71 @@ const getRouteSeo = (pathname, search) => {
       },
     },
     {
+      path: "/driving-licence",
+      skipAppSeo: true,
+      seo: {
+        title:
+          "Driving Licence Information & Verification in Pakistan | Sello.pk",
+        description:
+          "Explore province driving licence guides for Punjab, Sindh, KPK, Islamabad and Balochistan, then continue to official government portals to apply, renew or verify.",
+        canonical: "https://sello.pk/driving-licence",
+      },
+    },
+    {
+      path: "/driving-licence/punjab",
+      skipAppSeo: true,
+      seo: {
+        title:
+          "Punjab Driving Licence Online | DLIMS Apply, Renew & Verify – Sello.pk",
+        description:
+          "Punjab driving licence guide covering learner, permanent, renewal and tracking via official DLIMS 2.0, with links to the government portal.",
+        canonical: "https://sello.pk/driving-licence/punjab",
+      },
+    },
+    {
+      path: "/driving-licence/sindh",
+      skipAppSeo: true,
+      seo: {
+        title:
+          "Sindh Driving Licence Online | DLS Apply, Renew & Verify – Sello.pk",
+        description:
+          "Sindh driving licence guide for learner, permanent and renewal services via official DLS Online, with government portal action buttons.",
+        canonical: "https://sello.pk/driving-licence/sindh",
+      },
+    },
+    {
+      path: "/driving-licence/kpk",
+      skipAppSeo: true,
+      seo: {
+        title:
+          "KPK Driving Licence Online | Apply & Renew via Dastak – Sello.pk",
+        description:
+          "Khyber Pakhtunkhwa driving licence guide for learner permits, permanent licences, renewal and tracking via Transport KP / Dastak.",
+        canonical: "https://sello.pk/driving-licence/kpk",
+      },
+    },
+    {
+      path: "/driving-licence/islamabad",
+      skipAppSeo: true,
+      seo: {
+        title: "Islamabad Driving Licence Online | ITP-DLIMS Guide – Sello.pk",
+        description:
+          "Islamabad driving licence guide for learner, permanent, renewal and tracking via official Islamabad Traffic Police DLIMS.",
+        canonical: "https://sello.pk/driving-licence/islamabad",
+      },
+    },
+    {
+      path: "/driving-licence/balochistan",
+      skipAppSeo: true,
+      seo: {
+        title:
+          "Balochistan Driving Licence | Quetta Traffic Police Guide – Sello.pk",
+        description:
+          "Balochistan driving licence guide for Quetta Traffic Police appointments, learner/permanent steps and official licence verification.",
+        canonical: "https://sello.pk/driving-licence/balochistan",
+      },
+    },
+    {
       path: "/auctions",
       skipAppSeo: true,
       seo: {

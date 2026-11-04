@@ -26,6 +26,18 @@ const Signup = lazyImport(() => import("../pages/auth/SignUp.jsx"));
 const Blog = lazyImport(() => import("../pages/blog/Blog.jsx"));
 const AllBlog = lazyImport(() => import("../pages/blog/AllBlog.jsx"));
 const VehicleVerification = lazyImport(() => import("../pages/features/VehicleVerification.jsx"));
+const DrivingLicenceLandingPage = lazyImport(
+  () =>
+    import(
+      "../components/features/DrivingLicence/DrivingLicenceLandingPage.jsx"
+    ),
+);
+const DrivingLicenceProvincePage = lazyImport(
+  () =>
+    import(
+      "../components/features/DrivingLicence/DrivingLicenceProvincePage.jsx"
+    ),
+);
 const OurPrivacyPolicy = lazyImport(() => import("../pages/ourPages/OurPrivacyPolicy.jsx"));
 const TermsCondition = lazyImport(() => import("../pages/ourPages/TermsCondition.jsx"));
 const About = lazyImport(() => import("../pages/about/About.jsx"));
@@ -209,7 +221,15 @@ const AppRouter = () => {
           element={<EstimatorGuideDetail />}
         />
         <Route path="/vehicle-verification" element={<VehicleVerification />} />
-                <Route path="/auctions" element={<AuctionsActions />} />
+        <Route
+          path="/driving-licence"
+          element={<DrivingLicenceLandingPage />}
+        />
+        <Route
+          path="/driving-licence/:provinceSlug"
+          element={<DrivingLicenceProvincePage />}
+        />
+        <Route path="/auctions" element={<AuctionsActions />} />
         <Route path="/auctions/guide/:blogId" element={<AuctionGuideDetail />} />
         <Route path="/auctions/live" element={<LiveAuction />} />
         <Route path="/auctions/betting" element={<LiveAuction />} />

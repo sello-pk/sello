@@ -32,7 +32,6 @@ import {
   updateCommentStatus,
   deleteComment,
 } from "../controllers/commentController.js";
-
 const router = express.Router();
 
 /* -------------------------------- BANNERS --------------------------------- */

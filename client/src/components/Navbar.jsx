@@ -146,6 +146,7 @@ const Navbar = () => {
   ];
   const moreLinks = [
     { path: "/vehicle-verification", name: "Vehicle Verification" },
+    { path: "/driving-licence", name: "Driving License" },
   ];
   const publicAuctionLinks = [
     { path: "/auctions", name: "All Auctions" },

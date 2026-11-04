@@ -1772,6 +1772,149 @@ export const BlogPageSchema = ({ posts = [] }) => {
   return null;
 };
 
+export const DrivingLicenceLandingSchema = () => {
+  useEffect(() => {
+    const baseUrl = SITE_URL;
+    const pageUrl = `${baseUrl}/driving-licence`;
+    const schema = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebPage",
+          "@id": `${pageUrl}/#webpage`,
+          url: pageUrl,
+          name: "Driving Licence Information & Verification in Pakistan",
+          description:
+            "Province guides for Pakistan driving licence applications, renewals and verification with links to official government portals.",
+          isPartOf: { "@id": `${baseUrl}/#website` },
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": `${pageUrl}/#breadcrumb`,
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: baseUrl,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Driving Licence",
+              item: pageUrl,
+            },
+          ],
+        },
+        {
+          "@type": "ItemList",
+          "@id": `${pageUrl}/#provinces`,
+          name: "Pakistan driving licence province guides",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Punjab",
+              url: `${pageUrl}/punjab`,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Sindh",
+              url: `${pageUrl}/sindh`,
+            },
+            {
+              "@type": "ListItem",
+              position: 3,
+              name: "Khyber Pakhtunkhwa",
+              url: `${pageUrl}/kpk`,
+            },
+            {
+              "@type": "ListItem",
+              position: 4,
+              name: "Islamabad",
+              url: `${pageUrl}/islamabad`,
+            },
+            {
+              "@type": "ListItem",
+              position: 5,
+              name: "Balochistan",
+              url: `${pageUrl}/balochistan`,
+            },
+          ],
+        },
+      ],
+    };
+    addStructuredData(schema);
+  }, []);
+  return null;
+};
+
+export const DrivingLicenceProvinceSchema = ({ guide }) => {
+  useEffect(() => {
+    if (!guide?.slug) return;
+    const baseUrl = SITE_URL;
+    const pageUrl = `${baseUrl}/driving-licence/${guide.slug}`;
+    const graph = [
+      {
+        "@type": "WebPage",
+        "@id": `${pageUrl}/#webpage`,
+        url: pageUrl,
+        name: guide.seoTitle || `${guide.name} Driving Licence Guide`,
+        description: guide.seoDescription || guide.shortDescription,
+        isPartOf: { "@id": `${baseUrl}/#website` },
+        dateModified: guide.lastVerifiedAt || guide.updatedAt,
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${pageUrl}/#breadcrumb`,
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: baseUrl,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Driving Licence",
+            item: `${baseUrl}/driving-licence`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: guide.name,
+            item: pageUrl,
+          },
+        ],
+      },
+    ];
+
+    if (Array.isArray(guide.faqs) && guide.faqs.length > 0) {
+      graph.push({
+        "@type": "FAQPage",
+        "@id": `${pageUrl}/#faq`,
+        mainEntity: guide.faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq.answer,
+          },
+        })),
+      });
+    }
+
+    addStructuredData({
+      "@context": "https://schema.org",
+      "@graph": graph,
+    });
+  }, [guide]);
+
+  return null;
+};
+
 export default {
   ProductSchema,
   VehicleSchema,
@@ -1794,4 +1937,6 @@ export default {
   AboutPageSchema,
   ContactPageSchema,
   BlogPageSchema,
+  DrivingLicenceLandingSchema,
+  DrivingLicenceProvinceSchema,
 };
