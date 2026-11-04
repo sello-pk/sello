@@ -47,8 +47,72 @@ function injectHomeHeroPreloads() {
   }
 }
 
+/**
+ * Older static prerenders appended a full App HTML tree as a sibling of
+ * #root (after a <!-- prerendered:... --> comment). React then mounted a
+ * second App inside #root → double navbar/footer on blog/about/legal pages.
+ * New builds inject into #root; this only removes leftover OUTSIDE siblings.
+ * SPA shells (home/listings/tools) are untouched: they have no orphan chrome.
+ */
+function removeOrphanedPrerenderOutsideRoot() {
+  const root = document.getElementById("root");
+  if (!root?.parentNode) return;
+
+  // New correct builds already have the app tree inside #root — do nothing.
+  const rootHasAppChrome = Boolean(
+    root.querySelector("nav.sello-site-nav, #main-content, footer"),
+  );
+
+  const isOrphanAppNode = (el) => {
+    if (!el || el.nodeType !== Node.ELEMENT_NODE) return false;
+    if (el.tagName === "SCRIPT" || el.tagName === "LINK" || el.tagName === "STYLE") {
+      return false;
+    }
+    if (el.tagName === "NOSCRIPT") return false;
+    return Boolean(
+      el.matches?.(
+        "nav.sello-site-nav, #main-content, footer, [data-rht-toaster], .sello-bottom-bar",
+      ) ||
+        el.querySelector?.(
+          "nav.sello-site-nav, #main-content, footer, .sello-bottom-bar",
+        ) ||
+        el.hasAttribute?.("data-rht-toaster"),
+    );
+  };
+
+  let node = root.nextSibling;
+  let stripping = false;
+  while (node) {
+    const next = node.nextSibling;
+    if (
+      node.nodeType === Node.COMMENT_NODE &&
+      /prerendered:/.test(String(node.nodeValue || ""))
+    ) {
+      stripping = true;
+      node.parentNode.removeChild(node);
+      node = next;
+      continue;
+    }
+
+    // Legacy deploy fallback: empty #root + orphaned App chrome siblings.
+    if (!stripping && !rootHasAppChrome && isOrphanAppNode(node)) {
+      stripping = true;
+    }
+
+    if (stripping) {
+      const keepScript =
+        node.nodeType === Node.ELEMENT_NODE && node.tagName === "SCRIPT";
+      if (!keepScript) {
+        node.parentNode.removeChild(node);
+      }
+    }
+    node = next;
+  }
+}
+
 if (typeof document !== "undefined" && typeof window !== "undefined") {
   injectHomeHeroPreloads();
+  removeOrphanedPrerenderOutsideRoot();
 }
 
 window.addEventListener("unhandledrejection", (event) => {

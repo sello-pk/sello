@@ -94,9 +94,32 @@ export function applyPageHead(html, { title, description, canonical, image, keyw
 export function injectNoscriptBlock(html, innerHtml) {
   const block = `\n    <!-- seo-shell noscript -->\n    <noscript>\n${innerHtml}\n    </noscript>\n`;
   if (html.includes('id="root"')) {
-    return html.replace(/<div id="root"><\/div>/, `${block}<div id="root"></div>`);
+    return html.replace(
+      /<div\s+id="root"\s*>\s*<\/div>/i,
+      `${block}<div id="root"></div>`,
+    );
   }
   return html.replace("</body>", `${block}</body>`);
+}
+
+/**
+ * Put SSR/prerender markup INSIDE #root (never as a body sibling).
+ * Sibling injection caused double navbar/footer after React mounted.
+ * Returns { html, injected }.
+ */
+export function injectPrerenderIntoRoot(html, body, routePath = "") {
+  const marker = `<!-- prerendered:${routePath || "page"} -->`;
+  const rootRe = /<div\s+id="root"\s*>\s*<\/div>/i;
+  if (!rootRe.test(html)) {
+    return { html, injected: false };
+  }
+  return {
+    html: html.replace(
+      rootRe,
+      `<div id="root">${marker}\n${body}\n</div>`,
+    ),
+    injected: true,
+  };
 }
 
 export function stripHeroPreloads(html) {

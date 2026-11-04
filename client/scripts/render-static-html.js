@@ -12,6 +12,7 @@ import {
   articlePlainText,
   isSubstantialArticle,
 } from "./lib/api.js";
+import { injectPrerenderIntoRoot, stripHeroPreloads } from "./lib/htmlHead.js";
 
 const DIST_ROOT = path.join(CLIENT_ROOT, "dist");
 
@@ -136,13 +137,6 @@ function injectIndexHtmlHeroPreloads(distRoot) {
   ).join("\n");
   html = html.replace(headTag[0], `${headTag[0]}\n${tags}`);
   fs.writeFileSync(indexPath, html, "utf8");
-}
-
-function stripHeroPreloads(html) {
-  return html.replace(
-    /<link\b[^>]*id="sello-preload-hero-lcp-[^"]*"[^>]*\/?>/gi,
-    "",
-  );
 }
 
 // ------------------------------------------------------------- head builders
@@ -332,10 +326,20 @@ async function renderOne(renderer, entry, route) {
     );
   }
   const shell = stripHeroPreloads(fs.readFileSync(shellPath, "utf8"));
-  const finalHtml = route.head(shell).replace(
-    "</body>",
-    `<!-- prerendered:${route.path} -->\n${body}\n  </body>`,
+  // CRITICAL: SSR markup must live INSIDE #root.
+  // Older builds appended the full App HTML as a <body> sibling of #root.
+  // React then mounted another full App into #root → double navbar/footer/page.
+  const headed = route.head(shell);
+  const { html: finalHtml, injected } = injectPrerenderIntoRoot(
+    headed,
+    body,
+    route.path,
   );
+  if (!injected) {
+    console.warn(
+      `[render-static] #root placeholder missing for ${route.path}; skipped body inject to avoid double layout`,
+    );
+  }
   const outPath = outputPathFor(route.path);
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, finalHtml, "utf8");
