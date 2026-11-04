@@ -19,6 +19,7 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [showHeaderSearch, setShowHeaderSearch] = useState(false);
   const [openCompanyDropdown, setOpenCompanyDropdown] = useState(false);
+  const [openMoreDropdown, setOpenMoreDropdown] = useState(false);
   const [openAuctionsDropdown, setOpenAuctionsDropdown] = useState(false);
   const [openMobileAuctionsDropdown, setOpenMobileAuctionsDropdown] =
     useState(false);
@@ -30,6 +31,7 @@ const Navbar = () => {
   const linkRefs = useRef([]);
   const searchPanelRef = useRef(null);
   const companyDropdownRef = useRef(null);
+  const moreDropdownRef = useRef(null);
   const auctionsDropdownRef = useRef(null);
 
   // Track token in state so skip option re-evaluates when token changes
@@ -97,6 +99,15 @@ const Navbar = () => {
         setOpenCompanyDropdown(false);
       }
 
+      // Close more dropdown
+      if (
+        openMoreDropdown &&
+        moreDropdownRef.current &&
+        !moreDropdownRef.current.contains(event.target)
+      ) {
+        setOpenMoreDropdown(false);
+      }
+
       // Close auctions dropdown
       if (
         openAuctionsDropdown &&
@@ -106,7 +117,12 @@ const Navbar = () => {
         setOpenAuctionsDropdown(false);
       }
     },
-    [showHeaderSearch, openCompanyDropdown, openAuctionsDropdown],
+    [
+      showHeaderSearch,
+      openCompanyDropdown,
+      openMoreDropdown,
+      openAuctionsDropdown,
+    ],
   );
 
   useEffect(() => {
@@ -128,6 +144,9 @@ const Navbar = () => {
     { path: "/blog", name: "Blog" },
     { path: "/help/faqs", name: "FAQs" },
   ];
+  const moreLinks = [
+    { path: "/vehicle-verification", name: "Vehicle Verification" },
+  ];
   const publicAuctionLinks = [
     { path: "/auctions", name: "All Auctions" },
     { path: "/auctions/live", name: "Live Now" },
@@ -140,13 +159,20 @@ const Navbar = () => {
   ];
   const primaryDesktopLinks = menuLinks.filter(
     (link) =>
-      !["About Us", "Contact Us", "Live Auctions"].includes(link.name),
+      ![
+        "About Us",
+        "Contact Us",
+        "Live Auctions",
+        "Blog",
+        "Vehicle Verification",
+      ].includes(link.name),
   );
   const mobileMenuLinks = [...menuLinks, { path: "/help/faqs", name: "FAQs" }];
   const mobilePrimaryLinks = mobileMenuLinks.filter(
     (link) => link.path !== "/auctions",
   );
   const isCompanyActive = companyLinks.some((link) => isPathMatch(link.path));
+  const isMoreActive = moreLinks.some((link) => isPathMatch(link.path));
   const isAuctionsActive = location.pathname.startsWith("/auctions");
 
   /** Dynamic import keeps GSAP off the initial bundle / critical path until menu use. */
@@ -445,6 +471,59 @@ const Navbar = () => {
                       >
                         {companyLinks[3].name}
                       </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div
+                ref={moreDropdownRef}
+                className="relative"
+                onMouseEnter={() => setOpenMoreDropdown(true)}
+                onMouseLeave={() => setOpenMoreDropdown(false)}
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpenMoreDropdown((prev) => !prev)}
+                  aria-expanded={openMoreDropdown}
+                  aria-haspopup="true"
+                  className={`px-2 py-1 rounded-md transition-colors duration-200 whitespace-nowrap inline-flex items-center gap-2 ${
+                    isMoreActive
+                      ? "text-primary-500 font-semibold bg-primary-50"
+                      : "hover:text-primary-500"
+                  }`}
+                >
+                  More
+                  <FaChevronDown
+                    size={12}
+                    className={`transition-transform duration-200 ${
+                      openMoreDropdown ? "rotate-180" : ""
+                    }`}
+                    aria-hidden="true"
+                  />
+                </button>
+
+                {openMoreDropdown && (
+                  <div
+                    className="absolute top-full left-0 pt-2 z-[100]"
+                    role="menu"
+                  >
+                    <div className="w-64 rounded-xl border border-gray-200 bg-white shadow-lg text-gray-700 py-2">
+                      {moreLinks.map((link) => (
+                        <Link
+                          key={link.path}
+                          to={link.path}
+                          onClick={() => setOpenMoreDropdown(false)}
+                          role="menuitem"
+                          className={`block px-5 py-2.5 text-base transition-colors ${
+                            isPathMatch(link.path)
+                              ? "text-primary-500 font-semibold bg-primary-50"
+                              : "hover:bg-gray-50"
+                          }`}
+                        >
+                          {link.name}
+                        </Link>
+                      ))}
                     </div>
                   </div>
                 )}
