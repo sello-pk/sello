@@ -1113,11 +1113,14 @@ export const VehicleVerificationPageSchema = () => {
           areaServed: [
             { "@type": "AdministrativeArea", name: "Punjab" },
             { "@type": "AdministrativeArea", name: "Sindh" },
-            { "@type": "AdministrativeArea", name: "Islamabad Capital Territory" },
+            {
+              "@type": "AdministrativeArea",
+              name: "Islamabad Capital Territory",
+            },
             { "@type": "AdministrativeArea", name: "Khyber Pakhtunkhwa" },
           ],
           description:
-            "Instant online vehicle verification in Pakistan. Verify MTMIS vehicle registration details, owner records, engine/chassis numbers, tax payment status, and CPLC clearance across Punjab, Sindh, Islamabad, and KPK.",
+            "Verify your car or bike online through Sello. Check vehicle registration info and key details before you buy or sell a vehicle in Pakistan.",
           hasOfferCatalog: {
             "@type": "OfferCatalog",
             name: "Verification Checks",
@@ -1150,9 +1153,9 @@ export const VehicleVerificationPageSchema = () => {
           "@type": "WebPage",
           "@id": `${pageUrl}/#webpage`,
           url: pageUrl,
-          name: "Online Vehicle Verification Pakistan | MTMIS Car Check - Sello.pk",
+          name: "Online Vehicle Verification in Pakistan | Check Car Details | Sello",
           description:
-            "Verify any car or motorcycle registration online in Pakistan. Check Excise tax records, owner details, engine number, and CPLC clearance for Punjab, Sindh, Islamabad & KPK.",
+            "Verify your car or bike online through Sello. Check vehicle registration info and key details before you buy or sell a vehicle in Pakistan.",
           isPartOf: {
             "@id": `${baseUrl}/#website`,
           },
