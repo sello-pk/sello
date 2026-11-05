@@ -543,12 +543,18 @@ const toNumeric = (value) => {
 /**
  * Listings Page Schema — single @graph combining WebSite (with publisher),
  * BreadcrumbList, SearchResultsPage and an ItemList of the real cars on the page.
+ * Car entities use live /cars/... URLs via buildCarUrl (never fake /listings/slug).
  */
 export const ListingsPageSchema = ({ cars = [] }) => {
   useEffect(() => {
-    const baseUrl =
-      SITE_URL;
+    const baseUrl = SITE_URL;
     const listUrl = `${baseUrl}/listings`;
+    const defaultPriceValidUntil = new Date(
+      Date.now() + 90 * 24 * 60 * 60 * 1000,
+    )
+      .toISOString()
+      .slice(0, 10);
+
     const listItems = (Array.isArray(cars) ? cars : [])
       .filter((car) => car && car._id)
       .slice(0, 10)
@@ -639,9 +645,9 @@ export const ListingsPageSchema = ({ cars = [] }) => {
                 car.isSold || car.status === "sold"
                   ? "https://schema.org/SoldOut"
                   : "https://schema.org/InStock",
-              priceValidUntil:
-                car.expiryDate ||
-                new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+              priceValidUntil: car.expiryDate
+                ? String(car.expiryDate).slice(0, 10)
+                : defaultPriceValidUntil,
               areaServed: car.city
                 ? { "@type": "AdministrativeArea", name: car.city }
                 : undefined,
@@ -695,9 +701,9 @@ export const ListingsPageSchema = ({ cars = [] }) => {
           "@type": "SearchResultsPage",
           "@id": `${listUrl}/#webpage`,
           url: listUrl,
-          name: "Verified Used & New Cars for Sale in Pakistan | Sello.pk",
+          name: "Buy and Sell Cars in Pakistan | Trusted Brands – Sello.pk",
           description:
-            "Browse verified used and new cars for sale across Pakistan. Compare prices, check AI valuations, verify vehicle history, or bid on live vehicle auctions.",
+            "Buy and sell cars in Pakistan with confidence. Explore premium brands, compare models, and connect with trusted sellers on Sello.pk.",
           isPartOf: {
             "@id": `${baseUrl}/#website`,
           },
@@ -708,7 +714,8 @@ export const ListingsPageSchema = ({ cars = [] }) => {
             "@type": "SearchAction",
             target: {
               "@type": "EntryPoint",
-              urlTemplate: `${baseUrl}/search-results?search={search_term_string}`,
+              // Live search uses `search` (draft used `q=`)
+              urlTemplate: `${listUrl}?search={search_term_string}`,
             },
             "query-input": "required name=search_term_string",
           },
