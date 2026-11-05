@@ -375,8 +375,7 @@ export const WebSiteSchema = () => {
  */
 export const HomePageSchema = () => {
   useEffect(() => {
-    const baseUrl =
-      SITE_URL;
+    const baseUrl = SITE_URL;
 
     const schema = {
       "@context": "https://schema.org",
@@ -402,8 +401,9 @@ export const HomePageSchema = () => {
           priceRange: "PKR",
           address: {
             "@type": "PostalAddress",
-            streetAddress: "Sello Head Office, Gulberg",
-            addressLocality: "Lahore",
+            streetAddress:
+              "Sello Head Office, Paradise Business Complex Okara Bypass",
+            addressLocality: "Okara",
             addressRegion: "Punjab",
             addressCountry: "PK",
           },
@@ -417,9 +417,9 @@ export const HomePageSchema = () => {
           "@type": "WebSite",
           "@id": `${baseUrl}/#website`,
           url: baseUrl,
-          name: "Sello.pk - Buy & Sell Cars in Pakistan",
+          name: "Car for Sale in Pakistan | Buy & Sell Used Cars – Sello.pk",
           description:
-            "Buy, sell, or bid on verified cars in Pakistan. Explore AI Car Estimator, Vehicle Verification, and hybrid auctions on Sello.pk.",
+            "Find the best car for sale in Pakistan on Sello.pk. Buy or sell used cars in Karachi, Lahore, Islamabad & beyond with verified sellers and fair pricing.",
           publisher: {
             "@id": `${baseUrl}/#organization`,
           },
@@ -427,10 +427,12 @@ export const HomePageSchema = () => {
             "@type": "SearchAction",
             target: {
               "@type": "EntryPoint",
-              urlTemplate: `${baseUrl}/search-results?search={search_term_string}`,
+              // Real search flow uses `search` (not `q`) via SearchBar / listings filters
+              urlTemplate: `${baseUrl}/listings/car?search={search_term_string}`,
             },
             "query-input": "required name=search_term_string",
           },
+          inLanguage: "en-PK",
         },
         {
           "@type": "WebPage",
@@ -454,23 +456,31 @@ export const HomePageSchema = () => {
               "@type": "ListItem",
               position: 1,
               name: "Cars for Sale",
-              url: `${baseUrl}/listings/cars`,
+              url: `${baseUrl}/listings/car`,
             },
             {
               "@type": "ListItem",
               position: 2,
+              name: "Sell Your Car",
+              // Live sell route (draft /sell-car does not exist)
+              url: `${baseUrl}/create-post`,
+            },
+            {
+              "@type": "ListItem",
+              position: 3,
               name: "Online & Live Hybrid Car Auctions",
               url: `${baseUrl}/auctions`,
             },
             {
               "@type": "ListItem",
-              position: 3,
+              position: 4,
               name: "AI Car Estimator",
+              // Live estimator route (draft /ai-car-estimator does not exist)
               url: `${baseUrl}/car-estimator`,
             },
             {
               "@type": "ListItem",
-              position: 4,
+              position: 5,
               name: "Vehicle Verification",
               url: `${baseUrl}/vehicle-verification`,
             },
@@ -478,6 +488,21 @@ export const HomePageSchema = () => {
         },
       ],
     };
+
+    // Drop the static index.html Organization/WebSite block so home doesn't
+    // publish two conflicting graphs with the same @ids.
+    document
+      .querySelectorAll('script[type="application/ld+json"]:not([data-sello-jsonld])')
+      .forEach((el) => {
+        if (el.id === "structured-data") return;
+        const text = el.textContent || "";
+        if (
+          text.includes(`${baseUrl}/#organization`) ||
+          text.includes("https://sello.pk/#organization")
+        ) {
+          el.remove();
+        }
+      });
 
     addStructuredData(schema);
   }, []);

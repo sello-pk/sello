@@ -143,60 +143,64 @@
       }
     </script>
 
-    <!-- Site-wide JSON-LD: Organization + WebSite only. Page-level schema
-         (listings, cars, blog, FAQ, auctions) is emitted per route by
-         src/components/common/StructuredData.jsx. -->
+    <!-- Site-wide JSON-LD fallback for non-home routes / no-JS crawlers.
+         Home replaces this with HomePageSchema (AutomotiveBusiness graph).
+         Keep @ids aligned with StructuredData.jsx. -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@graph": [
           {
-            "@type": "Organization",
+            "@type": ["AutomotiveBusiness", "AutoDealer"],
             "@id": "https://sello.pk/#organization",
-            "name": "Sello",
-            "url": "https://sello.pk/",
+            "name": "Sello.pk",
+            "legalName": "Sello Group",
+            "url": "https://sello.pk",
             "logo": {
               "@type": "ImageObject",
-              "url": "https://sello.pk/logo.png"
+              "@id": "https://sello.pk/#logo",
+              "url": "https://sello.pk/logo.png",
+              "caption": "Sello.pk Logo"
             },
-            "slogan": "Pakistan's Smart Car Marketplace",
-            "description": "Sello is Pakistan's smart marketplace for buying and selling cars with AI-powered price estimation, live auctions, and free inspection services.",
-            "contactPoint": {
-              "@type": "ContactPoint",
-              "telephone": "+923122221474",
-              "contactType": "customer support",
-              "areaServed": "PK",
-              "availableLanguage": ["English", "Urdu"]
-            },
-            "sameAs": [
-              "https://www.instagram.com/sello.pakistan",
-              "https://youtube.com/@sello.pakistan",
-              "https://www.facebook.com/share/1DRC6dbkdQ/",
-              "https://x.com/sellopak",
-              "https://www.tiktok.com/@sello.pakistan"
-            ],
+            "image": { "@id": "https://sello.pk/#logo" },
+            "description": "Find the best car for sale in Pakistan on Sello.pk. Buy or sell used cars in Karachi, Lahore, Islamabad & beyond with verified sellers and fair pricing.",
+            "email": "info@sello.pk",
+            "priceRange": "PKR",
             "address": {
               "@type": "PostalAddress",
-              "addressCountry": "PK",
+              "streetAddress": "Sello Head Office, Paradise Business Complex Okara Bypass",
               "addressLocality": "Okara",
-              "postalCode": "56300",
-              "streetAddress": "Gateway Mall"
-            }
+              "addressRegion": "Punjab",
+              "addressCountry": "PK"
+            },
+            "areaServed": {
+              "@type": "Country",
+              "name": "Pakistan"
+            },
+            "sameAs": [
+              "https://www.facebook.com/profile.php?id=61584930269294",
+              "https://www.instagram.com/sello.pakistan",
+              "https://x.com/sellopak",
+              "https://www.youtube.com/@sello.pakistan",
+              "https://www.tiktok.com/@sello.pakistan"
+            ]
           },
           {
             "@type": "WebSite",
             "@id": "https://sello.pk/#website",
-            "name": "Sello",
-            "url": "https://sello.pk/",
+            "url": "https://sello.pk",
+            "name": "Car for Sale in Pakistan | Buy & Sell Used Cars – Sello.pk",
+            "description": "Find the best car for sale in Pakistan on Sello.pk. Buy or sell used cars in Karachi, Lahore, Islamabad & beyond with verified sellers and fair pricing.",
             "publisher": { "@id": "https://sello.pk/#organization" },
             "potentialAction": {
               "@type": "SearchAction",
               "target": {
                 "@type": "EntryPoint",
-                "urlTemplate": "https://sello.pk/search-results?search={search_term_string}"
+                "urlTemplate": "https://sello.pk/listings/car?search={search_term_string}"
               },
               "query-input": "required name=search_term_string"
-            }
+            },
+            "inLanguage": "en-PK"
           }
         ]
       }

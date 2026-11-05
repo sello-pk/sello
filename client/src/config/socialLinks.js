@@ -11,7 +11,7 @@
 // Tracking query params that Google/WhatsApp append on share are stripped so
 // the canonical handle is stored.
 export const SOCIAL_LINKS = {
-  facebook: "https://www.facebook.com/sellopakistan",
+  facebook: "https://www.facebook.com/profile.php?id=61584930269294",
   instagram: "https://www.instagram.com/sello.pakistan",
   x: "https://x.com/sellopak",
   youtube: "https://www.youtube.com/@sello.pakistan",
