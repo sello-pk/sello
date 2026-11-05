@@ -1772,6 +1772,71 @@ export const BlogPageSchema = ({ posts = [] }) => {
   return null;
 };
 
+export const VehicleVerificationProvinceSchema = ({ guide }) => {
+  useEffect(() => {
+    if (!guide?.slug) return;
+    const baseUrl = SITE_URL;
+    const pageUrl = `${baseUrl}/vehicle-verification/${guide.slug}`;
+    const graph = [
+      {
+        "@type": "WebPage",
+        "@id": `${pageUrl}/#webpage`,
+        url: pageUrl,
+        name: guide.seoTitle || `${guide.name} Vehicle Verification`,
+        description: guide.seoDescription || guide.shortDescription,
+        isPartOf: { "@id": `${baseUrl}/#website` },
+        dateModified: guide.lastVerifiedAt || guide.updatedAt,
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${pageUrl}/#breadcrumb`,
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: baseUrl,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Vehicle Verification",
+            item: `${baseUrl}/vehicle-verification`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: guide.name,
+            item: pageUrl,
+          },
+        ],
+      },
+    ];
+
+    if (Array.isArray(guide.faqs) && guide.faqs.length > 0) {
+      graph.push({
+        "@type": "FAQPage",
+        "@id": `${pageUrl}/#faq`,
+        mainEntity: guide.faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq.answer,
+          },
+        })),
+      });
+    }
+
+    addStructuredData({
+      "@context": "https://schema.org",
+      "@graph": graph,
+    });
+  }, [guide]);
+
+  return null;
+};
+
 export const DrivingLicenceLandingSchema = () => {
   useEffect(() => {
     const baseUrl = SITE_URL;
@@ -1932,6 +1997,7 @@ export default {
   ListingsPageSchema,
   CarEstimatorPageSchema,
   VehicleVerificationPageSchema,
+  VehicleVerificationProvinceSchema,
   AuctionsPageSchema,
   LiveAuctionPageSchema,
   AboutPageSchema,

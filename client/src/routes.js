@@ -10,6 +10,7 @@ export const ROUTES = {
   carDetails: (slug) => `/cars/${slug}`,
   carEstimator: "/car-estimator",
   vehicleVerification: "/vehicle-verification",
+  vehicleVerificationProvince: (slug) => `/vehicle-verification/${slug}`,
   drivingLicence: "/driving-licence",
   drivingLicenceProvince: (slug) => `/driving-licence/${slug}`,
   blog: "/blog",

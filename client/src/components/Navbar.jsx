@@ -23,6 +23,9 @@ const Navbar = () => {
   const [openAuctionsDropdown, setOpenAuctionsDropdown] = useState(false);
   const [openMobileAuctionsDropdown, setOpenMobileAuctionsDropdown] =
     useState(false);
+  const [openMobileCompanyDropdown, setOpenMobileCompanyDropdown] =
+    useState(false);
+  const [openMobileMoreDropdown, setOpenMobileMoreDropdown] = useState(false);
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
   const backdropRef = useRef(null);
   const drawerRef = useRef(null);
@@ -168,13 +171,26 @@ const Navbar = () => {
         "Vehicle Verification",
       ].includes(link.name),
   );
-  const mobileMenuLinks = [...menuLinks, { path: "/help/faqs", name: "FAQs" }];
-  const mobilePrimaryLinks = mobileMenuLinks.filter(
-    (link) => link.path !== "/auctions",
+  // Mobile mirrors desktop: primary links + Company / More / Auctions dropdowns
+  const mobilePrimaryLinks = menuLinks.filter(
+    (link) =>
+      ![
+        "About Us",
+        "Contact Us",
+        "Live Auctions",
+        "Blog",
+        "Vehicle Verification",
+      ].includes(link.name),
   );
   const isCompanyActive = companyLinks.some((link) => isPathMatch(link.path));
   const isMoreActive = moreLinks.some((link) => isPathMatch(link.path));
   const isAuctionsActive = location.pathname.startsWith("/auctions");
+
+  const resetMobileDropdowns = () => {
+    setOpenMobileAuctionsDropdown(false);
+    setOpenMobileCompanyDropdown(false);
+    setOpenMobileMoreDropdown(false);
+  };
 
   /** Dynamic import keeps GSAP off the initial bundle / critical path until menu use. */
   const ensureGsap = useCallback(() => {
@@ -190,6 +206,7 @@ const Navbar = () => {
   }, []);
 
   const openDrawer = () => {
+    resetMobileDropdowns();
     setOpen(true);
     ensureGsap().then((gsap) => {
       requestAnimationFrame(() => {
@@ -201,20 +218,34 @@ const Navbar = () => {
         gsap.fromTo(
           drawerRef.current,
           { xPercent: 100 },
-          { xPercent: 0, duration: 0.55, ease: "power4.out" },
-        );
-        gsap.fromTo(
-          linkRefs.current,
-          { y: 16, opacity: 0 },
           {
-            y: 0,
-            opacity: 1,
-            duration: 0.35,
-            ease: "power3.out",
-            stagger: 0.06,
-            delay: 0.16,
+            xPercent: 0,
+            duration: 0.55,
+            ease: "power4.out",
+            // Clear transform so overflow-y scroll works reliably on mobile
+            onComplete: () => {
+              gsap.set(drawerRef.current, { clearProps: "transform" });
+            },
           },
         );
+        const animatedLinks = linkRefs.current.filter(Boolean);
+        if (animatedLinks.length) {
+          gsap.fromTo(
+            animatedLinks,
+            { y: 16, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.35,
+              ease: "power3.out",
+              stagger: 0.06,
+              delay: 0.16,
+              onComplete: () => {
+                gsap.set(animatedLinks, { clearProps: "opacity,transform" });
+              },
+            },
+          );
+        }
       });
     });
   };
@@ -222,16 +253,20 @@ const Navbar = () => {
   const closeDrawer = () => {
     const gsapLib = gsapModRef.current;
     if (!gsapLib) {
+      resetMobileDropdowns();
       setOpen(false);
       return;
     }
-    gsapLib.to(linkRefs.current, {
-      y: 12,
-      opacity: 0,
-      duration: 0.25,
-      ease: "power2.in",
-      stagger: { each: 0.04, from: "end" },
-    });
+    const animatedLinks = linkRefs.current.filter(Boolean);
+    if (animatedLinks.length) {
+      gsapLib.to(animatedLinks, {
+        y: 12,
+        opacity: 0,
+        duration: 0.25,
+        ease: "power2.in",
+        stagger: { each: 0.04, from: "end" },
+      });
+    }
     gsapLib.to(backdropRef.current, {
       opacity: 0,
       duration: 0.32,
@@ -242,8 +277,8 @@ const Navbar = () => {
       duration: 0.45,
       ease: "power4.inOut",
       onComplete: () => {
+        resetMobileDropdowns();
         setOpen(false);
-        setOpenMobileAuctionsDropdown(false);
       },
     });
   };
@@ -647,150 +682,248 @@ const Navbar = () => {
           />
           <div
             ref={drawerRef}
-            className="absolute inset-0 text-black px-4 sm:px-6 py-4 sm:py-6 bg-white shadow-xl overflow-y-auto"
+            className="absolute inset-0 flex flex-col text-black bg-white shadow-xl"
           >
-            {/* Close Button */}
-            <div className="flex justify-end text-2xl sm:text-3xl mb-4 sm:mb-6">
-              <button
-                onClick={closeDrawer}
-                aria-label="Close navigation menu"
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <FaXmark />
-              </button>
-            </div>
-
-            {/* Search Bar */}
-            <div className="mb-4 sm:mb-6">
+            <div className="flex-shrink-0 px-4 sm:px-6 pt-4 sm:pt-6 pb-3">
+              <div className="flex justify-end text-2xl sm:text-3xl mb-3 sm:mb-4">
+                <button
+                  onClick={closeDrawer}
+                  aria-label="Close navigation menu"
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <FaXmark />
+                </button>
+              </div>
               <SearchBar />
             </div>
 
-            {/* Drawer Menu Links */}
-            <div className="flex flex-col gap-3 sm:gap-4 text-base sm:text-lg">
-              {mobilePrimaryLinks.map((link, index) => (
-                <Link
-                  key={index}
-                  to={link.path}
-                  ref={(el) => (linkRefs.current[index] = el)}
-                  onClick={closeDrawer}
-                  className={` pb-2 ${
-                    isActive(link.path) ? "font-bold text-black" : ""
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              ))}
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 sm:px-6 pb-8 [-webkit-overflow-scrolling:touch]">
+              <div className="flex flex-col gap-1 text-base sm:text-lg">
+                {mobilePrimaryLinks.map((link, index) => (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    ref={(el) => {
+                      linkRefs.current[index] = el;
+                    }}
+                    onClick={closeDrawer}
+                    className={`rounded-md px-2 py-2.5 ${
+                      isActive(link.path)
+                        ? "font-bold text-black bg-gray-50"
+                        : "text-black"
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                ))}
 
-              {/* Live Auctions Dropdown (mobile) */}
-              <div className="pb-2">
+                {/* Company Dropdown (mobile) */}
+                <div className="py-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpenMobileCompanyDropdown((prev) => !prev);
+                      setOpenMobileMoreDropdown(false);
+                      setOpenMobileAuctionsDropdown(false);
+                    }}
+                    aria-expanded={openMobileCompanyDropdown}
+                    aria-haspopup="true"
+                    className={`w-full inline-flex items-center justify-between rounded-md px-2 py-2.5 transition-colors duration-200 ${
+                      isCompanyActive
+                        ? "text-primary-500 font-semibold bg-primary-50"
+                        : "text-black"
+                    }`}
+                  >
+                    <span>Company</span>
+                    <FaChevronDown
+                      size={14}
+                      className={`transition-transform duration-200 ${
+                        openMobileCompanyDropdown ? "rotate-180" : ""
+                      }`}
+                      aria-hidden="true"
+                    />
+                  </button>
+                  {openMobileCompanyDropdown && (
+                    <div className="mt-1 rounded-xl border border-gray-200 bg-white shadow-sm py-2">
+                      {companyLinks.map((link) => (
+                        <Link
+                          key={link.path}
+                          to={link.path}
+                          onClick={closeDrawer}
+                          role="menuitem"
+                          className={`block px-4 py-2.5 text-base transition-colors ${
+                            isPathMatch(link.path)
+                              ? "text-primary-500 font-semibold bg-primary-50"
+                              : "hover:bg-gray-50"
+                          }`}
+                        >
+                          {link.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* More Dropdown (mobile) — Vehicle Verification + Driving License */}
+                <div className="py-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpenMobileMoreDropdown((prev) => !prev);
+                      setOpenMobileCompanyDropdown(false);
+                      setOpenMobileAuctionsDropdown(false);
+                    }}
+                    aria-expanded={openMobileMoreDropdown}
+                    aria-haspopup="true"
+                    className={`w-full inline-flex items-center justify-between rounded-md px-2 py-2.5 transition-colors duration-200 ${
+                      isMoreActive
+                        ? "text-primary-500 font-semibold bg-primary-50"
+                        : "text-black"
+                    }`}
+                  >
+                    <span>More</span>
+                    <FaChevronDown
+                      size={14}
+                      className={`transition-transform duration-200 ${
+                        openMobileMoreDropdown ? "rotate-180" : ""
+                      }`}
+                      aria-hidden="true"
+                    />
+                  </button>
+                  {openMobileMoreDropdown && (
+                    <div className="mt-1 rounded-xl border border-gray-200 bg-white shadow-sm py-2">
+                      {moreLinks.map((link) => (
+                        <Link
+                          key={link.path}
+                          to={link.path}
+                          onClick={closeDrawer}
+                          role="menuitem"
+                          className={`block px-4 py-2.5 text-base transition-colors ${
+                            isPathMatch(link.path)
+                              ? "text-primary-500 font-semibold bg-primary-50"
+                              : "hover:bg-gray-50"
+                          }`}
+                        >
+                          {link.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Live Auctions Dropdown (mobile) */}
+                <div className="py-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpenMobileAuctionsDropdown((prev) => !prev);
+                      setOpenMobileCompanyDropdown(false);
+                      setOpenMobileMoreDropdown(false);
+                    }}
+                    aria-expanded={openMobileAuctionsDropdown}
+                    aria-haspopup="true"
+                    className={`w-full inline-flex items-center justify-between rounded-md px-2 py-2.5 transition-colors duration-200 ${
+                      isAuctionsActive
+                        ? "text-primary-500 font-semibold bg-primary-50"
+                        : "text-black"
+                    }`}
+                  >
+                    <span>Live Auctions</span>
+                    <FaChevronDown
+                      size={14}
+                      className={`transition-transform duration-200 ${
+                        openMobileAuctionsDropdown ? "rotate-180" : ""
+                      }`}
+                      aria-hidden="true"
+                    />
+                  </button>
+
+                  {openMobileAuctionsDropdown && (
+                    <div className="mt-1 rounded-xl border border-gray-200 bg-white shadow-sm py-2">
+                      {publicAuctionLinks.map((link) => (
+                        <Link
+                          key={link.path}
+                          to={link.path}
+                          onClick={closeDrawer}
+                          role="menuitem"
+                          className={`block px-4 py-2.5 text-base transition-colors ${
+                            isPathMatch(link.path)
+                              ? "text-primary-500 font-semibold bg-primary-50"
+                              : "hover:bg-gray-50"
+                          }`}
+                        >
+                          {link.name}
+                        </Link>
+                      ))}
+
+                      {token && (
+                        <>
+                          <div className="my-2 border-t border-gray-200" />
+                          {userAuctionLinks.map((link) => (
+                            <Link
+                              key={link.path}
+                              to={link.path}
+                              onClick={closeDrawer}
+                              role="menuitem"
+                              className={`block px-4 py-2.5 text-base transition-colors ${
+                                isPathMatch(link.path)
+                                  ? "text-primary-500 font-semibold bg-primary-50"
+                                  : "hover:bg-gray-50"
+                              }`}
+                            >
+                              {link.name}
+                            </Link>
+                          ))}
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+
                 <button
                   type="button"
-                  onClick={() => setOpenMobileAuctionsDropdown((prev) => !prev)}
-                  aria-expanded={openMobileAuctionsDropdown}
-                  aria-haspopup="true"
-                  className={`w-full inline-flex items-center justify-between rounded-md px-2 py-2 transition-colors duration-200 ${
-                    isAuctionsActive
-                      ? "text-primary-500 font-semibold bg-primary-50"
-                      : "text-black"
-                  }`}
+                  onClick={() => {
+                    closeDrawer();
+                    navigate("/create-post");
+                  }}
+                  className="mt-4 flex items-center gap-2 text-black text-base sm:text-lg px-2 py-2.5"
                 >
-                  <span>Live Auctions</span>
-                  <FaChevronDown
-                    size={14}
-                    className={`transition-transform duration-200 ${
-                      openMobileAuctionsDropdown ? "rotate-180" : ""
-                    }`}
-                    aria-hidden="true"
-                  />
+                  <FaCirclePlus />
+                  Create Post
                 </button>
 
-                {openMobileAuctionsDropdown && (
-                  <div className="mt-2 rounded-xl border border-gray-200 bg-white shadow-sm py-2">
-                    {publicAuctionLinks.map((link) => (
-                      <Link
-                        key={link.path}
-                        to={link.path}
-                        onClick={closeDrawer}
-                        role="menuitem"
-                        className={`block px-4 py-2.5 text-base transition-colors ${
-                          isPathMatch(link.path)
-                            ? "text-primary-500 font-semibold bg-primary-50"
-                            : "hover:bg-gray-50"
-                        }`}
-                      >
-                        {link.name}
-                      </Link>
-                    ))}
-
-                    {token && (
-                      <>
-                        <div className="my-2 border-t border-gray-200" />
-                        {userAuctionLinks.map((link) => (
-                          <Link
-                            key={link.path}
-                            to={link.path}
-                            onClick={closeDrawer}
-                            role="menuitem"
-                            className={`block px-4 py-2.5 text-base transition-colors ${
-                              isPathMatch(link.path)
-                                ? "text-primary-500 font-semibold bg-primary-50"
-                                : "hover:bg-gray-50"
-                            }`}
-                          >
-                            {link.name}
-                          </Link>
-                        ))}
-                      </>
-                    )}
-                  </div>
+                {!isLoading && user?.role === "admin" && (
+                  <Link
+                    to="/admin/dashboard"
+                    onClick={closeDrawer}
+                    className="mt-2 flex items-center gap-2 text-primary-500 border-t border-primary-300 pt-4 text-base sm:text-lg px-2"
+                  >
+                    <span>Admin Panel</span>
+                  </Link>
                 )}
+                {!isLoading &&
+                  user?.role === "dealer" &&
+                  user?.dealerInfo?.verified && (
+                    <Link
+                      to="/dealer/dashboard"
+                      onClick={closeDrawer}
+                      className="mt-2 flex items-center gap-2 text-primary-500 border-t border-primary-300 pt-4 text-base sm:text-lg px-2"
+                    >
+                      <span>Dealer Dashboard</span>
+                    </Link>
+                  )}
+                {!isLoading &&
+                  user?.role === "dealer" &&
+                  !user?.dealerInfo?.verified && (
+                    <Link
+                      to="/seller/dashboard"
+                      onClick={closeDrawer}
+                      className="mt-2 flex items-center gap-2 text-primary-500 border-t border-primary-300 pt-4 text-base sm:text-lg px-2"
+                    >
+                      <span>My Dashboard</span>
+                    </Link>
+                  )}
               </div>
-
-              {/* Create Post (Mobile) */}
-              <button
-                onClick={() => {
-                  closeDrawer();
-                  navigate("/create-post");
-                }}
-                className="mt-4 flex items-center gap-2 text-black text-base sm:text-lg"
-              >
-                <FaCirclePlus />
-                Create Post
-              </button>
-
-              {/* Dashboard Links (Mobile) */}
-              {!isLoading && user?.role === "admin" && (
-                <Link
-                  to="/admin/dashboard"
-                  onClick={closeDrawer}
-                  className="mt-4 flex items-center gap-2 text-primary-500 border-t border-primary-300 pt-4 text-base sm:text-lg"
-                >
-                  <span>Admin Panel</span>
-                </Link>
-              )}
-              {!isLoading &&
-                user?.role === "dealer" &&
-                user?.dealerInfo?.verified && (
-                  <Link
-                    to="/dealer/dashboard"
-                    onClick={closeDrawer}
-                    className="mt-4 flex items-center gap-2 text-primary-500 border-t border-primary-300 pt-4 text-base sm:text-lg"
-                  >
-                    <span>Dealer Dashboard</span>
-                  </Link>
-                )}
-              {!isLoading &&
-                user?.role === "dealer" &&
-                !user?.dealerInfo?.verified && (
-                  <Link
-                    to="/seller/dashboard"
-                    onClick={closeDrawer}
-                    className="mt-4 flex items-center gap-2 text-primary-500 border-t border-primary-300 pt-4 text-base sm:text-lg"
-                  >
-                    <span>My Dashboard</span>
-                  </Link>
-                )}
-              {/* Individual users don't have a dashboard */}
             </div>
           </div>
         </div>

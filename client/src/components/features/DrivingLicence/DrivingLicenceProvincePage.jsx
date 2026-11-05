@@ -2,136 +2,71 @@ import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   ArrowRight,
-  ClipboardCheck,
+  Building2,
   ExternalLink,
-  FileText,
-  GraduationCap,
-  IdCard,
   Info,
-  ListChecks,
-  RefreshCw,
-  Search,
-  ShieldAlert,
-  Timer,
+  Lock,
+  MapPinned,
+  Shield,
+  Sparkles,
 } from "lucide-react";
 import SEO from "../../common/SEO";
+import NewsLatter from "../../utils/NewsLatter";
 import { AdSenseSlot } from "../../ads";
 import { DrivingLicenceProvinceSchema } from "../../common/StructuredData";
 import listingHero from "../../../assets/images/driving_licence.jpg";
+import enterDetailsIcon from "../../../assets/images/verification/enter_details.png";
+import recordIcon from "../../../assets/images/verification/record.png";
+import reportIcon from "../../../assets/images/verification/report.png";
+import confidenceIcon from "../../../assets/images/verification/confidence.png";
 import {
   getGuideBySlug,
   PROVINCE_META,
-  PROVINCE_ORDER,
   PORTAL_LABELS,
   formatVerifiedDate,
+  DRIVING_LICENCE_GUIDES,
 } from "./drivingLicenceContent";
 
-const SECTION_CONFIG = [
-  {
-    key: "introduction",
-    title: "Introduction",
-    isText: true,
-    icon: Info,
-    tone: "bg-sky-50 text-sky-700",
-  },
-  {
-    key: "learnerProcedure",
-    title: "Learner licence application procedure",
-    icon: GraduationCap,
-    tone: "bg-emerald-50 text-emerald-700",
-  },
-  {
-    key: "permanentProcedure",
-    title: "Permanent driving licence procedure",
-    icon: IdCard,
-    tone: "bg-violet-50 text-violet-700",
-  },
-  {
-    key: "renewalProcedure",
-    title: "Licence renewal process",
-    icon: RefreshCw,
-    tone: "bg-amber-50 text-amber-700",
-  },
-  {
-    key: "verificationGuide",
-    title: "Driving licence verification",
-    icon: Search,
-    tone: "bg-cyan-50 text-cyan-700",
-  },
-  {
-    key: "requiredDocuments",
-    title: "Required documents",
-    icon: FileText,
-    tone: "bg-rose-50 text-rose-700",
-  },
-  {
-    key: "ageRequirements",
-    title: "Minimum age requirements by vehicle category",
-    icon: ListChecks,
-    tone: "bg-indigo-50 text-indigo-700",
-  },
-  {
-    key: "feesAndPayment",
-    title: "Official fees and payment methods",
-    icon: ClipboardCheck,
-    tone: "bg-lime-50 text-lime-700",
-  },
-  {
-    key: "drivingTestGuidelines",
-    title: "Driving test guidelines",
-    icon: Timer,
-    tone: "bg-orange-50 text-orange-700",
-  },
-  {
-    key: "trackingInstructions",
-    title: "Application tracking instructions",
-    icon: Search,
-    tone: "bg-teal-50 text-teal-700",
-  },
+const stepVisuals = [
+  { icon: enterDetailsIcon, circle: "bg-green-50" },
+  { icon: recordIcon, circle: "bg-sky-50" },
+  { icon: reportIcon, circle: "bg-violet-50" },
+  { icon: confidenceIcon, circle: "bg-green-50" },
 ];
 
-const ACTION_META = {
-  learner: {
-    icon: GraduationCap,
-    className: "border-emerald-200 hover:border-emerald-500 hover:bg-emerald-50",
-  },
-  permanent: {
-    icon: IdCard,
-    className: "border-violet-200 hover:border-violet-500 hover:bg-violet-50",
-  },
-  verify: {
-    icon: Search,
-    className: "border-sky-200 hover:border-sky-500 hover:bg-sky-50",
-  },
-  renew: {
-    icon: RefreshCw,
-    className: "border-amber-200 hover:border-amber-500 hover:bg-amber-50",
-  },
-  track: {
-    icon: Timer,
-    className: "border-cyan-200 hover:border-cyan-500 hover:bg-cyan-50",
-  },
-  portal: {
-    icon: ExternalLink,
-    className: "border-slate-300 hover:border-primary-500 hover:bg-primary-50",
-  },
-};
-
-const ACTION_ORDER = [
-  "learner",
-  "permanent",
-  "verify",
-  "renew",
-  "track",
-  "portal",
+const CONTENT_SECTIONS = [
+  { key: "learnerProcedure", title: "Learner licence procedure" },
+  { key: "permanentProcedure", title: "Permanent licence procedure" },
+  { key: "renewalProcedure", title: "Renewal process" },
+  { key: "verificationGuide", title: "Licence verification" },
+  { key: "requiredDocuments", title: "Required documents" },
+  { key: "ageRequirements", title: "Age requirements" },
+  { key: "feesAndPayment", title: "Fees and payment" },
+  { key: "drivingTestGuidelines", title: "Driving test guidelines" },
+  { key: "trackingInstructions", title: "Track your application" },
 ];
 
-const EXTRA_TIPS = [
-  "Confirm you are using the portal for the same province where the licence will be issued.",
-  "Take screenshots or download receipts after every successful payment.",
-  "Arrive early for tests or appointments with original CNIC and printed confirmation.",
-  "If a page looks unofficial or asks for payment outside the government bill flow, leave immediately.",
-];
+const AccordionItem = ({ title, open, onToggle, children }) => (
+  <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
+    <button
+      type="button"
+      onClick={onToggle}
+      className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left"
+    >
+      <h3 className="text-sm sm:text-base font-semibold text-slate-900">
+        {title}
+      </h3>
+      <span className="text-slate-400 text-xl leading-none shrink-0">
+        {open ? "−" : "+"}
+      </span>
+    </button>
+    {open ? (
+      <div className="px-5 pb-5 text-slate-600 text-sm leading-relaxed">
+        {children}
+      </div>
+    ) : null}
+  </div>
+);
 
 const provinceDisplayName = (slug, fallback) => {
   if (fallback) return fallback;
@@ -143,22 +78,23 @@ const DrivingLicenceProvincePage = () => {
   const { provinceSlug } = useParams();
   const slug = String(provinceSlug || "").toLowerCase();
   const guide = getGuideBySlug(slug);
-  const [openFaq, setOpenFaq] = useState(0);
-
-  const actionLinks = useMemo(
-    () =>
-      [...(guide?.actionLinks || [])].sort(
-        (a, b) => ACTION_ORDER.indexOf(a.key) - ACTION_ORDER.indexOf(b.key),
-      ),
-    [guide],
-  );
+  const [openFaq, setOpenFaq] = useState(null);
+  const [openSection, setOpenSection] = useState(0);
 
   const visibleSections = useMemo(() => {
     if (!guide) return [];
-    return SECTION_CONFIG.filter((section) => {
+    return CONTENT_SECTIONS.filter((section) => {
       const value = guide[section.key];
       return value && !(Array.isArray(value) && value.length === 0);
     });
+  }, [guide]);
+
+  const primaryActions = useMemo(() => {
+    if (!guide?.actionLinks?.length) return [];
+    const preferred = ["learner", "permanent", "verify", "renew", "track", "portal"];
+    return [...guide.actionLinks].sort(
+      (a, b) => preferred.indexOf(a.key) - preferred.indexOf(b.key),
+    );
   }, [guide]);
 
   if (!guide) {
@@ -176,7 +112,7 @@ const DrivingLicenceProvincePage = () => {
         </p>
         <Link
           to="/driving-licence"
-          className="inline-flex items-center gap-2 text-primary-500 font-semibold"
+          className="inline-flex items-center justify-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-lg font-semibold"
         >
           Back to Driving Licence <ArrowRight className="w-4 h-4" />
         </Link>
@@ -187,9 +123,10 @@ const DrivingLicenceProvincePage = () => {
   const meta = PROVINCE_META[slug] || {};
   const name = provinceDisplayName(slug, guide.name);
   const canonical = `https://sello.pk/driving-licence/${slug}`;
+  const otherGuides = DRIVING_LICENCE_GUIDES.filter((g) => g.slug !== slug);
 
   return (
-    <div className="w-full min-w-0 overflow-x-hidden bg-white text-slate-800 pb-24 lg:pb-0">
+    <div className="w-full min-w-0 max-w-full overflow-x-hidden bg-white pb-20 lg:pb-0">
       <SEO
         title={guide.seoTitle}
         description={guide.seoDescription}
@@ -198,7 +135,7 @@ const DrivingLicenceProvincePage = () => {
       />
       <DrivingLicenceProvinceSchema guide={guide} />
 
-      <section className="relative w-full overflow-hidden min-h-[42vh] bg-gray-200 text-white">
+      <section className="relative w-full overflow-hidden min-h-[52vh] bg-gray-200">
         <img
           src={listingHero}
           alt=""
@@ -208,362 +145,332 @@ const DrivingLicenceProvincePage = () => {
           width="1600"
           height="400"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/30 via-slate-900/45 to-slate-900/55" />
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-          <nav className="text-sm text-white/70 mb-5" aria-label="Breadcrumb">
-            <ol className="flex flex-wrap items-center gap-2">
-              <li>
-                <Link to="/" className="hover:text-white">
-                  Home
-                </Link>
-              </li>
-              <li aria-hidden="true">/</li>
-              <li>
-                <Link to="/driving-licence" className="hover:text-white">
-                  Driving Licence
-                </Link>
-              </li>
-              <li aria-hidden="true">/</li>
-              <li className="text-white">{name}</li>
-            </ol>
-          </nav>
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/40 via-slate-900/10 to-transparent sm:from-slate-950/25 sm:via-transparent" />
+        <div className="relative z-10 flex min-h-[52vh] flex-col justify-start w-full min-w-0 max-w-8xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 pt-5 sm:pt-6 pb-10 sm:pb-14">
+          <div className="text-left w-full min-w-0 max-w-xl lg:max-w-2xl">
+            <nav
+              className="mb-4 flex flex-wrap items-center gap-2 text-xs sm:text-sm text-white/75"
+              aria-label="Breadcrumb"
+            >
+              <Link to="/" className="hover:text-white">
+                Home
+              </Link>
+              <span aria-hidden="true">/</span>
+              <Link to="/driving-licence" className="hover:text-white">
+                Driving Licence
+              </Link>
+              <span aria-hidden="true">/</span>
+              <span className="text-white">{name}</span>
+            </nav>
 
-          <div className="flex flex-col xl:flex-row xl:items-end gap-8 justify-between">
-            <div className="max-w-3xl">
-              <div className="flex items-start gap-4 mb-4">
-                {meta.icon ? (
-                  <div
-                    className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/95 flex items-center justify-center shrink-0 shadow-sm`}
-                  >
-                    <img
-                      src={meta.icon}
-                      alt=""
-                      className="max-w-[70%] max-h-[70%] object-contain"
-                    />
-                  </div>
-                ) : null}
-                <div>
-                  <p className="text-sm text-emerald-300 font-medium mb-1">
-                    {guide.authorityName}
-                  </p>
-                  <h1 className="text-3xl sm:text-4xl font-bold leading-tight">
-                    {name} Driving Licence Guide
-                  </h1>
-                </div>
+            {meta.icon ? (
+              <div className="mb-4 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-white shadow-sm">
+                <img
+                  src={meta.icon}
+                  alt=""
+                  className="max-h-[70%] max-w-[70%] object-contain"
+                />
               </div>
-              <p className="text-white/90 leading-relaxed text-pretty mb-4">
-                {guide.shortDescription}
-              </p>
-              <div className="flex flex-wrap gap-2 text-xs text-white/80">
-                <span className="rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-sm">
-                  Last verified: {formatVerifiedDate(guide.lastVerifiedAt)}
-                </span>
-                <span className="rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-sm">
-                  {PORTAL_LABELS[slug]}
-                </span>
-                <span className="rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-sm">
-                  No CNIC collected on Sello
-                </span>
-              </div>
+            ) : null}
+
+            <div className="inline-flex max-w-full items-center gap-2 bg-white text-primary-500 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium mb-3 sm:mb-5 shadow-sm">
+              <Sparkles className="w-4 h-4 shrink-0" />
+              <span className="truncate">
+                {PORTAL_LABELS[slug] || guide.authorityName}
+              </span>
             </div>
 
-            <div className="flex flex-col sm:flex-row xl:flex-col gap-3 shrink-0">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 sm:mb-4 leading-tight text-balance">
+              {name} Driving Licence Guide
+            </h1>
+            <p className="text-sm sm:text-base lg:text-lg text-gray-100 mb-5 sm:mb-8 text-pretty">
+              {guide.shortDescription} Continue to the official portal when you
+              are ready — Sello never asks for your CNIC or licence number here.
+            </p>
+
+            <div className="flex flex-col min-[420px]:flex-row flex-wrap justify-start items-stretch min-[420px]:items-center gap-2.5 sm:gap-3 mb-5 sm:mb-8">
               <a
                 href={guide.officialPortalUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-500 text-white font-semibold px-5 py-3 hover:opacity-90 shadow-lg shadow-primary-500/25"
+                className="inline-flex items-center justify-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 hover:-translate-y-0.5 transition-all shadow-lg shadow-primary-500/25"
               >
-                Visit Official Portal <ExternalLink className="w-4 h-4" />
+                <MapPinned className="w-4 h-4 shrink-0" />
+                Visit official portal
+                <ExternalLink className="w-4 h-4 shrink-0" />
               </a>
               <a
                 href="#official-actions"
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-white text-slate-900 font-semibold px-5 py-3 hover:bg-gray-100"
+                className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 hover:-translate-y-0.5 transition-all"
               >
-                View action buttons
+                View actions
               </a>
             </div>
+
+            <ul className="flex flex-wrap justify-start gap-1.5 sm:gap-3 text-[10px] sm:text-sm text-gray-100">
+              <li className="inline-flex items-center gap-1 sm:gap-2 whitespace-nowrap rounded-full bg-white/10 px-2 sm:px-3.5 py-1 sm:py-1.5 backdrop-blur-sm">
+                <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-primary-500 shrink-0" />
+                Secure
+              </li>
+              <li className="inline-flex items-center gap-1 sm:gap-2 whitespace-nowrap rounded-full bg-white/10 px-2 sm:px-3.5 py-1 sm:py-1.5 backdrop-blur-sm">
+                <Building2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-400 shrink-0" />
+                Official portals
+              </li>
+              <li className="inline-flex items-center gap-1 sm:gap-2 whitespace-nowrap rounded-full bg-white/10 px-2 sm:px-3.5 py-1 sm:py-1.5 backdrop-blur-sm">
+                <Lock className="w-3 h-3 sm:w-4 sm:h-4 text-blue-300 shrink-0" />
+                No CNIC collected
+              </li>
+            </ul>
           </div>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <aside className="lg:col-span-4 xl:col-span-3 space-y-4">
-          <div
-            id="official-actions"
-            className="scroll-mt-28 lg:sticky lg:top-24 space-y-4"
-          >
-            <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h2 className="text-base font-bold text-slate-900 mb-1 flex items-center gap-2">
-                <FileText className="w-4 h-4 text-primary-500" />
-                Official actions
-              </h2>
-              <p className="text-xs text-slate-600 mb-4">
-                These buttons leave Sello and open government services. Sello
-                does not process licence applications or CNIC data.
-              </p>
-              <div className="space-y-2.5">
-                {actionLinks.map((link) => {
-                  const action = ACTION_META[link.key] || ACTION_META.portal;
-                  const Icon = action.icon;
-                  return (
-                    <a
-                      key={`${link.key}-${link.url}`}
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`flex items-start gap-3 rounded-2xl border bg-white px-3.5 py-3 text-sm font-semibold text-slate-800 transition-colors ${action.className}`}
-                    >
-                      <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-50">
-                        <Icon className="w-4 h-4" />
-                      </span>
-                      <span className="flex-1">
-                        {link.label}
-                        {link.note ? (
-                          <span className="block text-[11px] font-normal text-slate-500 mt-0.5">
-                            {link.note}
-                          </span>
-                        ) : null}
-                      </span>
-                      <ExternalLink className="w-3.5 h-3.5 shrink-0 mt-1 text-slate-400" />
-                    </a>
-                  );
-                })}
-              </div>
-            </div>
+      <section className="py-14 sm:py-16 bg-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-sm text-primary-500 font-semibold mb-2">
+            {guide.authorityName}
+          </p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
+            About {name} driving licences
+          </h2>
+          <p className="text-slate-600 leading-relaxed text-pretty">
+            {guide.introduction}
+          </p>
+          <p className="mt-4 text-xs text-slate-400">
+            Last verified: {formatVerifiedDate(guide.lastVerifiedAt)}
+          </p>
+        </div>
+      </section>
 
-            <div className="rounded-3xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
-              <p className="font-semibold inline-flex items-center gap-2 mb-1">
-                <ShieldAlert className="w-4 h-4" />
-                Important
-              </p>
-              <p className="leading-relaxed">
-                Do not use another province&apos;s portal for {name}. Fees, ages
-                and documents must be confirmed on the official site linked
-                above.
-              </p>
-            </div>
-
-            <div className="hidden lg:block rounded-3xl border border-slate-200 bg-white p-4 text-sm">
-              <p className="font-semibold mb-2">On this page</p>
-              <ul className="space-y-1.5">
-                {visibleSections.map((section) => (
-                  <li key={section.key}>
-                    <a
-                      href={`#${section.key}`}
-                      className="text-slate-600 hover:text-primary-600"
-                    >
-                      {section.title}
-                    </a>
-                  </li>
-                ))}
-                {guide.faqs?.length ? (
-                  <li>
-                    <a
-                      href="#faqs"
-                      className="text-slate-600 hover:text-primary-600"
-                    >
-                      Frequently asked questions
-                    </a>
-                  </li>
-                ) : null}
-              </ul>
-            </div>
-
-            <div className="rounded-3xl border border-slate-200 bg-white p-4 text-sm">
-              <p className="font-semibold mb-2">Other provinces</p>
-              <ul className="space-y-1.5">
-                {PROVINCE_ORDER.filter((s) => s !== slug).map((s) => (
-                  <li key={s}>
-                    <Link
-                      to={`/driving-licence/${s}`}
-                      className="text-primary-600 hover:underline"
-                    >
-                      {provinceDisplayName(s)}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </aside>
-
-        <main className="lg:col-span-8 xl:col-span-9 space-y-6">
-          <div className="rounded-3xl border border-emerald-200 bg-emerald-50/70 p-5 sm:p-6">
-            <h2 className="text-lg font-bold text-slate-900 mb-2">
-              How to use this {name} guide
+      <section
+        id="official-actions"
+        className="scroll-mt-24 py-14 sm:py-16 bg-white"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold text-slate-900 mb-3">
+              Official Actions
             </h2>
-            <p className="text-sm text-slate-700 leading-relaxed mb-3">
-              Read the sections below to understand learner, permanent, renewal,
-              documents and tracking for {name}. When you are ready to act, use
-              the official action buttons — they open{" "}
-              {PORTAL_LABELS[slug] || "the provincial government portal"} in a
-              new tab. Sello keeps you informed; the government system completes
-              the service.
+            <p className="text-base text-slate-600 max-w-2xl mx-auto">
+              These buttons leave Sello and open {name} government services.
+              Applications and payments happen only on official portals.
             </p>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {EXTRA_TIPS.map((tip) => (
-                <li
-                  key={tip}
-                  className="flex gap-2 text-sm text-slate-700 leading-relaxed"
-                >
-                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
-                  <span>{tip}</span>
-                </li>
-              ))}
-            </ul>
           </div>
-
-          {visibleSections.map((section) => {
-            const value = guide[section.key];
-            const Icon = section.icon;
-            return (
-              <section
-                key={section.key}
-                id={section.key}
-                className="scroll-mt-28 rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm"
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
+            {primaryActions.map((link, i) => (
+              <a
+                key={`${link.key}-${link.url}`}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-5 hover:border-primary-500 hover:shadow-md transition-all"
               >
-                <div className="flex items-start gap-3 mb-4">
-                  <span
-                    className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${section.tone}`}
-                  >
-                    <Icon className="w-5 h-5" />
-                  </span>
-                  <h2 className="text-xl font-bold text-slate-900 pt-1.5">
-                    {section.title}
-                  </h2>
+                <div
+                  className={`w-14 h-14 rounded-full flex items-center justify-center mb-4 ${stepVisuals[i % stepVisuals.length].circle}`}
+                >
+                  <img
+                    src={stepVisuals[i % stepVisuals.length].icon}
+                    alt=""
+                    className="w-8 h-8 object-contain"
+                  />
                 </div>
-                {section.isText ? (
-                  <p className="text-slate-700 leading-relaxed whitespace-pre-line">
-                    {value}
+                <p className="text-base font-bold text-slate-900 mb-1">
+                  {link.label}
+                </p>
+                {link.note ? (
+                  <p className="text-sm text-slate-500 mb-3 flex-1">
+                    {link.note}
                   </p>
                 ) : (
-                  <ol className="space-y-3">
-                    {value.map((item, index) => (
-                      <li
-                        key={`${section.key}-${index}`}
-                        className="flex gap-3 text-slate-700 leading-relaxed"
-                      >
-                        <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-700">
-                          {index + 1}
-                        </span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ol>
+                  <p className="text-sm text-slate-500 mb-3 flex-1">
+                    Opens official government site
+                  </p>
                 )}
-              </section>
-            );
-          })}
+                <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-500">
+                  Continue <ExternalLink className="w-4 h-4" />
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
 
-          {guide.faqs?.length ? (
-            <section
-              id="faqs"
-              className="scroll-mt-28 rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm"
-            >
-              <h2 className="text-xl font-bold text-slate-900 mb-4">
-                Frequently asked questions
-              </h2>
-              <div className="space-y-3">
-                {guide.faqs.map((faq, index) => {
-                  const open = openFaq === index;
-                  return (
-                    <button
-                      key={`faq-${index}`}
-                      type="button"
-                      onClick={() => setOpenFaq(open ? null : index)}
-                      className={`w-full text-left rounded-2xl border px-4 py-3.5 transition-colors ${
-                        open
-                          ? "border-emerald-300 bg-emerald-50/50"
-                          : "border-slate-200 bg-slate-50 hover:border-slate-300"
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <span className="font-semibold text-slate-900">
-                          {faq.question}
-                        </span>
-                        <span className="text-slate-400 text-xl leading-none">
-                          {open ? "−" : "+"}
-                        </span>
-                      </div>
-                      {open ? (
-                        <p className="mt-3 text-sm text-slate-700 leading-relaxed">
-                          {faq.answer}
-                        </p>
-                      ) : null}
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
-          ) : null}
+      <div className="bg-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AdSenseSlot
+            slot="vehicleVerificationTop"
+            format="auto"
+            fullWidthResponsive
+            minHeight={100}
+          />
+        </div>
+      </div>
 
-          {guide.sourceUrls?.length ? (
-            <section className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
-              <h2 className="text-xl font-bold text-slate-900 mb-3 flex items-center gap-2">
-                <Info className="w-5 h-5 text-sky-600" />
-                Official source URLs
-              </h2>
-              <p className="text-sm text-slate-600 mb-3">
-                Cross-check process details on these government pages. Sello
-                summaries are informational only.
-              </p>
-              <ul className="space-y-2">
-                {guide.sourceUrls.map((url) => (
-                  <li key={url}>
-                    <a
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-sm text-primary-600 hover:underline break-all"
-                    >
-                      {url}
-                      <ExternalLink className="w-3.5 h-3.5 shrink-0" />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ) : null}
-
-          <section className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
-            <h2 className="text-lg font-bold text-slate-900 mb-2">
-              After your licence — useful on Sello
+      {visibleSections.length ? (
+        <section className="py-14 sm:py-16 bg-white">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl font-bold text-slate-900 mb-8">
+              Process Guide
             </h2>
-            <p className="text-sm text-slate-600 mb-4">
-              Once you can drive legally, explore verified listings, check
-              vehicle records, or estimate a car&apos;s market value.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <Link
-                to="/driving-licence"
-                className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium hover:border-primary-500 hover:bg-primary-50"
-              >
-                All province guides
-              </Link>
-              <Link
-                to="/vehicle-verification"
-                className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium hover:border-primary-500 hover:bg-primary-50"
-              >
-                Vehicle verification
-              </Link>
-              <Link
-                to="/listings"
-                className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium hover:border-primary-500 hover:bg-primary-50"
-              >
-                Cars for sale
-              </Link>
+            <div className="space-y-3">
+              {visibleSections.map((section, i) => {
+                const value = guide[section.key];
+                const open = openSection === i;
+                return (
+                  <AccordionItem
+                    key={section.key}
+                    title={section.title}
+                    open={open}
+                    onToggle={() => setOpenSection(open ? null : i)}
+                  >
+                    {Array.isArray(value) ? (
+                      <ol className="space-y-2.5">
+                        {value.map((item, index) => (
+                          <li
+                            key={`${section.key}-${index}`}
+                            className="flex gap-3"
+                          >
+                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary-50 text-xs font-bold text-primary-600">
+                              {index + 1}
+                            </span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    ) : (
+                      <p>{value}</p>
+                    )}
+                  </AccordionItem>
+                );
+              })}
             </div>
-          </section>
+          </div>
+        </section>
+      ) : null}
 
+      {guide.faqs?.length ? (
+        <section className="py-14 sm:py-16 bg-white">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl font-bold text-slate-900 mb-8">
+              Frequently Asked Questions
+            </h2>
+            <div className="space-y-3">
+              {guide.faqs.map((faq, i) => (
+                <AccordionItem
+                  key={faq.question}
+                  title={faq.question}
+                  open={openFaq === i}
+                  onToggle={() => setOpenFaq(openFaq === i ? null : i)}
+                >
+                  <p>{faq.answer}</p>
+                </AccordionItem>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      <section className="py-14 sm:py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold text-slate-900 mb-3">
+              Other Provinces
+            </h2>
+            <p className="text-base text-slate-600 max-w-2xl mx-auto">
+              Open another province guide, then continue to that region&apos;s
+              official portal.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {otherGuides.map((item) => {
+              const itemMeta = PROVINCE_META[item.slug] || {};
+              return (
+                <Link
+                  key={item.slug}
+                  to={`/driving-licence/${item.slug}`}
+                  className="group flex flex-col items-center text-center bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg transition-shadow hover:bg-green-200"
+                >
+                  <div className="w-20 h-20 mb-4 flex items-center justify-center">
+                    {itemMeta.icon ? (
+                      <img
+                        src={itemMeta.icon}
+                        alt=""
+                        className="max-w-full max-h-full object-contain"
+                      />
+                    ) : null}
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-1.5">
+                    {item.name}
+                  </h3>
+                  <p className="text-sm text-slate-500 leading-relaxed mb-4 flex-1">
+                    {item.shortDescription}
+                  </p>
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-primary-500 text-primary-500 text-sm font-semibold px-4 py-2 group-hover:bg-primary-500 group-hover:text-white transition-colors">
+                    Explore guide <ArrowRight className="w-4 h-4" />
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <div className="bg-white pt-2">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <AdSenseSlot
             slot="vehicleVerificationBottom"
             format="auto"
             fullWidthResponsive
-            minHeight={90}
+            minHeight={100}
           />
-        </main>
+        </div>
       </div>
+
+      <section className="pb-8 pt-10 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative overflow-hidden rounded-2xl bg-slate-100 px-5 sm:px-8 py-6">
+            <Lock
+              className="hidden sm:block absolute right-8 top-1/2 -translate-y-1/2 w-24 h-24 text-slate-300/70"
+              aria-hidden
+            />
+            <div className="relative flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shrink-0">
+                <Info className="w-5 h-5 text-slate-600" />
+              </div>
+              <div className="pr-0 sm:pr-24">
+                <h3 className="font-bold text-slate-900 mb-1">Disclaimer</h3>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Sello.pk publishes guidance only. Licence applications,
+                  payments and verification happen on official government
+                  portals. Confirm fees and documents on the live site before
+                  paying.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              to="/driving-licence"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-primary-500 hover:text-primary-600"
+            >
+              All licence guides
+            </Link>
+            <Link
+              to="/vehicle-verification"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-primary-500 hover:text-primary-600"
+            >
+              Vehicle verification
+            </Link>
+            <Link
+              to="/listings"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-primary-500 hover:text-primary-600"
+            >
+              Browse vehicles
+            </Link>
+          </div>
+        </div>
+      </section>
 
       <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur px-4 py-3">
         <a
@@ -572,10 +479,12 @@ const DrivingLicenceProvincePage = () => {
           rel="noopener noreferrer"
           className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-500 text-white font-semibold px-4 py-3"
         >
-          Open {PORTAL_LABELS[slug] || "official portal"}
+          Visit official portal
           <ExternalLink className="w-4 h-4" />
         </a>
       </div>
+
+      <NewsLatter />
     </div>
   );
 };

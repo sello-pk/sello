@@ -22,13 +22,6 @@ import SEO from "../../common/SEO";
 import NewsLatter from "../../utils/NewsLatter";
 import { AdSenseSlot } from "../../ads";
 import listingHero from "../../../assets/images/verification/vehicleVerificationHeroSection.jpeg";
-import punjabIcon from "../../../assets/images/verification/punjab.png";
-import islamabadIcon from "../../../assets/images/verification/islamabad.png";
-import sindhIcon from "../../../assets/images/verification/sindh.png";
-import kpkIcon from "../../../assets/images/verification/kpk.png";
-import balochistanIcon from "../../../assets/images/verification/blochistan.png";
-import gilgitBaltistan from "../../../assets/images/verification/gilgitBaltistan.png";
-import azadKashmir from "../../../assets/images/verification/azadKashmir.png";
 import serviceListingsImg from "../../../assets/images/verification/1.png";
 import serviceAuctionsImg from "../../../assets/images/verification/2.png";
 import serviceEstimatorImg from "../../../assets/images/verification/3.png";
@@ -50,56 +43,9 @@ import chassisPlateIcon from "../../../assets/images/verification/chassisPlate.p
 import engineNumberIcon from "../../../assets/images/verification/engineNumber.png";
 import insuranceIcon from "../../../assets/images/verification/insurance.png";
 import fitnessCertificateIcon from "../../../assets/images/verification/fitnessCertificate.png";
+import { LANDING_PROVINCES } from "./vehicleVerificationContent";
 
-const provinces = [
-  {
-    name: "Punjab",
-    desc: "Verify Punjab vehicle registration records",
-    url: "https://mtmis.excise.punjab.gov.pk/",
-    icon: punjabIcon,
-  },
-  {
-    name: "Islamabad",
-    desc: "Verify Islamabad vehicle ownership records",
-    url: "https://islamabadexcise.gov.pk/",
-    icon: islamabadIcon,
-  },
-  {
-    name: "Sindh",
-    desc: "Check Sindh vehicle registration details",
-    url: "https://excise.gos.pk/vehicle/vehicle_search",
-    icon: sindhIcon,
-  },
-  {
-    name: "KPK",
-    desc: "Access KPK vehicle verification services",
-    url: "https://www.kpexcise.gov.pk/mvrecords/",
-    icon: kpkIcon,
-  },
-  {
-    name: "Balochistan",
-    desc: "Open Balochistan Excise vehicle records",
-    url: "https://excise.balochistan.gov.pk/home/online-vehicle-verification/",
-    icon: balochistanIcon,
-  },
-  {
-    name: "Gilgit-Baltistan",
-    desc: "Check Gilgit-Baltistan vehicle registration details",
-    url: "https://gbexcise.gov.pk/vehsearch/vehicle-search.php",
-    icon: gilgitBaltistan,
-  },
-  {
-    name: "Azad Kashmir",
-    desc: "Access Azad Kashmir vehicle verification services",
-    url: "https://ird.ajk.gov.pk/tokentax/verification.php",
-    icon: azadKashmir,
-  },
-  {
-    name: "Browse Vehicles",
-    desc: "Explore a wide range of vehicles for sale",
-    url: "https://sello.pk/listings",
-  },
-];
+const provinces = LANDING_PROVINCES;
 
 const whyVerify = [
   {
@@ -462,7 +408,7 @@ const faqs = [
   },
   {
     q: "How does vehicle verification work on Sello?",
-    a: "Choose the province where the vehicle is registered. Sello opens that province's official Excise / MTMIS portal so you can check records, then compare them with the car and documents in person.",
+    a: "Choose the province where the vehicle is registered to open the Sello guide. From that detail page, continue to the official Excise / MTMIS portal to check records, then compare them with the car and documents in person.",
   },
   {
     q: "Is vehicle verification free?",
@@ -470,7 +416,7 @@ const faqs = [
   },
   {
     q: "Which provinces are currently supported?",
-    a: "Punjab, Islamabad, Sindh, KPK, and Balochistan. Each card above opens that region's official verification service.",
+    a: "Punjab, Islamabad, Sindh, KPK, Balochistan, Gilgit-Baltistan, and Azad Kashmir. Each card opens a Sello guide; official portal links are on the province detail page.",
   },
   {
     q: "Can I verify vehicle ownership details?",
@@ -672,25 +618,27 @@ const VehicleVerificationPage = () => {
               Select Your Province
             </h2>
             <p className="text-base text-slate-600 max-w-2xl mx-auto">
-              Choose your province to verify vehicle details and ownership
-              records
+              Choose your province to open the Sello guide. Official portal
+              links to verify vehicle details are on the next page.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {provinces.map((province) => (
-              <a
-                key={province.name}
-                href={province.url}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                key={province.slug || province.name}
+                to={province.to}
                 className="group flex flex-col items-center text-center bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg transition-shadow hover:bg-green-200"
               >
                 <div className="w-24 h-24 mb-5 flex items-center justify-center">
-                  <img
-                    src={province.icon}
-                    alt=""
-                    className="max-w-full max-h-full object-contain"
-                  />
+                  {province.icon ? (
+                    <img
+                      src={province.icon}
+                      alt=""
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  ) : (
+                    <Search className="w-12 h-12 text-primary-500" />
+                  )}
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 mb-1.5">
                   {province.name}
@@ -699,9 +647,12 @@ const VehicleVerificationPage = () => {
                   {province.desc}
                 </p>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-primary-500 text-primary-500 text-sm font-semibold px-4 py-2 group-hover:bg-primary-500 group-hover:text-white transition-colors">
-                  Verify Vehicle <ArrowRight className="w-4 h-4" />
+                  {province.slug === "listings"
+                    ? "Browse vehicles"
+                    : "Explore guide"}{" "}
+                  <ArrowRight className="w-4 h-4" />
                 </span>
-              </a>
+              </Link>
             ))}
           </div>
         </div>

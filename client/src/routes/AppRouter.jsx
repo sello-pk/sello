@@ -26,6 +26,12 @@ const Signup = lazyImport(() => import("../pages/auth/SignUp.jsx"));
 const Blog = lazyImport(() => import("../pages/blog/Blog.jsx"));
 const AllBlog = lazyImport(() => import("../pages/blog/AllBlog.jsx"));
 const VehicleVerification = lazyImport(() => import("../pages/features/VehicleVerification.jsx"));
+const VehicleVerificationProvincePage = lazyImport(
+  () =>
+    import(
+      "../components/features/VehicleVerification/VehicleVerificationProvincePage.jsx"
+    ),
+);
 const DrivingLicenceLandingPage = lazyImport(
   () =>
     import(
@@ -221,6 +227,10 @@ const AppRouter = () => {
           element={<EstimatorGuideDetail />}
         />
         <Route path="/vehicle-verification" element={<VehicleVerification />} />
+        <Route
+          path="/vehicle-verification/:provinceSlug"
+          element={<VehicleVerificationProvincePage />}
+        />
         <Route
           path="/driving-licence"
           element={<DrivingLicenceLandingPage />}

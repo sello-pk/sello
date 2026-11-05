@@ -160,6 +160,90 @@ const getRouteSeo = (pathname, search) => {
       },
     },
     {
+      path: "/vehicle-verification",
+      skipAppSeo: true,
+      seo: {
+        title: "Online Vehicle Verification in Pakistan | Check Car Details",
+        description:
+          "Verify your car or bike online through Sello. Open province guides for Punjab, Sindh, KPK, Islamabad, Balochistan, GB and AJK, then continue to official Excise portals.",
+        canonical: "https://sello.pk/vehicle-verification",
+      },
+    },
+    {
+      path: "/vehicle-verification/punjab",
+      skipAppSeo: true,
+      seo: {
+        title:
+          "Punjab Vehicle Verification Online | MTMIS Excise Check – Sello.pk",
+        description:
+          "Verify Punjab vehicle registration and ownership records via official MTMIS. Read the Sello guide, then open Punjab Excise for the live check.",
+        canonical: "https://sello.pk/vehicle-verification/punjab",
+      },
+    },
+    {
+      path: "/vehicle-verification/islamabad",
+      skipAppSeo: true,
+      seo: {
+        title:
+          "Islamabad Vehicle Verification Online | Excise Check – Sello.pk",
+        description:
+          "Check Islamabad (ICT) vehicle ownership and registration through official Excise services. Guide on Sello, verification on the government portal.",
+        canonical: "https://sello.pk/vehicle-verification/islamabad",
+      },
+    },
+    {
+      path: "/vehicle-verification/sindh",
+      skipAppSeo: true,
+      seo: {
+        title: "Sindh Vehicle Verification Online | Excise Search – Sello.pk",
+        description:
+          "Verify Sindh vehicle registration details on the official Excise vehicle search. Follow the Sello guide, then continue to the government portal.",
+        canonical: "https://sello.pk/vehicle-verification/sindh",
+      },
+    },
+    {
+      path: "/vehicle-verification/kpk",
+      skipAppSeo: true,
+      seo: {
+        title: "KPK Vehicle Verification Online | Excise MV Records – Sello.pk",
+        description:
+          "Verify Khyber Pakhtunkhwa vehicle registration via official KP Excise MV records. Read the guide on Sello, then open the government portal.",
+        canonical: "https://sello.pk/vehicle-verification/kpk",
+      },
+    },
+    {
+      path: "/vehicle-verification/balochistan",
+      skipAppSeo: true,
+      seo: {
+        title:
+          "Balochistan Vehicle Verification Online | Excise Check – Sello.pk",
+        description:
+          "Check Balochistan vehicle registration through official Excise online verification. Guide on Sello, live check on the government portal.",
+        canonical: "https://sello.pk/vehicle-verification/balochistan",
+      },
+    },
+    {
+      path: "/vehicle-verification/gilgit-baltistan",
+      skipAppSeo: true,
+      seo: {
+        title:
+          "Gilgit-Baltistan Vehicle Verification | GB Excise Search – Sello.pk",
+        description:
+          "Verify Gilgit-Baltistan vehicle registration via official GB Excise vehicle search. Read the Sello guide, then open the government portal.",
+        canonical: "https://sello.pk/vehicle-verification/gilgit-baltistan",
+      },
+    },
+    {
+      path: "/vehicle-verification/azad-kashmir",
+      skipAppSeo: true,
+      seo: {
+        title: "Azad Kashmir Vehicle Verification Online | AJK IRD – Sello.pk",
+        description:
+          "Verify Azad Kashmir vehicle token tax / registration-related details via official AJK IRD. Guide on Sello, verification on the government portal.",
+        canonical: "https://sello.pk/vehicle-verification/azad-kashmir",
+      },
+    },
+    {
       path: "/driving-licence",
       skipAppSeo: true,
       seo: {
