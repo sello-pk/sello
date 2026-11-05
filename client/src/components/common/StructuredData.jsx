@@ -1600,19 +1600,16 @@ export const LiveAuctionPageSchema = ({ auction, cars = [] }) => {
 };
 
 /**
- * About Page Schema — single @graph with WebSite, the full AutomotiveBusiness
- * organization (founder + team as real Person nodes), BreadcrumbList and the
- * AboutPage itself.
+ * About Page Schema — AutomotiveBusiness (founder + team from teamData),
+ * BreadcrumbList and AboutPage. aggregateRating is omitted: page ratings are
+ * marketing copy, not verified review data.
  */
 export const AboutPageSchema = () => {
   useEffect(() => {
-    const baseUrl =
-      SITE_URL;
+    const baseUrl = SITE_URL;
     const pageUrl = `${baseUrl}/about`;
     const orgId = `${baseUrl}/#organization`;
 
-    // Founder is the first roster entry; the rest are employees. Keeping the
-    // ids on /about/#<slug> matches the anchors used elsewhere on the site.
     const slugifyName = (name) =>
       name
         .toLowerCase()
@@ -1626,8 +1623,8 @@ export const AboutPageSchema = () => {
       jobTitle: member.position,
     }));
 
-    const founder = people[0];
-    const founderRef = founder ? { "@id": founder["@id"] } : undefined;
+    const founder = people[0] || null;
+    const employees = people.slice(1);
 
     const schema = {
       "@context": "https://schema.org",
@@ -1658,14 +1655,27 @@ export const AboutPageSchema = () => {
             name: "Pakistan",
           },
           sameAs: SOCIAL_SAME_AS,
-          ...(founderRef ? { founder: founderRef } : {}),
-          ...(people.length
-            ? { employee: people.map((person) => ({ "@id": person["@id"] })) }
+          ...(founder
+            ? {
+                founder: {
+                  "@type": "Person",
+                  "@id": founder["@id"],
+                  name: founder.name,
+                  jobTitle: founder.jobTitle,
+                  worksFor: { "@id": orgId },
+                },
+              }
             : {}),
-          // NOTE: aggregateRating is intentionally omitted. The only ratings on
-          // this page are hardcoded marketing copy plus three static
-          // testimonials, so publishing ratingValue/ratingCount here would be
-          // fabricated review data. See the comment on the component below.
+          ...(employees.length
+            ? {
+                employee: employees.map((person) => ({
+                  "@type": "Person",
+                  "@id": person["@id"],
+                  name: person.name,
+                  jobTitle: person.jobTitle,
+                })),
+              }
+            : {}),
           hasOfferCatalog: {
             "@type": "OfferCatalog",
             name: "Automotive Services",
@@ -1727,22 +1737,14 @@ export const AboutPageSchema = () => {
           "@type": "AboutPage",
           "@id": `${pageUrl}/#webpage`,
           url: pageUrl,
-          name: "About Us | Buy & Sell Cars Online in Pakistan - Sello.pk",
+          name: "About Us | Buy & Sell Cars Online in Pakistan – Sello.pk",
           description:
-            "Learn about Sello.pk, Pakistan's trusted digital automotive portal. Discover our leadership team, vision for transparent car trading, verified listings, and auction platform.",
+            "Sello.pk is a secure and transparent platform to buy and sell cars in Pakistan. Discover our mission, values, and commitment to trusted car trading.",
           isPartOf: { "@id": `${baseUrl}/#website` },
           breadcrumb: { "@id": `${pageUrl}/#breadcrumb` },
           mainEntity: { "@id": orgId },
           inLanguage: "en-PK",
         },
-        // Top-level so the founder/employee @id references above resolve
-        // within this graph rather than pointing at nothing.
-        ...people.map((person) => ({
-          ...person,
-          ...(founder && person["@id"] === founder["@id"]
-            ? { worksFor: { "@id": orgId } }
-            : {}),
-        })),
       ],
     };
 
