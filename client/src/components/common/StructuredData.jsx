@@ -1305,8 +1305,11 @@ export const AuctionsPageSchema = ({ auction, cars = [] }) => {
       const lowPrice = startingBid ?? toNumeric(car.price);
       const highPrice = currentBid ?? buyNowPrice ?? lowPrice;
       const nameParts = [car.year, car.make, car.model].filter(Boolean);
-      const name =
-        car.title || nameParts.join(" ") || "Auction vehicle";
+      const name = car.title || nameParts.join(" ") || "Auction vehicle";
+      const variant =
+        car.variant && car.variant !== "N/A"
+          ? String(car.variant).trim()
+          : "";
 
       return {
         "@type": "ListItem",
@@ -1320,6 +1323,7 @@ export const AuctionsPageSchema = ({ auction, cars = [] }) => {
           ...(car.make ? { brand: { "@type": "Brand", name: car.make } } : {}),
           ...(car.model ? { model: car.model } : {}),
           ...(car.year ? { modelDate: String(car.year) } : {}),
+          ...(variant ? { vehicleConfiguration: variant } : {}),
           ...(car.transmission
             ? { vehicleTransmission: normalizeTransmission(car.transmission) }
             : {}),
@@ -1377,9 +1381,9 @@ export const AuctionsPageSchema = ({ auction, cars = [] }) => {
           "@type": "CollectionPage",
           "@id": `${pageUrl}/#webpage`,
           url: pageUrl,
-          name: "Live Car Auctions in Pakistan | Bid & Buy Verified Used Cars - Sello.pk",
+          name: "Online Auctions in Pakistan | Bid & Win Deals – Sello.pk",
           description:
-            "Participate in live online vehicle auctions across Pakistan. Bid on verified used cars, inspected Japanese imports, and bank-leased vehicles with real-time price updates.",
+            "Explore online auctions on Sello.pk. Bid on cars, electronics & more. Get the best deals with secure bidding and verified listings across Pakistan.",
           isPartOf: { "@id": `${baseUrl}/#website` },
           breadcrumb: { "@id": `${pageUrl}/#breadcrumb` },
           inLanguage: "en-PK",
@@ -1407,8 +1411,7 @@ export const AuctionsPageSchema = ({ auction, cars = [] }) => {
                 "@id": `${pageUrl}/#itemlist`,
                 name: "Active Auction Vehicle Listings",
                 description: "Cars currently open for live bidding on Sello.pk",
-                itemListOrder:
-                  "https://schema.org/ItemListOrderDescending",
+                itemListOrder: "https://schema.org/ItemListOrderDescending",
                 numberOfItems: itemListElement.length,
                 itemListElement,
               },
