@@ -1464,7 +1464,13 @@ export const LiveAuctionPageSchema = ({ auction, cars = [] }) => {
       const startingBid = toNumeric(lot.startingBid);
       const price = currentBid ?? startingBid ?? toNumeric(car.price);
       const nameParts = [car.year, car.make, car.model].filter(Boolean);
-      const name = car.title || nameParts.join(" ") || "Auction vehicle";
+      const lotLabel = lot.lotNumber || lot.lotNo || lot.lot;
+      const baseName = car.title || nameParts.join(" ") || "Auction vehicle";
+      const name = lotLabel ? `Lot #${lotLabel}: ${baseName}` : baseName;
+      const variant =
+        car.variant && car.variant !== "N/A"
+          ? String(car.variant).trim()
+          : "";
 
       return {
         "@type": "ListItem",
@@ -1478,6 +1484,7 @@ export const LiveAuctionPageSchema = ({ auction, cars = [] }) => {
           ...(car.make ? { brand: { "@type": "Brand", name: car.make } } : {}),
           ...(car.model ? { model: car.model } : {}),
           ...(car.year ? { modelDate: String(car.year) } : {}),
+          ...(variant ? { vehicleConfiguration: variant } : {}),
           ...(car.transmission
             ? { vehicleTransmission: normalizeTransmission(car.transmission) }
             : {}),
@@ -1539,9 +1546,9 @@ export const LiveAuctionPageSchema = ({ auction, cars = [] }) => {
           "@type": "WebPage",
           "@id": `${pageUrl}/#webpage`,
           url: pageUrl,
-          name: "Live Online Car Bidding Arena | Sello.pk Digital Auctions",
+          name: "Live Auctions in Pakistan | Bid in Real-Time – Sello.pk",
           description:
-            "Join Sello's live car auction broadcast. Watch real-time inspection walkthroughs, submit live bids on verified Pakistani cars, and track real-time price increments.",
+            "Join live auctions on Sello.pk and bid in real-time on cars, electronics & more. Secure platform, fast bidding, and exciting deals across Pakistan.",
           isPartOf: { "@id": `${baseUrl}/#website` },
           breadcrumb: { "@id": `${pageUrl}/#breadcrumb` },
           inLanguage: "en-PK",
@@ -1552,8 +1559,7 @@ export const LiveAuctionPageSchema = ({ auction, cars = [] }) => {
           name: "Sello Live Online Car Bidding Session",
           description:
             "Real-time car bidding arena for verified vehicles in Pakistan. Watch live stream, check real-time bidding updates, and place bids.",
-          // schema.org has no "EventLive" member; EventScheduled is the valid
-          // enumeration value and the dates below convey the live window.
+          // schema.org has no EventLive; EventScheduled + BroadcastEvent.isLiveBroadcast
           eventStatus: "https://schema.org/EventScheduled",
           eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
           startDate: eventDates.startDate,
