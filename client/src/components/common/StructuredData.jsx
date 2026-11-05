@@ -156,19 +156,211 @@ export const ProductSchema = ({ car }) => {
 };
 
 /**
- * Enhanced Vehicle Schema (Product + Vehicle + Offer)
+ * Listing detail schema — WebSite + BreadcrumbList + WebPage + Car/Offer.
+ * Every listing field is dynamic from the live car document.
  */
 export const VehicleSchema = ({ car }) => {
   useEffect(() => {
     if (!car || !car._id) return;
 
     const baseUrl = SITE_URL;
-    const carUrl = `${baseUrl}${buildCarUrl(car)}`;
-    const schema = generateVehicleSchema(car, carUrl);
+    const carPath = buildCarUrl(car);
+    const carUrl = `${baseUrl}${carPath}`;
 
-    if (schema) {
-      addStructuredData(schema);
-    }
+    const make = car.make || "";
+    const model = car.model || "";
+    const year = car.year || "";
+    const city = car.city || "";
+    const variant =
+      car.variant && car.variant !== "N/A" ? String(car.variant).trim() : "";
+
+    const titleParts = [make, model, year].filter(Boolean);
+    if (car.condition) titleParts.push(car.condition);
+    titleParts.push("for sale");
+    if (city) titleParts.push("in", city);
+    const seoTitle = car.title || titleParts.join(" ");
+
+    const clean = (value) =>
+      value && value !== "N/A" ? String(value).trim() : "";
+    const priceLabel = car.price?.toLocaleString?.() || String(car.price || "0");
+    const mileageLabel = car.mileage?.toLocaleString?.() || "";
+    const descCore = [make, model, year].filter(Boolean).join(" ") || "Car";
+    const seoDescription = (() => {
+      if (car.metaDescription) return car.metaDescription;
+      const parts = [
+        `${descCore}${car.condition ? ` ${car.condition}` : ""} for sale.`,
+        city ? `Listed in ${city}.` : "",
+        `Price: PKR ${priceLabel}.`,
+        mileageLabel ? `${mileageLabel} KM driven.` : "",
+        "View details and contact seller on Sello.pk.",
+      ].filter(Boolean);
+      const text = parts.join(" ");
+      return text.length > 158 ? `${text.slice(0, 155)}...` : text;
+    })();
+
+    const displacement = toNumeric(car.engineCapacity ?? car.engine);
+    const mileageRaw = toNumeric(car.mileage);
+    const mileage = mileageRaw ? Math.round(mileageRaw) : undefined;
+    const priceValue = toNumeric(car.price);
+    const vehicleType = (car.vehicleType || "").toString().trim();
+    const isTwoWheeler =
+      /e-?bike|scooter|motorcycle|cycle|rickshaw/i.test(vehicleType);
+    const sellerRole = (car.postedBy?.role || car.ownerType || "")
+      .toString()
+      .trim()
+      .toLowerCase();
+    const isDealer =
+      sellerRole === "dealer" ||
+      sellerRole === "dealership" ||
+      car.ownerType === "Dealer" ||
+      car.ownerType === "Dealership";
+
+    const conditionRaw = (car.condition || "").toString().trim().toLowerCase();
+    const itemCondition =
+      conditionRaw === "new"
+        ? "https://schema.org/NewCondition"
+        : "https://schema.org/UsedCondition";
+    const availability =
+      car.isSold || car.status === "sold"
+        ? "https://schema.org/SoldOut"
+        : "https://schema.org/InStock";
+    const priceValidUntil = car.expiryDate
+      ? String(car.expiryDate).slice(0, 10)
+      : new Date(Date.now() + 90 * 24 * 60 * 60 * 1000)
+          .toISOString()
+          .slice(0, 10);
+
+    const images = Array.isArray(car.images)
+      ? car.images
+          .map((img) => toAbsoluteMediaUrl(img, baseUrl))
+          .filter(Boolean)
+      : [];
+    const primaryImage =
+      images[0] || toAbsoluteMediaUrl(car.images?.[0], baseUrl) || LOGO_URL;
+
+    const carNode = {
+      "@type": isTwoWheeler ? "Motorcycle" : "Car",
+      "@id": `${carUrl}#car`,
+      name: seoTitle,
+      url: carUrl,
+      image: images.length > 1 ? images : primaryImage,
+      brand: make ? { "@type": "Brand", name: make } : undefined,
+      model: model || undefined,
+      modelDate: year ? String(year) : undefined,
+      vehicleConfiguration: variant || undefined,
+      vehicleEngine: displacement
+        ? {
+            "@type": "EngineSpecification",
+            engineDisplacement: {
+              "@type": "QuantitativeValue",
+              value: displacement,
+              unitCode: "CMQ",
+            },
+          }
+        : undefined,
+      fuelType: normalizeFuelType(car.fuelType) || clean(car.fuelType) || undefined,
+      vehicleTransmission:
+        normalizeTransmission(car.transmission) ||
+        clean(car.transmission) ||
+        undefined,
+      mileageFromOdometer: mileage
+        ? {
+            "@type": "QuantitativeValue",
+            value: mileage,
+            unitCode: "KMT",
+          }
+        : undefined,
+      itemCondition,
+      offers: {
+        "@type": "Offer",
+        price:
+          priceValue != null
+            ? String(priceValue)
+            : car.price != null
+              ? String(car.price)
+              : undefined,
+        priceCurrency: "PKR",
+        availability,
+        priceValidUntil,
+        url: carUrl,
+        areaServed: city
+          ? { "@type": "AdministrativeArea", name: city }
+          : undefined,
+        seller: {
+          "@type": isDealer ? "AutoDealer" : "Person",
+          name:
+            car.postedBy?.name ||
+            (isDealer ? "Sello Verified Dealer" : "Direct Owner"),
+        },
+      },
+    };
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": `${baseUrl}/#website`,
+          url: baseUrl,
+          name: "Sello.pk",
+          publisher: {
+            "@type": "AutomotiveBusiness",
+            "@id": `${baseUrl}/#organization`,
+            name: "Sello.pk",
+            url: baseUrl,
+            logo: LOGO_URL,
+            sameAs: SOCIAL_SAME_AS,
+          },
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": `${carUrl}/#breadcrumb`,
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: baseUrl,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Car Listings",
+              item: `${baseUrl}/listings`,
+            },
+            {
+              "@type": "ListItem",
+              position: 3,
+              name: seoTitle,
+              item: carUrl,
+            },
+          ],
+        },
+        {
+          "@type": "WebPage",
+          "@id": `${carUrl}/#webpage`,
+          url: carUrl,
+          name: seoTitle,
+          description: seoDescription,
+          isPartOf: {
+            "@id": `${baseUrl}/#website`,
+          },
+          breadcrumb: {
+            "@id": `${carUrl}/#breadcrumb`,
+          },
+          primaryImageOfPage: primaryImage
+            ? {
+                "@type": "ImageObject",
+                url: primaryImage,
+              }
+            : undefined,
+          inLanguage: "en-PK",
+        },
+        carNode,
+      ],
+    };
+
+    addStructuredData(schema);
   }, [car]);
 
   return null;
