@@ -3,6 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import {
   ArrowRight,
   Building2,
+  CheckCircle2,
+  ChevronDown,
   ExternalLink,
   Info,
   Lock,
@@ -28,10 +30,10 @@ import {
 } from "./drivingLicenceContent";
 
 const stepVisuals = [
-  { icon: enterDetailsIcon, circle: "bg-green-50" },
+  { icon: enterDetailsIcon, circle: "bg-emerald-50" },
   { icon: recordIcon, circle: "bg-sky-50" },
   { icon: reportIcon, circle: "bg-violet-50" },
-  { icon: confidenceIcon, circle: "bg-green-50" },
+  { icon: confidenceIcon, circle: "bg-amber-50" },
 ];
 
 const CONTENT_SECTIONS = [
@@ -47,24 +49,39 @@ const CONTENT_SECTIONS = [
 ];
 
 const AccordionItem = ({ title, open, onToggle, children }) => (
-  <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
+  <div
+    className={`rounded-2xl border bg-white overflow-hidden transition-colors ${
+      open
+        ? "border-primary-300 shadow-sm"
+        : "border-slate-200 hover:border-slate-300"
+    }`}
+  >
     <button
       type="button"
       onClick={onToggle}
       className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left"
+      aria-expanded={open}
     >
       <h3 className="text-sm sm:text-base font-semibold text-slate-900">
         {title}
       </h3>
-      <span className="text-slate-400 text-xl leading-none shrink-0">
-        {open ? "−" : "+"}
-      </span>
+      <ChevronDown
+        className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200 ${
+          open ? "rotate-180 text-primary-500" : ""
+        }`}
+      />
     </button>
-    {open ? (
-      <div className="px-5 pb-5 text-slate-600 text-sm leading-relaxed">
-        {children}
+    <div
+      className={`grid transition-[grid-template-rows] duration-200 ease-out ${
+        open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+      }`}
+    >
+      <div className="overflow-hidden">
+        <div className="px-5 pb-5 text-slate-600 text-sm leading-relaxed border-t border-slate-100 pt-4">
+          {children}
+        </div>
       </div>
-    ) : null}
+    </div>
   </div>
 );
 
@@ -91,7 +108,14 @@ const DrivingLicenceProvincePage = () => {
 
   const primaryActions = useMemo(() => {
     if (!guide?.actionLinks?.length) return [];
-    const preferred = ["learner", "permanent", "verify", "renew", "track", "portal"];
+    const preferred = [
+      "learner",
+      "permanent",
+      "verify",
+      "renew",
+      "track",
+      "portal",
+    ];
     return [...guide.actionLinks].sort(
       (a, b) => preferred.indexOf(a.key) - preferred.indexOf(b.key),
     );
@@ -126,7 +150,7 @@ const DrivingLicenceProvincePage = () => {
   const otherGuides = DRIVING_LICENCE_GUIDES.filter((g) => g.slug !== slug);
 
   return (
-    <div className="w-full min-w-0 max-w-full overflow-x-hidden bg-white pb-20 lg:pb-0">
+    <div className="w-full min-w-0 max-w-full overflow-x-hidden bg-white pb-24 lg:pb-0">
       <SEO
         title={guide.seoTitle}
         description={guide.seoDescription}
@@ -135,7 +159,7 @@ const DrivingLicenceProvincePage = () => {
       />
       <DrivingLicenceProvinceSchema guide={guide} />
 
-      <section className="relative w-full overflow-hidden min-h-[52vh] bg-gray-200">
+      <section className="relative w-full overflow-hidden min-h-[56vh] sm:min-h-[58vh] bg-gray-200">
         <img
           src={listingHero}
           alt=""
@@ -145,26 +169,29 @@ const DrivingLicenceProvincePage = () => {
           width="1600"
           height="400"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/40 via-slate-900/10 to-transparent sm:from-slate-950/25 sm:via-transparent" />
-        <div className="relative z-10 flex min-h-[52vh] flex-col justify-start w-full min-w-0 max-w-8xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 pt-5 sm:pt-6 pb-10 sm:pb-14">
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/50 via-slate-900/25 to-transparent sm:from-slate-950/40 sm:via-slate-900/15" />
+        <div className="relative z-10 flex min-h-[56vh] sm:min-h-[58vh] flex-col justify-start w-full min-w-0 max-w-8xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 pt-6 sm:pt-8 pb-12 sm:pb-14">
           <div className="text-left w-full min-w-0 max-w-xl lg:max-w-2xl">
             <nav
-              className="mb-4 flex flex-wrap items-center gap-2 text-xs sm:text-sm text-white/75"
+              className="mb-5 flex flex-wrap items-center gap-2 text-xs sm:text-sm text-white/75"
               aria-label="Breadcrumb"
             >
-              <Link to="/" className="hover:text-white">
+              <Link to="/" className="hover:text-white transition-colors">
                 Home
               </Link>
               <span aria-hidden="true">/</span>
-              <Link to="/driving-licence" className="hover:text-white">
+              <Link
+                to="/driving-licence"
+                className="hover:text-white transition-colors"
+              >
                 Driving Licence
               </Link>
               <span aria-hidden="true">/</span>
-              <span className="text-white">{name}</span>
+              <span className="text-white font-medium">{name}</span>
             </nav>
 
             {meta.icon ? (
-              <div className="mb-4 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-white shadow-sm">
+              <div className="mb-5 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-white shadow-md ring-4 ring-white/20">
                 <img
                   src={meta.icon}
                   alt=""
@@ -173,7 +200,7 @@ const DrivingLicenceProvincePage = () => {
               </div>
             ) : null}
 
-            <div className="inline-flex max-w-full items-center gap-2 bg-white text-primary-500 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium mb-3 sm:mb-5 shadow-sm">
+            <div className="inline-flex max-w-full items-center gap-2 bg-white text-primary-500 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-5 shadow-sm">
               <Sparkles className="w-4 h-4 shrink-0" />
               <span className="truncate">
                 {PORTAL_LABELS[slug] || guide.authorityName}
@@ -183,12 +210,12 @@ const DrivingLicenceProvincePage = () => {
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 sm:mb-4 leading-tight text-balance">
               {name} Driving Licence Guide
             </h1>
-            <p className="text-sm sm:text-base lg:text-lg text-gray-100 mb-5 sm:mb-8 text-pretty">
+            <p className="text-sm sm:text-base lg:text-lg text-gray-100 mb-6 sm:mb-8 text-pretty">
               {guide.shortDescription} Continue to the official portal when you
               are ready — Sello never asks for your CNIC or licence number here.
             </p>
 
-            <div className="flex flex-col min-[420px]:flex-row flex-wrap justify-start items-stretch min-[420px]:items-center gap-2.5 sm:gap-3 mb-5 sm:mb-8">
+            <div className="flex flex-col min-[420px]:flex-row flex-wrap justify-start items-stretch min-[420px]:items-center gap-2.5 sm:gap-3 mb-6 sm:mb-8">
               <a
                 href={guide.officialPortalUrl}
                 target="_blank"
@@ -225,18 +252,49 @@ const DrivingLicenceProvincePage = () => {
         </div>
       </section>
 
-      <section className="py-14 sm:py-16 bg-white">
+      <section className="border-b border-slate-100 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {DRIVING_LICENCE_GUIDES.map((item) => {
+              const active = item.slug === slug;
+              return (
+                <Link
+                  key={item.slug}
+                  to={`/driving-licence/${item.slug}`}
+                  className={`shrink-0 inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition-colors ${
+                    active
+                      ? "bg-primary-500 text-white shadow-sm"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  {PROVINCE_META[item.slug]?.icon ? (
+                    <img
+                      src={PROVINCE_META[item.slug].icon}
+                      alt=""
+                      className="h-5 w-5 object-contain"
+                    />
+                  ) : null}
+                  {item.name}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-12 sm:py-16 bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-sm text-primary-500 font-semibold mb-2">
+          <p className="text-sm text-primary-500 font-semibold mb-2 tracking-wide uppercase">
             {guide.authorityName}
           </p>
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
             About {name} driving licences
           </h2>
-          <p className="text-slate-600 leading-relaxed text-pretty">
+          <p className="text-slate-600 leading-relaxed text-pretty text-base sm:text-lg">
             {guide.introduction}
           </p>
-          <p className="mt-4 text-xs text-slate-400">
+          <p className="mt-5 inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1.5 text-xs text-slate-500">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
             Last verified: {formatVerifiedDate(guide.lastVerifiedAt)}
           </p>
         </div>
@@ -244,11 +302,11 @@ const DrivingLicenceProvincePage = () => {
 
       <section
         id="official-actions"
-        className="scroll-mt-24 py-14 sm:py-16 bg-white"
+        className="scroll-mt-24 py-12 sm:py-16 bg-slate-50"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-slate-900 mb-3">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">
               Official Actions
             </h2>
             <p className="text-base text-slate-600 max-w-2xl mx-auto">
@@ -263,7 +321,7 @@ const DrivingLicenceProvincePage = () => {
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-5 hover:border-primary-500 hover:shadow-md transition-all"
+                className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-5 hover:border-primary-400 hover:shadow-lg hover:-translate-y-0.5 transition-all"
               >
                 <div
                   className={`w-14 h-14 rounded-full flex items-center justify-center mb-4 ${stepVisuals[i % stepVisuals.length].circle}`}
@@ -277,16 +335,10 @@ const DrivingLicenceProvincePage = () => {
                 <p className="text-base font-bold text-slate-900 mb-1">
                   {link.label}
                 </p>
-                {link.note ? (
-                  <p className="text-sm text-slate-500 mb-3 flex-1">
-                    {link.note}
-                  </p>
-                ) : (
-                  <p className="text-sm text-slate-500 mb-3 flex-1">
-                    Opens official government site
-                  </p>
-                )}
-                <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-500">
+                <p className="text-sm text-slate-500 mb-4 flex-1 leading-relaxed">
+                  {link.note || "Opens official government site"}
+                </p>
+                <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-500 group-hover:gap-2 transition-all">
                   Continue <ExternalLink className="w-4 h-4" />
                 </span>
               </a>
@@ -295,7 +347,7 @@ const DrivingLicenceProvincePage = () => {
         </div>
       </section>
 
-      <div className="bg-white">
+      <div className="bg-white py-6">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <AdSenseSlot
             slot="vehicleVerificationTop"
@@ -307,11 +359,16 @@ const DrivingLicenceProvincePage = () => {
       </div>
 
       {visibleSections.length ? (
-        <section className="py-14 sm:py-16 bg-white">
+        <section className="py-12 sm:py-16 bg-white">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-slate-900 mb-8">
-              Process Guide
-            </h2>
+            <div className="mb-8">
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
+                Process Guide
+              </h2>
+              <p className="text-slate-600 text-sm sm:text-base">
+                Expand each section for step-by-step {name} licence guidance.
+              </p>
+            </div>
             <div className="space-y-3">
               {visibleSections.map((section, i) => {
                 const value = guide[section.key];
@@ -324,7 +381,7 @@ const DrivingLicenceProvincePage = () => {
                     onToggle={() => setOpenSection(open ? null : i)}
                   >
                     {Array.isArray(value) ? (
-                      <ol className="space-y-2.5">
+                      <ol className="space-y-3">
                         {value.map((item, index) => (
                           <li
                             key={`${section.key}-${index}`}
@@ -333,12 +390,12 @@ const DrivingLicenceProvincePage = () => {
                             <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary-50 text-xs font-bold text-primary-600">
                               {index + 1}
                             </span>
-                            <span>{item}</span>
+                            <span className="leading-relaxed">{item}</span>
                           </li>
                         ))}
                       </ol>
                     ) : (
-                      <p>{value}</p>
+                      <p className="leading-relaxed">{value}</p>
                     )}
                   </AccordionItem>
                 );
@@ -349,9 +406,9 @@ const DrivingLicenceProvincePage = () => {
       ) : null}
 
       {guide.faqs?.length ? (
-        <section className="py-14 sm:py-16 bg-white">
+        <section className="py-12 sm:py-16 bg-slate-50">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-slate-900 mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8">
               Frequently Asked Questions
             </h2>
             <div className="space-y-3">
@@ -370,10 +427,10 @@ const DrivingLicenceProvincePage = () => {
         </section>
       ) : null}
 
-      <section className="py-14 sm:py-16 bg-white">
+      <section className="py-12 sm:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-slate-900 mb-3">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">
               Other Provinces
             </h2>
             <p className="text-base text-slate-600 max-w-2xl mx-auto">
@@ -388,14 +445,14 @@ const DrivingLicenceProvincePage = () => {
                 <Link
                   key={item.slug}
                   to={`/driving-licence/${item.slug}`}
-                  className="group flex flex-col items-center text-center bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg transition-shadow hover:bg-green-200"
+                  className="group flex flex-col items-center text-center bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg hover:border-primary-300 transition-all"
                 >
-                  <div className="w-20 h-20 mb-4 flex items-center justify-center">
+                  <div className="w-20 h-20 mb-4 flex items-center justify-center rounded-full bg-slate-50 group-hover:bg-primary-50 transition-colors">
                     {itemMeta.icon ? (
                       <img
                         src={itemMeta.icon}
                         alt=""
-                        className="max-w-full max-h-full object-contain"
+                        className="max-w-[70%] max-h-[70%] object-contain"
                       />
                     ) : null}
                   </div>
@@ -426,7 +483,7 @@ const DrivingLicenceProvincePage = () => {
         </div>
       </div>
 
-      <section className="pb-8 pt-10 bg-white">
+      <section className="pb-10 pt-10 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative overflow-hidden rounded-2xl bg-slate-100 px-5 sm:px-8 py-6">
             <Lock
@@ -452,19 +509,19 @@ const DrivingLicenceProvincePage = () => {
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
               to="/driving-licence"
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-primary-500 hover:text-primary-600"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-primary-500 hover:text-primary-600 transition-colors"
             >
               All licence guides
             </Link>
             <Link
               to="/vehicle-verification"
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-primary-500 hover:text-primary-600"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-primary-500 hover:text-primary-600 transition-colors"
             >
               Vehicle verification
             </Link>
             <Link
               to="/listings"
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-primary-500 hover:text-primary-600"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-primary-500 hover:text-primary-600 transition-colors"
             >
               Browse vehicles
             </Link>
@@ -472,12 +529,12 @@ const DrivingLicenceProvincePage = () => {
         </div>
       </section>
 
-      <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur px-4 py-3">
+      <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         <a
           href={guide.officialPortalUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-500 text-white font-semibold px-4 py-3"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-500 text-white font-semibold px-4 py-3 shadow-lg shadow-primary-500/20"
         >
           Visit official portal
           <ExternalLink className="w-4 h-4" />

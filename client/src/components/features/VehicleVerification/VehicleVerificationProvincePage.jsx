@@ -4,6 +4,7 @@ import {
   ArrowRight,
   Building2,
   CheckCircle2,
+  ChevronDown,
   ExternalLink,
   Info,
   Lock,
@@ -23,38 +24,50 @@ import confidenceIcon from "../../../assets/images/verification/confidence.png";
 import {
   getGuideBySlug,
   PROVINCE_META,
-  PROVINCE_ORDER,
   PORTAL_LABELS,
   formatVerifiedDate,
   VEHICLE_VERIFICATION_GUIDES,
 } from "./vehicleVerificationContent";
 
 const stepVisuals = [
-  { icon: enterDetailsIcon, circle: "bg-green-50" },
+  { icon: enterDetailsIcon, circle: "bg-emerald-50" },
   { icon: recordIcon, circle: "bg-sky-50" },
   { icon: reportIcon, circle: "bg-violet-50" },
-  { icon: confidenceIcon, circle: "bg-green-50" },
+  { icon: confidenceIcon, circle: "bg-amber-50" },
 ];
 
 const AccordionItem = ({ title, open, onToggle, children }) => (
-  <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
+  <div
+    className={`rounded-2xl border bg-white overflow-hidden transition-colors ${
+      open ? "border-primary-300 shadow-sm" : "border-slate-200 hover:border-slate-300"
+    }`}
+  >
     <button
       type="button"
       onClick={onToggle}
       className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left"
+      aria-expanded={open}
     >
       <h3 className="text-sm sm:text-base font-semibold text-slate-900">
         {title}
       </h3>
-      <span className="text-slate-400 text-xl leading-none shrink-0">
-        {open ? "−" : "+"}
-      </span>
+      <ChevronDown
+        className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200 ${
+          open ? "rotate-180 text-primary-500" : ""
+        }`}
+      />
     </button>
-    {open ? (
-      <div className="px-5 pb-5 text-slate-600 text-sm leading-relaxed">
-        {children}
+    <div
+      className={`grid transition-[grid-template-rows] duration-200 ease-out ${
+        open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+      }`}
+    >
+      <div className="overflow-hidden">
+        <div className="px-5 pb-5 text-slate-600 text-sm leading-relaxed border-t border-slate-100 pt-4">
+          {children}
+        </div>
       </div>
-    ) : null}
+    </div>
   </div>
 );
 
@@ -102,7 +115,7 @@ const VehicleVerificationProvincePage = () => {
   const checkHalf = Math.ceil((guide.whatYouCanCheck?.length || 0) / 2);
 
   return (
-    <div className="w-full min-w-0 max-w-full overflow-x-hidden bg-white pb-20 lg:pb-0">
+    <div className="w-full min-w-0 max-w-full overflow-x-hidden bg-white pb-24 lg:pb-0">
       <SEO
         title={guide.seoTitle}
         description={guide.seoDescription}
@@ -111,8 +124,7 @@ const VehicleVerificationProvincePage = () => {
       />
       <VehicleVerificationProvinceSchema guide={guide} />
 
-      {/* Hero — same language as landing */}
-      <section className="relative w-full overflow-hidden min-h-[52vh] bg-gray-200">
+      <section className="relative w-full overflow-hidden min-h-[56vh] sm:min-h-[58vh] bg-gray-200">
         <img
           src={listingHero}
           alt=""
@@ -122,26 +134,29 @@ const VehicleVerificationProvincePage = () => {
           width="1200"
           height="600"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/25 via-slate-900/40 to-slate-900/50" />
-        <div className="relative z-10 flex min-h-[52vh] flex-col justify-center w-full min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/30 via-slate-900/45 to-slate-900/60" />
+        <div className="relative z-10 flex min-h-[56vh] sm:min-h-[58vh] flex-col justify-center w-full min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
           <div className="text-center w-full min-w-0 max-w-3xl mx-auto">
             <nav
-              className="mb-4 flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm text-white/75"
+              className="mb-5 flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm text-white/75"
               aria-label="Breadcrumb"
             >
-              <Link to="/" className="hover:text-white">
+              <Link to="/" className="hover:text-white transition-colors">
                 Home
               </Link>
               <span aria-hidden="true">/</span>
-              <Link to="/vehicle-verification" className="hover:text-white">
+              <Link
+                to="/vehicle-verification"
+                className="hover:text-white transition-colors"
+              >
                 Vehicle Verification
               </Link>
               <span aria-hidden="true">/</span>
-              <span className="text-white">{name}</span>
+              <span className="text-white font-medium">{name}</span>
             </nav>
 
             {meta.icon ? (
-              <div className="mx-auto mb-4 flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-white shadow-sm">
+              <div className="mx-auto mb-5 flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-white shadow-md ring-4 ring-white/20">
                 <img
                   src={meta.icon}
                   alt=""
@@ -150,7 +165,7 @@ const VehicleVerificationProvincePage = () => {
               </div>
             ) : null}
 
-            <div className="inline-flex max-w-full items-center gap-2 bg-white text-primary-500 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium mb-3 sm:mb-5 shadow-sm">
+            <div className="inline-flex max-w-full items-center gap-2 bg-white text-primary-500 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-5 shadow-sm">
               <Sparkles className="w-4 h-4 shrink-0" />
               <span className="truncate">
                 {PORTAL_LABELS[slug] || guide.authorityName}
@@ -160,13 +175,13 @@ const VehicleVerificationProvincePage = () => {
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 sm:mb-4 leading-tight text-balance">
               {name} Vehicle Verification
             </h1>
-            <p className="text-sm sm:text-base lg:text-lg text-gray-100 mb-5 sm:mb-8 text-pretty">
+            <p className="text-sm sm:text-base lg:text-lg text-gray-100 mb-6 sm:mb-8 text-pretty">
               {guide.shortDescription}. Read the steps below, then continue on
-              the official government portal — Sello never asks for your CNIC
-              or registration number here.
+              the official government portal — Sello never asks for your CNIC or
+              registration number here.
             </p>
 
-            <div className="flex flex-col min-[420px]:flex-row flex-wrap justify-center items-stretch min-[420px]:items-center gap-2.5 sm:gap-3 mb-5 sm:mb-8">
+            <div className="flex flex-col min-[420px]:flex-row flex-wrap justify-center items-stretch min-[420px]:items-center gap-2.5 sm:gap-3 mb-6 sm:mb-8">
               <a
                 href={guide.officialPortalUrl}
                 target="_blank"
@@ -203,49 +218,85 @@ const VehicleVerificationProvincePage = () => {
         </div>
       </section>
 
-      {/* Intro */}
-      <section className="py-14 sm:py-16 bg-white">
+      {/* Province switcher */}
+      <section className="border-b border-slate-100 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {VEHICLE_VERIFICATION_GUIDES.map((item) => {
+              const active = item.slug === slug;
+              return (
+                <Link
+                  key={item.slug}
+                  to={`/vehicle-verification/${item.slug}`}
+                  className={`shrink-0 inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition-colors ${
+                    active
+                      ? "bg-primary-500 text-white shadow-sm"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  {PROVINCE_META[item.slug]?.icon ? (
+                    <img
+                      src={PROVINCE_META[item.slug].icon}
+                      alt=""
+                      className="h-5 w-5 object-contain"
+                    />
+                  ) : null}
+                  {item.name}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-12 sm:py-16 bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-sm text-primary-500 font-semibold mb-2">
+          <p className="text-sm text-primary-500 font-semibold mb-2 tracking-wide uppercase">
             {guide.authorityName}
           </p>
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
             About {name} verification
           </h2>
-          <p className="text-slate-600 leading-relaxed text-pretty">
+          <p className="text-slate-600 leading-relaxed text-pretty text-base sm:text-lg">
             {guide.introduction}
           </p>
-          <p className="mt-4 text-xs text-slate-400">
+          <p className="mt-5 inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1.5 text-xs text-slate-500">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
             Last verified: {formatVerifiedDate(guide.lastVerifiedAt)}
           </p>
         </div>
       </section>
 
-      {/* How to verify — 4 step grid like landing */}
-      <section id="how-to-verify" className="scroll-mt-24 py-14 sm:py-16 bg-white">
+      <section
+        id="how-to-verify"
+        className="scroll-mt-24 py-12 sm:py-16 bg-slate-50"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-slate-900 text-center mb-12">
-            How {name} Verification Works?
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-4">
+          <div className="text-center mb-10 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">
+              How {name} Verification Works
+            </h2>
+            <p className="text-slate-600 max-w-2xl mx-auto">
+              Follow these steps, then open the official portal to complete the
+              check.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
             {(guide.howToVerify || []).map((step, i) => (
-              <div key={step} className="relative text-center px-2">
-                {i < (guide.howToVerify?.length || 0) - 1 ? (
-                  <ArrowRight
-                    className="hidden lg:block absolute top-10 -right-3 w-6 h-6 text-slate-300"
-                    aria-hidden
-                  />
-                ) : null}
+              <div
+                key={step}
+                className="relative rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 text-center shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+              >
                 <div
-                  className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 ${stepVisuals[i % stepVisuals.length].circle}`}
+                  className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${stepVisuals[i % stepVisuals.length].circle}`}
                 >
                   <img
                     src={stepVisuals[i % stepVisuals.length].icon}
                     alt=""
-                    className="w-12 h-12 object-contain"
+                    className="w-9 h-9 object-contain"
                   />
                 </div>
-                <p className="text-xs font-semibold text-primary-500 mb-1">
+                <p className="text-xs font-bold uppercase tracking-wider text-primary-500 mb-2">
                   Step {i + 1}
                 </p>
                 <p className="text-sm text-slate-600 leading-relaxed">{step}</p>
@@ -267,7 +318,7 @@ const VehicleVerificationProvincePage = () => {
         </div>
       </section>
 
-      <div className="bg-white">
+      <div className="bg-white py-6">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <AdSenseSlot
             slot="vehicleVerificationTop"
@@ -278,38 +329,41 @@ const VehicleVerificationProvincePage = () => {
         </div>
       </div>
 
-      {/* What you can check */}
-      <section className="py-14 sm:py-16 bg-white">
+      <section className="py-12 sm:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-2xl border border-slate-100 shadow-sm p-6 sm:p-8 lg:p-10">
+          <div className="rounded-3xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-6 sm:p-8 lg:p-10 shadow-sm">
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8">
               Information You Can Verify
             </h2>
             <div className="grid lg:grid-cols-[1fr_1fr_minmax(220px,280px)] gap-8 items-start">
               <div className="space-y-3">
-                {(guide.whatYouCanCheck || []).slice(0, checkHalf).map((item) => (
-                  <div key={item} className="flex items-center gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-primary-500 shrink-0" />
-                    <span className="text-sm text-slate-600">{item}</span>
-                  </div>
-                ))}
+                {(guide.whatYouCanCheck || [])
+                  .slice(0, checkHalf)
+                  .map((item) => (
+                    <div key={item} className="flex items-start gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-primary-500 shrink-0 mt-0.5" />
+                      <span className="text-sm text-slate-600 leading-relaxed">
+                        {item}
+                      </span>
+                    </div>
+                  ))}
               </div>
               <div className="space-y-3">
                 {(guide.whatYouCanCheck || []).slice(checkHalf).map((item) => (
-                  <div key={item} className="flex items-center gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-primary-500 shrink-0" />
-                    <span className="text-sm text-slate-600">{item}</span>
+                  <div key={item} className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-primary-500 shrink-0 mt-0.5" />
+                    <span className="text-sm text-slate-600 leading-relaxed">
+                      {item}
+                    </span>
                   </div>
                 ))}
               </div>
-              <div className="rounded-2xl bg-primary-50 px-6 py-8 text-center">
-                <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-white flex items-center justify-center">
-                  <Shield className="w-7 h-7 text-primary-500" />
+              <div className="rounded-2xl bg-primary-500 px-6 py-8 text-center text-white shadow-lg shadow-primary-500/20">
+                <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-white/15 flex items-center justify-center">
+                  <Shield className="w-7 h-7 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">
-                  Official only
-                </h3>
-                <p className="text-sm text-slate-600 leading-relaxed">
+                <h3 className="text-lg font-bold mb-2">Official only</h3>
+                <p className="text-sm text-white/90 leading-relaxed">
                   Enter vehicle details only on{" "}
                   {PORTAL_LABELS[slug] || "the government portal"} — never on
                   unofficial forms.
@@ -320,31 +374,33 @@ const VehicleVerificationProvincePage = () => {
         </div>
       </section>
 
-      {/* Tips */}
-      <section className="py-14 sm:py-16 bg-white">
+      <section className="py-12 sm:py-16 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-slate-900 text-center mb-10">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 text-center mb-10">
             Before You Buy or Sell
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-5xl mx-auto">
-            {(guide.tips || []).map((tip) => (
+            {(guide.tips || []).map((tip, i) => (
               <div
                 key={tip}
-                className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-5"
+                className="flex items-start gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
               >
-                <CheckCircle2 className="w-5 h-5 text-primary-500 shrink-0 mt-0.5" />
-                <p className="text-sm text-slate-600 leading-relaxed">{tip}</p>
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-50 text-sm font-bold text-primary-600">
+                  {i + 1}
+                </span>
+                <p className="text-sm text-slate-600 leading-relaxed pt-1">
+                  {tip}
+                </p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* FAQs */}
       {guide.faqs?.length ? (
-        <section className="py-14 sm:py-16 bg-white">
+        <section className="py-12 sm:py-16 bg-white">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-slate-900 mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8">
               Frequently Asked Questions
             </h2>
             <div className="space-y-3">
@@ -363,11 +419,10 @@ const VehicleVerificationProvincePage = () => {
         </section>
       ) : null}
 
-      {/* Other provinces — same card UI as landing */}
-      <section className="py-14 sm:py-16 bg-white">
+      <section className="py-12 sm:py-16 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-slate-900 mb-3">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">
               Other Regions
             </h2>
             <p className="text-base text-slate-600 max-w-2xl mx-auto">
@@ -382,14 +437,14 @@ const VehicleVerificationProvincePage = () => {
                 <Link
                   key={item.slug}
                   to={`/vehicle-verification/${item.slug}`}
-                  className="group flex flex-col items-center text-center bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg transition-shadow hover:bg-green-200"
+                  className="group flex flex-col items-center text-center bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg hover:border-primary-300 transition-all"
                 >
-                  <div className="w-20 h-20 mb-4 flex items-center justify-center">
+                  <div className="w-20 h-20 mb-4 flex items-center justify-center rounded-full bg-slate-50 group-hover:bg-primary-50 transition-colors">
                     {itemMeta.icon ? (
                       <img
                         src={itemMeta.icon}
                         alt=""
-                        className="max-w-full max-h-full object-contain"
+                        className="max-w-[70%] max-h-[70%] object-contain"
                       />
                     ) : null}
                   </div>
@@ -420,8 +475,7 @@ const VehicleVerificationProvincePage = () => {
         </div>
       </div>
 
-      {/* Disclaimer */}
-      <section className="pb-8 pt-10 bg-white">
+      <section className="pb-10 pt-10 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative overflow-hidden rounded-2xl bg-slate-100 px-5 sm:px-8 py-6">
             <Lock
@@ -455,19 +509,19 @@ const VehicleVerificationProvincePage = () => {
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
               to="/vehicle-verification"
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-primary-500 hover:text-primary-600"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-primary-500 hover:text-primary-600 transition-colors"
             >
               All verification guides
             </Link>
             <Link
               to="/listings"
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-primary-500 hover:text-primary-600"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-primary-500 hover:text-primary-600 transition-colors"
             >
               Browse vehicles
             </Link>
             <Link
               to="/driving-licence"
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-primary-500 hover:text-primary-600"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-primary-500 hover:text-primary-600 transition-colors"
             >
               Driving licence guides
             </Link>
@@ -475,13 +529,12 @@ const VehicleVerificationProvincePage = () => {
         </div>
       </section>
 
-      {/* Mobile sticky CTA */}
-      <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur px-4 py-3">
+      <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         <a
           href={guide.officialPortalUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-500 text-white font-semibold px-4 py-3"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-500 text-white font-semibold px-4 py-3 shadow-lg shadow-primary-500/20"
         >
           Verify on official portal
           <ExternalLink className="w-4 h-4" />
