@@ -6,9 +6,7 @@
 import { useEffect } from "react";
 import { SOCIAL_SAME_AS } from "../../config/socialLinks";
 import {
-  generateVehicleSchema,
   generateBreadcrumbSchema,
-  generateBlogPostingSchema,
   generateItemListSchema,
   generateCollectionPageSchema,
   generateFAQSchema,
@@ -367,21 +365,130 @@ export const VehicleSchema = ({ car }) => {
 };
 
 /**
- * BlogPosting Schema
+ * Blog detail schema — WebSite + BreadcrumbList + WebPage + BlogPosting.
+ * All article fields are dynamic from the live blog document.
  */
 export const BlogPostingSchema = ({ blog }) => {
   useEffect(() => {
-    if (!blog) return;
+    if (!blog || (!blog.slug && !blog._id)) return;
 
     const baseUrl = SITE_URL;
-    const blogUrl = blog.slug
-      ? `${baseUrl}/blog/${blog.slug}`
-      : window.location.href;
-    const schema = generateBlogPostingSchema(blog, blogUrl);
+    const articlePath = buildBlogUrl(blog);
+    const articleUrl = `${baseUrl}${articlePath}`;
+    const orgId = `${baseUrl}/#organization`;
 
-    if (schema) {
-      addStructuredData(schema);
-    }
+    const seoTitle =
+      blog.metaTitle ||
+      blog.seoTitle ||
+      blog.title ||
+      "Sello.pk Blog Article";
+    const seoDescription =
+      blog.metaDescription ||
+      blog.excerpt ||
+      blog.description ||
+      "";
+    const categoryName =
+      blog.category?.name ||
+      blog.articleSection ||
+      blog.categoryName ||
+      undefined;
+    const datePublished = blog.publishedAt || blog.createdAt;
+    const dateModified =
+      blog.updatedAt || blog.publishedAt || blog.createdAt;
+    const imageUrl = toAbsoluteMediaUrl(blog.featuredImage, baseUrl);
+    const authorName =
+      (typeof blog.author?.name === "string" && blog.author.name.trim()) ||
+      (typeof blog.authorName === "string" && blog.authorName.trim()) ||
+      "Sello.pk Editorial";
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": `${baseUrl}/#website`,
+          url: baseUrl,
+          name: "Sello.pk",
+          publisher: {
+            "@type": "AutomotiveBusiness",
+            "@id": orgId,
+            name: "Sello.pk",
+            url: baseUrl,
+            logo: LOGO_URL,
+            sameAs: SOCIAL_SAME_AS,
+          },
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": `${articleUrl}/#breadcrumb`,
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: baseUrl,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Blog",
+              item: `${baseUrl}/blog`,
+            },
+            {
+              "@type": "ListItem",
+              position: 3,
+              name: blog.title || seoTitle,
+              item: articleUrl,
+            },
+          ],
+        },
+        {
+          "@type": "WebPage",
+          "@id": `${articleUrl}/#webpage`,
+          url: articleUrl,
+          name: seoTitle,
+          description: seoDescription || undefined,
+          isPartOf: { "@id": `${baseUrl}/#website` },
+          breadcrumb: { "@id": `${articleUrl}/#breadcrumb` },
+          inLanguage: "en-PK",
+        },
+        {
+          "@type": "BlogPosting",
+          "@id": `${articleUrl}/#article`,
+          isPartOf: { "@id": `${articleUrl}/#webpage` },
+          headline: seoTitle,
+          description: seoDescription || undefined,
+          ...(categoryName ? { articleSection: categoryName } : {}),
+          inLanguage: "en-PK",
+          ...(datePublished
+            ? { datePublished: new Date(datePublished).toISOString() }
+            : {}),
+          ...(dateModified
+            ? { dateModified: new Date(dateModified).toISOString() }
+            : {}),
+          mainEntityOfPage: {
+            "@type": "WebPage",
+            "@id": articleUrl,
+          },
+          ...(imageUrl
+            ? {
+                image: {
+                  "@type": "ImageObject",
+                  url: imageUrl,
+                  caption: seoTitle,
+                },
+              }
+            : {}),
+          author: {
+            "@type": "Person",
+            name: authorName,
+          },
+          publisher: { "@id": orgId },
+        },
+      ],
+    };
+
+    addStructuredData(schema);
   }, [blog]);
 
   return null;
