@@ -1877,10 +1877,15 @@ export const ContactPageSchema = () => {
  */
 export const BlogPageSchema = ({ posts = [] }) => {
   useEffect(() => {
-    const baseUrl =
-      SITE_URL;
+    const baseUrl = SITE_URL;
     const pageUrl = `${baseUrl}/blog`;
     const orgId = `${baseUrl}/#organization`;
+
+    const slugifyPerson = (name) =>
+      String(name || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
 
     const items = (Array.isArray(posts) ? posts : [])
       .filter((post) => post && post.slug)
@@ -1891,6 +1896,8 @@ export const BlogPageSchema = ({ posts = [] }) => {
       // publishedAt is null on drafts-imported posts, so fall back to createdAt.
       const datePublished = post.publishedAt || post.createdAt;
       const dateModified = post.updatedAt || datePublished;
+      const authorName = post.author?.name;
+      const authorSlug = authorName ? slugifyPerson(authorName) : "";
 
       return {
         "@type": "ListItem",
@@ -1900,7 +1907,8 @@ export const BlogPageSchema = ({ posts = [] }) => {
           "@id": `${postUrl}#article`,
           url: postUrl,
           headline: post.title || undefined,
-          description: post.excerpt || undefined,
+          description:
+            post.metaDescription || post.excerpt || post.description || undefined,
           image: toAbsoluteMediaUrl(post.featuredImage, baseUrl),
           ...(datePublished
             ? { datePublished: new Date(datePublished).toISOString() }
@@ -1908,14 +1916,14 @@ export const BlogPageSchema = ({ posts = [] }) => {
           ...(dateModified
             ? { dateModified: new Date(dateModified).toISOString() }
             : {}),
-          // The author is credited by name on the post itself; the team roster
-          // lives on /about, which is a real page (no dead #anchor here).
-          ...(post.author?.name
+          ...(authorName
             ? {
                 author: {
                   "@type": "Person",
-                  name: post.author.name,
-                  url: `${baseUrl}/about`,
+                  name: authorName,
+                  url: authorSlug
+                    ? `${baseUrl}/about#${authorSlug}`
+                    : `${baseUrl}/about`,
                 },
               }
             : {}),
