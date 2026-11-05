@@ -1854,9 +1854,9 @@ export const ContactPageSchema = () => {
           "@type": "ContactPage",
           "@id": `${pageUrl}/#webpage`,
           url: pageUrl,
-          name: "Contact Us | 24/7 Car Marketplace Support - Sello.pk",
+          name: "Contact Us | 24/7 Car Marketplace Support – Sello.pk",
           description:
-            "Get in touch with Sello.pk for support regarding used car listings, vehicle verification, live auctions, or AI price estimation. Phone, email, and WhatsApp help available.",
+            "Need help buying or selling a car in Pakistan? Contact Sello.pk for fast, reliable support. We're here to guide you every step of the way.",
           isPartOf: { "@id": `${baseUrl}/#website` },
           breadcrumb: { "@id": `${pageUrl}/#breadcrumb` },
           mainEntity: { "@id": orgId },
