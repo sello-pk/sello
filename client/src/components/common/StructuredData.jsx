@@ -984,7 +984,7 @@ export const CarEstimatorPageSchema = () => {
           operatingSystem: "All",
           browserRequirements: "Requires JavaScript. Requires HTML5.",
           description:
-            "AI-powered used car price estimator tool for Pakistan. Instantly calculate accurate market resale values for cars based on make, model, year, mileage, city, and vehicle condition.",
+            "Get instant AI-powered car valuations for Pakistani market. Estimate your car's price based on make, model, year, condition, and location.",
           offers: {
             "@type": "Offer",
             price: "0",
@@ -1005,9 +1005,9 @@ export const CarEstimatorPageSchema = () => {
           "@type": "WebPage",
           "@id": `${pageUrl}/#webpage`,
           url: pageUrl,
-          name: "AI Car Estimator | Free Used Car Valuation Tool in Pakistan - Sello.pk",
+          name: "AI Car Estimator - Find Your Car's Real Value | Sello.pk",
           description:
-            "Calculate accurate resale values for any car in Pakistan with Sello's AI Estimator. Instant valuation based on real-time market trends, mileage, and condition.",
+            "Get instant AI-powered car valuations for Pakistani market. Estimate your car's price based on make, model, year, condition, and location.",
           isPartOf: {
             "@id": `${baseUrl}/#website`,
           },
