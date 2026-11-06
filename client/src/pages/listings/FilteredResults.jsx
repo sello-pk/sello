@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams, useParams } from "react-router-dom";
 import FilterResultsSection from "../../components/sections/filter/FilterResultsSection";
 import SortAndViewOptions from "../../components/listings/SortAndViewOptions";
+import FilterForm from "../../components/sections/filter/FilterForm";
 import { FiX, FiFilter } from "react-icons/fi";
 import Breadcrumb from "../../components/common/Breadcrumb";
 import StructuredData from "../../components/common/StructuredData";
@@ -268,17 +269,27 @@ const FilteredResults = () => {
           </div>
         )}
 
-        {/* Sort and View Options */}
-        {totalResults > 0 && (
-          <SortAndViewOptions
-            sortBy={sortBy}
-            onSortChange={setSortBy}
-            viewMode={viewMode}
-            onViewChange={setViewMode}
-            totalResults={totalResults}
-            resultLabel="cars"
-          />
-        )}
+        {/* Filter drawer */}
+        <SortAndViewOptions
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+          viewMode={viewMode}
+          onViewChange={setViewMode}
+          totalResults={totalResults}
+          resultLabel="cars"
+          activeFilterCount={activeFilters.length}
+          filterContent={({ closeDrawer }) => (
+            <FilterForm
+              compact
+              onFilter={(filters) => {
+                if (filters && Object.keys(filters).length > 0) {
+                  navigate(buildListingsSearchUrl(filters));
+                }
+                closeDrawer?.();
+              }}
+            />
+          )}
+        />
 
         {/* Results */}
         {totalResults > 0 ? (

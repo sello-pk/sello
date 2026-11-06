@@ -4,8 +4,10 @@ import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { useGetCarsQuery } from "../../../redux/services/api";
 import CarCard from "../../common/CarCard";
 import SortAndViewOptions from "../../listings/SortAndViewOptions";
+import FilterForm from "../filter/FilterForm";
 import StructuredData from "../../common/StructuredData";
 import { blockAdsForPage } from "../../../utils/seoPolicy";
+import { buildListingsSearchUrl } from "../../../utils/urlBuilders";
 
 const sortCars = (cars, sortBy) => {
   if (!cars?.length) return cars;
@@ -264,8 +266,29 @@ const GetAllCarsSection = () => {
     );
   }
 
+  const handleDrawerFilter = useCallback(
+    (filters) => {
+      if (filters && Object.keys(filters).length > 0) {
+        navigate(buildListingsSearchUrl(filters));
+      }
+    },
+    [navigate],
+  );
+
+  const activeFilterCount = [
+    urlSearch,
+    urlCondition,
+    urlTransmission,
+    urlFuelType,
+    urlBodyType,
+    urlVehicleType,
+  ].filter(Boolean).length;
+
   return (
-    <section className="px-3 max-w-8xl mx-auto sm:px-4 md:px-6 lg:px-8 py-10 md:py-12 min-w-0 overflow-x-hidden">
+    <section
+      id="explore-vehicles"
+      className="scroll-mt-24 px-3 max-w-8xl mx-auto sm:px-4 md:px-6 lg:px-8 py-10 md:py-12 min-w-0 overflow-x-hidden"
+    >
       {listingsStructuredData}
       <div className="min-w-0 max-w-full">
         <h2 className="text-2xl md:text-3xl font-bold text-[#0B0C1E]">
@@ -298,8 +321,8 @@ const GetAllCarsSection = () => {
           ))}
         </div>
 
-        {/* Sort and view (listings page only) */}
-        {!isHomePage && filteredCars.length > 0 && (
+        {/* Filter drawer trigger (listings page only) */}
+        {!isHomePage && (
           <div className="mt-5">
             <SortAndViewOptions
               sortBy={sortBy}
@@ -308,6 +331,16 @@ const GetAllCarsSection = () => {
               onViewChange={setViewMode}
               totalResults={sortedCars.length}
               resultLabel="vehicles"
+              activeFilterCount={activeFilterCount}
+              filterContent={({ closeDrawer }) => (
+                <FilterForm
+                  compact
+                  onFilter={(filters) => {
+                    handleDrawerFilter(filters);
+                    closeDrawer?.();
+                  }}
+                />
+              )}
             />
           </div>
         )}

@@ -24,7 +24,7 @@ const getVehicleLabel = (vehicleType, fieldType) => {
   return `${vehicleName} ${fieldType}`;
 };
 
-const FilterForm = ({ onFilter, simplifiedFields = false }) => {
+const FilterForm = ({ onFilter, simplifiedFields = false, compact = false }) => {
   // Vehicle type options - same as CreatePostForm and HeroFilter
   const vehicleTypeOptions = [
     "Car",
@@ -483,37 +483,70 @@ const FilterForm = ({ onFilter, simplifiedFields = false }) => {
 
   return (
     <div className="min-w-0">
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
-        <div className="min-w-0">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Filter Cars</h2>
-          <p className="text-sm text-gray-600 mt-1">
-            Find your perfect car with advanced filters
-          </p>
+      {compact ? (
+        <div className="mb-3 flex items-center justify-end">
+          <button
+            type="button"
+            onClick={handleClearFilters}
+            className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-primary-600 transition-colors"
+          >
+            Clear all
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={handleClearFilters}
-          className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-        >
-          Clear All
-        </button>
-      </div>
-      <form className="space-y-4 h-auto min-w-0" onSubmit={handleSubmit}>
+      ) : (
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
+          <div className="min-w-0">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+              Filter Cars
+            </h2>
+            <p className="text-sm text-gray-600 mt-1">
+              Find your perfect car with advanced filters
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleClearFilters}
+            className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Clear All
+          </button>
+        </div>
+      )}
+      <form
+        className={`h-auto min-w-0 ${compact ? "space-y-3" : "space-y-4"}`}
+        onSubmit={handleSubmit}
+      >
         {/* Vehicle Type Selection - Button Style like CreatePostForm */}
-        <div className="mb-6">
-          <label className="block mb-3 text-center font-medium text-gray-700">
+        <div className={compact ? "mb-1" : "mb-6"}>
+          <label
+            className={`block font-medium text-gray-700 ${
+              compact ? "mb-2 text-left text-sm" : "mb-3 text-center"
+            }`}
+          >
             Vehicle Type
           </label>
-          <div className="flex justify-center gap-2 sm:gap-3 flex-wrap">
+          <div
+            className={`flex flex-wrap gap-1.5 sm:gap-2 ${
+              compact ? "justify-start" : "justify-center gap-2 sm:gap-3"
+            }`}
+          >
             {vehicleTypeOptions.map((type) => (
               <button
                 key={type}
                 type="button"
                 onClick={() => handleChange("vehicleType", type)}
-                className={`group relative px-3 sm:px-5 py-1.5 rounded font-semibold text-xs sm:text-sm transition-all duration-300 transform hover:scale-105 active:scale-95 ${
-                  filters.vehicleType === type
-                    ? "bg-primary-500 text-black shadow-lg shadow-primary-500/25 ring-2 ring-primary-500 ring-offset-2"
-                    : "bg-white text-gray-700 border-2 border-gray-200 hover:border-primary-500 hover:shadow-md hover:bg-primary-50"
+                className={`relative rounded font-semibold transition-colors ${
+                  compact
+                    ? `px-2.5 py-1 text-xs ${
+                        filters.vehicleType === type
+                          ? "bg-primary-500 text-white"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                      }`
+                    : `group px-3 sm:px-5 py-1.5 text-xs sm:text-sm transform hover:scale-105 active:scale-95 ${
+                        filters.vehicleType === type
+                          ? "bg-primary-500 text-black shadow-lg shadow-primary-500/25 ring-2 ring-primary-500 ring-offset-2"
+                          : "bg-white text-gray-700 border-2 border-gray-200 hover:border-primary-500 hover:shadow-md hover:bg-primary-50"
+                      }`
                 }`}
               >
                 {type}
@@ -522,7 +555,7 @@ const FilterForm = ({ onFilter, simplifiedFields = false }) => {
           </div>
         </div>
 
-        {!simplifiedFields && (
+        {!simplifiedFields && !compact && (
           <div className="field space-y-2">
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Search by Title
@@ -559,14 +592,16 @@ const FilterForm = ({ onFilter, simplifiedFields = false }) => {
               />
             </div>
           </div>
-          <div className="min-w-0 overflow-hidden">
-            <RangeFilter
-              type="price"
-              min={0}
-              max={10000000}
-              onChange={(values) => handleRangeChange("price", values)}
-            />
-          </div>
+          {!compact ? (
+            <div className="min-w-0 overflow-hidden">
+              <RangeFilter
+                type="price"
+                min={0}
+                max={10000000}
+                onChange={(values) => handleRangeChange("price", values)}
+              />
+            </div>
+          ) : null}
         </div>
 
         {/* Row 1: Make and Model */}
@@ -623,7 +658,7 @@ const FilterForm = ({ onFilter, simplifiedFields = false }) => {
           </div>
         </div>
 
-        {!simplifiedFields && (
+        {!simplifiedFields && !compact && (
           <div className="field min-w-0">
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Variant
@@ -664,14 +699,16 @@ const FilterForm = ({ onFilter, simplifiedFields = false }) => {
               />
             </div>
           </div>
-          <div className="min-w-0 overflow-hidden">
-            <RangeFilter
-              type="year"
-              min={1950}
-              max={new Date().getFullYear()}
-              onChange={(values) => handleRangeChange("year", values)}
-            />
-          </div>
+          {!compact ? (
+            <div className="min-w-0 overflow-hidden">
+              <RangeFilter
+                type="year"
+                min={1950}
+                max={new Date().getFullYear()}
+                onChange={(values) => handleRangeChange("year", values)}
+              />
+            </div>
+          ) : null}
         </div>
 
         {/* Mileage */}
@@ -697,14 +734,16 @@ const FilterForm = ({ onFilter, simplifiedFields = false }) => {
               />
             </div>
           </div>
-          <div className="min-w-0 overflow-hidden">
-            <RangeFilter
-              type="mileage"
-              min={0}
-              max={300000}
-              onChange={(values) => handleRangeChange("mileage", values)}
-            />
-          </div>
+          {!compact ? (
+            <div className="min-w-0 overflow-hidden">
+              <RangeFilter
+                type="mileage"
+                min={0}
+                max={300000}
+                onChange={(values) => handleRangeChange("mileage", values)}
+              />
+            </div>
+          ) : null}
         </div>
 
         {/* Battery Range (E-bike) */}
@@ -786,7 +825,9 @@ const FilterForm = ({ onFilter, simplifiedFields = false }) => {
         </div>
 
         {/* Body Type Filter - Full Width */}
-        {!simplifiedFields && isFieldVisible(filters.vehicleType || "Car", "bodyType") && (
+        {!simplifiedFields &&
+          !compact &&
+          isFieldVisible(filters.vehicleType || "Car", "bodyType") && (
           <div className="field space-y-2">
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Body Type
@@ -815,7 +856,7 @@ const FilterForm = ({ onFilter, simplifiedFields = false }) => {
           </div>
         )}
 
-        {!simplifiedFields && (
+        {!simplifiedFields && !compact && (
           <div className="field space-y-2">
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Exterior Color
@@ -827,7 +868,7 @@ const FilterForm = ({ onFilter, simplifiedFields = false }) => {
           </div>
         )}
 
-        {!simplifiedFields && (
+        {!simplifiedFields && !compact && (
           <div className="field space-y-2">
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Interior Color
@@ -839,23 +880,25 @@ const FilterForm = ({ onFilter, simplifiedFields = false }) => {
           </div>
         )}
 
-        {/* Owner Type - Full Width */}
-        <div className="field space-y-2">
-          <label className="block mb-2 text-sm font-medium text-gray-700">
-            Owner Type
-          </label>
-          <FilterSpecs specType="ownerType" value={filters.ownerType} onChange={(value) => handleChange("ownerType", value)} />
-        </div>
+        {!compact ? (
+          <div className="field space-y-2">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Owner Type
+            </label>
+            <FilterSpecs specType="ownerType" value={filters.ownerType} onChange={(value) => handleChange("ownerType", value)} />
+          </div>
+        ) : null}
 
-        {/* Warranty - Full Width */}
-        <div className="field space-y-2">
-          <label className="block mb-2 text-sm font-medium text-gray-700">
-            Warranty
-          </label>
-          <FilterSpecs specType="warrantyType" value={filters.warranty} onChange={(value) => handleChange("warranty", value)} />
-        </div>
+        {!compact ? (
+          <div className="field space-y-2">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Warranty
+            </label>
+            <FilterSpecs specType="warrantyType" value={filters.warranty} onChange={(value) => handleChange("warranty", value)} />
+          </div>
+        ) : null}
 
-        {!simplifiedFields && (
+        {!simplifiedFields && !compact && (
           <div className="field space-y-2">
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Country
@@ -893,7 +936,7 @@ const FilterForm = ({ onFilter, simplifiedFields = false }) => {
                     ? "No cities available"
                     : filters.country
                       ? "All Cities"
-                      : "All Cities (select Country to filter)"
+                      : "All Cities"
               }
               disabled={categoriesLoading}
               isLoading={categoriesLoading}
@@ -901,7 +944,7 @@ const FilterForm = ({ onFilter, simplifiedFields = false }) => {
           </div>
         )}
 
-        {!simplifiedFields && (
+        {!simplifiedFields && !compact && (
           <div className="field space-y-2">
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Location
@@ -921,10 +964,14 @@ const FilterForm = ({ onFilter, simplifiedFields = false }) => {
         )}
 
         {/* Submit */}
-        <div>
+        <div className={compact ? "sticky bottom-0 bg-white pt-2 pb-1" : ""}>
           <button
             type="submit"
-            className="bg-primary-500 text-white px-4 py-2 rounded hover:opacity-90 transition-colors w-full text-xl shadow-lg shadow-gray-400 font-semibold"
+            className={`bg-primary-500 text-white rounded-lg hover:opacity-90 transition-colors w-full font-semibold ${
+              compact
+                ? "px-4 py-2.5 text-sm shadow-sm"
+                : "px-4 py-2 text-xl shadow-lg shadow-gray-400"
+            }`}
           >
             Apply Filters
           </button>

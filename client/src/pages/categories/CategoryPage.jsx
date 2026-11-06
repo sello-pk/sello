@@ -394,17 +394,31 @@ const CategoryPage = () => {
         ) : (
           // Show individual category listings
           <>
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-              {/* Filters Sidebar */}
-              <div className="lg:col-span-1">
-                <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
-                  <h2 className="text-xl font-semibold mb-4">Filters</h2>
-                  <FilterForm onFilter={handleFilterChange} />
-                </div>
+            <div>
+              <div className="mb-4">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                  {currentCategory?.name} Listings ({total})
+                </h2>
+                <SortAndViewOptions
+                  sortBy={sortBy}
+                  onSortChange={setSortBy}
+                  viewMode={viewMode}
+                  onViewChange={setViewMode}
+                  totalResults={sortedCars.length}
+                  resultLabel="vehicles"
+                  filterContent={({ closeDrawer }) => (
+                    <FilterForm
+                      compact
+                      onFilter={(next) => {
+                        handleFilterChange(next);
+                        closeDrawer?.();
+                      }}
+                    />
+                  )}
+                />
               </div>
 
-              {/* Category Listings */}
-              <div className="lg:col-span-3">
+              <div>
                 {isLoading ? (
                   <div className="text-center py-12">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
@@ -441,19 +455,6 @@ const CategoryPage = () => {
                   </div>
                 ) : (
                   <>
-                    <div className="mb-4">
-                      <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                        {currentCategory?.name} Listings ({total})
-                      </h2>
-                      <SortAndViewOptions
-                        sortBy={sortBy}
-                        onSortChange={setSortBy}
-                        viewMode={viewMode}
-                        onViewChange={setViewMode}
-                        totalResults={sortedCars.length}
-                        resultLabel="vehicles"
-                      />
-                    </div>
                     <div
                       className={`mb-8 ${
                         viewMode === "list"

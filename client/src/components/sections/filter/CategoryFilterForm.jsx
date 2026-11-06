@@ -27,7 +27,7 @@ const toPluralVehicleName = (vehicleType = "") => {
   return `${name}s`;
 };
 
-const CategoryFilterForm = ({ vehicleType, onFilter }) => {
+const CategoryFilterForm = ({ vehicleType, onFilter, compact = false }) => {
   const [availableModels, setAvailableModels] = useState([]);
   const [availableStates, setAvailableStates] = useState([]);
   const [availableCities, setAvailableCities] = useState([]);
@@ -400,24 +400,40 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
 
   return (
     <div className="min-w-0">
-      <div className="flex items-start justify-between gap-3 mb-4 sm:mb-6">
-        <div className="min-w-0">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight">
-            Filter {toPluralVehicleName(vehicleType)}
-          </h2>
-          <p className="text-xs sm:text-sm text-gray-600 mt-1">
-            Find your perfect {vehicleType.toLowerCase()} with advanced filters
-          </p>
+      {compact ? (
+        <div className="mb-3 flex items-center justify-end">
+          <button
+            type="button"
+            onClick={handleClearFilters}
+            className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-primary-600 transition-colors"
+          >
+            Clear all
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={handleClearFilters}
-          className="shrink-0 px-3 sm:px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-        >
-          Clear All
-        </button>
-      </div>
-      <form className="space-y-5 h-auto" onSubmit={handleSubmit}>
+      ) : (
+        <div className="flex items-start justify-between gap-3 mb-4 sm:mb-6">
+          <div className="min-w-0">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight">
+              Filter {toPluralVehicleName(vehicleType)}
+            </h2>
+            <p className="text-xs sm:text-sm text-gray-600 mt-1">
+              Find your perfect {vehicleType.toLowerCase()} with advanced
+              filters
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleClearFilters}
+            className="shrink-0 px-3 sm:px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Clear All
+          </button>
+        </div>
+      )}
+      <form
+        className={`h-auto ${compact ? "space-y-3" : "space-y-5"}`}
+        onSubmit={handleSubmit}
+      >
         {/* Title Search - Full Width */}
         <div className="field space-y-2">
           <label className="block mb-1.5 sm:mb-2 text-sm font-medium text-gray-700">
@@ -453,12 +469,14 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
               />
             </div>
           </div>
-          <RangeFilter
-            type="price"
-            min={0}
-            max={10000000}
-            onChange={(values) => handleRangeChange("price", values)}
-          />
+          {!compact ? (
+            <RangeFilter
+              type="price"
+              min={0}
+              max={10000000}
+              onChange={(values) => handleRangeChange("price", values)}
+            />
+          ) : null}
         </div>
 
         {/* Vehicle Make */}
@@ -531,12 +549,14 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
               />
             </div>
           </div>
-          <RangeFilter
-            type="year"
-            min={1950}
-            max={new Date().getFullYear()}
-            onChange={(values) => handleRangeChange("year", values)}
-          />
+          {!compact ? (
+            <RangeFilter
+              type="year"
+              min={1950}
+              max={new Date().getFullYear()}
+              onChange={(values) => handleRangeChange("year", values)}
+            />
+          ) : null}
         </div>
 
         {/* Mileage - only for vehicle types where relevant */}
@@ -562,12 +582,14 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
                 />
               </div>
             </div>
-            <RangeFilter
-              type="mileage"
-              min={0}
-              max={300000}
-              onChange={(values) => handleRangeChange("mileage", values)}
-            />
+            {!compact ? (
+              <RangeFilter
+                type="mileage"
+                min={0}
+                max={300000}
+                onChange={(values) => handleRangeChange("mileage", values)}
+              />
+            ) : null}
           </div>
         )}
 
@@ -598,12 +620,14 @@ const CategoryFilterForm = ({ vehicleType, onFilter }) => {
                 />
               </div>
             </div>
-            <RangeFilter
-              type="batteryRange"
-              min={50}
-              max={500}
-              onChange={(values) => handleRangeChange("batteryRange", values)}
-            />
+            {!compact ? (
+              <RangeFilter
+                type="batteryRange"
+                min={50}
+                max={500}
+                onChange={(values) => handleRangeChange("batteryRange", values)}
+              />
+            ) : null}
           </div>
         )}
 
