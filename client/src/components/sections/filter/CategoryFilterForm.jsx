@@ -434,18 +434,19 @@ const CategoryFilterForm = ({ vehicleType, onFilter, compact = false }) => {
         className={`h-auto ${compact ? "space-y-3" : "space-y-5"}`}
         onSubmit={handleSubmit}
       >
-        {/* Title Search - Full Width */}
-        <div className="field space-y-2">
-          <label className="block mb-1.5 sm:mb-2 text-sm font-medium text-gray-700">
-            Search by Title
-          </label>
-          <Input
-            inputType="text"
-            value={filters.search}
-            onChange={(e) => handleChange("search", e.target.value)}
-            placeholder={`e.g., ${vehicleType} model`}
-          />
-        </div>
+        {!compact ? (
+          <div className="field space-y-2">
+            <label className="block mb-1.5 sm:mb-2 text-sm font-medium text-gray-700">
+              Search by Title
+            </label>
+            <Input
+              inputType="text"
+              value={filters.search}
+              onChange={(e) => handleChange("search", e.target.value)}
+              placeholder={`e.g., ${vehicleType} model`}
+            />
+          </div>
+        ) : null}
 
         {/* Price */}
         <div className="field space-y-2">
@@ -658,20 +659,26 @@ const CategoryFilterForm = ({ vehicleType, onFilter, compact = false }) => {
                 />
               </div>
             </div>
-            <RangeFilter
-              type="motorPower"
-              min={1}
-              max={500}
-              onChange={(values) => handleRangeChange("motorPower", values)}
-            />
+            {!compact ? (
+              <RangeFilter
+                type="motorPower"
+                min={1}
+                max={500}
+                onChange={(values) => handleRangeChange("motorPower", values)}
+              />
+            ) : null}
           </div>
         )}
 
         {/* Submit Button */}
-        <div className="pt-3 sm:pt-4">
+        <div className={compact ? "sticky bottom-0 bg-white pt-2" : "pt-3 sm:pt-4"}>
           <button
             type="submit"
-            className="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition-colors duration-200 text-sm sm:text-base"
+            className={`w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-lg transition-colors duration-200 ${
+              compact
+                ? "py-2.5 px-4 text-sm shadow-sm"
+                : "py-2.5 sm:py-3 px-4 sm:px-6 text-sm sm:text-base"
+            }`}
           >
             Apply Filters
           </button>
