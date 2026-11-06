@@ -291,15 +291,21 @@ const GetAllCarsSection = () => {
     >
       {listingsStructuredData}
       <div className="min-w-0 max-w-full">
-        <h2 className="text-2xl md:text-3xl font-bold text-[#0B0C1E]">
-          Explore All Vehicles
-        </h2>
-        <p className="text-gray-500 text-sm mt-1">
-          Browse new and used vehicles
-        </p>
+        {isHomePage ? (
+          <>
+            <h2 className="text-2xl md:text-3xl font-bold text-[#0B0C1E]">
+              Explore All Vehicles
+            </h2>
+            <p className="text-gray-500 text-sm mt-1">
+              Browse new and used vehicles
+            </p>
+          </>
+        ) : null}
 
         {/* Tabs: compact row on mobile (short labels), full labels from sm — no horizontal scroll */}
-        <div className="mt-6 flex w-full min-w-0 max-w-full flex-wrap gap-1 p-1 bg-gray-100 rounded-xl sm:flex-nowrap sm:justify-start">
+        <div
+          className={`${isHomePage ? "mt-6" : "mt-5"} flex w-full min-w-0 max-w-full flex-wrap gap-1 p-1 bg-gray-100 rounded-xl sm:flex-nowrap sm:justify-start`}
+        >
           {tabs.map((tab) => (
             <button
               key={tab.id}

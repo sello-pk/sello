@@ -68,10 +68,11 @@ const getRouteSeo = (pathname, search) => {
       path: "/listings",
       skipAppSeo: true,
       seo: {
-        title: "Buy and Sell Cars in Pakistan | Trusted Brands – Sello.pk",
+        title: "Cars for Sale in Pakistan | Browse Used & New Cars – Sello.pk",
         description:
-          "Buy and sell cars in Pakistan with confidence. Explore premium brands, compare models, and connect with trusted sellers on Sello.pk.",
-        keywords: "buy and sell cars, buy and sell cars in Pakistan",
+          "Browse cars for sale in Pakistan on Sello.pk. Filter used and new cars by make, model, city, and price, then connect with trusted sellers nationwide.",
+        keywords:
+          "cars for sale in Pakistan, used cars Pakistan, new cars for sale, buy cars online, sell car Pakistan, car listings Pakistan, Sello.pk",
         canonical: "https://sello.pk/listings",
       },
     },
@@ -79,10 +80,11 @@ const getRouteSeo = (pathname, search) => {
       path: "/cars",
       skipAppSeo: true,
       seo: {
-        title: "Buy and Sell Cars in Pakistan | Trusted Brands – Sello.pk",
+        title: "Cars for Sale in Pakistan | Browse Used & New Cars – Sello.pk",
         description:
-          "Buy and sell cars in Pakistan with confidence. Explore premium brands, compare models, and connect with trusted sellers on Sello.pk.",
-        keywords: "buy and sell cars, buy and sell cars in Pakistan",
+          "Browse cars for sale in Pakistan on Sello.pk. Filter used and new cars by make, model, city, and price, then connect with trusted sellers nationwide.",
+        keywords:
+          "cars for sale in Pakistan, used cars Pakistan, new cars for sale, buy cars online, sell car Pakistan, car listings Pakistan, Sello.pk",
         canonical: "https://sello.pk/listings",
       },
     },
