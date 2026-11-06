@@ -27,8 +27,9 @@ const CarListings = () => {
       />
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0 pt-8 sm:pt-10">
         <header className="mb-2 min-w-0">
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#0B0C1E] leading-tight text-balance">
-            Cars for Sale in Pakistan
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#0B0C1E] leading-tight text-balance max-w-4xl">
+            Find the Best Cars for Sale in Pakistan with Verified Listings &
+            Great Details
           </h1>
           <p className="mt-2 text-sm sm:text-base text-slate-600 max-w-3xl text-pretty">
             Browse used and new car listings across Pakistan. Use filters to
