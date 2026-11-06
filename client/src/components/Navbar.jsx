@@ -171,7 +171,7 @@ const Navbar = () => {
         "Vehicle Verification",
       ].includes(link.name),
   );
-  // Mobile mirrors desktop: primary links + Company / More / Auctions dropdowns
+  // Mobile order: Home, Listings, AI Estimator, Live Auctions, Company, More
   const mobilePrimaryLinks = menuLinks.filter(
     (link) =>
       ![
@@ -717,6 +717,75 @@ const Navbar = () => {
                   </Link>
                 ))}
 
+                {/* Live Auctions Dropdown (mobile) */}
+                <div className="py-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpenMobileAuctionsDropdown((prev) => !prev);
+                      setOpenMobileCompanyDropdown(false);
+                      setOpenMobileMoreDropdown(false);
+                    }}
+                    aria-expanded={openMobileAuctionsDropdown}
+                    aria-haspopup="true"
+                    className={`w-full inline-flex items-center justify-between rounded-md px-2 py-2.5 transition-colors duration-200 ${
+                      isAuctionsActive
+                        ? "text-primary-500 font-semibold bg-primary-50"
+                        : "text-black"
+                    }`}
+                  >
+                    <span>Live Auctions</span>
+                    <FaChevronDown
+                      size={14}
+                      className={`transition-transform duration-200 ${
+                        openMobileAuctionsDropdown ? "rotate-180" : ""
+                      }`}
+                      aria-hidden="true"
+                    />
+                  </button>
+
+                  {openMobileAuctionsDropdown && (
+                    <div className="mt-1 rounded-xl border border-gray-200 bg-white shadow-sm py-2">
+                      {publicAuctionLinks.map((link) => (
+                        <Link
+                          key={link.path}
+                          to={link.path}
+                          onClick={closeDrawer}
+                          role="menuitem"
+                          className={`block px-4 py-2.5 text-base transition-colors ${
+                            isPathMatch(link.path)
+                              ? "text-primary-500 font-semibold bg-primary-50"
+                              : "hover:bg-gray-50"
+                          }`}
+                        >
+                          {link.name}
+                        </Link>
+                      ))}
+
+                      {token && (
+                        <>
+                          <div className="my-2 border-t border-gray-200" />
+                          {userAuctionLinks.map((link) => (
+                            <Link
+                              key={link.path}
+                              to={link.path}
+                              onClick={closeDrawer}
+                              role="menuitem"
+                              className={`block px-4 py-2.5 text-base transition-colors ${
+                                isPathMatch(link.path)
+                                  ? "text-primary-500 font-semibold bg-primary-50"
+                                  : "hover:bg-gray-50"
+                              }`}
+                            >
+                              {link.name}
+                            </Link>
+                          ))}
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+
                 {/* Company Dropdown (mobile) */}
                 <div className="py-1">
                   <button
@@ -807,75 +876,6 @@ const Navbar = () => {
                           {link.name}
                         </Link>
                       ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Live Auctions Dropdown (mobile) */}
-                <div className="py-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setOpenMobileAuctionsDropdown((prev) => !prev);
-                      setOpenMobileCompanyDropdown(false);
-                      setOpenMobileMoreDropdown(false);
-                    }}
-                    aria-expanded={openMobileAuctionsDropdown}
-                    aria-haspopup="true"
-                    className={`w-full inline-flex items-center justify-between rounded-md px-2 py-2.5 transition-colors duration-200 ${
-                      isAuctionsActive
-                        ? "text-primary-500 font-semibold bg-primary-50"
-                        : "text-black"
-                    }`}
-                  >
-                    <span>Live Auctions</span>
-                    <FaChevronDown
-                      size={14}
-                      className={`transition-transform duration-200 ${
-                        openMobileAuctionsDropdown ? "rotate-180" : ""
-                      }`}
-                      aria-hidden="true"
-                    />
-                  </button>
-
-                  {openMobileAuctionsDropdown && (
-                    <div className="mt-1 rounded-xl border border-gray-200 bg-white shadow-sm py-2">
-                      {publicAuctionLinks.map((link) => (
-                        <Link
-                          key={link.path}
-                          to={link.path}
-                          onClick={closeDrawer}
-                          role="menuitem"
-                          className={`block px-4 py-2.5 text-base transition-colors ${
-                            isPathMatch(link.path)
-                              ? "text-primary-500 font-semibold bg-primary-50"
-                              : "hover:bg-gray-50"
-                          }`}
-                        >
-                          {link.name}
-                        </Link>
-                      ))}
-
-                      {token && (
-                        <>
-                          <div className="my-2 border-t border-gray-200" />
-                          {userAuctionLinks.map((link) => (
-                            <Link
-                              key={link.path}
-                              to={link.path}
-                              onClick={closeDrawer}
-                              role="menuitem"
-                              className={`block px-4 py-2.5 text-base transition-colors ${
-                                isPathMatch(link.path)
-                                  ? "text-primary-500 font-semibold bg-primary-50"
-                                  : "hover:bg-gray-50"
-                              }`}
-                            >
-                              {link.name}
-                            </Link>
-                          ))}
-                        </>
-                      )}
                     </div>
                   )}
                 </div>
