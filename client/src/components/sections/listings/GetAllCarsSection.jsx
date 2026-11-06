@@ -199,6 +199,24 @@ const GetAllCarsSection = () => {
     [filteredCars, sortBy, isHomePage],
   );
 
+  const handleDrawerFilter = useCallback(
+    (filters) => {
+      if (filters && Object.keys(filters).length > 0) {
+        navigate(buildListingsSearchUrl(filters));
+      }
+    },
+    [navigate],
+  );
+
+  const activeFilterCount = [
+    urlSearch,
+    urlCondition,
+    urlTransmission,
+    urlFuelType,
+    urlBodyType,
+    urlVehicleType,
+  ].filter(Boolean).length;
+
   // Prevent rendering on search-results page to avoid conflicts
   if (
     location.pathname === "/search-results" ||
@@ -265,24 +283,6 @@ const GetAllCarsSection = () => {
       </section>
     );
   }
-
-  const handleDrawerFilter = useCallback(
-    (filters) => {
-      if (filters && Object.keys(filters).length > 0) {
-        navigate(buildListingsSearchUrl(filters));
-      }
-    },
-    [navigate],
-  );
-
-  const activeFilterCount = [
-    urlSearch,
-    urlCondition,
-    urlTransmission,
-    urlFuelType,
-    urlBodyType,
-    urlVehicleType,
-  ].filter(Boolean).length;
 
   return (
     <section
