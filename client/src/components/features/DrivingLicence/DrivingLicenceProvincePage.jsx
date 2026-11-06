@@ -330,20 +330,71 @@ const DrivingLicenceProvincePage = () => {
       </section>
 
       <section className="py-12 sm:py-16 bg-white">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-sm text-primary-500 font-semibold mb-2 tracking-wide uppercase">
-            {guide.authorityName}
-          </p>
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
-            About {name} driving licences
-          </h2>
-          <p className="text-slate-600 leading-relaxed text-pretty text-base sm:text-lg">
-            {guide.introduction}
-          </p>
-          <p className="mt-5 inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1.5 text-xs text-slate-500">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-            Last verified: {formatVerifiedDate(guide.lastVerifiedAt)}
-          </p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-[minmax(0,1.4fr)_minmax(240px,0.7fr)] gap-8 lg:gap-12 items-start">
+            <div className="text-left">
+              <p className="inline-flex max-w-full items-center rounded-full bg-primary-50 px-3 py-1 text-xs sm:text-sm font-semibold text-primary-600 mb-4">
+                <span className="truncate">{guide.authorityName}</span>
+              </p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4 leading-tight">
+                About {name} driving licences
+              </h2>
+              <p className="text-slate-600 leading-relaxed text-pretty text-base sm:text-[1.05rem]">
+                {guide.introduction}
+              </p>
+              <p className="mt-6 inline-flex items-center gap-2 text-sm text-slate-500">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                Last verified: {formatVerifiedDate(guide.lastVerifiedAt)}
+              </p>
+            </div>
+
+            <aside className="rounded-2xl border border-slate-200 bg-slate-50 p-5 sm:p-6">
+              <div className="flex items-center gap-4 mb-5">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white border border-slate-200">
+                  {meta.icon ? (
+                    <img
+                      src={meta.icon}
+                      alt=""
+                      className="max-h-[65%] max-w-[65%] object-contain"
+                    />
+                  ) : (
+                    <Building2 className="w-6 h-6 text-slate-500" />
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                    Official channel
+                  </p>
+                  <p className="text-sm font-bold text-slate-900 truncate">
+                    {PORTAL_LABELS[slug] || guide.authorityName}
+                  </p>
+                </div>
+              </div>
+              <ul className="space-y-3 text-sm text-slate-600">
+                <li className="flex items-start gap-2.5">
+                  <Shield className="w-4 h-4 text-primary-500 shrink-0 mt-0.5" />
+                  Guidance on Sello, applications on government portals
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <Lock className="w-4 h-4 text-sky-500 shrink-0 mt-0.5" />
+                  No CNIC or licence number collected here
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <MapPinned className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                  Confirm fees and documents on the live official site
+                </li>
+              </ul>
+              <a
+                href={guide.officialPortalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary-500 px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
+              >
+                Open official portal
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            </aside>
+          </div>
         </div>
       </section>
 
