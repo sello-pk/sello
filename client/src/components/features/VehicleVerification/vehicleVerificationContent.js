@@ -47,7 +47,7 @@ export const PROVINCE_META = {
   balochistan: {
     icon: balochistanIcon,
     accent: "bg-rose-50",
-    portalLabel: "Balochistan Excise Verification",
+    portalLabel: "ETANB / Balochistan Excise Verification",
   },
   "gilgit-baltistan": {
     icon: gilgitBaltistanIcon,
@@ -96,6 +96,7 @@ const buildGuide = ({
   shortDescription,
   authorityName,
   officialPortalUrl,
+  portalHomeUrl,
   introduction,
   howToVerify,
   whatYouCanCheck = sharedWhatYouCanCheck,
@@ -103,36 +104,46 @@ const buildGuide = ({
   faqs,
   seoTitle,
   seoDescription,
-}) => ({
-  slug,
-  name,
-  shortDescription,
-  authorityName,
-  officialPortalUrl,
-  introduction,
-  howToVerify,
-  whatYouCanCheck,
-  tips,
-  actionLinks: [
-    {
-      key: "verify",
-      label: `Open ${PORTAL_LABELS[slug] || "official portal"}`,
-      url: officialPortalUrl,
-      note: "Leaves Sello and opens the government verification site",
-    },
-    {
-      key: "portal",
-      label: "Official portal home",
-      url: officialPortalUrl,
-    },
-  ],
-  sourceUrls: [officialPortalUrl],
-  faqs,
-  seoTitle,
-  seoDescription,
-  lastVerifiedAt: LAST_VERIFIED_AT,
-  isPublished: true,
-});
+  actionNotes = {},
+}) => {
+  const homeUrl = portalHomeUrl || officialPortalUrl;
+  return {
+    slug,
+    name,
+    shortDescription,
+    authorityName,
+    officialPortalUrl,
+    portalHomeUrl: homeUrl,
+    introduction,
+    howToVerify,
+    whatYouCanCheck,
+    tips,
+    actionLinks: [
+      {
+        key: "verify",
+        label: "Verify Vehicle Online",
+        url: officialPortalUrl,
+        note:
+          actionNotes.verify ||
+          "Leaves Sello and opens the official verification form",
+      },
+      {
+        key: "portal",
+        label: "Visit Official Portal",
+        url: homeUrl,
+        note:
+          actionNotes.portal ||
+          "Official department website / services hub",
+      },
+    ],
+    sourceUrls: [...new Set([officialPortalUrl, homeUrl])],
+    faqs,
+    seoTitle,
+    seoDescription,
+    lastVerifiedAt: LAST_VERIFIED_AT,
+    isPublished: true,
+  };
+};
 
 export const VEHICLE_VERIFICATION_GUIDES = [
   buildGuide({
@@ -141,12 +152,17 @@ export const VEHICLE_VERIFICATION_GUIDES = [
     shortDescription: "Verify Punjab vehicle registration records",
     authorityName: "Punjab Excise & Taxation — MTMIS",
     officialPortalUrl: "https://mtmis.excise.punjab.gov.pk/",
+    portalHomeUrl: "https://excise.punjab.gov.pk/",
+    actionNotes: {
+      verify: "Official Punjab MTMIS vehicle verification",
+      portal: "Punjab Excise & Taxation department site",
+    },
     introduction:
       "Punjab vehicle verification is handled through the Motor Transport Management Information System (MTMIS) run by Punjab Excise & Taxation. Use this guide first, then continue on the official portal to check registration details before you buy or sell.",
     howToVerify: [
       "Open the official Punjab MTMIS portal from the action button on this page.",
-      "Enter the vehicle registration number exactly as shown on the registration book.",
-      "Review the published result for make, model, engine/chassis and ownership fields where available.",
+      "Enter the vehicle registration number exactly as shown on the registration book or plate.",
+      "Enter the registration date from the registration book / smart card when the form asks for it, then complete the captcha.",
       "Compare the online result with the physical vehicle and documents before you pay.",
     ],
     faqs: [
@@ -172,13 +188,18 @@ export const VEHICLE_VERIFICATION_GUIDES = [
     shortDescription: "Verify Islamabad vehicle ownership records",
     authorityName: "Islamabad Excise & Taxation",
     officialPortalUrl: "https://islamabadexcise.gov.pk/",
+    portalHomeUrl: "https://islamabadexcise.gov.pk/",
+    actionNotes: {
+      verify: "Official Islamabad Excise site — use Check Vehicle Detail / Vehicle Services",
+      portal: "Islamabad Excise & Taxation department site",
+    },
     introduction:
       "Islamabad Capital Territory vehicle records are managed by Islamabad Excise & Taxation. This page explains what to prepare, then links you to the official Islamabad Excise site for verification.",
     howToVerify: [
-      "Open the official Islamabad Excise portal from the button on this page.",
-      "Locate the vehicle search or verification section on the government site.",
-      "Enter the registration number and review available ownership and registration fields.",
-      "Match results with the registration book and the vehicle before finalizing a deal.",
+      "Open the official Islamabad Excise website from the button on this page.",
+      "Use Online Services / Check Vehicle Detail (Vehicle Services Portal may ask you to sign in with Gmail).",
+      "Enter the registration details requested on the government form.",
+      "Match results with the registration book / smart card and the vehicle before finalizing a deal.",
     ],
     faqs: [
       {
@@ -203,11 +224,16 @@ export const VEHICLE_VERIFICATION_GUIDES = [
     shortDescription: "Check Sindh vehicle registration details",
     authorityName: "Sindh Excise, Taxation & Narcotics Control",
     officialPortalUrl: "https://excise.gos.pk/vehicle/vehicle_search",
+    portalHomeUrl: "https://excise.gos.pk/",
+    actionNotes: {
+      verify: "Official Sindh Excise online vehicle search",
+      portal: "Sindh Excise department website",
+    },
     introduction:
       "Sindh vehicle registration checks are available through the Sindh Excise vehicle search service. Read this guide, then open the official Sindh portal to verify a car or bike registered in Sindh.",
     howToVerify: [
       "Open the official Sindh Excise vehicle search page from this guide.",
-      "Enter the registration number carefully (include city code as shown on the book).",
+      "Choose Four Wheelers or Two Wheelers, then enter the registration number exactly as on the plate.",
       "Review registration details returned by the portal.",
       "Cross-check engine and chassis numbers on the vehicle against the book and portal result.",
     ],
@@ -233,12 +259,17 @@ export const VEHICLE_VERIFICATION_GUIDES = [
     shortDescription: "Access KPK vehicle verification services",
     authorityName: "Khyber Pakhtunkhwa Excise & Taxation",
     officialPortalUrl: "https://www.kpexcise.gov.pk/mvrecords/",
+    portalHomeUrl: "https://www.kpexcise.gov.pk/new/",
+    actionNotes: {
+      verify: "KP Excise MV records / Vehicle Verification service",
+      portal: "KP Excise department website (e-Services)",
+    },
     introduction:
       "Khyber Pakhtunkhwa publishes motor vehicle records through KP Excise online services. Use this page to understand the check, then open the official MV records portal.",
     howToVerify: [
-      "Open the official KP Excise MV records portal from the action button.",
-      "Enter the vehicle registration details requested by the government form.",
-      "Review the returned registration information.",
+      "Open the official KP Excise MV records / Vehicle Verification link from the action button.",
+      "If the form asks for a district, select the registration district, then enter the registration number.",
+      "If the old MV records page redirects, use e-Services → Vehicle Verification on the KP Excise site.",
       "Compare portal data with documents and physical identification numbers on the vehicle.",
     ],
     faqs: [
@@ -262,13 +293,17 @@ export const VEHICLE_VERIFICATION_GUIDES = [
     name: "Balochistan",
     shortDescription: "Open Balochistan Excise vehicle records",
     authorityName: "Balochistan Excise & Taxation",
-    officialPortalUrl:
-      "https://excise.balochistan.gov.pk/home/online-vehicle-verification/",
+    officialPortalUrl: "https://www.etanb.com/vehicle-verification/",
+    portalHomeUrl: "https://excise.balochistan.gov.pk/",
+    actionNotes: {
+      verify: "Official ETANB / Balochistan Excise vehicle verification form",
+      portal: "Balochistan Excise department website",
+    },
     introduction:
       "Balochistan Excise provides online vehicle verification for vehicles registered in the province. This Sello guide explains the safe process and links to the official verification page.",
     howToVerify: [
-      "Open Balochistan Excise online vehicle verification from this page.",
-      "Submit the registration number on the official form only.",
+      "Open the official Balochistan / ETANB vehicle verification form from this page.",
+      "Enter the registration number exactly as on the plate; select the registration district if asked.",
       "Review published registration information.",
       "Confirm numbers on the vehicle and documents match before purchase.",
     ],
@@ -276,7 +311,7 @@ export const VEHICLE_VERIFICATION_GUIDES = [
       {
         question: "Where should I verify a Balochistan-registered car?",
         answer:
-          "Use the official Balochistan Excise online vehicle verification page linked from this guide.",
+          "Use the official ETANB vehicle verification form linked from this guide (also reached via Balochistan Excise online services).",
       },
       {
         question: "Will Sello ask for my CNIC to verify?",
@@ -295,11 +330,16 @@ export const VEHICLE_VERIFICATION_GUIDES = [
     shortDescription: "Check Gilgit-Baltistan vehicle registration details",
     authorityName: "Gilgit-Baltistan Excise",
     officialPortalUrl: "https://gbexcise.gov.pk/vehsearch/vehicle-search.php",
+    portalHomeUrl: "https://gbexcise.gov.pk/",
+    actionNotes: {
+      verify: "Official GB Excise vehicle search form",
+      portal: "Gilgit-Baltistan Excise department website",
+    },
     introduction:
       "Gilgit-Baltistan vehicle search is available through GB Excise. Follow this guide, then continue to the official GB vehicle search page to verify registration details.",
     howToVerify: [
       "Open the official GB Excise vehicle search from the action button.",
-      "Enter the registration number as printed on the registration book.",
+      "Select the registration district and enter the registration number and date from the book.",
       "Review available results from the government database.",
       "Match the result with chassis, engine and paperwork before paying.",
     ],
@@ -326,11 +366,16 @@ export const VEHICLE_VERIFICATION_GUIDES = [
     shortDescription: "Access Azad Kashmir vehicle verification services",
     authorityName: "Azad Jammu & Kashmir IRD",
     officialPortalUrl: "https://ird.ajk.gov.pk/tokentax/verification.php",
+    portalHomeUrl: "https://ird.ajk.gov.pk/",
+    actionNotes: {
+      verify: "Official AJK IRD online MV / token tax verification",
+      portal: "AJK Inland Revenue Department website",
+    },
     introduction:
       "Azad Kashmir vehicle-related checks are provided through AJK IRD services, including token tax verification. Use this guide for context, then open the official AJK portal.",
     howToVerify: [
-      "Open the official AJK IRD token tax / verification page from this guide.",
-      "Enter the details requested on the government form.",
+      "Open the official AJK IRD online MV verification page from this guide.",
+      "Enter CNIC or MV registration number as requested on the government form.",
       "Review the verification response carefully.",
       "Confirm documents and vehicle identification numbers in person before purchase.",
     ],

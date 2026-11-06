@@ -282,24 +282,6 @@ const DrivingLicenceProvincePage = () => {
         </div>
       </section>
 
-      <section className="py-12 sm:py-16 bg-white">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-sm text-primary-500 font-semibold mb-2 tracking-wide uppercase">
-            {guide.authorityName}
-          </p>
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
-            About {name} driving licences
-          </h2>
-          <p className="text-slate-600 leading-relaxed text-pretty text-base sm:text-lg">
-            {guide.introduction}
-          </p>
-          <p className="mt-5 inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1.5 text-xs text-slate-500">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-            Last verified: {formatVerifiedDate(guide.lastVerifiedAt)}
-          </p>
-        </div>
-      </section>
-
       <section
         id="official-actions"
         className="scroll-mt-24 py-12 sm:py-16 bg-slate-50"
@@ -344,6 +326,24 @@ const DrivingLicenceProvincePage = () => {
               </a>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="py-12 sm:py-16 bg-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-sm text-primary-500 font-semibold mb-2 tracking-wide uppercase">
+            {guide.authorityName}
+          </p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
+            About {name} driving licences
+          </h2>
+          <p className="text-slate-600 leading-relaxed text-pretty text-base sm:text-lg">
+            {guide.introduction}
+          </p>
+          <p className="mt-5 inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1.5 text-xs text-slate-500">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+            Last verified: {formatVerifiedDate(guide.lastVerifiedAt)}
+          </p>
         </div>
       </section>
 

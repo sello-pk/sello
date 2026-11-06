@@ -193,10 +193,10 @@ const VehicleVerificationProvincePage = () => {
                 <ExternalLink className="w-4 h-4 shrink-0" />
               </a>
               <a
-                href="#how-to-verify"
+                href="#official-actions"
                 className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 hover:-translate-y-0.5 transition-all"
               >
-                How it works
+                Official actions
               </a>
             </div>
 
@@ -245,6 +245,53 @@ const VehicleVerificationProvincePage = () => {
                 </Link>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="official-actions"
+        className="scroll-mt-24 py-12 sm:py-16 bg-slate-50"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">
+              Official Actions
+            </h2>
+            <p className="text-base text-slate-600 max-w-2xl mx-auto">
+              These buttons leave Sello and open {name} government services.
+              Vehicle checks happen only on official portals.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
+            {(guide.actionLinks || []).map((link, i) => (
+              <a
+                key={`${link.key}-${link.url}`}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-5 hover:border-primary-400 hover:shadow-lg hover:-translate-y-0.5 transition-all"
+              >
+                <div
+                  className={`w-14 h-14 rounded-full flex items-center justify-center mb-4 ${stepVisuals[i % stepVisuals.length].circle}`}
+                >
+                  <img
+                    src={stepVisuals[i % stepVisuals.length].icon}
+                    alt=""
+                    className="w-8 h-8 object-contain"
+                  />
+                </div>
+                <p className="text-base font-bold text-slate-900 mb-1">
+                  {link.label}
+                </p>
+                <p className="text-sm text-slate-500 mb-4 flex-1 leading-relaxed">
+                  {link.note || "Opens official government site"}
+                </p>
+                <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-500 group-hover:gap-2 transition-all">
+                  Continue <ExternalLink className="w-4 h-4" />
+                </span>
+              </a>
+            ))}
           </div>
         </div>
       </section>
