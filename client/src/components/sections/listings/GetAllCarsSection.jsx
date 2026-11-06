@@ -287,7 +287,11 @@ const GetAllCarsSection = () => {
   return (
     <section
       id="explore-vehicles"
-      className="scroll-mt-24 px-3 max-w-8xl mx-auto sm:px-4 md:px-6 lg:px-8 py-10 md:py-12 min-w-0 overflow-x-hidden"
+      className={`scroll-mt-24 min-w-0 overflow-x-hidden ${
+        isHomePage
+          ? "px-3 max-w-8xl mx-auto sm:px-4 md:px-6 lg:px-8 py-10 md:py-12"
+          : "py-5 sm:py-7"
+      }`}
     >
       {listingsStructuredData}
       <div className="min-w-0 max-w-full">
