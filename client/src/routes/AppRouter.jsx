@@ -44,6 +44,7 @@ const DrivingLicenceProvincePage = lazyImport(
       "../components/features/DrivingLicence/DrivingLicenceProvincePage.jsx"
     ),
 );
+const PetrolPrices = lazyImport(() => import("../pages/PetrolPrices.jsx"));
 const OurPrivacyPolicy = lazyImport(() => import("../pages/ourPages/OurPrivacyPolicy.jsx"));
 const TermsCondition = lazyImport(() => import("../pages/ourPages/TermsCondition.jsx"));
 const About = lazyImport(() => import("../pages/about/About.jsx"));
@@ -150,6 +151,7 @@ const AccountDeletionRequests = lazyImport(
   () => import("../pages/admin/AccountDeletionRequests.jsx"),
 );
 const Settings = lazyImport(() => import("../pages/admin/Settings.jsx"));
+const AdminFuelPrices = lazyImport(() => import("../pages/admin/FuelPrices.jsx"));
 const SupportChat = lazyImport(() => import("../pages/admin/SupportChat.jsx"));
 const CustomerRequests = lazyImport(
   () => import("../pages/admin/CustomerRequests.jsx"),
@@ -239,6 +241,7 @@ const AppRouter = () => {
           path="/driving-licence/:provinceSlug"
           element={<DrivingLicenceProvincePage />}
         />
+        <Route path="/petrol-prices" element={<PetrolPrices />} />
         <Route path="/auctions" element={<AuctionsActions />} />
         <Route path="/auctions/guide/:blogId" element={<AuctionGuideDetail />} />
         <Route path="/auctions/live" element={<LiveAuction />} />
@@ -320,6 +323,7 @@ const AppRouter = () => {
           <Route path="/admin/testimonials" element={<Testimonials />} />
           <Route path="/admin/auctions" element={<AuctionManagement />} />
           <Route path="/admin/settings" element={<Settings />} />
+          <Route path="/admin/fuel-prices" element={<AdminFuelPrices />} />
 
           {/* Add other admin routes as needed */}
         </Route>

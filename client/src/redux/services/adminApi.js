@@ -191,6 +191,7 @@ export const adminApi = createApi({
     "Payments",
     "Subscriptions",
     "DeletionRequests",
+    "FuelPrices",
   ],
   endpoints: (builder) => ({
     // Dashboard
@@ -1393,6 +1394,29 @@ export const adminApi = createApi({
       providesTags: ["Auctions"],
       transformResponse: (response) => response?.data || response,
     }),
+    getAdminFuelPrices: builder.query({
+      query: () => "/admin/fuel-prices",
+      providesTags: ["FuelPrices"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    runFuelPriceCheck: builder.mutation({
+      query: (body = {}) => ({
+        url: "/admin/fuel-prices/run-check",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["FuelPrices"],
+      transformResponse: (response) => response?.data || response,
+    }),
+    correctFuelPrice: builder.mutation({
+      query: (body) => ({
+        url: "/admin/fuel-prices/correct",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["FuelPrices"],
+      transformResponse: (response) => response?.data || response,
+    }),
   }),
 });
 
@@ -1537,4 +1561,7 @@ export const {
   useAdminGetPlatformSettingsQuery,
   useAdminUpdatePlatformSettingsMutation,
   useAdminGetAuditLogQuery,
+  useGetAdminFuelPricesQuery,
+  useRunFuelPriceCheckMutation,
+  useCorrectFuelPriceMutation,
 } = adminApi;

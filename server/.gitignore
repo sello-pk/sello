@@ -129,3 +129,7 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Downloaded OGRA fuel publication PDFs
+storage/fuel-publications/
+

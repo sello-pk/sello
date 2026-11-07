@@ -311,11 +311,16 @@ export const api = createApi({
     try {
       const httpMethod = String(args?.method || "GET").toUpperCase();
       const isRead = httpMethod === "GET" || httpMethod === "HEAD";
+      const requestUrl = String(args?.url || "");
+      // Public fuel prices must stay readable even while auction/notification
+      // pollers are in a 429 cooldown — otherwise /petrol-prices flickers error.
+      const bypassRateLimitGate =
+        requestUrl === "/fuel-prices" || requestUrl.startsWith("/fuel-prices?");
 
       // Cooling down after a 429: fail reads locally so pollers don't keep
       // firing requests (each would log another 429). Mutations still go out —
       // they are user-initiated and must not silently disappear.
-      if (isRead && Date.now() < rateLimitedUntil) {
+      if (isRead && !bypassRateLimitGate && Date.now() < rateLimitedUntil) {
         return rateLimitedResult();
       }
 
@@ -523,6 +528,7 @@ export const api = createApi({
     "Listing",
     "SavedCar",
     "Comment",
+    "FuelPrices",
   ],
   endpoints: (builder) => ({
     registerUser: builder.mutation({
@@ -1375,6 +1381,14 @@ export const api = createApi({
       }),
       transformResponse: (response) => response?.data || response,
     }),
+    getFuelPrices: builder.query({
+      query: () => "/fuel-prices",
+      providesTags: ["FuelPrices"],
+      // Keep last good payload longer so a transient 429/network blip
+      // does not blank the public petrol-prices page.
+      keepUnusedDataFor: 300,
+      transformResponse: (response) => response?.data || response,
+    }),
     calculateFuelCost: builder.mutation({
       query: (data) => ({
         url: "/inventory/tools/fuel",
@@ -2189,6 +2203,7 @@ export const {
   useGetMyWalletQuery,
   useCreateDepositMutation,
   useGetMyDepositsQuery,
+  useGetFuelPricesQuery,
   useCalculateMaintenanceCostMutation,
   useCalculateFuelCostMutation,
   useCalculateResaleValueMutation,

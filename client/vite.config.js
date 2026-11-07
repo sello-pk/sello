@@ -93,6 +93,15 @@ export default defineConfig({
     cors: true,
     // Remove COOP/COEP headers to allow Google OAuth popup to work properly
     headers: {},
+    // Local API proxy — use VITE_API_URL=/api (or unset + DEV default) so
+    // /petrol-prices hits the running Express server, not production 404s.
+    proxy: {
+      "/api": {
+        target: "http://127.0.0.1:4002",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 
   build: {

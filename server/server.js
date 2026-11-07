@@ -104,6 +104,20 @@ if (process.env.ENABLE_CRON_JOBS === "true") {
       }
     });
 
+    // OGRA fuel price monitor every 30 minutes
+    cron.default.schedule("*/30 * * * *", async () => {
+      Logger.info("Running OGRA fuel price monitor job...");
+      try {
+        const { runFuelPriceMonitorJob } = await import(
+          "./services/fuelPrices/runFuelPriceJob.js"
+        );
+        const summary = await runFuelPriceMonitorJob();
+        Logger.info("OGRA fuel price monitor completed", summary);
+      } catch (error) {
+        Logger.error("OGRA fuel price monitor cron job failed", error);
+      }
+    });
+
     // Run refresh token cleanup daily at 3 AM
     cron.default.schedule("0 3 * * *", async () => {
       Logger.info("Running refresh token cleanup job...");
