@@ -36,6 +36,10 @@ dotenv.config();
 
 export const app = express();
 
+// Behind nginx/Cloudflare PM2 sees X-Forwarded-For. Without trust proxy,
+// express-rate-limit throws ERR_ERL_UNEXPECTED_X_FORWARDED_FOR and blocks API traffic.
+app.set("trust proxy", 1);
+
 /* ------------------------ SINGLE-SERVICE CLIENT (STATIC) ------------------------ */
 // When the built React client exists (../client/dist), Express serves it on the
 // same origin as the API so the whole app runs as one Render Web Service.
