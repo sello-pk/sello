@@ -91,15 +91,18 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     cors: true,
-    // Remove COOP/COEP headers to allow Google OAuth popup to work properly
-    headers: {},
-    // Local API proxy — use VITE_API_URL=/api (or unset + DEV default) so
-    // /petrol-prices hits the running Express server, not production 404s.
+    // Allow Google OAuth popup to use window.closed (avoids COOP console noise)
+    headers: {
+      "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
+    },
+    // VITE_API_URL=/api → proxy here (avoids CORS). Default target is production
+    // so brands/categories load even when local Mongo is empty. Override with
+    // VITE_PROXY_TARGET=http://127.0.0.1:4002 for a fully local backend.
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:4002",
+        target: process.env.VITE_PROXY_TARGET || "https://api.sello.pk",
         changeOrigin: true,
-        secure: false,
+        secure: true,
       },
     },
   },

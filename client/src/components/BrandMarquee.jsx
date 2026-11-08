@@ -104,7 +104,7 @@ const BrandMarquee = ({ brands: propBrands = [] }) => {
   const brands = useMemo(() => {
     if (makes && makes.length > 0) {
       return makes
-        .filter((brand) => brand.isActive && brand.image)
+        .filter((brand) => brand.isActive !== false)
         .sort((a, b) => (a.order || 0) - (b.order || 0));
     }
     return propBrands || [];
