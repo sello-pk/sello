@@ -20,34 +20,63 @@ function matchAllNumbers(text, pattern) {
   return values;
 }
 
+// OGRA now often rounds pump prices to whole rupees (e.g. 346.00 / 346).
+const PKR = String.raw`(\d{2,3}(?:\.\d{1,2})?)`;
+
 const EXTRACTORS = [
   {
     fuel_type: "motor_spirit",
     label: "Motor Spirit / Petrol (Super)",
     preferred: [
-      /total\s+petrol\s+price[\s\S]{0,160}?(\d{2,3}\.\d{1,2})/i,
+      new RegExp(
+        String.raw`total\s+(?:calculated\s+)?petrol\s+price[\s\S]{0,200}?${PKR}`,
+        "i"
+      ),
+      new RegExp(
+        String.raw`total\s+petrol\s+price\s*\([^)]*\)[\s\S]{0,80}?${PKR}`,
+        "i"
+      ),
     ],
     fallback: [
-      /motor\s+spirit\s*\(?\s*ms\s*\)?[\s\S]{0,40}?(\d{2,3}\.\d{1,2})/i,
-      /(?:^|\n)\s*petrol\s*\(?\s*ms\s*\)?[\s\S]{0,40}?(\d{2,3}\.\d{1,2})/i,
+      new RegExp(
+        String.raw`motor\s+spirit\s*\(?\s*ms\s*\)?[\s\S]{0,40}?${PKR}`,
+        "i"
+      ),
+      new RegExp(
+        String.raw`(?:^|\n)\s*petrol\s*\(?\s*ms\s*\)?[\s\S]{0,40}?${PKR}`,
+        "i"
+      ),
     ],
   },
   {
     fuel_type: "high_speed_diesel",
     label: "High-Speed Diesel",
     preferred: [
-      /total\s+diesel\s+price[\s\S]{0,160}?(\d{2,3}\.\d{1,2})/i,
+      new RegExp(
+        String.raw`total\s+(?:calculated\s+)?diesel\s+price[\s\S]{0,200}?${PKR}`,
+        "i"
+      ),
+      new RegExp(
+        String.raw`total\s+diesel\s+price\s*\([^)]*\)[\s\S]{0,80}?${PKR}`,
+        "i"
+      ),
     ],
     fallback: [
-      /high\s*[- ]?\s*speed\s*diesel\s*\(?\s*hsd\s*\)?[\s\S]{0,40}?(\d{2,3}\.\d{1,2})/i,
+      new RegExp(
+        String.raw`high\s*[- ]?\s*speed\s*diesel\s*\(?\s*hsd\s*\)?[\s\S]{0,40}?${PKR}`,
+        "i"
+      ),
     ],
   },
   {
     fuel_type: "kerosene_oil",
     label: "Kerosene Oil",
     preferred: [
-      /(?:maximum\s+ex[- ]depot\s+sale\s+price|total\s+kerosene[^\n]{0,80})[\s\S]{0,80}?(\d{2,3}\.\d{1,2})/i,
-      /kerosene(?:\s+oil)?[\s\S]{0,40}?(\d{2,3}\.\d{1,2})/i,
+      new RegExp(
+        String.raw`(?:maximum\s+ex[- ]depot\s+sale\s+price|total\s+kerosene[^\n]{0,80})[\s\S]{0,80}?${PKR}`,
+        "i"
+      ),
+      new RegExp(String.raw`kerosene(?:\s+oil)?[\s\S]{0,40}?${PKR}`, "i"),
     ],
     fallback: [],
   },
@@ -55,8 +84,11 @@ const EXTRACTORS = [
     fuel_type: "light_diesel_oil",
     label: "Light Diesel Oil",
     preferred: [
-      /light\s+diesel(?:\s+oil)?[\s\S]{0,40}?(\d{2,3}\.\d{1,2})/i,
-      /\bldo\b[\s\S]{0,40}?(\d{2,3}\.\d{1,2})/i,
+      new RegExp(
+        String.raw`light\s+diesel(?:\s+oil)?[\s\S]{0,40}?${PKR}`,
+        "i"
+      ),
+      new RegExp(String.raw`\bldo\b[\s\S]{0,40}?${PKR}`, "i"),
     ],
     fallback: [],
   },

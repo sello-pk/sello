@@ -104,17 +104,32 @@ export async function runFuelPriceMonitorJob({ forceDocumentRef = null } = {}) {
     const existingHashes = await getExistingHashes();
     const previousPrices = await getPreviousPriceMap();
 
-    // Auto-process only preferred OGRA price-publication build-ups (text-layer PDFs).
-    // Scanned gazette notifications are tracked via discovery but not auto-published.
+    // Prefer newest official build-ups + notified petroleum sheets (incl. companion
+    // downloads near scanned gazette PDFs). price.ogra.org.pk can lag ogra.org.pk.
     const queue = publications
       .filter((p) =>
         forceDocumentRef
           ? p.document_ref === forceDocumentRef
           : Boolean(p.preferred)
       )
-      .slice(0, forceDocumentRef ? 1 : 5);
+      .slice(0, forceDocumentRef ? 1 : 12);
+
+    const publishedEffectiveKeys = new Set();
 
     for (const item of queue) {
+      const effectiveKey = item.effective_date
+        ? new Date(item.effective_date).toISOString().slice(0, 10)
+        : null;
+      if (
+        item.companion_of &&
+        effectiveKey &&
+        publishedEffectiveKeys.has(effectiveKey) &&
+        !forceDocumentRef
+      ) {
+        summary.skipped += 1;
+        continue;
+      }
+
       let publication = await FuelSourcePublication.findOne({
         document_ref: item.document_ref,
       });
@@ -278,6 +293,11 @@ export async function runFuelPriceMonitorJob({ forceDocumentRef = null } = {}) {
         existingHashes.add(extracted.content_hash);
         for (const row of validation.normalizedPrices) {
           previousPrices[row.fuel_type] = row.price;
+        }
+        if (publication.effective_date) {
+          publishedEffectiveKeys.add(
+            new Date(publication.effective_date).toISOString().slice(0, 10)
+          );
         }
 
         summary.published += result.published.filter((p) => !p.skipped).length;

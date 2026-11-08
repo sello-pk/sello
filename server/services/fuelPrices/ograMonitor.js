@@ -23,15 +23,48 @@ const MONTHS = {
 
 export function parseEffectiveDateFromText(text = "") {
   if (!text) return null;
-  const match = String(text).match(
-    /(?:effective(?:\s+dated)?|dated)\s+([A-Za-z]+)\s+(\d{1,2}),?\s+(\d{4})/i
+  const raw = String(text);
+
+  // "Effective Dated November 07, 2026" / "Effective November 7, 2026"
+  const long = raw.match(
+    /(?:effective(?:\s+dated)?|dated|from)\s+([A-Za-z]+)\s+(\d{1,2}),?\s+(\d{4})/i
   );
-  if (!match) return null;
-  const month = MONTHS[match[1].toLowerCase()];
-  const day = Number(match[2]);
-  const year = Number(match[3]);
-  if (month == null || !day || !year) return null;
-  return new Date(Date.UTC(year, month, day));
+  if (long) {
+    const month = MONTHS[long[1].toLowerCase()];
+    const day = Number(long[2]);
+    const year = Number(long[3]);
+    if (month != null && day && year) return new Date(Date.UTC(year, month, day));
+  }
+
+  // "7-Nov-26" / "07-Nov-2026" (common in OGRA build-up sheets)
+  const short = raw.match(
+    /\b(\d{1,2})[-/ ]([A-Za-z]{3,9})[-/ ](\d{2,4})\b/
+  );
+  if (short) {
+    const day = Number(short[1]);
+    const monKey = short[2].toLowerCase();
+    const month =
+      MONTHS[monKey] ??
+      MONTHS[
+        Object.keys(MONTHS).find((k) => k.startsWith(monKey.slice(0, 3))) || ""
+      ];
+    let year = Number(short[3]);
+    if (year < 100) year += 2000;
+    if (month != null && day && year) return new Date(Date.UTC(year, month, day));
+  }
+
+  // "07-11-2026" / "07/11/2026" (POL notification filenames)
+  const dmy = raw.match(/\b(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})\b/);
+  if (dmy) {
+    const day = Number(dmy[1]);
+    const month = Number(dmy[2]) - 1;
+    const year = Number(dmy[3]);
+    if (month >= 0 && month <= 11 && day && year) {
+      return new Date(Date.UTC(year, month, day));
+    }
+  }
+
+  return null;
 }
 
 function formatDateInput(date) {
@@ -69,11 +102,38 @@ function prefersBuildUp(title = "") {
   if (t.includes("ifem")) return false;
   if (t.includes("detail computation")) return false;
   if (t.includes("max ex-depot")) return false;
-  if (t.includes("district") || t.includes("pump wise")) return false;
+  if (t.includes("district") || t.includes("pump wise") || t.includes("pol prices"))
+    return false;
   return (
     t.includes("price publication") ||
-    t.includes("price publications effective")
+    t.includes("price publications effective") ||
+    // Official gazette notifications — often newer than price.ogra.org.pk mirrors
+    (t.includes("petroleum products prices") && t.includes("effective"))
   );
+}
+
+/** Nearby OGRA download IDs often hold the text-layer build-up for a scanned notification. */
+export function companionDownloadCandidates(documentRef, title, listingUrl) {
+  const match = String(documentRef || "").match(/^ogra-download:(\d+)$/);
+  if (!match) return [];
+  const id = Number(match[1]);
+  if (!Number.isFinite(id)) return [];
+  // Prefer nearby older IDs first (build-ups are usually published just before the gazette PDF).
+  const deltas = [-1, -2, -3, -4, -5, -6, -7, -8, 1, 2];
+  return deltas
+    .map((delta) => id + delta)
+    .filter((sibling) => sibling > 0)
+    .map((sibling) => ({
+      document_ref: `ogra-download:${sibling}`,
+      portal_document_id: null,
+      title: `${title} (companion build-up #${sibling})`,
+      source_url: `https://www.ogra.org.pk/download/${sibling}?lang=en`,
+      listing_url: listingUrl,
+      effective_date: parseEffectiveDateFromText(title),
+      preferred: true,
+      channel: "ogra_companion",
+      companion_of: documentRef,
+    }));
 }
 
 export async function discoverOgraPublications() {
@@ -187,6 +247,31 @@ export async function discoverOgraPublications() {
     }
   }
 
+  // For the newest few scanned notifications, probe nearby download IDs for
+  // text-layer build-ups (e.g. Nov 7 notification 18073 → build-up 18071).
+  const newestNotifications = discoveries
+    .filter(
+      (d) =>
+        d.channel === "ogra_notified" &&
+        d.preferred &&
+        d.effective_date &&
+        !d.companion_of
+    )
+    .sort(
+      (a, b) =>
+        (b.effective_date?.getTime() || 0) - (a.effective_date?.getTime() || 0)
+    )
+    .slice(0, 3);
+  for (const note of newestNotifications) {
+    discoveries.push(
+      ...companionDownloadCandidates(
+        note.document_ref,
+        note.title,
+        note.listing_url
+      )
+    );
+  }
+
   // De-dupe by document_ref, prefer build-up titles
   const byRef = new Map();
   for (const item of discoveries) {
@@ -197,10 +282,15 @@ export async function discoverOgraPublications() {
   }
 
   const unique = [...byRef.values()].sort((a, b) => {
-    if (a.preferred !== b.preferred) return a.preferred ? -1 : 1;
     const ad = a.effective_date?.getTime() || 0;
     const bd = b.effective_date?.getTime() || 0;
-    return bd - ad;
+    if (ad !== bd) return bd - ad;
+    // Try text-layer companions before the scanned gazette itself
+    const aComp = Boolean(a.companion_of);
+    const bComp = Boolean(b.companion_of);
+    if (aComp !== bComp) return aComp ? -1 : 1;
+    if (a.preferred !== b.preferred) return a.preferred ? -1 : 1;
+    return 0;
   });
 
   return { publications: unique, errors, checkedAt: new Date() };
