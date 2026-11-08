@@ -61,6 +61,9 @@ import vanCatBlog2 from "./categories/catBlogs/vanCatBlog2.webp";
 import trustLegal from "./images/trustLegal.webp";
 import auctionSchedule from "./images/auctionSchedule.webp";
 
+// Listings Page Images
+import PakistanCarListingsBanner from "./images/PakistanCarListingsBanner.webp";
+
 // Review images for CustomerReviews component - using professional Unsplash people photos
 const review1 =
   "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face&auto=format";
@@ -96,6 +99,7 @@ export const images = {
   mianMotors,
   auctionSchedule,
   trustLegal,
+  PakistanCarListingsBanner,
   review1,
   review2,
   review3,

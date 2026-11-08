@@ -8,6 +8,8 @@ import PartnerOffersSection from "../../components/sections/listings/PartnerOffe
 import SEO from "../../components/common/SEO";
 import { AdSenseSlot } from "../../components/ads";
 
+import { images } from "../../assets/assets.js";
+
 const LISTINGS_SEO = {
   title: "Cars for Sale in Pakistan | Browse Used & New Cars – Sello.pk",
   description:
@@ -27,52 +29,46 @@ const CarListings = () => {
         canonical={LISTINGS_SEO.canonical}
       />
 
-      <header className="relative overflow-hidden border-b border-slate-200/80 bg-[#0B0C1E]">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.35]"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 12% 20%, rgba(255,138,0,0.35), transparent 42%), radial-gradient(circle at 88% 10%, rgba(56,189,248,0.18), transparent 36%), linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%)",
-          }}
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.08]"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(-12deg, transparent, transparent 10px, rgba(255,255,255,0.06) 10px, rgba(255,255,255,0.06) 11px)",
-          }}
-          aria-hidden
-        />
+      <header
+        className={`relative overflow-hidden border-b border-slate-200/80 md:h-[375px]`}
+      >
+        <div className="cover-image absolute">
+          <img
+            src={images.PakistanCarListingsBanner}
+            alt="Pakistan Car Listings Banner"
+          />
+        </div>
+
+        <div className="overlay inset-0 bg-[#050B20]/50 absolute"></div>
 
         <div className="relative max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-7">
-          <div className="flex flex-col gap-3 sm:gap-4 max-w-3xl">
-            <p className="inline-flex w-fit items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.14em] text-primary-400">
+          <div className="flex flex-col gap-3 sm:gap-4 max-w-5xl">
+            <p className="inline-flex w-fit items-center gap-1.5 rounded-full border border-primary px-2.5 py-1 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.14em] text-primary-500">
               Sello listings
             </p>
 
-            <h1 className="text-sm sm:text-base lg:text-lg font-semibold text-white leading-snug tracking-tight text-balance">
+            <h1 className="text-lg sm:text-xl lg:text-2xl md:text-2xl font-semibold text-white leading-snug tracking-tight text-balance pt-2.5">
               Find the Best Cars for Sale in Pakistan with{" "}
-              <span className="text-primary-400">Verified Listings</span> & Great
-              Details
+              <span className="text-primary-500">Verified Listings</span> &
+              Great Details
             </h1>
 
-            <p className="text-xs sm:text-sm text-white/70 max-w-xl text-pretty leading-relaxed">
+            <p className="text-xs sm:text-xl text-gray-100 max-w-3xl text-pretty leading-relaxed">
               Filter by make, model, city, and price — then contact sellers
               directly.
             </p>
 
-            <ul className="mt-1 flex flex-wrap gap-2">
-              <li className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 text-[11px] sm:text-xs font-medium text-white/90">
-                <ShieldCheck className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+            <ul className="mt-8 flex flex-wrap gap-2">
+              <li className="inline-flex items-center gap-1.5 rounded-full bg-primary px-2.5 py-1 text-[11px] sm:text-xs font-medium text-white">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                 Verified listings
               </li>
-              <li className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 text-[11px] sm:text-xs font-medium text-white/90">
-                <SlidersHorizontal className="h-3.5 w-3.5 text-sky-300 shrink-0" />
+              <li className="inline-flex items-center gap-1.5 rounded-full bg-primary px-2.5 py-1 text-[11px] sm:text-xs font-medium text-white">
+                <SlidersHorizontal className="h-3.5 w-3.5 text-sky-400 shrink-0" />
                 Smart filters
               </li>
-              <li className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 text-[11px] sm:text-xs font-medium text-white/90">
-                <MapPin className="h-3.5 w-3.5 text-primary-400 shrink-0" />
+              <li className="inline-flex items-center gap-1.5 rounded-full bg-primary px-2.5 py-1 text-[11px] sm:text-xs font-medium text-white">
+                <MapPin className="h-3.5 w-3.5 text-white shrink-0" />
                 Cities nationwide
               </li>
             </ul>
