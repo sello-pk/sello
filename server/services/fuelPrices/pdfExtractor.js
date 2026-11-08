@@ -26,7 +26,7 @@ const PKR = String.raw`(\d{2,3}(?:\.\d{1,2})?)`;
 const EXTRACTORS = [
   {
     fuel_type: "motor_spirit",
-    label: "Motor Spirit / Petrol (Super)",
+    label: "Premier Euro 5 (Petrol / Motor Spirit)",
     preferred: [
       new RegExp(
         String.raw`total\s+(?:calculated\s+)?petrol\s+price[\s\S]{0,200}?${PKR}`,
@@ -50,7 +50,7 @@ const EXTRACTORS = [
   },
   {
     fuel_type: "high_speed_diesel",
-    label: "High-Speed Diesel",
+    label: "Hi-Cetane Diesel Euro 5 (HSD)",
     preferred: [
       new RegExp(
         String.raw`total\s+(?:calculated\s+)?diesel\s+price[\s\S]{0,200}?${PKR}`,
@@ -70,7 +70,7 @@ const EXTRACTORS = [
   },
   {
     fuel_type: "kerosene_oil",
-    label: "Kerosene Oil",
+    label: "Superior Kerosene Oil (SKO)",
     preferred: [
       new RegExp(
         String.raw`(?:maximum\s+ex[- ]depot\s+sale\s+price|total\s+kerosene[^\n]{0,80})[\s\S]{0,80}?${PKR}`,
@@ -82,7 +82,7 @@ const EXTRACTORS = [
   },
   {
     fuel_type: "light_diesel_oil",
-    label: "Light Diesel Oil",
+    label: "Light Diesel Oil (LDO)",
     preferred: [
       new RegExp(
         String.raw`light\s+diesel(?:\s+oil)?[\s\S]{0,40}?${PKR}`,

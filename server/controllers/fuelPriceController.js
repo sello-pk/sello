@@ -1,4 +1,9 @@
-import FuelPrice, { FUEL_TYPE_LABELS, FUEL_TYPES } from "../models/fuelPriceModel.js";
+import FuelPrice, {
+  FUEL_TYPE_LABELS,
+  FUEL_TYPES,
+  FUEL_CATALOG,
+  FUEL_DEFAULT_UNIT,
+} from "../models/fuelPriceModel.js";
 import FuelPriceHistory from "../models/fuelPriceHistoryModel.js";
 import FuelSourcePublication from "../models/fuelSourcePublicationModel.js";
 import FuelAutomationLog from "../models/fuelAutomationLogModel.js";
@@ -41,18 +46,32 @@ export async function getPublicFuelPrices(req, res) {
       return t > max ? t : max;
     }, 0);
 
+    const withLabels = (rows) =>
+      (rows || []).map((row) => ({
+        ...row,
+        label: FUEL_TYPE_LABELS[row.fuel_type] || row.label,
+      }));
+
     return ok(res, {
-      current,
-      history,
+      current: withLabels(current),
+      history: withLabels(history),
       meta: {
         source_name: "Oil & Gas Regulatory Authority (OGRA)",
         source_portal: "https://price.ogra.org.pk/",
         source_listing: "https://www.ogra.org.pk/notified-petroleum-prices",
+        secondary_source: {
+          name: "Retail boards (PSO / Shell / PakWheels via Trackmate)",
+          api: "https://fuel.trackmate.page/api/prices",
+          note: "Used for Hi-Octane, LPG, and gaps; OGRA wins for Premier Euro 5 & HSD when available.",
+        },
         latest_publication: latestPublication,
         last_verified_at: verifiedAt ? new Date(verifiedAt) : null,
         last_successful_update: lastSuccess?.createdAt || null,
         last_check_at: lastCheck?.createdAt || null,
         labels: FUEL_TYPE_LABELS,
+        catalog: FUEL_CATALOG,
+        default_units: FUEL_DEFAULT_UNIT,
+        fuel_types: FUEL_TYPES,
       },
     });
   } catch (error) {

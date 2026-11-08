@@ -37,8 +37,13 @@ export function validateExtractedPrices({
     if (row.currency && String(row.currency).toUpperCase() !== "PKR") {
       errors.push(`${row.fuel_type}: currency must be PKR`);
     }
-    if (row.unit && !/per[_\s-]?litre/i.test(String(row.unit))) {
-      errors.push(`${row.fuel_type}: unit must be per litre`);
+    if (
+      row.unit &&
+      !/per[_\s-]?(litre|kg|mmbtu|tonne)/i.test(String(row.unit))
+    ) {
+      errors.push(
+        `${row.fuel_type}: unit must be per litre / kg / mmbtu / tonne`
+      );
     }
     if (!Number.isFinite(row.price)) {
       errors.push(`${row.fuel_type}: price is not a number`);

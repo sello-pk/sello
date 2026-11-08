@@ -11,6 +11,7 @@ import { fetchBinary } from "./httpClient.js";
 import { extractFromPdfBuffer } from "./pdfExtractor.js";
 import { validateExtractedPrices } from "./validator.js";
 import { publishVerifiedPrices } from "./publisher.js";
+import { ingestTrackmateFuelPrices } from "./ingestTrackmate.js";
 import { notifyFuelAdmins } from "./notifyAdmin.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -339,6 +340,25 @@ export async function runFuelPriceMonitorJob({ forceDocumentRef = null } = {}) {
           metadata: { document_ref: item.document_ref },
         });
       }
+    }
+
+    // Secondary retail board (PSO / Shell / PakWheels) for Hi-Octane, LPG, SKO, LDO
+    // and as fallback when OGRA PDFs lag. Never overwrites fresher OGRA MS/HSD.
+    try {
+      const trackmate = await ingestTrackmateFuelPrices();
+      summary.trackmate = trackmate;
+      if (trackmate.ok) {
+        summary.published += trackmate.published || 0;
+        summary.skipped += trackmate.skipped || 0;
+      } else {
+        summary.errors.push({
+          source: "trackmate",
+          message: trackmate.error || "Trackmate ingest failed",
+        });
+      }
+    } catch (tmError) {
+      summary.errors.push({ source: "trackmate", message: tmError.message });
+      Logger.error("Trackmate ingest threw", tmError);
     }
 
     await writeLog({

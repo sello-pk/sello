@@ -16,15 +16,35 @@ export async function publishVerifiedPrices({
   publicationId,
   verified_by = "automation",
   notes = null,
+  source_channel = "ogra",
+  /** When true, never overwrite OGRA-sourced Premier Euro 5 / HSD with a weaker channel. */
+  protectOgraCore = false,
 }) {
   const fetched_at = new Date();
   const verified_at = new Date();
   const published = [];
   const effectiveTime = toTime(effective_date);
+  const OGRA_CORE = new Set(["motor_spirit", "high_speed_diesel"]);
 
   for (const row of prices) {
     const current = await FuelPrice.findOne({ fuel_type: row.fuel_type });
 
+    if (
+      protectOgraCore &&
+      OGRA_CORE.has(row.fuel_type) &&
+      current?.source_channel === "ogra" &&
+      current?.publication_status === "published"
+    ) {
+      const curT = toTime(current.effective_date);
+      if (curT != null && (effectiveTime == null || effectiveTime <= curT)) {
+        published.push({
+          fuel_type: row.fuel_type,
+          skipped: true,
+          reason: "ogra_core_protected",
+        });
+        continue;
+      }
+    }
     // Chronological previous snapshot (for history deltas), not whatever is currently displayed.
     const priorHistory = await FuelPriceHistory.findOne({
       fuel_type: row.fuel_type,
@@ -69,6 +89,8 @@ export async function publishVerifiedPrices({
       continue;
     }
 
+    const unit = row.unit || current?.unit || "per_litre";
+
     await FuelPriceHistory.create({
       fuel_type: row.fuel_type,
       label: row.label || FUEL_TYPE_LABELS[row.fuel_type],
@@ -76,7 +98,7 @@ export async function publishVerifiedPrices({
       previous_price,
       change_amount,
       currency: "PKR",
-      unit: "per_litre",
+      unit,
       effective_date,
       source_url,
       source_document,
@@ -86,7 +108,7 @@ export async function publishVerifiedPrices({
       verified_at,
       publication_status: "published",
       verified_by,
-      notes,
+      notes: notes || row.notes || null,
     });
 
     // Current table must always reflect the newest effective_date, never an older backfill.
@@ -116,16 +138,17 @@ export async function publishVerifiedPrices({
           previous_price: displayPrevious,
           change_amount: displayChange,
           currency: "PKR",
-          unit: "per_litre",
+          unit,
           effective_date,
           source_url,
           source_document,
           source_publication_id: publicationId || null,
+          source_channel,
           fetched_at,
           verified_at,
           publication_status: "published",
           verified_by,
-          notes,
+          notes: notes || row.notes || null,
         },
         { upsert: true, new: true, setDefaultsOnInsert: true }
       );
@@ -196,6 +219,7 @@ export async function rebuildCurrentPricesFromHistory() {
         source_url: latest.source_url,
         source_document: latest.source_document,
         source_publication_id: latest.source_publication_id,
+        source_channel: latest.source_channel || "ogra",
         fetched_at: latest.fetched_at,
         verified_at: latest.verified_at,
         publication_status: "published",

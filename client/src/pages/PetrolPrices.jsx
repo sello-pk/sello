@@ -15,10 +15,34 @@ import { useGetFuelPricesQuery } from "../redux/services/api";
 
 const FUEL_ORDER = [
   "motor_spirit",
+  "hi_octane",
   "high_speed_diesel",
+  "e10_gasoline",
   "kerosene_oil",
   "light_diesel_oil",
+  "lpg",
+  "lng",
+  "biodiesel",
+  "jet_fuel",
+  "marine_fuel",
 ];
+
+const unitSuffix = (unit) => {
+  if (!unit) return "Rs / L";
+  if (/kg/i.test(unit)) return "Rs / kg";
+  if (/mmbtu/i.test(unit)) return "Rs / MMBtu";
+  if (/tonne/i.test(unit)) return "Rs / t";
+  return "Rs / L";
+};
+
+const shortFuelLabel = (label = "") =>
+  label
+    .replace(/^Premier Euro 5 \(Petrol \/ Motor Spirit\)$/i, "Premier Euro 5")
+    .replace(/^Octane\+ Euro 5 \(Hi-Octane\)$/i, "Octane+")
+    .replace(/^Hi-Cetane Diesel Euro 5 \(HSD\)$/i, "Diesel (HSD)")
+    .replace(/^Superior Kerosene Oil \(SKO\)$/i, "Kerosene (SKO)")
+    .replace(/^Light Diesel Oil \(LDO\)$/i, "LDO")
+    .replace(/^Liquefied Petroleum Gas \(LPG\)$/i, "LPG");
 
 const formatPkr = (value) => {
   if (value == null || Number.isNaN(Number(value))) return "—";
@@ -218,13 +242,15 @@ const PetrolPrices = () => {
             {petrol && (
               <aside className="fuel-hero-spotlight rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-sm px-5 py-5 sm:px-6">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary-400/90">
-                  Petrol (MS)
+                  Premier Euro 5
                 </p>
                 <p className="mt-2 flex items-baseline gap-2">
                   <span className="text-4xl sm:text-5xl font-bold tracking-tight tabular-nums text-white">
                     {formatPkr(petrol.price)}
                   </span>
-                  <span className="text-sm text-white/50">Rs / L</span>
+                  <span className="text-sm text-white/50">
+                    {unitSuffix(petrol.unit)}
+                  </span>
                 </p>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <ChangeBadge amount={petrol.change_amount} />
@@ -305,53 +331,97 @@ const PetrolPrices = () => {
             30 minutes and will update this page after validation.
           </div>
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {current.map((row, index) => {
-              const isPetrol = row.fuel_type === "motor_spirit";
-              return (
-                <article
-                  key={row.fuel_type}
-                  className={`fuel-price-tile group relative overflow-hidden rounded-2xl border px-4 py-4 transition-all duration-300 hover:-translate-y-0.5 ${
-                    isPetrol
-                      ? "border-primary-200/80 bg-gradient-to-br from-white to-orange-50/60 shadow-[0_12px_28px_rgba(255,138,0,0.08)]"
-                      : "border-stone-200/90 bg-white shadow-[0_8px_24px_rgba(15,23,42,0.04)] hover:border-stone-300"
-                  }`}
-                  style={{ animationDelay: `${index * 60}ms` }}
-                >
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-stone-500 line-clamp-2 min-h-[2.5rem]">
-                    {row.label}
-                  </p>
-                  <p className="mt-1 flex items-baseline gap-1.5">
-                    <span className="text-[1.65rem] font-bold tracking-tight tabular-nums text-stone-900">
-                      {formatPkr(row.price)}
-                    </span>
-                    <span className="text-xs font-medium text-stone-400">
-                      Rs/L
-                    </span>
-                  </p>
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <ChangeBadge amount={row.change_amount} compact />
-                    {row.previous_price != null && (
-                      <span className="text-[11px] text-stone-400 tabular-nums">
-                        prev {formatPkr(row.previous_price)}
+          <>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {current.map((row, index) => {
+                const isPetrol = row.fuel_type === "motor_spirit";
+                const isTrackmate = row.source_channel === "trackmate";
+                return (
+                  <article
+                    key={row.fuel_type}
+                    className={`fuel-price-tile group relative overflow-hidden rounded-2xl border px-4 py-4 transition-all duration-300 hover:-translate-y-0.5 ${
+                      isPetrol
+                        ? "border-primary-200/80 bg-gradient-to-br from-white to-orange-50/60 shadow-[0_12px_28px_rgba(255,138,0,0.08)]"
+                        : "border-stone-200/90 bg-white shadow-[0_8px_24px_rgba(15,23,42,0.04)] hover:border-stone-300"
+                    }`}
+                    style={{ animationDelay: `${index * 60}ms` }}
+                  >
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-stone-500 line-clamp-2 min-h-[2.5rem]">
+                      {row.label}
+                    </p>
+                    <p className="mt-1 flex items-baseline gap-1.5">
+                      <span className="text-[1.65rem] font-bold tracking-tight tabular-nums text-stone-900">
+                        {formatPkr(row.price)}
                       </span>
+                      <span className="text-xs font-medium text-stone-400">
+                        {unitSuffix(row.unit)}
+                      </span>
+                    </p>
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <ChangeBadge amount={row.change_amount} compact />
+                      {row.previous_price != null && (
+                        <span className="text-[11px] text-stone-400 tabular-nums">
+                          prev {formatPkr(row.previous_price)}
+                        </span>
+                      )}
+                    </div>
+                    {row.source_url && (
+                      <a
+                        href={row.source_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-4 inline-flex items-center gap-1 text-[11px] font-medium text-stone-500 opacity-0 group-hover:opacity-100 transition-opacity hover:text-primary-600"
+                      >
+                        {isTrackmate ? "Retail board" : "Source"}
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
                     )}
-                  </div>
-                  {row.source_url && (
-                    <a
-                      href={row.source_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-4 inline-flex items-center gap-1 text-[11px] font-medium text-stone-500 opacity-0 group-hover:opacity-100 transition-opacity hover:text-primary-600"
-                    >
-                      Source PDF
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
-                  )}
-                </article>
-              );
-            })}
-          </div>
+                  </article>
+                );
+              })}
+            </div>
+
+            {Array.isArray(meta.catalog) && meta.catalog.length > 0 && (
+              <div className="mt-8 space-y-4">
+                <h2 className="text-lg font-semibold tracking-tight text-stone-900">
+                  All fuel categories
+                </h2>
+                {meta.catalog.map((group) => {
+                  const priced = new Set(current.map((r) => r.fuel_type));
+                  return (
+                    <div key={group.group}>
+                      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-500 mb-2">
+                        {group.group}
+                      </p>
+                      <ul className="grid gap-2 sm:grid-cols-2">
+                        {(group.fuels || []).map((id) => {
+                          const label = meta.labels?.[id] || id;
+                          const has = priced.has(id);
+                          return (
+                            <li
+                              key={id}
+                              className="flex items-center justify-between gap-3 rounded-xl border border-stone-200/80 bg-white px-3 py-2.5 text-sm"
+                            >
+                              <span className="text-stone-800 font-medium">
+                                {label}
+                              </span>
+                              <span
+                                className={`text-[11px] font-semibold ${
+                                  has ? "text-emerald-700" : "text-stone-400"
+                                }`}
+                              >
+                                {has ? "Live" : "Awaiting rate"}
+                              </span>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </>
         )}
 
         <section className="mt-12 sm:mt-14">
@@ -384,7 +454,7 @@ const PetrolPrices = () => {
                         : "text-stone-600 hover:text-stone-900"
                     }`}
                   >
-                    {opt.label.replace("Motor Spirit / ", "").replace("High-Speed ", "")}
+                    {shortFuelLabel(opt.label)}
                   </button>
                 );
               })}
