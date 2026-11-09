@@ -45,6 +45,7 @@ import insuranceIcon from "../../../assets/images/verification/insurance.png";
 import fitnessCertificateIcon from "../../../assets/images/verification/fitnessCertificate.png";
 import { LANDING_PROVINCES } from "./vehicleVerificationContent";
 import VehicleVerificationGuideSection from "./VehicleVerificationGuideSection";
+import { FaqAccordionItem } from "../../common/FaqAccordion";
 
 const provinces = LANDING_PROVINCES;
 
@@ -287,38 +288,6 @@ const trustBar = [
   { icon: Lock, label: "100% Confidential Information" },
   { icon: Headset, label: "Dedicated 24/7 Support" },
 ];
-
-const AccordionItem = ({
-  title,
-  children,
-  open,
-  onToggle,
-  headingAs = "h3",
-}) => {
-  const Heading = headingAs;
-  return (
-    <div className="rounded-2xl bg-white shadow-sm border border-slate-100 overflow-hidden">
-      <button
-        type="button"
-        onClick={onToggle}
-        className="w-full px-5 py-4 text-left flex items-center justify-between gap-4"
-        aria-expanded={open}
-      >
-        <Heading className="text-base font-semibold text-slate-900">
-          {title}
-        </Heading>
-        <span className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center shrink-0">
-          {open ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-        </span>
-      </button>
-      {open ? (
-        <div className="px-5 pb-5 text-slate-600 text-sm leading-relaxed space-y-3">
-          {children}
-        </div>
-      ) : null}
-    </div>
-  );
-};
 
 const scrollToId = (id) => (event) => {
   event.preventDefault();
@@ -653,7 +622,7 @@ const VehicleVerificationPage = () => {
           </h2>
           <div className="space-y-3">
             {faqs.map((faq, i) => (
-              <AccordionItem
+              <FaqAccordionItem
                 key={faq.q}
                 title={faq.q}
                 open={openFaq === i}
@@ -661,7 +630,7 @@ const VehicleVerificationPage = () => {
                 headingAs="h3"
               >
                 <p>{faq.a}</p>
-              </AccordionItem>
+              </FaqAccordionItem>
             ))}
           </div>
         </div>

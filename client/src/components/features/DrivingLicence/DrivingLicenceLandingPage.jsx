@@ -43,6 +43,7 @@ import {
   LAST_VERIFIED_AT,
   formatVerifiedDate,
 } from "./drivingLicenceContent";
+import { FaqAccordionItem } from "../../common/FaqAccordion";
 
 const scrollToId = (id) => (event) => {
   event.preventDefault();
@@ -50,28 +51,6 @@ const scrollToId = (id) => (event) => {
     .getElementById(id)
     ?.scrollIntoView({ behavior: "smooth", block: "start" });
 };
-
-const AccordionItem = ({ title, open, onToggle, children }) => (
-  <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
-    <button
-      type="button"
-      onClick={onToggle}
-      className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left"
-    >
-      <h3 className="text-sm sm:text-base font-semibold text-slate-900">
-        {title}
-      </h3>
-      <span className="text-slate-400 text-xl leading-none shrink-0">
-        {open ? "−" : "+"}
-      </span>
-    </button>
-    {open ? (
-      <div className="px-5 pb-5 text-slate-600 text-sm leading-relaxed">
-        {children}
-      </div>
-    ) : null}
-  </div>
-);
 
 const whyLicence = [
   {
@@ -487,14 +466,14 @@ const DrivingLicenceLandingPage = () => {
           </h2>
           <div className="space-y-3">
             {LANDING_FAQS.map((faq, i) => (
-              <AccordionItem
+              <FaqAccordionItem
                 key={faq.q}
                 title={faq.q}
                 open={openFaq === i}
                 onToggle={() => setOpenFaq(openFaq === i ? null : i)}
               >
                 <p>{faq.a}</p>
-              </AccordionItem>
+              </FaqAccordionItem>
             ))}
           </div>
         </div>

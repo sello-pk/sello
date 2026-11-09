@@ -1,51 +1,7 @@
 import React, { useState } from "react";
-import { ChevronDown, ListChecks, Sparkles } from "lucide-react";
+import { ListChecks, Sparkles } from "lucide-react";
 import StructuredData from "./StructuredData";
-
-const AccordionItem = ({ title, children, open, onToggle }) => (
-  <div
-    className={`overflow-hidden rounded-2xl border transition-all duration-300 ${
-      open
-        ? "border-primary-500/30 bg-white shadow-lg shadow-primary-500/5"
-        : "border-slate-100 bg-white shadow-sm hover:shadow-md"
-    }`}
-  >
-    <button
-      type="button"
-      onClick={onToggle}
-      className="w-full px-5 sm:px-6 py-5 text-left flex items-center justify-between gap-4 group"
-      aria-expanded={open}
-    >
-      <h3
-        className={`text-base sm:text-lg font-semibold transition-colors ${
-          open ? "text-primary-500" : "text-slate-900 group-hover:text-primary-500"
-        }`}
-      >
-        {title}
-      </h3>
-      <span
-        className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all ${
-          open
-            ? "bg-gradient-to-br from-[#FFA602] to-amber-500 text-white rotate-180"
-            : "bg-slate-100 text-slate-500 group-hover:bg-primary-50 group-hover:text-primary-500"
-        }`}
-      >
-        <ChevronDown className="w-4 h-4" />
-      </span>
-    </button>
-    <div
-      className={`grid transition-all duration-300 ${
-        open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-      }`}
-    >
-      <div className="overflow-hidden">
-        <div className="px-5 sm:px-6 pb-6 text-slate-600 text-sm sm:text-base leading-relaxed border-t border-slate-100 pt-4">
-          {children}
-        </div>
-      </div>
-    </div>
-  </div>
-);
+import { FaqAccordionItem } from "./FaqAccordion";
 
 const CityLandingContent = ({ content, cityName }) => {
   const [openFaq, setOpenFaq] = useState(null);
@@ -179,14 +135,14 @@ const CityLandingContent = ({ content, cityName }) => {
             </div>
             <div className="space-y-3 max-w-3xl mx-auto">
               {content.faqs.map((faq, i) => (
-                <AccordionItem
+                <FaqAccordionItem
                   key={faq.question}
                   title={faq.question}
                   open={openFaq === i}
                   onToggle={() => setOpenFaq(openFaq === i ? null : i)}
                 >
                   <p>{faq.answer}</p>
-                </AccordionItem>
+                </FaqAccordionItem>
               ))}
             </div>
           </div>

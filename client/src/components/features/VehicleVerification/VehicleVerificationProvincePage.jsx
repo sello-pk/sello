@@ -28,6 +28,7 @@ import {
   formatVerifiedDate,
   VEHICLE_VERIFICATION_GUIDES,
 } from "./vehicleVerificationContent";
+import { FaqAccordionItem } from "../../common/FaqAccordion";
 
 const stepVisuals = [
   { icon: enterDetailsIcon, circle: "bg-emerald-50" },
@@ -35,41 +36,6 @@ const stepVisuals = [
   { icon: reportIcon, circle: "bg-violet-50" },
   { icon: confidenceIcon, circle: "bg-amber-50" },
 ];
-
-const AccordionItem = ({ title, open, onToggle, children }) => (
-  <div
-    className={`rounded-2xl border bg-white overflow-hidden transition-colors ${
-      open ? "border-primary-300 shadow-sm" : "border-slate-200 hover:border-slate-300"
-    }`}
-  >
-    <button
-      type="button"
-      onClick={onToggle}
-      className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left"
-      aria-expanded={open}
-    >
-      <h3 className="text-sm sm:text-base font-semibold text-slate-900">
-        {title}
-      </h3>
-      <ChevronDown
-        className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200 ${
-          open ? "rotate-180 text-primary-500" : ""
-        }`}
-      />
-    </button>
-    <div
-      className={`grid transition-[grid-template-rows] duration-200 ease-out ${
-        open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-      }`}
-    >
-      <div className="overflow-hidden">
-        <div className="px-5 pb-5 text-slate-600 text-sm leading-relaxed border-t border-slate-100 pt-4">
-          {children}
-        </div>
-      </div>
-    </div>
-  </div>
-);
 
 const provinceDisplayName = (slug, fallback) => {
   if (fallback) return fallback;
@@ -452,14 +418,14 @@ const VehicleVerificationProvincePage = () => {
             </h2>
             <div className="space-y-3">
               {guide.faqs.map((faq, i) => (
-                <AccordionItem
+                <FaqAccordionItem
                   key={faq.question}
                   title={faq.question}
                   open={openFaq === i}
                   onToggle={() => setOpenFaq(openFaq === i ? null : i)}
                 >
                   <p>{faq.answer}</p>
-                </AccordionItem>
+                </FaqAccordionItem>
               ))}
             </div>
           </div>

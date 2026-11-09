@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { images } from "../../../assets/assets";
 import SEO from "../../../components/common/SEO";
+import { FaqAccordionItem } from "../../../components/common/FaqAccordion";
 
 // ==================== CUSTOM COMPONENTS ====================
 
@@ -45,72 +46,8 @@ const CardTitle = ({ children, className = "" }) => {
   );
 };
 
-// Accordion Components
-const Accordion = ({ children, className = "" }) => {
-  const [openItem, setOpenItem] = React.useState(null);
-
-  return (
-    <div className={`space-y-2 ${className}`}>
-      {React.Children.map(children, (child) =>
-        React.cloneElement(child, {
-          openItem,
-          setOpenItem,
-        }),
-      )}
-    </div>
-  );
-};
-
-const AccordionItem = ({ children, value, openItem, setOpenItem }) => {
-  const isOpen = openItem === value;
-
-  return (
-    <div className="border border-slate-200 rounded-lg overflow-hidden">
-      {React.Children.map(children, (child) =>
-        React.cloneElement(child, {
-          isOpen,
-          onToggle: () => setOpenItem(isOpen ? null : value),
-        }),
-      )}
-    </div>
-  );
-};
-
-const AccordionTrigger = ({ children, isOpen, onToggle, className = "" }) => {
-  return (
-    <button
-      onClick={onToggle}
-      className={`w-full px-4 py-3 text-left flex items-center justify-between hover:bg-slate-50 transition-colors ${className}`}
-    >
-      <span className="font-medium text-slate-900">{children}</span>
-      <svg
-        className={`w-4 h-4 text-slate-500 transition-transform ${isOpen ? "rotate-180" : ""}`}
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M19 9l-7 7-7-7"
-        />
-      </svg>
-    </button>
-  );
-};
-
-const AccordionContent = ({ children, isOpen, className = "" }) => {
-  return (
-    <div
-      className={`px-4 pb-3 text-slate-500 ${isOpen ? "block" : "hidden"} ${className}`}
-    >
-      {children}
-    </div>
-  );
-};
-
 export default function TrustLegal() {
+  const [openFaq, setOpenFaq] = React.useState(null);
   const sections = [
     {
       icon: Shield,
@@ -338,18 +275,20 @@ By participating in our auctions, you acknowledge and accept these limitations.`
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Accordion className="w-full">
+              <div className="space-y-3">
                 {faqs.map((faq, index) => (
-                  <AccordionItem key={index} value={`faq-${index}`}>
-                    <AccordionTrigger className="text-left">
-                      {faq.question}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-slate-500">
-                      {faq.answer}
-                    </AccordionContent>
-                  </AccordionItem>
+                  <FaqAccordionItem
+                    key={index}
+                    title={faq.question}
+                    open={openFaq === index}
+                    onToggle={() =>
+                      setOpenFaq(openFaq === index ? null : index)
+                    }
+                  >
+                    <p className="leading-relaxed">{faq.answer}</p>
+                  </FaqAccordionItem>
                 ))}
-              </Accordion>
+              </div>
             </CardContent>
           </Card>
         </motion.div>

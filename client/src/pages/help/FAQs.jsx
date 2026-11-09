@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SEO from "../../components/common/SEO";
+import { FaqAccordionItem } from "../../components/common/FaqAccordion";
 import {
-  FiChevronDown,
-  FiChevronUp,
   FiMail,
   FiPhone,
   FiMessageCircle,
@@ -211,40 +210,18 @@ const FAQs = () => {
             Frequently Asked Questions
           </h1>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {faqs.map((faq, index) => (
-              <div
+              <FaqAccordionItem
                 key={index}
-                className="border border-gray-200 rounded-lg overflow-hidden"
+                title={faq.question}
+                open={openIndex === index}
+                onToggle={() =>
+                  setOpenIndex(openIndex === index ? null : index)
+                }
               >
-                <button
-                  onClick={() =>
-                    setOpenIndex(openIndex === index ? null : index)
-                  }
-                  className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
-                  aria-expanded={openIndex === index}
-                  aria-controls={`faq-answer-${index}`}
-                >
-                  <span className="font-semibold text-gray-900 pr-4">
-                    {faq.question}
-                  </span>
-                  {openIndex === index ? (
-                    <FiChevronUp className="h-5 w-5 text-gray-500 flex-shrink-0" />
-                  ) : (
-                    <FiChevronDown className="h-5 w-5 text-gray-500 flex-shrink-0" />
-                  )}
-                </button>
-                {openIndex === index && (
-                  <div
-                    id={`faq-answer-${index}`}
-                    className="px-6 py-4 bg-gray-50 border-t border-gray-200"
-                  >
-                    <p className="text-gray-700 whitespace-pre-line">
-                      {faq.answer}
-                    </p>
-                  </div>
-                )}
-              </div>
+                <p className="whitespace-pre-line">{faq.answer}</p>
+              </FaqAccordionItem>
             ))}
           </div>
 

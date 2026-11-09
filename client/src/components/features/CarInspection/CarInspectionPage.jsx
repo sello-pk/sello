@@ -32,6 +32,7 @@ import { FiZap, FiShield, FiClock } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import SEO from "../../common/SEO";
 import NewsLatter from "../../utils/NewsLatter";
+import { FaqAccordionItem } from "../../common/FaqAccordion";
 
 const benefits = [
   "Detailed vehicle condition assessment",
@@ -490,22 +491,14 @@ const CarInspectionPage = () => {
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-10 text-center">Frequently Asked Questions</h2>
           <div className="space-y-3">
             {faqs.map((faq, i) => (
-              <div key={i} className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-gray-300 hover:shadow-sm transition-all">
-                <button
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between p-5 text-left gap-4"
-                >
-                  <span className="text-sm font-medium text-gray-800">{faq.q}</span>
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all ${openFaq === i ? "bg-[#FFA602] rotate-180" : "bg-gray-100"}`}>
-                    <FaChevronDown size={12} className={openFaq === i ? "text-white" : "text-gray-500"} />
-                  </div>
-                </button>
-                <div className={`overflow-hidden transition-all duration-300 ${openFaq === i ? "max-h-40" : "max-h-0"}`}>
-                  <div className="px-5 pb-5 text-gray-500 text-sm leading-relaxed border-t border-gray-100 pt-4">
-                    {faq.a}
-                  </div>
-                </div>
-              </div>
+              <FaqAccordionItem
+                key={i}
+                title={faq.q}
+                open={openFaq === i}
+                onToggle={() => setOpenFaq(openFaq === i ? null : i)}
+              >
+                <p>{faq.a}</p>
+              </FaqAccordionItem>
             ))}
           </div>
         </div>
