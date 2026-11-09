@@ -1211,7 +1211,7 @@ export default function EstimatorBlogsSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.4, delay: index * 0.06 }}
-                className={`group flex flex-col rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#FDFBF7] lg:items-start ${isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"}`}
+                className={`group flex flex-col items-stretch rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#FDFBF7] ${isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"}`}
               >
                 {/* Content area (light beige) */}
                 <div className="relative flex-1 flex flex-col justify-between p-8 lg:p-10 min-h-[280px] lg:min-h-0 lg:min-w-0">
@@ -1249,11 +1249,11 @@ export default function EstimatorBlogsSection() {
                 </div>
 
                 {/* Image area - stretches with card so no gap; image fills and covers */}
-                <div className="relative w-full lg:w-[520px] lg:flex-shrink-0 h-72 lg:h-[400px] lg:min-h-[400px] lg:self-stretch overflow-hidden">
+                <div className="relative w-full lg:w-[480px] xl:w-[520px] lg:flex-shrink-0 h-72 sm:h-80 lg:h-auto min-h-[280px] lg:min-h-0 self-stretch overflow-hidden">
                   <img
                     src={post.image}
                     alt={post.title}
-                    className="absolute inset-0 size-full block object-cover object-center opacity-90"
+                    className="absolute inset-0 w-full h-full block object-cover object-center opacity-90"
                     loading="lazy"
                   />
                   <div className="absolute top-5 left-5">

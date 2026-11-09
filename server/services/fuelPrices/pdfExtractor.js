@@ -94,22 +94,63 @@ const EXTRACTORS = [
   },
 ];
 
+const TABLE_HEADER = /existing[\s\S]{0,80}?new[\s\S]{0,80}?(?:increase|decrease)/i;
+
+const PRESS_RELEASE_ROWS = [
+  {
+    fuel_type: "motor_spirit",
+    pattern:
+      /\bpetrol\s*\(\s*ms\s*\)\s+(\d{2,3}(?:\.\d{1,2})?)\s+(\d{2,3}(?:\.\d{1,2})?)/i,
+  },
+  {
+    fuel_type: "high_speed_diesel",
+    pattern:
+      /\bdiesel\s*\(\s*hsd\s*\)\s+(\d{2,3}(?:\.\d{1,2})?)\s+(\d{2,3}(?:\.\d{1,2})?)/i,
+  },
+];
+
+/**
+ * OGRA press releases print a small table:
+ *   Product | Existing (5-Nov-26) | New (6-Nov-26) | Increase/(Decrease)
+ * The second numeric column is the newly notified ex-depot rate.
+ */
+function extractPressReleaseTable(text) {
+  const prices = new Map();
+  if (!TABLE_HEADER.test(text)) return prices;
+
+  for (const rule of PRESS_RELEASE_ROWS) {
+    const match = text.match(rule.pattern);
+    if (!match) continue;
+    const value = Number(match[2]);
+    if (Number.isFinite(value)) prices.set(rule.fuel_type, value);
+  }
+  return prices;
+}
+
 export function extractPricesFromText(rawText = "", meta = {}) {
   const text = normalizeWhitespace(rawText);
   const prices = [];
   const warnings = [];
+  const tablePrices = extractPressReleaseTable(text);
 
   for (const rule of EXTRACTORS) {
     let values = [];
-    for (const pattern of rule.preferred) {
-      values = values.concat(matchAllNumbers(text, pattern));
-    }
     let usedFallback = false;
-    if (!values.length) {
-      for (const pattern of rule.fallback) {
+
+    if (tablePrices.has(rule.fuel_type)) {
+      // Official press-release table: Existing | New | Increase/(Decrease).
+      // Always publish the New column, never the superseded Existing rate.
+      values = [tablePrices.get(rule.fuel_type)];
+    } else {
+      for (const pattern of rule.preferred) {
         values = values.concat(matchAllNumbers(text, pattern));
       }
-      usedFallback = values.length > 0;
+      if (!values.length) {
+        for (const pattern of rule.fallback) {
+          values = values.concat(matchAllNumbers(text, pattern));
+        }
+        usedFallback = values.length > 0;
+      }
     }
 
     if (!values.length) {

@@ -319,7 +319,7 @@ export default function AuctionBlogsSection() {
             return (
               <article
                 key={post.id}
-                className={`group flex flex-col rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#FDFBF7] lg:items-start ${isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"}`}
+                className={`group flex flex-col items-stretch rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#FDFBF7] ${isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"}`}
               >
                 <div className="relative flex-1 flex flex-col justify-between p-5 sm:p-8 lg:p-10 min-h-[260px] lg:min-h-0 lg:min-w-0">
                   <div>
@@ -356,11 +356,11 @@ export default function AuctionBlogsSection() {
                   </div>
                 </div>
 
-                <div className="relative w-full lg:w-[520px] lg:flex-shrink-0 h-56 sm:h-72 lg:h-[400px] lg:min-h-[400px] lg:self-stretch overflow-hidden">
+                <div className="relative w-full lg:w-[480px] xl:w-[520px] lg:flex-shrink-0 h-56 sm:h-72 lg:h-auto min-h-[260px] lg:min-h-0 self-stretch overflow-hidden">
                   <img
                     src={post.image}
                     alt={post.title}
-                    className="absolute inset-0 size-full block object-cover object-center opacity-90"
+                    className="absolute inset-0 w-full h-full block object-cover object-center opacity-90"
                     loading="lazy"
                   />
                   <div className="absolute top-5 left-5">

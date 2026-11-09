@@ -32,7 +32,7 @@ export const FUEL_TYPE_LABELS = {
 /** Display order + grouping for public UI. */
 export const FUEL_CATALOG = [
   {
-    group: "Retail automotive",
+    group: "Retail Automotive Fuels (Petrol & Diesel)",
     fuels: [
       "motor_spirit",
       "hi_octane",
@@ -41,15 +41,15 @@ export const FUEL_CATALOG = [
     ],
   },
   {
-    group: "Industrial & utility",
-    fuels: ["kerosene_oil", "light_diesel_oil"],
-  },
-  {
-    group: "Gaseous & alternate",
+    group: "Gaseous & Alternate Fuels",
     fuels: ["lpg", "lng", "biodiesel"],
   },
   {
-    group: "Aviation & marine",
+    group: "Industrial & Utility Fuels",
+    fuels: ["kerosene_oil", "light_diesel_oil"],
+  },
+  {
+    group: "Aviation & Marine Fuels",
     fuels: ["jet_fuel", "marine_fuel"],
   },
 ];

@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import RouteLoader from "../components/common/RouteLoader";
 import { lazyImport } from "../utils/lazyImports.js";
 import {
@@ -44,7 +44,7 @@ const DrivingLicenceProvincePage = lazyImport(
       "../components/features/DrivingLicence/DrivingLicenceProvincePage.jsx"
     ),
 );
-const PetrolPrices = lazyImport(() => import("../pages/PetrolPrices.jsx"));
+const FuelPrices = lazyImport(() => import("../pages/FuelPrices.jsx"));
 const OurPrivacyPolicy = lazyImport(() => import("../pages/ourPages/OurPrivacyPolicy.jsx"));
 const TermsCondition = lazyImport(() => import("../pages/ourPages/TermsCondition.jsx"));
 const About = lazyImport(() => import("../pages/about/About.jsx"));
@@ -60,6 +60,9 @@ const GenericVehicleCategoryPage = lazyImport(
 const BlogDetails = lazyImport(() => import("../pages/blog/BlogDetails.jsx"));
 const EstimatorGuideDetail = lazyImport(
   () => import("../pages/features/EstimatorGuideDetail.jsx"),
+);
+const VehicleVerificationGuideDetail = lazyImport(
+  () => import("../pages/features/VehicleVerificationGuideDetail.jsx"),
 );
 const AuctionGuideDetail = lazyImport(
   () => import("../pages/features/AuctionGuideDetail.jsx"),
@@ -230,6 +233,10 @@ const AppRouter = () => {
         />
         <Route path="/vehicle-verification" element={<VehicleVerification />} />
         <Route
+          path="/vehicle-verification/guide/:blogId"
+          element={<VehicleVerificationGuideDetail />}
+        />
+        <Route
           path="/vehicle-verification/:provinceSlug"
           element={<VehicleVerificationProvincePage />}
         />
@@ -241,7 +248,12 @@ const AppRouter = () => {
           path="/driving-licence/:provinceSlug"
           element={<DrivingLicenceProvincePage />}
         />
-        <Route path="/petrol-prices" element={<PetrolPrices />} />
+        <Route path="/fuel-prices" element={<FuelPrices />} />
+        {/* Legacy URL: keep old links and indexed pages working. */}
+        <Route
+          path="/petrol-prices"
+          element={<Navigate to="/fuel-prices" replace />}
+        />
         <Route path="/auctions" element={<AuctionsActions />} />
         <Route path="/auctions/guide/:blogId" element={<AuctionGuideDetail />} />
         <Route path="/auctions/live" element={<LiveAuction />} />

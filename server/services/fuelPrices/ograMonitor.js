@@ -3,6 +3,7 @@ import {
   OGRA_PRICE_PORTAL,
   OGRA_NOTIFIED_LISTING,
   OGRA_PRICE_PUBLICATION_LISTING,
+  OGRA_PRESS_RELEASES_LISTING,
 } from "./constants.js";
 import { fetchText } from "./httpClient.js";
 
@@ -96,6 +97,23 @@ function isPricePublicationTitle(title = "") {
   );
 }
 
+/** "OGRA Announces Fuel Prices for November 06, 2026" press releases. */
+function isPressReleaseTitle(title = "") {
+  const t = title.toLowerCase();
+  return t.includes("announces fuel prices") || t.includes("fuel prices for");
+}
+
+/** Publication date printed in a press-release title (effective date is parsed from the PDF). */
+function parseReleaseTitleDate(title = "") {
+  const match = String(title).match(/([A-Za-z]+)\s+(\d{1,2}),?\s+(\d{4})/);
+  if (!match) return null;
+  const month = MONTHS[match[1].toLowerCase()];
+  const day = Number(match[2]);
+  const year = Number(match[3]);
+  if (month == null || !day || !year) return null;
+  return new Date(Date.UTC(year, month, day));
+}
+
 function prefersBuildUp(title = "") {
   const t = title.toLowerCase();
   if (t.includes("platts")) return false;
@@ -119,11 +137,13 @@ export function companionDownloadCandidates(documentRef, title, listingUrl) {
   const id = Number(match[1]);
   if (!Number.isFinite(id)) return [];
   // Prefer nearby older IDs first (build-ups are usually published just before the gazette PDF).
-  const deltas = [-1, -2, -3, -4, -5, -6, -7, -8, 1, 2];
+  // Prefer the known build-up sheet (-2) first: for notification 18073 the
+  // text-layer build-up is 18071, while -1 is an unrelated data sheet.
+  const deltas = [-2, -1, -3, -4, -5, -6, -7, -8, 1, 2];
   return deltas
-    .map((delta) => id + delta)
-    .filter((sibling) => sibling > 0)
-    .map((sibling) => ({
+    .map((delta, rank) => ({ sibling: id + delta, rank }))
+    .filter(({ sibling }) => sibling > 0)
+    .map(({ sibling, rank }) => ({
       document_ref: `ogra-download:${sibling}`,
       portal_document_id: null,
       title: `${title} (companion build-up #${sibling})`,
@@ -133,6 +153,8 @@ export function companionDownloadCandidates(documentRef, title, listingUrl) {
       preferred: true,
       channel: "ogra_companion",
       companion_of: documentRef,
+      // Lower is better: -2 is usually the text-layer build-up sheet.
+      companion_rank: rank,
     }));
 }
 
@@ -202,11 +224,14 @@ export async function discoverOgraPublications() {
     errors.push({ source: "price_portal", message: error.message });
   }
 
-  // Secondary: classic OGRA website notified petroleum prices + price publication pages
+  // Secondary: classic OGRA website notified petroleum prices, price publication
+  // pages and the press-release archive (text-layer PDFs, often newer than the portal).
   for (const listing of [
     { url: OGRA_NOTIFIED_LISTING, channel: "ogra_notified" },
     { url: OGRA_PRICE_PUBLICATION_LISTING, channel: "ogra_price_publication" },
+    { url: OGRA_PRESS_RELEASES_LISTING, channel: "ogra_press_release" },
   ]) {
+    const isPressRelease = listing.channel === "ogra_press_release";
     try {
       const { text, url } = await fetchText(listing.url);
       const $ = cheerio.load(text);
@@ -221,13 +246,18 @@ export async function discoverOgraPublications() {
           .find("p, span, a, h2, h3, h4")
           .filter((_, node) => {
             const t = $(node).text().trim();
-            return /petroleum|price publication|motor spirit|effective/i.test(t);
+            return /petroleum|price publication|motor spirit|effective|fuel prices/i.test(t);
           })
           .first()
           .text()
           .trim() || container.text().replace(/\s+/g, " ").trim().slice(0, 180);
 
-        if (!isPricePublicationTitle(title) && !/price publication/i.test(title)) {
+        if (isPressRelease) {
+          if (!isPressReleaseTitle(title)) return;
+        } else if (
+          !isPricePublicationTitle(title) &&
+          !/price publication/i.test(title)
+        ) {
           return;
         }
 
@@ -237,8 +267,9 @@ export async function discoverOgraPublications() {
           title: title || `OGRA download ${idMatch[1]}`,
           source_url: abs,
           listing_url: url,
-          effective_date: parseEffectiveDateFromText(title),
-          preferred: prefersBuildUp(title),
+          effective_date:
+            parseReleaseTitleDate(title) || parseEffectiveDateFromText(title),
+          preferred: isPressRelease || prefersBuildUp(title),
           channel: listing.channel,
         });
       });

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Fuel,
@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import SEO from "../components/common/SEO";
 import { useGetFuelPricesQuery } from "../redux/services/api";
+
+import { images } from "../assets/assets";
 
 const FUEL_ORDER = [
   "motor_spirit",
@@ -98,22 +100,30 @@ const ChangeBadge = ({ amount, compact = false }) => {
   );
 };
 
-const PetrolPrices = () => {
+const FuelPrices = () => {
   const [fuelFilter, setFuelFilter] = useState("all");
   const { data, isLoading, isError, error, refetch, isFetching } =
     useGetFuelPricesQuery(undefined, {
       refetchOnMountOrArgChange: true,
       refetchOnReconnect: true,
+      refetchOnFocus: true,
+      // Keep the public page in step with the 30-minute OGRA monitor.
+      pollingInterval: 15 * 60 * 1000,
     });
 
   const current = useMemo(() => {
     const rows = [...(data?.current || [])];
     rows.sort(
       (a, b) =>
-        FUEL_ORDER.indexOf(a.fuel_type) - FUEL_ORDER.indexOf(b.fuel_type)
+        FUEL_ORDER.indexOf(a.fuel_type) - FUEL_ORDER.indexOf(b.fuel_type),
     );
     return rows;
   }, [data?.current]);
+
+  const currentByType = useMemo(
+    () => new Map(current.map((row) => [row.fuel_type, row])),
+    [current],
+  );
 
   const history = data?.history || [];
   const meta = data?.meta || {};
@@ -131,6 +141,27 @@ const PetrolPrices = () => {
   const effectiveDate =
     petrol?.effective_date || current[0]?.effective_date || null;
 
+  // Euro 5 headline table is built from the live API rows, so it always matches
+  // the verified rates above and updates whenever the monitor publishes.
+  const notificationFuels = current
+    .filter(
+      (row) =>
+        row.fuel_type === "motor_spirit" ||
+        row.fuel_type === "high_speed_diesel",
+    )
+    .map((row) => ({
+      ...row,
+      shortLabel:
+        row.fuel_type === "motor_spirit" ? "Petrol (MS)" : "Diesel (HSD)",
+    }));
+  const notificationSource =
+    notificationFuels.find((row) => row.source_url)?.source_url ||
+    meta.latest_publication?.source_url ||
+    meta.source_listing ||
+    meta.source_portal;
+  const notificationEffective =
+    notificationFuels[0]?.effective_date || effectiveDate;
+
   const filterOptions = useMemo(() => {
     const types = new Set(history.map((r) => r.fuel_type));
     return [
@@ -145,6 +176,17 @@ const PetrolPrices = () => {
     ];
   }, [history, meta.labels]);
 
+  const historyRef = useRef(null);
+  const showHistoryFor = (fuelType) => {
+    setFuelFilter(fuelType);
+    window.requestAnimationFrame(() => {
+      historyRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  };
+
   const filteredHistory = useMemo(() => {
     const rows =
       fuelFilter === "all"
@@ -154,9 +196,7 @@ const PetrolPrices = () => {
       const da = new Date(a.effective_date).getTime();
       const db = new Date(b.effective_date).getTime();
       if (db !== da) return db - da;
-      return (
-        FUEL_ORDER.indexOf(a.fuel_type) - FUEL_ORDER.indexOf(b.fuel_type)
-      );
+      return FUEL_ORDER.indexOf(a.fuel_type) - FUEL_ORDER.indexOf(b.fuel_type);
     });
   }, [history, fuelFilter]);
 
@@ -175,53 +215,43 @@ const PetrolPrices = () => {
   return (
     <div className="min-h-screen min-w-0 overflow-x-hidden bg-[#F6F7F9] text-stone-900">
       <SEO
-        title="Petrol Prices in Pakistan Today | Latest Fuel Prices – Sello.pk"
-        description="Check the latest verified petrol, diesel, kerosene and other fuel prices in Pakistan. View effective dates, historical prices and official OGRA notifications on Sello.pk."
-        keywords="petrol price Pakistan, diesel price Pakistan, OGRA fuel prices, petrol rate today, HSD price, kerosene price, Sello.pk"
-        canonical="https://sello.pk/petrol-prices"
+        title="Fuel Prices in Pakistan Today | Petrol, Diesel & OGRA Rates – Sello.pk"
+        description="Check the latest verified fuel prices in Pakistan — petrol, diesel, kerosene and more. View effective dates, historical prices and official OGRA notifications on Sello.pk."
+        keywords="fuel price Pakistan, petrol price Pakistan, diesel price Pakistan, OGRA fuel prices, petrol rate today, HSD price, kerosene price, Sello.pk"
+        canonical="https://sello.pk/fuel-prices"
       />
 
-      <header className="relative overflow-hidden bg-[#0B0C1E] text-white">
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            backgroundImage:
-              "radial-gradient(ellipse 80% 60% at 0% 0%, rgba(255,138,0,0.28), transparent 55%), radial-gradient(ellipse 50% 40% at 100% 20%, rgba(56,189,248,0.12), transparent 50%)",
-          }}
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.07]"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(-14deg, transparent, transparent 12px, rgba(255,255,255,0.08) 12px, rgba(255,255,255,0.08) 13px)",
-          }}
-          aria-hidden
-        />
+      <header className="relative overflow-hidden md:h-[375px] ">
+        <div className="absolute inset-0">
+          <img
+            src={images.fuelPricesInPakistan}
+            alt=""
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+        <div className="overlay inset-0 bg-[#050B20]/50 absolute"></div>
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-10 sm:pt-8 sm:pb-12">
           <nav
             aria-label="Breadcrumb"
-            className="mb-6 flex items-center gap-1.5 text-xs text-white/55"
+            className="mb-6 flex items-center gap-1.5 text-xs text-black/65"
           >
             <Link to="/" className="hover:text-white/90 transition-colors">
               Home
             </Link>
             <ChevronRight className="h-3 w-3 opacity-60" />
-            <span className="text-primary-400 font-medium">Petrol prices</span>
+            <span className="text-primary font-medium">Fuel prices</span>
           </nav>
 
           <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
             <div className="fuel-hero-copy">
-              <p className="text-[2rem] sm:text-4xl lg:text-[2.75rem] font-bold tracking-tight text-primary-400 leading-none">
-                Sello
-              </p>
-              <h1 className="mt-3 text-2xl sm:text-3xl font-semibold tracking-tight text-white text-balance">
-                Petrol prices in Pakistan
+              <h1 className="mt-3 text-2xl sm:text-3xl font-semibold tracking-tight text-white/90 text-balance">
+                Fuel prices in Pakistan
               </h1>
-              <p className="mt-3 max-w-xl text-sm sm:text-[15px] text-white/65 leading-relaxed text-pretty">
-                Verified OGRA rates, updated automatically — not news guesses
-                or crude-oil math.
+              <p className="mt-3 max-w-xl text-sm sm:text-[15px] text-white/75 leading-relaxed text-pretty">
+                Verified OGRA rates, updated automatically — not news guesses or
+                crude-oil math.
               </p>
 
               <div className="mt-5 flex flex-wrap items-center gap-2">
@@ -267,6 +297,104 @@ const PetrolPrices = () => {
       </header>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-7 sm:py-9">
+        {notificationFuels.length > 0 && (
+          <section
+            aria-labelledby="latest-notification-heading"
+            className="mb-6 overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-[0_8px_24px_rgba(15,23,42,0.04)]"
+          >
+            <div className="flex flex-wrap items-start justify-between gap-3 border-b border-stone-100 px-4 py-3 sm:px-5">
+              <div className="min-w-0">
+                <h2
+                  id="latest-notification-heading"
+                  className="text-sm font-semibold text-stone-900"
+                >
+                  Latest OGRA notification — Euro 5 fuels
+                </h2>
+                <p className="mt-0.5 text-xs text-stone-500">
+                  {notificationEffective
+                    ? `Verified ex-depot rates in effect from ${formatDate(notificationEffective)}`
+                    : "Latest verified ex-depot rates"}
+                </p>
+              </div>
+              {notificationSource && (
+                <a
+                  href={notificationSource}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-primary-600 hover:underline"
+                >
+                  Official notification
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              )}
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-left text-sm">
+                <thead>
+                  <tr className="border-b border-stone-100 bg-stone-50/80 text-[11px] uppercase tracking-[0.08em] text-stone-500">
+                    <th className="px-4 py-2.5 font-semibold sm:px-5">
+                      Product
+                    </th>
+                    <th className="px-4 py-2.5 font-semibold">Existing</th>
+                    <th className="px-4 py-2.5 font-semibold">
+                      {notificationEffective
+                        ? `New (${formatDate(notificationEffective)})`
+                        : "New"}
+                    </th>
+                    <th className="px-4 py-2.5 text-right font-semibold sm:pr-5">
+                      Change
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {notificationFuels.map((row) => (
+                    <tr
+                      key={row.fuel_type}
+                      className="border-t border-stone-100"
+                    >
+                      <td className="px-4 py-2.5 font-medium text-stone-800 sm:px-5">
+                        {row.shortLabel}
+                      </td>
+                      <td className="px-4 py-2.5 tabular-nums text-stone-500">
+                        {row.previous_price == null
+                          ? "—"
+                          : `Rs ${formatPkr(row.previous_price)}`}
+                      </td>
+                      <td className="px-4 py-2.5 font-semibold tabular-nums text-stone-900">
+                        Rs {formatPkr(row.price)}
+                      </td>
+                      <td className="px-4 py-2.5 text-right sm:pr-5">
+                        {row.change_amount == null ? (
+                          <span className="text-stone-400">—</span>
+                        ) : (
+                          <ChangeBadge amount={row.change_amount} compact />
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <p className="border-t border-stone-100 px-4 py-2.5 text-[11px] leading-relaxed text-stone-500 sm:px-5">
+              Ex-depot prices in Rs/litre. These rates update automatically when
+              OGRA publishes a new notification.{" "}
+              <a
+                href={
+                  meta.source_listing ||
+                  "https://www.ogra.org.pk/notified-petroleum-prices"
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-primary-600 hover:underline"
+              >
+                OGRA notifications
+              </a>
+            </p>
+          </section>
+        )}
+
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <a
             href={meta.source_portal || "https://price.ogra.org.pk/"}
@@ -380,51 +508,10 @@ const PetrolPrices = () => {
                 );
               })}
             </div>
-
-            {Array.isArray(meta.catalog) && meta.catalog.length > 0 && (
-              <div className="mt-8 space-y-4">
-                <h2 className="text-lg font-semibold tracking-tight text-stone-900">
-                  All fuel categories
-                </h2>
-                {meta.catalog.map((group) => {
-                  const priced = new Set(current.map((r) => r.fuel_type));
-                  return (
-                    <div key={group.group}>
-                      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-500 mb-2">
-                        {group.group}
-                      </p>
-                      <ul className="grid gap-2 sm:grid-cols-2">
-                        {(group.fuels || []).map((id) => {
-                          const label = meta.labels?.[id] || id;
-                          const has = priced.has(id);
-                          return (
-                            <li
-                              key={id}
-                              className="flex items-center justify-between gap-3 rounded-xl border border-stone-200/80 bg-white px-3 py-2.5 text-sm"
-                            >
-                              <span className="text-stone-800 font-medium">
-                                {label}
-                              </span>
-                              <span
-                                className={`text-[11px] font-semibold ${
-                                  has ? "text-emerald-700" : "text-stone-400"
-                                }`}
-                              >
-                                {has ? "Live" : "Awaiting rate"}
-                              </span>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
           </>
         )}
 
-        <section className="mt-12 sm:mt-14">
+        <section ref={historyRef} className="mt-12 scroll-mt-24 sm:mt-14">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-5">
             <div>
               <h2 className="text-xl font-semibold tracking-tight text-stone-900">
@@ -632,4 +719,4 @@ const PetrolPrices = () => {
   );
 };
 
-export default PetrolPrices;
+export default FuelPrices;

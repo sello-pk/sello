@@ -64,6 +64,30 @@ import auctionSchedule from "./images/auctionSchedule.webp";
 // Listings Page Images
 import PakistanCarListingsBanner from "./images/PakistanCarListingsBanner.webp";
 
+// Fuel Price Page Images
+import fuelPricesInPakistan from "./images/fuelPricesInPakistan.webp";
+
+// Vehicle Verification Page Images
+import onlineVehicleVerfication from "./images/onlineVehicleVerfication.webp";
+import whyMTMISAndOnlineVehicleVerificationAreImportant from "./images/whyMTMISAndOnlineVehicleVerificationAreImportant.webp";
+import whatInformationCanBeCheckedThroughVehicleVerification from "./images/whatInformationCanBeCheckedThroughVehicleVerification.webp";
+import smartBuyingTips from "./images/smartBuyingTips.webp";
+import whyIsCarVerificationImportantBeforeBuying from "./images/whyIsCarVerificationImportantBeforeBuying.webp";
+import howSelloHelpsWithVehicleVerification from "./images/howSelloHelpsWithVehicleVerification.webp";
+import whatInformationShouldYouCheckDuringVehicleVerification from "./images/whatInformationShouldYouCheckDuringVehicleVerification.webp";
+import punjabVehicleVerification from "./images/punjabVehicleVerification.webp";
+import carRegistrationCheckBeforeBuyingAUsedCar from "./images/carRegistrationCheckBeforeBuyingAUsedCar.webp";
+import howToCheckCarDetailsBeforeBuying from "./images/howToCheckCarDetailsBeforeBuying.webp";
+import vehicleVerificationInLahoreAndOtherCities from "./images/vehicleVerificationInLahoreAndOtherCities.webp";
+import punjabExciseVehicleVerification from "./images/punjabExciseVehicleVerification.webp";
+import onlineBikeRegistrationCheck from "./images/onlineBikeRegistrationCheck.webp";
+import canYouCheckTheVehicleOwner from "./images/canYouCheckTheVehicleOwner.webp";
+import vehicleRegistrationAndSmartCardVerification from "./images/vehicleRegistrationAndSmartCardVerification.jpeg";
+import whyPhysicalInspectionIsAlsoImportant from "./images/whyPhysicalInspectionIsAlsoImportant.jpeg";
+import buyAndSellVehiclesWithMoreConfidence from "./images/buyAndSellVehiclesWithMoreConfidence.jpeg";
+import whyChooseSello from "./images/whyChooseSello.jpeg";
+import finalThoughts from "./images/finalThoughts.jpeg";
+
 // Review images for CustomerReviews component - using professional Unsplash people photos
 const review1 =
   "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face&auto=format";
@@ -100,6 +124,26 @@ export const images = {
   auctionSchedule,
   trustLegal,
   PakistanCarListingsBanner,
+  fuelPricesInPakistan,
+  onlineVehicleVerfication,
+  whyMTMISAndOnlineVehicleVerificationAreImportant,
+  whatInformationCanBeCheckedThroughVehicleVerification,
+  smartBuyingTips,
+  whyIsCarVerificationImportantBeforeBuying,
+  howSelloHelpsWithVehicleVerification,
+  whatInformationShouldYouCheckDuringVehicleVerification,
+  punjabVehicleVerification,
+  carRegistrationCheckBeforeBuyingAUsedCar,
+  howToCheckCarDetailsBeforeBuying,
+  vehicleVerificationInLahoreAndOtherCities,
+  punjabExciseVehicleVerification,
+  onlineBikeRegistrationCheck,
+  canYouCheckTheVehicleOwner,
+  vehicleRegistrationAndSmartCardVerification,
+  whyPhysicalInspectionIsAlsoImportant,
+  buyAndSellVehiclesWithMoreConfidence,
+  whyChooseSello,
+  finalThoughts,
   review1,
   review2,
   review3,

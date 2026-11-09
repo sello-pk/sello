@@ -10,5 +10,8 @@
 # Brand-specific category redirects (specific brands only, no catch-all)
 /cars/audi  /listings?make=Audi  301
 
+# Public page renamed: "Petrol Prices" -> "Fuel Prices" (keep old links/indexed URLs working)
+/petrol-prices  /fuel-prices  301
+
 # SPA fallback (must stay last: first matching rule wins) — all unmatched routes serve index.html
 /*  /index.html  200

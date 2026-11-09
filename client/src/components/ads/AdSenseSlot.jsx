@@ -121,7 +121,7 @@ const AdSenseSlot = ({
       }
     };
 
-    if (typeof IntersectionObserver === "undefined" || window.localStorage.getItem("__eagerAds") === "1") {
+    if (typeof IntersectionObserver === "undefined") {
       pushAd();
     } else {
       observer = new IntersectionObserver(

@@ -291,6 +291,14 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- FUEL PRICES -->
+  <url>
+    <loc>https://sello.pk/fuel-prices</loc>
+    <lastmod>2026-11-08</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- AUCTIONS -->
   <url>
     <loc>https://sello.pk/auctions</loc>

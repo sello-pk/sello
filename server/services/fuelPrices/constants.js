@@ -3,9 +3,11 @@ export const OGRA_NOTIFIED_LISTING =
   "https://www.ogra.org.pk/notified-petroleum-prices";
 export const OGRA_PRICE_PUBLICATION_LISTING =
   "https://www.ogra.org.pk/price-publication";
+export const OGRA_PRESS_RELEASES_LISTING =
+  "https://www.ogra.org.pk/press-releases-2";
 
 export const USER_AGENT =
-  "SelloFuelPriceMonitor/1.0 (+https://sello.pk/petrol-prices; official OGRA source monitoring)";
+  "SelloFuelPriceMonitor/1.0 (+https://sello.pk/fuel-prices; official OGRA source monitoring)";
 
 export const REQUEST_TIMEOUT_MS = 45000;
 export const MIN_REQUEST_GAP_MS = 900;

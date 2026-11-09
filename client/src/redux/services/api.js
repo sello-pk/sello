@@ -313,7 +313,7 @@ export const api = createApi({
       const isRead = httpMethod === "GET" || httpMethod === "HEAD";
       const requestUrl = String(args?.url || "");
       // Public fuel prices must stay readable even while auction/notification
-      // pollers are in a 429 cooldown — otherwise /petrol-prices flickers error.
+      // pollers are in a 429 cooldown — otherwise /fuel-prices flickers error.
       const bypassRateLimitGate =
         requestUrl === "/fuel-prices" || requestUrl.startsWith("/fuel-prices?");
 
@@ -1385,7 +1385,7 @@ export const api = createApi({
       query: () => "/fuel-prices",
       providesTags: ["FuelPrices"],
       // Keep last good payload longer so a transient 429/network blip
-      // does not blank the public petrol-prices page.
+      // does not blank the public fuel-prices page.
       keepUnusedDataFor: 300,
       transformResponse: (response) => response?.data || response,
     }),

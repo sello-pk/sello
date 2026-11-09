@@ -30,7 +30,7 @@ const CarListings = () => {
       />
 
       <header
-        className={`relative overflow-hidden border-b border-slate-200/80 md:h-[375px]`}
+        className={`relative overflow-hidden border-b border-slate-200/80 md:h-[375px] `}
       >
         <div className="cover-image absolute">
           <img

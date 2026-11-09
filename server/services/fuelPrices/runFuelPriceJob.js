@@ -46,6 +46,90 @@ async function getExistingHashes() {
   );
 }
 
+const QUEUE_LIMIT = 12;
+const MAX_DATES = 4;
+const MAX_DOCS_PER_DATE = 2;
+
+/** Lower priority number = processed first within a publication date. */
+function documentPriority(item) {
+  if (item.channel === "ogra_press_release") return -100;
+  if (typeof item.companion_rank === "number") return item.companion_rank;
+  if (item.channel === "ogra_companion") return 50;
+  if (item.channel === "price_portal") return 60;
+  return 70;
+}
+
+function effectiveKeyOf(item) {
+  const time = item.effective_date ? new Date(item.effective_date).getTime() : NaN;
+  return Number.isFinite(time)
+    ? new Date(time).toISOString().slice(0, 10)
+    : `ref:${item.document_ref}`;
+}
+
+/**
+ * Pick a small, date-balanced queue. Taking the newest N items used to let ten
+ * companion build-ups for the same notification crowd out the official press
+ * release for the previous effective date — which left history without the
+ * preceding rate and produced wrong `previous_price`/`change_amount` values.
+ *
+ * Selection guarantees the newest few publication dates are represented, with
+ * at most one press release and one best-ranked build-up per date. The result is
+ * ordered oldest → newest so each notification's delta is computed against the
+ * rate it actually replaced.
+ */
+export function selectMonitorQueue(publications, { forceDocumentRef = null } = {}) {
+  if (forceDocumentRef) {
+    return publications.filter((p) => p.document_ref === forceDocumentRef).slice(0, 1);
+  }
+
+  const candidates = publications.filter(
+    (p) => p.preferred || p.channel === "ogra_press_release"
+  );
+
+  const byDate = new Map();
+  for (const item of candidates) {
+    const key = effectiveKeyOf(item);
+    const group = byDate.get(key) || [];
+    group.push(item);
+    byDate.set(key, group);
+  }
+
+  const dateKeys = [...byDate.keys()]
+    .filter((key) => !key.startsWith("ref:"))
+    .sort((a, b) => (a < b ? 1 : -1))
+    .slice(0, MAX_DATES);
+  for (const key of byDate.keys()) {
+    if (key.startsWith("ref:") && dateKeys.length < MAX_DATES) dateKeys.push(key);
+  }
+
+  const selected = [];
+  for (const key of dateKeys) {
+    const group = [...(byDate.get(key) || [])].sort((a, b) => {
+      const byPriority = documentPriority(a) - documentPriority(b);
+      if (byPriority !== 0) return byPriority;
+      // Prefer the newest sibling (closer to the notification) on ties.
+      return String(b.document_ref).localeCompare(String(a.document_ref), undefined, {
+        numeric: true,
+      });
+    });
+
+    // Always keep the official press release, then the best build-up sheet.
+    const official = group.filter((p) => p.channel === "ogra_press_release");
+    const others = group.filter((p) => p.channel !== "ogra_press_release");
+    selected.push(...official.slice(0, 1), ...others.slice(0, MAX_DOCS_PER_DATE - 1));
+  }
+
+  // Oldest first so history gets the preceding rate before the newer notification.
+  selected.sort((a, b) => {
+    const at = a.effective_date ? new Date(a.effective_date).getTime() : 0;
+    const bt = b.effective_date ? new Date(b.effective_date).getTime() : 0;
+    if (at !== bt) return at - bt;
+    return documentPriority(a) - documentPriority(b);
+  });
+
+  return selected.slice(0, QUEUE_LIMIT);
+}
+
 export async function runFuelPriceMonitorJob({ forceDocumentRef = null } = {}) {
   const startedAt = new Date();
   const summary = {
@@ -107,13 +191,8 @@ export async function runFuelPriceMonitorJob({ forceDocumentRef = null } = {}) {
 
     // Prefer newest official build-ups + notified petroleum sheets (incl. companion
     // downloads near scanned gazette PDFs). price.ogra.org.pk can lag ogra.org.pk.
-    const queue = publications
-      .filter((p) =>
-        forceDocumentRef
-          ? p.document_ref === forceDocumentRef
-          : Boolean(p.preferred)
-      )
-      .slice(0, forceDocumentRef ? 1 : 12);
+    // Selection is date-balanced and ordered oldest-first so previous prices line up.
+    const queue = selectMonitorQueue(publications, { forceDocumentRef });
 
     const publishedEffectiveKeys = new Set();
 
