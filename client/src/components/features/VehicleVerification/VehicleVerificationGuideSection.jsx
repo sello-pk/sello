@@ -10,19 +10,19 @@ import {
 } from "lucide-react";
 
 import onlineVehicleVerfication from "../../../assets/images/onlineVehicleVerfication.webp";
-import whyMTMISAndOnlineVehicleVerificationAreImportant from "../../../assets/images/whyMTMISAndOnlineVehicleVerificationAreImportant.webp";
-import auctionSheetVerification from "../../../assets/blogs/auctionSheetVerification.webp";
 import smartBuyingTips from "../../../assets/images/smartBuyingTips.webp";
-import carCatBlog from "../../../assets/categories/catBlogs/carCatBlog.webp";
+import whatInformationCanBeCheckedThroughVehicleVerification from "../../../assets/images/whatInformationCanBeCheckedThroughVehicleVerification.webp";
+import whyMTMISAndOnlineVehicleVerificationAreImportant from "../../../assets/images/whyMTMISAndOnlineVehicleVerificationAreImportant.webp";
+import whyIsCarVerificationImportantBeforeBuying from "../../../assets/images/whyIsCarVerificationImportantBeforeBuying.webp";
 import howSelloHelpsWithVehicleVerification from "../../../assets/images/howSelloHelpsWithVehicleVerification.webp";
-import vehicleVerificationHeroSection from "../../../assets/images/verification/vehicleVerificationHeroSection.jpeg";
+import whatInformationShouldYouCheckDuringVehicleVerification from "../../../assets/images/whatInformationShouldYouCheckDuringVehicleVerification.webp";
 import punjabVehicleVerification from "../../../assets/images/punjabVehicleVerification.webp";
 import carRegistrationCheckBeforeBuyingAUsedCar from "../../../assets/images/carRegistrationCheckBeforeBuyingAUsedCar.webp";
-import howCarCondition from "../../../assets/blogs/estimator/howCarCondition.webp";
+import howToCheckCarDetailsBeforeBuying from "../../../assets/images/howToCheckCarDetailsBeforeBuying.webp";
 import vehicleVerificationInLahoreAndOtherCities from "../../../assets/images/vehicleVerificationInLahoreAndOtherCities.webp";
-import verificationPostImg from "../../../assets/images/verification/post.jpeg";
-import bikeCatBlog from "../../../assets/categories/catBlogs/bikeCatBlog.webp";
-import trustLegal from "../../../assets/images/trustLegal.webp";
+import punjabExciseVehicleVerification from "../../../assets/images/punjabExciseVehicleVerification.webp";
+import onlineBikeRegistrationCheck from "../../../assets/images/onlineBikeRegistrationCheck.webp";
+import canYouCheckTheVehicleOwner from "../../../assets/images/canYouCheckTheVehicleOwner.webp";
 import vehicleRegistrationAndSmartCardVerification from "../../../assets/images/vehicleRegistrationAndSmartCardVerification.jpeg";
 import whyPhysicalInspectionIsAlsoImportant from "../../../assets/images/whyPhysicalInspectionIsAlsoImportant.jpeg";
 import buyAndSellVehiclesWithMoreConfidence from "../../../assets/images/buyAndSellVehiclesWithMoreConfidence.jpeg";
@@ -175,7 +175,7 @@ Always ask the seller for the vehicle's registration number and the province of 
     readTime: "6 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: whyMTMISAndOnlineVehicleVerificationAreImportant,
+    image: smartBuyingTips,
     excerpt:
       "MTMIS (Motor Transport Management Information System) is an online database used to verify vehicle registration, engine and chassis numbers, and token tax status across provincial Excise boards.",
     body: [
@@ -209,7 +209,7 @@ For a used-car buyer, this is a research tool: compare the seller's claims with 
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: auctionSheetVerification,
+    image: whatInformationCanBeCheckedThroughVehicleVerification,
     excerpt:
       "Depending on the provincial system and what authorized channels publish, records may include vehicle registration number, make and model, engine and chassis information, and token status.",
     body: [
@@ -249,7 +249,7 @@ For a used-car buyer, this is a research tool: compare the seller's claims with 
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: smartBuyingTips,
+    image: whyMTMISAndOnlineVehicleVerificationAreImportant,
     excerpt:
       "When you buy a used car or motorcycle, it is a risk to rely only on what the seller says. A vehicle may pass a visual inspection and still have registration issues. Online tools like MTMIS add transparency.",
     body: [
@@ -282,7 +282,7 @@ Online checks are a useful tool when buying cars in Pakistan, but they are only 
     readTime: "6 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: carCatBlog,
+    image: whyIsCarVerificationImportantBeforeBuying,
     excerpt:
       "The used-car market offers a wide choice, but every buyer should review the car carefully before finalizing a deal. Verification can surface issues that do not match what the seller reported.",
     body: [
@@ -350,7 +350,7 @@ Choosing a car is about more than photos and price. Slow down and think through 
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: vehicleVerificationHeroSection,
+    image: whatInformationShouldYouCheckDuringVehicleVerification,
     excerpt:
       "A proper vehicle verification in Pakistan differs by province and by what the relevant authorities publish. Always compare official information with what the seller is offering.",
     body: [
@@ -452,7 +452,7 @@ Records are only part of the picture. Also look at mechanical condition, bodywor
     readTime: "6 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: howCarCondition,
+    image: howToCheckCarDetailsBeforeBuying,
     excerpt:
       "Start with the information the seller has. Ask for the registration number and go over the registration documents, then run the authorized provincial check.",
     body: [
@@ -518,7 +518,7 @@ The same rule applies to vehicles in Karachi, Islamabad, Rawalpindi, Faisalabad,
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: verificationPostImg,
+    image: punjabExciseVehicleVerification,
     excerpt:
       "Many buyers looking at a car or bike in Punjab use Punjab Excise vehicle verification. Registration information is held by the appropriate government bodies, so use official sources.",
     body: [
@@ -550,7 +550,7 @@ If you have questions about a document's authenticity or title status, contact t
     readTime: "4 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: bikeCatBlog,
+    image: onlineBikeRegistrationCheck,
     excerpt:
       "Vehicle checks go beyond cars. An online bike registration check is useful when you buy or sell a used motorcycle to avoid stolen or clone vehicles.",
     body: [
@@ -580,7 +580,7 @@ Also review the bike's physical condition. Mechanical issues, accident damage, a
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: trustLegal,
+    image: canYouCheckTheVehicleOwner,
     excerpt:
       "Many users want to check the vehicle owner before buying a car or bike. What is available to the public varies by law, privacy rules, and provincial policies.",
     body: [
