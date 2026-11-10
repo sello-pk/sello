@@ -5,6 +5,8 @@ import islamabadIcon from "../../../assets/images/verification/islamabad.png";
 import balochistanIcon from "../../../assets/images/verification/blochistan.png";
 import howToApplyLearnerPunjabImg from "../../../assets/images/How to Apply for a Learner Driving Licence in Punjab.jpeg";
 import howToGetRegularPunjabImg from "../../../assets/images/How to Get a Regular Driving Licence in Punjab.jpeg";
+import howToApplyLearnerSindhImg from "../../../assets/images/How to Apply for a Learner Driving Licence in Sindh.jpeg";
+import howToGetRegularSindhImg from "../../../assets/images/How to Get a Regular Driving Licence in Sindh.jpeg";
 
 /** Hardcoded Driving Licence guides — no API/DB required. */
 
@@ -402,6 +404,20 @@ Applicants above 50 years and certain commercial licence applicants may need a m
     shortDescription:
       "Learner, permanent, renewal and IDP services through Sindh Police DLS Online.",
     authorityName: "Sindh Police — Driving License Sindh (DLS Online)",
+    overviewSections: [
+      {
+        title: "How to Apply for a Learner Driving Licence in Sindh",
+        content:
+          "If you want to drive a car or motorcycle in Sindh, Pakistan, the first step is to obtain a learner driving licence. Visit the official Sindh Police Driving Licence portal and create an online account using your CNIC and mobile number. Complete the learner licence application, select your required vehicle category and upload the necessary documents, including your CNIC and a recent photograph. Generate the payment bill and pay through an approved payment channel. Once your payment is confirmed and your application is processed, download and print your learner driving licence. Always follow the learner permit conditions and practise driving safely.",
+        image: howToApplyLearnerSindhImg,
+      },
+      {
+        title: "How to Get a Regular Driving Licence in Sindh",
+        content:
+          "After obtaining your learner driving licence and completing the mandatory waiting period, you can apply for a regular driving licence in Sindh. For a non-commercial licence, the required waiting period is generally 42 days. Visit the designated Driving Licence Branch with your original CNIC and learner permit, and complete the required medical fitness examination and driving licence tests. These may include a traffic signs or theoretical test and a practical driving test, depending on your selected vehicle category. After successfully completing the required tests and paying the applicable fee, your regular driving licence will be processed by the licensing authority. Always confirm the latest requirements and fees through the official Sindh Police driving licence service before visiting a branch.",
+        image: howToGetRegularSindhImg,
+      },
+    ],
     introduction: `Sindh driving licence services are provided through the official DLS Online portal operated with Sindh Police. Citizens can apply for learner licences, permanent licences, renewals and related services online. ${disclaimer}`,
     learnerProcedure: [
       "Create an account or log in on the official DLS Online portal.",
@@ -452,26 +468,66 @@ Applicants above 50 years and certain commercial licence applicants may need a m
       "Keep the generated bill ID for banking support and portal follow-up.",
       "For courier deliveries, use the tracking details provided after issuance.",
     ],
+    faqTitle: "Frequently Asked Questions About Sindh Driving Licence",
     faqs: [
       {
-        question: "What is the official Sindh driving licence portal?",
+        question:
+          "How can I apply for a learner driving licence online in Sindh?",
         answer:
-          "Use https://dlsonline.sindhpolice.gov.pk/ — the official DLS Online service. Do not use Punjab DLIMS links for Sindh applications.",
+          "You can apply through the official Sindh Driving Licence online system. Create an account using your CNIC and mobile number, complete the application form, select your vehicle category, upload the required documents and generate a PSID for payment. After payment confirmation and application approval, download and print your learner driving permit.",
       },
       {
-        question: "Can I get a learner licence instantly online in Sindh?",
+        question:
+          "What is the minimum age to get a learner driving licence in Sindh?",
         answer:
-          "According to DLS Online guidance, learner licences can be available after form completion and successful payment. Permanent renewals / IDP may be delivered by courier.",
+          "The minimum age generally depends on the vehicle category. Applicants for a motorcycle or motorcar licence must meet the applicable minimum age requirement, generally 18 years. Commercial vehicle categories may have higher age and eligibility requirements. Check the latest requirements with Sindh Police before applying.",
       },
       {
-        question: "What payment channels does Sindh DLS Online support?",
+        question:
+          "What documents are required for a learner driving licence in Sindh?",
         answer:
-          "DLS Online instructs applicants to generate a bill ID and pay through internet banking / mobile apps with 1Bill facility, including channels such as EasyPaisa and JazzCash where available. Confirm options shown at payment time.",
+          "Applicants generally need a valid CNIC, a recent passport-size photograph and the personal information requested in the online application. Additional documents may be required depending on the selected vehicle category.",
       },
       {
-        question: "Does Sello process Sindh licence payments?",
+        question:
+          "How much is the learner driving licence fee in Sindh?",
         answer:
-          "No. Pay only through the official bill generated on DLS Online.",
+          "The learner licence fee depends on the applicable government fee schedule and selected vehicle category. Generate the payment PSID through the official online system to see the amount payable. Always confirm the latest fee before making payment.",
+      },
+      {
+        question:
+          "Can I apply for a learner driving licence online in Karachi?",
+        answer:
+          "Yes. Residents of Karachi can use the Sindh Police online driving licence service to submit a learner licence application. Follow the online instructions, complete the required information and pay the generated fee.",
+      },
+      {
+        question: "How long is a learner driving licence valid in Sindh?",
+        answer:
+          "A learner driving permit is generally valid for six months. Check the expiry date printed on your permit and follow the conditions mentioned by the licensing authority.",
+      },
+      {
+        question:
+          "How many days after getting a learner licence can I apply for a permanent driving licence in Sindh?",
+        answer:
+          "You must generally wait at least 42 days after obtaining your learner permit before appearing for the regular driving licence process. The Government of Sindh confirms this mandatory waiting period.",
+      },
+      {
+        question:
+          "What tests are required to get a permanent driving licence in Sindh?",
+        answer:
+          "Applicants may need to pass a theoretical or traffic-sign test and a practical driving test. The exact requirements depend on the selected vehicle category and instructions from the licensing authority.",
+      },
+      {
+        question:
+          "Can I renew or track my driving licence online in Sindh?",
+        answer:
+          "Sindh’s digital driving licence system provides online services, including application tracking. You can use your CNIC to check the progress of supported applications. Renewal options and requirements may depend on the service available through the official portal.",
+      },
+      {
+        question:
+          "Where can I check or verify my Sindh driving licence online?",
+        answer:
+          "You can use the official Sindh Driving Licence Information Management System (DLIMS) to access the licence verification service. Follow the portal instructions and enter the required information to check the available licence record.",
       },
     ],
     actionLinks: [
