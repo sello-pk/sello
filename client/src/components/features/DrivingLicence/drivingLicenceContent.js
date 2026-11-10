@@ -11,6 +11,7 @@ import howToApplyLearnerKpkImg from "../../../assets/images/How to Apply for a L
 import howToGetRegularKpkImg from "../../../assets/images/How to Get a Regular Driving Licence in Khyber Pakhtunkhwa.jpeg";
 import howToApplyLearnerIslamabadImg from "../../../assets/images/How to Apply for a Learner Driving Licence in Islamabad.jpeg";
 import howToGetRegularIslamabadImg from "../../../assets/images/How to Get a Regular Driving Licence in Islamabad.jpeg";
+import howToGetRegularBalochistanImg from "../../../assets/images/How to Get a Regular Driving Licence in Balochistan.jpeg";
 
 /** Hardcoded Driving Licence guides — no API/DB required. */
 
@@ -949,6 +950,14 @@ Applicants above 50 years and certain commercial licence applicants may need a m
     shortDescription:
       "Book appointments and verify licences through Quetta / Balochistan Traffic Police services.",
     authorityName: "Quetta Traffic Police / Balochistan Traffic Police",
+    overviewSections: [
+      {
+        title: "How to Get a Regular Driving Licence in Balochistan",
+        content:
+          "After obtaining your learner driving licence and completing the required waiting period, you can apply for a regular driving licence in Balochistan. According to the published Quetta Traffic Police procedure, you must hold your learner permit for at least six weeks before applying for a permanent licence. Visit the relevant driving licence branch with your original learner permit, CNIC, recent passport-size photographs, required medical certificate and fee payment documents. Complete the prescribed driving test to demonstrate your knowledge of traffic rules and your ability to operate the selected vehicle safely. After successfully passing the test and completing the required formalities, your regular driving licence will be processed by the licensing authority.",
+        image: howToGetRegularBalochistanImg,
+      },
+    ],
     introduction: `Balochistan driving licence services are handled through Quetta Traffic Police digital channels, including online appointment booking and licence verification on the official QTP website. Online coverage can differ from other provinces — many steps still require an in-person visit after booking. ${disclaimer}`,
     learnerProcedure: [
       "Open the official Quetta Traffic Police website and choose Online Appointment.",
@@ -996,16 +1005,79 @@ Applicants above 50 years and certain commercial licence applicants may need a m
       "For digital services and history features, Quetta / Balochistan Traffic Police also publish a public mobile app — confirm features inside the official store listing.",
       "Contact published on QTP: info@qtp.gob.pk · +92-819213316.",
     ],
+    faqTitle: "Frequently Asked Questions – Balochistan Driving Licence Guide",
     faqs: [
       {
-        question: "What is the official Balochistan / Quetta licence website?",
+        question:
+          "How can I apply for a driving licence in Balochistan?",
         answer:
-          "Use https://qtp.gob.pk/ for appointments and related traffic police services. Verification is available via the official driving / verification pages on that site.",
+          "Visit the official Quetta Traffic Police website and use its online appointment service, where available. Select the relevant licence service and book an appointment. Visit the designated licensing branch with your required documents to complete the application process.",
       },
       {
-        question: "Can I use Punjab DLIMS for a Balochistan licence?",
+        question:
+          "What is the minimum age for a driving licence in Balochistan?",
+        answer: `The general minimum age requirements are:
+
+• Motorcycle and motorcar: 18 years
+• Light Transport Vehicle (LTV): 21 years
+• Heavy Transport Vehicle (HTV): 22 years
+
+Always confirm the applicable category requirements with the licensing authority.`,
+      },
+      {
+        question:
+          "What documents are required for a driving licence in Balochistan?",
+        answer: `Commonly required documents include:
+
+• Original CNIC and an attested copy
+• Recent passport-size photographs
+• Medical fitness certificate, where required
+• Valid learner permit for a regular licence
+• Relevant application form and fee ticket
+
+Additional documents may be required depending on the licence category.`,
+      },
+      {
+        question:
+          "How much is the learner driving licence fee in Balochistan?",
         answer:
-          "No. Punjab DLIMS is only for Punjab. Balochistan applications and verification go through Quetta / Balochistan Traffic Police channels.",
+          "Quetta Traffic Police information lists a Rs. 20 ticket for the learner application. Fees and requirements may change, so confirm the latest amount with the relevant licensing branch before applying.",
+      },
+      {
+        question:
+          "How long is a learner driving licence valid in Balochistan?",
+        answer:
+          "A learner driving licence is generally valid for six months. Check the expiry date printed on your permit and follow the licensing authority’s instructions.",
+      },
+      {
+        question:
+          "How long after getting a learner permit can I apply for a regular driving licence?",
+        answer:
+          "According to the Quetta Traffic Police guidance, applicants can apply for a regular driving licence after holding their learner permit for at least six weeks. Confirm the required waiting period with your local licensing branch.",
+      },
+      {
+        question:
+          "Is a driving test required for a regular licence in Balochistan?",
+        answer:
+          "Yes. Applicants are generally required to pass the applicable driving test and demonstrate knowledge of traffic signs and road rules. The exact test requirements depend on the vehicle category.",
+      },
+      {
+        question:
+          "Can I book a driving licence appointment online in Balochistan?",
+        answer:
+          "Quetta Traffic Police provides an online appointment facility through its official website. Applicants should check the available branches, appointment types and time slots before visiting.",
+      },
+      {
+        question:
+          "How can I verify my Balochistan driving licence online?",
+        answer:
+          "Visit the official Quetta Traffic Police website and open its Driving Licence Verification service. Follow the instructions and enter your CNIC details to check the available licence record.",
+      },
+      {
+        question:
+          "Can I renew or get a duplicate driving licence in Balochistan?",
+        answer:
+          "Yes. Quetta Traffic Police provides renewal and duplicate licence application services. Applicants should download or obtain the relevant form and confirm the required documents, fees and procedure with the licensing authority.",
       },
     ],
     actionLinks: [
