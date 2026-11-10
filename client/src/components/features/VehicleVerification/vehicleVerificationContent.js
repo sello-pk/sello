@@ -13,6 +13,8 @@ import sindhHeroImg from "../../../assets/images/Access Sindh's Official Vehicle
 import howToCheckSindhImg from "../../../assets/images/How to Check Vehicle Registration Before Buying a Used Car in Sindh.jpeg";
 import kpkHeroImg from "../../../assets/images/Access Khyber Pakhtunkhwa's Official Vehicle Verification Portal.jpeg";
 import howToCheckKpkImg from "../../../assets/images/How to Check Vehicle Registration Before Buying a Used Car in Khyber Pakhtunkhwa.jpeg";
+import balochistanHeroImg from "../../../assets/images/Access Balochistan's Official Vehicle Verification Portal.jpeg";
+import howToCheckBalochistanImg from "../../../assets/images/How to Check Vehicle Registration Before Buying a Used Car in Balochistan.jpeg";
 
 /** Hardcoded Vehicle Verification province guides — official portal URLs unchanged. */
 
@@ -544,6 +546,15 @@ export const VEHICLE_VERIFICATION_GUIDES = [
   buildGuide({
     slug: "balochistan",
     name: "Balochistan",
+    heroTitle: "Access Balochistan's Official Vehicle Verification Portal",
+    heroDescription:
+      "Looking to check vehicle registration details in Balochistan, Pakistan? SELLO provides helpful guidance to understand the online vehicle verification process and access the official Balochistan Excise Department website. Learn how to check available registration information for cars, motorcycles and other registered vehicles. Follow the steps below to continue to the official government portal. SELLO does not collect your CNIC or vehicle registration number on this page.",
+    heroImage: balochistanHeroImg,
+    overviewTitle:
+      "How to Check Vehicle Registration Before Buying a Used Car in Balochistan",
+    overviewContent:
+      "Before purchasing a used car or motorcycle in Balochistan, it is important to check its available registration and ownership records. Visit the official Balochistan Excise Department website and select its Online Vehicle Verification service. Follow the portal instructions and provide the required vehicle information to access available records. Compare the information with the vehicle and its original registration documents. Always arrange a proper physical inspection before making your final purchase decision.",
+    overviewImage: howToCheckBalochistanImg,
     shortDescription: "Open Balochistan Excise vehicle records",
     authorityName: "Balochistan Excise & Taxation",
     officialPortalUrl: "https://www.etanb.com/vehicle-verification/",
@@ -553,7 +564,7 @@ export const VEHICLE_VERIFICATION_GUIDES = [
       portal: "Balochistan Excise department website",
     },
     introduction:
-      "Balochistan Excise provides online vehicle verification for vehicles registered in the province. This Sello guide explains the safe process and links to the official verification page.",
+      "Before purchasing a used car or motorcycle in Balochistan, it is important to check its available registration and ownership records. Visit the official Balochistan Excise Department website and select its Online Vehicle Verification service. Follow the portal instructions and provide the required vehicle information to access available records. Compare the information with the vehicle and its original registration documents. Always arrange a proper physical inspection before making your final purchase decision.",
     howToVerify: [
       "Open the official Balochistan / ETANB vehicle verification form from this page.",
       "Enter the registration number exactly as on the plate; select the registration district if asked.",
