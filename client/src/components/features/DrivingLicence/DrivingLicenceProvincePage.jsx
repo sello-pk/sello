@@ -293,6 +293,70 @@ const DrivingLicenceProvincePage = () => {
         </div>
       </section>
 
+      {/* 2-Column Overview / Guide Sections */}
+      {guide.overviewSections?.length ? (
+        <div className="border-b border-slate-100 bg-white">
+          {guide.overviewSections.map((sec, idx) => (
+            <section
+              key={sec.title || idx}
+              className={`py-12 sm:py-16 ${idx % 2 === 1 ? "bg-slate-50/70" : "bg-white"}`}
+            >
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                  <div className={idx % 2 === 1 ? "lg:order-2" : ""}>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4 sm:mb-6 leading-tight">
+                      {sec.title}
+                    </h2>
+                    <p className="text-base sm:text-lg text-slate-600 leading-relaxed whitespace-pre-line">
+                      {sec.content}
+                    </p>
+                  </div>
+                  <div
+                    className={`relative rounded-2xl overflow-hidden shadow-lg border border-slate-200 ${
+                      idx % 2 === 1 ? "lg:order-1" : ""
+                    }`}
+                  >
+                    {sec.image && (
+                      <img
+                        src={sec.image}
+                        alt={sec.title}
+                        className="w-full h-auto object-cover max-h-[440px]"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+            </section>
+          ))}
+        </div>
+      ) : guide.overviewImage ? (
+        <section className="py-12 sm:py-16 bg-white border-b border-slate-100">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4 sm:mb-6 leading-tight">
+                  {guide.overviewTitle || `How to Apply for a Driving Licence in ${name}`}
+                </h2>
+                <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
+                  {guide.overviewContent || guide.introduction}
+                </p>
+              </div>
+              <div className="relative rounded-2xl overflow-hidden shadow-lg border border-slate-200">
+                <img
+                  src={guide.overviewImage}
+                  alt={guide.overviewTitle || `How to Apply for a Driving Licence in ${name}`}
+                  className="w-full h-auto object-cover max-h-[420px]"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       <section className="py-12 sm:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-[minmax(0,1.4fr)_minmax(240px,0.7fr)] gap-8 lg:gap-12 items-start">
@@ -424,7 +488,7 @@ const DrivingLicenceProvincePage = () => {
         <section className="py-12 sm:py-16 bg-slate-50">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8">
-              Frequently Asked Questions
+              {guide.faqTitle || "Frequently Asked Questions"}
             </h2>
             <div className="space-y-3">
               {guide.faqs.map((faq, i) => (
@@ -434,7 +498,7 @@ const DrivingLicenceProvincePage = () => {
                   open={openFaq === i}
                   onToggle={() => setOpenFaq(openFaq === i ? null : i)}
                 >
-                  <p>{faq.answer}</p>
+                  <p className="whitespace-pre-line leading-relaxed">{faq.answer}</p>
                 </FaqAccordionItem>
               ))}
             </div>

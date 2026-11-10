@@ -3,6 +3,8 @@ import sindhIcon from "../../../assets/images/verification/sindh.png";
 import kpkIcon from "../../../assets/images/verification/kpk.png";
 import islamabadIcon from "../../../assets/images/verification/islamabad.png";
 import balochistanIcon from "../../../assets/images/verification/blochistan.png";
+import howToApplyLearnerPunjabImg from "../../../assets/images/How to Apply for a Learner Driving Licence in Punjab.jpeg";
+import howToGetRegularPunjabImg from "../../../assets/images/How to Get a Regular Driving Licence in Punjab.jpeg";
 
 /** Hardcoded Driving Licence guides — no API/DB required. */
 
@@ -207,6 +209,20 @@ export const DRIVING_LICENCE_GUIDES = [
     shortDescription:
       "Apply, renew and verify driving licences through Punjab DLIMS 2.0 / Dastak.",
     authorityName: "Punjab DLIMS (Driving License Information Management System)",
+    overviewSections: [
+      {
+        title: "How to Apply for a Learner Driving Licence in Punjab",
+        content:
+          "If you are planning to drive a car or motorcycle in Punjab, Pakistan, the first step is to obtain a learner driving permit. Visit the official Punjab DLIMS or Dastak platform, create an account and complete the online application. Upload the required documents, generate your PSID and pay the applicable fee through an approved payment channel. Once your application is processed, you can download your learner permit and begin learning to drive according to traffic rules.",
+        image: howToApplyLearnerPunjabImg,
+      },
+      {
+        title: "How to Get a Regular Driving Licence in Punjab",
+        content:
+          "After completing the required learner period, you can apply for a regular driving licence in Punjab. Visit the relevant licensing centre and complete the required driving and traffic-rule tests for your selected vehicle category. Keep your original CNIC, valid learner permit and any other required documents ready. After successfully passing the required tests and completing the payment process, your regular driving licence will be processed by the licensing authority. Always check the latest requirements and fees through the official Punjab DLIMS platform.",
+        image: howToGetRegularPunjabImg,
+      },
+    ],
     introduction: `Punjab residents use the official Driving License Information Management System (DLIMS 2.0) for learner permits, permanent licences, renewals, payments and tracking. Services are delivered through the Government of Punjab Dastak one-window platform. ${disclaimer}`,
     learnerProcedure: [
       "Open the official Punjab DLIMS portal and create an account or sign in.",
@@ -261,31 +277,71 @@ export const DRIVING_LICENCE_GUIDES = [
       "Keep your PSID / application reference safe for payment and support queries.",
       "Official contact published on DLIMS: info@dlims.punjab.gov.pk · 042-99202892 · emergency 15.",
     ],
+    faqTitle: "Frequently Asked Questions About Punjab Driving Licence",
     faqs: [
       {
-        question: "Where do I apply for a Punjab driving licence online?",
+        question:
+          "How can I apply for a driving licence in Punjab, Pakistan?",
         answer:
-          "Apply for learner, renewal and related DLIMS services on https://dastak.punjab.gov.pk/. Use https://dlims.punjab.gov.pk/verify to verify a licence and https://dlims.punjab.gov.pk/track to track an application. Sello only provides guidance and links — applications are completed on the government sites.",
+          "You can apply through the official Punjab Driving Licence Information Management System (DLIMS), which is integrated with the Dastak platform. Create an account, select the required licence service, complete the application, upload the necessary documents and pay the applicable fee.",
       },
       {
-        question: "What is the published online learner fee in Punjab?",
+        question:
+          "How can I apply for a learner driving licence online in Punjab?",
         answer:
-          "According to the official DLIMS FAQ, the online learner driving licence fee is PKR 500 per category. Always re-check the live PSID amount in your application.",
+          "Visit the official DLIMS or Dastak platform, create an account and complete the learner licence application. Upload your photograph and CNIC copies, generate your PSID and pay the required fee. After payment and processing, your digital learner permit will be available through your account.",
       },
       {
-        question: "What documents does Punjab DLIMS commonly ask for online?",
+        question:
+          "What is the minimum age for getting a driving licence in Punjab?",
         answer:
-          "The official FAQ lists a clear face photo, CNIC front and back scans, and a medical certificate signed by a government doctor when age is above 50 for online learner applications. Always follow the checklist inside your live application.",
+          "The minimum age for a motorcycle or motorcar learner permit is 18 years. For an LTV learner permit, the minimum age is 21 years. Additional age and eligibility requirements may apply to other commercial vehicle categories.",
       },
       {
-        question: "How do I track a Punjab DLIMS application?",
-        answer:
-          "Sign in to your DLIMS dashboard for real-time updates. Keep your PSID / application reference for payment and support queries. Published contact: info@dlims.punjab.gov.pk · 042-99202892.",
+        question:
+          "What documents are required for a Punjab learner driving licence?",
+        answer: `Generally, you need:
+
+• Valid CNIC (front and back)
+• Recent photograph with a white background
+• Medical certificate, if required by the licensing authority
+
+Applicants above 50 years and certain commercial licence applicants may need a medical certificate signed by an authorised government doctor.`,
       },
       {
-        question: "Does Sello issue or print driving licences?",
+        question:
+          "How much does a learner driving licence cost in Punjab?",
         answer:
-          "No. Sello is an automotive marketplace. All licence issuance, renewal and verification are handled by official government systems.",
+          "The online learner driving licence fee is PKR 500 per category according to the official DLIMS information. If you apply for more than one category, the applicable fee is charged for each category. Always check the latest fee before payment.",
+      },
+      {
+        question: "How long is a learner driving permit valid in Punjab?",
+        answer:
+          "A learner driving permit is generally valid for 180 days from its issuance. Check the expiry date displayed on your permit and apply for renewal if required.",
+      },
+      {
+        question:
+          "How long must I wait before taking the regular driving licence test in Punjab?",
+        answer:
+          "You generally need to hold your learner permit for at least 42 days before appearing for the regular driving licence test. You must also meet the relevant eligibility requirements and pass the required tests.",
+      },
+      {
+        question:
+          "What tests are required to get a regular driving licence in Punjab?",
+        answer:
+          "Applicants generally need to pass a traffic signs or theoretical test and a practical driving test for their selected vehicle category. The licensing authority assesses your knowledge of traffic rules and ability to operate the vehicle safely.",
+      },
+      {
+        question:
+          "How can I renew or get a duplicate driving licence in Punjab?",
+        answer:
+          "You can apply for eligible driving licence services through the official Dastak platform. Select the renewal or duplicate licence service, provide the required information and documents, generate the applicable payment slip and complete the payment process.",
+      },
+      {
+        question:
+          "How can I check my Punjab driving licence application status?",
+        answer:
+          "Visit the official DLIMS or Dastak platform and log in to your account. Use the application tracking facility to check available updates about your application, payment, approval and licence card processing.",
       },
     ],
     actionLinks: [
