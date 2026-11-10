@@ -17,6 +17,8 @@ import balochistanHeroImg from "../../../assets/images/Access Balochistan's Offi
 import howToCheckBalochistanImg from "../../../assets/images/How to Check Vehicle Registration Before Buying a Used Car in Balochistan.jpeg";
 import gbHeroImg from "../../../assets/images/Access Gilgit-Baltistan's Official Vehicle Verification Portal.jpeg";
 import howToCheckGbImg from "../../../assets/images/How to Check Vehicle Registration Before Buying a Used Car in Gilgit-Baltistan.jpeg";
+import ajkHeroImg from "../../../assets/images/Access Azad Kashmir's Official Vehicle Verification Portal.jpeg";
+import howToCheckAjkImg from "../../../assets/images/How to Check Vehicle Registration Before Buying a Used Car in Azad Kashmir.jpeg";
 
 /** Hardcoded Vehicle Verification province guides — official portal URLs unchanged. */
 
@@ -688,6 +690,15 @@ export const VEHICLE_VERIFICATION_GUIDES = [
   buildGuide({
     slug: "azad-kashmir",
     name: "Azad Kashmir",
+    heroTitle: "Access Azad Kashmir's Official Vehicle Verification Portal",
+    heroDescription:
+      "Looking to check vehicle registration details in Azad Jammu & Kashmir (AJK), Pakistan? SELLO provides helpful guidance to understand the online vehicle verification process and access official AJK government resources. Learn where to check available vehicle registration and ownership information through the relevant government portal. Follow the steps below to access the official verification service and review the available records. SELLO does not collect your CNIC or vehicle registration number on this page.",
+    heroImage: ajkHeroImg,
+    overviewTitle:
+      "How to Check Vehicle Registration Before Buying a Used Car in Azad Kashmir",
+    overviewContent:
+      "Before purchasing a used car or motorcycle in Azad Jammu & Kashmir, it is important to check its available registration and ownership records. Visit the official AJK government vehicle verification service and follow the instructions to access available vehicle information. Compare the government record with the vehicle’s original registration documents, including its engine and chassis numbers. Online verification is an important first step, but always arrange a proper physical inspection before making your final purchase decision.",
+    overviewImage: howToCheckAjkImg,
     shortDescription: "Access Azad Kashmir vehicle verification services",
     authorityName: "Azad Jammu & Kashmir IRD",
     officialPortalUrl: "https://ird.ajk.gov.pk/tokentax/verification.php",
@@ -697,23 +708,70 @@ export const VEHICLE_VERIFICATION_GUIDES = [
       portal: "AJK Inland Revenue Department website",
     },
     introduction:
-      "Azad Kashmir vehicle-related checks are provided through AJK IRD services, including token tax verification. Use this guide for context, then open the official AJK portal.",
+      "Before purchasing a used car or motorcycle in Azad Jammu & Kashmir, it is important to check its available registration and ownership records. Visit the official AJK government vehicle verification service and follow the instructions to access available vehicle information. Compare the government record with the vehicle’s original registration documents, including its engine and chassis numbers. Online verification is an important first step, but always arrange a proper physical inspection before making your final purchase decision.",
     howToVerify: [
       "Open the official AJK IRD online MV verification page from this guide.",
       "Enter CNIC or MV registration number as requested on the government form.",
       "Review the verification response carefully.",
       "Confirm documents and vehicle identification numbers in person before purchase.",
     ],
+    faqTitle:
+      "Frequently Asked Questions About Azad Jammu & Kashmir (AJK) Vehicle Verification",
     faqs: [
       {
-        question: "Is AJK token tax verification the same as full ownership history?",
+        question:
+          "How can I check vehicle registration online in Azad Kashmir?",
         answer:
-          "Published fields vary. Treat the portal result as one check among documents, physical inspection and seller due diligence.",
+          "You can check vehicle registration through the official AJK Inland Revenue Department’s Online Motor Vehicle Verification portal. Select the registration number search option, enter the required details and submit your search to view available vehicle records.",
       },
       {
-        question: "Which portal should I use for Azad Kashmir vehicles?",
+        question: "What is AJK Vehicle Verification?",
         answer:
-          "Use the official AJK IRD verification URL linked on this page — not another province’s Excise site.",
+          "AJK Vehicle Verification is an online service provided by the Department of Inland Revenue, Government of Azad Jammu & Kashmir. It allows users to access available vehicle registration records through the official government system.",
+      },
+      {
+        question: "Can I check AJK vehicle ownership using a CNIC number?",
+        answer:
+          "Yes. The official AJK verification portal provides a CNIC-based search option. Enter the registered owner’s CNIC in the required format to check available vehicles associated with that CNIC. Only use someone else’s CNIC with their permission.",
+      },
+      {
+        question: "Can I verify an AJK vehicle using its registration number?",
+        answer:
+          "Yes. Select the MV Reg. No. search option on the official portal and enter the vehicle registration number as shown on its registration documents. Submit the search to view the available vehicle information.",
+      },
+      {
+        question: "Is AJK online vehicle verification free?",
+        answer:
+          "The official portal provides an online vehicle search facility. Check the government website for any applicable charges related to additional services, such as vehicle registration, transfer or documentation.",
+      },
+      {
+        question:
+          "What information can I find through AJK vehicle verification?",
+        answer:
+          "Depending on the available government records, vehicle information may include registration number, make, model, engine number, chassis number, ownership details and motor vehicle tax information.",
+      },
+      {
+        question:
+          "Can I check vehicle ownership before buying a used car in Azad Kashmir?",
+        answer:
+          "Yes. You can use the official AJK vehicle verification portal to review available registration and ownership information. Compare the results with the seller’s original registration documents and physically check the engine and chassis numbers before purchasing.",
+      },
+      {
+        question:
+          "What should I do if the AJK vehicle verification portal shows no record?",
+        answer:
+          "First, check that you selected the correct search option and entered the CNIC or registration number accurately. If the vehicle record still does not appear, contact the relevant AJK Inland Revenue or Excise office for assistance.",
+      },
+      {
+        question: "Can I check AJK vehicle token tax information online?",
+        answer:
+          "You can use the official AJK Inland Revenue vehicle verification service to review available vehicle and tax-related information. For outstanding dues, payment procedures or updated tax details, consult the official department.",
+      },
+      {
+        question:
+          "Can I verify an AJK-registered vehicle from another city in Pakistan?",
+        answer:
+          "Yes. You can access the online AJK vehicle verification portal from anywhere with an internet connection. This is useful when checking an AJK-registered car or motorcycle before purchasing it in another city or province.",
       },
     ],
     seoTitle:
