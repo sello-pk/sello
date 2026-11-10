@@ -9,6 +9,8 @@ import howToApplyLearnerSindhImg from "../../../assets/images/How to Apply for a
 import howToGetRegularSindhImg from "../../../assets/images/How to Get a Regular Driving Licence in Sindh.jpeg";
 import howToApplyLearnerKpkImg from "../../../assets/images/How to Apply for a Learner Driving Licence in Khyber Pakhtunkhwa.jpeg";
 import howToGetRegularKpkImg from "../../../assets/images/How to Get a Regular Driving Licence in Khyber Pakhtunkhwa.jpeg";
+import howToApplyLearnerIslamabadImg from "../../../assets/images/How to Apply for a Learner Driving Licence in Islamabad.jpeg";
+import howToGetRegularIslamabadImg from "../../../assets/images/How to Get a Regular Driving Licence in Islamabad.jpeg";
 
 /** Hardcoded Driving Licence guides — no API/DB required. */
 
@@ -770,6 +772,20 @@ Applicants above 50 years and certain commercial licence applicants may need a m
     shortDescription:
       "Islamabad Traffic Police DLIMS for online driving licence services in ICT.",
     authorityName: "Islamabad Traffic Police — ITP-DLIMS",
+    overviewSections: [
+      {
+        title: "How to Apply for a Learner Driving Licence in Islamabad",
+        content:
+          "If you want to drive a car or motorcycle in Islamabad, Pakistan, the first step is to obtain a learner driving permit. Visit the official Islamabad Traffic Police Driving Licence portal and open the Online Learner Permit service. Register and complete the online application by providing the required personal information and uploading the necessary documents, including your CNIC and photograph. Follow the portal instructions to complete the payment process. Once your application is processed, download your learner permit from the official system. Always check the latest eligibility requirements and learner permit conditions before applying.",
+        image: howToApplyLearnerIslamabadImg,
+      },
+      {
+        title: "How to Get a Regular Driving Licence in Islamabad",
+        content:
+          "After obtaining your learner driving permit and completing the required waiting period, you can apply for a regular driving licence in Islamabad. Applicants for a motorcycle or motorcar licence generally need to be at least 18 years old. Visit the designated Islamabad Traffic Police licensing centre with your original CNIC and learner permit. Complete the required medical examination, traffic signs or theoretical test, and practical driving test. After successfully passing the required tests and paying the applicable fee, your driving licence will be processed by the licensing authority. Always confirm the latest requirements and fees through the official Islamabad Traffic Police website before visiting.",
+        image: howToGetRegularIslamabadImg,
+      },
+    ],
     introduction: `Islamabad Capital Territory driving licence services are offered through Islamabad Traffic Police DLIMS (ITP-DLIMS). The portal is designed to streamline online licence applications for ICT residents. ${disclaimer}`,
     learnerProcedure: [
       "Open the official ITP-DLIMS portal.",
@@ -814,16 +830,65 @@ Applicants above 50 years and certain commercial licence applicants may need a m
       "Track applications from your ITP-DLIMS account dashboard.",
       "Official helpline published on ITP-DLIMS: 051-9001541.",
     ],
+    faqTitle: "Frequently Asked Questions About Islamabad Driving Licence",
     faqs: [
       {
-        question: "What is the official Islamabad driving licence portal?",
+        question:
+          "How can I apply for a learner driving licence online in Islamabad?",
         answer:
-          "https://dlims.islamabadpolice.gov.pk/ — Islamabad Traffic Police DLIMS.",
+          "You can apply through the official Islamabad Traffic Police Driving Licence portal. Register on the website, select the Online Learner Permit service, enter the required information, upload the requested documents and complete the payment process. Follow the portal instructions to download your learner permit after processing.",
       },
       {
-        question: "Is Islamabad the same as Punjab DLIMS?",
+        question:
+          "What is the minimum age to get a learner driving licence in Islamabad?",
         answer:
-          "No. Islamabad uses ITP-DLIMS. Punjab uses dlims.punjab.gov.pk. Apply on the portal that matches where you are licensed.",
+          "The minimum age for a motorcycle or motorcar learner permit is 18 years. Applicants seeking an LTV licence generally need to be at least 21 years old. Other commercial categories may have additional age and experience requirements.",
+      },
+      {
+        question:
+          "What documents are required for a learner driving licence in Islamabad?",
+        answer:
+          "Applicants generally need a valid CNIC and a recent photograph. You should upload clear copies of the documents requested by the online portal. Additional medical documentation may be required depending on your age or vehicle category.",
+      },
+      {
+        question:
+          "How much is the learner driving licence fee in Islamabad?",
+        answer:
+          "The fee depends on the selected vehicle category and the current Islamabad Traffic Police fee schedule. Check the amount displayed on the official online application portal before making payment.",
+      },
+      {
+        question: "How long is a learner driving permit valid in Islamabad?",
+        answer:
+          "A learner driving permit is generally valid for six months. Check the expiry date printed on your permit and complete the regular driving licence process within its validity period.",
+      },
+      {
+        question:
+          "How many days after getting a learner permit can I apply for a regular driving licence in Islamabad?",
+        answer:
+          "The normal waiting period is 42 days after the learner permit is issued. However, Islamabad Traffic Police guidance allows this period to be waived in certain cases for applicants who already hold a valid driving licence from another district of Pakistan or a foreign country, subject to approval.",
+      },
+      {
+        question:
+          "What tests are required to get a regular driving licence in Islamabad?",
+        answer:
+          "Applicants generally need to complete a medical or vision examination, a traffic signs or theoretical test and a practical driving test. The licensing authority must confirm that the applicant meets the required standards before issuing a regular licence.",
+      },
+      {
+        question: "Can I renew my driving licence online in Islamabad?",
+        answer:
+          "Yes. Islamabad Traffic Police provides an online renewal facility through its official Driving Licence portal. Register or log in, submit the requested information and documents, pay the applicable fee and follow the delivery instructions. Renewed licences are delivered through courier service under the online service arrangement.",
+      },
+      {
+        question:
+          "How can I verify my driving licence online in Islamabad?",
+        answer:
+          "Visit the official Islamabad Police website and select Driving License Verification. Enter the required licence information according to the portal instructions to check the available record.",
+      },
+      {
+        question:
+          "Can I apply for a duplicate driving licence online in Islamabad?",
+        answer:
+          "Yes. Islamabad Traffic Police provides an online duplicate licence application facility. Submit the required information and documents through the official portal, pay the applicable fee and follow the courier delivery instructions. Make sure your name, residential address and mobile number are entered correctly.",
       },
     ],
     actionLinks: [
