@@ -1,7 +1,13 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Clock, User, ArrowRight, ShieldCheck } from "lucide-react";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Clock,
+  User,
+  ArrowRight,
+  ShieldCheck,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 
 import onlineVehicleVerfication from "../../../assets/images/onlineVehicleVerfication.webp";
 import whyMTMISAndOnlineVehicleVerificationAreImportant from "../../../assets/images/whyMTMISAndOnlineVehicleVerificationAreImportant.webp";
@@ -761,6 +767,27 @@ Sello provides tools, information, resources, and listings that make buying and 
 ];
 
 export default function VehicleVerificationGuideSection() {
+  const [expandedSteps, setExpandedSteps] = useState({});
+
+  const toggleStep = (id, scrollOnClose = false) => {
+    setExpandedSteps((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+
+    if (scrollOnClose && typeof window !== "undefined") {
+      setTimeout(() => {
+        const el = document.getElementById(`guide-step-${id}`);
+        if (el) {
+          const yOffset = -80;
+          const y =
+            el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: "smooth" });
+        }
+      }, 50);
+    }
+  };
+
   const handleScrollToProvinces = (e) => {
     e.preventDefault();
     const elem = document.getElementById("select-province");
@@ -796,6 +823,8 @@ export default function VehicleVerificationGuideSection() {
         <div className="space-y-8 lg:space-y-12">
           {vehicleVerificationGuidePosts.map((post, index) => {
             const isImageLeft = index % 2 === 1; // odd = image left, even = image right
+            const isExpanded = !!expandedSteps[post.id];
+
             return (
               <motion.article
                 key={post.id}
@@ -804,7 +833,7 @@ export default function VehicleVerificationGuideSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.4, delay: (index % 3) * 0.05 }}
-                className={`group flex flex-col rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#FDFBF7] ${
+                className={`group flex flex-col rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 bg-[#FDFBF7] border border-stone-200/60 ${
                   isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"
                 }`}
               >
@@ -834,21 +863,117 @@ export default function VehicleVerificationGuideSection() {
                       {post.excerpt}
                     </p>
 
-                    <Link
-                      to={`/vehicle-verification/guide/${post.id}`}
-                      className="inline-flex items-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-xl font-semibold hover:opacity-95 transition-opacity shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 group cursor-pointer"
+                    <button
+                      type="button"
+                      onClick={() => toggleStep(post.id)}
+                      aria-expanded={isExpanded}
+                      aria-controls={`guide-step-content-${post.id}`}
+                      className="inline-flex items-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-xl font-semibold hover:opacity-95 transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 group cursor-pointer"
                     >
-                      Read More
-                      <ArrowRight
-                        className="w-5 h-5 group-hover:translate-x-0.5 transition-transform"
-                        aria-hidden
-                      />
-                    </Link>
+                      <span>{isExpanded ? "Read Less" : "Read More"}</span>
+                      {isExpanded ? (
+                        <ChevronUp
+                          className="w-5 h-5 transition-transform"
+                          aria-hidden
+                        />
+                      ) : (
+                        <ChevronDown
+                          className="w-5 h-5 transition-transform"
+                          aria-hidden
+                        />
+                      )}
+                    </button>
+
+                    <AnimatePresence>
+                      {isExpanded && (
+                        <motion.div
+                          id={`guide-step-content-${post.id}`}
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.35, ease: "easeInOut" }}
+                          className="overflow-hidden"
+                        >
+                          <div className="mt-8 pt-8 border-t border-stone-200/80">
+                            {/* Formatted markdown content */}
+                            <div
+                              className="prose prose-lg max-w-none text-gray-700 font-normal leading-relaxed"
+                              dangerouslySetInnerHTML={{
+                                __html: formatBlogContent(post.fullContent),
+                              }}
+                            />
+
+                            {/* Key Checklist & Verification Points */}
+                            {post.items && post.items.length > 0 && (
+                              <div className="mt-8 pt-6 border-t border-stone-200/80">
+                                <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                                  <ShieldCheck className="w-5 h-5 text-primary-500" />
+                                  <span>Key Checklist & Verification Points:</span>
+                                </h4>
+                                <ul className="grid gap-3 sm:grid-cols-2">
+                                  {post.items.map((item) => (
+                                    <li
+                                      key={item}
+                                      className="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm"
+                                    >
+                                      <span className="w-2 h-2 rounded-full bg-primary-500 shrink-0 mt-2" />
+                                      <span className="text-sm font-medium text-gray-800">
+                                        {item}
+                                      </span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+
+                            {/* Bottom Read Less and scroll-to-top controls */}
+                            <div className="mt-8 pt-4 border-t border-stone-200/60 flex items-center justify-between">
+                              <button
+                                type="button"
+                                onClick={() => toggleStep(post.id, true)}
+                                className="inline-flex items-center gap-2 text-primary-500 font-semibold hover:text-primary-600 transition-colors py-2 cursor-pointer text-sm sm:text-base"
+                              >
+                                <ChevronUp className="w-4 h-4" />
+                                <span>Read Less</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const el = document.getElementById(
+                                    `guide-step-${post.id}`,
+                                  );
+                                  if (el) {
+                                    const yOffset = -80;
+                                    const y =
+                                      el.getBoundingClientRect().top +
+                                      window.pageYOffset +
+                                      yOffset;
+                                    window.scrollTo({
+                                      top: y,
+                                      behavior: "smooth",
+                                    });
+                                  }
+                                }}
+                                className="text-xs sm:text-sm text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+                              >
+                                Back to top of step ↑
+                              </button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
 
                 {/* Image area */}
-                <div className="relative w-full lg:w-[500px] xl:w-[540px] lg:flex-shrink-0 h-72 sm:h-80 lg:h-[370px] xl:h-[390px] lg:self-stretch overflow-hidden bg-slate-900/5">
+                <div
+                  className={`relative w-full lg:w-[480px] xl:w-[520px] lg:flex-shrink-0 overflow-hidden bg-slate-900/5 transition-all duration-300 ${
+                    isExpanded
+                      ? "h-72 sm:h-80 lg:h-[400px] xl:h-[440px] lg:self-start lg:sticky lg:top-24 rounded-2xl m-4 sm:m-6 lg:m-6"
+                      : "h-72 sm:h-80 lg:h-auto lg:min-h-[360px] lg:self-stretch"
+                  }`}
+                >
                   <img
                     src={post.image}
                     alt={post.title}
