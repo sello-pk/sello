@@ -15,6 +15,8 @@ import kpkHeroImg from "../../../assets/images/Access Khyber Pakhtunkhwa's Offic
 import howToCheckKpkImg from "../../../assets/images/How to Check Vehicle Registration Before Buying a Used Car in Khyber Pakhtunkhwa.jpeg";
 import balochistanHeroImg from "../../../assets/images/Access Balochistan's Official Vehicle Verification Portal.jpeg";
 import howToCheckBalochistanImg from "../../../assets/images/How to Check Vehicle Registration Before Buying a Used Car in Balochistan.jpeg";
+import gbHeroImg from "../../../assets/images/Access Gilgit-Baltistan's Official Vehicle Verification Portal.jpeg";
+import howToCheckGbImg from "../../../assets/images/How to Check Vehicle Registration Before Buying a Used Car in Gilgit-Baltistan.jpeg";
 
 /** Hardcoded Vehicle Verification province guides — official portal URLs unchanged. */
 
@@ -591,6 +593,15 @@ export const VEHICLE_VERIFICATION_GUIDES = [
   buildGuide({
     slug: "gilgit-baltistan",
     name: "Gilgit-Baltistan",
+    heroTitle: "Access Gilgit-Baltistan's Official Vehicle Verification Portal",
+    heroDescription:
+      "Looking to check vehicle registration details in Gilgit-Baltistan, Pakistan? SELLO provides helpful guidance to understand the online vehicle verification process and access the official Gilgit-Baltistan Excise Department portal. Learn how to search available vehicle records using the registration district, vehicle number and registration date. Follow the steps below to access the government verification service and check the available information. SELLO does not collect your CNIC or vehicle registration number on this page.",
+    heroImage: gbHeroImg,
+    overviewTitle:
+      "How to Check Vehicle Registration Before Buying a Used Car in Gilgit-Baltistan",
+    overviewContent:
+      "Before purchasing a used car or motorcycle in Gilgit-Baltistan, it is important to check its available registration records. Visit the official GB Excise vehicle verification portal, select the vehicle’s registration district and enter its registration number and original registration date as requested. Compare the available government record with the vehicle and its original registration documents, including the engine and chassis numbers. Online verification is an important first step, but always arrange a proper physical inspection before making your final purchase decision.",
+    overviewImage: howToCheckGbImg,
     shortDescription: "Check Gilgit-Baltistan vehicle registration details",
     authorityName: "Gilgit-Baltistan Excise",
     officialPortalUrl: "https://gbexcise.gov.pk/vehsearch/vehicle-search.php",
@@ -600,23 +611,73 @@ export const VEHICLE_VERIFICATION_GUIDES = [
       portal: "Gilgit-Baltistan Excise department website",
     },
     introduction:
-      "Gilgit-Baltistan vehicle search is available through GB Excise. Follow this guide, then continue to the official GB vehicle search page to verify registration details.",
+      "Before purchasing a used car or motorcycle in Gilgit-Baltistan, it is important to check its available registration records. Visit the official GB Excise vehicle verification portal, select the vehicle’s registration district and enter its registration number and original registration date as requested. Compare the available government record with the vehicle and its original registration documents, including the engine and chassis numbers. Online verification is an important first step, but always arrange a proper physical inspection before making your final purchase decision.",
     howToVerify: [
       "Open the official GB Excise vehicle search from the action button.",
       "Select the registration district and enter the registration number and date from the book.",
       "Review available results from the government database.",
       "Match the result with chassis, engine and paperwork before paying.",
     ],
+    faqTitle:
+      "Frequently Asked Questions About Gilgit-Baltistan Vehicle Verification",
     faqs: [
       {
-        question: "Does GB verification work for all Gilgit-Baltistan plates?",
+        question:
+          "How can I check vehicle registration online in Gilgit-Baltistan?",
         answer:
-          "Coverage depends on what GB Excise has published online. If a record is missing, contact the relevant Excise office.",
+          "You can check vehicle registration through the official Gilgit-Baltistan Excise and Taxation Department portal. Select the registration district, enter the vehicle registration number and registration date, then submit your search to view available records.",
       },
       {
-        question: "Are third-party GB verification apps safe?",
+        question: "What is Gilgit-Baltistan Vehicle Verification?",
         answer:
-          "Prefer the official GB Excise URL linked here. Avoid apps or forms that ask for CNIC or payment outside government channels.",
+          "Gilgit-Baltistan Vehicle Verification is an online service provided by the Excise and Taxation Department, Government of Gilgit-Baltistan. It allows users to check available vehicle registration records through the department’s MVRTMS database.",
+      },
+      {
+        question:
+          "What information is required to verify a vehicle in Gilgit-Baltistan?",
+        answer:
+          "You generally need three details: Vehicle registration district, vehicle registration number, and original vehicle registration date. Make sure the information matches the vehicle’s registration documents.",
+      },
+      {
+        question: "Is Gilgit-Baltistan vehicle verification free?",
+        answer:
+          "The official portal provides an online vehicle search facility. Check the government website or contact the Excise Department for confirmation of any applicable charges related to additional services.",
+      },
+      {
+        question:
+          "What information can I find through GB vehicle verification?",
+        answer:
+          "Depending on the available government records, the portal may display vehicle registration details, chassis number, engine information and token tax validity.",
+      },
+      {
+        question:
+          "Can I check vehicle ownership before buying a used car in Gilgit-Baltistan?",
+        answer:
+          "Yes. You can review available registration records through the official GB Excise portal. Compare the information with the original registration book and physically check the vehicle’s engine and chassis numbers before purchasing.",
+      },
+      {
+        question:
+          "Can I verify a Gilgit-Baltistan vehicle using only its registration number?",
+        answer:
+          "No. The official vehicle search requires additional information, including the registration district and registration date. Keep the original vehicle registration documents available before starting the search.",
+      },
+      {
+        question:
+          "Why does the GB vehicle verification portal show no vehicle record found?",
+        answer:
+          "This may happen if the registration district, vehicle number or registration date is incorrect. Check all three details against the original registration documents. If the problem continues, contact the relevant district Excise office for assistance.",
+      },
+      {
+        question:
+          "Can I check route permit details through the Gilgit-Baltistan Excise portal?",
+        answer:
+          "Yes. The official portal provides a separate Route Permit Verification service. You can search available permit information using the required district and vehicle or permit details.",
+      },
+      {
+        question:
+          "Can I verify vehicles registered in other provinces through the GB vehicle verification portal?",
+        answer:
+          "No. The Gilgit-Baltistan portal is intended for vehicles registered in the region. For vehicles registered in Punjab, Sindh, Islamabad, Khyber Pakhtunkhwa or Balochistan, use the relevant government’s official vehicle verification service.",
       },
     ],
     seoTitle:
