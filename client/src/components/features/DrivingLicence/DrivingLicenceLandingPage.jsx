@@ -15,7 +15,8 @@ import SEO from "../../common/SEO";
 import NewsLatter from "../../utils/NewsLatter";
 import { AdSenseSlot } from "../../ads";
 import { DrivingLicenceLandingSchema } from "../../common/StructuredData";
-import listingHero from "../../../assets/images/driving_licence.jpg";
+import licenceHeroImg from "../../../assets/images/Access Official Driving Licence Verification Services in Pakistan.jpeg";
+import howToCheckLicenceImg from "../../../assets/images/How to Check and Verify Your Driving Licence Online in Pakistan.jpeg";
 import serviceListingsImg from "../../../assets/images/verification/1.png";
 import serviceAuctionsImg from "../../../assets/images/verification/2.png";
 import serviceEstimatorImg from "../../../assets/images/verification/3.png";
@@ -143,24 +144,24 @@ const DrivingLicenceLandingPage = () => {
   return (
     <div className="w-full min-w-0 max-w-full overflow-x-hidden bg-white">
       <SEO
-        title="Driving Licence Information & Verification in Pakistan | Sello.pk"
-        description="Official-province guides for Pakistan driving licences. Explore Punjab, Sindh, KPK, Islamabad and Balochistan processes, then continue to government portals to apply, renew or verify."
+        title="Access Official Driving Licence Verification Services in Pakistan | Sello.pk"
+        description="Looking to verify a driving licence in Pakistan? Explore Punjab, Sindh, Islamabad, KPK, Balochistan, Gilgit-Baltistan and Azad Kashmir services, then continue to official government portals."
         canonical="https://sello.pk/driving-licence"
         keywords="driving licence Pakistan, DLIMS Punjab, DLS Sindh, Islamabad DLIMS, KPK driving licence, Balochistan driving licence, verify driving licence"
       />
-      <DrivingLicenceLandingSchema />
+      <DrivingLicenceLandingSchema faqs={LANDING_FAQS} />
 
       <section className="relative w-full overflow-hidden min-h-[62vh] sm:min-h-[68vh] bg-gray-200">
         <img
-          src={listingHero}
-          alt=""
+          src={licenceHeroImg}
+          alt="Access Official Driving Licence Verification Services in Pakistan"
           className="absolute inset-0 h-full w-full object-cover object-right"
           fetchpriority="high"
           decoding="async"
           width="1600"
           height="400"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/40 via-slate-900/10 to-transparent sm:from-slate-950/25 sm:via-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-900/40 to-transparent sm:from-slate-950/50 sm:via-slate-900/20" />
         <div className="relative z-10 flex min-h-[62vh] sm:min-h-[68vh] flex-col justify-start w-full min-w-0 max-w-8xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 pt-5 sm:pt-6 pb-10 sm:pb-14">
           <div className="text-left w-full min-w-0 max-w-xl lg:max-w-2xl">
             <div className="inline-flex max-w-full items-center gap-2 bg-white text-primary-500 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium mb-3 sm:mb-5 shadow-sm">
@@ -168,12 +169,18 @@ const DrivingLicenceLandingPage = () => {
               <span className="truncate">Official DLIMS &amp; traffic police guides</span>
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 sm:mb-4 leading-tight text-balance">
-              Driving Licence Information &amp; Verification in Pakistan
+              Access Official Driving Licence Verification Services in Pakistan
             </h1>
             <p className="text-sm sm:text-base lg:text-lg text-gray-100 mb-5 sm:mb-8 text-pretty">
-              Read province-specific guidelines on Sello first, then open the
-              official government portal to apply, renew, track or verify. We
-              never ask for your CNIC or licence number here.
+              Looking to verify a driving licence in Pakistan? SELLO provides
+              helpful guidance to access official driving licence verification
+              services across Punjab, Sindh, Islamabad, Khyber Pakhtunkhwa,
+              Balochistan, Azad Jammu &amp; Kashmir and Gilgit-Baltistan. Each
+              region maintains its own licensing system and verification
+              portal. Select the relevant issuing authority, follow the
+              instructions and check the available licence information
+              directly through the official government website. SELLO does not
+              collect your CNIC or driving licence number on this page.
             </p>
             <div className="flex flex-col min-[420px]:flex-row flex-wrap justify-start items-stretch min-[420px]:items-center gap-2.5 sm:gap-3 mb-5 sm:mb-8">
               <a
@@ -206,6 +213,39 @@ const DrivingLicenceLandingPage = () => {
                 No CNIC collected
               </li>
             </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* 2-Column Overview Section */}
+      <section className="py-12 sm:py-16 bg-white border-b border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4 sm:mb-6 leading-tight">
+                How to Check and Verify Your Driving Licence Online in Pakistan
+              </h2>
+              <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
+                Checking your driving licence online can help you review the
+                information available in the issuing authority’s records.
+                First, identify the province or territory where your licence
+                was issued. Visit the relevant official driving licence
+                verification portal and enter the required information, such as
+                your CNIC or licence number, according to the portal’s
+                instructions. Review the displayed licence details and
+                validity information, where available. Always use the issuing
+                authority’s official website for verification.
+              </p>
+            </div>
+            <div className="relative rounded-2xl overflow-hidden shadow-lg border border-slate-200">
+              <img
+                src={howToCheckLicenceImg}
+                alt="How to Check and Verify Your Driving Licence Online in Pakistan"
+                className="w-full h-auto object-cover max-h-[420px]"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -461,20 +501,24 @@ const DrivingLicenceLandingPage = () => {
 
       <section className="py-16 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-slate-900 mb-8">
-            Frequently Asked Questions
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8 leading-tight">
+            Frequently Asked Questions About Driving Licence Information &amp; Verification in Pakistan
           </h2>
           <div className="space-y-3">
-            {LANDING_FAQS.map((faq, i) => (
-              <FaqAccordionItem
-                key={faq.q}
-                title={faq.q}
-                open={openFaq === i}
-                onToggle={() => setOpenFaq(openFaq === i ? null : i)}
-              >
-                <p>{faq.a}</p>
-              </FaqAccordionItem>
-            ))}
+            {LANDING_FAQS.map((faq, i) => {
+              const question = faq.question || faq.q;
+              const answer = faq.answer || faq.a;
+              return (
+                <FaqAccordionItem
+                  key={question}
+                  title={question}
+                  open={openFaq === i}
+                  onToggle={() => setOpenFaq(openFaq === i ? null : i)}
+                >
+                  <p>{answer}</p>
+                </FaqAccordionItem>
+              );
+            })}
           </div>
         </div>
       </section>

@@ -108,20 +108,79 @@ export const PREPARATION_CHECKLIST = [
 
 export const LANDING_FAQS = [
   {
-    q: "Does Sello issue driving licences?",
-    a: "No. Sello.pk is an automotive marketplace. These pages explain provincial processes and link to official government portals. Applications, payments and licence cards are handled only by government systems.",
+    question: "How can I verify my driving licence online in Pakistan?",
+    answer:
+      "You can verify your driving licence through the official online portal of the province or territory that issued it. Select the relevant licensing authority, enter the required information, such as your CNIC or licence number, and follow the verification instructions.",
+    q: "How can I verify my driving licence online in Pakistan?",
+    a: "You can verify your driving licence through the official online portal of the province or territory that issued it. Select the relevant licensing authority, enter the required information, such as your CNIC or licence number, and follow the verification instructions.",
   },
   {
-    q: "Why are there separate guides for each province?",
-    a: "Pakistan's driving licence systems differ by province and territory. Punjab uses DLIMS, Sindh uses DLS Online, Islamabad uses ITP-DLIMS, KPK uses Transport / Dastak channels, and Balochistan uses Quetta Traffic Police services. Using the wrong portal can delay or invalidate an application.",
+    question:
+      "Is there one driving licence verification website for all of Pakistan?",
+    answer:
+      "No. Pakistan does not currently have one universal public driving licence verification portal. Punjab, Sindh, Islamabad, Khyber Pakhtunkhwa, Balochistan, Azad Jammu & Kashmir and Gilgit-Baltistan have their own licensing systems and verification services.",
+    q: "Is there one driving licence verification website for all of Pakistan?",
+    a: "No. Pakistan does not currently have one universal public driving licence verification portal. Punjab, Sindh, Islamabad, Khyber Pakhtunkhwa, Balochistan, Azad Jammu & Kashmir and Gilgit-Baltistan have their own licensing systems and verification services.",
   },
   {
-    q: "Will Sello ask for my CNIC or licence number?",
-    a: "No. Sello does not collect CNIC or licence numbers on these guide pages. Enter personal details only on the official government portal you open from the action buttons.",
+    question: "Can I check my driving licence using my CNIC number?",
+    answer:
+      "Yes. Several provincial and regional licensing portals offer CNIC-based verification. Depending on the issuing authority, you may also need your driving licence number or other details.",
+    q: "Can I check my driving licence using my CNIC number?",
+    a: "Yes. Several provincial and regional licensing portals offer CNIC-based verification. Depending on the issuing authority, you may also need your driving licence number or other details.",
   },
   {
-    q: "Are fees on this page always final?",
-    a: "No. Where an official portal publishes a fee (for example Punjab's online learner FAQ), we mention it with a verification date. Always confirm the live amount inside the government payment step before paying.",
+    question:
+      "What information can I find through online driving licence verification?",
+    answer:
+      "Depending on the official portal, available information may include the licence holder’s name, licence number, licence type, permitted vehicle categories, issue date, expiry date and current licence status.",
+    q: "What information can I find through online driving licence verification?",
+    a: "Depending on the official portal, available information may include the licence holder’s name, licence number, licence type, permitted vehicle categories, issue date, expiry date and current licence status.",
+  },
+  {
+    question:
+      "How can I check whether my Pakistani driving licence is valid or expired?",
+    answer:
+      "Visit the official verification portal of the authority that issued your licence. Enter the required information and check the displayed licence status and expiry date, where available.",
+    q: "How can I check whether my Pakistani driving licence is valid or expired?",
+    a: "Visit the official verification portal of the authority that issued your licence. Enter the required information and check the displayed licence status and expiry date, where available.",
+  },
+  {
+    question: "Can I verify a learner driving licence online in Pakistan?",
+    answer:
+      "Some provincial licensing systems provide online information or verification facilities for learner permits. Availability depends on the issuing authority and its online services.",
+    q: "Can I verify a learner driving licence online in Pakistan?",
+    a: "Some provincial licensing systems provide online information or verification facilities for learner permits. Availability depends on the issuing authority and its online services.",
+  },
+  {
+    question:
+      "Can I verify an international driving licence issued in Pakistan?",
+    answer:
+      "Verification depends on the authority that issued your international driving permit. Contact the relevant licensing authority or use its official international licence verification service, where available.",
+    q: "Can I verify an international driving licence issued in Pakistan?",
+    a: "Verification depends on the authority that issued your international driving permit. Contact the relevant licensing authority or use its official international licence verification service, where available.",
+  },
+  {
+    question:
+      "What should I do if my driving licence details do not appear online?",
+    answer:
+      "First, confirm that you are using the correct provincial or regional portal. Check your CNIC and licence number for typing errors. If your record is still unavailable, contact the issuing traffic police or licensing office to confirm your record.",
+    q: "What should I do if my driving licence details do not appear online?",
+    a: "First, confirm that you are using the correct provincial or regional portal. Check your CNIC and licence number for typing errors. If your record is still unavailable, contact the issuing traffic police or licensing office to confirm your record.",
+  },
+  {
+    question: "Is online driving licence verification free in Pakistan?",
+    answer:
+      "Many official government portals provide online licence verification without a search fee. However, charges may apply for other services, such as licence issuance, renewal, duplicate cards or international permits. Check the relevant official portal for current fees.",
+    q: "Is online driving licence verification free in Pakistan?",
+    a: "Many official government portals provide online licence verification without a search fee. However, charges may apply for other services, such as licence issuance, renewal, duplicate cards or international permits. Check the relevant official portal for current fees.",
+  },
+  {
+    question: "Can I verify a Pakistani driving licence while living abroad?",
+    answer:
+      "Yes. You can generally access the relevant official online verification portal from outside Pakistan, including the UAE and other countries. You may need your Pakistani CNIC and driving licence details to complete the search.",
+    q: "Can I verify a Pakistani driving licence while living abroad?",
+    a: "Yes. You can generally access the relevant official online verification portal from outside Pakistan, including the UAE and other countries. You may need your Pakistani CNIC and driving licence details to complete the search.",
   },
 ];
 

@@ -2190,81 +2190,110 @@ export const VehicleVerificationProvinceSchema = ({ guide }) => {
   return null;
 };
 
-export const DrivingLicenceLandingSchema = () => {
+export const DrivingLicenceLandingSchema = ({ faqs } = {}) => {
   useEffect(() => {
     const baseUrl = SITE_URL;
     const pageUrl = `${baseUrl}/driving-licence`;
+    const graph = [
+      {
+        "@type": "WebPage",
+        "@id": `${pageUrl}/#webpage`,
+        url: pageUrl,
+        name: "Access Official Driving Licence Verification Services in Pakistan",
+        description:
+          "Official-province guides for Pakistan driving licences. Explore Punjab, Sindh, KPK, Islamabad, Balochistan, Gilgit-Baltistan and Azad Kashmir processes, then continue to government portals to apply, renew or verify.",
+        isPartOf: { "@id": `${baseUrl}/#website` },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${pageUrl}/#breadcrumb`,
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: baseUrl,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Driving Licence",
+            item: pageUrl,
+          },
+        ],
+      },
+      {
+        "@type": "ItemList",
+        "@id": `${pageUrl}/#provinces`,
+        name: "Pakistan driving licence province guides",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Punjab",
+            url: `${pageUrl}/punjab`,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Sindh",
+            url: `${pageUrl}/sindh`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: "Khyber Pakhtunkhwa",
+            url: `${pageUrl}/kpk`,
+          },
+          {
+            "@type": "ListItem",
+            position: 4,
+            name: "Islamabad",
+            url: `${pageUrl}/islamabad`,
+          },
+          {
+            "@type": "ListItem",
+            position: 5,
+            name: "Balochistan",
+            url: `${pageUrl}/balochistan`,
+          },
+          {
+            "@type": "ListItem",
+            position: 6,
+            name: "Gilgit-Baltistan",
+            url: `${pageUrl}/gilgit-baltistan`,
+          },
+          {
+            "@type": "ListItem",
+            position: 7,
+            name: "Azad Kashmir",
+            url: `${pageUrl}/azad-kashmir`,
+          },
+        ],
+      },
+    ];
+
+    if (Array.isArray(faqs) && faqs.length > 0) {
+      graph.push({
+        "@type": "FAQPage",
+        "@id": `${pageUrl}/#faq`,
+        mainEntity: faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question || faq.q,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq.answer || faq.a,
+          },
+        })),
+      });
+    }
+
     const schema = {
       "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "WebPage",
-          "@id": `${pageUrl}/#webpage`,
-          url: pageUrl,
-          name: "Driving Licence Information & Verification in Pakistan",
-          description:
-            "Province guides for Pakistan driving licence applications, renewals and verification with links to official government portals.",
-          isPartOf: { "@id": `${baseUrl}/#website` },
-        },
-        {
-          "@type": "BreadcrumbList",
-          "@id": `${pageUrl}/#breadcrumb`,
-          itemListElement: [
-            {
-              "@type": "ListItem",
-              position: 1,
-              name: "Home",
-              item: baseUrl,
-            },
-            {
-              "@type": "ListItem",
-              position: 2,
-              name: "Driving Licence",
-              item: pageUrl,
-            },
-          ],
-        },
-        {
-          "@type": "ItemList",
-          "@id": `${pageUrl}/#provinces`,
-          name: "Pakistan driving licence province guides",
-          itemListElement: [
-            {
-              "@type": "ListItem",
-              position: 1,
-              name: "Punjab",
-              url: `${pageUrl}/punjab`,
-            },
-            {
-              "@type": "ListItem",
-              position: 2,
-              name: "Sindh",
-              url: `${pageUrl}/sindh`,
-            },
-            {
-              "@type": "ListItem",
-              position: 3,
-              name: "Khyber Pakhtunkhwa",
-              url: `${pageUrl}/kpk`,
-            },
-            {
-              "@type": "ListItem",
-              position: 4,
-              name: "Islamabad",
-              url: `${pageUrl}/islamabad`,
-            },
-            {
-              "@type": "ListItem",
-              position: 5,
-              name: "Balochistan",
-              url: `${pageUrl}/balochistan`,
-            },
-          ],
-        },
-      ],
+      "@graph": graph,
     };
     addStructuredData(schema);
-  }, []);
+  }, [faqs]);
   return null;
 };
 
