@@ -7,6 +7,8 @@ import gilgitBaltistanIcon from "../../../assets/images/verification/gilgitBalti
 import azadKashmirIcon from "../../../assets/images/verification/azadKashmir.png";
 import punjabHeroImg from "../../../assets/images/Access Punjab's Official Vehicle Verification Portal.jpeg";
 import howToCheckPunjabImg from "../../../assets/images/How to Check Vehicle Registration Before Buying a Used Car.jpeg";
+import islamabadHeroImg from "../../../assets/images/Access Islamabad's Official Vehicle Verification Portal.jpeg";
+import howToCheckIslamabadImg from "../../../assets/images/How to Check Vehicle Ownership Before Buying a Used Car in Islamabad.jpeg";
 
 /** Hardcoded Vehicle Verification province guides — official portal URLs unchanged. */
 
@@ -254,32 +256,92 @@ export const VEHICLE_VERIFICATION_GUIDES = [
   buildGuide({
     slug: "islamabad",
     name: "Islamabad",
+    heroTitle: "Access Islamabad's Official Vehicle Verification Portal",
+    heroDescription:
+      "Looking to check vehicle registration details in Islamabad, Pakistan? SELLO provides helpful guidance to understand the online vehicle verification process and access the official Islamabad government portal. Learn how to find available vehicle records and follow the steps to check registration information. Continue to the official government website for vehicle verification. SELLO does not collect your CNIC or vehicle registration number on this page.",
+    heroImage: islamabadHeroImg,
+    overviewTitle:
+      "How to Check Vehicle Ownership Before Buying a Used Car in Islamabad",
+    overviewContent:
+      "Before buying a used car or motorcycle in Islamabad, it is important to review its available registration and ownership records. Visit the official Islamabad vehicle verification portal and follow the instructions to access the vehicle information. Compare the available details with the vehicle and its original registration documents. Online verification is an important first step, but always arrange a proper physical inspection before making your final purchase decision.",
+    overviewImage: howToCheckIslamabadImg,
     shortDescription: "Verify Islamabad vehicle ownership records",
     authorityName: "Islamabad Excise & Taxation",
     officialPortalUrl: "https://islamabadexcise.gov.pk/",
     portalHomeUrl: "https://islamabadexcise.gov.pk/",
     actionNotes: {
-      verify: "Official Islamabad Excise site — use Check Vehicle Detail / Vehicle Services",
+      verify:
+        "Official Islamabad Excise site — use Check Vehicle Detail / Vehicle Services",
       portal: "Islamabad Excise & Taxation department site",
     },
     introduction:
-      "Islamabad Capital Territory vehicle records are managed by Islamabad Excise & Taxation. This page explains what to prepare, then links you to the official Islamabad Excise site for verification.",
+      "Before buying a used car or motorcycle in Islamabad, it is important to review its available registration and ownership records. Visit the official Islamabad vehicle verification portal and follow the instructions to access the vehicle information. Compare the available details with the vehicle and its original registration documents. Online verification is an important first step, but always arrange a proper physical inspection before making your final purchase decision.",
     howToVerify: [
       "Open the official Islamabad Excise website from the button on this page.",
       "Use Online Services / Check Vehicle Detail (Vehicle Services Portal may ask you to sign in with Gmail).",
       "Enter the registration details requested on the government form.",
       "Match results with the registration book / smart card and the vehicle before finalizing a deal.",
     ],
+    faqTitle:
+      "Frequently Asked Questions About Islamabad Vehicle Verification",
     faqs: [
       {
-        question: "Can I verify ICT-registered cars from outside Islamabad?",
+        question:
+          "How can I check vehicle registration online in Islamabad?",
         answer:
-          "Yes. Use the official Islamabad Excise online services. Online checks support due diligence but do not replace in-person document and vehicle inspection.",
+          "You can check vehicle registration details through the official Islamabad Excise Department website or its designated online vehicle verification service. Follow the portal instructions to access available vehicle records.",
       },
       {
-        question: "Does Sello store my Islamabad registration search?",
+        question: "What is Islamabad Vehicle Verification?",
         answer:
-          "No. Sello does not collect registration numbers on these guide pages. Searches happen only on the official government portal.",
+          "Islamabad Vehicle Verification is an online service that allows users to check available registration and ownership information for vehicles registered in Islamabad.",
+      },
+      {
+        question:
+          "Can I check car and motorcycle registration online in Islamabad?",
+        answer:
+          "Yes. You can use the official Islamabad vehicle verification service to check available registration information for cars and motorcycles registered in Islamabad.",
+      },
+      {
+        question: "Is Islamabad vehicle verification free?",
+        answer:
+          "Check the official Islamabad Excise portal for the latest service details and any applicable fees. Charges may vary depending on the service you use.",
+      },
+      {
+        question:
+          "What information can I find through Islamabad vehicle verification?",
+        answer:
+          "Depending on the available government records, information may include vehicle registration number, make, model, colour, engine number, chassis number, registration date and ownership details.",
+      },
+      {
+        question:
+          "Can I check vehicle ownership before buying a used car in Islamabad?",
+        answer:
+          "Yes. You can review available ownership and registration details through the official government portal. Always compare the information with the original vehicle documents before purchasing.",
+      },
+      {
+        question:
+          "Can I verify an Islamabad vehicle using its registration number?",
+        answer:
+          "The official verification service allows users to search vehicle records according to its current portal requirements. You may need to provide the registration number or other requested information.",
+      },
+      {
+        question:
+          "Does Islamabad vehicle verification confirm whether a vehicle is stolen?",
+        answer:
+          "Registration verification alone does not necessarily confirm that a vehicle has no theft or criminal record. For additional checks, contact the relevant Islamabad Police or government authority.",
+      },
+      {
+        question:
+          "What should I do if vehicle details do not match the official records?",
+        answer:
+          "Avoid proceeding with the purchase until the discrepancy is clarified. Compare the vehicle's engine and chassis numbers with its original documents and available government records. Contact Islamabad Excise for assistance.",
+      },
+      {
+        question:
+          "Can I verify vehicles registered in other provinces through Islamabad's vehicle verification portal?",
+        answer:
+          "Islamabad's vehicle verification service is intended for vehicles registered in Islamabad. For vehicles registered in Punjab, Sindh, KPK or Balochistan, use the relevant provincial government's official verification service.",
       },
     ],
     seoTitle:
