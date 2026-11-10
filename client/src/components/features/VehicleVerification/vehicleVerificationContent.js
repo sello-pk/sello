@@ -9,6 +9,8 @@ import punjabHeroImg from "../../../assets/images/Access Punjab's Official Vehic
 import howToCheckPunjabImg from "../../../assets/images/How to Check Vehicle Registration Before Buying a Used Car.jpeg";
 import islamabadHeroImg from "../../../assets/images/Access Islamabad's Official Vehicle Verification Portal.jpeg";
 import howToCheckIslamabadImg from "../../../assets/images/How to Check Vehicle Ownership Before Buying a Used Car in Islamabad.jpeg";
+import sindhHeroImg from "../../../assets/images/Access Sindh's Official Vehicle Verification Portal.jpeg";
+import howToCheckSindhImg from "../../../assets/images/How to Check Vehicle Registration Before Buying a Used Car in Sindh.jpeg";
 
 /** Hardcoded Vehicle Verification province guides — official portal URLs unchanged. */
 
@@ -352,6 +354,15 @@ export const VEHICLE_VERIFICATION_GUIDES = [
   buildGuide({
     slug: "sindh",
     name: "Sindh",
+    heroTitle: "Access Sindh's Official Vehicle Verification Portal",
+    heroDescription:
+      "Looking to check vehicle registration details in Sindh, Pakistan? SELLO provides helpful guidance to understand the online vehicle verification process and access the official Sindh Excise portal. Learn how to check available registration records for cars and motorcycles by selecting the vehicle category and entering its registration number on the government website. Follow the steps below to view the available vehicle information. SELLO does not collect your CNIC or vehicle registration number on this page",
+    heroImage: sindhHeroImg,
+    overviewTitle:
+      "How to Check Vehicle Registration Before Buying a Used Car in Sindh",
+    overviewContent:
+      "Before purchasing a used car or motorcycle in Sindh, it is important to check its available registration and ownership records. Visit the official Sindh Excise vehicle verification portal, select the vehicle category and enter its registration number as shown on the number plate. Compare the information displayed with the vehicle and its original registration documents. Online verification is an important first step, but always arrange a proper physical inspection before making your final purchase decision.",
+    overviewImage: howToCheckSindhImg,
     shortDescription: "Check Sindh vehicle registration details",
     authorityName: "Sindh Excise, Taxation & Narcotics Control",
     officialPortalUrl: "https://excise.gos.pk/vehicle/vehicle_search",
@@ -361,23 +372,72 @@ export const VEHICLE_VERIFICATION_GUIDES = [
       portal: "Sindh Excise department website",
     },
     introduction:
-      "Sindh vehicle registration checks are available through the Sindh Excise vehicle search service. Read this guide, then open the official Sindh portal to verify a car or bike registered in Sindh.",
+      "Before purchasing a used car or motorcycle in Sindh, it is important to check its available registration and ownership records. Visit the official Sindh Excise vehicle verification portal, select the vehicle category and enter its registration number as shown on the number plate. Compare the information displayed with the vehicle and its original registration documents. Online verification is an important first step, but always arrange a proper physical inspection before making your final purchase decision.",
     howToVerify: [
       "Open the official Sindh Excise vehicle search page from this guide.",
       "Choose Four Wheelers or Two Wheelers, then enter the registration number exactly as on the plate.",
       "Review registration details returned by the portal.",
       "Cross-check engine and chassis numbers on the vehicle against the book and portal result.",
     ],
+    faqTitle: "Frequently Asked Questions About Sindh Vehicle Verification",
     faqs: [
       {
-        question: "Does Sindh verification cover Karachi bikes and cars?",
+        question:
+          "How can I check vehicle registration online in Sindh?",
         answer:
-          "Sindh Excise services cover vehicles registered under Sindh. Always use the official vehicle search page linked here for current availability.",
+          "You can check vehicle registration through the official Sindh Excise website. Select the vehicle category, enter the registration number exactly as shown on the number plate, complete the security check and view the available record.",
       },
       {
-        question: "Why is my Sindh record missing?",
+        question: "What is Sindh Vehicle Verification?",
         answer:
-          "Records can be incomplete or delayed. Confirm the number, try again later, or visit the Excise office associated with the registration.",
+          "Sindh Vehicle Verification is an online service provided by the Excise, Taxation & Narcotics Control Department, Government of Sindh. It allows users to access available motor vehicle registration records.",
+      },
+      {
+        question:
+          "Can I check car and motorcycle registration online in Sindh?",
+        answer:
+          "Yes. The official portal provides separate options for Four Wheelers and Two Wheelers. Select the correct category before entering the vehicle registration number.",
+      },
+      {
+        question: "Is Sindh online vehicle verification free?",
+        answer:
+          "The official portal provides an online vehicle record search facility. Check the government website for any charges associated with other services, such as registration, transfer or tax payments.",
+      },
+      {
+        question:
+          "What information can I find through Sindh vehicle verification?",
+        answer:
+          "Depending on the available government record, vehicle information may include registration number, make, model, engine number, chassis number and other registration details.",
+      },
+      {
+        question:
+          "Can I check vehicle ownership before buying a used car in Sindh?",
+        answer:
+          "Yes. You can review the available registration record through the official Sindh Excise portal. Compare the details with the original vehicle documents and check that the engine and chassis numbers match the physical vehicle before purchasing.",
+      },
+      {
+        question:
+          "Can I verify a Sindh vehicle using its number plate?",
+        answer:
+          "Yes. Select Four Wheelers or Two Wheelers on the official portal and enter the registration number exactly as printed on the number plate. Complete the security check to view the available record.",
+      },
+      {
+        question:
+          "Can I check vehicles registered against my CNIC in Sindh?",
+        answer:
+          "Yes. The Sindh Excise Department provides a separate Vehicle Verification by CNIC service. Use the official government portal and follow its instructions to check available vehicle records associated with your CNIC.",
+      },
+      {
+        question:
+          "What should I do if a vehicle's details do not match the official record?",
+        answer:
+          "Do not proceed with the purchase until the discrepancy is resolved. Compare the registration documents, engine number and chassis number with the available official records. Contact the Sindh Excise Department for further assistance.",
+      },
+      {
+        question:
+          "Can I verify vehicles registered in other provinces through Sindh's vehicle verification portal?",
+        answer:
+          "Sindh's vehicle verification service is intended for vehicles registered in Sindh. For vehicles registered in Punjab, Islamabad, Khyber Pakhtunkhwa or Balochistan, use the relevant government's official vehicle verification portal.",
       },
     ],
     seoTitle: "Sindh Vehicle Verification Online | Excise Search – Sello.pk",
