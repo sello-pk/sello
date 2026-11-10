@@ -5,6 +5,8 @@ import kpkIcon from "../../../assets/images/verification/kpk.png";
 import balochistanIcon from "../../../assets/images/verification/blochistan.png";
 import gilgitBaltistanIcon from "../../../assets/images/verification/gilgitBaltistan.png";
 import azadKashmirIcon from "../../../assets/images/verification/azadKashmir.png";
+import punjabHeroImg from "../../../assets/images/Access Punjab's Official Vehicle Verification Portal.jpeg";
+import howToCheckPunjabImg from "../../../assets/images/How to Check Vehicle Registration Before Buying a Used Car.jpeg";
 
 /** Hardcoded Vehicle Verification province guides — official portal URLs unchanged. */
 
@@ -93,6 +95,13 @@ const sharedBeforeYouBuy = [
 const buildGuide = ({
   slug,
   name,
+  heroTitle,
+  heroDescription,
+  heroImage,
+  overviewTitle,
+  overviewContent,
+  overviewImage,
+  faqTitle,
   shortDescription,
   authorityName,
   officialPortalUrl,
@@ -110,6 +119,13 @@ const buildGuide = ({
   return {
     slug,
     name,
+    heroTitle,
+    heroDescription,
+    heroImage,
+    overviewTitle,
+    overviewContent,
+    overviewImage,
+    faqTitle,
     shortDescription,
     authorityName,
     officialPortalUrl,
@@ -149,6 +165,15 @@ export const VEHICLE_VERIFICATION_GUIDES = [
   buildGuide({
     slug: "punjab",
     name: "Punjab",
+    heroTitle: "Access Punjab's Official Vehicle Verification Portal",
+    heroDescription:
+      "Looking to check vehicle registration details in Punjab, Pakistan? SELLO provides helpful guidance to understand the online vehicle verification process and access the official Punjab Government portal. Learn where to check vehicle records and what details may be available through the government system. Follow the steps below and continue directly to the official portal for verification.",
+    heroImage: punjabHeroImg,
+    overviewTitle:
+      "How to Check Vehicle Registration Before Buying a Used Car",
+    overviewContent:
+      "Before purchasing a used car or motorcycle in Punjab, it is important to check its available registration records. Visit the official Punjab Excise, Taxation & Narcotics Control Department portal and follow the instructions to access vehicle information. Compare the details provided by the government portal with the vehicle and its original registration documents. Online verification is an important first step, but it should always be supported by a proper physical inspection before making your final purchase decision.",
+    overviewImage: howToCheckPunjabImg,
     shortDescription: "Verify Punjab vehicle registration records",
     authorityName: "Punjab Excise & Taxation — MTMIS",
     officialPortalUrl: "https://mtmis.excise.punjab.gov.pk/",
@@ -165,16 +190,60 @@ export const VEHICLE_VERIFICATION_GUIDES = [
       "Enter the registration date from the registration book / smart card when the form asks for it, then complete the captcha.",
       "Compare the online result with the physical vehicle and documents before you pay.",
     ],
+    faqTitle: "Frequently Asked Questions About Punjab Vehicle Verification",
     faqs: [
       {
-        question: "Is Punjab MTMIS free to use?",
+        question: "How can I check vehicle registration online in Punjab?",
         answer:
-          "Public verification tools provided by Punjab Excise are generally free to query. Always confirm fee notices on the live portal and never pay third-party “agents” for the same check.",
+          "You can check vehicle registration through the official Punjab Excise MTMIS portal. Visit the website, enter the required vehicle information and follow the instructions to view available registration records.",
       },
       {
-        question: "What if the Punjab record does not match the car?",
+        question: "What is MTMIS Punjab?",
         answer:
-          "Do not proceed with payment. Recheck the registration number, inspect chassis and engine stamps, and contact the relevant Excise office or the seller for clarification.",
+          "MTMIS stands for Motor Transport Management Information System. It is used by Punjab's Excise, Taxation & Narcotics Control Department to maintain and provide access to vehicle registration records.",
+      },
+      {
+        question: "Can I verify a car or motorcycle online in Punjab?",
+        answer:
+          "Yes. Punjab's online vehicle verification service covers registered motor vehicles, including cars and motorcycles. You can access the official portal to check available registration information.",
+      },
+      {
+        question: "Is Punjab MTMIS vehicle verification free?",
+        answer:
+          "You can access the official online vehicle verification service through the Punjab Excise website. Check the official portal for any applicable charges associated with other services.",
+      },
+      {
+        question: "What information can I find through Punjab vehicle verification?",
+        answer:
+          "Depending on the available government record, vehicle information may include registration number, make, model, engine number, chassis number, registration date, colour and ownership details.",
+      },
+      {
+        question: "Can I check vehicle ownership before buying a used car?",
+        answer:
+          "Yes. You can use the official MTMIS portal to review available ownership and registration information. Compare the results with the seller's original documents before proceeding with the purchase.",
+      },
+      {
+        question: "Can I check a vehicle's registration using its number plate?",
+        answer:
+          "The official Punjab MTMIS portal provides an online vehicle verification facility. Follow the current search form requirements, which may request additional information besides the registration number.",
+      },
+      {
+        question:
+          "Does MTMIS Punjab verification confirm that a vehicle is not stolen?",
+        answer:
+          "Not necessarily. MTMIS primarily provides vehicle registration information. For additional theft or criminal-record checks, contact the relevant Punjab Police or official vehicle verification service.",
+      },
+      {
+        question:
+          "What should I do if vehicle details do not match the official record?",
+        answer:
+          "Do not rush into purchasing the vehicle. Compare its registration documents, engine number and chassis number with the available official records. Contact the relevant Excise office if you find discrepancies.",
+      },
+      {
+        question:
+          "Can I verify a vehicle registered outside Punjab through MTMIS Punjab?",
+        answer:
+          "MTMIS Punjab is intended for vehicles registered in Punjab. For vehicles registered in Sindh, KPK, Balochistan or Islamabad, use the relevant official registration verification service.",
       },
     ],
     seoTitle:

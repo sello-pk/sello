@@ -76,6 +76,11 @@ const VehicleVerificationProvincePage = () => {
 
   const meta = PROVINCE_META[slug] || {};
   const name = provinceDisplayName(slug, guide.name);
+  const heroImage = guide.heroImage || listingHero;
+  const heroTitle = guide.heroTitle || `${name} Vehicle Verification`;
+  const heroDescription =
+    guide.heroDescription ||
+    `${guide.shortDescription}. Read the steps below, then continue on the official government portal — Sello never asks for your CNIC or registration number here.`;
   const canonical = `https://sello.pk/vehicle-verification/${slug}`;
   const otherGuides = VEHICLE_VERIFICATION_GUIDES.filter((g) => g.slug !== slug);
   const checkHalf = Math.ceil((guide.whatYouCanCheck?.length || 0) / 2);
@@ -92,15 +97,15 @@ const VehicleVerificationProvincePage = () => {
 
       <section className="relative w-full overflow-hidden min-h-[56vh] sm:min-h-[58vh] bg-gray-200">
         <img
-          src={listingHero}
-          alt=""
+          src={heroImage}
+          alt={heroTitle}
           className="absolute inset-0 h-full w-full object-cover object-center"
           fetchpriority="high"
           decoding="async"
           width="1200"
           height="600"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/30 via-slate-900/45 to-slate-900/60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/40 via-slate-900/60 to-slate-900/75" />
         <div className="relative z-10 flex min-h-[56vh] sm:min-h-[58vh] flex-col justify-center w-full min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
           <div className="text-center w-full min-w-0 max-w-3xl mx-auto">
             <nav
@@ -139,12 +144,10 @@ const VehicleVerificationProvincePage = () => {
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 sm:mb-4 leading-tight text-balance">
-              {name} Vehicle Verification
+              {heroTitle}
             </h1>
             <p className="text-sm sm:text-base lg:text-lg text-gray-100 mb-6 sm:mb-8 text-pretty">
-              {guide.shortDescription}. Read the steps below, then continue on
-              the official government portal — Sello never asks for your CNIC or
-              registration number here.
+              {heroDescription}
             </p>
 
             <div className="flex flex-col min-[420px]:flex-row flex-wrap justify-center items-stretch min-[420px]:items-center gap-2.5 sm:gap-3 mb-6 sm:mb-8">
@@ -263,20 +266,62 @@ const VehicleVerificationProvincePage = () => {
       </section>
 
       <section className="py-12 sm:py-16 bg-white">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-sm text-primary-500 font-semibold mb-2 tracking-wide uppercase">
-            {guide.authorityName}
-          </p>
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
-            About {name} verification
-          </h2>
-          <p className="text-slate-600 leading-relaxed text-pretty text-base sm:text-lg">
-            {guide.introduction}
-          </p>
-          <p className="mt-5 inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1.5 text-xs text-slate-500">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-            Last verified: {formatVerifiedDate(guide.lastVerifiedAt)}
-          </p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {guide.overviewImage ? (
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+              <div>
+                <p className="text-xs sm:text-sm text-primary-500 font-semibold mb-2 tracking-wide uppercase">
+                  {guide.authorityName}
+                </p>
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-5 leading-tight text-balance">
+                  {guide.overviewTitle || `About ${name} verification`}
+                </h2>
+                <p className="text-slate-600 leading-relaxed text-base sm:text-lg mb-6 text-pretty">
+                  {guide.overviewContent || guide.introduction}
+                </p>
+                <div className="flex flex-wrap items-center gap-3">
+                  <p className="inline-flex items-center gap-2 rounded-full bg-slate-50 border border-slate-100 px-3.5 py-1.5 text-xs sm:text-sm text-slate-600 font-medium">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                    Last verified: {formatVerifiedDate(guide.lastVerifiedAt)}
+                  </p>
+                  <a
+                    href="#how-to-verify"
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 hover:text-primary-700 hover:gap-2 transition-all"
+                  >
+                    View step-by-step process <ArrowRight className="w-4 h-4" />
+                  </a>
+                </div>
+              </div>
+
+              <div className="relative rounded-3xl overflow-hidden shadow-lg border border-slate-100 bg-slate-100 aspect-[4/3] sm:aspect-[16/10] lg:aspect-[4/3]">
+                <img
+                  src={guide.overviewImage}
+                  alt={guide.overviewTitle || "Vehicle Registration Check"}
+                  className="w-full h-full object-cover object-center"
+                  loading="lazy"
+                  decoding="async"
+                  width="800"
+                  height="600"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="max-w-3xl mx-auto text-center">
+              <p className="text-sm text-primary-500 font-semibold mb-2 tracking-wide uppercase">
+                {guide.authorityName}
+              </p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
+                About {name} verification
+              </h2>
+              <p className="text-slate-600 leading-relaxed text-pretty text-base sm:text-lg">
+                {guide.introduction}
+              </p>
+              <p className="mt-5 inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1.5 text-xs text-slate-500">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                Last verified: {formatVerifiedDate(guide.lastVerifiedAt)}
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -414,7 +459,7 @@ const VehicleVerificationProvincePage = () => {
         <section className="py-12 sm:py-16 bg-white">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8">
-              Frequently Asked Questions
+              {guide.faqTitle || "Frequently Asked Questions"}
             </h2>
             <div className="space-y-3">
               {guide.faqs.map((faq, i) => (
