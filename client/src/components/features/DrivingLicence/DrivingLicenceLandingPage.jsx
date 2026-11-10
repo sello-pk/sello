@@ -17,6 +17,7 @@ import { AdSenseSlot } from "../../ads";
 import { DrivingLicenceLandingSchema } from "../../common/StructuredData";
 import licenceHeroImg from "../../../assets/images/Access Official Driving Licence Verification Services in Pakistan.jpeg";
 import howToCheckLicenceImg from "../../../assets/images/How to Check and Verify Your Driving Licence Online in Pakistan.jpeg";
+import whatYouCanDoImg from "../../../assets/images/What You Can Do.jpeg";
 import serviceListingsImg from "../../../assets/images/verification/1.png";
 import serviceAuctionsImg from "../../../assets/images/verification/2.png";
 import serviceEstimatorImg from "../../../assets/images/verification/3.png";
@@ -361,11 +362,13 @@ const DrivingLicenceLandingPage = () => {
                 ))}
               </div>
             </div>
-            <div className="rounded-2xl overflow-hidden bg-slate-50 min-h-[280px] lg:min-h-[360px]">
+            <div className="relative rounded-2xl overflow-hidden shadow-lg border border-slate-200 min-h-[280px] lg:min-h-[360px]">
               <img
-                src={serviceGuidesImg}
-                alt=""
+                src={whatYouCanDoImg}
+                alt="What You Can Do"
                 className="w-full h-full object-cover min-h-[280px] lg:min-h-[360px]"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           </div>
