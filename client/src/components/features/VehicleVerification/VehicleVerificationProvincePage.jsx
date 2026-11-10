@@ -495,7 +495,7 @@ const VehicleVerificationProvincePage = () => {
                 <Link
                   key={item.slug}
                   to={`/vehicle-verification/${item.slug}`}
-                  className="group flex flex-col items-center text-center bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg hover:border-primary-300 transition-all"
+                  className="group flex flex-col items-center text-center bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg hover:border-primary-400 transition-all hover:bg-green-50"
                 >
                   <div className="w-20 h-20 mb-4 flex items-center justify-center rounded-full bg-slate-50 group-hover:bg-primary-50 transition-colors">
                     {itemMeta.icon ? (
@@ -506,15 +506,12 @@ const VehicleVerificationProvincePage = () => {
                       />
                     ) : null}
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900 mb-1.5">
+                  <h3 className="text-lg font-bold text-slate-900 mb-1.5 group-hover:text-primary-600 transition-colors">
                     {item.name}
                   </h3>
-                  <p className="text-sm text-slate-500 leading-relaxed mb-4 flex-1">
+                  <p className="text-sm text-slate-500 leading-relaxed">
                     {item.shortDescription}
                   </p>
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-primary-500 text-primary-500 text-sm font-semibold px-4 py-2 group-hover:bg-primary-500 group-hover:text-white transition-colors">
-                    Explore guide <ArrowRight className="w-4 h-4" />
-                  </span>
                 </Link>
               );
             })}

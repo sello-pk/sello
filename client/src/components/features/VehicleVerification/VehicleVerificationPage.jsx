@@ -383,9 +383,9 @@ const VehicleVerificationPage = () => {
               <Link
                 key={province.slug || province.name}
                 to={province.to}
-                className="group flex flex-col items-center text-center bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg transition-shadow hover:bg-green-200"
+                className="group flex flex-col items-center text-center bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg hover:border-primary-400 transition-all hover:bg-green-50"
               >
-                <div className="w-24 h-24 mb-5 flex items-center justify-center">
+                <div className="w-24 h-24 mb-4 flex items-center justify-center">
                   {province.icon ? (
                     <img
                       src={province.icon}
@@ -396,18 +396,12 @@ const VehicleVerificationPage = () => {
                     <Search className="w-12 h-12 text-primary-500" />
                   )}
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-1.5">
+                <h3 className="text-lg font-bold text-slate-900 mb-1.5 group-hover:text-primary-600 transition-colors">
                   {province.name}
                 </h3>
-                <p className="text-sm text-slate-500 leading-relaxed mb-5 flex-1">
+                <p className="text-sm text-slate-500 leading-relaxed">
                   {province.desc}
                 </p>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-primary-500 text-primary-500 text-sm font-semibold px-4 py-2 group-hover:bg-primary-500 group-hover:text-white transition-colors">
-                  {province.slug === "listings"
-                    ? "Browse vehicles"
-                    : "Explore guide"}{" "}
-                  <ArrowRight className="w-4 h-4" />
-                </span>
               </Link>
             ))}
           </div>
