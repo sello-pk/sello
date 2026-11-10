@@ -7,6 +7,8 @@ import howToApplyLearnerPunjabImg from "../../../assets/images/How to Apply for 
 import howToGetRegularPunjabImg from "../../../assets/images/How to Get a Regular Driving Licence in Punjab.jpeg";
 import howToApplyLearnerSindhImg from "../../../assets/images/How to Apply for a Learner Driving Licence in Sindh.jpeg";
 import howToGetRegularSindhImg from "../../../assets/images/How to Get a Regular Driving Licence in Sindh.jpeg";
+import howToApplyLearnerKpkImg from "../../../assets/images/How to Apply for a Learner Driving Licence in Khyber Pakhtunkhwa.jpeg";
+import howToGetRegularKpkImg from "../../../assets/images/How to Get a Regular Driving Licence in Khyber Pakhtunkhwa.jpeg";
 
 /** Hardcoded Driving Licence guides — no API/DB required. */
 
@@ -586,6 +588,21 @@ Applicants above 50 years and certain commercial licence applicants may need a m
     shortDescription:
       "Learner, permanent, renewal and tracking via Khyber Pakhtunkhwa Transport / Dastak services.",
     authorityName: "Transport & Mass Transit Department, Khyber Pakhtunkhwa",
+    overviewSections: [
+      {
+        title:
+          "How to Apply for a Learner Driving Licence in Khyber Pakhtunkhwa",
+        content:
+          "If you want to drive a car or motorcycle in Khyber Pakhtunkhwa, Pakistan, the first step is to obtain a learner driving permit. You can apply through the official KP Dastak app by registering with your CNIC and mobile number. Select the Learner Permit service, complete the application form, upload a copy of your CNIC and pay the applicable fee online. After submitting your application and completing the required process, your learner permit will be issued. Applicants can also visit an authorised driving licence branch for assistance. Always check the latest eligibility requirements and learner permit conditions through the official KP Transport Department.",
+        image: howToApplyLearnerKpkImg,
+      },
+      {
+        title: "How to Get a Regular Driving Licence in Khyber Pakhtunkhwa",
+        content:
+          "After obtaining your learner driving permit and completing the required waiting period, you can apply for a regular driving licence in Khyber Pakhtunkhwa. According to the Peshawar Traffic Police procedure, the learner permit matures after 45 days. Apply for a permanent licence through the official KP Dastak app or visit your relevant driving licence branch. Complete the required documentation, medical examination where applicable, and driving licence tests. Applicants must pass the traffic signs test and practical driving test where required. After successfully completing the process and paying the applicable fee, your driving licence will be processed by the licensing authority. Always confirm the latest requirements and fees through the official government portal before applying.",
+        image: howToGetRegularKpkImg,
+      },
+    ],
     introduction: `Khyber Pakhtunkhwa provides online driving licence services through the provincial Transport department’s Driving License page and the Dastak app. Use KPK official channels only — do not submit KPK applications on Punjab or Sindh portals. ${disclaimer}`,
     learnerProcedure: [
       "Download the official Dastak app (or follow the Transport KP Driving License page instructions).",
@@ -633,16 +650,68 @@ Applicants above 50 years and certain commercial licence applicants may need a m
       "Use the Track Application Status service listed on the Transport KP Driving License page / Dastak app.",
       "Keep your application reference and registered mobile number available.",
     ],
+    faqTitle:
+      "Frequently Asked Questions About Khyber Pakhtunkhwa Driving Licence",
     faqs: [
       {
-        question: "Where are official KPK driving licence services listed?",
+        question:
+          "How can I apply for a learner driving licence online in Khyber Pakhtunkhwa?",
         answer:
-          "See https://www.transport.kp.gov.pk/DL.html and complete services through the official Dastak app channels linked by Transport KP.",
+          "You can apply through the official KP Dastak app. Register using your CNIC and mobile number, select the Learner Permit service, complete the application form, upload the required CNIC copy and pay the applicable fee online. You can track your application through the available digital services.",
       },
       {
-        question: "Can I apply on Punjab DLIMS for a KPK licence?",
+        question:
+          "What is the minimum age to get a learner driving licence in Khyber Pakhtunkhwa?",
         answer:
-          "No. Each province/territory uses its own official system. Use KPK Transport / Dastak services for Khyber Pakhtunkhwa.",
+          "The minimum age for a motorcycle or motorcar learner permit is generally 18 years. Commercial vehicle categories may have higher age requirements. Applicants should confirm the eligibility criteria for their selected vehicle category before applying.",
+      },
+      {
+        question:
+          "What documents are required for a learner driving licence in KP?",
+        answer:
+          "Applicants generally need a valid CNIC, a registered mobile number and the documents requested during the application process. A medical certificate from an authorised medical practitioner may also be required, depending on the licence category and applicable requirements.",
+      },
+      {
+        question:
+          "How much is the learner driving licence fee in Khyber Pakhtunkhwa?",
+        answer:
+          "The learner permit fee listed by Peshawar Traffic Police is PKR 1,000. Additional charges may apply for medical examinations, tests and licence cards. Fees can vary by service or location, so check the latest amount through the official KP Dastak app or your relevant licensing branch.",
+      },
+      {
+        question:
+          "How long does a learner driving permit take to mature in KP?",
+        answer:
+          "According to Peshawar Traffic Police, a learner permit matures after 45 days. Applicants can then visit the relevant driving licence branch and proceed with the regular driving licence process.",
+      },
+      {
+        question:
+          "How can I get a permanent driving licence in Khyber Pakhtunkhwa?",
+        answer:
+          "After completing the 45-day learner period, apply for a permanent driving licence through the KP Dastak app or the relevant licensing branch. Submit the required documents, complete the applicable medical and driving tests, and pay the prescribed fee. You must pass the required tests to obtain your licence.",
+      },
+      {
+        question:
+          "What tests are required for a permanent driving licence in KP?",
+        answer:
+          "Applicants generally need to pass a traffic signs test and a practical driving test. The licensing authority may also conduct the required medical or fitness examination before issuing the licence.",
+      },
+      {
+        question:
+          "Can I renew my driving licence online in Khyber Pakhtunkhwa?",
+        answer:
+          "Yes. The KP Transport Department lists existing driving licence renewal as an online service through the Dastak app. Follow the application instructions, upload the required documents and pay the applicable renewal fee.",
+      },
+      {
+        question:
+          "How can I check or verify my driving licence online in KP?",
+        answer:
+          "You can use the official KP digital driving licence services to check your application status and access licence verification. Follow the portal instructions and provide the required licence or CNIC information to view the available record.",
+      },
+      {
+        question:
+          "Can I apply for a duplicate driving licence in Khyber Pakhtunkhwa?",
+        answer:
+          "Yes. The KP Dastak app provides a duplicate driving licence application service. Follow the official instructions and submit the required documents. If your licence has been lost or stolen, you may also need to provide a police report or Roznamcha, as required by the licensing authority.",
       },
     ],
     actionLinks: [
