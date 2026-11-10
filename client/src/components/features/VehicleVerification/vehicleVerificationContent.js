@@ -11,6 +11,8 @@ import islamabadHeroImg from "../../../assets/images/Access Islamabad's Official
 import howToCheckIslamabadImg from "../../../assets/images/How to Check Vehicle Ownership Before Buying a Used Car in Islamabad.jpeg";
 import sindhHeroImg from "../../../assets/images/Access Sindh's Official Vehicle Verification Portal.jpeg";
 import howToCheckSindhImg from "../../../assets/images/How to Check Vehicle Registration Before Buying a Used Car in Sindh.jpeg";
+import kpkHeroImg from "../../../assets/images/Access Khyber Pakhtunkhwa's Official Vehicle Verification Portal.jpeg";
+import howToCheckKpkImg from "../../../assets/images/How to Check Vehicle Registration Before Buying a Used Car in Khyber Pakhtunkhwa.jpeg";
 
 /** Hardcoded Vehicle Verification province guides — official portal URLs unchanged. */
 
@@ -447,6 +449,16 @@ export const VEHICLE_VERIFICATION_GUIDES = [
   buildGuide({
     slug: "kpk",
     name: "Khyber Pakhtunkhwa",
+    heroTitle:
+      "Access Khyber Pakhtunkhwa's Official Vehicle Verification Portal",
+    heroDescription:
+      "Looking to check vehicle registration details in Khyber Pakhtunkhwa, Pakistan? SELLO provides helpful guidance to understand the online vehicle verification process and access the official KP Excise Department website. Learn how to find available vehicle registration records for cars, motorcycles and other registered vehicles. Follow the steps below to continue to the official government portal and check the available information. SELLO does not collect your CNIC or vehicle registration number on this page.",
+    heroImage: kpkHeroImg,
+    overviewTitle:
+      "How to Check Vehicle Registration Before Buying a Used Car in Khyber Pakhtunkhwa",
+    overviewContent:
+      "Before purchasing a used car or motorcycle in Khyber Pakhtunkhwa, it is important to check its available registration and ownership records. Visit the official KP Excise Department website and use its Online Vehicle Information service to check the available vehicle details. Compare the information with the vehicle and its original registration documents, including the engine and chassis numbers. Online verification is an important first step, but always arrange a proper physical inspection before making your final purchase decision.",
+    overviewImage: howToCheckKpkImg,
     shortDescription: "Access KPK vehicle verification services",
     authorityName: "Khyber Pakhtunkhwa Excise & Taxation",
     officialPortalUrl: "https://www.kpexcise.gov.pk/mvrecords/",
@@ -456,23 +468,73 @@ export const VEHICLE_VERIFICATION_GUIDES = [
       portal: "KP Excise department website (e-Services)",
     },
     introduction:
-      "Khyber Pakhtunkhwa publishes motor vehicle records through KP Excise online services. Use this page to understand the check, then open the official MV records portal.",
+      "Before purchasing a used car or motorcycle in Khyber Pakhtunkhwa, it is important to check its available registration and ownership records. Visit the official KP Excise Department website and use its Online Vehicle Information service to check the available vehicle details. Compare the information with the vehicle and its original registration documents, including the engine and chassis numbers. Online verification is an important first step, but always arrange a proper physical inspection before making your final purchase decision.",
     howToVerify: [
       "Open the official KP Excise MV records / Vehicle Verification link from the action button.",
       "If the form asks for a district, select the registration district, then enter the registration number.",
       "If the old MV records page redirects, use e-Services → Vehicle Verification on the KP Excise site.",
       "Compare portal data with documents and physical identification numbers on the vehicle.",
     ],
+    faqTitle:
+      "Frequently Asked Questions About Khyber Pakhtunkhwa Vehicle Verification",
     faqs: [
       {
-        question: "Is KP Excise MV records the correct site for KPK cars?",
+        question:
+          "How can I check vehicle registration online in Khyber Pakhtunkhwa?",
         answer:
-          "Yes for KPK-registered vehicles. Do not use another province’s portal for a KPK registration number.",
+          "You can check available vehicle registration information through the official Khyber Pakhtunkhwa Excise, Taxation & Narcotics Control Department website. Visit the Online Vehicle Info service and follow the instructions to search for vehicle records.",
       },
       {
-        question: "Can online verification replace a physical inspection?",
+        question: "What is KP Vehicle Verification?",
         answer:
-          "No. Online checks support buying decisions. Always inspect the vehicle and original paperwork in person.",
+          "KP Vehicle Verification is an online facility that helps users access available registration information for vehicles registered in Khyber Pakhtunkhwa, Pakistan.",
+      },
+      {
+        question:
+          "Can I check car and motorcycle registration online in KP?",
+        answer:
+          "Yes. The official KP Excise Department provides an Online Vehicle Info service for accessing vehicle information. Check the portal for the available vehicle categories and search options.",
+      },
+      {
+        question: "Is Khyber Pakhtunkhwa vehicle verification free?",
+        answer:
+          "You can access the official government website to check the available online vehicle information service. Any applicable charges for other services, such as registration or transfer, should be confirmed through the official department.",
+      },
+      {
+        question:
+          "What information can I find through KP vehicle verification?",
+        answer:
+          "Depending on the available government records, information may include the vehicle registration number, make, model, engine number, chassis number and other registration details.",
+      },
+      {
+        question:
+          "Can I check vehicle ownership before buying a used car in KP?",
+        answer:
+          "Yes. You can review the available vehicle registration information through the official KP Excise portal. Compare the details with the original registration documents and physically check the engine and chassis numbers before purchasing.",
+      },
+      {
+        question:
+          "Can I verify a Khyber Pakhtunkhwa vehicle using its registration number?",
+        answer:
+          "The official Online Vehicle Info service provides access to vehicle records. Follow the current portal instructions and enter the required registration information in the requested format.",
+      },
+      {
+        question:
+          "Can I check token tax information for a vehicle registered in KP?",
+        answer:
+          "The KP Excise Department provides motor vehicle tax information and related services. Visit its official website to check the available tax details and applicable payment procedures.",
+      },
+      {
+        question:
+          "What should I do if vehicle details do not match the official records?",
+        answer:
+          "Do not proceed with the purchase until the discrepancy is clarified. Compare the vehicle’s registration documents, engine number and chassis number with the available government records. Contact the KP Excise Department for assistance.",
+      },
+      {
+        question:
+          "Can I verify vehicles registered in other provinces through the KP vehicle verification portal?",
+        answer:
+          "The KP Excise vehicle information service is intended for vehicles registered in Khyber Pakhtunkhwa. For vehicles registered in Punjab, Sindh, Islamabad or Balochistan, use the relevant government’s official verification portal.",
       },
     ],
     seoTitle: "KPK Vehicle Verification Online | Excise MV Records – Sello.pk",
