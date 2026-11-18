@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useGetSingleCarQuery } from "../redux/services/api";
 import { VehicleVerificationGuideCards } from "../components/features/VehicleVerification/VehicleVerificationGuideSection";
+import { loanVerificationPosts } from "../components/features/VehicleVerification/loanVerificationPosts.js";
 import { extractCarIdFromSlug } from "../utils/urlBuilders";
 import {
   calculateBudget,
@@ -757,7 +758,7 @@ export default function CarLoanCalculator() {
 
         <section aria-labelledby="loan-verification-guides">
           <h2 id="loan-verification-guides" className="sr-only">Vehicle verification guides</h2>
-          <VehicleVerificationGuideCards limit={2} accordion />
+          <VehicleVerificationGuideCards posts={loanVerificationPosts} />
         </section>
       </div>
     </div>

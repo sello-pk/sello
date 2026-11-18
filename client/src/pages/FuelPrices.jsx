@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { ChevronRight, Fuel } from "lucide-react";
 import { images } from "../assets/assets";
+import { VehicleVerificationGuideCards } from "../components/features/VehicleVerification/VehicleVerificationGuideSection";
+import { fuelVerificationPosts } from "../components/features/VehicleVerification/fuelVerificationPosts.js";
 import { useGetFuelPricesQuery } from "../redux/services/api";
 
 const formatPrice = new Intl.NumberFormat("en-PK", {
@@ -110,6 +112,10 @@ export default function FuelPrices() {
         <p className="mt-5 text-sm text-stone-600">
           Prices reflect OGRA-notified rates.
         </p>
+      </section>
+      <section className="mx-auto max-w-6xl px-4 pb-8 sm:px-6 sm:pb-12 lg:px-8" aria-labelledby="fuel-verification-guides">
+        <h2 id="fuel-verification-guides" className="sr-only">Vehicle verification guides</h2>
+        <VehicleVerificationGuideCards posts={fuelVerificationPosts} />
       </section>
     </div>
   );

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { motion as Motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { verificationPreviewPosts } from "./verificationPreviewPosts.js";
+import { motion as Motion, useReducedMotion } from "framer-motion";
 import {
   Clock,
   User,
@@ -9,8 +10,6 @@ import {
   ChevronUp,
 } from "lucide-react";
 
-import onlineVehicleVerfication from "../../../assets/images/onlineVehicleVerfication.webp";
-import smartBuyingTips from "../../../assets/images/smartBuyingTips.webp";
 import whatInformationCanBeCheckedThroughVehicleVerification from "../../../assets/images/whatInformationCanBeCheckedThroughVehicleVerification.webp";
 import whyMTMISAndOnlineVehicleVerificationAreImportant from "../../../assets/images/whyMTMISAndOnlineVehicleVerificationAreImportant.webp";
 import whyIsCarVerificationImportantBeforeBuying from "../../../assets/images/whyIsCarVerificationImportantBeforeBuying.webp";
@@ -126,81 +125,7 @@ export function formatBlogContent(text) {
 }
 
 export const vehicleVerificationGuidePosts = [
-  {
-    id: 1,
-    stepNumber: "01",
-    title: "What is online vehicle verification?",
-    category: "Online Verification",
-    readTime: "5 min read",
-    author: "Sello Verification Team",
-    date: "November 2026",
-    image: onlineVehicleVerfication,
-    excerpt:
-      "Online vehicle verification reviews official registration records, specs, and tax status before you buy. It lets buyers compare seller claims with government records to avoid fraud.",
-    body: [
-      "Online vehicle verification reviews available vehicle information through relevant, authorized sources. What is published may include registration info, vehicle specs, registration status, and other key records that vary by province.",
-      "Before you buy a car, do not base your decision only on what the seller tells you. A car may look great in pictures or pass a brief inspection, but you should also check the registration and other details to rule out issues.",
-      "An online car registration check is especially useful when you are buying a used car. It lets buyers compare what the seller says with what is on record.",
-    ],
-    items: [
-      "Official verification of registration details",
-      "Cross-referencing seller claims with state records",
-      "Protection against fraudulent documents and duplicates",
-      "Instant access to tax and token clearance records",
-    ],
-    fullContent: `Online vehicle verification reviews available vehicle information through relevant, authorized sources. What is published may include registration info, vehicle specs, registration status, and other key records that vary by province.
-
-Before you buy a car, do not base your decision only on what the seller tells you. A car may look great in pictures or pass a brief inspection, but you should also check the registration and other details to rule out issues.
-
-An online car registration check is especially useful when you are buying a used car. It lets buyers compare what the seller says with what is on record.
-
-## Why Online Verification Matters
-
-In Pakistan, the used automotive market involves thousands of daily private and commercial transactions. Without an official verification step, buyers risk purchasing vehicles with:
-
-- **Unpaid token taxes or heavy fines**
-- **Cloned or tampered registration numbers**
-- **Bank-lease encumbrances or court disputes**
-- **Discrepancies in engine or chassis serial numbers**
-
-## How to Get Started
-
-Always ask the seller for the vehicle's registration number and the province of registration. Using official government portals like Punjab MTMIS, Sindh Excise, or Islamabad ICT, you can cross-verify all vital parameters within minutes.`,
-  },
-  {
-    id: 2,
-    stepNumber: "02",
-    title: "What is MTMIS and how does it relate to vehicle verification?",
-    category: "MTMIS System",
-    readTime: "6 min read",
-    author: "Sello Verification Team",
-    date: "November 2026",
-    image: smartBuyingTips,
-    excerpt:
-      "MTMIS (Motor Transport Management Information System) is an online database used to verify vehicle registration, engine and chassis numbers, and token tax status across provincial Excise boards.",
-    body: [
-      "MTMIS, which stands for Motor Transport Management Information System, is an online vehicle verification tool used to obtain vehicle registration and related information. Through provincial vehicle registration and Excise boards, users can check details of a registered car or motorcycle.",
-      "The information published can vary by province and authority. A typical vehicle check may include make and model, registration date, engine information, chassis information, and tax or token status.",
-      "For a used-car buyer, this is a research tool: compare the seller's claims with registration records before you buy. Online verification is only the start of the purchase process. A full picture also needs a physical inspection, document check, price comparison, and a proper ownership transfer.",
-    ],
-    items: [
-      "Motor Transport Management Information System overview",
-      "Provincial Excise & Taxation automated records",
-      "Verification of engine number, chassis number, and make",
-      "Clearance status of token taxes and historical fees",
-    ],
-    fullContent: `MTMIS, which stands for Motor Transport Management Information System, is an online vehicle verification tool used to obtain vehicle registration and related information. Through provincial vehicle registration and Excise boards, users can check details of a registered car or motorcycle.
-
-The information published can vary by province and authority. A typical vehicle check may include make and model, registration date, engine information, chassis information, and tax or token status.
-
-For a used-car buyer, this is a research tool: compare the seller's claims with registration records before you buy. Online verification is only the start of the purchase process. A full picture also needs a physical inspection, document check, price comparison, and a proper ownership transfer.
-
-## Core Features of MTMIS
-
-- **Comprehensive Vehicle Specs:** Year of manufacture, engine capacity (cc), body type, and official color code.
-- **Tax Status Details:** Historical token tax records and the exact date up to which taxes have been cleared.
-- **Ownership Transfer Trail:** Verification of whether the current seller is the legal registered owner.`,
-  },
+  ...verificationPreviewPosts,
   {
     id: 3,
     stepNumber: "03",
@@ -766,58 +691,31 @@ Sello provides tools, information, resources, and listings that make buying and 
   },
 ];
 
-export function VehicleVerificationGuideCards({
-  limit = vehicleVerificationGuidePosts.length,
-  accordion = false,
-}) {
-  const [expandedSteps, setExpandedSteps] = useState({});
+export function VehicleVerificationGuideCards({ posts = vehicleVerificationGuidePosts }) {
+  const [expandedId, setExpandedId] = useState(null);
   const reduceMotion = useReducedMotion();
 
-  const toggleStep = (id, scrollOnClose = false) => {
-    setExpandedSteps((prev) => ({
-      ...(accordion ? {} : prev),
-      [id]: !prev[id],
-    }));
-
-    if (accordion) {
-      const trigger = document.getElementById(`guide-step-trigger-${id}`);
-      if (scrollOnClose) trigger?.focus({ preventScroll: true });
-      requestAnimationFrame(() => {
-        trigger?.scrollIntoView({
-          block: scrollOnClose ? "center" : "nearest",
-          behavior: "auto",
-        });
+  const toggleStep = (id, returnFocus = false) => {
+    setExpandedId((previous) => previous === id ? null : id);
+    const trigger = document.getElementById(`guide-step-trigger-${id}`);
+    if (returnFocus) trigger?.focus({ preventScroll: true });
+    requestAnimationFrame(() => {
+      trigger?.scrollIntoView({
+        block: returnFocus ? "center" : "nearest",
+        behavior: "auto",
       });
-      return;
-    }
-
-    if (scrollOnClose && typeof window !== "undefined") {
-      setTimeout(() => {
-        const el = document.getElementById(`guide-step-${id}`);
-        if (el) {
-          const yOffset = -80;
-          const y =
-            el.getBoundingClientRect().top + window.pageYOffset + yOffset;
-          window.scrollTo({ top: y, behavior: "smooth" });
-        }
-      }, 50);
-    }
+    });
   };
-
   return (
     <div className="space-y-8 lg:space-y-12">
-      {vehicleVerificationGuidePosts.slice(0, limit).map((post, index) => {
+      {posts.map((post, index) => {
         const isImageLeft = index % 2 === 1; // odd = image left, even = image right
-        const isExpanded = !!expandedSteps[post.id];
+        const isExpanded = expandedId === post.id;
 
         return (
-          <Motion.article
+          <article
             key={post.id}
             id={`guide-step-${post.id}`}
-            initial={accordion ? false : { opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.4, delay: (index % 3) * 0.05 }}
             className={`group flex flex-col rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 bg-[#FDFBF7] border border-stone-200/60 ${
               isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"
             }`}
@@ -837,7 +735,7 @@ export function VehicleVerificationGuideCards({
                   <span className="text-sm text-gray-500">{post.date}</span>
                 </div>
 
-                <h3 className="text-2xl lg:text-3xl font-bold text-primary-500 mb-4 leading-tight">
+                <h3 className="mb-4 break-words text-2xl font-bold leading-tight text-primary-500 lg:text-3xl">
                   <span className="text-primary-500 mr-2">
                     {post.stepNumber}.
                   </span>
@@ -854,10 +752,8 @@ export function VehicleVerificationGuideCards({
                   onClick={() => toggleStep(post.id)}
                   aria-expanded={isExpanded}
                   aria-controls={`guide-step-content-${post.id}`}
-                  className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 cursor-pointer ${
-                    accordion ? "min-h-11 scroll-mt-24 scroll-mb-8" : "transition-all group"
-                  } ${
-                    accordion && isExpanded
+                  className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 cursor-pointer min-h-11 scroll-mt-24 scroll-mb-8 ${
+                    isExpanded
                       ? "bg-primary-50 text-primary-800"
                       : "bg-primary-500 text-white shadow-md hover:shadow-lg hover:opacity-95"
                   }`}
@@ -877,23 +773,20 @@ export function VehicleVerificationGuideCards({
                 </button>
 
                 <div
-                  id={accordion ? `guide-step-content-${post.id}` : undefined}
-                  hidden={accordion && !isExpanded}
+                  id={`guide-step-content-${post.id}`}
+                  hidden={!isExpanded}
                 >
-                <AnimatePresence>
                   {isExpanded && (
                     <Motion.div
-                      id={accordion ? undefined : `guide-step-content-${post.id}`}
-                      initial={accordion ? { opacity: 0 } : { opacity: 0, height: 0 }}
-                      animate={accordion ? { opacity: 1 } : { opacity: 1, height: "auto" }}
-                      exit={accordion ? undefined : { opacity: 0, height: 0 }}
-                      transition={{ duration: accordion ? (reduceMotion ? 0 : 0.18) : 0.35, ease: "easeInOut" }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: reduceMotion ? 0 : 0.18, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
                       <div className="mt-8 pt-8 border-t border-stone-200/80">
                         {/* Formatted markdown content */}
                         <div
-                          className="prose prose-lg max-w-none text-gray-700 font-normal leading-relaxed"
+                          className="prose prose-lg max-w-none break-words font-normal leading-relaxed text-gray-700"
                           dangerouslySetInnerHTML={{
                             __html: formatBlogContent(post.fullContent),
                           }}
@@ -922,7 +815,7 @@ export function VehicleVerificationGuideCards({
                           </div>
                         )}
 
-                        {/* Bottom Read Less and scroll-to-top controls */}
+                        {/* Return focus to the primary toggle when closing here. */}
                         <div className="mt-8 pt-4 border-t border-stone-200/60 flex items-center justify-between">
                           <button
                             type="button"
@@ -932,53 +825,22 @@ export function VehicleVerificationGuideCards({
                             <ChevronUp className="w-4 h-4" />
                             <span>Read Less</span>
                           </button>
-                          {!accordion && <button
-                            type="button"
-                            onClick={() => {
-                              const el = document.getElementById(
-                                `guide-step-${post.id}`,
-                              );
-                              if (el) {
-                                const yOffset = -80;
-                                const y =
-                                  el.getBoundingClientRect().top +
-                                  window.pageYOffset +
-                                  yOffset;
-                                window.scrollTo({
-                                  top: y,
-                                  behavior: "smooth",
-                                });
-                              }
-                            }}
-                            className="text-xs sm:text-sm text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
-                          >
-                            Back to top of step ↑
-                          </button>}
                         </div>
                       </div>
                     </Motion.div>
                   )}
-                </AnimatePresence>
                 </div>
               </div>
             </div>
 
             {/* Image area */}
             <div
-              className={`relative w-full lg:w-[480px] xl:w-[520px] lg:flex-shrink-0 overflow-hidden bg-slate-900/5 ${
-                accordion
-                  ? "h-72 sm:h-80 lg:h-[360px] lg:self-start"
-                  : isExpanded
-                    ? "h-72 sm:h-80 lg:h-[400px] xl:h-[440px] lg:self-start lg:sticky lg:top-24 rounded-2xl m-4 sm:m-6 lg:m-6 transition-all duration-300"
-                    : "h-72 sm:h-80 lg:h-auto lg:min-h-[360px] lg:self-stretch transition-all duration-300"
-              }`}
+              className="relative h-72 w-full overflow-hidden bg-slate-900/5 sm:h-80 lg:h-[360px] lg:w-[480px] lg:flex-shrink-0 lg:self-start xl:w-[520px]"
             >
               <img
                 src={post.image}
                 alt={post.title}
-                className={`absolute inset-0 w-full h-full block object-cover object-center opacity-90 ${
-                  accordion ? "" : "transition-transform duration-500 group-hover:scale-105"
-                }`}
+                className="absolute inset-0 block h-full w-full object-cover object-center opacity-90"
                 loading="lazy"
               />
               <div className="absolute top-5 left-5">
@@ -992,7 +854,7 @@ export function VehicleVerificationGuideCards({
                 <span>{post.readTime}</span>
               </div>
             </div>
-          </Motion.article>
+          </article>
         );
       })}
     </div>
