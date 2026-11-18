@@ -49,12 +49,11 @@ const adminSections = {
   testimonials: ["Testimonials", "Manage published customer testimonials"],
   auctions: ["Auctions", "Manage auction schedules, lots, and results"],
   settings: ["Settings", "Manage marketplace settings and staff access"],
-  "fuel-prices": ["Fuel Prices", "Review fuel price publications and manage corrections"],
 };
 
 const fuelPricesSeo = {
   title: "Fuel Prices in Pakistan Today | Petrol, Diesel & OGRA Rates – Sello.pk",
-  description: "Check the latest verified fuel prices in Pakistan — petrol, diesel, kerosene and more. View effective dates, historical prices and official OGRA notifications on Sello.pk.",
+  description: "Check current petrol and diesel prices in Pakistan in PKR per litre, with effective dates and changes from the previous notified rates.",
   canonical: "https://sello.pk/fuel-prices",
 };
 

@@ -151,7 +151,6 @@ const AccountDeletionRequests = lazyImport(
   () => import("../pages/admin/AccountDeletionRequests.jsx"),
 );
 const Settings = lazyImport(() => import("../pages/admin/Settings.jsx"));
-const AdminFuelPrices = lazyImport(() => import("../pages/admin/FuelPrices.jsx"));
 const SupportChat = lazyImport(() => import("../pages/admin/SupportChat.jsx"));
 const CustomerRequests = lazyImport(
   () => import("../pages/admin/CustomerRequests.jsx"),
@@ -328,7 +327,6 @@ const AppRouter = () => {
           <Route path="/admin/testimonials" element={<Testimonials />} />
           <Route path="/admin/auctions" element={<AuctionManagement />} />
           <Route path="/admin/settings" element={<Settings />} />
-          <Route path="/admin/fuel-prices" element={<AdminFuelPrices />} />
 
           {/* Add other admin routes as needed */}
         </Route>

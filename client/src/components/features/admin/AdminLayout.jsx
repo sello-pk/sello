@@ -125,11 +125,6 @@ const AdminLayout = ({ children }) => {
       label: "Car Estimator",
     },
     {
-      path: "/admin/fuel-prices",
-      icon: FiActivity,
-      label: "Fuel Prices",
-    },
-    {
       path: "/admin/account-deletion-requests",
       icon: FiTrash2,
       label: "Account Deletion",

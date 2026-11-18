@@ -25,7 +25,7 @@ server {
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
     # Pick one: the app runs an AdSense cross-origin script; a strict CSP needs
     # to allow googleads/cloudinary/facebook/pixel endpoints:
-    # add_header Content-Security-Policy "default-src 'self' https://*.sello.pk https://*.google.com https://*.googlesyndication.com https://*.cloudinary.com https://connect.facebook.net https://*.tiktokcdn.com https://*.gtagmanager.com https://*.google-analytics.com https://t.contentsquare.net https://*.clarity.ms data: blob: 'unsafe-inline' 'unsafe-eval';" always;
+    # add_header Content-Security-Policy "default-src 'self' https://*.sello.pk https://api2.autoones.com https://*.google.com https://*.googlesyndication.com https://*.cloudinary.com https://connect.facebook.net https://*.tiktokcdn.com https://*.gtagmanager.com https://*.google-analytics.com https://t.contentsquare.net https://*.clarity.ms data: blob: 'unsafe-inline' 'unsafe-eval';" always;
 
     # --- Compression ---
     gzip on;

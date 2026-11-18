@@ -311,16 +311,11 @@ export const api = createApi({
     try {
       const httpMethod = String(args?.method || "GET").toUpperCase();
       const isRead = httpMethod === "GET" || httpMethod === "HEAD";
-      const requestUrl = String(args?.url || "");
-      // Public fuel prices must stay readable even while auction/notification
-      // pollers are in a 429 cooldown — otherwise /fuel-prices flickers error.
-      const bypassRateLimitGate =
-        requestUrl === "/fuel-prices" || requestUrl.startsWith("/fuel-prices?");
 
       // Cooling down after a 429: fail reads locally so pollers don't keep
       // firing requests (each would log another 429). Mutations still go out —
       // they are user-initiated and must not silently disappear.
-      if (isRead && !bypassRateLimitGate && Date.now() < rateLimitedUntil) {
+      if (isRead && Date.now() < rateLimitedUntil) {
         return rateLimitedResult();
       }
 
@@ -528,7 +523,6 @@ export const api = createApi({
     "Listing",
     "SavedCar",
     "Comment",
-    "FuelPrices",
   ],
   endpoints: (builder) => ({
     registerUser: builder.mutation({
@@ -1382,12 +1376,13 @@ export const api = createApi({
       transformResponse: (response) => response?.data || response,
     }),
     getFuelPrices: builder.query({
-      query: () => "/fuel-prices",
-      providesTags: ["FuelPrices"],
-      // Keep last good payload longer so a transient 429/network blip
-      // does not blank the public fuel-prices page.
+      queryFn: (_arg, queryApi, extraOptions) =>
+        fetchBaseQuery({ credentials: "omit", timeout: 10000 })(
+          "https://api2.autoones.com/api/fuel-prices",
+          queryApi,
+          extraOptions,
+        ),
       keepUnusedDataFor: 300,
-      transformResponse: (response) => response?.data || response,
     }),
     calculateFuelCost: builder.mutation({
       query: (data) => ({

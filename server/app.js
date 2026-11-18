@@ -88,6 +88,7 @@ app.use(
         connectSrc: [
           "'self'",
           "https://api.sello.pk",
+          "https://api2.autoones.com",
           "https://www.sello.pk",
           "https://sello.pk",
           "https://accounts.google.com",

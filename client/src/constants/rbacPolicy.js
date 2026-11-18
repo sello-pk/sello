@@ -86,12 +86,6 @@ export const PERMISSION_ROUTE_ACCESS = {
     "deleteInquiries",
   ],
   "/admin/valuations": ["viewAnalytics", "viewListings"],
-  "/admin/fuel-prices": [
-    "viewSettings",
-    "managePlatformSettings",
-    "viewAnalytics",
-    "viewAuditLogs",
-  ],
   "/admin/account-deletion-requests": [
     "manageUsers",
     "viewUserProfiles",

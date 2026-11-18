@@ -13,8 +13,7 @@
     "validate-env": "node ./scripts/validateEnv.js",
     "seed:blogs": "node ./scripts/seedBlogs.js",
     "clear:blogs": "node ./scripts/clearBlogs.js",
-    "backfill:auction-access": "node ./scripts/backfillAuctionCapabilities.js",
-    "cron:fuel-prices": "node ./scripts/runFuelPriceMonitor.js"
+    "backfill:auction-access": "node ./scripts/backfillAuctionCapabilities.js"
   },
   "keywords": [],
   "author": "",
@@ -22,7 +21,6 @@
   "description": "",
   "dependencies": {
     "bcrypt": "^6.0.0",
-    "cheerio": "^1.2.0",
     "cloudinary": "^1.41.3",
     "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
@@ -43,7 +41,6 @@
     "nodemailer": "^7.0.3",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
-    "pdf-parse": "^2.4.5",
     "socket.io": "^4.8.1",
     "stripe": "^20.0.0",
     "swagger-jsdoc": "^6.2.8",
