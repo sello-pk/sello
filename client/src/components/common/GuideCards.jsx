@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { motion as Motion, useReducedMotion } from "framer-motion";
 import { ChevronDown, ChevronUp, Clock, ShieldCheck, User } from "lucide-react";
 
@@ -98,10 +98,18 @@ function formatBlogContent(text) {
   return out.join("");
 }
 
-export default function GuideCards({ posts, checklistTitle = "Key points" }) {
-  const [expandedId, setExpandedId] = useState(null);
+export default function GuideCards({ posts, checklistTitle = "Key points", initialPostId = null }) {
+  const [expandedId, setExpandedId] = useState(initialPostId);
   const idPrefix = useId();
   const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (initialPostId === null) return undefined;
+    const frame = requestAnimationFrame(() => {
+      document.getElementById(`${idPrefix}-card-${initialPostId}`)?.scrollIntoView({ block: "start" });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [idPrefix, initialPostId]);
 
   const toggleStep = (id, returnFocus = false) => {
     setExpandedId((previous) => previous === id ? null : id);
@@ -124,7 +132,7 @@ export default function GuideCards({ posts, checklistTitle = "Key points" }) {
           <article
             key={post.id}
             id={`${idPrefix}-card-${post.id}`}
-            className={`group flex flex-col rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 bg-[#FDFBF7] border border-stone-200/60 ${
+            className={`group flex scroll-mt-24 flex-col rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 bg-[#FDFBF7] border border-stone-200/60 ${
               isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"
             }`}
           >
@@ -144,9 +152,7 @@ export default function GuideCards({ posts, checklistTitle = "Key points" }) {
                 </div>
 
                 <h3 className="mb-4 break-words text-2xl font-bold leading-tight text-primary-500 lg:text-3xl">
-                  <span className="text-primary-500 mr-2">
-                    {post.stepNumber}.
-                  </span>
+                  {post.stepNumber && <span className="text-primary-500 mr-2">{post.stepNumber}.</span>}
                   {post.title}
                 </h3>
 

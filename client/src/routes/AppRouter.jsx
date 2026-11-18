@@ -59,9 +59,6 @@ const GenericVehicleCategoryPage = lazyImport(
   () => import("../pages/listings/GenericVehicleCategoryPage.jsx"),
 );
 const BlogDetails = lazyImport(() => import("../pages/blog/BlogDetails.jsx"));
-const EstimatorGuideDetail = lazyImport(
-  () => import("../pages/features/EstimatorGuideDetail.jsx"),
-);
 const AuctionGuideDetail = lazyImport(
   () => import("../pages/features/AuctionGuideDetail.jsx"),
 );
@@ -226,7 +223,7 @@ const AppRouter = () => {
         <Route path="/car-estimator" element={<CarEstimator />} />
         <Route
           path="/car-estimator/guide/:blogId"
-          element={<EstimatorGuideDetail />}
+          element={<CarEstimator />}
         />
         <Route path="/vehicle-verification" element={<VehicleVerification />} />
         <Route

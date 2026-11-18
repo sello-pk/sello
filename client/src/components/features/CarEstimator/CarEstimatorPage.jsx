@@ -926,7 +926,7 @@ function ResaleTool() {
   );
 }
 
-const CarEstimatorPage = () => {
+const CarEstimatorPage = ({ initialGuideId }) => {
   const navigate = useNavigate();
   const [result, setResult] = useState(null);
   const [activeTab, setActiveTab] = useState("estimate");
@@ -1274,7 +1274,7 @@ const CarEstimatorPage = () => {
         </div>
 
         {/* Blog Sections */}
-        <EstimatorBlogsSection />
+        <EstimatorBlogsSection initialGuideId={initialGuideId} />
       </div>
     </>
   );

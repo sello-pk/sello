@@ -5,105 +5,8 @@ import howWeKeep from "../../../assets/blogs/estimator/howWeKeep.webp";
 import howCarCondition from "../../../assets/blogs/estimator/howCarCondition.webp";
 import aiCarPricing from "../../../assets/blogs/estimator/aiCarPricing.webp";
 
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Clock, User, ArrowRight } from "lucide-react";
-
-/** Format markdown-like blog content to safe HTML (paragraphs, headings, bold, lists, tables). */
-export function formatBlogContent(text) {
-  if (!text || typeof text !== "string") return "";
-  const blocks = text.split(/\n\n+/);
-  const out = [];
-  const bold = (s) =>
-    s.replace(
-      /\*\*(.*?)\*\*/g,
-      '<strong class="font-semibold text-gray-900">$1</strong>',
-    );
-
-  for (const block of blocks) {
-    const trimmed = block.trim();
-    if (!trimmed) continue;
-
-    const lines = trimmed.split("\n");
-    const firstLine = lines[0] || "";
-
-    // Table: multiple lines with pipes
-    if (
-      lines.length >= 2 &&
-      firstLine.includes("|") &&
-      lines.every((l) => l.includes("|"))
-    ) {
-      const rows = lines
-        .map((l) =>
-          l
-            .split("|")
-            .map((c) => c.trim())
-            .filter(Boolean),
-        )
-        .filter((cells) => cells.length > 0);
-      const isSeparator = (cells) => cells.every((c) => /^[-:]+$/.test(c));
-      const headerRow = rows[0] || [];
-      const dataRows = rows.filter((_, i) => i > 0 && !isSeparator(rows[i]));
-      out.push(
-        '<div class="overflow-x-auto my-6 rounded-xl border border-gray-200"><table class="w-full text-left text-sm"><thead><tr class="bg-gray-50 border-b border-gray-200">',
-      );
-      headerRow.forEach((c) => {
-        out.push(
-          `<th class="px-4 py-3 font-semibold text-gray-900">${bold(c)}</th>`,
-        );
-      });
-      out.push("</tr></thead><tbody>");
-      dataRows.forEach((row, i) => {
-        out.push(
-          `<tr class=\"border-b border-gray-100 ${i % 2 === 0 ? "bg-white" : "bg-gray-50/50"}\">`,
-        );
-        row.forEach((c) => {
-          out.push(`<td class="px-4 py-3 text-gray-700">${bold(c)}</td>`);
-        });
-        out.push("</tr>");
-      });
-      out.push("</tbody></table></div>");
-      continue;
-    }
-
-    // ## Heading
-    if (firstLine.startsWith("## ") && lines.length === 1) {
-      out.push(
-        `<h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4 first:mt-0">${bold(firstLine.slice(3))}</h2>`,
-      );
-      continue;
-    }
-    // ### Heading
-    if (firstLine.startsWith("### ") && lines.length === 1) {
-      out.push(
-        `<h3 class="text-xl font-bold text-gray-900 mt-8 mb-3">${bold(firstLine.slice(4))}</h3>`,
-      );
-      continue;
-    }
-
-    // Unordered list (lines starting with - )
-    if (
-      lines.every((l) => l.trimStart().startsWith("- ") || l.trimStart() === "")
-    ) {
-      out.push('<ul class="list-none space-y-2 my-4">');
-      lines.forEach((l) => {
-        const content = l.replace(/^\s*-\s*/, "").trim();
-        if (content)
-          out.push(
-            `<li class="flex items-start gap-3"><span class=\"w-2 h-2 rounded-full bg-primary-500 flex-shrink-0 mt-2.5\"></span><span class=\"text-gray-700\">${bold(content)}</span></li>`,
-          );
-      });
-      out.push("</ul>");
-      continue;
-    }
-
-    // Paragraph(s)
-    const para = trimmed.split(/\n/).join(" ");
-    out.push(`<p class="mb-5 text-gray-700 leading-relaxed">${bold(para)}</p>`);
-  }
-
-  return out.join("");
-}
+import { ArrowRight } from "lucide-react";
+import GuideCards from "../../common/GuideCards";
 
 export const estimatorBlogPosts = [
   {
@@ -1125,7 +1028,7 @@ Whether you are a buyer or a seller you deserve clarity which is what we provide
   },
 ];
 
-export default function EstimatorBlogsSection() {
+export default function EstimatorBlogsSection({ initialGuideId }) {
   const handleCtaClick = () => {
     // Find the CarEstimatorPage component and switch to Estimate tab
     const target = document.getElementById("estimator-tabs");
@@ -1199,78 +1102,7 @@ export default function EstimatorBlogsSection() {
           </div>
         </div>
 
-        {/* Blog Posts Grid - even: image right, odd: image left; primary-500 max */}
-        <div className="space-y-8 lg:space-y-12">
-          {estimatorBlogPosts.map((post, index) => {
-            const isImageLeft = index % 2 === 1; // odd = image left
-            return (
-              <motion.article
-                key={post.id}
-                id={`blog-card-${post.id}`}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.4, delay: index * 0.06 }}
-                className={`group flex flex-col items-stretch rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#FDFBF7] ${isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"}`}
-              >
-                {/* Content area (light beige) */}
-                <div className="relative flex-1 flex flex-col justify-between p-8 lg:p-10 min-h-[280px] lg:min-h-0 lg:min-w-0">
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <div className="w-8 h-8 rounded-full bg-gray-200/80 flex items-center justify-center">
-                          <User className="w-4 h-4 text-gray-600" />
-                        </div>
-                        <span className="text-sm font-medium text-gray-700">
-                          {post.author}
-                        </span>
-                      </div>
-                      <span className="text-sm text-gray-500">{post.date}</span>
-                    </div>
-                    <h3 className="text-2xl lg:text-3xl font-bold text-primary-500 mb-4 leading-tight">
-                      {post.title}
-                    </h3>
-                    <div className="prose prose-lg max-w-none text-gray-700">
-                      <p className="text-base lg:text-lg leading-relaxed mb-6 text-gray-600">
-                        {post.excerpt}
-                      </p>
-                      <Link
-                        to={`/car-estimator/guide/${post.id}`}
-                        className="inline-flex items-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-xl font-semibold hover:opacity-95 transition-opacity shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 group"
-                      >
-                        Read More
-                        <ArrowRight
-                          className="w-5 h-5 group-hover:translate-x-0.5 transition-transform"
-                          aria-hidden
-                        />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Image area - stretches with card so no gap; image fills and covers */}
-                <div className="relative w-full lg:w-[480px] xl:w-[520px] lg:flex-shrink-0 h-72 sm:h-80 lg:h-auto min-h-[280px] lg:min-h-0 self-stretch overflow-hidden">
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    className="absolute inset-0 w-full h-full block object-cover object-center opacity-90"
-                    loading="lazy"
-                  />
-                  <div className="absolute top-5 left-5">
-                    <span className="inline-flex items-center gap-2 bg-white/95 text-gray-800 px-3 py-1.5 rounded-full text-sm font-semibold shadow">
-                      <span className="w-1.5 h-1.5 bg-primary-500 rounded-full" />
-                      {post.category}
-                    </span>
-                  </div>
-                  <div className="absolute bottom-5 left-5 flex items-center gap-2 text-gray-300 text-sm">
-                    <Clock className="w-4 h-4" aria-hidden />
-                    <span>{post.readTime}</span>
-                  </div>
-                </div>
-              </motion.article>
-            );
-          })}
-        </div>
+        <GuideCards posts={estimatorBlogPosts} initialPostId={initialGuideId} />
 
         {/* Enhanced Call to Action */}
         <div className="mt-12 sm:mt-20 relative">
