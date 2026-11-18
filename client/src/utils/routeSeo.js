@@ -1,5 +1,6 @@
 import { matchPath } from "react-router-dom";
 import { getListingsPageCopy } from "./urlBuilders.js";
+import { CAR_LOAN_SEO } from "./carLoanCalculator.js";
 
 const notFoundSeo = {
   title: "Page Not Found | Sello.pk",
@@ -113,6 +114,7 @@ const routeSeoConfigs = [
   { path: "/cars/:id", seo: listingDetailSeo },
   { path: "/car-details/:id", seo: listingDetailSeo },
   { path: "/fuel-prices", seo: fuelPricesSeo },
+  { path: "/car-loan-calculator", seo: CAR_LOAN_SEO },
   { path: "/petrol-prices", seo: fuelPricesSeo },
   { path: "/listings/:categorySlug/guide/:blogId", seo: guideSeo },
   { path: "/car-estimator/guide/:blogId", seo: guideSeo },

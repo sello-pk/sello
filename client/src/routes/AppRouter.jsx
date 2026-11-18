@@ -45,6 +45,7 @@ const DrivingLicenceProvincePage = lazyImport(
     ),
 );
 const FuelPrices = lazyImport(() => import("../pages/FuelPrices.jsx"));
+const CarLoanCalculator = lazyImport(() => import("../pages/CarLoanCalculator.jsx"));
 const OurPrivacyPolicy = lazyImport(() => import("../pages/ourPages/OurPrivacyPolicy.jsx"));
 const TermsCondition = lazyImport(() => import("../pages/ourPages/TermsCondition.jsx"));
 const About = lazyImport(() => import("../pages/about/About.jsx"));
@@ -241,6 +242,7 @@ const AppRouter = () => {
           element={<DrivingLicenceProvincePage />}
         />
         <Route path="/fuel-prices" element={<FuelPrices />} />
+        <Route path="/car-loan-calculator" element={<CarLoanCalculator />} />
         {/* Legacy URL: keep old links and indexed pages working. */}
         <Route
           path="/petrol-prices"
