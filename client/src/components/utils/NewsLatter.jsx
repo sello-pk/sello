@@ -34,7 +34,7 @@ const NewsLatter = () => {
   };
 
   return (
-    <div className="bg-[#050B20] flex md:flex-row flex-col items-center justify-between px-3 sm:px-4 md:px-6 lg:px-8 pt-10 sm:pt-12 pb-0 mb-0">
+    <div className="bg-[#050B20] flex md:flex-row flex-col items-center justify-between gap-x-6 px-3 sm:px-4 md:px-6 lg:px-8 pt-10 sm:pt-12 pb-0 mb-0">
       <div className="text-white md:pt-4 md:pb-2 py-4">
         <h2 className="md:text-4xl text-3xl py-2 md:py-3">Join Sello</h2>
         <p className="">
@@ -42,7 +42,7 @@ const NewsLatter = () => {
           updates in one place.
         </p>
       </div>
-      <div className="md:pt-4 md:pb-2 py-4">
+      <div className="w-full min-w-0 max-w-md py-4 md:w-1/2 md:shrink-0 md:pt-4 md:pb-2">
         <form
           onSubmit={handleSubmit}
           className="field bg-white/20 h-12 sm:h-14 md:h-16 w-full max-w-md mx-auto px-3 sm:px-4 flex items-center justify-between gap-2 sm:gap-3 rounded-full"
@@ -52,7 +52,7 @@ const NewsLatter = () => {
           </label>
           <input
             id="newsletter-email"
-            className="flex-1 h-full text-sm sm:text-base md:text-lg outline-none text-white bg-transparent border-none placeholder:text-white/85"
+            className="min-w-0 flex-1 h-full text-sm sm:text-base md:text-lg outline-none text-white bg-transparent border-none placeholder:text-white/85"
             type="email"
             placeholder="Your Email Address..."
             aria-label="Email address for newsletter"

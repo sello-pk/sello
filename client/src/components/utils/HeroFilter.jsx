@@ -169,7 +169,7 @@ const HeroFilter = () => {
   }, [searchError]);
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-3 py-3 sm:px-4 sm:py-4">
+    <div className="mx-auto w-full max-w-6xl">
       <div className="rounded-xl border border-white/20 bg-white/10 p-4 shadow-sm backdrop-blur-md sm:p-5 md:p-6">
         <form onSubmit={handleSearch} className="flex flex-col gap-4 sm:gap-5">
           <h2 className="text-center text-base font-medium leading-snug text-white sm:text-left sm:text-lg">
@@ -177,7 +177,7 @@ const HeroFilter = () => {
             Great Deals
           </h2>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <Select
               inputId="make-select"
               name="make-select"
@@ -191,6 +191,7 @@ const HeroFilter = () => {
               isClearable
               styles={searchableSelectStyles}
               components={{ DropdownIndicator }}
+              menuPlacement="auto"
               menuPortalTarget={menuPortalTarget}
             />
 
@@ -208,6 +209,7 @@ const HeroFilter = () => {
               isDisabled={!filters.make}
               styles={searchableSelectStyles}
               components={{ DropdownIndicator }}
+              menuPlacement="auto"
               menuPortalTarget={menuPortalTarget}
             />
 
@@ -224,6 +226,7 @@ const HeroFilter = () => {
               isDisabled={!filters.model}
               styles={searchableSelectStyles}
               components={{ DropdownIndicator }}
+              menuPlacement="auto"
               menuPortalTarget={menuPortalTarget}
             />
 
@@ -236,7 +239,7 @@ const HeroFilter = () => {
             </button>
           </div>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="grid gap-2 min-[360px]:grid-cols-2 sm:flex sm:flex-wrap sm:gap-3">
             <button
               onClick={() => navigate("/listings")}
               type="button"

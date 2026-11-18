@@ -70,7 +70,7 @@ const BrandsSection = () => {
     <section className="bg-[#EEEEEE] w-full md:py-8 md:rounded-tl-[80px]">
       <div className="max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-x-4">
           <h2 className="text-xl md:text-3xl font-semibold py-2">
             Explore Our Premium Brands
           </h2>
@@ -93,10 +93,9 @@ const BrandsSection = () => {
           </Suspense>
         </div>
 
-        {/* Grid + side ad. Stacks on mobile, becomes a 70/30 row from md up. */}
-        <div className="w-full flex flex-col md:flex-row md:items-start gap-4 md:gap-5">
-          <div className="py-4 w-full md:w-[62%] md:min-w-0">
-            <div className="grid md:grid-cols-4 grid-cols-2 gap-4 md:gap-5">
+        <div className="flex w-full flex-col gap-4 lg:flex-row lg:items-start lg:gap-5">
+          <div className="w-full min-w-0 py-4 lg:flex-1">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:gap-5">
               {brandsCategory.map((brand, index) => {
                 const isLastItem = index === brandsCategory.length - 1;
                 const isOddNumberOfItems = brandsCategory.length % 2 !== 0;
@@ -150,7 +149,7 @@ const BrandsSection = () => {
             </div>
           </div>
 
-          <div className="w-full md:w-[38%] md:min-w-[340px] md:max-w-[420px] md:shrink-0 md:self-start md:sticky md:top-20">
+          <div className="w-full lg:sticky lg:top-20 lg:w-[30%] lg:min-w-[250px] lg:max-w-[420px] lg:shrink-0">
             <AdSenseSlot slot="brandsSection" width={250} height={250} />
           </div>
         </div>

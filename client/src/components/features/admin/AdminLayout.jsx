@@ -161,7 +161,7 @@ const AdminLayout = ({ children }) => {
   };
 
   return (
-    <div className="admin-theme flex h-screen overflow-hidden bg-gray-100 dark:bg-gray-900 relative">
+    <div className="admin-theme flex h-dvh overflow-hidden bg-gray-100 dark:bg-gray-900 relative">
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div
@@ -176,7 +176,7 @@ const AdminLayout = ({ children }) => {
           mobileMenuOpen
             ? "translate-x-0"
             : "-translate-x-full lg:translate-x-0"
-        } fixed lg:static h-screen lg:h-full flex-shrink-0 bg-[#050B20] dark:bg-gray-900 text-white transition-all duration-300 flex flex-col z-50`}
+        } fixed lg:static h-dvh lg:h-full flex-shrink-0 bg-[#050B20] dark:bg-gray-900 text-white transition-all duration-300 flex flex-col z-50`}
       >
         {/* Logo - Primary Orange Header */}
         <div className="bg-primary-500 px-4 py-2 flex items-center justify-between">

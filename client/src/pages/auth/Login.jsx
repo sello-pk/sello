@@ -241,7 +241,7 @@ const Login = () => {
         description="Login to your Sello.pk account to buy and sell cars in Pakistan. Access your dashboard, manage listings, and connect with buyers."
         canonical="https://sello.pk/login"
       />
-      <div className="flex md:flex-row flex-col h-screen bg-gray-50">
+      <div className="flex min-h-dvh flex-col bg-gray-50 pt-16 md:flex-row md:pt-0">
         {/* Orange Header */}
         <HeaderLogo />
 
@@ -313,7 +313,7 @@ const Login = () => {
               </div>
 
               {/* Checkbox and Links */}
-              <div className="flex items-center justify-between mb-6">
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <input
                     type="checkbox"

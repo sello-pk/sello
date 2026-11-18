@@ -50,7 +50,7 @@ const FeaturedCarsCarousel = () => {
             </div>
             <div className="hidden md:block h-10 w-28 rounded-lg bg-gray-200 animate-pulse" />
           </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 8 }).map((_, key) => (
               <div
                 key={key}
@@ -100,7 +100,7 @@ const FeaturedCarsCarousel = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-6">
+        <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
           {featuredCars.map((car) => (
             <CarCard key={car._id} car={car} />
           ))}

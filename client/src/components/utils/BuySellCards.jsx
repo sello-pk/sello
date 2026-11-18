@@ -18,10 +18,10 @@ const BuySellCards = () => {
               <p className="text-sm md:text-base text-gray-600 leading-7 mb-6 md:mb-7">
                 {post.description}
               </p>
-              <div className="flex items-end justify-between gap-4">
+              <div className="flex flex-wrap items-end justify-between gap-3 sm:gap-4">
                 <Link
                   to={post.redirect}
-                  className="inline-flex h-11 items-center gap-2 rounded-lg bg-primary-500 px-5 text-gray-950 font-bold hover:opacity-90 transition-colors focus-visible:ring-2 focus-visible:ring-primary-700 focus-visible:ring-offset-2"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary-500 px-3 font-bold text-gray-950 transition-colors hover:opacity-90 focus-visible:ring-2 focus-visible:ring-primary-700 focus-visible:ring-offset-2 sm:px-5"
                   aria-label={`Get started ${post.title.toLowerCase().includes('looking') ? 'buying a car' : 'selling a car'}`}
                 >
                   {post.title.toLowerCase().includes('looking') ? 'Browse Cars' : 'Sell Your Car'}

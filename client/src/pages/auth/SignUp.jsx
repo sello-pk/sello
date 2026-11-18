@@ -175,12 +175,12 @@ const SignUp = () => {
       />
       {/* Hidden H1 for SEO */}
       <h1 className="sr-only">Sign Up - Create Your Sello Account</h1>
-      <div className="flex md:flex-row flex-col min-h-screen">
+      <div className="flex min-h-dvh flex-col pt-16 md:flex-row md:pt-0">
         {/* Orange Header */}
         <HeaderLogo />
 
         {/* Main Content - White Panel */}
-        <div className="flex-1 flex items-start md:items-center justify-center px-4 py-6 md:py-8 overflow-y-auto">
+        <div className="flex min-w-0 flex-1 items-start justify-center px-4 py-6 md:items-center md:py-8">
           <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-6 md:p-8">
             {/* User Icon */}
             <div className="flex justify-center mb-4">

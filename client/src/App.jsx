@@ -813,9 +813,11 @@ const App = () => {
     "/accept-invite",
   ];
 
+  const isAdminPage = location.pathname.startsWith("/admin");
   const shouldShowNavbarFooter =
     !hideNavbarFooter.includes(location.pathname) &&
-    !location.pathname.startsWith("/admin");
+    !location.pathname.startsWith("/accept-invite/") &&
+    !isAdminPage;
 
   // Defer support chat (socket.io + RTK) until idle — reduces mobile INP/TBT on first paint
   useEffect(() => {
@@ -858,7 +860,7 @@ const App = () => {
       <main
         id="main-content"
         className={`min-w-0 w-full max-w-full ${
-          shouldShowNavbarFooter ? "pb-0" : "h-screen overflow-hidden pb-0"
+          isAdminPage ? "h-dvh overflow-hidden" : ""
         }`}
       >
         <AppRouter />
