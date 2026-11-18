@@ -21,6 +21,7 @@ import CarEstimatorForm from "./CarEstimatorForm";
 import CarEstimatorResult from "./CarEstimatorResult";
 import estimatorHero from "../../../assets/images/estimatorHero.webp";
 import EstimatorBlogsSection from "./EstimatorBlogsSection";
+import EstimatorFaqSection from "./EstimatorFaqSection";
 import { API_CONFIG } from "../../../config/index.js";
 import { useCarCategories } from "../../../hooks/useCarCategories";
 import { capitalize } from "../../../utils/formatters";
@@ -1275,6 +1276,7 @@ const CarEstimatorPage = ({ initialGuideId }) => {
 
         {/* Blog Sections */}
         <EstimatorBlogsSection initialGuideId={initialGuideId} />
+        <EstimatorFaqSection />
       </div>
     </>
   );
