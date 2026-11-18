@@ -108,10 +108,7 @@ export default function FuelPrices() {
           </div>
         )}
         <p className="mt-5 text-sm text-stone-600">
-          OGRA-notified prices provided by{" "}
-          <a href="https://autoones.com/fuel-prices-api" className="underline underline-offset-2">
-            AutoOnes
-          </a>.
+          Prices reflect OGRA-notified rates.
         </p>
       </section>
     </div>
