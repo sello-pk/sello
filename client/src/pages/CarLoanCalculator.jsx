@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useGetSingleCarQuery } from "../redux/services/api";
 import GuideCards from "../components/common/GuideCards";
-import { loanVerificationPosts } from "../components/features/VehicleVerification/loanVerificationPosts.js";
+import { carLoanGuidePosts } from "../utils/carLoanGuidePosts.js";
 import { extractCarIdFromSlug } from "../utils/urlBuilders";
 import {
   calculateBudget,
@@ -756,9 +756,9 @@ export default function CarLoanCalculator() {
           </Link>
         </section>
 
-        <section aria-labelledby="loan-verification-guides">
-          <h2 id="loan-verification-guides" className="sr-only">Vehicle verification guides</h2>
-          <GuideCards posts={loanVerificationPosts} checklistTitle="Key Checklist & Verification Points:" />
+        <section aria-labelledby="loan-financing-guides">
+          <h2 id="loan-financing-guides" className="sr-only">Car financing guides</h2>
+          <GuideCards posts={carLoanGuidePosts} />
         </section>
       </div>
     </div>
