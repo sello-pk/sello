@@ -11,6 +11,12 @@ import {
 } from "lucide-react";
 import { useGetSingleCarQuery } from "../redux/services/api";
 import GuideCards from "../components/common/GuideCards";
+import alfalahLogo from "../assets/banks_logo/bank-alfalah-sello.png";
+import faysalLogo from "../assets/banks_logo/faysal-bank-sello.png";
+import hblLogo from "../assets/banks_logo/HBL-sello.png";
+import mcbLogo from "../assets/banks_logo/mcb-sello.png";
+import meezanLogo from "../assets/banks_logo/meezan-bank-sello.png";
+import ublLogo from "../assets/banks_logo/UBL-Bank-sello.png";
 import { carLoanGuidePosts } from "../utils/carLoanGuidePosts.js";
 import { extractCarIdFromSlug } from "../utils/urlBuilders";
 import {
@@ -35,6 +41,7 @@ const pageContainer = "mx-auto w-full max-w-8xl px-3 sm:px-4 md:px-6 lg:px-8";
 const banks = [
   {
     name: "Meezan Bank",
+    logo: meezanLogo,
     product: "Car Ijarah",
     type: "Islamic · Ijarah",
     link: "https://www.meezanbank.com/car-ijarah/",
@@ -43,6 +50,7 @@ const banks = [
   },
   {
     name: "HBL",
+    logo: hblLogo,
     product: "HBL CarLoan",
     type: "Conventional",
     link: "https://www.hbl.com/carloan",
@@ -51,6 +59,7 @@ const banks = [
   },
   {
     name: "Bank Alfalah",
+    logo: alfalahLogo,
     product: "Auto Loan",
     type: "Conventional",
     link: "https://www.bankalfalah.com/personal-banking/loans/auto-loan/",
@@ -59,6 +68,7 @@ const banks = [
   },
   {
     name: "UBL",
+    logo: ublLogo,
     product: "UBL Drive",
     type: "Conventional",
     link: "https://ubldigital.com/Loans/Consumer-Loans/UBL-Drive",
@@ -67,6 +77,7 @@ const banks = [
   },
   {
     name: "Faysal Bank",
+    logo: faysalLogo,
     product: "Faysal Islami Car Finance",
     type: "Islamic · Diminishing Musharakah",
     link: "https://www.faysalbank.com/car-finance/faysal-islami-car-finance",
@@ -75,6 +86,7 @@ const banks = [
   },
   {
     name: "MCB Bank",
+    logo: mcbLogo,
     product: "Car4U",
     type: "Conventional",
     link: "https://www.mcb.com.pk/personal/consumer-loans/consumer-loans/car4u",
@@ -709,11 +721,26 @@ export default function CarLoanCalculator() {
             {banks.map((bank) => (
               <article
                 key={bank.name}
-                className="flex flex-col items-start rounded-xl border border-slate-200 p-4"
+                className="flex flex-col items-start rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:border-primary-300 hover:shadow-lg focus-within:border-primary-300 focus-within:shadow-md motion-safe:transition-[transform,border-color,box-shadow] motion-safe:duration-200 motion-safe:hover:-translate-y-0.5"
               >
-                <h3 className="font-semibold">{bank.name}</h3>
-                <p className="mt-1 text-sm">{bank.product}</p>
-                <p className="mb-3 mt-1 text-sm text-slate-600">{bank.type}</p>
+                <div className="mb-3 flex w-full items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h3 className="font-semibold">{bank.name}</h3>
+                    <p className="mt-1 text-sm">{bank.product}</p>
+                    <p className="mt-2 inline-block rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700">
+                      {bank.type}
+                    </p>
+                  </div>
+                  <img
+                    src={bank.logo}
+                    alt=""
+                    width={96}
+                    height={48}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-12 w-20 shrink-0 object-contain object-right-top sm:w-24"
+                  />
+                </div>
                 <p className="mb-4 text-sm leading-relaxed text-slate-700">
                   {bank.terms}
                 </p>
@@ -721,7 +748,7 @@ export default function CarLoanCalculator() {
                   href={bank.link}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-auto inline-flex items-center gap-1 text-sm font-semibold underline underline-offset-4"
+                  className="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-primary-500 underline underline-offset-4 hover:text-primary-600"
                 >
                   Official product details{" "}
                   <ArrowUpRight aria-hidden="true" className="h-4 w-4" />
