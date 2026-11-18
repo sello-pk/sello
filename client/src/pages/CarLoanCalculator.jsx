@@ -28,6 +28,7 @@ const fieldClass =
   "min-h-11 w-full min-w-0 rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-500";
 const primary =
   "inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary-500 px-4 py-2 text-sm font-bold text-[#0A1025] hover:bg-primary-600";
+const pageContainer = "mx-auto w-full max-w-8xl px-3 sm:px-4 md:px-6 lg:px-8";
 
 const banks = [
   {
@@ -311,7 +312,7 @@ export default function CarLoanCalculator() {
   return (
     <div className="bg-[#F6F7F9] text-[#0A1025]">
       <header className="bg-[#0A1025] text-white">
-        <div className="mx-auto max-w-6xl px-4 py-9 sm:px-6 sm:py-14 lg:px-8">
+        <div className={`${pageContainer} py-9 sm:py-14`}>
           <nav
             aria-label="Breadcrumb"
             className="flex flex-wrap items-center gap-2 text-sm text-slate-300"
@@ -332,7 +333,7 @@ export default function CarLoanCalculator() {
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-6xl gap-6 px-4 py-8 sm:px-6 lg:px-8">
+      <div className={`${pageContainer} grid gap-6 py-8`}>
         <div className="grid items-start gap-6 lg:grid-cols-[1.15fr_1fr]">
           <section className={panel} aria-labelledby="loan-inputs">
             <h2
