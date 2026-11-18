@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { FRONTEND_CONFIG } from "../../config";
 import {
@@ -9,6 +9,21 @@ import {
   cleanCanonicalSearch,
   blockAdsForPage,
 } from "../../utils/seoPolicy";
+
+const PageSeoContext = createContext(null);
+
+export function RouteSeo({ fallback, children }) {
+  const [pageCount, setPageCount] = useState(0);
+
+  return (
+    <>
+      {pageCount === 0 && <SEO {...fallback} />}
+      <PageSeoContext.Provider value={setPageCount}>
+        {children}
+      </PageSeoContext.Provider>
+    </>
+  );
+}
 
 /**
  * SEO Component for dynamic meta tags
@@ -30,6 +45,13 @@ const SEO = ({
   robots,
 }) => {
   const location = useLocation();
+  const setPageCount = useContext(PageSeoContext);
+
+  useEffect(() => {
+    if (!setPageCount) return undefined;
+    setPageCount((count) => count + 1);
+    return () => setPageCount((count) => count - 1);
+  }, [setPageCount]);
   const siteUrl = (FRONTEND_CONFIG.SITE_URL || "https://sello.pk").replace(
     /\/+$/,
     "",
@@ -178,7 +200,7 @@ const SEO = ({
     }
     canonicalLink.setAttribute("href", canonicalUrl);
   }, [
-    title,
+    location.key,
     safeDescription,
     imageUrl,
     safeType,

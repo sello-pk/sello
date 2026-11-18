@@ -12,7 +12,7 @@ import {
   articlePlainText,
   isSubstantialArticle,
 } from "./lib/api.js";
-import { injectPrerenderIntoRoot, stripHeroPreloads } from "./lib/htmlHead.js";
+import { applyPageHead, injectScript, injectPrerenderIntoRoot, stripHeroPreloads } from "./lib/htmlHead.js";
 
 const DIST_ROOT = path.join(CLIENT_ROOT, "dist");
 
@@ -37,24 +37,11 @@ function fail(message) {
 
 // ---------------------------------------------------------------- head utils
 
-function escapeAttr(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
 function toAbsolute(maybeRelative) {
   if (!maybeRelative) return "";
   if (/^https?:\/\//i.test(maybeRelative)) return maybeRelative;
   if (maybeRelative.startsWith("//")) return `https:${maybeRelative}`;
   return `${SITE_URL}${maybeRelative.startsWith("/") ? "" : "/"}${maybeRelative}`;
-}
-
-function metaTag(attrKey, attrValue, content) {
-  if (content === undefined || content === null || content === "") return null;
-  return `<meta ${attrKey}="${attrValue}" content="${escapeAttr(content)}" />`;
 }
 
 function safeJson(value) {
@@ -65,48 +52,6 @@ function fullTitle(title) {
   const t = String(title || "").trim();
   if (!t) return "Blog | Sello";
   return t.includes("Sello") ? t : `${t} | Sello`;
-}
-
-function updateOrInjectMeta(html, attrKey, attrValue, content) {
-  const re = new RegExp(`(<meta[^>]*${attrKey}="${attrValue}"[^>]*)`);
-  if (re.test(html)) {
-    return html.replace(re, (m, tag) =>
-      tag.replace(/(content=")[^"]*(")/, `$1${escapeAttr(content)}$2`),
-    );
-  }
-  const tag = metaTag(attrKey, attrValue, content);
-  return tag ? html.replace("</head>", `${tag}\n  </head>`) : html;
-}
-
-function updateTitle(html, title) {
-  const tag = `<title>${escapeAttr(title)}</title>`;
-  if (/<title>[\s\S]*?<\/title>/.test(html)) {
-    return html.replace(/<title>[\s\S]*?<\/title>/, tag);
-  }
-  return html.replace("</head>", `${tag}\n  </head>`);
-}
-
-function updateOrInjectLink(html, rel, href) {
-  const re = new RegExp(`(<link[^>]*rel="${rel}"[^>]*)(\\s*)/?>`);
-  if (re.test(html)) {
-    return html.replace(re, (m, prefix) =>
-      prefix.includes("href=")
-        ? `${prefix.replace(/(href=")[^"]*(")/, `$1${escapeAttr(href)}$2`)} />`
-        : `${prefix} href="${escapeAttr(href)}" />`,
-    );
-  }
-  return html.replace(
-    "</head>",
-    `<link rel="${rel}" href="${escapeAttr(href)}" />\n  </head>`,
-  );
-}
-
-function injectScript(html, scriptType, id, content) {
-  const attrs = `type="${scriptType}"${id ? ` id="${id}"` : ""}`;
-  return html.replace(
-    "</head>",
-    `<script ${attrs}>${content}</script>\n  </head>`,
-  );
 }
 
 // ------------------------------------------------------------- index.html hero preloads
@@ -196,25 +141,8 @@ const STATIC_META = {
 };
 
 function buildStaticHead(meta) {
-  const title = fullTitle(meta.title);
-  const { description, keywords, canonical } = meta;
-  return (html) => {
-    let out = updateTitle(html, title);
-    out = updateOrInjectMeta(out, "name", "description", description);
-    if (keywords) {
-      out = updateOrInjectMeta(out, "name", "keywords", keywords);
-    }
-    out = updateOrInjectMeta(out, "property", "og:title", title);
-    out = updateOrInjectMeta(out, "property", "og:description", description);
-    out = updateOrInjectMeta(out, "property", "og:url", canonical);
-    out = updateOrInjectMeta(out, "name", "twitter:title", title);
-    out = updateOrInjectMeta(out, "name", "twitter:description", description);
-    out = updateOrInjectMeta(out, "name", "twitter:url", canonical);
-    out = updateOrInjectLink(out, "canonical", canonical);
-    return out;
-  };
+  return (html) => applyPageHead(html, { ...meta, title: fullTitle(meta.title) });
 }
-
 function buildBlogHead(blog) {
   const slug = blog?.slug || blog?._id;
   const canonical = `${SITE_URL}/blog/${encodeURIComponent(slug)}`;
@@ -275,22 +203,7 @@ function buildBlogHead(blog) {
   });
 
   return (html) => {
-    let out = updateTitle(html, title);
-    out = updateOrInjectMeta(out, "name", "description", description);
-    if (keywords) {
-      out = updateOrInjectMeta(out, "name", "keywords", keywords);
-    }
-    out = updateOrInjectMeta(out, "property", "og:title", title);
-    out = updateOrInjectMeta(out, "property", "og:description", description);
-    out = updateOrInjectMeta(out, "property", "og:url", canonical);
-    out = updateOrInjectMeta(out, "name", "twitter:title", title);
-    out = updateOrInjectMeta(out, "name", "twitter:description", description);
-    out = updateOrInjectMeta(out, "name", "twitter:url", canonical);
-    if (image) {
-      out = updateOrInjectMeta(out, "property", "og:image", image);
-      out = updateOrInjectMeta(out, "name", "twitter:image", image);
-    }
-    out = updateOrInjectLink(out, "canonical", canonical);
+    let out = applyPageHead(html, { title, description, canonical, keywords, image });
     out = injectScript(out, "application/ld+json", "structured-data", jsonLd);
     out = injectScript(
       out,

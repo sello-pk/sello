@@ -30,37 +30,37 @@ export function toAbsolute(siteUrl, maybeRelative) {
 export function updateTitle(html, title) {
   const tag = `<title>${escapeAttr(title)}</title>`;
   if (/<title>[\s\S]*?<\/title>/.test(html)) {
-    return html.replace(/<title>[\s\S]*?<\/title>/, tag);
+    return html.replace(/<title>[\s\S]*?<\/title>/, () => tag);
   }
-  return html.replace("</head>", `${tag}\n  </head>`);
+  return html.replace("</head>", () => `${tag}\n  </head>`);
 }
 
 export function updateOrInjectMeta(html, attrKey, attrValue, content) {
   if (content === undefined || content === null || content === "") return html;
   const re = new RegExp(`(<meta[^>]*${attrKey}="${attrValue}"[^>]*)`);
   if (re.test(html)) {
-    return html.replace(re, (m, tag) =>
-      tag.replace(/(content=")[^"]*(")/, `$1${escapeAttr(content)}$2`),
+    return html.replace(re, (match) =>
+      match.replace(/content="[^"]*"/, () => `content="${escapeAttr(content)}"`),
     );
   }
   return html.replace(
     "</head>",
-    `<meta ${attrKey}="${attrValue}" content="${escapeAttr(content)}" />\n  </head>`,
+    () => `<meta ${attrKey}="${attrValue}" content="${escapeAttr(content)}" />\n  </head>`,
   );
 }
 
 export function updateOrInjectLink(html, rel, href) {
-  const re = new RegExp(`(<link[^>]*rel="${rel}"[^>]*)(\\s*)/?>`);
+  const re = new RegExp(`<link\\b[^>]*\\brel="${rel}"[^>]*>`);
   if (re.test(html)) {
-    return html.replace(re, (m, prefix) =>
-      prefix.includes("href=")
-        ? `${prefix.replace(/(href=")[^"]*(")/, `$1${escapeAttr(href)}$2`)} />`
-        : `${prefix} href="${escapeAttr(href)}" />`,
+    return html.replace(re, (tag) =>
+      tag.includes("href=")
+        ? tag.replace(/href="[^"]*"/, () => `href="${escapeAttr(href)}"`)
+        : tag.replace(/\s*\/?>$/, () => ` href="${escapeAttr(href)}" />`),
     );
   }
   return html.replace(
     "</head>",
-    `<link rel="${rel}" href="${escapeAttr(href)}" />\n  </head>`,
+    () => `<link rel="${rel}" href="${escapeAttr(href)}" />\n  </head>`,
   );
 }
 
@@ -68,7 +68,7 @@ export function injectScript(html, scriptType, id, content) {
   const attrs = `type="${scriptType}"${id ? ` id="${id}"` : ""}`;
   return html.replace(
     "</head>",
-    `<script ${attrs}>${content}</script>\n  </head>`,
+    () => `<script ${attrs}>${content}</script>\n  </head>`,
   );
 }
 
@@ -96,10 +96,10 @@ export function injectNoscriptBlock(html, innerHtml) {
   if (html.includes('id="root"')) {
     return html.replace(
       /<div\s+id="root"\s*>\s*<\/div>/i,
-      `${block}<div id="root"></div>`,
+      () => `${block}<div id="root"></div>`,
     );
   }
-  return html.replace("</body>", `${block}</body>`);
+  return html.replace("</body>", () => `${block}</body>`);
 }
 
 /**
@@ -116,7 +116,7 @@ export function injectPrerenderIntoRoot(html, body, routePath = "") {
   return {
     html: html.replace(
       rootRe,
-      `<div id="root">${marker}\n${body}\n</div>`,
+      () => `<div id="root">${marker}\n${body}\n</div>`,
     ),
     injected: true,
   };

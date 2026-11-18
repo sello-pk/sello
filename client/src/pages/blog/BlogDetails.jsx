@@ -213,6 +213,13 @@ const BlogDetails = () => {
     const isGenuine404 = is404;
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        {isGenuine404 && (
+          <SEO
+            title="Blog Post Not Found | Sello.pk"
+            description="This article is no longer available. Explore more automotive news and guides on the Sello.pk blog."
+            robots="noindex, follow"
+          />
+        )}
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             {isGenuine404 ? "Blog Post Not Found" : "Blog Post Unavailable"}
@@ -237,6 +244,11 @@ const BlogDetails = () => {
   if (!currentBlog) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <SEO
+          title="Blog Post Not Found | Sello.pk"
+          description="This article is no longer available. Explore more automotive news and guides on the Sello.pk blog."
+          robots="noindex, follow"
+        />
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Blog Post Not Found
@@ -302,7 +314,8 @@ const BlogDetails = () => {
         description={
           safeMetaDescription ||
           safeExcerpt ||
-          plainContentPreview
+          plainContentPreview ||
+          `Read ${safeTitle} on the Sello.pk automotive blog.`
         }
         image={safeFeaturedImage}
         url={buildBlogUrl(currentBlog)}

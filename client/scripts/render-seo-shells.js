@@ -13,6 +13,8 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { getRouteSeo, staticSeoPaths } from "../src/utils/routeSeo.js";
+import { getRobotsForPath } from "../src/utils/seoPolicy.js";
 import {
   CLIENT_ROOT,
   API_BASE_URL,
@@ -473,6 +475,20 @@ function writeNoindexShell({ path: routePath, title, description }) {
   });
 }
 
+function writeMissingRouteShells() {
+  for (const routePath of staticSeoPaths) {
+    // Query parameters determine whether search results are indexable.
+    if (routePath === "/search-results" || fs.existsSync(outputPathFor(routePath))) continue;
+    const seo = getRouteSeo(routePath);
+    const canonical = seo.canonical || `${SITE_URL}${routePath}`;
+    writeShell(routePath, (html) => applyPageHead(html, {
+      ...seo,
+      canonical,
+      robots: seo.robots || getRobotsForPath(routePath),
+    }));
+  }
+}
+
 function writeHomeShell() {
   const title = "Car for Sale in Pakistan | Buy & Sell Used Cars – Sello.pk";
   const description =
@@ -582,11 +598,12 @@ async function main() {
     );
   }
 
-  // After car shells (they copy index.html): homepage + private noindex + 404.
-  writeHomeShell();
   for (const shell of NOINDEX_SHELLS) {
     writeNoindexShell(shell);
   }
+  writeMissingRouteShells();
+  // Write the homepage last so its metadata and noscript content stay local.
+  writeHomeShell();
   writeNotFoundPage();
   log(
     `✓ home + ${NOINDEX_SHELLS.length} noindex shells + 404.html`,

@@ -58,7 +58,7 @@ function safeJson(value) {
 function updateTitle(html, title) {
   const tag = `<title>${escapeAttr(title)}</title>`;
   if (/<title>[\s\S]*?<\/title>/.test(html)) {
-    return html.replace(/<title>[\s\S]*?<\/title>/, tag);
+    return html.replace(/<title>[\s\S]*?<\/title>/, () => tag);
   }
   return html.replace("</head>", `${tag}\n</head>`);
 }
@@ -67,13 +67,13 @@ function updateMeta(html, attrKey, attrValue, content) {
   if (!content) return html;
   const re = new RegExp(`(<meta[^>]*${attrKey}="${attrValue}"[^>]*)`);
   if (re.test(html)) {
-    return html.replace(re, (m, tag) =>
-      tag.replace(/(content=")[^"]*(")/, `$1${escapeAttr(content)}$2`),
+    return html.replace(re, (match) =>
+      match.replace(/content="[^"]*"/, () => `content="${escapeAttr(content)}"`),
     );
   }
   return html.replace(
     "</head>",
-    `<meta ${attrKey}="${attrValue}" content="${escapeAttr(content)}" />\n</head>`,
+    () => `<meta ${attrKey}="${attrValue}" content="${escapeAttr(content)}" />\n</head>`,
   );
 }
 
@@ -193,6 +193,9 @@ export async function buildCarDetailHtml(shellPath, slugSegment) {
   html = updateMeta(html, "name", "description", description);
   html = updateMeta(html, "property", "og:title", title);
   html = updateMeta(html, "property", "og:description", description);
+  html = updateMeta(html, "name", "twitter:title", title);
+  html = updateMeta(html, "name", "twitter:description", description);
+  html = updateMeta(html, "name", "twitter:url", canonical);
   html = updateMeta(html, "property", "og:url", canonical);
   if (image) html = updateMeta(html, "property", "og:image", image);
   html = updateCanonical(html, canonical);
