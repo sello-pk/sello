@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   Clock,
   User,
@@ -766,14 +766,30 @@ Sello provides tools, information, resources, and listings that make buying and 
   },
 ];
 
-export default function VehicleVerificationGuideSection() {
+export function VehicleVerificationGuideCards({
+  limit = vehicleVerificationGuidePosts.length,
+  accordion = false,
+}) {
   const [expandedSteps, setExpandedSteps] = useState({});
+  const reduceMotion = useReducedMotion();
 
   const toggleStep = (id, scrollOnClose = false) => {
     setExpandedSteps((prev) => ({
-      ...prev,
+      ...(accordion ? {} : prev),
       [id]: !prev[id],
     }));
+
+    if (accordion) {
+      const trigger = document.getElementById(`guide-step-trigger-${id}`);
+      if (scrollOnClose) trigger?.focus({ preventScroll: true });
+      requestAnimationFrame(() => {
+        trigger?.scrollIntoView({
+          block: scrollOnClose ? "center" : "nearest",
+          behavior: "auto",
+        });
+      });
+      return;
+    }
 
     if (scrollOnClose && typeof window !== "undefined") {
       setTimeout(() => {
@@ -788,6 +804,202 @@ export default function VehicleVerificationGuideSection() {
     }
   };
 
+  return (
+    <div className="space-y-8 lg:space-y-12">
+      {vehicleVerificationGuidePosts.slice(0, limit).map((post, index) => {
+        const isImageLeft = index % 2 === 1; // odd = image left, even = image right
+        const isExpanded = !!expandedSteps[post.id];
+
+        return (
+          <Motion.article
+            key={post.id}
+            id={`guide-step-${post.id}`}
+            initial={accordion ? false : { opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.4, delay: (index % 3) * 0.05 }}
+            className={`group flex flex-col rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 bg-[#FDFBF7] border border-stone-200/60 ${
+              isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"
+            }`}
+          >
+            {/* Content area */}
+            <div className="relative flex-1 flex flex-col justify-between p-6 sm:p-8 lg:p-10 min-h-[260px] lg:min-h-0 lg:min-w-0">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <div className="w-8 h-8 rounded-full bg-gray-200/80 flex items-center justify-center">
+                      <User className="w-4 h-4 text-gray-600" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">
+                      {post.author}
+                    </span>
+                  </div>
+                  <span className="text-sm text-gray-500">{post.date}</span>
+                </div>
+
+                <h3 className="text-2xl lg:text-3xl font-bold text-primary-500 mb-4 leading-tight">
+                  <span className="text-primary-500 mr-2">
+                    {post.stepNumber}.
+                  </span>
+                  {post.title}
+                </h3>
+
+                <p className="text-base lg:text-lg leading-relaxed mb-6 text-gray-600">
+                  {post.excerpt}
+                </p>
+
+                <button
+                  type="button"
+                  id={`guide-step-trigger-${post.id}`}
+                  onClick={() => toggleStep(post.id)}
+                  aria-expanded={isExpanded}
+                  aria-controls={`guide-step-content-${post.id}`}
+                  className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 cursor-pointer ${
+                    accordion ? "min-h-11 scroll-mt-24 scroll-mb-8" : "transition-all group"
+                  } ${
+                    accordion && isExpanded
+                      ? "bg-primary-50 text-primary-800"
+                      : "bg-primary-500 text-white shadow-md hover:shadow-lg hover:opacity-95"
+                  }`}
+                >
+                  <span>{isExpanded ? "Read Less" : "Read More"}</span>
+                  {isExpanded ? (
+                    <ChevronUp
+                      className="w-5 h-5 transition-transform"
+                      aria-hidden
+                    />
+                  ) : (
+                    <ChevronDown
+                      className="w-5 h-5 transition-transform"
+                      aria-hidden
+                    />
+                  )}
+                </button>
+
+                <div
+                  id={accordion ? `guide-step-content-${post.id}` : undefined}
+                  hidden={accordion && !isExpanded}
+                >
+                <AnimatePresence>
+                  {isExpanded && (
+                    <Motion.div
+                      id={accordion ? undefined : `guide-step-content-${post.id}`}
+                      initial={accordion ? { opacity: 0 } : { opacity: 0, height: 0 }}
+                      animate={accordion ? { opacity: 1 } : { opacity: 1, height: "auto" }}
+                      exit={accordion ? undefined : { opacity: 0, height: 0 }}
+                      transition={{ duration: accordion ? (reduceMotion ? 0 : 0.18) : 0.35, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <div className="mt-8 pt-8 border-t border-stone-200/80">
+                        {/* Formatted markdown content */}
+                        <div
+                          className="prose prose-lg max-w-none text-gray-700 font-normal leading-relaxed"
+                          dangerouslySetInnerHTML={{
+                            __html: formatBlogContent(post.fullContent),
+                          }}
+                        />
+
+                        {/* Key Checklist & Verification Points */}
+                        {post.items && post.items.length > 0 && (
+                          <div className="mt-8 pt-6 border-t border-stone-200/80">
+                            <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                              <ShieldCheck className="w-5 h-5 text-primary-500" />
+                              <span>Key Checklist & Verification Points:</span>
+                            </h4>
+                            <ul className="grid gap-3 sm:grid-cols-2">
+                              {post.items.map((item) => (
+                                <li
+                                  key={item}
+                                  className="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm"
+                                >
+                                  <span className="w-2 h-2 rounded-full bg-primary-500 shrink-0 mt-2" />
+                                  <span className="text-sm font-medium text-gray-800">
+                                    {item}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* Bottom Read Less and scroll-to-top controls */}
+                        <div className="mt-8 pt-4 border-t border-stone-200/60 flex items-center justify-between">
+                          <button
+                            type="button"
+                            onClick={() => toggleStep(post.id, true)}
+                            className="inline-flex items-center gap-2 text-primary-500 font-semibold hover:text-primary-600 transition-colors py-2 cursor-pointer text-sm sm:text-base"
+                          >
+                            <ChevronUp className="w-4 h-4" />
+                            <span>Read Less</span>
+                          </button>
+                          {!accordion && <button
+                            type="button"
+                            onClick={() => {
+                              const el = document.getElementById(
+                                `guide-step-${post.id}`,
+                              );
+                              if (el) {
+                                const yOffset = -80;
+                                const y =
+                                  el.getBoundingClientRect().top +
+                                  window.pageYOffset +
+                                  yOffset;
+                                window.scrollTo({
+                                  top: y,
+                                  behavior: "smooth",
+                                });
+                              }
+                            }}
+                            className="text-xs sm:text-sm text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+                          >
+                            Back to top of step ↑
+                          </button>}
+                        </div>
+                      </div>
+                    </Motion.div>
+                  )}
+                </AnimatePresence>
+                </div>
+              </div>
+            </div>
+
+            {/* Image area */}
+            <div
+              className={`relative w-full lg:w-[480px] xl:w-[520px] lg:flex-shrink-0 overflow-hidden bg-slate-900/5 ${
+                accordion
+                  ? "h-72 sm:h-80 lg:h-[360px] lg:self-start"
+                  : isExpanded
+                    ? "h-72 sm:h-80 lg:h-[400px] xl:h-[440px] lg:self-start lg:sticky lg:top-24 rounded-2xl m-4 sm:m-6 lg:m-6 transition-all duration-300"
+                    : "h-72 sm:h-80 lg:h-auto lg:min-h-[360px] lg:self-stretch transition-all duration-300"
+              }`}
+            >
+              <img
+                src={post.image}
+                alt={post.title}
+                className={`absolute inset-0 w-full h-full block object-cover object-center opacity-90 ${
+                  accordion ? "" : "transition-transform duration-500 group-hover:scale-105"
+                }`}
+                loading="lazy"
+              />
+              <div className="absolute top-5 left-5">
+                <span className="inline-flex items-center gap-2 bg-white/95 text-gray-800 px-3 py-1.5 rounded-full text-sm font-semibold shadow">
+                  <span className="w-1.5 h-1.5 bg-primary-500 rounded-full" />
+                  {post.category}
+                </span>
+              </div>
+              <div className="absolute bottom-5 left-5 flex items-center gap-2 text-white text-sm bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-lg shadow">
+                <Clock className="w-4 h-4 text-white" aria-hidden />
+                <span>{post.readTime}</span>
+              </div>
+            </div>
+          </Motion.article>
+        );
+      })}
+    </div>
+  );
+}
+
+export default function VehicleVerificationGuideSection() {
   const handleScrollToProvinces = (e) => {
     e.preventDefault();
     const elem = document.getElementById("select-province");
@@ -820,181 +1032,7 @@ export default function VehicleVerificationGuideSection() {
         </div>
 
         {/* Alternating Cards Grid */}
-        <div className="space-y-8 lg:space-y-12">
-          {vehicleVerificationGuidePosts.map((post, index) => {
-            const isImageLeft = index % 2 === 1; // odd = image left, even = image right
-            const isExpanded = !!expandedSteps[post.id];
-
-            return (
-              <motion.article
-                key={post.id}
-                id={`guide-step-${post.id}`}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.4, delay: (index % 3) * 0.05 }}
-                className={`group flex flex-col rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 bg-[#FDFBF7] border border-stone-200/60 ${
-                  isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"
-                }`}
-              >
-                {/* Content area */}
-                <div className="relative flex-1 flex flex-col justify-between p-6 sm:p-8 lg:p-10 min-h-[260px] lg:min-h-0 lg:min-w-0">
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <div className="w-8 h-8 rounded-full bg-gray-200/80 flex items-center justify-center">
-                          <User className="w-4 h-4 text-gray-600" />
-                        </div>
-                        <span className="text-sm font-medium text-gray-700">
-                          {post.author}
-                        </span>
-                      </div>
-                      <span className="text-sm text-gray-500">{post.date}</span>
-                    </div>
-
-                    <h3 className="text-2xl lg:text-3xl font-bold text-primary-500 mb-4 leading-tight">
-                      <span className="text-primary-500 mr-2">
-                        {post.stepNumber}.
-                      </span>
-                      {post.title}
-                    </h3>
-
-                    <p className="text-base lg:text-lg leading-relaxed mb-6 text-gray-600">
-                      {post.excerpt}
-                    </p>
-
-                    <button
-                      type="button"
-                      onClick={() => toggleStep(post.id)}
-                      aria-expanded={isExpanded}
-                      aria-controls={`guide-step-content-${post.id}`}
-                      className="inline-flex items-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-xl font-semibold hover:opacity-95 transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 group cursor-pointer"
-                    >
-                      <span>{isExpanded ? "Read Less" : "Read More"}</span>
-                      {isExpanded ? (
-                        <ChevronUp
-                          className="w-5 h-5 transition-transform"
-                          aria-hidden
-                        />
-                      ) : (
-                        <ChevronDown
-                          className="w-5 h-5 transition-transform"
-                          aria-hidden
-                        />
-                      )}
-                    </button>
-
-                    <AnimatePresence>
-                      {isExpanded && (
-                        <motion.div
-                          id={`guide-step-content-${post.id}`}
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.35, ease: "easeInOut" }}
-                          className="overflow-hidden"
-                        >
-                          <div className="mt-8 pt-8 border-t border-stone-200/80">
-                            {/* Formatted markdown content */}
-                            <div
-                              className="prose prose-lg max-w-none text-gray-700 font-normal leading-relaxed"
-                              dangerouslySetInnerHTML={{
-                                __html: formatBlogContent(post.fullContent),
-                              }}
-                            />
-
-                            {/* Key Checklist & Verification Points */}
-                            {post.items && post.items.length > 0 && (
-                              <div className="mt-8 pt-6 border-t border-stone-200/80">
-                                <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                  <ShieldCheck className="w-5 h-5 text-primary-500" />
-                                  <span>Key Checklist & Verification Points:</span>
-                                </h4>
-                                <ul className="grid gap-3 sm:grid-cols-2">
-                                  {post.items.map((item) => (
-                                    <li
-                                      key={item}
-                                      className="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm"
-                                    >
-                                      <span className="w-2 h-2 rounded-full bg-primary-500 shrink-0 mt-2" />
-                                      <span className="text-sm font-medium text-gray-800">
-                                        {item}
-                                      </span>
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
-
-                            {/* Bottom Read Less and scroll-to-top controls */}
-                            <div className="mt-8 pt-4 border-t border-stone-200/60 flex items-center justify-between">
-                              <button
-                                type="button"
-                                onClick={() => toggleStep(post.id, true)}
-                                className="inline-flex items-center gap-2 text-primary-500 font-semibold hover:text-primary-600 transition-colors py-2 cursor-pointer text-sm sm:text-base"
-                              >
-                                <ChevronUp className="w-4 h-4" />
-                                <span>Read Less</span>
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const el = document.getElementById(
-                                    `guide-step-${post.id}`,
-                                  );
-                                  if (el) {
-                                    const yOffset = -80;
-                                    const y =
-                                      el.getBoundingClientRect().top +
-                                      window.pageYOffset +
-                                      yOffset;
-                                    window.scrollTo({
-                                      top: y,
-                                      behavior: "smooth",
-                                    });
-                                  }
-                                }}
-                                className="text-xs sm:text-sm text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
-                              >
-                                Back to top of step ↑
-                              </button>
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </div>
-
-                {/* Image area */}
-                <div
-                  className={`relative w-full lg:w-[480px] xl:w-[520px] lg:flex-shrink-0 overflow-hidden bg-slate-900/5 transition-all duration-300 ${
-                    isExpanded
-                      ? "h-72 sm:h-80 lg:h-[400px] xl:h-[440px] lg:self-start lg:sticky lg:top-24 rounded-2xl m-4 sm:m-6 lg:m-6"
-                      : "h-72 sm:h-80 lg:h-auto lg:min-h-[360px] lg:self-stretch"
-                  }`}
-                >
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    className="absolute inset-0 w-full h-full block object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  <div className="absolute top-5 left-5">
-                    <span className="inline-flex items-center gap-2 bg-white/95 text-gray-800 px-3 py-1.5 rounded-full text-sm font-semibold shadow">
-                      <span className="w-1.5 h-1.5 bg-primary-500 rounded-full" />
-                      {post.category}
-                    </span>
-                  </div>
-                  <div className="absolute bottom-5 left-5 flex items-center gap-2 text-white text-sm bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-lg shadow">
-                    <Clock className="w-4 h-4 text-white" aria-hidden />
-                    <span>{post.readTime}</span>
-                  </div>
-                </div>
-              </motion.article>
-            );
-          })}
-        </div>
+        <VehicleVerificationGuideCards />
 
         {/* Enhanced Call to Action */}
         <div className="mt-12 sm:mt-20 relative">

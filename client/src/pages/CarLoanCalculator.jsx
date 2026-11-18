@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { useGetSingleCarQuery } from "../redux/services/api";
+import { VehicleVerificationGuideCards } from "../components/features/VehicleVerification/VehicleVerificationGuideSection";
 import { extractCarIdFromSlug } from "../utils/urlBuilders";
 import {
   calculateBudget,
@@ -752,6 +753,11 @@ export default function CarLoanCalculator() {
             Find Your Next Car on SELLO{" "}
             <ArrowUpRight aria-hidden="true" className="h-4 w-4" />
           </Link>
+        </section>
+
+        <section aria-labelledby="loan-verification-guides">
+          <h2 id="loan-verification-guides" className="sr-only">Vehicle verification guides</h2>
+          <VehicleVerificationGuideCards limit={2} accordion />
         </section>
       </div>
     </div>
