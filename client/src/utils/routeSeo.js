@@ -654,7 +654,7 @@ const aliases = new Map([
 export const staticSeoPaths = [
   ...routeSeoConfigs.map(({ path }) => path).filter((path) => !/[:*]/.test(path)),
   ...aliases.keys(),
-  ...["car", "bike", "bus", "truck", "van", "farm"].map((type) => `/listings/${type}`),
+  ...["car", "bike", "bus", "truck", "van", "farm", "buses", "vans", "e-bikes"].map((type) => `/listings/${type}`),
 ];
 
 export function getRouteSeo(pathname, search = "") {

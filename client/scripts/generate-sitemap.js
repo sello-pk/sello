@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { CLIENT_ROOT, SITE_URL } from "./lib/api.js";
+import { getRobotsForPath, isNoindexRobots } from "../src/utils/seoPolicy.js";
 
 const { makeSeo, modelSeo } = await import(
   pathToFileURL(path.join(CLIENT_ROOT, "src/utils/listingsSeo.js")).href
@@ -36,6 +37,17 @@ function escapeXml(value) {
     .replace(/>/g, "&gt;");
 }
 
+function sitemapLocation(value) {
+  try {
+    const url = new URL(value.trim().replaceAll("&amp;", "&"));
+    if (url.origin !== SITE_URL || url.username || url.password || url.hash ||
+        isNoindexRobots(getRobotsForPath(url.pathname.toLowerCase(), url.search))) return null;
+    return url;
+  } catch {
+    return null;
+  }
+}
+
 function toTitleCase(value) {
   return String(value || "")
     .trim()
@@ -44,8 +56,7 @@ function toTitleCase(value) {
 
 function urlBlock(loc, { lastmod, changefreq = "weekly", priority = "0.7" }) {
   return `  <url>
-    <loc>${escapeXml(loc)}</loc>
-    <lastmod>${escapeXml(lastmod)}</lastmod>
+    <loc>${escapeXml(loc)}</loc>${lastmod ? `\n    <lastmod>${escapeXml(lastmod)}</lastmod>` : ""}
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>
   </url>`;
@@ -62,7 +73,7 @@ function articleUrl(article) {
 }
 
 /** makeSeo / modelSeo keys → canonical /search-results?make=&model= URLs */
-function buildMakeModelUrls(today) {
+function buildMakeModelUrls() {
   const blocks = [];
   const seen = new Set();
 
@@ -72,7 +83,7 @@ function buildMakeModelUrls(today) {
     if (seen.has(loc)) continue;
     seen.add(loc);
     blocks.push(
-      urlBlock(loc, { lastmod: today, changefreq: "daily", priority: "0.8" }),
+      urlBlock(loc, { changefreq: "daily", priority: "0.8" }),
     );
   }
 
@@ -94,7 +105,7 @@ function buildMakeModelUrls(today) {
     if (seen.has(loc)) continue;
     seen.add(loc);
     blocks.push(
-      urlBlock(loc, { lastmod: today, changefreq: "daily", priority: "0.8" }),
+      urlBlock(loc, { changefreq: "daily", priority: "0.8" }),
     );
   }
 
@@ -105,18 +116,13 @@ function main() {
   if (!fs.existsSync(PUBLIC_SITEMAP)) {
     throw new Error(`source sitemap not found: ${PUBLIC_SITEMAP}`);
   }
-  const today = new Date().toISOString().slice(0, 10);
-  let baseXml = fs.readFileSync(PUBLIC_SITEMAP, "utf8");
-  // Freshen static lastmods on each build so crawlers see a current signal
-  baseXml = baseXml.replace(
-    /<lastmod>[^<]+<\/lastmod>/g,
-    `<lastmod>${today}</lastmod>`,
-  );
-
   const existingLocs = new Set();
-  for (const match of baseXml.matchAll(/<loc>([^<]+)<\/loc>/g)) {
-    existingLocs.add(match[1].trim());
-  }
+  const baseXml = fs.readFileSync(PUBLIC_SITEMAP, "utf8").replace(/<url>[^]*?<\/url>/g, (block) => {
+    const url = sitemapLocation(block.match(/<loc>([^<]+)<\/loc>/)?.[1] || "");
+    if (!url || existingLocs.has(url.href)) return "";
+    existingLocs.add(url.href);
+    return block;
+  });
   now();
   console.log(`base sitemap: ${existingLocs.size} URLs from public/sitemap.xml`);
 
@@ -124,10 +130,10 @@ function main() {
   if (MANIFEST_PATH && fs.existsSync(MANIFEST_PATH)) {
     const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, "utf8"));
     for (const article of manifest.articles || []) {
-      const loc = String(article.loc || "").trim();
-      if (!loc) continue;
-      if (existingLocs.has(loc)) continue;
-      existingLocs.add(loc);
+      const url = sitemapLocation(String(article.loc || ""));
+      if (!url || existingLocs.has(url.href) || !/^\/blog\/[^/]+$/.test(url.pathname) ||
+          !fs.existsSync(path.join(CLIENT_ROOT, "dist", url.pathname.slice(1), "index.html"))) continue;
+      existingLocs.add(url.href);
       articleBlocks.push(articleUrl(article));
     }
   } else {
@@ -137,11 +143,11 @@ function main() {
   }
 
   const makeModelBlocks = [];
-  for (const block of buildMakeModelUrls(today)) {
+  for (const block of buildMakeModelUrls()) {
     const locMatch = block.match(/<loc>([^<]+)<\/loc>/);
-    const loc = locMatch?.[1];
-    if (!loc || existingLocs.has(loc)) continue;
-    existingLocs.add(loc);
+    const url = sitemapLocation(locMatch?.[1] || "");
+    if (!url || existingLocs.has(url.href)) continue;
+    existingLocs.add(url.href);
     makeModelBlocks.push(block);
   }
   console.log(`make/model landings added: ${makeModelBlocks.length}`);

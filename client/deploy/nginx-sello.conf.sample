@@ -8,7 +8,7 @@
 #   * /blog/* is special: unknown blog slugs must return a REAL 404 (HTTP 404,
 #     not a 200 SPA fallback) so Google Search Console never flags a soft 404.
 #     Valid articles are static prerendered HTML files under dist/blog/<slug>/,
-#     so `try_files $uri $uri/` serves them directly; anything else 404s.
+#     so `try_files $uri/index.html` serves them without a trailing-slash redirect; anything else 404s.
 #   * Never return 200 for a missing /blog/* URL.
 
 server {
@@ -55,23 +55,23 @@ server {
     # Matches /blog/anything, INCLUDING /blog/all and /blog/<slug>.
     location ^~ /blog/ {
         # Serve dist/blog/<slug>/index.html automatically (index directive above).
-        try_files $uri $uri/ =404;
+        try_files $uri/index.html $uri $uri/ =404;
     }
 
     # --- /blog exactly: prerendered page dist/blog/index.html ---
     location = /blog {
-        try_files $uri $uri/ =404;
+        try_files $uri/index.html $uri $uri/ =404;
     }
 
     # --- Car detail SEO shells: unknown /cars/<slug> must be HTTP 404 (not SPA 200) ---
     # Valid listings are written at build to dist/cars/<slug>/index.html.
     location ^~ /cars/ {
-        try_files $uri $uri/ =404;
+        try_files $uri/index.html $uri $uri/ =404;
     }
 
     # --- City landing shells ---
     location ^~ /used-cars/ {
-        try_files $uri $uri/ =404;
+        try_files $uri/index.html $uri $uri/ =404;
     }
 
     # --- Auth / account shells (build writes noindex HTML under these paths) ---
@@ -118,11 +118,11 @@ server {
     location /terms-condition/ { try_files $uri $uri/ =404; }
     location /terms-conditions/ { try_files $uri $uri/ =404; }
 
-    location = /about         { try_files $uri $uri/ /index.html; }
-    location = /contact       { try_files $uri $uri/ /index.html; }
-    location = /privacy-policy { try_files $uri $uri/ /index.html; }
-    location = /terms-condition { try_files $uri $uri/ /index.html; }
-    location = /terms-conditions { try_files $uri $uri/ /index.html; }
+    location = /about         { try_files $uri/index.html $uri $uri/ /index.html; }
+    location = /contact       { try_files $uri/index.html $uri $uri/ /index.html; }
+    location = /privacy-policy { try_files $uri/index.html $uri $uri/ /index.html; }
+    location = /terms-condition { try_files $uri/index.html $uri $uri/ /index.html; }
+    location = /terms-conditions { try_files $uri/index.html $uri $uri/ /index.html; }
 
     # --- HTML pages (index.html + prerendered pages): revalidate every time ---
     location ~* \.html$ {
@@ -133,7 +133,7 @@ server {
     # --- SPA fallback for all remaining app routes ---
     location / {
         add_header Cache-Control "no-cache";
-        try_files $uri $uri/ /index.html;
+        try_files $uri/index.html $uri $uri/ /index.html;
     }
 
     # --- 404 page (built dist/404.html includes noindex) ---
