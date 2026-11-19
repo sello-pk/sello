@@ -55,6 +55,7 @@ export const getSimilarListings = async (req, res) => {
                 }
             ]
         })
+        .select("-contactNumber -whatsappNumber")
         .populate("postedBy", "name email role sellerRating reviewCount isVerified")
         .limit(limit)
         .sort({ isBoosted: -1, boostPriority: -1, createdAt: -1 });

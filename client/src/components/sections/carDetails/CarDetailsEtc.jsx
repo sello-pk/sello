@@ -319,7 +319,7 @@ const CarDetailsEtc = () => {
                               .join(", ")}
                           </p>
                         )}
-                        {(car.contactNumber ||
+                        {token && currentUser && (car.contactNumber ||
                           car.postedBy.dealerInfo?.businessPhone ||
                           car.postedBy.dealerInfo?.whatsappNumber) && (
                           <p className="flex items-center gap-1">
@@ -337,6 +337,7 @@ const CarDetailsEtc = () => {
 
               {/* Contact Buttons */}
               {!car.isSold &&
+                token &&
                 currentUser &&
                 currentUser._id !== car.postedBy?._id && (
                   <div className="space-y-3 mt-6">
