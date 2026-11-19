@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { images, menuLinks } from "../assets/assets";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import SearchBar from "./utils/SearchBar";
+import HeaderSearch from "./common/HeaderSearch";
 import { FaCirclePlus, FaBars, FaXmark, FaChevronDown } from "react-icons/fa6";
 import { FiSearch } from "react-icons/fi";
 import { useGetMeQuery } from "../redux/services/api";
@@ -18,6 +18,15 @@ const Navbar = () => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const [showHeaderSearch, setShowHeaderSearch] = useState(false);
+  useEffect(() => {
+    const openSearch = (event) => {
+      if (!(event.ctrlKey || event.metaKey) || event.altKey || event.key.toLowerCase() !== "k" || document.querySelector("dialog[open]")) return;
+      event.preventDefault();
+      setShowHeaderSearch(true);
+    };
+    window.addEventListener("keydown", openSearch);
+    return () => window.removeEventListener("keydown", openSearch);
+  }, []);
   const [openCompanyDropdown, setOpenCompanyDropdown] = useState(false);
   const [openMoreDropdown, setOpenMoreDropdown] = useState(false);
   const [openAuctionsDropdown, setOpenAuctionsDropdown] = useState(false);
@@ -32,7 +41,6 @@ const Navbar = () => {
   const gsapModRef = useRef(null);
   const gsapLoadRef = useRef(null);
   const linkRefs = useRef([]);
-  const searchPanelRef = useRef(null);
   const companyDropdownRef = useRef(null);
   const moreDropdownRef = useRef(null);
   const auctionsDropdownRef = useRef(null);
@@ -84,15 +92,6 @@ const Navbar = () => {
 
   const handleClickOutside = useCallback(
     (event) => {
-      // Close search panel
-      if (
-        showHeaderSearch &&
-        searchPanelRef.current &&
-        !searchPanelRef.current.contains(event.target)
-      ) {
-        setShowHeaderSearch(false);
-      }
-
       // Close company dropdown
       if (
         openCompanyDropdown &&
@@ -121,7 +120,6 @@ const Navbar = () => {
       }
     },
     [
-      showHeaderSearch,
       openCompanyDropdown,
       openMoreDropdown,
       openAuctionsDropdown,
@@ -295,42 +293,6 @@ const Navbar = () => {
 
   // Use the listings header style site-wide for visual consistency.
   const isListingsTheme = true;
-  const renderHeaderSearchToggle = () => (
-    <div
-      ref={searchPanelRef}
-      className={`hidden lg:block relative h-10 overflow-hidden transition-[width] duration-300 ease-out will-change-[width] ${
-        showHeaderSearch ? "w-[260px]" : "w-8"
-      }`}
-    >
-      <div
-        className={`absolute inset-0 transition-[opacity,transform] duration-300 ease-out ${
-          showHeaderSearch
-            ? "opacity-100 translate-x-0 pointer-events-auto"
-            : "opacity-0 translate-x-2 pointer-events-none"
-        }`}
-      >
-        <SearchBar compact placeholder="Search products" />
-      </div>
-      <button
-        type="button"
-        aria-label="Open search"
-        onClick={() => setShowHeaderSearch(true)}
-        className={`absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg border transition-[opacity,transform] duration-300 flex items-center justify-center ${
-          showHeaderSearch
-            ? "opacity-0 scale-95 pointer-events-none"
-            : "opacity-100 scale-100 pointer-events-auto"
-        } ${
-          isListingsTheme
-            ? "border-primary-500 text-primary-500 hover:bg-primary-50 bg-white"
-            : "border-white/70 text-white hover:bg-white/20"
-        }`}
-        title="Search"
-      >
-        <FiSearch size={14} />
-      </button>
-    </div>
-  );
-
   return (
     <>
       <nav
@@ -572,7 +534,9 @@ const Navbar = () => {
 
           {/* User Avatar / Login + Actions */}
           <div className="sello-auth-slot flex items-center gap-3 sm:gap-4 lg:gap-5 flex-shrink-0">
-            {renderHeaderSearchToggle()}
+            <button type="button" aria-label="Open search" aria-haspopup="dialog" onClick={() => setShowHeaderSearch(true)} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary-500 bg-white text-primary-500 hover:bg-primary-50 focus-visible:ring-2 focus-visible:ring-primary-500">
+              <FiSearch size={17} aria-hidden="true" />
+            </button>
 
             {/* Create Post Button (Desktop) */}
             <button
@@ -697,7 +661,9 @@ const Navbar = () => {
                   <FaXmark />
                 </button>
               </div>
-              <SearchBar />
+              <button type="button" aria-haspopup="dialog" className="flex w-full items-center gap-2 rounded-lg border border-slate-300 px-4 py-3 text-left text-sm font-semibold" onClick={() => { closeDrawer(); setShowHeaderSearch(true); }}>
+                <FiSearch aria-hidden="true" /> Search listings
+              </button>
             </div>
 
             <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 sm:px-6 pb-8 [-webkit-overflow-scrolling:touch]">
@@ -931,6 +897,7 @@ const Navbar = () => {
           </div>
         </div>
       )}
+      {showHeaderSearch && <HeaderSearch onClose={() => setShowHeaderSearch(false)} />}
     </>
   );
 };
