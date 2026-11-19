@@ -18,6 +18,19 @@ const Navbar = () => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const [showHeaderSearch, setShowHeaderSearch] = useState(false);
+  const [compactHeader, setCompactHeader] = useState(false);
+  useEffect(() => {
+    let previous;
+    const updateHeader = () => {
+      const compact = window.scrollY >= 80;
+      if (compact === previous) return;
+      previous = compact;
+      setCompactHeader(compact);
+    };
+    updateHeader();
+    window.addEventListener("scroll", updateHeader, { passive: true });
+    return () => window.removeEventListener("scroll", updateHeader);
+  }, []);
   useEffect(() => {
     const openSearch = (event) => {
       if (!(event.ctrlKey || event.metaKey) || event.altKey || event.key.toLowerCase() !== "k" || document.querySelector("dialog[open]")) return;
@@ -295,19 +308,23 @@ const Navbar = () => {
   const isListingsTheme = true;
   return (
     <>
+      {/* Reserve the expanded height so shrinking the bar does not move the page. */}
+      <div className="pointer-events-none sticky top-0 z-50 h-[57px] sm:h-[61px] md:h-[65px] lg:h-[69px]">
       <nav
-        className={`sello-site-nav w-full sticky top-0 z-50 border-b backdrop-blur-md ${
+        data-compact={compactHeader}
+        aria-label="Main navigation"
+        className={`sello-site-nav pointer-events-auto w-full border-b backdrop-blur-md transition-shadow duration-200 motion-reduce:transition-none ${compactHeader ? "shadow-sm" : ""} ${
           isListingsTheme
             ? "bg-white/95 text-gray-700 border-gray-200"
             : "bg-primary-500 text-white border-primary-400"
         }`}
       >
-        <div className="max-w-8xl mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8 py-2.5 flex items-center justify-between min-w-0 min-h-[52px] sm:min-h-[56px]">
+        <div className={`max-w-8xl mx-auto flex w-full min-w-0 items-center justify-between px-3 transition-[height] duration-200 ease-out motion-reduce:transition-none sm:px-4 md:px-6 xl:px-8 ${compactHeader ? "h-[50px] md:h-14" : "h-14 sm:h-[60px] md:h-16 lg:h-[68px]"}`}>
           <div className="flex items-center min-w-0 gap-4 xl:gap-6">
             {/* Logo */}
             <Link to="/" className="cursor-pointer flex-shrink-0">
               <img
-                className="h-9 sm:h-10 md:h-11 lg:h-12 w-auto"
+                className={`w-auto transition-[height] duration-200 ease-out motion-reduce:transition-none ${compactHeader ? "h-[34px] sm:h-[38px] md:h-10 lg:h-11" : "h-9 sm:h-10 md:h-11 lg:h-12"}`}
                 src={isListingsTheme ? images.blackLogo : images.logo}
                 width="120"
                 height="48"
@@ -318,9 +335,9 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Links (Centered) */}
-          <div className="hidden lg:flex flex-1 items-center justify-center px-4">
+          <div className="hidden lg:flex flex-1 items-center justify-center px-2 xl:px-4">
             <div
-              className={`flex items-center gap-3 xl:gap-4 text-sm lg:text-base ${
+              className={`flex items-center gap-1 xl:gap-4 text-sm xl:text-base ${
                 isListingsTheme ? "text-gray-600" : "text-white"
               }`}
             >
@@ -533,7 +550,7 @@ const Navbar = () => {
           </div>
 
           {/* User Avatar / Login + Actions */}
-          <div className="sello-auth-slot flex items-center gap-3 sm:gap-4 lg:gap-5 flex-shrink-0">
+          <div className={`sello-auth-slot flex shrink-0 items-center gap-2 transition-[gap] duration-200 motion-reduce:transition-none ${compactHeader ? "sm:gap-2 xl:gap-3" : "sm:gap-3 xl:gap-5"}`}>
             <button type="button" aria-label="Open search" aria-haspopup="dialog" onClick={() => setShowHeaderSearch(true)} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary-500 bg-white text-primary-500 hover:bg-primary-50 focus-visible:ring-2 focus-visible:ring-primary-500">
               <FiSearch size={17} aria-hidden="true" />
             </button>
@@ -542,7 +559,7 @@ const Navbar = () => {
             <button
               type="button"
               onClick={() => navigate("/create-post")}
-              className={`hidden sm:flex gap-1.5 sm:gap-2 items-center text-xs sm:text-sm px-3 py-2 rounded-lg border transition-colors duration-200 ${
+              className={`hidden sm:flex min-h-9 gap-1.5 sm:gap-2 items-center text-xs sm:text-sm rounded-lg border transition-[padding,background-color] duration-200 motion-reduce:transition-none ${compactHeader ? "px-2.5 py-1.5" : "px-3 py-2"} ${
                 isListingsTheme
                   ? "text-primary-500 border-primary-500 hover:bg-primary-50"
                   : "text-white border-white/70 hover:bg-white/20"
@@ -614,7 +631,7 @@ const Navbar = () => {
                 <button
                   type="button"
                   onClick={() => navigate("/login")}
-                  className="px-3 py-1.5 sm:px-3.5 sm:py-2 md:px-4 md:py-2 bg-primary-500 rounded-lg text-gray-950 font-bold text-xs sm:text-sm hover:opacity-90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2"
+                  className={`min-h-9 bg-primary-500 rounded-lg text-gray-950 font-bold text-xs sm:text-sm hover:opacity-90 transition-[padding,opacity] duration-200 motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${compactHeader ? "px-3 py-1.5" : "px-3 py-2 md:px-4"}`}
                 >
                   Login
                 </button>
@@ -638,6 +655,7 @@ const Navbar = () => {
           </div>
         </div>
       </nav>
+      </div>
 
       {/* Mobile Drawer */}
       {open && (
