@@ -114,6 +114,38 @@ const routeSeoConfigs = [
   { path: "/cars/:id", seo: listingDetailSeo },
   { path: "/car-details/:id", seo: listingDetailSeo },
   { path: "/fuel-prices", seo: fuelPricesSeo },
+  {
+    path: "/car-compare",
+    seo: {
+      title: "Compare Cars in Pakistan | Sello.pk",
+      description: "Compare car prices, specifications, performance, fuel economy, safety, and features side by side on Sello.pk.",
+      canonical: "https://sello.pk/compare",
+    },
+  },
+  {
+    path: "/compare/result",
+    seo: {
+      title: "Car Comparison Results | Sello.pk",
+      description: "Compare selected Sello catalogue models and versions side by side.",
+      canonical: "https://sello.pk/compare",
+    },
+  },
+  {
+    path: "/compare",
+    seo: {
+      title: "Compare Cars in Pakistan | Sello.pk",
+      description: "Compare car prices, specifications, mileage, features, and details side by side on Sello.pk.",
+      canonical: "https://sello.pk/compare",
+    },
+  },
+  {
+    path: "/compare/listings",
+    seo: {
+      title: "Compare Car Listings | Sello.pk",
+      description: "Compare asking prices, mileage, and details from individual Sello listings.",
+      canonical: "https://sello.pk/compare/listings",
+    },
+  },
   { path: "/car-loan-calculator", seo: CAR_LOAN_SEO },
   { path: "/petrol-prices", seo: fuelPricesSeo },
   { path: "/listings/:categorySlug/guide/:blogId", seo: guideSeo },

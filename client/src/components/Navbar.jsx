@@ -151,6 +151,7 @@ const Navbar = () => {
     { path: "/vehicle-verification", name: "Vehicle Verification" },
     { path: "/driving-licence", name: "Driving License" },
     { path: "/fuel-prices", name: "Fuel Prices" },
+    { path: "/compare", name: "Car Compare" },
     { path: "/car-loan-calculator", name: "Car Loan Calculator" },
   ];
   const publicAuctionLinks = [

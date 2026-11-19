@@ -299,6 +299,13 @@
     <priority>0.8</priority>
   </url>
 
+  <url>
+    <loc>https://sello.pk/compare</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- AUCTIONS -->
   <url>
     <loc>https://sello.pk/auctions</loc>

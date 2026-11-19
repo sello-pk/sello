@@ -45,6 +45,16 @@ const DrivingLicenceProvincePage = lazyImport(
     ),
 );
 const FuelPrices = lazyImport(() => import("../pages/FuelPrices.jsx"));
+const CarCompare = lazyImport(() => import("../pages/CarCompare.jsx"));
+const CarModelCompare = lazyImport(() => import("../pages/CarModelCompare.jsx"));
+
+function CompareEntry({ results = false }) {
+  const { search, hash } = useLocation();
+  if (!results && new URLSearchParams(search).has("ids")) {
+    return <Navigate to={{ pathname: "/compare/listings", search, hash }} replace />;
+  }
+  return <CarModelCompare results={results} />;
+}
 const CarLoanCalculator = lazyImport(() => import("../pages/CarLoanCalculator.jsx"));
 const OurPrivacyPolicy = lazyImport(() => import("../pages/ourPages/OurPrivacyPolicy.jsx"));
 const TermsCondition = lazyImport(() => import("../pages/ourPages/TermsCondition.jsx"));
@@ -134,6 +144,7 @@ const AdminUsers = lazyImport(() => import("../pages/admin/Users.jsx"));
 const AdminListings = lazyImport(() => import("../pages/admin/Listings.jsx"));
 const AdminDealers = lazyImport(() => import("../pages/admin/Dealers.jsx"));
 const AdminCategories = lazyImport(() => import("../pages/admin/Categories.jsx"));
+const CarCatalogAdmin = lazyImport(() => import("../pages/admin/CarCatalogAdmin.jsx"));
 const AdminValuations = lazyImport(() => import("../pages/admin/Valuations.jsx"));
 const AdminChatMonitoring = lazyImport(
   () => import("../pages/admin/ChatMonitoring.jsx"),
@@ -239,6 +250,11 @@ const AppRouter = () => {
           element={<DrivingLicenceProvincePage />}
         />
         <Route path="/fuel-prices" element={<FuelPrices />} />
+        <Route path="/compare" element={<CompareEntry />} />
+        <Route path="/compare/result" element={<CompareEntry results />} />
+        <Route path="/compare/listings" element={<CarCompare />} />
+        <Route path="/car-compare" element={<CompareEntry />} />
+        <Route path="/car-compare/result" element={<CompareEntry results />} />
         <Route path="/car-loan-calculator" element={<CarLoanCalculator />} />
         {/* Legacy URL: keep old links and indexed pages working. */}
         <Route
@@ -296,6 +312,7 @@ const AppRouter = () => {
           <Route path="/admin/valuations" element={<AdminValuations />} />
           <Route path="/admin/dealers" element={<AdminDealers />} />
           <Route path="/admin/categories" element={<AdminCategories />} />
+          <Route path="/admin/car-catalog" element={<CarCatalogAdmin />} />
           <Route path="/admin/blogs" element={<BlogsOverview />} />
           <Route path="/admin/blogs/categories" element={<BlogCategories />} />
           <Route path="/admin/blog-categories" element={<BlogCategories />} />

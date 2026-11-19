@@ -1,4 +1,6 @@
 import express from "express";
+import { catalogMakes, catalogModels, catalogVariants, catalogComparison, popularCatalogComparisons, resolveCatalogListing } from "../controllers/carCatalogController.js";
+import { getCarComparison } from "../controllers/carCompareController.js";
 import {
   createCar, deleteCar, editCar, getAllCars, getFilteredCars, getMyCars, getSingleCar, markCarAsSold, relistCar, getCarCountsByMake
 } from "../controllers/carController.js";
@@ -22,10 +24,18 @@ import { cache, cacheKeys, invalidateCache } from "../middlewares/cacheMiddlewar
 
 const router = express.Router();
 
+router.get("/car-catalog/makes", catalogMakes);
+router.get("/car-catalog/models", catalogModels);
+router.get("/car-catalog/variants", catalogVariants);
+router.get("/car-catalog/resolve", resolveCatalogListing);
+router.get("/car-catalog/compare", catalogComparison);
+router.get("/car-catalog/popular", popularCatalogComparisons);
+
 /* ---------------------------------- CARS ---------------------------------- */
 // Public
 router.get("/cars", cache(300, cacheKeys.carListings), getAllCars);
 router.get("/cars/filter", cache(300, cacheKeys.carListings), getFilteredCars);
+router.get("/cars/compare", getCarComparison);
 router.get("/cars/stats/counts-by-make", cache(1800, (req) => `cache:cars:stats:counts-by-make:${req.query?.vehicleType || "all"}`), getCarCountsByMake);
 router.get("/cars/:id", validateObjectId('id'), cache(600, cacheKeys.car), getSingleCar);
 

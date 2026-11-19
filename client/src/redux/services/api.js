@@ -837,6 +837,11 @@ export const api = createApi({
     }),
 
     // ✅ Get Single Car Endpoint
+    getCarComparison: builder.query({
+      query: (ids) => ({ url: "/cars/compare", params: { ids: ids.join(",") } }),
+      transformResponse: (response) => response.data.listings,
+      keepUnusedDataFor: 30,
+    }),
     getSingleCar: builder.query({
       query: (carId) => ({
         url: `/cars/${carId}`,
@@ -2102,6 +2107,7 @@ export const {
   useLogoutMutation,
   useGetCarsQuery,
   useGetSingleCarQuery,
+  useGetCarComparisonQuery,
   useGetCarCountsByMakeQuery,
   useCreateCarMutation,
   useGetFilteredCarsQuery,

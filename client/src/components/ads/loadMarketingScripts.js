@@ -32,6 +32,12 @@ export function isAnalyticsEnabled() {
   }
 }
 
+export function trackCompare(event, properties) {
+  if (isAnalyticsEnabled() && hasCookieConsent()) {
+    window.gtag?.("event", event, properties);
+  }
+}
+
 function injectScript(src, { id, crossOrigin } = {}) {
   if (id && document.getElementById(id)) return null;
   const s = document.createElement("script");

@@ -42,6 +42,7 @@ export const PERMISSION_ROUTE_ACCESS = {
     "createDealers",
     "deleteDealers",
   ],
+  "/admin/car-catalog": ["manageCategories"],
   "/admin/categories": [
     "viewCategories",
     "createCategories",

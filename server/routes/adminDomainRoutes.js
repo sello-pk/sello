@@ -1,4 +1,5 @@
 import express from "express";
+import { adminCatalogVariants, saveCatalogVariant, archiveCatalogVariant } from "../controllers/carCatalogController.js";
 import { auth, authorize } from "../middlewares/authMiddleware.js";
 import { hasPermission, hasAnyPermission } from "../middlewares/permissionMiddleware.js";
 import { upload } from "../middlewares/multer.js";
@@ -22,6 +23,10 @@ const router = express.Router();
 
 /* ---------------------------------- ADMIN --------------------------------- */
 router.use("/admin", auth, authorize("admin"));
+router.get("/admin/car-catalog/variants", hasPermission("manageCategories"), adminCatalogVariants);
+router.post("/admin/car-catalog/variants", hasPermission("manageCategories"), saveCatalogVariant);
+router.put("/admin/car-catalog/variants/:id", hasPermission("manageCategories"), saveCatalogVariant);
+router.delete("/admin/car-catalog/variants/:id", hasPermission("manageCategories"), archiveCatalogVariant);
 router.get(
   "/admin/dashboard",
   hasAnyPermission(

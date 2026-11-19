@@ -1,0 +1,90 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import Category from "../models/categoryModel.js";
+import Variant from "../models/carCatalogVariantModel.js";
+import { archiveCatalogVariant, catalogComparison, catalogMakes, catalogModels, catalogVariants, popularCatalogComparisons, parseCatalogTokens, resolveCatalogListing, saveCatalogVariant, validateCatalogVariant } from "../controllers/carCatalogController.js";
+const id = (n) => String(n).repeat(24);
+const date = "2025-01-01";
+const make = { _id: id(1), name: "Toyota" };
+const model = { _id: id(2), name: "Corolla", parentCategory: make._id };
+const first = { _id: id(3), modelId: model._id, name: "Altis 1.6", comparisonGroup: "Altis versions", specifications: { engineCapacityCc: 1600 } };
+const second = { _id: id(4), modelId: model._id, name: "Altis 1.8", comparisonGroup: "Altis versions", specifications: { engineCapacityCc: 1800 } };
+const query = (result) => ({ select(){return this}, sort(){return this}, limit(){return this}, async lean(){return result} });
+const response = () => ({ code:200, status(value){this.code=value;return this}, json(value){this.body=value;return this} });
+test("validates the number, kind and uniqueness of comparison tokens", () => {
+  assert.deepEqual(parseCatalogTokens(`v-${id(3)},v-${id(4)}`), [`v-${id(3)}`,`v-${id(4)}`]);
+  for (const input of [{}, "", `v-${id(3)}`, `v-${id(3)},v-${id(3)}`, `v-${id(3)},m-${id(4)},v-${id(5)},v-${id(6)}`]) assert.equal(parseCatalogTokens(input),null);
+});
+test("requires a source, validates prices and accepts an unpublished record without prices", async () => {
+  const input = { modelId: model._id, name: first.name, verifiedAt: date, sourceUrl: "https://example.test/spec", published: false, features: { abs: "standard" } };
+  const data = validateCatalogVariant(input);
+  assert.equal(data.price, null);
+  await new Variant(data).validate();
+  assert.throws(() => validateCatalogVariant({ ...input, sourceUrl: "javascript:alert(1)" }));
+  assert.throws(() => validateCatalogVariant({ ...input, features: { abs: false } }));
+  assert.throws(() => validateCatalogVariant({ ...input, specifications: { engineCapacityCc: "1.6 L" } }));
+  assert.throws(() => validateCatalogVariant({ ...input, price: { amount: 100, type: "manufacturer" } }));
+});
+
+test("listing preselection requires an exact unambiguous version and model year", async (context) => {
+  context.mock.method(Category, "find", (filter) => query(filter.subType === "make" ? [make] : [model]));
+  const fixtures = [[first], [first, second]];
+  const find = context.mock.method(Variant, "find", () => query(fixtures.shift()));
+  const req = { query: { make: "Toyota", model: "Corolla", variant: "Altis 1.6", year: "2025" } };
+  const matched = response();
+  await resolveCatalogListing(req, matched);
+  assert.equal(matched.body.data.variant._id, first._id);
+  assert.equal(find.mock.calls[0].arguments[0].year, 2025);
+  assert.equal(find.mock.calls[0].arguments[0].name.$regex, "^Altis 1\\.6$");
+  const ambiguous = response();
+  await resolveCatalogListing(req, ambiguous);
+  assert.equal(ambiguous.body.data.variant, null);
+});
+
+test("admin saves sourced versions and archives without deleting the record", async (context) => {
+  context.mock.method(Category, "findOne", () => query(model));
+  context.mock.method(Category, "exists", async () => true);
+  const create = context.mock.method(Variant, "create", async (body) => ({ ...body, _id: first._id }));
+  const update = context.mock.method(Variant, "findByIdAndUpdate", async (_id, fields) => ({ ...fields, _id: first._id }));
+  const body = { modelId: model._id, name: first.name, verifiedAt: date, sourceUrl: "https://example.test/spec", published: true };
+  const created = response();
+  await saveCatalogVariant({ params: {}, body }, created);
+  assert.equal(create.mock.callCount(), 1);
+  assert.equal(created.body.data.published, true);
+  const archived = response();
+  await archiveCatalogVariant({ params: { id: first._id } }, archived);
+  assert.deepEqual(update.mock.calls[0].arguments[1], { published: false });
+  assert.equal(archived.body.data.id, first._id);
+});
+test("selects active categories and published versions with bounded search", async (context) => {
+  const find = context.mock.method(Category,"find",(filter)=>query(filter.subType==="make"?[make]:[model]));
+  context.mock.method(Category,"findOne",()=>query(model));
+  context.mock.method(Category,"exists",async()=>true);
+  const variants=context.mock.method(Variant,"find",()=>query([first,second]));
+  let res=response();
+  await catalogMakes({query:{q:"Toy."}},res);
+  assert.equal(res.body.data[0].name,"Toyota");
+  assert.equal(find.mock.calls[0].arguments[0].name.$regex,"^Toy\\.");
+  res=response();
+  await catalogModels({query:{makeId:make._id}},res);
+  assert.equal(find.mock.calls[1].arguments[0].parentCategory,make._id);
+  res=response();
+  await catalogVariants({query:{modelId:model._id}},res);
+  assert.equal(res.body.data.length,2);
+  assert.deepEqual(variants.mock.calls[0].arguments[0],{modelId:model._id,published:true});
+  res=response();
+  await catalogModels({query:{makeId:{$ne:null}}},res);
+  assert.equal(res.code,400);
+});
+test("compares two versions of the same model, preserves order and represents missing records", async (context) => {
+  context.mock.method(Category,"find",(filter)=>query(filter.subType==="make"?[make]:[model]));
+  const find=context.mock.method(Variant,"find",()=>query([first,second]));
+  const res=response();
+  await catalogComparison({query:{vehicles:`v-${id(4)},v-${id(3)},v-${id(5)}`}},res);
+  assert.deepEqual(res.body.data.map((value)=>value.variant?.name),["Altis 1.8","Altis 1.6",undefined]);
+  assert.equal(res.body.data[2].unavailable,true);
+  assert.equal(find.mock.calls[0].arguments[0].published,true);
+  const curated=response();
+  await popularCatalogComparisons({},curated);
+  assert.equal(curated.body.data[0].vehicles.length,2);
+});

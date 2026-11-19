@@ -59,8 +59,8 @@ const CarDetails = () => {
     const isLegacyDetails = location.pathname.startsWith("/car-details/");
     const isCarsPath = location.pathname.startsWith("/cars/");
     if (!isLegacyDetails && !isCarsPath) return;
-    navigate(`${canonicalPath}${location.search || ""}`, { replace: true });
-  }, [car, location.pathname, location.search, navigate]);
+    navigate(`${canonicalPath}${location.search || ""}${location.hash || ""}`, { replace: true });
+  }, [car, location.pathname, location.search, location.hash, navigate]);
 
   useEffect(() => {
     if (!car?._id) return;

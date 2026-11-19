@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { CompareCarButton } from "../../common/CompareCarButton.jsx";
 import {
   useGetSingleCarQuery,
   useGetMeQuery,
@@ -25,12 +26,20 @@ import { trackContact } from "../../../utils/metaPixel.js";
 
 const Btns = () => {
   const navigate = useNavigate();
+  const { hash } = useLocation();
   const { id: routeParam } = useParams();
   const extractedCarId = extractCarIdFromSlug(routeParam);
   const token = localStorage.getItem("token");
   const { data: car } = useGetSingleCarQuery(extractedCarId, {
     skip: !extractedCarId,
   });
+  useEffect(() => {
+    if (!car || hash !== "#seller-actions") return undefined;
+    const frame = requestAnimationFrame(() => {
+      document.getElementById("seller-actions")?.scrollIntoView({ block: "start" });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [car, hash]);
   const { data: currentUser } = useGetMeQuery(undefined, { skip: !token });
   const { data: savedCarsData } = useGetSavedCarsQuery(undefined, {
     skip: !currentUser || !token,
@@ -152,7 +161,7 @@ const Btns = () => {
 
   return (
     <>
-      <div className="px-3 sm:px-4 md:px-8 lg:px-20 py-6 bg-[#F9FAFB] border-b border-gray-200 w-full min-w-0 max-w-full">
+      <div id="seller-actions" className="scroll-mt-24 px-3 sm:px-4 md:px-8 lg:px-20 py-6 bg-[#F9FAFB] border-b border-gray-200 w-full min-w-0 max-w-full">
         <div className="flex flex-col gap-4 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between w-full min-w-0">
           {/* Left Side - Action Buttons */}
           <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4 items-center min-w-0">
@@ -221,6 +230,7 @@ const Btns = () => {
               <FaShareAlt />
               Share
             </button>
+            <CompareCarButton car={car} source="listing_detail" />
           </div>
 
           {/* Right Side - Status & Report */}

@@ -38,6 +38,8 @@ const PRIVATE_PATH_PATTERNS = [
   // Query-param auction detail/compare — not stable SEO URLs (use hub + live instead)
   /^\/auctions\/car-detail\/?$/,
   /^\/auctions\/compare\/?$/,
+  /^\/compare\/(result|listings)\/?$/i,
+  /^\/car-compare(?:\/result)?\/?$/i,
 ];
 
 /**

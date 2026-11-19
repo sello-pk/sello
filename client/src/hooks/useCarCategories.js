@@ -5,7 +5,7 @@ import { useGetAllCategoriesQuery } from "../redux/services/adminApi";
  * Custom hook to fetch and organize car categories (makes, models, years, countries, cities)
  * @param {string} vehicleType - Optional vehicle type filter (Car, Bus, Truck, Van, Bike, E-bike)
  */
-export const useCarCategories = (vehicleType = null) => {
+export const useCarCategories = (vehicleType = null, { includeYearsAndLocations = true } = {}) => {
   // Build query params
   const carQueryParams = {
     type: "car",
@@ -16,14 +16,12 @@ export const useCarCategories = (vehicleType = null) => {
   }
 
   // Execute all queries in parallel for better performance
-  const {
-    data: allCarCategories,
-    isLoading: carLoading,
-  } = useGetAllCategoriesQuery(carQueryParams, {
+  const carCategoriesQuery = useGetAllCategoriesQuery(carQueryParams, {
     // Align with adminApi defaults — avoids waterfall refetches when Hero + BrandMarquee
     // (and other mounts) subscribe; subscribers still fetch in parallel on cold cache.
     refetchOnMountOrArgChange: false,
   });
+  const { data: allCarCategories, isLoading: carLoading } = carCategoriesQuery;
 
   const {
     data: yearCategories,
@@ -36,6 +34,7 @@ export const useCarCategories = (vehicleType = null) => {
     },
     {
       refetchOnMountOrArgChange: false,
+      skip: !includeYearsAndLocations,
     },
   );
 
@@ -49,6 +48,7 @@ export const useCarCategories = (vehicleType = null) => {
     },
     {
       refetchOnMountOrArgChange: false,
+      skip: !includeYearsAndLocations,
     },
   );
 
@@ -312,5 +312,6 @@ export const useCarCategories = (vehicleType = null) => {
     isLoading,
     /** True only while car make/model categories are loading (not years/locations) */
     isCarCategoriesLoading: carLoading,
+    carCategoriesQuery,
   };
 };
