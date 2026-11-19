@@ -223,6 +223,8 @@ const AppRouter = () => {
           element={<GenericVehicleCategoryPage />}
         />
         <Route path="/cars" element={<CarListings />} />
+        <Route path="/cars/compare" element={<CompareEntry />} />
+        <Route path="/cars/compare/:comparison" element={<CompareEntry results />} />
         <Route path="/car-details/:id" element={<CarDetails />} />
         <Route path="/cars/:id" element={<CarDetails />} />
         <Route path="/filter" element={<FilterPage />} />

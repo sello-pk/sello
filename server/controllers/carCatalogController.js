@@ -43,10 +43,24 @@ export const catalogModels = handle(async (req, res) => {
 });
 
 export const catalogVariants = handle(async (req, res) => {
-  const { modelId, q } = req.query;
+  const { modelId, q, year } = req.query;
   await activeModel(modelId);
-  return ok(res, await Variant.find({ modelId, published: true, ...search(q) }).select("_id name year generation").sort({ name: 1, year: -1, _id: 1 }).limit(limit).lean());
+  if (year !== undefined && !/^\d{4}$/.test(year)) fail("Choose a valid model year.");
+  return ok(res, await Variant.find({ modelId, published: true, ...search(q), ...(year ? { year: Number(year) } : {}) }).select("_id name year generation").sort({ name: 1, year: -1, _id: 1 }).limit(limit).lean());
 });
+
+export const catalogYears = handle(async (req, res) => {
+  const model = await activeModel(req.query.modelId);
+  const years = await Variant.distinct("year", { modelId: model._id, published: true, year: { $ne: null } });
+  return ok(res, years.filter(Number.isInteger).sort((a, b) => b - a));
+});
+
+function hideSources(entry) {
+  if (!entry.variant) return entry;
+  const { sourceUrl: _source, price, ...variant } = entry.variant;
+  const { sourceUrl: _priceSource, ...publicPrice } = price || {};
+  return { ...entry, variant: { ...variant, price: price ? publicPrice : null } };
+}
 
 export function parseCatalogTokens(value) {
   if (typeof value !== "string" || value.length > 80) return null;
@@ -56,7 +70,7 @@ export function parseCatalogTokens(value) {
     new Set(tokens).size === tokens.length ? tokens : null;
 }
 
-async function resolveVehicles(tokens, knownVariants) {
+export async function resolveVehicles(tokens, knownVariants) {
   const variantIds = tokens.filter((token) => token.startsWith("v-")).map((token) => token.slice(2));
   const variants = knownVariants ?? await Variant.find({ _id: { $in: variantIds }, published: true }).select(variantFields).lean();
   const modelIds = [...tokens.filter((token) => token.startsWith("m-")).map((token) => token.slice(2)), ...variants.map((variant) => variant.modelId)];
@@ -79,7 +93,7 @@ async function resolveVehicles(tokens, knownVariants) {
 export const catalogComparison = handle(async (req, res) => {
   const tokens = parseCatalogTokens(req.query.vehicles);
   if (!tokens) fail("Choose two or three distinct models or versions.");
-  return ok(res, await resolveVehicles(tokens));
+  return ok(res, (await resolveVehicles(tokens)).map(hideSources));
 });
 
 export const resolveCatalogListing = handle(async (req, res) => {
@@ -109,7 +123,7 @@ export const popularCatalogComparisons = handle(async (_req, res) => {
     if (members.length < 3) members.push(entry);
     groups.set(group, members);
   }
-  return ok(res, [...groups].filter(([, members]) => members.length >= 2).slice(0, 8).map(([name, vehicles]) => ({ name, vehicles })));
+  return ok(res, [...groups].filter(([, members]) => members.length >= 2).slice(0, 8).map(([name, vehicles]) => ({ name, vehicles: vehicles.map(hideSources) })));
 });
 
 const requiredText = (value, max, label) => {
@@ -160,11 +174,12 @@ export function validateCatalogVariant(body) {
     price: null,
   };
   if (body.price != null) {
-    const { amount, upperAmount, type, sourceUrl, verifiedAt } = body.price;
+    const { amount, upperAmount, type, sourceUrl, verifiedAt, effectiveDate } = body.price;
     if (!Number.isFinite(amount) || amount <= 0 || amount > 1e9 ||
         (upperAmount != null && (!Number.isFinite(upperAmount) || upperAmount < amount || upperAmount > 1e9)) ||
-        !["manufacturer", "dealer", "sello_new"].includes(type)) fail("Enter a valid sourced PKR price.");
+        !["manufacturer", "ex_factory", "dealer", "sello_new"].includes(type)) fail("Enter a valid sourced PKR price.");
     result.price = { amount, upperAmount, type, sourceUrl: url(sourceUrl), verifiedAt: date(verifiedAt) };
+    if (effectiveDate) result.price.effectiveDate = date(effectiveDate);
   }
   return result;
 }

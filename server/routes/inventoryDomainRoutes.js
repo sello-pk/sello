@@ -1,5 +1,7 @@
 import express from "express";
-import { catalogMakes, catalogModels, catalogVariants, catalogComparison, popularCatalogComparisons, resolveCatalogListing } from "../controllers/carCatalogController.js";
+import rateLimit from "express-rate-limit";
+import { getComparisonOverlay, getComparisonSettings, getBuyingRecommendation } from "../controllers/carCompareExperienceController.js";
+import { catalogMakes, catalogModels, catalogVariants, catalogYears, catalogComparison, popularCatalogComparisons, resolveCatalogListing } from "../controllers/carCatalogController.js";
 import { getCarComparison } from "../controllers/carCompareController.js";
 import {
   createCar, deleteCar, editCar, getAllCars, getFilteredCars, getMyCars, getSingleCar, markCarAsSold, relistCar, getCarCountsByMake
@@ -23,13 +25,18 @@ import { validateObjectId } from "../middlewares/validationMiddleware.js";
 import { cache, cacheKeys, invalidateCache } from "../middlewares/cacheMiddleware.js";
 
 const router = express.Router();
+const compareAiLimit = rateLimit({ windowMs: 60000, max: 12, standardHeaders: true, legacyHeaders: false });
 
 router.get("/car-catalog/makes", catalogMakes);
 router.get("/car-catalog/models", catalogModels);
 router.get("/car-catalog/variants", catalogVariants);
+router.get("/car-catalog/years", catalogYears);
 router.get("/car-catalog/resolve", resolveCatalogListing);
 router.get("/car-catalog/compare", catalogComparison);
 router.get("/car-catalog/popular", popularCatalogComparisons);
+router.get("/car-catalog/experience", getComparisonSettings);
+router.get("/car-catalog/overlay", (req, res, next) => req.query.research === "true" ? compareAiLimit(req, res, next) : next(), getComparisonOverlay);
+router.post("/car-catalog/recommendation", compareAiLimit, getBuyingRecommendation);
 
 /* ---------------------------------- CARS ---------------------------------- */
 // Public

@@ -40,6 +40,7 @@ const PRIVATE_PATH_PATTERNS = [
   /^\/auctions\/compare\/?$/,
   /^\/compare\/(result|listings)\/?$/i,
   /^\/car-compare(?:\/result)?\/?$/i,
+  /^\/cars\/compare\/.+/i,
 ];
 
 /**

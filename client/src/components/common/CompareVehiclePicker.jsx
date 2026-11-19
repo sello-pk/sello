@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, ChevronRight, X } from "lucide-react";
-import { useCatalogVariantsQuery } from "../../redux/services/carCatalogApi.js";
-import { versionLabel, withMake, withModel } from "../../utils/carCatalog.js";
+import { useCatalogVariantsQuery, useCatalogYearsQuery } from "../../redux/services/carCatalogApi.js";
+import { pickerSelection, versionLabel, withMake, withModel } from "../../utils/carCatalog.js";
 
 const control = "rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-primary-500";
 
-function PickerStep({ title, visible, entries, selected, disabledText, query, getLabel, onSelect }) {
+function PickerStep({ title, visible, entries, selected, disabledText, query, getLabel, onSelect, children }) {
   const [search, setSearch] = useState("");
   const heading = useRef(null);
   const term = search.trim().toLowerCase();
@@ -17,13 +17,12 @@ function PickerStep({ title, visible, entries, selected, disabledText, query, ge
   }, [visible]);
   return (
     <section className={`${visible ? "flex" : "hidden"} min-h-0 min-w-0 flex-col p-4 md:flex`}>
-      <h3 ref={heading} tabIndex={-1} className="mb-2 font-bold">{title}{title === "Version" && <span className="ml-2 text-xs font-normal text-slate-600">Optional</span>}</h3>
+      <h3 ref={heading} tabIndex={-1} className="mb-2 font-bold">{title}</h3>
+      {children}
       {disabledText ? <p className="text-sm text-slate-600">{disabledText}</p> : <>
         <input className={`${control} mb-2 w-full font-normal`} aria-label={`Search ${title.toLowerCase()}`} placeholder="Search…" value={search} onChange={(event) => setSearch(event.target.value)} />
         {query.isLoading && <p role="status" className="py-2 text-sm">Loading…</p>}
-        {query.isError && (query.error?.status === 404 && title === "Version" ? (
-          <p className="py-2 text-sm text-slate-600">Version data is unavailable. You can save without a version.</p>
-        ) : <button type="button" className="self-start py-2 text-sm font-semibold underline" onClick={query.refetch}>Retry loading {title.toLowerCase()} options</button>)}
+        {query.isError && <button type="button" className="self-start py-2 text-sm font-semibold underline" onClick={query.refetch}>Retry loading {title.toLowerCase()} options</button>}
         {!query.isFetching && !query.isError && !shown.length && <p className="py-2 text-sm text-slate-600">{search ? "No matches." : title === "Version" ? "No published versions." : "No options available."}</p>}
         <ul className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
           {shown.map((entry) => (
@@ -43,10 +42,14 @@ function PickerStep({ title, visible, entries, selected, disabledText, query, ge
 export default function CompareVehiclePicker({ value, onSave, onClose, vehicleCategories }) {
   const dialog = useRef(null);
   const [draft, setDraft] = useState(value);
+  const [year, setYear] = useState(value.variant?.year || "");
   const [step, setStep] = useState(value.model ? 2 : value.make ? 1 : 0);
   const { makes, getModelsByMake, carCategoriesQuery: categories } = vehicleCategories;
-  const variants = useCatalogVariantsQuery({ modelId: draft.model?._id }, { skip: !draft.model });
+  const years = useCatalogYearsQuery(draft.model?._id, { skip: !draft.model });
+  const variants = useCatalogVariantsQuery({ modelId: draft.model?._id, year }, { skip: !draft.model });
   const models = getModelsByMake[draft.make?._id] || [];
+  const selection = pickerSelection(draft, variants.isError || (year && !variants.currentData?.length) ? undefined : variants.currentData);
+  const modelOnly = selection && !selection.variant;
 
   useEffect(() => {
     const element = dialog.current;
@@ -67,13 +70,20 @@ export default function CompareVehiclePicker({ value, onSave, onClose, vehicleCa
           ))}
         </div>
         <div className="grid h-[min(25rem,55dvh)] min-h-0 md:grid-cols-3 md:divide-x md:divide-slate-200">
-          <PickerStep title="Make" visible={step === 0} entries={makes} selected={draft.make} query={categories} getLabel={(entry) => entry.name} onSelect={(make) => { if (make._id !== draft.make?._id) setDraft(withMake(make)); setStep(1); }} />
-          <PickerStep key={draft.make?._id ?? "model"} title="Model" visible={step === 1} entries={models} selected={draft.model} disabledText={!draft.make && "Choose a make first."} query={categories} getLabel={(entry) => entry.name} onSelect={(model) => { if (model._id !== draft.model?._id) setDraft(withModel(draft, model)); setStep(2); }} />
-          <PickerStep key={draft.model?._id ?? "version"} title="Version" visible={step === 2} entries={variants.currentData || []} selected={draft.variant} disabledText={!draft.model && "Choose a model first."} query={variants} getLabel={versionLabel} onSelect={(variant) => setDraft({ ...draft, variant: variant._id === draft.variant?._id ? null : variant })} />
+          <PickerStep title="Make" visible={step === 0} entries={makes} selected={draft.make} query={categories} getLabel={(entry) => entry.name} onSelect={(make) => { if (make._id !== draft.make?._id) { setDraft(withMake(make)); setYear(""); } setStep(1); }} />
+          <PickerStep key={draft.make?._id ?? "model"} title="Model" visible={step === 1} entries={models} selected={draft.model} disabledText={!draft.make && "Choose a make first."} query={categories} getLabel={(entry) => entry.name} onSelect={(model) => { if (model._id !== draft.model?._id) { setDraft(withModel(draft, model)); setYear(""); } setStep(2); }} />
+          <PickerStep key={draft.model?._id ?? "version"} title="Version" visible={step === 2} entries={variants.currentData || []} selected={selection?.variant} disabledText={!draft.model && "Choose a model first."} query={variants} getLabel={versionLabel} onSelect={(variant) => setDraft({ ...draft, variant })}>
+            {years.currentData?.length > 0 && <label className="mb-2 grid gap-1 text-sm">Model year
+              <select value={year} className={control} onChange={(event) => { setYear(event.target.value); setDraft({ ...draft, variant: null }); }}>
+                <option value="">All years</option>
+                {years.currentData.map((year) => <option key={year} value={year}>{year}</option>)}
+              </select>
+            </label>}
+          </PickerStep>
         </div>
         <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 p-4">
-          <p className="text-sm text-slate-600">{[draft.make?.name, draft.model?.name, draft.variant?.name].filter(Boolean).join(" · ") || "Version is optional"}</p>
-          <button type="button" className={`${control} bg-primary-500 text-slate-950 disabled:opacity-50`} disabled={!draft.model} onClick={() => onSave(draft)}>Done</button>
+          <p role="status" className="text-sm text-slate-600">{modelOnly ? "Only the model name is available. Prices and specifications require a published version." : selection?.variant ? [draft.make.name, draft.model.name, versionLabel(selection.variant)].join(" · ") : draft.model ? (variants.isFetching ? "Loading published versions…" : "Choose a version to compare.") : "Choose a make and model."}</p>
+          <button type="button" className={`${control} bg-primary-500 text-slate-950 disabled:opacity-50`} disabled={!selection} onClick={() => onSave(selection)}>{modelOnly ? "Use model only" : "Done"}</button>
         </footer>
       </div>
     </dialog>

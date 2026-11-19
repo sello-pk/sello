@@ -8,6 +8,7 @@ const priceSchema = new mongoose.Schema({
   amount: Number,
   upperAmount: Number,
   type: String,
+  effectiveDate: Date,
   ...source,
 }, { _id: false });
 

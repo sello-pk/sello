@@ -1,4 +1,5 @@
 import { corePageSeo } from "../src/utils/corePageSeo.js";
+import { getRouteSeo } from "../src/utils/routeSeo.js";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -107,6 +108,7 @@ const TERMS_COMMON = {
 };
 
 const STATIC_META = {
+  "/cars/compare": getRouteSeo("/cars/compare"),
   "/about": corePageSeo.about,
   "/contact": corePageSeo.contact,
   "/privacy-policy": PRIVACY_TERMS_COMMON,
@@ -287,6 +289,7 @@ function buildRoutes({ entry, categories, listData, blogsBySlug, relatedDataBySl
   const routes = [];
   for (const routePath of [
     "/about",
+    "/cars/compare",
     "/contact",
     "/privacy-policy",
     "/terms-condition",

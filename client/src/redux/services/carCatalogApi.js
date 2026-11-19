@@ -20,10 +20,9 @@ function fromCategories(select) {
   };
 }
 
-function withCategoryFallback(query, fallback, useCategories = () => false) {
+function withCategoryFallback(query, fallback) {
   const readCategories = fromCategories(fallback);
   return async (arg, context, _options, baseQuery) => {
-    if (useCategories(arg)) return readCategories(arg, context);
     const result = await baseQuery(query(arg));
     if (!result.error) return { data: result.data.data };
     if (result.error.status === 404 || result.error.originalStatus === 404) return readCategories(arg, context);
@@ -43,6 +42,13 @@ function modelEntry(cars, model) {
 
 const activate = api.enhanceEndpoints({ addTagTypes: ["CarCatalogue"] }).injectEndpoints({
   endpoints: (builder) => ({
+    compareExperience: builder.query({ query: () => "/car-catalog/experience", transformResponse: (response) => response.data, providesTags: ["CarCatalogue"] }),
+    compareOverlay: builder.query({ query: (params) => ({ url: "/car-catalog/overlay", params }), transformResponse: (response) => response.data, providesTags: ["CarCatalogue"], keepUnusedDataFor: 30 }),
+    compareRecommendation: builder.mutation({ query: (body) => ({ url: "/car-catalog/recommendation", method: "POST", body }), transformResponse: (response) => response.data }),
+    compareReviews: builder.query({ query: (params) => ({ url: "/admin/car-compare/reviews", params }), transformResponse: (response) => response.data, providesTags: ["CarCatalogue"] }),
+    saveCompareReview: builder.mutation({ query: ({ id, ...body }) => ({ url: `/admin/car-compare/reviews/${id}`, method: "POST", body }), invalidatesTags: ["CarCatalogue"] }),
+    saveCompareExperience: builder.mutation({ query: (body) => ({ url: "/admin/car-compare/settings", method: "PUT", body }), invalidatesTags: ["CarCatalogue"] }),
+    uploadCompareImage: builder.mutation({ query: (body) => ({ url: "/admin/car-compare/images", method: "POST", body }) }),
     catalogMakes: builder.query({
       queryFn: fromCategories(
         (cars, q) => sortAndSearch(cars.filter((entry) => entry.subType === "make"), q),
@@ -53,7 +59,8 @@ const activate = api.enhanceEndpoints({ addTagTypes: ["CarCatalogue"] }).injectE
         (cars, { makeId, q }) => sortAndSearch(cars.filter((entry) => entry.subType === "model" && entry.parentCategory === makeId), q),
       ),
     }),
-    catalogVariants: builder.query({ query: ({ modelId, q = "" }) => ({ url: "/car-catalog/variants", params: { modelId, q } }), transformResponse: (response) => response.data, providesTags: ["CarCatalogue"] }),
+    catalogVariants: builder.query({ query: ({ modelId, q = "", year }) => ({ url: "/car-catalog/variants", params: { modelId, q, ...(year ? { year } : {}) } }), transformResponse: (response) => response.data, providesTags: ["CarCatalogue"] }),
+    catalogYears: builder.query({ query: (modelId) => ({ url: "/car-catalog/years", params: { modelId } }), transformResponse: (response) => response.data, providesTags: ["CarCatalogue"] }),
     catalogComparison: builder.query({
       queryFn: withCategoryFallback(
         (vehicles) => ({ url: "/car-catalog/compare", params: { vehicles } }),
@@ -62,7 +69,6 @@ const activate = api.enhanceEndpoints({ addTagTypes: ["CarCatalogue"] }).injectE
           const model = cars.find((entry) => entry.subType === "model" && entry._id === token.slice(2));
           return modelEntry(cars, model) || { token, unavailable: true };
         }),
-        (vehicles) => (parseCatalogSelection(vehicles) || []).every((token) => token.startsWith("m-")),
       ),
       keepUnusedDataFor: 20,
       providesTags: ["CarCatalogue"],
@@ -98,5 +104,7 @@ const activate = api.enhanceEndpoints({ addTagTypes: ["CarCatalogue"] }).injectE
     }),
   }),
 });
+
+export const { useCompareExperienceQuery, useCompareOverlayQuery, useCompareRecommendationMutation, useCompareReviewsQuery, useSaveCompareReviewMutation, useSaveCompareExperienceMutation, useCatalogYearsQuery, useUploadCompareImageMutation } = activate;
 
 export const { useCatalogMakesQuery, useCatalogModelsQuery, useCatalogVariantsQuery, useCatalogComparisonQuery, usePopularCatalogComparisonsQuery, useResolveCatalogListingQuery, useAdminCatalogVariantsQuery, useSaveCatalogVariantMutation, useArchiveCatalogVariantMutation } = activate;
