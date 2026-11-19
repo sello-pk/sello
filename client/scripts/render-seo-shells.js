@@ -1,3 +1,4 @@
+import { corePageSeo } from "../src/utils/corePageSeo.js";
 /**
  * Build-time SEO shells for money pages that stay SPA at runtime.
  *
@@ -213,12 +214,7 @@ async function mapLimit(items, limit, worker) {
 }
 
 const LISTING_HUBS = [
-  {
-    path: "/listings",
-    title: "Buy and Sell Cars in Pakistan | Trusted Brands – Sello.pk",
-    description:
-      "Buy and sell cars in Pakistan with confidence. Explore premium brands, compare models, and connect with trusted sellers on Sello.pk.",
-  },
+  { path: "/listings", ...corePageSeo.listings },
   {
     path: "/listings/cars",
     title: "Cars for Sale in Pakistan | Used & New Cars - Sello.pk",
@@ -243,24 +239,14 @@ const LISTING_HUBS = [
     description:
       "Explore car brands available on Sello.pk and jump to make and model listings across Pakistan.",
   },
-  {
-    path: "/car-estimator",
-    title: "AI Car Estimator - Find Your Car's Real Value | Sello.pk",
-    description:
-      "Get instant AI-powered car valuations for Pakistani market. Estimate your car's price based on make, model, year, condition, and location.",
-  },
+  { path: "/car-estimator", ...corePageSeo.estimator },
   {
     path: "/auctions",
     title: "Bid & Win Deals – Live Car Auctions | Sello.pk",
     description:
       "Join Sello.pk live car auctions. Browse upcoming lots, learn how bidding works, and win vehicles at competitive prices in Pakistan.",
   },
-  {
-    path: "/auctions/live",
-    title: "Live Car Auction | Bid Now on Sello.pk",
-    description:
-      "Watch and bid on live vehicle auctions on Sello.pk. Real-time bidding for cars across Pakistan.",
-  },
+  { path: "/auctions/live", ...corePageSeo.liveAuction },
   {
     path: "/auctions/schedule",
     title: "Auction Schedule | Upcoming Car Auctions - Sello.pk",
@@ -304,8 +290,7 @@ const CITY_SLUGS = [
   "attock",
 ];
 
-function writeLandingShell({ path: routePath, title, description, noscriptExtra = "" }) {
-  const canonical = `${SITE_URL}${routePath}`;
+function writeLandingShell({ path: routePath, title, description, keywords, canonical = `${SITE_URL}${routePath}`, noscriptExtra = "" }) {
   const collection = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
@@ -324,7 +309,7 @@ function writeLandingShell({ path: routePath, title, description, noscriptExtra 
   };
 
   writeShell(routePath, (html) => {
-    let out = applyPageHead(html, { title, description, canonical });
+    let out = applyPageHead(html, { title, description, canonical, keywords });
     out = injectScript(
       out,
       "application/ld+json",
@@ -490,16 +475,13 @@ function writeMissingRouteShells() {
 }
 
 function writeHomeShell() {
-  const title = "Car for Sale in Pakistan | Buy & Sell Used Cars – Sello.pk";
-  const description =
-    "Find the best car for sale in Pakistan on Sello.pk. Buy or sell used cars in Karachi, Lahore, Islamabad & beyond with verified sellers and fair pricing.";
-  const canonical = `${SITE_URL}/`;
+  const { title, description, canonical, keywords } = corePageSeo.home;
   // Patch dist/index.html in place (path "/" → dist/index.html).
   // keepHeroPreloads: homepage owns the LCP image preloads from render-static.
   writeShell(
     "/",
     (html) => {
-      let out = applyPageHead(html, { title, description, canonical });
+      let out = applyPageHead(html, { title, description, canonical, keywords });
       out = injectNoscriptBlock(
         out,
         `      <h1>Buy and Sell Used Cars in Pakistan – Sello.pk</h1>

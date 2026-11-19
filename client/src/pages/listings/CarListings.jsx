@@ -1,3 +1,4 @@
+import { corePageSeo } from "../../utils/corePageSeo.js";
 import React from "react";
 import { ShieldCheck, SlidersHorizontal, MapPin } from "lucide-react";
 import GetAllCarsSection from "../../components/sections/listings/GetAllCarsSection";
@@ -10,24 +11,10 @@ import { AdSenseSlot } from "../../components/ads";
 
 import { images } from "../../assets/assets.js";
 
-const LISTINGS_SEO = {
-  title: "Cars for Sale in Pakistan | Browse Used & New Cars – Sello.pk",
-  description:
-    "Browse cars for sale in Pakistan on Sello.pk. Filter used and new cars by make, model, city, and price, then connect with trusted sellers nationwide.",
-  keywords:
-    "cars for sale in Pakistan, used cars Pakistan, new cars for sale, buy cars online, sell car Pakistan, car listings Pakistan, Sello.pk",
-  canonical: "https://sello.pk/listings",
-};
-
 const CarListings = () => {
   return (
     <div className="min-h-screen min-w-0 overflow-x-hidden">
-      <SEO
-        title={LISTINGS_SEO.title}
-        description={LISTINGS_SEO.description}
-        keywords={LISTINGS_SEO.keywords}
-        canonical={LISTINGS_SEO.canonical}
-      />
+      <SEO {...corePageSeo.listings} />
 
       <header
         className={`relative overflow-hidden border-b border-slate-200/80 md:h-[375px] `}

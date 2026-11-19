@@ -1,3 +1,4 @@
+import { corePageSeo } from "../utils/corePageSeo.js";
 import React, { Suspense, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Hero from "../components/sections/home/Hero";
@@ -55,12 +56,7 @@ const Home = () => {
 
   return (
     <div className="w-full min-w-0 max-w-full overflow-x-hidden">
-      <SEO
-        title="Car for Sale in Pakistan | Buy & Sell Used Cars – Sello.pk"
-        description="Find the best car for sale in Pakistan on Sello.pk. Buy or sell used cars in Karachi, Lahore, Islamabad & beyond with verified sellers and fair pricing."
-        keywords="cars for sale, cars for sale in Pakistan"
-        canonical="https://sello.pk/"
-      />
+      <SEO {...corePageSeo.home} />
       <StructuredData.HomePageSchema />
       <div className="w-full min-w-0">
         <Hero />

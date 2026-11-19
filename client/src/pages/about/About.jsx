@@ -1,3 +1,4 @@
+import { corePageSeo } from "../../utils/corePageSeo.js";
 import React from "react";
 import AboutHeroSection from "../../components/sections/about/AboutHeroSection";
 import OutStorySection from "../../components/sections/about/OutStorySection";
@@ -13,11 +14,7 @@ const About = () => {
   return (
     <div>
       <StructuredData.AboutPageSchema />
-      <SEO
-        title="About Us | Buy & Sell Cars Online in Pakistan – Sello.pk"
-        description="Sello.pk is a secure and transparent platform to buy and sell cars in Pakistan. Discover our mission, values, and commitment to trusted car trading."
-        canonical="https://sello.pk/about"
-      />
+      <SEO {...corePageSeo.about} />
       <AboutHeroSection />
       <OutStorySection />
       <div className="px-4 sm:px-6 lg:px-8">

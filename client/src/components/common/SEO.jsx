@@ -43,6 +43,7 @@ const SEO = ({
   url,
   canonical,
   robots,
+  exactTitle = false,
 }) => {
   const location = useLocation();
   const setPageCount = useContext(PageSeoContext);
@@ -146,7 +147,7 @@ const SEO = ({
         : NOINDEX_ROBOTS
       : explicitRobots || DEFAULT_ROBOTS;
   const isNoindex = isNoindexRobots(safeRobots);
-  const fullTitle = safeTitle.includes("Sello")
+  const fullTitle = exactTitle || safeTitle.includes("Sello")
     ? safeTitle
     : `${safeTitle} | Sello`;
   const imageUrl = toAbsoluteUrl(image);

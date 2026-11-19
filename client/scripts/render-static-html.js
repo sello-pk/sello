@@ -1,3 +1,4 @@
+import { corePageSeo } from "../src/utils/corePageSeo.js";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -106,18 +107,8 @@ const TERMS_COMMON = {
 };
 
 const STATIC_META = {
-  "/about": {
-    title: "About Us | Buy & Sell Cars Online in Pakistan - Sello.pk",
-    description:
-      "Sello.pk is a secure and transparent platform to buy and sell cars in Pakistan. Discover our mission, values, and commitment to trusted car trading.",
-    canonical: `${SITE_URL}/about`,
-  },
-  "/contact": {
-    title: "Contact Us | 24/7 Car Marketplace Support - Sello.pk",
-    description:
-      "Need help buying or selling a car in Pakistan? Contact Sello.pk for fast, reliable support. We're here to guide you every step of the way.",
-    canonical: `${SITE_URL}/contact`,
-  },
+  "/about": corePageSeo.about,
+  "/contact": corePageSeo.contact,
   "/privacy-policy": PRIVACY_TERMS_COMMON,
   "/terms-condition": TERMS_COMMON,
   "/terms-conditions": TERMS_COMMON,

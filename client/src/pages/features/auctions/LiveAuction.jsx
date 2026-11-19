@@ -1,3 +1,4 @@
+import { corePageSeo } from "../../../utils/corePageSeo.js";
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -459,11 +460,7 @@ export default function LiveAuction() {
 
   return (
     <>
-      <SEO
-        title="Live Auctions in Pakistan | Bid in Real-Time – Sello.pk"
-        description="Join live auctions on Sello.pk and bid in real-time on cars, electronics & more. Secure platform, fast bidding, and exciting deals across Pakistan."
-        canonical="https://sello.pk/auctions/live"
-      />
+      <SEO {...corePageSeo.liveAuction} />
       <StructuredData.LiveAuctionPageSchema
         auction={liveAuction}
         cars={displayCars}

@@ -1,3 +1,4 @@
+import { corePageSeo } from "./corePageSeo.js";
 import { matchPath } from "react-router-dom";
 import { getListingsPageCopy } from "./urlBuilders.js";
 import { CAR_LOAN_SEO } from "./carLoanCalculator.js";
@@ -69,48 +70,10 @@ const guideSeo = {
 };
 
 const routeSeoConfigs = [
-  {
-    path: "/",
-    seo: {
-      title: "Car for Sale in Pakistan | Buy & Sell Used Cars – Sello.pk",
-      description:
-        "Find the best car for sale in Pakistan on Sello.pk. Buy or sell used cars in Karachi, Lahore, Islamabad & beyond with verified sellers and fair pricing.",
-      keywords: "cars for sale, cars for sale in Pakistan",
-      canonical: "https://sello.pk/",
-    },
-  },
-  {
-    path: "/home",
-    seo: {
-      title: "Car for Sale in Pakistan | Buy & Sell Used Cars – Sello.pk",
-      description:
-        "Find the best car for sale in Pakistan on Sello.pk. Buy or sell used cars in Karachi, Lahore, Islamabad & beyond with verified sellers and fair pricing.",
-      keywords: "cars for sale, cars for sale in Pakistan",
-      canonical: "https://sello.pk/",
-    },
-  },
-  {
-    path: "/listings",
-    seo: {
-      title: "Cars for Sale in Pakistan | Browse Used & New Cars – Sello.pk",
-      description:
-        "Browse cars for sale in Pakistan on Sello.pk. Filter used and new cars by make, model, city, and price, then connect with trusted sellers nationwide.",
-      keywords:
-        "cars for sale in Pakistan, used cars Pakistan, new cars for sale, buy cars online, sell car Pakistan, car listings Pakistan, Sello.pk",
-      canonical: "https://sello.pk/listings",
-    },
-  },
-  {
-    path: "/cars",
-    seo: {
-      title: "Cars for Sale in Pakistan | Browse Used & New Cars – Sello.pk",
-      description:
-        "Browse cars for sale in Pakistan on Sello.pk. Filter used and new cars by make, model, city, and price, then connect with trusted sellers nationwide.",
-      keywords:
-        "cars for sale in Pakistan, used cars Pakistan, new cars for sale, buy cars online, sell car Pakistan, car listings Pakistan, Sello.pk",
-      canonical: "https://sello.pk/listings",
-    },
-  },
+  { path: "/", seo: corePageSeo.home },
+  { path: "/home", seo: corePageSeo.home },
+  { path: "/listings", seo: corePageSeo.listings },
+  { path: "/cars", seo: corePageSeo.listings },
   { path: "/cars/:id", seo: listingDetailSeo },
   { path: "/car-details/:id", seo: listingDetailSeo },
   { path: "/fuel-prices", seo: fuelPricesSeo },
@@ -215,14 +178,7 @@ const routeSeoConfigs = [
         "Explore all major car brands and vehicle makes available on Sello.pk, from Suzuki and Toyota to Honda, Kia, and more.",
     },
   },
-  {
-    path: "/car-estimator",
-    seo: {
-      title: "AI Car Estimator - Find Your Car's Real Value | Sello.pk",
-      description:
-        "Get instant AI-powered car valuations for the Pakistani market based on make, model, year, condition, and location.",
-    },
-  },
+  { path: "/car-estimator", seo: corePageSeo.estimator },
   {
     path: "/vehicle-verification",
     seo: {
@@ -366,23 +322,8 @@ const routeSeoConfigs = [
         "Join car auctions in Pakistan on Sello.pk. Discover verified vehicles, upcoming events, hybrid bidding, and trusted auction support.",
     },
   },
-  {
-    path: "/auctions/live",
-    seo: {
-      title: "Live Car Auction in Pakistan | Bid Online – Sello.pk",
-      description:
-        "Follow live car auctions on Sello.pk, view active bids, compare listed vehicles, and bid online with real-time updates.",
-    },
-  },
-  {
-    path: "/auctions/betting",
-    seo: {
-      title: "Live Car Auction in Pakistan | Bid Online – Sello.pk",
-      description:
-        "Track live auction bidding on Sello.pk and explore verified vehicles available in current car auctions across Pakistan.",
-      canonical: "https://sello.pk/auctions/live",
-    },
-  },
+  { path: "/auctions/live", seo: corePageSeo.liveAuction },
+  { path: "/auctions/betting", seo: corePageSeo.liveAuction },
   {
     path: "/auctions/schedule",
     seo: {
@@ -496,22 +437,8 @@ const routeSeoConfigs = [
       description: "Read automotive news, vehicle guides, and buying and selling advice on the Sello.pk blog.",
     },
   },
-  {
-    path: "/about",
-    seo: {
-      title: "About Us | Buy & Sell Cars Online in Pakistan – Sello.pk",
-      description:
-        "Sello.pk is a secure and transparent platform to buy and sell cars in Pakistan. Discover our mission, values, and commitment to trusted car trading.",
-    },
-  },
-  {
-    path: "/contact",
-    seo: {
-      title: "Contact Us | 24/7 Car Marketplace Support – Sello.pk",
-      description:
-        "Need help buying or selling a car in Pakistan? Contact Sello.pk for fast, reliable support. We’re here to guide you every step of the way.",
-    },
-  },
+  { path: "/about", seo: corePageSeo.about },
+  { path: "/contact", seo: corePageSeo.contact },
   {
     path: "/help-center",
     seo: {

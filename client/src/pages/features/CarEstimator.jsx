@@ -1,3 +1,4 @@
+import { corePageSeo } from "../../utils/corePageSeo.js";
 import React from "react";
 import { useParams } from "react-router-dom";
 import CarEstimatorPage from "../../components/features/CarEstimator/CarEstimatorPage";
@@ -16,12 +17,7 @@ const CarEstimator = () => {
           description={guide.excerpt}
         />
       ) : (
-        <SEO
-          title="AI Car Estimator - Find Your Car's Real Value | Sello.pk"
-          description="Get instant AI-powered car valuations for Pakistani market. Estimate your car's price based on make, model, year, condition, and location."
-          keywords="car estimator, car value calculator, AI car price, used car valuation, car price Pakistan"
-          canonical="https://sello.pk/car-estimator"
-        />
+        <SEO {...corePageSeo.estimator} />
       )}
       <StructuredData.CarEstimatorPageSchema />
       <CarEstimatorPage initialGuideId={guide?.id} />
