@@ -23,13 +23,6 @@ import { validateObjectId } from "../middlewares/validationMiddleware.js";
 import { cache, cacheKeys, invalidateCache } from "../middlewares/cacheMiddleware.js";
 
 const router = express.Router();
-const cachePublicCars = (ttl, key) => {
-    const publicCache = cache(ttl, key);
-    return (req, res, next) => {
-        res.set("Cache-Control", "private, no-store");
-        return req.user ? next() : publicCache(req, res, next);
-    };
-};
 
 router.get("/car-catalog/makes", catalogMakes);
 router.get("/car-catalog/models", catalogModels);
@@ -40,11 +33,11 @@ router.get("/car-catalog/popular", popularCatalogComparisons);
 
 /* ---------------------------------- CARS ---------------------------------- */
 // Public
-router.get("/cars", optionalAuth, cachePublicCars(300, cacheKeys.carListings), getAllCars);
-router.get("/cars/filter", optionalAuth, cachePublicCars(300, cacheKeys.carListings), getFilteredCars);
+router.get("/cars", cache(300, cacheKeys.carListings), getAllCars);
+router.get("/cars/filter", cache(300, cacheKeys.carListings), getFilteredCars);
 router.get("/cars/compare", getCarComparison);
 router.get("/cars/stats/counts-by-make", cache(1800, (req) => `cache:cars:stats:counts-by-make:${req.query?.vehicleType || "all"}`), getCarCountsByMake);
-router.get("/cars/:id", validateObjectId('id'), optionalAuth, cachePublicCars(600, cacheKeys.car), getSingleCar);
+router.get("/cars/:id", validateObjectId('id'), cache(600, cacheKeys.car), getSingleCar);
 
 // Actions
 router.post("/cars", auth, upload.array("images", 15), async (req, res, next) => {
@@ -53,25 +46,25 @@ router.post("/cars", auth, upload.array("images", 15), async (req, res, next) =>
 }, createCar);
 
 router.put("/cars/:id", auth, validateObjectId('id'), upload.array("images", 15), async (req, res, next) => {
-    try { await invalidateCache(cacheKeys.car(req)); } catch { /* continue */ }
+    try { await invalidateCache(`cache:cars:${req.params.id}`); } catch { /* continue */ }
     try { await invalidateCache("cache:cars:list:*"); } catch { /* continue */ }
     next();
 }, editCar);
 
 router.put("/cars/:carId/sold", auth, validateObjectId('carId'), async (req, res, next) => {
-    try { await invalidateCache(cacheKeys.car(req)); } catch { /* continue */ }
+    try { await invalidateCache(`cache:cars:${req.params.carId}`); } catch { /* continue */ }
     try { await invalidateCache("cache:cars:list:*"); } catch { /* continue */ }
     next();
 }, markCarAsSold);
 
 router.post("/cars/:carId/relist", auth, validateObjectId('carId'), async (req, res, next) => {
-    try { await invalidateCache(cacheKeys.car(req)); } catch { /* continue */ }
+    try { await invalidateCache(`cache:cars:${req.params.carId}`); } catch { /* continue */ }
     try { await invalidateCache("cache:cars:list:*"); } catch { /* continue */ }
     next();
 }, relistCar);
 
 router.delete("/cars/:id", auth, validateObjectId('id'), async (req, res, next) => {
-    try { await invalidateCache(cacheKeys.car(req)); } catch { /* continue */ }
+    try { await invalidateCache(`cache:cars:${req.params.id}`); } catch { /* continue */ }
     try { await invalidateCache("cache:cars:list:*"); } catch { /* continue */ }
     next();
 }, deleteCar);

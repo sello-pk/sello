@@ -10,7 +10,7 @@ export function invalidateAuthCaches() {
   ])
     .then(([storeMod, apiMod, adminMod]) => {
       try {
-        storeMod.store.dispatch(apiMod.api.util.invalidateTags(["User", "Car", "Cars"]));
+        storeMod.store.dispatch(apiMod.api.util.invalidateTags(["User"]));
       } catch {
         // ignore
       }

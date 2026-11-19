@@ -26,7 +26,7 @@ import { trackContact } from "../../../utils/metaPixel.js";
 
 const Btns = () => {
   const navigate = useNavigate();
-  const { pathname, search, hash } = useLocation();
+  const { hash } = useLocation();
   const { id: routeParam } = useParams();
   const extractedCarId = extractCarIdFromSlug(routeParam);
   const token = localStorage.getItem("token");
@@ -40,14 +40,7 @@ const Btns = () => {
     });
     return () => cancelAnimationFrame(frame);
   }, [car, hash]);
-  const { currentData: currentUser } = useGetMeQuery(undefined, { skip: !token });
-  const signedIn = Boolean(token && currentUser?._id);
-  const guestStyle = signedIn ? "" : "opacity-60";
-  const requireLogin = () => {
-    if (signedIn) return true;
-    navigate("/login", { state: { listingReturn: `${pathname}${search}#seller-actions` } });
-    return false;
-  };
+  const { data: currentUser } = useGetMeQuery(undefined, { skip: !token });
   const { data: savedCarsData } = useGetSavedCarsQuery(undefined, {
     skip: !currentUser || !token,
   });
@@ -73,11 +66,10 @@ const Btns = () => {
   }, [extractedCarId, currentUser, trackRecentlyViewed]);
 
   const handleShare = async () => {
-    if (!requireLogin()) return;
     try {
       const currentUrl = window.location.href;
       if (navigator.share) {
-        await navigator.share({
+        navigator.share({
           title: "Sello - Car Details",
           text: "Check out this car I found on Sello!",
           url: currentUrl,
@@ -95,7 +87,10 @@ const Btns = () => {
   const isSold = !!car?.isSold;
 
   const handleChat = () => {
-    if (!requireLogin()) return;
+    if (!currentUser) {
+      toast.error("Please login to chat with seller");
+      return;
+    }
     if (car && currentUser._id === car.postedBy?._id) {
       toast.error("You cannot chat with yourself");
       return;
@@ -108,7 +103,6 @@ const Btns = () => {
   };
 
   const handleCall = () => {
-    if (!requireLogin()) return;
     if (isSold) {
       toast.error("This car has been sold. Calling is disabled.");
       return;
@@ -121,7 +115,6 @@ const Btns = () => {
   };
 
   const handleWhatsApp = () => {
-    if (!requireLogin()) return;
     if (isSold) {
       toast.error("This car has been sold. WhatsApp is disabled.");
       return;
@@ -169,7 +162,6 @@ const Btns = () => {
   return (
     <>
       <div id="seller-actions" className="scroll-mt-24 px-3 sm:px-4 md:px-8 lg:px-20 py-6 bg-[#F9FAFB] border-b border-gray-200 w-full min-w-0 max-w-full">
-        {!signedIn && <p className="mb-3 text-sm text-slate-600">Log in to contact the seller or share this listing.</p>}
         <div className="flex flex-col gap-4 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between w-full min-w-0">
           {/* Left Side - Action Buttons */}
           <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4 items-center min-w-0">
@@ -178,9 +170,9 @@ const Btns = () => {
               <button
                 onClick={handleChat}
                 disabled={
-                  signedIn && currentUser._id === car?.postedBy?._id
+                  !currentUser || (car && currentUser._id === car.postedBy?._id)
                 }
-                className={`flex items-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${guestStyle}`}
+                className="flex items-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <FaCommentDots />
                 {currentUser && car && currentUser._id === car.postedBy?._id
@@ -190,10 +182,10 @@ const Btns = () => {
             )}
 
             {/* Call Button */}
-            {!isSold && (!signedIn || car?.contactNumber) && (
+            {!isSold && car?.contactNumber && (
               <button
                 onClick={handleCall}
-                className={`flex items-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-colors ${guestStyle}`}
+                className="flex items-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-colors"
               >
                 <FaPhone />
                 Call Now
@@ -202,12 +194,12 @@ const Btns = () => {
 
             {/* WhatsApp Button */}
             {!isSold &&
-              (!signedIn || car?.whatsappNumber ||
+              (car?.whatsappNumber ||
                 car?.contactNumber ||
                 car?.postedBy?.dealerInfo?.whatsappNumber) && (
               <button
                 onClick={handleWhatsApp}
-                className={`flex items-center gap-2 bg-[#25D366] text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-colors ${guestStyle}`}
+                className="flex items-center gap-2 bg-[#25D366] text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-colors"
               >
                 <FaWhatsapp size={20} />
                 WhatsApp
@@ -233,7 +225,7 @@ const Btns = () => {
             {/* Share Button */}
             <button
               onClick={handleShare}
-              className={`flex items-center gap-2 bg-primary-100 text-primary-500 px-6 py-3 rounded-lg font-semibold hover:bg-primary-200 transition-colors ${guestStyle}`}
+              className="flex items-center gap-2 bg-primary-100 text-primary-500 px-6 py-3 rounded-lg font-semibold hover:bg-primary-200 transition-colors"
             >
               <FaShareAlt />
               Share

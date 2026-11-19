@@ -3,7 +3,7 @@ import HeaderLogo from "../../components/utils/HeaderLogo";
 import AuthFooter from "../../components/utils/AuthFooter";
 import { images } from "../../assets/assets";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
 import toast from "react-hot-toast";
 import {
@@ -26,10 +26,6 @@ const Login = () => {
   });
 
   const navigate = useNavigate();
-  const { state } = useLocation();
-  const listingReturn = typeof state?.listingReturn === "string" && /^\/(?:cars|car-details)\/[\w-]+(?:\?[^#]*)?#seller-actions$/.test(state.listingReturn)
-    ? state.listingReturn
-    : null;
   const [loginUser, { isLoading }] = useLoginUserMutation();
   const [googleLogin] = useGoogleLoginMutation();
 
@@ -76,10 +72,6 @@ const Login = () => {
 
       // Small delay to allow state updates
       setTimeout(() => {
-        if (listingReturn) {
-          navigate(listingReturn, { replace: true });
-          return;
-        }
         // Redirect based on user role - be strict about admin checks
         const userRole = user?.role?.toLowerCase()?.trim();
 
@@ -148,10 +140,6 @@ const Login = () => {
 
       // Small delay to allow state updates
       setTimeout(() => {
-        if (listingReturn) {
-          navigate(listingReturn, { replace: true });
-          return;
-        }
         // Redirect based on user role - be strict about admin checks
         const userRole = responseUser?.role?.toLowerCase()?.trim();
 

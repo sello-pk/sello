@@ -85,12 +85,12 @@ export const cacheKeys = {
   // Cache key for car listings
   carListings: (req) => {
     const { page = 1, limit = 10, ...filters } = req.query;
-    return `cache:cars:list:public-v2:${JSON.stringify({ page, limit, filters })}`;
+    return `cache:cars:list:${JSON.stringify({ page, limit, filters })}`;
   },
 
   // Cache key for single car
   car: (req) => {
-    return `cache:cars:${req.params.id || req.params.carId}:public-v2`;
+    return `cache:cars:${req.params.id}`;
   },
 
   // Cache key for user profile

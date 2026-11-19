@@ -6,16 +6,6 @@ import mongoose from "mongoose";
 import { getPriceAnalysis } from "../../utils/valuationHelper.js";
 import { escapeRegex } from "../../utils/helpers.js";
 
-export function hideListingContact(car) {
-  delete car.contactNumber;
-  delete car.whatsappNumber;
-  if (car.postedBy?.dealerInfo) {
-    delete car.postedBy.dealerInfo.businessPhone;
-    delete car.postedBy.dealerInfo.whatsappNumber;
-  }
-  return car;
-}
-
 export const getAllCars = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -79,7 +69,6 @@ export const getAllCars = async (req, res) => {
     // Enrichment: For auction-flagged items, join minimal auction data (timer/bid)
     const cars = await Promise.all(
       carsDocuments.map(async (c) => {
-        if (!req.user) hideListingContact(c);
         if (c.listingType === "auction") {
           try {
             const ac = await AuctionCar.findOne({ car: c._id, status: { $ne: "withdrawn" } })
@@ -160,7 +149,6 @@ export const getSingleCar = async (req, res) => {
     await car.save();
 
     const carData = car.toObject();
-    if (!req.user) hideListingContact(carData);
 
     // Enrichment: For auction-flagged items, join minimal auction data (timer/bid)
     if (carData.listingType === "auction") {
