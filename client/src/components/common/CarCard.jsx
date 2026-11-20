@@ -14,8 +14,6 @@ import { images } from "../../assets/assets";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { trackContact } from "../../utils/metaPixel.js";
-import { CompareCarButton } from "./CompareCarButton.jsx";
-import { isComparableCar } from "../../utils/carCompare.js";
 
 const CountdownTimer = ({ targetDate }) => {
   const [time, setTime] = React.useState({ d: 0, h: 0, m: 0, s: 0 });
@@ -351,7 +349,6 @@ const CarCard = ({
               </div>
             )}
           </div>
-          {isComparableCar(car) && <div className="mt-2"><CompareCarButton car={car} source="listing_card" /></div>}
           {actions && (
             <div className="mt-3 pt-3 border-t border-[#e5e7eb]" onClick={(e) => e.stopPropagation()}>
               {actions}
@@ -558,7 +555,6 @@ const CarCard = ({
             </span>
           )}
         </div>
-        {isComparableCar(car) && <div className="mt-2"><CompareCarButton car={car} source="listing_card" /></div>}
         {actions && (
           <div className="mt-3 pt-3 border-t border-[#e5e7eb]" onClick={(e) => e.stopPropagation()}>
             {actions}

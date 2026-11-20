@@ -108,7 +108,6 @@ const TERMS_COMMON = {
 };
 
 const STATIC_META = {
-  "/cars/compare": getRouteSeo("/cars/compare"),
   "/about": corePageSeo.about,
   "/contact": corePageSeo.contact,
   "/privacy-policy": PRIVACY_TERMS_COMMON,
@@ -289,7 +288,6 @@ function buildRoutes({ entry, categories, listData, blogsBySlug, relatedDataBySl
   const routes = [];
   for (const routePath of [
     "/about",
-    "/cars/compare",
     "/contact",
     "/privacy-policy",
     "/terms-condition",

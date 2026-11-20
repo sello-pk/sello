@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { CompareCarButton } from "../../common/CompareCarButton.jsx";
 import {
   useGetSingleCarQuery,
   useGetMeQuery,
@@ -230,7 +229,6 @@ const Btns = () => {
               <FaShareAlt />
               Share
             </button>
-            <CompareCarButton car={car} source="listing_detail" />
           </div>
 
           {/* Right Side - Status & Report */}

@@ -4,7 +4,6 @@ import { StaticRouter } from "react-router";
 import { configureStore } from "@reduxjs/toolkit";
 import { api } from "../src/redux/services/api";
 import { adminApi } from "../src/redux/services/adminApi";
-import carCompare from "../src/redux/carCompareSlice.js";
 import App from "../src/App";
 
 /**
@@ -16,7 +15,6 @@ export function createAppStore() {
     reducer: {
       [api.reducerPath]: api.reducer,
       [adminApi.reducerPath]: adminApi.reducer,
-      carCompare,
     },
     middleware: (getDefaultMiddleware) => {
       // Dev-only state checks are pointless in the build-time prerender and

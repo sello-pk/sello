@@ -1,8 +1,4 @@
 import express from "express";
-import rateLimit from "express-rate-limit";
-import { getComparisonOverlay, getComparisonSettings, getBuyingRecommendation, getMarketPrices } from "../controllers/carCompareExperienceController.js";
-import { catalogMakes, catalogModels, catalogVariants, catalogYears, catalogComparison, popularCatalogComparisons, resolveCatalogListing } from "../controllers/carCatalogController.js";
-import { getCarComparison } from "../controllers/carCompareController.js";
 import {
   createCar, deleteCar, editCar, getAllCars, getFilteredCars, getMyCars, getSingleCar, markCarAsSold, relistCar, getCarCountsByMake
 } from "../controllers/carController.js";
@@ -25,25 +21,12 @@ import { validateObjectId } from "../middlewares/validationMiddleware.js";
 import { cache, cacheKeys, invalidateCache } from "../middlewares/cacheMiddleware.js";
 
 const router = express.Router();
-const compareAiLimit = rateLimit({ windowMs: 60000, max: 12, standardHeaders: true, legacyHeaders: false });
 
-router.get("/car-catalog/makes", catalogMakes);
-router.get("/car-catalog/models", catalogModels);
-router.get("/car-catalog/variants", catalogVariants);
-router.get("/car-catalog/years", catalogYears);
-router.get("/car-catalog/resolve", resolveCatalogListing);
-router.get("/car-catalog/compare", catalogComparison);
-router.get("/car-catalog/popular", popularCatalogComparisons);
-router.get("/car-catalog/experience", getComparisonSettings);
-router.get("/car-catalog/market-prices", compareAiLimit, getMarketPrices);
-router.get("/car-catalog/overlay", (req, res, next) => req.query.research === "true" ? compareAiLimit(req, res, next) : next(), getComparisonOverlay);
-router.post("/car-catalog/recommendation", compareAiLimit, getBuyingRecommendation);
 
 /* ---------------------------------- CARS ---------------------------------- */
 // Public
 router.get("/cars", cache(300, cacheKeys.carListings), getAllCars);
 router.get("/cars/filter", cache(300, cacheKeys.carListings), getFilteredCars);
-router.get("/cars/compare", getCarComparison);
 router.get("/cars/stats/counts-by-make", cache(1800, (req) => `cache:cars:stats:counts-by-make:${req.query?.vehicleType || "all"}`), getCarCountsByMake);
 router.get("/cars/:id", validateObjectId('id'), cache(600, cacheKeys.car), getSingleCar);
 

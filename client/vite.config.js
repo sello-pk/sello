@@ -4,7 +4,6 @@ import { viteStaticCopy } from "vite-plugin-static-copy";
 import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
 import path from "path";
 import { fileURLToPath } from "url";
-import { comparisonArticles } from "./src/utils/compareEditorial.js";
 
 // Fix for __dirname in ESM
 const __filename = fileURLToPath(import.meta.url);
@@ -22,9 +21,6 @@ export default defineConfig({
         { src: "public/_headers", dest: "." },
         { src: "src/assets/images/hero.webp", dest: "lcp" },
         { src: "src/assets/images/heroMobile.webp", dest: "lcp" },
-        ...comparisonArticles.map(({ image }) => ({
-          src: `src/assets/images/${path.posix.basename(image)}`, dest: "assets/car-compare",
-        })),
         // Stable /logo.png for og:image, twitter:image and schema.org logo
         // (many pages reference https://sello.pk/logo.png; it did not exist,
         // so the SPA fallback answered with HTML and Google saw no image).

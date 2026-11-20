@@ -7,7 +7,6 @@ import { lazyImport } from "./utils/lazyImports.js";
 import Navbar from "./components/Navbar.jsx";
 import BottomHeader from "./components/BottomHeader.jsx";
 import Footer from "./components/Footer.jsx";
-import { CompareTray } from "./components/common/CompareCarButton.jsx";
 import { AdSenseSlot } from "./components/ads";
 import { isAnalyticsEnabled } from "./components/ads/loadMarketingScripts";
 /** Filename avoids "cookieconsent" (cookie-blocker lists match that URL substring). */
@@ -186,7 +185,6 @@ const App = () => {
 
       {/* Show Footer except for auth pages & admin */}
       {shouldShowNavbarFooter && <Footer />}
-      {shouldShowNavbarFooter && location.pathname.replace(/\/+$/, "") !== "/compare/listings" && <CompareTray />}
 
       {/* Cookie / AdSense disclosure — public pages only */}
       {shouldShowNavbarFooter && <PrivacyNotice />}

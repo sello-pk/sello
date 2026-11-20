@@ -64,12 +64,6 @@ server {
     }
 
     # --- Car detail SEO shells: unknown /cars/<slug> must be HTTP 404 (not SPA 200) ---
-    location = /cars/compare {
-        try_files /cars/compare/index.html /index.html;
-    }
-    location ^~ /cars/compare/ {
-        try_files $uri $uri/index.html /cars/compare/results/index.html;
-    }
 
     # Valid listings are written at build to dist/cars/<slug>/index.html.
     location ^~ /cars/ {

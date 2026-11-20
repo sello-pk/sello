@@ -92,7 +92,6 @@ const AdminLayout = ({ children }) => {
     { path: "/admin/listings", icon: FiList, label: "Listings" },
     { path: "/admin/dealers", icon: FiBriefcase, label: "Dealer Management" },
     { path: "/admin/categories", icon: FiGrid, label: "Categories" },
-    { path: "/admin/car-catalog", icon: FiGrid, label: "Car Catalogue" },
     { path: "/admin/blogs", icon: FiFileText, label: "Blog Management" },
     {
       path: "/admin/testimonials",

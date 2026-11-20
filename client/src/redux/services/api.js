@@ -310,10 +310,7 @@ export const api = createApi({
   baseQuery: async (args, api, extraOptions) => {
     try {
       const httpMethod = String(args?.method || "GET").toUpperCase();
-      const requestPath = typeof args === "string" ? args : args.url;
-      const localCompareApi = import.meta.env.DEV && import.meta.env.VITE_COMPARE_API_URL &&
-        /^\/(?:car-catalog|admin\/car-(?:catalog|compare))\//.test(requestPath);
-      const baseUrl = localCompareApi ? import.meta.env.VITE_COMPARE_API_URL : API_BASE_URL;
+      const baseUrl = API_BASE_URL;
       const isRead = httpMethod === "GET" || httpMethod === "HEAD";
 
       // Cooling down after a 429: fail reads locally so pollers don't keep
@@ -841,11 +838,6 @@ export const api = createApi({
     }),
 
     // ✅ Get Single Car Endpoint
-    getCarComparison: builder.query({
-      query: (ids) => ({ url: "/cars/compare", params: { ids: ids.join(",") } }),
-      transformResponse: (response) => response.data.listings,
-      keepUnusedDataFor: 30,
-    }),
     getSingleCar: builder.query({
       query: (carId) => ({
         url: `/cars/${carId}`,
@@ -2111,7 +2103,6 @@ export const {
   useLogoutMutation,
   useGetCarsQuery,
   useGetSingleCarQuery,
-  useGetCarComparisonQuery,
   useGetCarCountsByMakeQuery,
   useCreateCarMutation,
   useGetFilteredCarsQuery,
