@@ -9,8 +9,8 @@ import { useGetFilteredCarsQuery } from "../redux/services/api.js";
 import SEO from "../components/common/SEO.jsx";
 import { comparisonArticles } from "../utils/compareEditorial.js";
 import CompareEditorial from "../components/common/CompareEditorial.jsx";
-import { BuyingPriority, RunningCost } from "../components/common/CompareBuyingTools.jsx";
-import { useCompareAiOverviewQuery, useCatalogComparisonQuery, useCatalogVariantsQuery, useCompareExperienceQuery, useCompareMarketPricesQuery, useCompareOverlayQuery, usePopularCatalogComparisonsQuery, useResolveCatalogListingQuery } from "../redux/services/carCatalogApi.js";
+import { RunningCost } from "../components/common/CompareBuyingTools.jsx";
+import { useCatalogComparisonQuery, useCatalogVariantsQuery, useCompareExperienceQuery, useCompareMarketPricesQuery, useCompareOverlayQuery, usePopularCatalogComparisonsQuery, useResolveCatalogListingQuery } from "../redux/services/carCatalogApi.js";
 import { hasDifference, isComparableCar, specNumber } from "../utils/carCompare.js";
 import { buildCarUrl, buildListingsSearchUrl } from "../utils/urlBuilders.js";
 import { formatPrice } from "../utils/formatters.js";
@@ -131,11 +131,7 @@ function MarketplaceListings({ vehicles }) {
   </section>;
 }
 
-function ResultOverview({ entries, tokens, onVersionChange, researchEnabled, summaryEnabled }) {
-  const [priority, setPriority] = useState("general");
-  const available = entries.filter((entry) => !entry.unavailable);
-  const showAi = summaryEnabled && available.length >= 2;
-  const ai = useCompareAiOverviewQuery({ vehicles: available.map((entry) => entry.token).join(","), priority }, { skip: !showAi });
+function ResultOverview({ entries, tokens, onVersionChange, researchEnabled }) {
   const samples = [useComparisonListings(entries[0]), useComparisonListings(entries[1]), useComparisonListings(entries[2])];
   function listingRange(index, key, format) {
     const { listings, query } = samples[index];
@@ -194,12 +190,17 @@ function ResultOverview({ entries, tokens, onVersionChange, researchEnabled, sum
     ["Transmission", (entry, i) => specification(entry, i, "transmission", "", "transmission")],
     ["Odometer in used listings", (_, index) => listingRange(index, "mileage", (km) => `${km.toLocaleString("en-PK")} km`)],
   ];
-  const label = "sticky left-0 z-10 w-28 break-words border-r border-slate-200 bg-slate-50 px-3 py-2 text-left text-xs font-semibold leading-5 text-slate-700 sm:w-44 sm:px-4 sm:text-sm lg:w-48";
+  const label = "col-span-full sm:sticky sm:left-0 sm:z-10 sm:w-28 break-words border-r border-slate-200 bg-slate-50 px-3 py-2 text-left text-xs font-semibold leading-5 text-slate-700 sm:w-44 sm:px-4 sm:text-sm lg:w-48";
   return (
-    <div role="region" aria-label="Side-by-side vehicle overview" tabIndex={0} className="overflow-x-auto overscroll-x-contain rounded-xl border border-slate-200 focus-visible:ring-2 focus-visible:ring-primary-500">
-      <table className="w-full table-fixed text-left text-sm leading-5 [--label-width:7rem] sm:[--label-width:11rem] lg:[--label-width:12rem]" style={{ minWidth: `calc(var(--label-width) + ${entries.length * 11}rem)` }}>
+    <div className="min-w-0 max-w-full">
+    <div role="region" aria-label="Side-by-side vehicle overview" tabIndex={0} className="max-w-full overflow-x-auto overscroll-x-contain rounded-xl border border-slate-200 focus-visible:ring-2 focus-visible:ring-primary-500">
+      <table className="block w-full table-fixed text-left text-sm leading-5 sm:table">
+        <colgroup className="hidden sm:table-column-group">
+          <col style={{ width: 192 }} />
+          {entries.map((entry) => <col key={entry.token} />)}
+        </colgroup>
         <caption className="sr-only">Vehicle versions, reference prices, and marketplace listings</caption>
-        <thead><tr>
+        <thead className="block sm:table-header-group"><tr className="grid grid-cols-2 sm:table-row">
           <th scope="col" className={label}>Vehicle</th>
           {entries.map((entry) => <th key={entry.token} scope="col" className="break-words border-l border-slate-100 px-3 py-3 align-bottom text-base font-semibold sm:px-4">
             {entry.unavailable ? "Unavailable vehicle" : <>
@@ -208,22 +209,15 @@ function ResultOverview({ entries, tokens, onVersionChange, researchEnabled, sum
             </>}
           </th>)}
         </tr></thead>
-        <tbody>{rows.map(([name, render]) => <tr key={name} className="border-t border-slate-200">
+        <tbody className="block sm:table-row-group">{rows.map(([name, render]) => <tr key={name} className="grid grid-cols-2 border-t border-slate-200 sm:table-row">
           <th scope="row" className={label}>{name}</th>
           {entries.map((entry, index) => <td key={entry.token} className="break-words border-l border-slate-100 px-3 py-2.5 align-middle sm:px-4">
             {entry.unavailable ? (name === "Version" ? <p className="text-sm">Unavailable. Use Change cars to replace it.</p> : "—") : render(entry, index)}
           </td>)}
         </tr>)}
-          {showAi && <tr className="border-t border-slate-200">
-            <th scope="row" className={label}>Sello AI guidance<BuyingPriority priority={priority} setPriority={setPriority} /></th>
-            {entries.map((entry) => <td key={entry.token} className="border-l border-slate-100 p-3 align-top text-sm sm:p-4">
-              {entry.unavailable ? "Unavailable" : ai.isFetching ? "Comparing…" : ai.isError ?
-                <button type="button" className="underline" onClick={ai.refetch}>Retry AI comparison</button> :
-                ai.currentData?.[available.indexOf(entry)]?.guidance || "Guidance unavailable"}
-            </td>)}
-          </tr>}
         </tbody>
       </table>
+    </div>
     </div>
   );
 }
@@ -517,7 +511,7 @@ export default function CarModelCompare({ results = false }) {
                 <p className="mb-4 rounded-lg bg-slate-50 p-3 text-sm text-slate-700">You selected {vehicles.filter((entry) => !entry.variant).map(catalogueTitle).join(" and ")}. Exact specifications depend on the trim. To compare individual cars and their asking prices, choose seller listings below.</p>
               )}
               <p className="mb-2 text-xs text-slate-600 sm:hidden">Swipe the table to see all cars.</p>
-              <ResultOverview entries={resultEntries} tokens={tokens} researchEnabled={experience.data?.research} summaryEnabled={experience.data?.summary} onVersionChange={(index, token) => {
+              <ResultOverview entries={resultEntries} tokens={tokens} researchEnabled={experience.data?.research} onVersionChange={(index, token) => {
                 const next = parseCatalogSelection(tokens.map((value, position) => position === index ? token : value).join(","));
                 if (!next) return;
                 setShareState("");
