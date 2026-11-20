@@ -3,7 +3,7 @@ import Review, { CarCompareResearchLease } from "../models/carCompareReviewModel
 import Settings from "../models/carCompareSettingsModel.js";
 import Variant from "../models/carCatalogVariantModel.js";
 import { parseCatalogTokens, resolveVehicles } from "./carCatalogController.js";
-import { chooseComparisonEvidence, missingResearchFields, researchComparison, validateComparisonFields } from "../utils/carCompareResearch.js";
+import { chooseComparisonEvidence, compareModelsWithAi, comparisonAiConfigured, missingResearchFields, researchComparison, validateComparisonFields } from "../utils/carCompareResearch.js";
 import { escapeRegex } from "../utils/helpers.js";
 import Logger from "../utils/logger.js";
 
@@ -13,7 +13,7 @@ const inFlight = new Map();
 const recommendations = new Map();
 const ok = (res, data) => res.json({ success: true, data });
 const invalid = (res, message) => res.status(400).json({ success: false, message });
-const settings = async () => (await Settings.findById(id).lean()) || {};
+const settings = async () => (await Settings.findById(id).lean()) || { research: comparisonAiConfigured(), summary: comparisonAiConfigured() };
 const objectId = (value) => /^[a-f0-9]{24}$/i.test(value || "");
 const safeImage = (value) => typeof value === "string" && value.length <= 1000 &&
   (/^\/(?!\/)[a-z0-9/_\-.]+$/i.test(value) || /^https:\/\/(?:res\.cloudinary\.com|(?:www\.)?sello\.pk)\/[a-z0-9/_.,%~-]+$/i.test(value));
@@ -65,11 +65,11 @@ async function research(entry, record, missing) {
   const key = String(entry.variant._id);
   if (inFlight.has(key)) return inFlight.get(key);
   const work = (async () => {
-    if (!process.env.CAR_COMPARE_SEARCH_API_KEY || !(process.env.OPENAI_API_KEY || process.env.OPENAI_KEY)) return record;
+    if (!comparisonAiConfigured()) return record;
     const owner = randomUUID();
     try {
       await CarCompareResearchLease.updateOne({ _id: key, expiresAt: { $lte: new Date() } }, {
-        $set: { owner, expiresAt: new Date(Date.now() + 20000) },
+        $set: { owner, expiresAt: new Date(Date.now() + 45000) },
       }, { upsert: true });
     } catch (error) {
       if (error.code === 11000) return record;
@@ -124,7 +124,33 @@ export const getBuyingRecommendation = handle(async (req, res) => {
   const priority = req.body?.priority || "general";
   if (!tokens || !priorities.has(priority)) return invalid(res, "Choose a valid comparison and priority.");
   if (!(await settings()).summary) return ok(res, []);
-  const entries = (await resolveVehicles(tokens)).filter((entry) => !entry.unavailable && entry.variant);
+  const available = (await resolveVehicles(tokens)).filter((entry) => !entry.unavailable);
+  const entries = available.filter((entry) => entry.variant);
+  if (req.body?.mode === "overview") {
+    if (available.length < 2) return ok(res, []);
+    const reviews = await Review.find({ variantId: { $in: entries.map(({ variant }) => variant._id) } }).lean();
+    const approved = new Map(reviews.map((record) => [String(record.variantId), record.approved]));
+    const cars = available.map((entry) => ({
+      vehicle: entry.variant ? identityFor(entry) : [entry.make.name, entry.model.name].join(" "),
+      specifications: { ...entry.variant?.specifications, ...approved.get(String(entry.variant?._id)) },
+      features: entry.variant?.features, pricePkr: entry.variant?.price?.amount, priceType: entry.variant?.price?.type,
+    }));
+    const key = JSON.stringify(["overview", priority, cars]);
+    let cached = recommendations.get(key);
+    if (!cached || cached.expiresAt <= Date.now()) {
+      if (recommendations.size >= 100) recommendations.delete(recommendations.keys().next().value);
+      cached = { work: compareModelsWithAi(cars, priority), expiresAt: Date.now() + 300000 };
+      recommendations.set(key, cached);
+    }
+    try {
+      const result = await cached.work;
+      if (result.length !== cars.length) throw new Error("Incomplete comparison");
+      return ok(res, result);
+    } catch {
+      if (recommendations.get(key) === cached) recommendations.delete(key);
+      return res.status(503).json({ success: false, message: "AI comparison is temporarily unavailable." });
+    }
+  }
   if (entries.length < 2) return ok(res, []);
   const reviews = await Review.find({ variantId: { $in: entries.map(({ variant }) => variant._id) } }).lean();
   const records = new Map(reviews.map(({ variantId, approved }) => [String(variantId), approved]));

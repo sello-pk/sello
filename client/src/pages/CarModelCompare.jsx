@@ -462,7 +462,7 @@ export default function CarModelCompare({ results = false }) {
             {vehicles.length >= 2 && <>
               {vehicles.some((entry) => entry.variant) && <ComparisonTable vehicles={vehicles.map((entry) => enrich(entry, true))} />}
               {vehicles.some((entry) => entry.variant) && <RunningCost vehicles={vehicles} />}
-              {experience.data?.summary && vehicles.filter((entry) => entry.variant).length >= 2 && <BuyingRecommendation key={tokens.join(",")} vehicles={tokens} />}
+              {experience.data?.summary && <BuyingRecommendation key={tokens.join(",")} vehicles={vehicles.map((entry) => entry.token)} />}
               <MarketplaceListings key={tokens.join(",")} vehicles={vehicles} />
             </>}
           </>

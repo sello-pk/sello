@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useGetFuelPricesQuery } from "../../redux/services/api";
-import { useCompareRecommendationMutation } from "../../redux/services/carCatalogApi.js";
+import { useCompareAiOverviewQuery } from "../../redux/services/carCatalogApi.js";
 import { catalogueTitle } from "../../utils/carCatalog.js";
 import { runningCost } from "../../utils/compareRunningCost.js";
 import { formatPrice } from "../../utils/formatters";
@@ -49,26 +49,20 @@ export function RunningCost({ vehicles }) {
 
 export function BuyingRecommendation({ vehicles }) {
   const [priority, setPriority] = useState("general");
-  const [requested, setRequested] = useState(false);
-  const [getRecommendation, result] = useCompareRecommendationMutation();
+  const result = useCompareAiOverviewQuery({ vehicles: vehicles.join(","), priority });
   return <section className={shell} aria-labelledby="compare-recommendation">
     <h2 id="compare-recommendation" className="text-xl font-bold">Sello AI buying recommendation</h2>
     <div className="flex flex-wrap items-end gap-3">
       <label className="grid gap-1 text-sm font-semibold">Buying priority (optional)
-        <select className={control} value={priority} onChange={(event) => { setPriority(event.target.value); setRequested(false); }}>
+        <select className={control} value={priority} onChange={(event) => setPriority(event.target.value)}>
           {Object.entries({ general: "General", fuel: "Fuel saving", maintenance: "Low maintenance", resale: "Resale value", comfort: "Comfort", performance: "Performance", family: "Family use" }).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
         </select>
       </label>
-      <button type="button" className="min-h-10 rounded-lg bg-primary-500 px-4 text-sm font-bold disabled:opacity-50" disabled={result.isLoading} onClick={() => {
-        setRequested(true);
-        getRecommendation({ vehicles: vehicles.join(","), priority });
-      }}>{result.isLoading ? "Generating…" : "Get recommendation"}</button>
     </div>
-    {requested && !result.isLoading && <div aria-live="polite">
-      {result.isError ? <p>Recommendation temporarily unavailable.</p> : result.data?.length ? <ul className="list-disc space-y-1 pl-5">
-        {result.data.map((fact) => <li key={fact.unit}>{fact.vehicle} has the {fact.comparison.toLowerCase()} comparable figure ({formatPrice(fact.value)} {fact.unit}). {fact.reason}</li>)}
-      </ul> : <p>There is not enough comparable approved data to make a recommendation.</p>}
-      <p className="mt-2 text-xs text-slate-600">The recommendation considers approved metrics available for every selected car.</p>
-    </div>}
+    <div aria-live="polite">
+      {result.isFetching ? <p>Comparing your selected cars…</p> : result.isError ? <p>AI comparison temporarily unavailable. <button type="button" className="font-semibold underline" onClick={result.refetch}>Try again</button></p> :
+        result.currentData?.length ? <div className="grid gap-4 sm:grid-cols-2">{result.currentData.map((item, index) =>
+          <div key={vehicles[index]}><h3 className="font-semibold">{item.vehicle}</h3><p className="mt-1 text-sm text-slate-700">{item.guidance}</p></div>)}</div> : <p>AI guidance is unavailable for this selection.</p>}
+    </div>
   </section>;
 }

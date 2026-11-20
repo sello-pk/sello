@@ -45,6 +45,11 @@ const activate = api.enhanceEndpoints({ addTagTypes: ["CarCatalogue"] }).injectE
     compareExperience: builder.query({ query: () => "/car-catalog/experience", transformResponse: (response) => response.data, providesTags: ["CarCatalogue"] }),
     compareOverlay: builder.query({ query: (params) => ({ url: "/car-catalog/overlay", params }), transformResponse: (response) => response.data, providesTags: ["CarCatalogue"], keepUnusedDataFor: 30 }),
     compareRecommendation: builder.mutation({ query: (body) => ({ url: "/car-catalog/recommendation", method: "POST", body }), transformResponse: (response) => response.data }),
+    compareAiOverview: builder.query({
+      query: (body) => ({ url: "/car-catalog/recommendation", method: "POST", body: { ...body, mode: "overview" } }),
+      transformResponse: (response) => response.data,
+      keepUnusedDataFor: 60,
+    }),
     compareReviews: builder.query({ query: (params) => ({ url: "/admin/car-compare/reviews", params }), transformResponse: (response) => response.data, providesTags: ["CarCatalogue"] }),
     saveCompareReview: builder.mutation({ query: ({ id, ...body }) => ({ url: `/admin/car-compare/reviews/${id}`, method: "POST", body }), invalidatesTags: ["CarCatalogue"] }),
     saveCompareExperience: builder.mutation({ query: (body) => ({ url: "/admin/car-compare/settings", method: "PUT", body }), invalidatesTags: ["CarCatalogue"] }),
@@ -105,6 +110,6 @@ const activate = api.enhanceEndpoints({ addTagTypes: ["CarCatalogue"] }).injectE
   }),
 });
 
-export const { useCompareExperienceQuery, useCompareOverlayQuery, useCompareRecommendationMutation, useCompareReviewsQuery, useSaveCompareReviewMutation, useSaveCompareExperienceMutation, useCatalogYearsQuery, useUploadCompareImageMutation } = activate;
+export const { useCompareExperienceQuery, useCompareOverlayQuery, useCompareRecommendationMutation, useCompareAiOverviewQuery, useCompareReviewsQuery, useSaveCompareReviewMutation, useSaveCompareExperienceMutation, useCatalogYearsQuery, useUploadCompareImageMutation } = activate;
 
 export const { useCatalogMakesQuery, useCatalogModelsQuery, useCatalogVariantsQuery, useCatalogComparisonQuery, usePopularCatalogComparisonsQuery, useResolveCatalogListingQuery, useAdminCatalogVariantsQuery, useSaveCatalogVariantMutation, useArchiveCatalogVariantMutation } = activate;
