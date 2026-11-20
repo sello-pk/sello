@@ -93,8 +93,21 @@ export async function resolveVehicles(tokens, knownVariants) {
 export const catalogComparison = handle(async (req, res) => {
   const tokens = parseCatalogTokens(req.query.vehicles);
   if (!tokens) fail("Choose two or three distinct models or versions.");
-  return ok(res, (await resolveVehicles(tokens)).map(hideSources));
+  return ok(res, (await resolveComparisonDetails(tokens)).map(hideSources));
 });
+
+export async function resolveComparisonDetails(tokens) {
+  const entries = await resolveVehicles(tokens);
+  const selections = entries.filter((entry) => entry.year && !entry.unavailable && !entry.variant);
+  if (!selections.length) return entries;
+  const versions = await Variant.find({ published: true, $or: selections.map(({ model, year }) => ({ modelId: model._id, year })) })
+    .select("modelId year name specifications price.amount price.upperAmount price.type").lean();
+  return entries.map((entry) => {
+    if (!entry.year || entry.unavailable || entry.variant) return entry;
+    const trims = versions.filter((v) => String(v.modelId) === String(entry.model._id) && v.year === entry.year);
+    return { ...entry, publishedTrims: trims.map(({ name, specifications, price }) => ({ name, specifications, price })) };
+  });
+}
 
 export const resolveCatalogListing = handle(async (req, res) => {
   const exact = (value, label) => ({ $regex: "^" + escapeRegex(requiredText(value, 120, label)) + "$", $options: "i" });

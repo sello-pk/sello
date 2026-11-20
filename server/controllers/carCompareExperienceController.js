@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import Review, { CarCompareResearchLease } from "../models/carCompareReviewModel.js";
 import Settings from "../models/carCompareSettingsModel.js";
 import Variant from "../models/carCatalogVariantModel.js";
-import { parseCatalogTokens, resolveVehicles } from "./carCatalogController.js";
+import { parseCatalogTokens, resolveComparisonDetails, resolveVehicles } from "./carCatalogController.js";
 import { chooseComparisonEvidence, compareModelsWithAi, comparisonAiConfigured, missingResearchFields, researchComparison, searchUsedAskingPrices, validateComparisonFields } from "../utils/carCompareResearch.js";
 import { escapeRegex } from "../utils/helpers.js";
 import Logger from "../utils/logger.js";
@@ -146,7 +146,7 @@ export const getBuyingRecommendation = handle(async (req, res) => {
   const priority = req.body?.priority || "general";
   if (!tokens || !priorities.has(priority)) return invalid(res, "Choose a valid comparison and priority.");
   if (!(await settings()).summary) return ok(res, []);
-  const available = (await resolveVehicles(tokens)).filter((entry) => !entry.unavailable);
+  const available = (await resolveComparisonDetails(tokens)).filter((entry) => !entry.unavailable);
   const entries = available.filter((entry) => entry.variant);
   if (req.body?.mode === "overview") {
     if (available.length < 2) return ok(res, []);
@@ -156,6 +156,7 @@ export const getBuyingRecommendation = handle(async (req, res) => {
       vehicle: entry.variant ? identityFor(entry) : [entry.year, entry.make.name, entry.model.name].filter(Boolean).join(" "),
       specifications: { ...entry.variant?.specifications, ...approved.get(String(entry.variant?._id)) },
       features: entry.variant?.features, pricePkr: entry.variant?.price?.amount, priceType: entry.variant?.price?.type,
+      publishedTrims: entry.publishedTrims,
     }));
     const key = JSON.stringify(["overview", priority, cars]);
     let cached = recommendations.get(key);

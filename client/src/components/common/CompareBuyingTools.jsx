@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useGetFuelPricesQuery } from "../../redux/services/api";
-import { useCompareAiOverviewQuery } from "../../redux/services/carCatalogApi.js";
 import { catalogueTitle } from "../../utils/carCatalog.js";
 import { runningCost } from "../../utils/compareRunningCost.js";
 import { formatPrice } from "../../utils/formatters";
@@ -47,22 +46,10 @@ export function RunningCost({ vehicles }) {
   </section>;
 }
 
-export function BuyingRecommendation({ vehicles }) {
-  const [priority, setPriority] = useState("general");
-  const result = useCompareAiOverviewQuery({ vehicles: vehicles.join(","), priority });
-  return <section className={shell} aria-labelledby="compare-recommendation">
-    <h2 id="compare-recommendation" className="text-xl font-bold">Sello AI car comparison</h2>
-    <div className="flex flex-wrap items-end gap-3">
-      <label className="grid gap-1 text-sm font-semibold">Buying priority (optional)
-        <select className={control} value={priority} onChange={(event) => setPriority(event.target.value)}>
-          {Object.entries({ general: "General", fuel: "Fuel saving", maintenance: "Low maintenance", resale: "Resale value", comfort: "Comfort", performance: "Performance", family: "Family use" }).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-        </select>
-      </label>
-    </div>
-    <div aria-live="polite">
-      {result.isFetching ? <p>Comparing your selected cars…</p> : result.isError ? <p>AI comparison temporarily unavailable. <button type="button" className="font-semibold underline" onClick={result.refetch}>Try again</button></p> :
-        result.currentData?.length ? <div className="grid gap-4 sm:grid-cols-2">{result.currentData.map((item, index) =>
-          <div key={vehicles[index]}><h3 className="font-semibold">{item.vehicle}</h3><p className="mt-1 text-sm text-slate-700">{item.guidance}</p></div>)}</div> : <p>AI guidance is unavailable for this selection.</p>}
-    </div>
-  </section>;
+export function BuyingPriority({ priority, setPriority }) {
+  return <label className="grid gap-1 text-sm font-semibold">Buying priority
+    <select className={control} value={priority} onChange={(event) => setPriority(event.target.value)}>
+      {Object.entries({ general: "General", fuel: "Fuel saving", maintenance: "Low maintenance", resale: "Resale value", comfort: "Comfort", performance: "Performance", family: "Family use" }).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+    </select>
+  </label>;
 }

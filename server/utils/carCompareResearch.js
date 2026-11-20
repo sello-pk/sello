@@ -171,7 +171,7 @@ export async function researchComparison(identity, missing) {
 
 export async function compareModelsWithAi(cars, priority) {
   const result = await askOpenAi(
-    "Help a Pakistani used-car buyer compare these specific vehicles for the given priority. Use supplied approved facts when available. For model names without an exact year and trim give a concise qualitative model-level comparison and explain what the buyer should check for each car. Never assert trim-specific equipment, numerical figures, prices, or a winner without supporting supplied facts. No external brand references other than vehicle names, URLs or markdown. Return JSON {cars:[{index:integer,guidance:string}]} with one distinct, practical response per input car in order.",
+    "Write the buyer-guidance row of a Pakistani car comparison table. Each car already has its own column with make, model, year, prices, fuel economy and specifications. For each column write one or two concise sentences explaining a concrete trade-off versus the other selections for the buyer's priority. Use the supplied approved facts. If comparing published trims of a model year, identify the trim a figure belongs to. If evidence cannot distinguish the cars, say which missing detail would change the decision. Avoid generic inspection checklists, invented figures, trim assumptions, unsupported winners and repeating the table. Do not include URLs, outside site names or markdown. Return JSON {cars:[{index:integer,guidance:string}]} with one item per input in order.",
     { cars, priority },
   );
   if (!Array.isArray(result?.cars)) return [];

@@ -9,8 +9,8 @@ import { useGetFilteredCarsQuery } from "../redux/services/api.js";
 import SEO from "../components/common/SEO.jsx";
 import { comparisonArticles } from "../utils/compareEditorial.js";
 import CompareEditorial from "../components/common/CompareEditorial.jsx";
-import { BuyingRecommendation, RunningCost } from "../components/common/CompareBuyingTools.jsx";
-import { useCatalogComparisonQuery, useCatalogVariantsQuery, useCompareExperienceQuery, useCompareMarketPricesQuery, useCompareOverlayQuery, usePopularCatalogComparisonsQuery, useResolveCatalogListingQuery } from "../redux/services/carCatalogApi.js";
+import { BuyingPriority, RunningCost } from "../components/common/CompareBuyingTools.jsx";
+import { useCompareAiOverviewQuery, useCatalogComparisonQuery, useCatalogVariantsQuery, useCompareExperienceQuery, useCompareMarketPricesQuery, useCompareOverlayQuery, usePopularCatalogComparisonsQuery, useResolveCatalogListingQuery } from "../redux/services/carCatalogApi.js";
 import { hasDifference, isComparableCar, specNumber } from "../utils/carCompare.js";
 import { buildCarUrl, buildListingsSearchUrl } from "../utils/urlBuilders.js";
 import { formatPrice } from "../utils/formatters.js";
@@ -73,13 +73,20 @@ function ResultVersion({ entry, selectedTokens, onChange }) {
   );
 }
 
+function useComparisonListings(entry) {
+  const year = entry?.variant?.year || entry?.year;
+  const filters = { make: entry?.make?.name, model: entry?.model?.name, vehicleType: "Car", ...(year ? { yearMin: year, yearMax: year } : {}) };
+  const query = useGetFilteredCarsQuery({ ...filters, page: 1, limit: 12 }, { skip: !entry?.model });
+  const normalized = (value) => String(value ?? "").trim().toLowerCase();
+  const listings = (query.currentData?.cars || []).filter((car) => isComparableCar(car) &&
+    normalized(car.make) === normalized(filters.make) && normalized(car.model) === normalized(filters.model) &&
+    (!year || Number(car.year) === Number(year)) && (!entry.variant || normalized(car.variant) === normalized(entry.variant.name)));
+  return { filters, listings, query };
+}
+
 function MarketplacePreview({ entry, onSelect, selectedId }) {
   const { make, model } = entry;
-  const filters = { make: make.name, model: model.name, vehicleType: "Car" };
-  const { currentData, isFetching, isError, refetch } = useGetFilteredCarsQuery({ ...filters, page: 1, limit: 12 });
-  const normalized = (value) => String(value ?? "").trim().toLowerCase();
-  const listings = (currentData?.cars || []).filter((car) => isComparableCar(car) &&
-    normalized(car.make) === normalized(make.name) && normalized(car.model) === normalized(model.name));
+  const { filters, listings, query: { isFetching, isError, refetch } } = useComparisonListings(entry);
   const listing = listings.find((car) => car._id === selectedId) || listings[0];
   const price = listing && specNumber(listing.price, "", 1);
   return (
@@ -124,13 +131,41 @@ function MarketplaceListings({ vehicles }) {
   </section>;
 }
 
-function ResultOverview({ entries, tokens, onVersionChange, researchEnabled }) {
+function ResultOverview({ entries, tokens, onVersionChange, researchEnabled, summaryEnabled }) {
+  const [priority, setPriority] = useState("general");
+  const available = entries.filter((entry) => !entry.unavailable);
+  const showAi = summaryEnabled && available.length >= 2;
+  const ai = useCompareAiOverviewQuery({ vehicles: available.map((entry) => entry.token).join(","), priority }, { skip: !showAi });
+  const samples = [useComparisonListings(entries[0]), useComparisonListings(entries[1]), useComparisonListings(entries[2])];
+  function listingRange(index, key, format) {
+    const { listings, query } = samples[index];
+    const values = listings.filter((car) => String(car.condition).toLowerCase() === "used")
+      .map((car) => specNumber(car[key], "", 1)).filter((n) => n != null);
+    if (!values.length) return query.isFetching ? "Checking listings…" : query.isError ?
+      <button type="button" onClick={query.refetch} className="underline">Retry listings</button> : "Not available";
+    const low = Math.min(...values), high = Math.max(...values);
+    return <><strong className="font-semibold tabular-nums"><span className="whitespace-nowrap">{format(low)}</span>{high !== low && <> – <span className="whitespace-nowrap">{format(high)}</span></>}</strong>
+      <span className="mt-1 block text-xs text-slate-600">{values.length} matching Sello {values.length === 1 ? "ad" : "ads"}</span></>;
+  }
+  function specification(entry, index, key, unit = "", listingKey) {
+    const trims = entry.variant ? [entry.variant] : entry.publishedTrims || [];
+    const values = [...new Set(trims.map((trim) => trim.specifications?.[key]).filter((value) => value != null && value !== ""))];
+    if (values.length) return values.map((value) => `${value}${unit}`).join(" / ");
+    const reported = listingKey && [...new Set(samples[index].listings.map((car) => car[listingKey])
+      .filter((value) => value && !/^(n\/a|unknown)$/i.test(String(value))))];
+    return reported?.length ? <>{reported.map((value) => `${value}${unit}`).join(" / ")}
+      <span className="block text-xs text-slate-600">Seller-reported</span></> : "Not available";
+  }
   const imagesAvailable = entries.some((entry) => entry.variant?.image || entry.model?.image);
   const hasVersion = entries.some((entry) => entry.variant);
   const showMarket = researchEnabled && entries.some((entry) => entry.year || entry.variant?.year);
   const market = useCompareMarketPricesQuery(tokens.join(","), { skip: !showMarket });
   const rows = [
+    ["Make", (entry) => entry.make.name],
+    ["Model", (entry) => entry.model.name],
+    ["Model year", (entry) => entry.variant?.year || entry.year || "Not selected"],
     ["Version", (entry, index) => <ResultVersion entry={entry} selectedTokens={tokens} onChange={(token) => onVersionChange(index, token)} />],
+    ["Sello asking prices", (_, index) => listingRange(index, "price", formatPkr)],
     ...(showMarket ? [["Average used asking price", (entry) => {
       if (!entry.year && !entry.variant?.year) return "Select a year";
       const sample = market.currentData?.[entry.token];
@@ -142,20 +177,31 @@ function ResultOverview({ entries, tokens, onVersionChange, researchEnabled }) {
         <p className="text-xs text-slate-600">{sample.count} online asking prices · Checked {sample.checked}</p>
       </div>;
     }]] : []),
-    ...(hasVersion ? [["New-car reference price", (entry) => <Price entry={entry} />],
+    ["New-car reference price", (entry) => {
+      if (entry.variant) return <Price entry={entry} />;
+      const priced = (entry.publishedTrims || []).filter((trim) => trim.price?.type === "ex_factory" && trim.price.amount > 0);
+      return priced.length ? priced.map((trim) => <p key={trim.name}>{trim.name} · {formatPkr(trim.price.amount)}{trim.price.upperAmount > trim.price.amount && " – " + formatPkr(trim.price.upperAmount)} (ex-factory)</p>) : "Not available";
+    }],
+    ...(hasVersion ? [
     ["Used market estimate", ({ variant }) => {
       const { usedMinPkr, usedMaxPkr } = variant?.specifications || {};
       return usedMinPkr > 0 && usedMaxPkr >= usedMinPkr ? <p className="text-sm">{formatPkr(usedMinPkr)} – {formatPkr(usedMaxPkr)} <span className="block text-xs text-slate-600">Estimated range</span></p> : <p className="text-sm text-slate-600">Not available</p>;
     }]] : []),
+    ["City fuel economy", (entry, i) => specification(entry, i, "cityKmPerL", " km/L")],
+    ["Highway fuel economy", (entry, i) => specification(entry, i, "highwayKmPerL", " km/L")],
+    ["Fuel type", (entry, i) => specification(entry, i, "fuelType", "", "fuelType")],
+    ["Engine capacity", (entry, i) => specification(entry, i, "engineCapacityCc", " cc", "engineCapacity")],
+    ["Transmission", (entry, i) => specification(entry, i, "transmission", "", "transmission")],
+    ["Odometer in used listings", (_, index) => listingRange(index, "mileage", (km) => `${km.toLocaleString("en-PK")} km`)],
   ];
-  const label = "sticky left-0 z-10 w-24 break-words border-r border-slate-200 bg-slate-50 p-2 text-left text-xs font-semibold text-slate-700 sm:w-32 sm:p-4 sm:text-sm";
+  const label = "sticky left-0 z-10 w-28 break-words border-r border-slate-200 bg-slate-50 px-3 py-2 text-left text-xs font-semibold leading-5 text-slate-700 sm:w-44 sm:px-4 sm:text-sm lg:w-48";
   return (
     <div role="region" aria-label="Side-by-side vehicle overview" tabIndex={0} className="overflow-x-auto overscroll-x-contain rounded-xl border border-slate-200 focus-visible:ring-2 focus-visible:ring-primary-500">
-      <table className="w-full table-fixed text-left" style={{ minWidth: 96 + entries.length * 176 }}>
+      <table className="w-full table-fixed text-left text-sm leading-5 [--label-width:7rem] sm:[--label-width:11rem] lg:[--label-width:12rem]" style={{ minWidth: `calc(var(--label-width) + ${entries.length * 11}rem)` }}>
         <caption className="sr-only">Vehicle versions, reference prices, and marketplace listings</caption>
         <thead><tr>
           <th scope="col" className={label}>Vehicle</th>
-          {entries.map((entry) => <th key={entry.token} scope="col" className="break-words border-l border-slate-100 p-3 align-bottom sm:p-4">
+          {entries.map((entry) => <th key={entry.token} scope="col" className="break-words border-l border-slate-100 px-3 py-3 align-bottom text-base font-semibold sm:px-4">
             {entry.unavailable ? "Unavailable vehicle" : <>
               {imagesAvailable && <VehicleImage entry={entry} />}
               <span className={imagesAvailable ? "mt-3 block" : "block"}>{entry.year || entry.variant?.year} {entry.make.name} {entry.model.name}</span>
@@ -164,10 +210,19 @@ function ResultOverview({ entries, tokens, onVersionChange, researchEnabled }) {
         </tr></thead>
         <tbody>{rows.map(([name, render]) => <tr key={name} className="border-t border-slate-200">
           <th scope="row" className={label}>{name}</th>
-          {entries.map((entry, index) => <td key={entry.token} className="border-l border-slate-100 p-3 align-top sm:p-4">
+          {entries.map((entry, index) => <td key={entry.token} className="break-words border-l border-slate-100 px-3 py-2.5 align-middle sm:px-4">
             {entry.unavailable ? (name === "Version" ? <p className="text-sm">Unavailable. Use Change cars to replace it.</p> : "—") : render(entry, index)}
           </td>)}
-        </tr>)}</tbody>
+        </tr>)}
+          {showAi && <tr className="border-t border-slate-200">
+            <th scope="row" className={label}>Sello AI guidance<BuyingPriority priority={priority} setPriority={setPriority} /></th>
+            {entries.map((entry) => <td key={entry.token} className="border-l border-slate-100 p-3 align-top text-sm sm:p-4">
+              {entry.unavailable ? "Unavailable" : ai.isFetching ? "Comparing…" : ai.isError ?
+                <button type="button" className="underline" onClick={ai.refetch}>Retry AI comparison</button> :
+                ai.currentData?.[available.indexOf(entry)]?.guidance || "Guidance unavailable"}
+            </td>)}
+          </tr>}
+        </tbody>
       </table>
     </div>
   );
@@ -442,10 +497,9 @@ export default function CarModelCompare({ results = false }) {
         {preselected && !full && !preselected.variant && <p className={panel}>The matching model is selected. Choose a version if its exact catalogue record is available.</p>}
         {results && selection.currentData && (
           <>
-            {vehicles.length >= 2 && experience.data?.summary && <BuyingRecommendation key={tokens.join(",")} vehicles={vehicles.map((entry) => entry.token)} />}
             <section className={panel} aria-labelledby="catalogue-prices">
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                <h2 id="catalogue-prices" className="text-xl font-bold">Vehicles and prices</h2>
+                <h2 id="catalogue-prices" className="text-xl font-bold">Compare prices and specifications</h2>
                 <div className="flex flex-wrap gap-2">
                   <button type="button" className={button} onClick={() => {
                     const section = editor.current;
@@ -463,7 +517,7 @@ export default function CarModelCompare({ results = false }) {
                 <p className="mb-4 rounded-lg bg-slate-50 p-3 text-sm text-slate-700">You selected {vehicles.filter((entry) => !entry.variant).map(catalogueTitle).join(" and ")}. Exact specifications depend on the trim. To compare individual cars and their asking prices, choose seller listings below.</p>
               )}
               <p className="mb-2 text-xs text-slate-600 sm:hidden">Swipe the table to see all cars.</p>
-              <ResultOverview entries={resultEntries} tokens={tokens} researchEnabled={experience.data?.research} onVersionChange={(index, token) => {
+              <ResultOverview entries={resultEntries} tokens={tokens} researchEnabled={experience.data?.research} summaryEnabled={experience.data?.summary} onVersionChange={(index, token) => {
                 const next = parseCatalogSelection(tokens.map((value, position) => position === index ? token : value).join(","));
                 if (!next) return;
                 setShareState("");
@@ -472,6 +526,7 @@ export default function CarModelCompare({ results = false }) {
                 navigate(catalogResultUrl(next, vehicles));
               }} />
             </section>
+
             {research.isFetching && <p role="status" className="text-sm text-slate-600">Checking missing specifications. Your comparison is ready below.</p>}
             {vehicles.length >= 2 && <>
               {vehicles.some((entry) => entry.variant) && <ComparisonTable vehicles={vehicles.map((entry) => enrich(entry, true))} />}
