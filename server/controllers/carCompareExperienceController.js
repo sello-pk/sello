@@ -3,7 +3,7 @@ import Review, { CarCompareResearchLease } from "../models/carCompareReviewModel
 import Settings from "../models/carCompareSettingsModel.js";
 import Variant from "../models/carCatalogVariantModel.js";
 import { parseCatalogTokens, resolveVehicles } from "./carCatalogController.js";
-import { chooseComparisonEvidence, compareModelsWithAi, comparisonAiConfigured, missingResearchFields, researchComparison, validateComparisonFields } from "../utils/carCompareResearch.js";
+import { chooseComparisonEvidence, compareModelsWithAi, comparisonAiConfigured, missingResearchFields, researchComparison, searchUsedAskingPrices, validateComparisonFields } from "../utils/carCompareResearch.js";
 import { escapeRegex } from "../utils/helpers.js";
 import Logger from "../utils/logger.js";
 
@@ -119,6 +119,28 @@ export const getComparisonOverlay = handle(async (req, res) => {
 });
 
 const priorities = new Set(["general", "fuel", "maintenance", "resale", "comfort", "performance", "family"]);
+const marketPrices = new Map();
+export const getMarketPrices = handle(async (req, res) => {
+  const tokens = parseCatalogTokens(req.query.vehicles);
+  if (!tokens) return invalid(res, "Choose two or three cars.");
+  if (!(await settings()).research || !comparisonAiConfigured()) return ok(res, {});
+  const entries = (await resolveVehicles(tokens)).filter((entry) => !entry.unavailable && (entry.year || entry.variant?.year));
+  const prices = await Promise.all(entries.map(async (entry) => {
+    let cached = marketPrices.get(entry.token);
+    if (!cached || cached.expires <= Date.now()) {
+      cached = { work: searchUsedAskingPrices(entry), expires: Date.now() + 6 * 3600000 };
+      if (marketPrices.size >= 256) marketPrices.delete(marketPrices.keys().next().value);
+      marketPrices.set(entry.token, cached);
+    }
+    try { return [entry.token, await cached.work]; }
+    catch {
+      if (marketPrices.get(entry.token) === cached) marketPrices.delete(entry.token);
+      return [entry.token, { failed: true }];
+    }
+  }));
+  return ok(res, Object.fromEntries(prices));
+});
+
 export const getBuyingRecommendation = handle(async (req, res) => {
   const tokens = parseCatalogTokens(req.body?.vehicles);
   const priority = req.body?.priority || "general";

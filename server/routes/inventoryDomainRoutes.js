@@ -1,6 +1,6 @@
 import express from "express";
 import rateLimit from "express-rate-limit";
-import { getComparisonOverlay, getComparisonSettings, getBuyingRecommendation } from "../controllers/carCompareExperienceController.js";
+import { getComparisonOverlay, getComparisonSettings, getBuyingRecommendation, getMarketPrices } from "../controllers/carCompareExperienceController.js";
 import { catalogMakes, catalogModels, catalogVariants, catalogYears, catalogComparison, popularCatalogComparisons, resolveCatalogListing } from "../controllers/carCatalogController.js";
 import { getCarComparison } from "../controllers/carCompareController.js";
 import {
@@ -35,6 +35,7 @@ router.get("/car-catalog/resolve", resolveCatalogListing);
 router.get("/car-catalog/compare", catalogComparison);
 router.get("/car-catalog/popular", popularCatalogComparisons);
 router.get("/car-catalog/experience", getComparisonSettings);
+router.get("/car-catalog/market-prices", compareAiLimit, getMarketPrices);
 router.get("/car-catalog/overlay", (req, res, next) => req.query.research === "true" ? compareAiLimit(req, res, next) : next(), getComparisonOverlay);
 router.post("/car-catalog/recommendation", compareAiLimit, getBuyingRecommendation);
 

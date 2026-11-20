@@ -45,6 +45,11 @@ const activate = api.enhanceEndpoints({ addTagTypes: ["CarCatalogue"] }).injectE
     compareExperience: builder.query({ query: () => "/car-catalog/experience", transformResponse: (response) => response.data, providesTags: ["CarCatalogue"] }),
     compareOverlay: builder.query({ query: (params) => ({ url: "/car-catalog/overlay", params }), transformResponse: (response) => response.data, providesTags: ["CarCatalogue"], keepUnusedDataFor: 30 }),
     compareRecommendation: builder.mutation({ query: (body) => ({ url: "/car-catalog/recommendation", method: "POST", body }), transformResponse: (response) => response.data }),
+    compareMarketPrices: builder.query({
+      query: (vehicles) => ({ url: "/car-catalog/market-prices", params: { vehicles }, timeout: 45000 }),
+      transformResponse: (response) => response.data,
+      keepUnusedDataFor: 600,
+    }),
     compareAiOverview: builder.query({
       query: (body) => ({ url: "/car-catalog/recommendation", method: "POST", body: { ...body, mode: "overview" } }),
       transformResponse: (response) => response.data,
@@ -113,4 +118,4 @@ const activate = api.enhanceEndpoints({ addTagTypes: ["CarCatalogue"] }).injectE
 
 export const { useCompareExperienceQuery, useCompareOverlayQuery, useCompareRecommendationMutation, useCompareAiOverviewQuery, useCompareReviewsQuery, useSaveCompareReviewMutation, useSaveCompareExperienceMutation, useCatalogYearsQuery, useUploadCompareImageMutation } = activate;
 
-export const { useCatalogMakesQuery, useCatalogModelsQuery, useCatalogVariantsQuery, useCatalogComparisonQuery, usePopularCatalogComparisonsQuery, useResolveCatalogListingQuery, useAdminCatalogVariantsQuery, useSaveCatalogVariantMutation, useArchiveCatalogVariantMutation } = activate;
+export const { useCompareMarketPricesQuery, useCatalogMakesQuery, useCatalogModelsQuery, useCatalogVariantsQuery, useCatalogComparisonQuery, usePopularCatalogComparisonsQuery, useResolveCatalogListingQuery, useAdminCatalogVariantsQuery, useSaveCatalogVariantMutation, useArchiveCatalogVariantMutation } = activate;

@@ -4,6 +4,8 @@ Car Compare reads active `Category` makes and models and published `CarCatalogVa
 
 ## Configure and release
 
+For local development against the updated Express server, set `VITE_COMPARE_API_URL=http://127.0.0.1:4000/api` in `client/.env.development.local` and use the port configured for your local API. Vite uses this override for catalogue and comparison requests only. Production builds use the regular API configuration.
+
 1. Deploy the API and apply the updated frontend routing for `/cars/compare`. Verify the MongoDB unique index on the review variant ID and the lease TTL index. On Nginx, merge the comparison locations into the active configuration so direct share links reach the SPA with the noindex result shell.
 2. Leave both AI switches off for the first comparison and check prices, approved specifications, sharing, and the running cost calculator. The public landing page has four default guides. Use the Car Catalogue settings to preview and publish replacements.
 3. Car Compare reuses the price estimator's server-side `OPENAI_API_KEY` or `OPENAI_KEY`. With no saved settings, a configured key enables AI guidance and research. Saved switches take precedence. Model-only selections receive qualitative buying guidance. Exact year and trim selections can also retrieve missing specifications through OpenAI web search, or Brave Search when its optional key is configured.

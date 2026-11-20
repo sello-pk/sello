@@ -310,6 +310,10 @@ export const api = createApi({
   baseQuery: async (args, api, extraOptions) => {
     try {
       const httpMethod = String(args?.method || "GET").toUpperCase();
+      const requestPath = typeof args === "string" ? args : args.url;
+      const localCompareApi = import.meta.env.DEV && import.meta.env.VITE_COMPARE_API_URL &&
+        /^\/(?:car-catalog|admin\/car-(?:catalog|compare))\//.test(requestPath);
+      const baseUrl = localCompareApi ? import.meta.env.VITE_COMPARE_API_URL : API_BASE_URL;
       const isRead = httpMethod === "GET" || httpMethod === "HEAD";
 
       // Cooling down after a 429: fail reads locally so pollers don't keep
@@ -320,7 +324,7 @@ export const api = createApi({
       }
 
       const baseResult = await fetchBaseQuery({
-        baseUrl: API_BASE_URL,
+        baseUrl,
         credentials: "include",
         prepareHeaders: (headers, { extra, endpoint }) => {
           const token = getAccessToken();
@@ -372,7 +376,7 @@ export const api = createApi({
             if (newToken) {
               // Retry the original request with the new access token
               return fetchBaseQuery({
-                baseUrl: API_BASE_URL,
+                baseUrl,
                 credentials: "include",
                 prepareHeaders: (headers) => {
                   headers.set("Authorization", `Bearer ${newToken}`);
