@@ -63,17 +63,17 @@ function hideSources(entry) {
 }
 
 export function parseCatalogTokens(value) {
-  if (typeof value !== "string" || value.length > 80) return null;
+  if (typeof value !== "string" || value.length > 95) return null;
   const tokens = value.toLowerCase().split(",");
   return tokens.length >= 2 && tokens.length <= 3 &&
-    tokens.every((token) => /^[mv]-[a-f0-9]{24}$/.test(token)) &&
+    tokens.every((token) => (/^[mv]-[a-f0-9]{24}$/.test(token) || (/^m-[a-f0-9]{24}-(19|20)\d{2}$/.test(token) && Number(token.slice(27)) <= new Date().getFullYear() + 1))) &&
     new Set(tokens).size === tokens.length ? tokens : null;
 }
 
 export async function resolveVehicles(tokens, knownVariants) {
-  const variantIds = tokens.filter((token) => token.startsWith("v-")).map((token) => token.slice(2));
+  const variantIds = tokens.filter((token) => token.startsWith("v-")).map((token) => token.slice(2, 26));
   const variants = knownVariants ?? await Variant.find({ _id: { $in: variantIds }, published: true }).select(variantFields).lean();
-  const modelIds = [...tokens.filter((token) => token.startsWith("m-")).map((token) => token.slice(2)), ...variants.map((variant) => variant.modelId)];
+  const modelIds = [...tokens.filter((token) => token.startsWith("m-")).map((token) => token.slice(2, 26)), ...variants.map((variant) => variant.modelId)];
   const models = await Category.find({ ...catalogue("model"), _id: { $in: modelIds } }).select(projection).lean();
   const makes = await Category.find({ ...catalogue("make"), _id: { $in: models.map((model) => model.parentCategory) } }).select(projection).lean();
   const indexed = (records) => new Map(records.map((entry) => [String(entry._id), entry]));
@@ -81,12 +81,12 @@ export async function resolveVehicles(tokens, knownVariants) {
   const byModel = indexed(models);
   const byMake = indexed(makes);
   return tokens.map((token) => {
-    const id = token.slice(2);
+    const id = token.slice(2, 26);
     const variant = token.startsWith("v-") ? byVariant.get(id) : null;
     const model = byModel.get(String(variant?.modelId ?? id));
     const make = model && byMake.get(String(model.parentCategory));
     if (!make || (token.startsWith("v-") && !variant)) return { token, unavailable: true };
-    return { token, make, model, variant: variant || null };
+    return { token, make, model, variant: variant || null, ...(token.length > 26 ? { year: Number(token.slice(27)) } : {}) };
   });
 }
 

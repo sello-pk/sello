@@ -71,8 +71,9 @@ const activate = api.enhanceEndpoints({ addTagTypes: ["CarCatalogue"] }).injectE
         (vehicles) => ({ url: "/car-catalog/compare", params: { vehicles } }),
         (cars, vehicles) => (parseCatalogSelection(vehicles) || []).map((token) => {
           if (token.startsWith("v-")) return { token, unavailable: true, needsCatalogue: true };
-          const model = cars.find((entry) => entry.subType === "model" && entry._id === token.slice(2));
-          return modelEntry(cars, model) || { token, unavailable: true };
+          const model = cars.find((entry) => entry.subType === "model" && entry._id === token.slice(2, 26));
+          const entry = modelEntry(cars, model);
+          return entry ? { ...entry, token, year: Number(token.slice(27)) || null } : { token, unavailable: true };
         }),
       ),
       keepUnusedDataFor: 20,

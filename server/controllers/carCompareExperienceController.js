@@ -131,7 +131,7 @@ export const getBuyingRecommendation = handle(async (req, res) => {
     const reviews = await Review.find({ variantId: { $in: entries.map(({ variant }) => variant._id) } }).lean();
     const approved = new Map(reviews.map((record) => [String(record.variantId), record.approved]));
     const cars = available.map((entry) => ({
-      vehicle: entry.variant ? identityFor(entry) : [entry.make.name, entry.model.name].join(" "),
+      vehicle: entry.variant ? identityFor(entry) : [entry.year, entry.make.name, entry.model.name].filter(Boolean).join(" "),
       specifications: { ...entry.variant?.specifications, ...approved.get(String(entry.variant?._id)) },
       features: entry.variant?.features, pricePkr: entry.variant?.price?.amount, priceType: entry.variant?.price?.type,
     }));

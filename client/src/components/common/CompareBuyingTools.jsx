@@ -51,7 +51,7 @@ export function BuyingRecommendation({ vehicles }) {
   const [priority, setPriority] = useState("general");
   const result = useCompareAiOverviewQuery({ vehicles: vehicles.join(","), priority });
   return <section className={shell} aria-labelledby="compare-recommendation">
-    <h2 id="compare-recommendation" className="text-xl font-bold">Sello AI buying recommendation</h2>
+    <h2 id="compare-recommendation" className="text-xl font-bold">Sello AI car comparison</h2>
     <div className="flex flex-wrap items-end gap-3">
       <label className="grid gap-1 text-sm font-semibold">Buying priority (optional)
         <select className={control} value={priority} onChange={(event) => setPriority(event.target.value)}>

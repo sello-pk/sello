@@ -46,10 +46,10 @@ function Price({ entry }) {
 }
 
 function ResultVersion({ entry, selectedTokens, onChange }) {
-  const versions = useCatalogVariantsQuery({ modelId: entry.model._id });
+  const versions = useCatalogVariantsQuery({ modelId: entry.model._id, year: entry.year });
   const options = versions.currentData || [];
   const selected = entry.variant?._id || "";
-  const modelToken = `m-${entry.model._id}`;
+  const modelToken = tokenFor({ model: entry.model, year: entry.year || entry.variant?.year });
   if (versions.isError && !selected) return <button type="button" onClick={versions.refetch} className={button}>Retry versions</button>;
   if (!selected && !options.length) {
     return <p className="text-sm text-slate-600">{versions.isFetching ? "Loading versions…" : versions.isError ? "Version data unavailable" : "No published versions"}</p>;
@@ -145,7 +145,7 @@ function ResultOverview({ entries, tokens, onVersionChange }) {
           {entries.map((entry) => <th key={entry.token} scope="col" className="break-words border-l border-slate-100 p-3 align-bottom sm:p-4">
             {entry.unavailable ? "Unavailable vehicle" : <>
               {imagesAvailable && <VehicleImage entry={entry} />}
-              <span className={imagesAvailable ? "mt-3 block" : "block"}>{entry.make.name} {entry.model.name}</span>
+              <span className={imagesAvailable ? "mt-3 block" : "block"}>{entry.year || entry.variant?.year} {entry.make.name} {entry.model.name}</span>
             </>}
           </th>)}
         </tr></thead>
@@ -162,7 +162,7 @@ function ResultOverview({ entries, tokens, onVersionChange }) {
 
 function SelectionEditor({ entries = [], results = false }) {
   const navigate = useNavigate();
-  const vehicleCategories = useCarCategories("Car", { includeYearsAndLocations: false });
+  const vehicleCategories = useCarCategories("Car");
   const [storageError, setStorageError] = useState(false);
   const [editing, setEditing] = useState(null);
   const nextId = useRef(Math.max(2, entries.length));
@@ -197,7 +197,7 @@ function SelectionEditor({ entries = [], results = false }) {
       navigate(catalogResultUrl(valid, slots.filter(({ selection }) => tokenFor(selection)).map(({ selection }) => selection)), { state: { storageError: !persisted } });
     }}>
       <h2 className="text-xl font-bold">{results ? "Change your comparison" : "Choose your cars"}</h2>
-      <p className="mt-1 text-sm text-slate-600">Choose two or three cars. Select the year and version to compare prices and specifications.</p>
+      <p className="mt-1 text-sm text-slate-600">Choose a make, model and year for each car.</p>
       <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {slots.map(({ id, selection }, index) => (
           <fieldset key={id} aria-label={`Car ${index + 1}`} className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-4">
@@ -209,14 +209,14 @@ function SelectionEditor({ entries = [], results = false }) {
               <span className="break-words">{selection.model ? catalogueTitle(selection) : "Select make and model"}</span>
               <ChevronRight aria-hidden="true" className="h-4 w-4 shrink-0" />
             </button>
-            {selection.model && !selection.variant && <p className="mt-2 text-xs text-slate-600">Model only · No version selected</p>}
+            {selection.model && !selection.year && !selection.variant && <p className="mt-2 text-xs text-slate-600">Model only · No version selected</p>}
             {(slots.length > 2 || selection.make) && <button type="button" className="mt-3 min-h-9 text-sm font-semibold text-slate-700 underline" onClick={() => {
               setSlots((previous) => previous.length > 2 ? previous.filter((slot) => slot.id !== id) : previous.map((slot) => slot.id === id ? { id, selection: withMake(null) } : slot));
               trackCompare("car_compare_remove_vehicle", { catalogue_id: tokenFor(selection) || undefined });
             }}>{slots.length > 2 ? "Remove car" : "Clear car"}</button>}
           </fieldset>
         ))}
-        {slots.length < CATALOG_LIMIT && <button type="button" className="flex min-h-20 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 p-4 text-sm font-semibold text-slate-800 hover:border-primary-500 hover:bg-primary-50 focus-visible:ring-2 focus-visible:ring-primary-500 sm:col-span-2 lg:col-span-1" onClick={() => {
+        {slots.length < CATALOG_LIMIT && <button type="button" className="bg-white flex min-h-20 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 p-4 text-sm font-semibold text-slate-800 hover:border-primary-500 hover:bg-primary-50 focus-visible:ring-2 focus-visible:ring-primary-500 sm:col-span-2 lg:col-span-1" onClick={() => {
           const id = nextId.current++;
           setSlots((previous) => previous.length < CATALOG_LIMIT ? [...previous, { id, selection: withMake(null) }] : previous);
           setEditing(id);
@@ -227,7 +227,7 @@ function SelectionEditor({ entries = [], results = false }) {
       {storageError && <p role="status" className="mt-3 text-sm text-slate-700">Browser storage is unavailable. Keep your comparison with a share link.</p>}
       <div className="mt-5 flex flex-col gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:flex-wrap sm:items-center">
         <button type="submit" className={`${primary} min-h-11 sm:px-6`} disabled={!valid || incomplete}>{results ? "Update comparison" : "Compare Cars"} <ArrowRight aria-hidden="true" size={16} /></button>
-        {canClear && <button type="button" className={button} onClick={() => {
+        {canClear && <button type="button" className={button + " text-slate-950"} onClick={() => {
           save([]);
           if (results) navigate("/cars/compare");
           else setSlots([{ id: 0, selection: withMake(null) }, { id: 1, selection: withMake(null) }]);
@@ -429,6 +429,7 @@ export default function CarModelCompare({ results = false }) {
         {preselected && !full && !preselected.variant && <p className={panel}>The matching model is selected. Choose a version if its exact catalogue record is available.</p>}
         {results && selection.currentData && (
           <>
+            {vehicles.length >= 2 && experience.data?.summary && <BuyingRecommendation key={tokens.join(",")} vehicles={vehicles.map((entry) => entry.token)} />}
             <section className={panel} aria-labelledby="catalogue-prices">
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <h2 id="catalogue-prices" className="text-xl font-bold">Vehicles and prices</h2>
@@ -446,7 +447,7 @@ export default function CarModelCompare({ results = false }) {
               {shareState && <p role="status" className="mb-3 text-sm">{shareState}</p>}
               {manualLink && <input aria-label="Comparison link" readOnly value={manualLink} onFocus={(event) => event.target.select()} className="mb-3 w-full rounded border border-slate-300 p-2 text-sm" />}
               {vehicles.some((entry) => !entry.variant) && (
-                <p className="mb-4 rounded-lg bg-slate-50 p-3 text-sm text-slate-700">You selected {vehicles.filter((entry) => !entry.variant).map(catalogueTitle).join(" and ")} by model name. Catalogue specifications require a published version. To compare individual cars and their asking prices, choose seller listings below.</p>
+                <p className="mb-4 rounded-lg bg-slate-50 p-3 text-sm text-slate-700">You selected {vehicles.filter((entry) => !entry.variant).map(catalogueTitle).join(" and ")}. Exact specifications depend on the trim. To compare individual cars and their asking prices, choose seller listings below.</p>
               )}
               <p className="mb-2 text-xs text-slate-600 sm:hidden">Swipe the table to see all cars.</p>
               <ResultOverview entries={resultEntries} tokens={tokens} onVersionChange={(index, token) => {
@@ -462,7 +463,6 @@ export default function CarModelCompare({ results = false }) {
             {vehicles.length >= 2 && <>
               {vehicles.some((entry) => entry.variant) && <ComparisonTable vehicles={vehicles.map((entry) => enrich(entry, true))} />}
               {vehicles.some((entry) => entry.variant) && <RunningCost vehicles={vehicles} />}
-              {experience.data?.summary && <BuyingRecommendation key={tokens.join(",")} vehicles={vehicles.map((entry) => entry.token)} />}
               <MarketplaceListings key={tokens.join(",")} vehicles={vehicles} />
             </>}
           </>

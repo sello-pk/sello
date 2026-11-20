@@ -3,14 +3,14 @@ export const CATALOG_STORAGE = "sello_model_compare_v1";
 
 export function tokenFor(slot) {
   if (slot?.variant?._id) return `v-${slot.variant._id}`;
-  return slot?.model?._id ? `m-${slot.model._id}` : null;
+  return slot?.model?._id ? `m-${slot.model._id}${slot.year ? "-" + slot.year : ""}` : null;
 }
 
 export function parseCatalogSelection(value) {
-  if (typeof value !== "string" || value.length > 80) return null;
+  if (typeof value !== "string" || value.length > 95) return null;
   const tokens = value.toLowerCase().split(",");
   return tokens.length >= 2 && tokens.length <= CATALOG_LIMIT &&
-    tokens.every((token) => /^[mv]-[a-f0-9]{24}$/.test(token)) &&
+    tokens.every((token) => (/^[mv]-[a-f0-9]{24}$/.test(token) || (/^m-[a-f0-9]{24}-(19|20)\d{2}$/.test(token) && Number(token.slice(27)) <= new Date().getFullYear() + 1))) &&
     new Set(tokens).size === tokens.length ? tokens : null;
 }
 
@@ -21,15 +21,8 @@ export function catalogResultUrl(tokens, entries = []) {
 
 export const withMake = (make) => ({ make, model: null, variant: null });
 export const withModel = (slot, model) => ({ ...slot, model, variant: null });
-export function pickerSelection(draft, versions) {
-  if (!draft.model || !Array.isArray(versions)) return null;
-  if (!versions.length) return { ...draft, variant: null };
-  const variant = versions.find((item) => item._id === draft.variant?._id)
-    ?? (versions.length === 1 ? versions[0] : null);
-  return variant ? { ...draft, variant } : null;
-}
 export const versionLabel = (variant) => [variant.name, variant.generation, variant.year].filter(Boolean).join(" · ");
-export const catalogueTitle = (entry) => [entry.make.name, entry.model.name, entry.variant && versionLabel(entry.variant)].filter(Boolean).join(" ");
+export const catalogueTitle = (entry) => [entry.make.name, entry.model.name, entry.variant ? versionLabel(entry.variant) : entry.year].filter(Boolean).join(" ");
 
 export function modelCompareLink(car) {
   if (!car?.make || !car.model || (car.vehicleType && car.vehicleType !== "Car")) return "/cars/compare";
@@ -72,7 +65,7 @@ export function catalogGroups(entries) {
   return [
     ["General information", [
       ["Make", entries.map((entry) => entry.make.name)], ["Model", entries.map((entry) => entry.model.name)],
-      ["Version", entries.map((entry) => entry.variant?.name)], ["Model year", entries.map((entry) => entry.variant?.year)],
+      ["Version", entries.map((entry) => entry.variant?.name)], ["Model year", entries.map((entry) => entry.variant?.year ?? entry.year)],
       ["Generation", entries.map((entry) => entry.variant?.generation)],
       ...rows(entries, { bodyType: "Body type", assembly: "Assembly" }, specifications),
     ]],
