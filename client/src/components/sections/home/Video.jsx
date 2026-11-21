@@ -5,19 +5,19 @@ import { images } from "../../../assets/assets";
 const Video = () => {
   return (
     <div className="max-w-8xl mx-auto py-8 md:py-16">
-      <div className="px-3 sm:px-4 md:px-6 lg:px-8 mx-auto flex items-center flex-col sm:flex-col md:flex-col lg:flex-row gap-10 h-full">
-        <div className="video h-full lg:w-1/2 md:w-full border-2 border-primary/70 rounded overflow-hidden">
+      <div className="px-3 sm:px-4 md:px-6 lg:px-8 mx-auto flex flex-col lg:flex-row lg:items-stretch gap-10">
+        {/* Image: stretches to match the text height on desktop */}
+        <div className="video relative w-full lg:w-[40%] aspect-[16/10] lg:aspect-auto lg:min-h-[22rem] border-2 border-primary/70 rounded overflow-hidden">
           <img
             src={images.selloVideo}
             alt="A Smarter Way to Sell Your Car with Sello"
-            width="672"
-            height="383"
             loading="lazy"
             decoding="async"
-            className="w-full h-full rounded object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
           />
         </div>
-        <div className="content">
+
+        <div className="content w-full lg:w-[60%]">
           <h2 className="md:text-4xl text-3xl font-semibold max-w-4xl pb-5">
             A Smarter Way to Sell Your Car in Pakistan
           </h2>
@@ -35,8 +35,7 @@ const Video = () => {
               "Get quick inspections at great prices and also have transparent and reliable valuations.",
             ].map((list, index) => (
               <li key={index} className="flex items-center gap-2 my-2">
-                {" "}
-                <FaCheck className="md:w-7 w-5 md:h-7 h-5 rounded-full bg-white text-green-400 p-1 shadow-md " />{" "}
+                <FaCheck className="md:w-7 w-5 md:h-7 h-5 shrink-0 rounded-full bg-white text-green-400 p-1 shadow-md" />
                 {list}
               </li>
             ))}
