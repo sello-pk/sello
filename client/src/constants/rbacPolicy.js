@@ -12,6 +12,7 @@ export const SYSTEM_ROLE_NAMES = [
 ];
 
 export const PERMISSION_ROUTE_ACCESS = {
+  '/admin/car-compare': ['manageCategories'],
   "/admin/dashboard": [
     "viewAnalytics",
     "viewListings",

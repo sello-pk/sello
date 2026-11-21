@@ -7,6 +7,7 @@ export const ROUTES = {
   // Public routes
   home: "/",
   cars: "/cars",
+  carCompare: '/cars/compare',
   carDetails: (slug) => `/cars/${slug}`,
   carEstimator: "/car-estimator",
   vehicleVerification: "/vehicle-verification",

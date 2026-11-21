@@ -159,6 +159,7 @@ const Navbar = () => {
     { path: "/help/faqs", name: "FAQs" },
   ];
   const moreLinks = [
+    { path: '/cars/compare', name: 'Car Compare' },
     { path: "/vehicle-verification", name: "Vehicle Verification" },
     { path: "/driving-licence", name: "Driving License" },
     { path: "/fuel-prices", name: "Fuel Prices" },

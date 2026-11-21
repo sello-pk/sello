@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, useId } from "react";
 import { ChevronDown, X, Search } from "lucide-react";
 
 const SearchableSelect = ({
@@ -14,6 +14,7 @@ const SearchableSelect = ({
   required = false,
   compact = false,
 }) => {
+  const selectId = useId();
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -87,6 +88,7 @@ const SearchableSelect = ({
 
   const handleSelect = useCallback(
     (option) => {
+      if (option.disabled) return;
       onChange(option.value);
       setIsOpen(false);
       setSearchTerm("");
@@ -163,8 +165,12 @@ const SearchableSelect = ({
     return (
       <div
         key={option.value}
+        id={`${selectId}-option-${globalIndex}`}
+        role="option"
+        aria-selected={option.value === value}
+        aria-disabled={Boolean(option.disabled)}
         className={`px-3 py-2 cursor-pointer transition-colors ${
-          isHighlighted ? "bg-primary-50 text-primary-600" : "hover:bg-gray-50"
+          isHighlighted ? "bg-primary-50 text-slate-900" : "hover:bg-gray-50"
         } ${option.disabled ? "opacity-50 cursor-not-allowed" : ""}`}
         onClick={() => !option.disabled && handleSelect(option)}
         onMouseEnter={() => setHighlightedIndex(globalIndex)}
@@ -208,6 +214,7 @@ const SearchableSelect = ({
     >
       {label && (
         <label
+          id={`${selectId}-label`}
           className={`block mb-1 text-sm font-medium text-gray-700 ${compact ? "text-xs" : ""}`}
         >
           {label}
@@ -223,6 +230,12 @@ const SearchableSelect = ({
         onKeyDown={handleKeyDown}
         tabIndex={disabled ? -1 : 0}
         role="combobox"
+        aria-labelledby={label ? `${selectId}-label` : undefined}
+        aria-label={label ? undefined : placeholder}
+        aria-controls={`${selectId}-listbox`}
+        aria-activedescendant={isOpen && highlightedIndex >= 0 ? `${selectId}-option-${highlightedIndex}` : undefined}
+        aria-disabled={disabled || isLoading}
+        aria-required={required}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
       >
@@ -284,13 +297,14 @@ const SearchableSelect = ({
                   setHighlightedIndex(-1);
                 }}
                 placeholder="Search..."
+                aria-label={`Search ${label || 'options'}`}
                 className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
                 onClick={(e) => e.stopPropagation()}
               />
             </div>
           </div>
 
-          <div className="max-h-48 overflow-y-auto" role="listbox">
+          <div id={`${selectId}-listbox`} className="max-h-48 overflow-y-auto" role="listbox" aria-labelledby={label ? `${selectId}-label` : undefined}>
             {filteredOptions.length === 0 ? (
               <div className="px-3 py-4 text-center text-sm text-gray-500">
                 No results found

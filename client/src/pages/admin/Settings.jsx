@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import AdminLayout from "../../components/features/admin/AdminLayout";
 import GeneralSettingsTab from "../../components/features/admin/settings/GeneralSettingsTab";
 import UserRolesTab from "../../components/features/admin/settings/UserRolesTab";
+import { CompareSettings } from './CarCompareAdmin';
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState("general"); // 'general' or 'roles'
@@ -22,6 +23,7 @@ const Settings = () => {
 
           {/* Tab Switcher */}
           <div className="bg-gray-100 dark:bg-gray-800 p-1 rounded-lg flex w-full md:w-auto overflow-x-auto">
+            <button onClick={() => setActiveTab('compare')} className="px-4 py-2 whitespace-nowrap">Car Compare content</button>
             <button
               onClick={() => setActiveTab("general")}
               className={`whitespace-nowrap px-4 sm:px-6 py-2 rounded-md font-medium text-sm transition-all ${
@@ -47,7 +49,7 @@ const Settings = () => {
 
         {/* Content Area */}
         <div className="animate-fade-in">
-          {activeTab === "roles" ? <UserRolesTab /> : <GeneralSettingsTab />}
+          {activeTab === 'compare' ? <CompareSettings /> : activeTab === "roles" ? <UserRolesTab /> : <GeneralSettingsTab />}
         </div>
       </div>
     </AdminLayout>

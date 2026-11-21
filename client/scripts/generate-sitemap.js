@@ -143,6 +143,9 @@ function main() {
   }
 
   const makeModelBlocks = [];
+  const compareUrl = `${SITE_URL}/cars/compare`;
+  const compareBlock = existingLocs.has(compareUrl) ? '' : urlBlock(compareUrl, { changefreq: 'weekly', priority: '0.7' });
+  if (compareBlock) existingLocs.add(compareUrl);
   for (const block of buildMakeModelUrls()) {
     const locMatch = block.match(/<loc>([^<]+)<\/loc>/);
     const url = sitemapLocation(locMatch?.[1] || "");
@@ -158,7 +161,7 @@ function main() {
       : ""
   }${makeModelBlocks.join("\n")}${
     articleBlocks.length ? `\n\n  <!-- BLOG ARTICLES (generated) -->\n` : ""
-  }${articleBlocks.join("\n")}\n</urlset>\n`;
+  }${articleBlocks.join("\n")}\n${compareBlock}\n</urlset>\n`;
 
   fs.mkdirSync(path.dirname(DIST_SITEMAP), { recursive: true });
   fs.writeFileSync(DIST_SITEMAP, out, "utf8");

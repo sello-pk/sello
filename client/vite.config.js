@@ -99,6 +99,10 @@ export default defineConfig({
     // so brands/categories load even when local Mongo is empty. Override with
     // VITE_PROXY_TARGET=http://127.0.0.1:4002 for a fully local backend.
     proxy: {
+      "/api/compare": {
+        target: process.env.VITE_COMPARE_PROXY_TARGET || "http://127.0.0.1:4002",
+        changeOrigin: true,
+      },
       "/api": {
         target: process.env.VITE_PROXY_TARGET || "https://api.sello.pk",
         changeOrigin: true,
