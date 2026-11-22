@@ -66,6 +66,10 @@ import auctionSchedule from "./images/auctionSchedule.webp";
 
 // Listings Page Images
 import PakistanCarListingsBanner from "./images/PakistanCarListingsBanner.webp";
+import CarsforSaleinPakistan from "./CarsforSaleinPakistan.webp";
+import ElectricBikesforSaleinPakistan from "./ElectricBikesforSaleinPakistan.webp";
+import CommercialVehiclesforSaleinPakistan from "./CommercialVehiclesforSaleinPakistan.webp";
+import TractorsforSaleinPakistan from "./TractorsforSaleinPakistan.webp";
 
 // Fuel Price Page Images
 import fuelPricesInPakistan from "./images/fuelPricesInPakistan.webp";
@@ -130,6 +134,10 @@ export const images = {
   auctionSchedule,
   trustLegal,
   PakistanCarListingsBanner,
+  CarsforSaleinPakistan,
+  ElectricBikesforSaleinPakistan,
+  CommercialVehiclesforSaleinPakistan,
+  TractorsforSaleinPakistan,
   fuelPricesInPakistan,
   onlineVehicleVerfication,
   whyMTMISAndOnlineVehicleVerificationAreImportant,
