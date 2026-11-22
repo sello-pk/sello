@@ -6,7 +6,7 @@ import { images } from "../../../assets/assets";
 const content = [
   {
     id: 1,
-    image: images.selloVideo,
+    image: images.smartWay,
     h2: "A Smarter Way to Sell Your Car in Pakistan",
     p: "In Pakistan if you are looking to put your car for sale or reach out to the buyers that are actively in the market for a used car, we connect you with true buying prospects from across the nation. We have designed our platform to get a fair price for your car quickly and in a transparent way.",
     options: [
@@ -17,7 +17,7 @@ const content = [
   },
   {
     id: 2,
-    image: images.selloVideo,
+    image: images.buySellCar,
     h2: "Buy and Sell Cars in Pakistan",
     p: "Looking for an used car in Pakistan? SELLO has you covered. Check out listings from known brands and get in touch with buyers or sellers all over the country.",
     options: [
@@ -28,7 +28,7 @@ const content = [
   },
   {
     id: 3,
-    image: images.selloVideo,
+    image: images.bikesElectricBikes,
     h2: "Bikes & Electric Bikes Marketplace",
     p: "Find motorcycles and electric bikes for sale across Pakistan on SELLO. Explore. Connect with sellers nationwide.",
     options: [
@@ -39,7 +39,7 @@ const content = [
   },
   {
     id: 4,
-    image: images.selloVideo,
+    image: images.onlineVehicleAuctions,
     h2: "Online Vehicle Auctions",
     p: "I invite you to discover online vehicle auctions in Pakistan on SELLO, where registered dealers and verified partners can find vehicles and place bids. I learn about auction opportunities in a marketplace that makes buying vehicles fair and open.",
     options: [

@@ -39,8 +39,11 @@ import electricSvg3 from "./images/electricSvg3.png";
 import amingarageLogo from "./images/amingarage.png";
 import mianMotors from "./images/mianMotors.png";
 
-// SELLO VIDEO
-import selloVideo from "./selloVideo.webp";
+// Home page content posts
+import smartWay from "./smartWay.webp";
+import buySellCar from "./buySellCar.webp";
+import bikesElectricBikes from "./bikesElectricBikes.webp";
+import onlineVehicleAuctions from "./onlineVehicleAuctions.webp";
 
 // Categories Blogs Images
 import bikeCatBlog from "./categories/catBlogs/bikeCatBlog.webp";
@@ -116,7 +119,10 @@ export const images = {
   userHeroSectionImg,
   searchSvg,
   comma,
-  selloVideo,
+  smartWay,
+  buySellCar,
+  bikesElectricBikes,
+  onlineVehicleAuctions,
   electricSvg3,
   // Partener Logos
   amingarageLogo,
