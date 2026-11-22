@@ -6,6 +6,7 @@ import SEO from "../components/common/SEO";
 import StructuredData from "../components/common/StructuredData";
 import { AdSenseSlot } from "../components/ads";
 import { lazyImport } from "../utils/lazyImports.js";
+import Faqs from "../components/utils/Faqs.jsx";
 
 /** Below-fold sections — separate chunks so homepage initial JS stays smaller (LCP/TBT). */
 const BrandsSection = lazyImport(
@@ -91,6 +92,9 @@ const Home = () => {
         </BelowFold>
         <BelowFold minHeight="12rem">
           <RecentlyViewedCars />
+        </BelowFold>
+        <BelowFold minHeight="12rem">
+          <Faqs />
         </BelowFold>
         <BelowFold minHeight="10rem">
           <NewsLatter />
