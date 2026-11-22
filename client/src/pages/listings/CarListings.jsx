@@ -11,6 +11,7 @@ import { AdSenseSlot } from "../../components/ads";
 import { FaCheck } from "react-icons/fa6";
 
 import { images } from "../../assets/assets.js";
+import Faqs from "../../components/utils/Faqs.jsx";
 
 const content = [
   {
@@ -56,6 +57,29 @@ const content = [
       "Explore agricultural. Farming equipment across Pakistan.",
       "Filter listings by price and city, then contact sellers directly.",
     ],
+  },
+];
+
+const faqs = [
+  {
+    q: "Where can I find vehicles for sale in Pakistan?",
+    a: "If you are looking for vehicles for sale in Pakistan, SELLO is the place to go. On SELLO, you can explore a range of cars, bikes, electric bikes, trucks, vans, buses and tractors.",
+  },
+  {
+    q: "Can I find used cars on SELLO?",
+    a: "Yes, SELLO offers listings for both used cars. On SELLO, you can browse brands, models and price ranges throughout Pakistan.",
+  },
+  {
+    q: "Can I buy bikes and electric bikes online in Pakistan?",
+    a: "Yes, you can buy bikes and electric bikes online. On SELLO, you will find used motorcycles and electric bikes listed by sellers across Pakistan.",
+  },
+  {
+    q: "Does SELLO offer vehicles for sale?",
+    a: "Yes, SELLO has vehicles for sale. On SELLO, you can explore trucks, vans, buses and other commercial vehicles from sellers over Pakistan.",
+  },
+  {
+    q: "Can I find tractors and agricultural vehicles on SELLO?",
+    a: "Yes, SELLO features tractors and agricultural vehicles. On SELLO, you can find farming vehicles and equipment that buyers can discover across Pakistan.",
   },
 ];
 
@@ -164,6 +188,7 @@ const CarListings = () => {
         <BlogSection />
         <ExploreBrands />
         <PartnerOffersSection />
+        <Faqs faqs={faqs} />
       </div>
     </div>
   );
