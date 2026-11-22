@@ -37,6 +37,17 @@ const content = [
       "Discover bikes for daily commuting, with options to suit different needs and budgets across Pakistan.",
     ],
   },
+  {
+    id: 4,
+    image: images.selloVideo,
+    h2: "Online Vehicle Auctions",
+    p: "I invite you to discover online vehicle auctions in Pakistan on SELLO, where registered dealers and verified partners can find vehicles and place bids. I learn about auction opportunities in a marketplace that makes buying vehicles fair and open.",
+    options: [
+      "Browse auction. Review vehicle details before placing bids.",
+      "Participate through dealer and verified partner accounts, following auction requirements.",
+      "Discover vehicle auction opportunities across Pakistan. Connect with SELLO for participation information.",
+    ],
+  },
 ];
 
 const ContentHome = () => {
