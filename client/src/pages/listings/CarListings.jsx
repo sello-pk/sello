@@ -99,7 +99,7 @@ const CarListings = () => {
         <div className="overlay inset-0 bg-[#050B20]/50 absolute"></div>
 
         <div className="relative max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-7">
-          <div className="flex flex-col gap-3 sm:gap-4 max-w-5xl">
+          <div className="flex flex-col items-center justify-center gap-3 sm:gap-4 max-w-full">
             <p className="inline-flex w-fit items-center gap-1.5 rounded-full border border-primary px-2.5 py-1 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.14em] text-primary-500">
               Sello listings
             </p>
@@ -117,15 +117,15 @@ const CarListings = () => {
 
             <ul className="mt-8 flex flex-wrap gap-2">
               <li className="inline-flex items-center gap-1.5 rounded-full bg-primary px-2.5 py-1 text-[11px] sm:text-xs font-medium text-white">
-                <ShieldCheck className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                <ShieldCheck className="h-5 w-5 text-emerald-500 shrink-0" />
                 Verified listings
               </li>
               <li className="inline-flex items-center gap-1.5 rounded-full bg-primary px-2.5 py-1 text-[11px] sm:text-xs font-medium text-white">
-                <SlidersHorizontal className="h-3.5 w-3.5 text-sky-400 shrink-0" />
+                <SlidersHorizontal className="h-5 w-5 text-sky-400 shrink-0" />
                 Smart filters
               </li>
               <li className="inline-flex items-center gap-1.5 rounded-full bg-primary px-2.5 py-1 text-[11px] sm:text-xs font-medium text-white">
-                <MapPin className="h-3.5 w-3.5 text-white shrink-0" />
+                <MapPin className="h-5 w-5 text-white shrink-0" />
                 Cities nationwide
               </li>
             </ul>
