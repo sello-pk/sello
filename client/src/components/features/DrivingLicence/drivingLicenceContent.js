@@ -67,49 +67,49 @@ export const formatVerifiedDate = (value) => {
 export const HOW_IT_WORKS = [
   {
     step: "01",
-    title: "Choose your province",
-    desc: "Open the Sello guide for the province or territory where you will apply or verify your licence.",
+    title: "Choose Your Province",
+    desc: "Open up the Sello guide for the province or territory in which you are applying.",
   },
   {
     step: "02",
-    title: "Read the process first",
-    desc: "Review learner, permanent, renewal, documents, fees notes and FAQs before leaving Sello.",
+    title: "Read the Process First",
+    desc: "Understand the processes for learner and permanent licenses, renewal procedures, document requirements, fee structures and also the common questions.",
   },
   {
     step: "03",
-    title: "Continue on the official portal",
-    desc: "Use the action buttons to apply, renew, track or verify only on that province's government site.",
+    title: "Continue on the Official Portal",
+    desc: "Use the action buttons present in the related provincial guide to apply, renew, track or verify your licence through the government website.",
   },
   {
     step: "04",
-    title: "Keep records safe",
-    desc: "Save payment references, appointment slips and digital copies. Never share CNIC details on unofficial forms.",
+    title: "Keep Your Records Safe",
+    desc: "Save your payment records, appointment slips and digital versions of your documents. Also do not share your CNIC or license details via unofficial forms.",
   },
 ];
 
 export const WHAT_YOU_CAN_DO = [
   {
-    title: "Apply for a learner licence",
-    desc: "Follow province steps, then open the official portal or appointment system to submit your application.",
+    title: "Apply for a Learner Licence",
+    desc: "In your province’s case study the learner permit requirements, get your documents in order and then on to the application or appointment system.",
   },
   {
-    title: "Apply for a permanent licence",
-    desc: "Check eligibility after your learner period, prepare documents, and complete tests where required.",
+    title: "Apply for a Permanent Licence",
+    desc: "Check your eligibility once the required learner period is complete. As for the documentation and which test to take, follow the appropriate procedure.",
   },
   {
-    title: "Renew an existing licence",
-    desc: "See renewal windows and payment guidance, then renew through the correct provincial channel.",
+    title: "Renew an Existing Licence",
+    desc: "Find out how online renewal of driving licenses in Punjab and in other regions works. Before you go to the relevant government portal do a review of the renewal requirements.",
   },
   {
-    title: "Verify or track status",
-    desc: "Use official verification and tracking tools linked from each province guide — not third-party forms.",
+    title: "Verify or Track Your Licence",
+    desc: "Use of official verification and application tracking tools for licence info. Sello takes you to the right portal which doesn’t collect your personal details.",
   },
 ];
 
 export const PREPARATION_CHECKLIST = [
-  "Valid CNIC (original and clear scans/photos when applying online)",
-  "Recent photograph meeting the portal's background/size rules",
-  "Medical certificate if your province or age group requires it",
+  "Valid CNIC: Keep your original CNIC and digital copies of them available for online applications.",
+  "Recent Photograph: Prepare a recent photo that is in the proper background, size and format for the given portal.",
+  "Payment Access: Prepare to use online banking or supported mobile banking services for official PSID and 1Bill payments as required.",
   "Registered mobile number and email for OTP / account recovery",
   "Banking or mobile-wallet access for official PSID / 1Bill payments",
   "Existing learner or permanent licence details for renewal or upgrade",
@@ -124,42 +124,40 @@ export const LANDING_FAQS = [
     a: "You can verify your driving licence through the official online portal of the province or territory that issued it. Select the relevant licensing authority, enter the required information, such as your CNIC or licence number, and follow the verification instructions.",
   },
   {
+    question: "How can I verify my driving licence online in Pakistan?",
+    answer:
+      "Identify the province or state in which your license was issued. Go to the official site which does issue the license, put in the required info and check your record.",
+    q: "How can I verify my driving licence online in Pakistan?",
+    a: "No. Pakistan does not currently have one universal public driving licence verification portal. Punjab, Sindh, Islamabad, Khyber Pakhtunkhwa, Balochistan, Azad Jammu & Kashmir and Gilgit-Baltistan have their own licensing systems and verification services.",
+  },
+  {
     question:
       "Is there one driving licence verification website for all of Pakistan?",
     answer:
-      "No. Pakistan does not currently have one universal public driving licence verification portal. Punjab, Sindh, Islamabad, Khyber Pakhtunkhwa, Balochistan, Azad Jammu & Kashmir and Gilgit-Baltistan have their own licensing systems and verification services.",
+      "Obviously No. Different provinces and regions have separate licensing systems. You must use the portal which issued your license.",
     q: "Is there one driving licence verification website for all of Pakistan?",
-    a: "No. Pakistan does not currently have one universal public driving licence verification portal. Punjab, Sindh, Islamabad, Khyber Pakhtunkhwa, Balochistan, Azad Jammu & Kashmir and Gilgit-Baltistan have their own licensing systems and verification services.",
+    a: "Obviously No. Different provinces and regions have separate licensing systems. You must use the portal which issued your license.",
   },
   {
     question: "Can I check my driving licence using my CNIC number?",
     answer:
-      "Yes. Several provincial and regional licensing portals offer CNIC-based verification. Depending on the issuing authority, you may also need your driving licence number or other details.",
+      "Yes in some provinces you can do CNIC based searches. In others you may also put in your licence or permit number. Follow the instructions on the relevant official site.",
     q: "Can I check my driving licence using my CNIC number?",
-    a: "Yes. Several provincial and regional licensing portals offer CNIC-based verification. Depending on the issuing authority, you may also need your driving licence number or other details.",
+    a: "Yes in some provinces you can do CNIC based searches. In others you may also put in your licence or permit number. Follow the instructions on the relevant official site.",
   },
   {
-    question:
-      "What information can I find through online driving licence verification?",
+    question: "How can I track my driving licence application?",
     answer:
-      "Depending on the official portal, available information may include the licence holder’s name, licence number, licence type, permitted vehicle categories, issue date, expiry date and current licence status.",
-    q: "What information can I find through online driving licence verification?",
-    a: "Depending on the official portal, available information may include the licence holder’s name, licence number, licence type, permitted vehicle categories, issue date, expiry date and current licence status.",
+      "Use the issuing authority’s application tracking service. For example in Punjab you can use DLIMS 2.0 and Dastak for tracking, other regions have different processes.",
+    q: "How can I track my driving licence application?",
+    a: "Use the issuing authority’s application tracking service. For example in Punjab you can use DLIMS 2.0 and Dastak for tracking, other regions have different processes.",
   },
   {
-    question:
-      "How can I check whether my Pakistani driving licence is valid or expired?",
+    question: "Can I check my driving licence by SMS?",
     answer:
-      "Visit the official verification portal of the authority that issued your licence. Enter the required information and check the displayed licence status and expiry date, where available.",
-    q: "How can I check whether my Pakistani driving licence is valid or expired?",
-    a: "Visit the official verification portal of the authority that issued your licence. Enter the required information and check the displayed licence status and expiry date, where available.",
-  },
-  {
-    question: "Can I verify a learner driving licence online in Pakistan?",
-    answer:
-      "Some provincial licensing systems provide online information or verification facilities for learner permits. Availability depends on the issuing authority and its online services.",
-    q: "Can I verify a learner driving licence online in Pakistan?",
-    a: "Some provincial licensing systems provide online information or verification facilities for learner permits. Availability depends on the issuing authority and its online services.",
+      "SMS verification is at the discretion of the issuing authority. Go to your province’s website or reach out to the traffic police department to determine if SMS service is available.",
+    q: "Can I check my driving licence by SMS?",
+    a: "SMS verification is at the discretion of the issuing authority. Go to your province’s website or reach out to the traffic police department to determine if SMS service is available.",
   },
   {
     question:
@@ -201,7 +199,6 @@ export const PORTAL_LABELS = {
   balochistan: "Quetta Traffic Police",
 };
 
-
 export const LAST_VERIFIED_AT = "2026-11-04";
 const VERIFIED_AT = LAST_VERIFIED_AT;
 
@@ -214,8 +211,9 @@ export const DRIVING_LICENCE_GUIDES = [
     name: "Punjab",
     order: 1,
     shortDescription:
-      "Apply, renew and verify driving licences through Punjab DLIMS 2.0 / Dastak.",
-    authorityName: "Punjab DLIMS (Driving License Information Management System)",
+      "Explore learner permits, permanent licences, renewals, application tracking and DLIMS license verification through the Punjab DLIMS 2.0 and Dastak.",
+    authorityName:
+      "Punjab DLIMS (Driving License Information Management System)",
     overviewSections: [
       {
         title: "How to Apply for a Learner Driving Licence in Punjab",
@@ -287,8 +285,7 @@ export const DRIVING_LICENCE_GUIDES = [
     faqTitle: "Frequently Asked Questions About Punjab Driving Licence",
     faqs: [
       {
-        question:
-          "How can I apply for a driving licence in Punjab, Pakistan?",
+        question: "How can I apply for a driving licence in Punjab, Pakistan?",
         answer:
           "You can apply through the official Punjab Driving Licence Information Management System (DLIMS), which is integrated with the Dastak platform. Create an account, select the required licence service, complete the application, upload the necessary documents and pay the applicable fee.",
       },
@@ -316,8 +313,7 @@ export const DRIVING_LICENCE_GUIDES = [
 Applicants above 50 years and certain commercial licence applicants may need a medical certificate signed by an authorised government doctor.`,
       },
       {
-        question:
-          "How much does a learner driving licence cost in Punjab?",
+        question: "How much does a learner driving licence cost in Punjab?",
         answer:
           "The online learner driving licence fee is PKR 500 per category according to the official DLIMS information. If you apply for more than one category, the applicable fee is charged for each category. Always check the latest fee before payment.",
       },
@@ -396,7 +392,8 @@ Applicants above 50 years and certain commercial licence applicants may need a m
       "https://dlims.punjab.gov.pk/verify",
       "https://dlims.punjab.gov.pk/track",
     ],
-    seoTitle: "Punjab Driving Licence Online | DLIMS Apply, Renew & Verify – Sello.pk",
+    seoTitle:
+      "Punjab Driving Licence Online | DLIMS Apply, Renew & Verify – Sello.pk",
     seoDescription:
       "Step-by-step Punjab driving licence guide for learner, permanent, renewal and tracking via official DLIMS 2.0. Confirm fees and documents on the government portal.",
     lastVerifiedAt: VERIFIED_AT,
@@ -407,7 +404,7 @@ Applicants above 50 years and certain commercial licence applicants may need a m
     name: "Sindh",
     order: 2,
     shortDescription:
-      "Learner, permanent, renewal and IDP services through Sindh Police DLS Online.",
+      "Find out what you can for learner, permanent and renewal services at Sindh Police Driving Licence Services (DLS Online). Get info on online driving license check Sindh and licence verification",
     authorityName: "Sindh Police — Driving License Sindh (DLS Online)",
     overviewSections: [
       {
@@ -494,8 +491,7 @@ Applicants above 50 years and certain commercial licence applicants may need a m
           "Applicants generally need a valid CNIC, a recent passport-size photograph and the personal information requested in the online application. Additional documents may be required depending on the selected vehicle category.",
       },
       {
-        question:
-          "How much is the learner driving licence fee in Sindh?",
+        question: "How much is the learner driving licence fee in Sindh?",
         answer:
           "The learner licence fee depends on the applicable government fee schedule and selected vehicle category. Generate the payment PSID through the official online system to see the amount payable. Always confirm the latest fee before making payment.",
       },
@@ -523,8 +519,7 @@ Applicants above 50 years and certain commercial licence applicants may need a m
           "Applicants may need to pass a theoretical or traffic-sign test and a practical driving test. The exact requirements depend on the selected vehicle category and instructions from the licensing authority.",
       },
       {
-        question:
-          "Can I renew or track my driving licence online in Sindh?",
+        question: "Can I renew or track my driving licence online in Sindh?",
         answer:
           "Sindh’s digital driving licence system provides online services, including application tracking. You can use your CNIC to check the progress of supported applications. Renewal options and requirements may depend on the service available through the official portal.",
       },
@@ -578,7 +573,8 @@ Applicants above 50 years and certain commercial licence applicants may need a m
       "https://dlsonline.sindhpolice.gov.pk/",
       "https://dls.gos.pk/",
     ],
-    seoTitle: "Sindh Driving Licence Online | DLS Apply, Renew & Verify – Sello.pk",
+    seoTitle:
+      "Sindh Driving Licence Online | DLS Apply, Renew & Verify – Sello.pk",
     seoDescription:
       "Guide to Sindh driving licence services via official DLS Online: learner, permanent, renewal and tracking. Confirm live fees and documents on the government portal.",
     lastVerifiedAt: VERIFIED_AT,
@@ -589,7 +585,7 @@ Applicants above 50 years and certain commercial licence applicants may need a m
     name: "Khyber Pakhtunkhwa",
     order: 3,
     shortDescription:
-      "Learner, permanent, renewal and tracking via Khyber Pakhtunkhwa Transport / Dastak services.",
+      "Understand the learner, permanent, renewal and tracking processes through Khyber Pakhtunkhwa Transport Department and its digital services.",
     authorityName: "Transport & Mass Transit Department, Khyber Pakhtunkhwa",
     overviewSections: [
       {
@@ -705,8 +701,7 @@ Applicants above 50 years and certain commercial licence applicants may need a m
           "Yes. The KP Transport Department lists existing driving licence renewal as an online service through the Dastak app. Follow the application instructions, upload the required documents and pay the applicable renewal fee.",
       },
       {
-        question:
-          "How can I check or verify my driving licence online in KP?",
+        question: "How can I check or verify my driving licence online in KP?",
         answer:
           "You can use the official KP digital driving licence services to check your application status and access licence verification. Follow the portal instructions and provide the required licence or CNIC information to view the available record.",
       },
@@ -760,7 +755,8 @@ Applicants above 50 years and certain commercial licence applicants may need a m
       "https://www.transport.kp.gov.pk/DL.html",
       "https://ecitizen.kp.gov.pk/",
     ],
-    seoTitle: "KPK Driving Licence Online | Apply & Renew via Dastak – Sello.pk",
+    seoTitle:
+      "KPK Driving Licence Online | Apply & Renew via Dastak – Sello.pk",
     seoDescription:
       "Khyber Pakhtunkhwa driving licence guide: learner permit, permanent licence, renewal and tracking via official Transport KP / Dastak services.",
     lastVerifiedAt: VERIFIED_AT,
@@ -771,7 +767,7 @@ Applicants above 50 years and certain commercial licence applicants may need a m
     name: "Islamabad",
     order: 4,
     shortDescription:
-      "Islamabad Traffic Police DLIMS for online driving licence services in ICT.",
+      "Access to Islamabad Traffic Police info which includes issuance of learner permits, renewal processes and online application options. Also find out about driving license online check procedures.",
     authorityName: "Islamabad Traffic Police — ITP-DLIMS",
     overviewSections: [
       {
@@ -852,8 +848,7 @@ Applicants above 50 years and certain commercial licence applicants may need a m
           "Applicants generally need a valid CNIC and a recent photograph. You should upload clear copies of the documents requested by the online portal. Additional medical documentation may be required depending on your age or vehicle category.",
       },
       {
-        question:
-          "How much is the learner driving licence fee in Islamabad?",
+        question: "How much is the learner driving licence fee in Islamabad?",
         answer:
           "The fee depends on the selected vehicle category and the current Islamabad Traffic Police fee schedule. Check the amount displayed on the official online application portal before making payment.",
       },
@@ -880,8 +875,7 @@ Applicants above 50 years and certain commercial licence applicants may need a m
           "Yes. Islamabad Traffic Police provides an online renewal facility through its official Driving Licence portal. Register or log in, submit the requested information and documents, pay the applicable fee and follow the delivery instructions. Renewed licences are delivered through courier service under the online service arrangement.",
       },
       {
-        question:
-          "How can I verify my driving licence online in Islamabad?",
+        question: "How can I verify my driving licence online in Islamabad?",
         answer:
           "Visit the official Islamabad Police website and select Driving License Verification. Enter the required licence information according to the portal instructions to check the available record.",
       },
@@ -948,7 +942,7 @@ Applicants above 50 years and certain commercial licence applicants may need a m
     name: "Balochistan",
     order: 5,
     shortDescription:
-      "Book appointments and verify licences through Quetta / Balochistan Traffic Police services.",
+      "Find out about driving license appointments, verification and other services at the appropriate Balochistan Traffic Police licensing facilities.",
     authorityName: "Quetta Traffic Police / Balochistan Traffic Police",
     overviewSections: [
       {
@@ -1008,8 +1002,7 @@ Applicants above 50 years and certain commercial licence applicants may need a m
     faqTitle: "Frequently Asked Questions – Balochistan Driving Licence Guide",
     faqs: [
       {
-        question:
-          "How can I apply for a driving licence in Balochistan?",
+        question: "How can I apply for a driving licence in Balochistan?",
         answer:
           "Visit the official Quetta Traffic Police website and use its online appointment service, where available. Select the relevant licence service and book an appointment. Visit the designated licensing branch with your required documents to complete the application process.",
       },
@@ -1038,14 +1031,12 @@ Always confirm the applicable category requirements with the licensing authority
 Additional documents may be required depending on the licence category.`,
       },
       {
-        question:
-          "How much is the learner driving licence fee in Balochistan?",
+        question: "How much is the learner driving licence fee in Balochistan?",
         answer:
           "Quetta Traffic Police information lists a Rs. 20 ticket for the learner application. Fees and requirements may change, so confirm the latest amount with the relevant licensing branch before applying.",
       },
       {
-        question:
-          "How long is a learner driving licence valid in Balochistan?",
+        question: "How long is a learner driving licence valid in Balochistan?",
         answer:
           "A learner driving licence is generally valid for six months. Check the expiry date printed on your permit and follow the licensing authority’s instructions.",
       },
@@ -1068,8 +1059,7 @@ Additional documents may be required depending on the licence category.`,
           "Quetta Traffic Police provides an online appointment facility through its official website. Applicants should check the available branches, appointment types and time slots before visiting.",
       },
       {
-        question:
-          "How can I verify my Balochistan driving licence online?",
+        question: "How can I verify my Balochistan driving licence online?",
         answer:
           "Visit the official Quetta Traffic Police website and open its Driving Licence Verification service. Follow the instructions and enter your CNIC details to check the available licence record.",
       },
@@ -1124,7 +1114,8 @@ Additional documents may be required depending on the licence category.`,
       "https://qtp.gob.pk/driving",
       "https://qtp.gob.pk/onlineappointment",
     ],
-    seoTitle: "Balochistan Driving Licence | Quetta Traffic Police Guide – Sello.pk",
+    seoTitle:
+      "Balochistan Driving Licence | Quetta Traffic Police Guide – Sello.pk",
     seoDescription:
       "Balochistan driving licence guide: book Quetta Traffic Police appointments, understand learner/permanent steps, and verify licences on official QTP channels.",
     lastVerifiedAt: VERIFIED_AT,
@@ -1134,4 +1125,3 @@ Additional documents may be required depending on the licence category.`,
 
 export const getGuideBySlug = (slug) =>
   DRIVING_LICENCE_GUIDES.find((g) => g.slug === slug) || null;
-

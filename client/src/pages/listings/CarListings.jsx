@@ -88,18 +88,26 @@ const CarListings = () => {
     <div className="min-h-screen min-w-0 overflow-x-hidden">
       <SEO {...corePageSeo.listings} />
 
-      <header className={`relative overflow-hidden md:h-[350px] `}>
-        <div className="cover-image absolute">
+      <header className="relative min-h-[320px] overflow-hidden bg-[#050B20] md:h-[350px] md:min-h-0">
+        {/* Decorative hero background: fill the header, never render at intrinsic size */}
+        <div className="absolute inset-0">
           <img
             src={images.PakistanCarListingsBanner}
-            alt="Pakistan Car Listings Banner"
+            alt=""
+            aria-hidden="true"
+            className="h-full w-full object-cover object-center"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            width="1584"
+            height="396"
           />
         </div>
 
-        <div className="overlay inset-0 bg-[#050B20]/50 absolute"></div>
+        <div className="overlay absolute inset-0 bg-[#050B20]/50"></div>
 
-        <div className="relative max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-7">
-          <div className="flex flex-col items-center justify-center gap-3 sm:gap-4 max-w-full">
+        <div className="relative z-10 flex min-h-[320px] w-full max-w-8xl items-center mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-7 md:min-h-0">
+          <div className="flex w-full flex-col items-center justify-center gap-3 sm:gap-4 max-w-full">
             <p className="inline-flex w-fit items-center gap-1.5 rounded-full border border-primary px-2.5 py-1 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.14em] text-primary-500">
               Sello listings
             </p>

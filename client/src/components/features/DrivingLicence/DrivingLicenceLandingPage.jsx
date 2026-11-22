@@ -16,9 +16,9 @@ import NewsLatter from "../../utils/NewsLatter";
 import { AdSenseSlot } from "../../ads";
 import { DrivingLicenceLandingSchema } from "../../common/StructuredData";
 import listingHero from "../../../assets/images/driving_licence.jpg";
-import accessLicenceImg from "../../../assets/images/Access Official Driving Licence Verification Services in Pakistan.jpeg";
-import howToCheckLicenceImg from "../../../assets/images/How to Check and Verify Your Driving Licence Online in Pakistan.jpeg";
-import whatYouCanDoImg from "../../../assets/images/What You Can Do.jpeg";
+import DrivingLicenceVerification from "../../../assets/images/DrivingLicenceVerification.webp";
+import DrivingLicenceOnline from "../../../assets/images/DrivingLicenceOnline.webp";
+import WhatYouCanDo from "../../../assets/images/WhatYouCanDo.webp";
 import serviceListingsImg from "../../../assets/images/verification/1.png";
 import serviceAuctionsImg from "../../../assets/images/verification/2.png";
 import serviceEstimatorImg from "../../../assets/images/verification/3.png";
@@ -58,26 +58,26 @@ const scrollToId = (id) => (event) => {
 const whyLicence = [
   {
     icon: ownershipIcon,
-    title: "Learner & permanent",
-    desc: "Understand how to apply for learner and permanent licences in your province.",
+    title: "Learner and Permanent Licence Guidance",
+    desc: "Know the process for getting learner and permanent licenses in your province which includes eligibility, application steps and driving test requirements.",
     circle: "bg-green-50",
   },
   {
     icon: registrationIcon,
-    title: "Renewal guidance",
-    desc: "See renewal steps before you open the official government payment flow.",
+    title: "Renewal Guidance",
+    desc: "Review the payment details and required documents before you access the official government payment or application portal.",
     circle: "bg-sky-50",
   },
   {
     icon: fraudIcon,
-    title: "Verify safely",
-    desc: "Use only official provincial portals — never share CNIC on unofficial forms.",
+    title: "Safe Licence Verification",
+    desc: "Use provincial government sites for punjab licence verification and other licence checks. Stay away from unofficial sites which request personal info.",
     circle: "bg-green-50",
   },
   {
     icon: buyerProtectionIcon,
-    title: "Buyer & seller trust",
-    desc: "Licence clarity helps keep Pakistan’s automotive marketplace safer for everyone.",
+    title: "Buyer and Seller Confidence",
+    desc: "Licence awareness is a component of responsible driving and also which sees to it that people are informed of important documentation as they take part in Pakistan’s automotive market.",
     circle: "bg-sky-50",
   },
 ];
@@ -168,15 +168,18 @@ const DrivingLicenceLandingPage = () => {
           <div className="text-left w-full min-w-0 max-w-xl lg:max-w-2xl">
             <div className="inline-flex max-w-full items-center gap-2 bg-white text-primary-500 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium mb-3 sm:mb-5 shadow-sm">
               <Sparkles className="w-4 h-4 shrink-0" />
-              <span className="truncate">Official DLIMS &amp; traffic police guides</span>
+              <span className="truncate">
+                Official DLIMS &amp; traffic police guides
+              </span>
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 sm:mb-4 leading-tight text-balance">
-              Driving Licence Information &amp; Verification in Pakistan
+              Driving Licence Information & Verification in Pakistan
             </h1>
             <p className="text-sm sm:text-base lg:text-lg text-gray-100 mb-5 sm:mb-8 text-pretty">
-              Read province-specific guidelines on Sello first, then open the
-              official government portal to apply, renew, track or verify. We
-              never ask for your CNIC or licence number here.
+              Looking for driving license services, online verification or
+              application help in Pakistan? At Sello we help you out in finding
+              the right provincial driving license info which in turn will point
+              you to the government sites.
             </p>
             <div className="flex flex-col min-[420px]:flex-row flex-wrap justify-start items-stretch min-[420px]:items-center gap-2.5 sm:gap-3 mb-5 sm:mb-8">
               <a
@@ -198,15 +201,15 @@ const DrivingLicenceLandingPage = () => {
             <ul className="flex flex-wrap justify-start gap-1.5 sm:gap-3 text-[10px] sm:text-sm text-gray-100">
               <li className="inline-flex items-center gap-1 sm:gap-2 whitespace-nowrap rounded-full bg-white/10 px-2 sm:px-3.5 py-1 sm:py-1.5 backdrop-blur-sm">
                 <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-primary-500 shrink-0" />
-                Secure
+                Secure Guidance
               </li>
               <li className="inline-flex items-center gap-1 sm:gap-2 whitespace-nowrap rounded-full bg-white/10 px-2 sm:px-3.5 py-1 sm:py-1.5 backdrop-blur-sm">
                 <Building2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-400 shrink-0" />
-                Official portals
+                Official Government Portals
               </li>
               <li className="inline-flex items-center gap-1 sm:gap-2 whitespace-nowrap rounded-full bg-white/10 px-2 sm:px-3.5 py-1 sm:py-1.5 backdrop-blur-sm">
                 <Lock className="w-3 h-3 sm:w-4 sm:h-4 text-blue-300 shrink-0" />
-                No CNIC collected
+                No CNIC Collected
               </li>
             </ul>
           </div>
@@ -214,15 +217,20 @@ const DrivingLicenceLandingPage = () => {
       </section>
 
       {/* Select Your Province */}
-      <section id="select-province" className="scroll-mt-24 py-16 bg-white border-b border-slate-100">
+      <section
+        id="select-province"
+        className="scroll-mt-24 py-16 bg-white border-b border-slate-100"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-slate-900 mb-3">
               Select Your Province
             </h2>
             <p className="text-base text-slate-600 max-w-2xl mx-auto">
-              Choose your province to open the Sello guide. Official apply,
-              renew, verify and track buttons are on the next page.
+              In Pakistan each province issues its own driving licences. Go to
+              the province which issued your licence or which you plan to apply
+              in. There you will find the appropriate Sello guide which in turn
+              will give you the official service links.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -262,23 +270,28 @@ const DrivingLicenceLandingPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div>
               <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4 sm:mb-6 leading-tight">
-                Access Official Driving Licence Verification Services in Pakistan
+                Access Official Driving Licence Verification Services in
+                Pakistan
               </h2>
               <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
-                Looking to verify a driving licence in Pakistan? SELLO provides
-                helpful guidance to access official driving licence verification
-                services across Punjab, Sindh, Islamabad, Khyber Pakhtunkhwa,
-                Balochistan, Azad Jammu &amp; Kashmir and Gilgit-Baltistan. Each
-                region maintains its own licensing system and verification
-                portal. Select the relevant issuing authority, follow the
-                instructions and check the available licence information
-                directly through the official government website. SELLO does not
-                collect your CNIC or driving licence number on this page.
+                Looking to check your driving license in Pakistan? Sello is to
+                guide you through the official driving license verification
+                processes in Punjab, Sindh, Islamabad, Khyber Pakhtunkhwa,
+                Balochistan, Azad Jammu and Kashmir, and Gilgit-Baltistan. Each
+                region has its own licensing and verification systems. Go to the
+                relevant issuing authority, follow the instructions and check
+                out the available licences at the government website. For
+                instance in Punjab residents use the DLIMS platform for online
+                dlims check and in Sindh it is the DLS verification service
+                which is accessed. Also for the traffic police and other
+                regional services in Punjab they should be accessed through the
+                official channels. Sello does not request your CNIC or driving
+                license number here.
               </p>
             </div>
             <div className="relative rounded-2xl overflow-hidden shadow-lg border border-slate-200">
               <img
-                src={accessLicenceImg}
+                src={DrivingLicenceVerification}
                 alt="Access Official Driving Licence Verification Services in Pakistan"
                 className="w-full h-auto object-cover max-h-[420px]"
                 loading="lazy"
@@ -298,20 +311,26 @@ const DrivingLicenceLandingPage = () => {
                 How to Check and Verify Your Driving Licence Online in Pakistan
               </h2>
               <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
-                Checking your driving licence online can help you review the
-                information available in the issuing authority’s records.
-                First, identify the province or territory where your licence
-                was issued. Visit the relevant official driving licence
-                verification portal and enter the required information, such as
-                your CNIC or licence number, according to the portal’s
-                instructions. Review the displayed licence details and
-                validity information, where available. Always use the issuing
-                authority’s official website for verification.
+                In another region a online driving license check or verification
+                of your record will do to see what we have in the issuing
+                authority’s records. Follow these general steps: Identify your
+                issuing region: Confirm if your license was issued in Punjab,
+                Sindh, KPK, Islamabad or another region. Open the relevant Sello
+                guide: Check out the instructions and official portal link for
+                your location. Visit the government portal: Open up the driving
+                licence verification or tracking service. Enter the required
+                information: give your CNIC, license number or application
+                reference only at the official government website as needed.
+                Review the result: Check out the license details and validity
+                info from the authority. The process for online Punjab driving
+                license check, driving license verification in KPK and Islamabad
+                driving license online check may vary. Follow the instructions
+                which are given by the relevant portal.
               </p>
             </div>
             <div className="relative rounded-2xl overflow-hidden shadow-lg border border-slate-200 lg:order-1">
               <img
-                src={howToCheckLicenceImg}
+                src={DrivingLicenceOnline}
                 alt="How to Check and Verify Your Driving Licence Online in Pakistan"
                 className="w-full h-auto object-cover max-h-[420px]"
                 loading="lazy"
@@ -338,6 +357,11 @@ const DrivingLicenceLandingPage = () => {
           <h2 className="text-3xl font-bold text-slate-900 text-center mb-12">
             Why Driving Licence Guidance Matters
           </h2>
+          <p>
+            Grasping the licensing process’ details which in turn helps drivers
+            to have the right documents in order and to use the correct
+            government services.
+          </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {whyLicence.map((item) => (
               <div
@@ -390,7 +414,7 @@ const DrivingLicenceLandingPage = () => {
             </div>
             <div className="relative rounded-2xl overflow-hidden shadow-lg border border-slate-200 min-h-[280px] lg:min-h-[360px]">
               <img
-                src={whatYouCanDoImg}
+                src={WhatYouCanDo}
                 alt="What You Can Do"
                 className="w-full h-full object-cover min-h-[280px] lg:min-h-[360px]"
                 loading="lazy"
@@ -531,7 +555,8 @@ const DrivingLicenceLandingPage = () => {
       <section className="py-16 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8 leading-tight">
-            Frequently Asked Questions About Driving Licence Information &amp; Verification in Pakistan
+            Frequently Asked Questions About Driving Licence Information &amp;
+            Verification in Pakistan
           </h2>
           <div className="space-y-3">
             {LANDING_FAQS.map((faq, i) => {
@@ -600,10 +625,11 @@ const DrivingLicenceLandingPage = () => {
               <div className="pr-0 sm:pr-24">
                 <h3 className="font-bold text-slate-900 mb-1">Disclaimer</h3>
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  Sello.pk publishes guidance only. Licence applications,
-                  payments, tests and verification happen exclusively on
-                  official government portals. Confirm current fees, ages and
-                  documents on the live portal. Information last verified:{" "}
+                  Sello. Pk reports out and also gives guidance on that. Driving
+                  license applications, payments, tests, renewals and
+                  verification are the responsibility of the government portals.
+                  Check live portals for current fees, eligibility, ages and
+                  document requirements before you apply.
                   {formatVerifiedDate(LAST_VERIFIED_AT)}.
                 </p>
               </div>
