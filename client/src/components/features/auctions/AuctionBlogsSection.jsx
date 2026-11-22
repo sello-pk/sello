@@ -332,7 +332,9 @@ export default function AuctionBlogsSection() {
                           {post.author}
                         </span>
                       </div>
-                      <span className="text-xs sm:text-sm text-gray-500">{post.date}</span>
+                      <span className="text-xs sm:text-sm text-gray-500">
+                        {post.date}
+                      </span>
                     </div>
 
                     <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary-500 mb-4 leading-tight break-words">
@@ -382,4 +384,3 @@ export default function AuctionBlogsSection() {
     </section>
   );
 }
-

@@ -11,7 +11,9 @@ import { lazyImport } from "../utils/lazyImports.js";
 const BrandsSection = lazyImport(
   () => import("../components/sections/home/BrandsSection.jsx"),
 );
-const Video = lazyImport(() => import("../components/sections/home/Video.jsx"));
+const ContentHome = lazyImport(
+  () => import("../components/sections/home/ContentHome.jsx"),
+);
 const BannerCarousal = lazyImport(
   () => import("../components/utils/BannerCarousal.jsx"),
 );
@@ -67,7 +69,7 @@ const Home = () => {
           <FeaturedCarsCarousel />
         </BelowFold>
         <BelowFold minHeight="16rem">
-          <Video />
+          <ContentHome />
         </BelowFold>
         <BelowFold minHeight="14rem">
           <BannerCarousal />
