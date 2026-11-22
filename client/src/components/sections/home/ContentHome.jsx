@@ -26,6 +26,17 @@ const content = [
       "Have a car to sell? Put it on SELLO. Reach people who are searching for vehicles online.",
     ],
   },
+  {
+    id: 3,
+    image: images.selloVideo,
+    h2: "Bikes & Electric Bikes Marketplace",
+    p: "Find motorcycles and electric bikes for sale across Pakistan on SELLO. Explore. Connect with sellers nationwide.",
+    options: [
+      "Browse used motorcycles from popular brands, models and price ranges across Pakistan and compare options.",
+      "Discover bikes for daily commuting, with options to suit different needs and budgets across Pakistan.",
+      "Discover bikes for daily commuting, with options to suit different needs and budgets across Pakistan.",
+    ],
+  },
 ];
 
 const ContentHome = () => {
