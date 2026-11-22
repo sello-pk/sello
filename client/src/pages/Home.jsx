@@ -57,6 +57,29 @@ const Home = () => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, [location.pathname]);
 
+  const faqs = [
+    {
+      q: "What is SELLO.?",
+      a: "SELLO is a web based car market in Pakistan. Here, people can. Sell cars, bikes, electric bikes, trucks, vans and other vehicles.",
+    },
+    {
+      q: "Can I sell my car for free on SELLO?",
+      a: "Yes, you can put your vehicle on SELLO. Reach out to people who might want to buy it through the site.",
+    },
+    {
+      q: "Can I find cars and bikes across Pakistan?",
+      a: "Yes, SELLO has vehicle ads from cities in Pakistan. This makes it simpler to look through the cars and bikes that're out there.",
+    },
+    {
+      q: "Does SELLO offer AI car price estimation?",
+      a: "Yes, SELLO has an AI Car Price Estimator and Resale Value tool. These help you look into estimated vehicle prices and what your vehicle might be worth on.",
+    },
+    {
+      q: "Does SELLO offer online vehicle auctions?",
+      a: "Yes, approved registered dealers. Checked partners can look into and take part in vehicle auctions on SELLO. This depends on the rules of each auction.",
+    },
+  ];
+
   return (
     <div className="w-full min-w-0 max-w-full overflow-x-hidden">
       <SEO {...corePageSeo.home} />
@@ -94,7 +117,7 @@ const Home = () => {
           <RecentlyViewedCars />
         </BelowFold>
         <BelowFold minHeight="12rem">
-          <Faqs />
+          <Faqs faqs={faqs} />
         </BelowFold>
         <BelowFold minHeight="10rem">
           <NewsLatter />
