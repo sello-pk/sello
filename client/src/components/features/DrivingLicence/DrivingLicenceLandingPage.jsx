@@ -4,6 +4,8 @@ import {
   ArrowRight,
   Building2,
   CheckCircle2,
+  ChevronDown,
+  ChevronUp,
   Info,
   Lock,
   MapPinned,
@@ -43,6 +45,8 @@ import {
   PREPARATION_CHECKLIST,
   LANDING_FAQS,
   PROVINCE_META,
+  OFFICIAL_VERIFICATION_SECTION,
+  VERIFY_ONLINE_SECTION,
   LAST_VERIFIED_AT,
   formatVerifiedDate,
 } from "./drivingLicenceContent";
@@ -53,6 +57,96 @@ const scrollToId = (id) => (event) => {
   document
     .getElementById(id)
     ?.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
+const ReadMoreButton = ({ expanded, onClick, controls }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    aria-expanded={expanded}
+    aria-controls={controls}
+    className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-6 py-3 font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${
+      expanded
+        ? "bg-primary-50 text-primary-800"
+        : "bg-primary-500 text-white shadow-md hover:opacity-95 hover:shadow-lg"
+    }`}
+  >
+    <span>{expanded ? "Read Less" : "Read More"}</span>
+    {expanded ? (
+      <ChevronUp className="h-5 w-5" aria-hidden />
+    ) : (
+      <ChevronDown className="h-5 w-5" aria-hidden />
+    )}
+  </button>
+);
+
+const ImageInfoCard = ({
+  id,
+  image,
+  imageAlt,
+  icon: Icon,
+  title,
+  summary,
+  points,
+  details,
+}) => {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <article className="overflow-hidden rounded-3xl border border-stone-200/60 bg-[#FDFBF7] shadow-lg">
+      <div className="grid sm:grid-cols-2">
+        <div className="relative min-h-[220px] bg-[#FDFBF7] sm:min-h-[260px] md:min-h-[300px] lg:min-h-[340px]">
+          <img
+            src={image}
+            alt={imageAlt}
+            className="absolute inset-0 h-full w-full object-cover"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        <div className="flex min-w-0 flex-col justify-center p-6 sm:p-8 lg:p-10">
+          <div className="mb-4 flex items-start gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-50">
+              <Icon className="h-5 w-5 text-primary-500" aria-hidden />
+            </span>
+            <h2 className="text-2xl font-bold leading-tight text-slate-900 sm:text-3xl">
+              {title}
+            </h2>
+          </div>
+          <p className="text-base leading-relaxed text-slate-600">{summary}</p>
+          <ul className="mt-5 space-y-3">
+            {points.map((point) => (
+              <li key={point} className="flex items-start gap-3">
+                <CheckCircle2
+                  className="mt-0.5 h-5 w-5 shrink-0 text-primary-500"
+                  aria-hidden
+                />
+                <span className="text-sm leading-relaxed text-slate-600 sm:text-base">
+                  {point}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-7">
+            <ReadMoreButton
+              expanded={expanded}
+              onClick={() => setExpanded((value) => !value)}
+              controls={`${id}-details`}
+            />
+          </div>
+        </div>
+      </div>
+      <div id={`${id}-details`} hidden={!expanded}>
+        {expanded ? (
+          <div className="border-t border-stone-200/80 px-6 py-6 sm:px-8 sm:py-8 lg:px-10">
+            <p className="text-sm leading-relaxed text-slate-600 sm:text-base">
+              {details}
+            </p>
+          </div>
+        ) : null}
+      </div>
+    </article>
+  );
 };
 
 const whyLicence = [
@@ -264,80 +358,29 @@ const DrivingLicenceLandingPage = () => {
         </div>
       </section>
 
-      {/* 2-Column Section 1: Access Official Driving Licence Verification Services in Pakistan */}
+      {/* Official verification services */}
       <section className="py-12 sm:py-16 bg-slate-50/70 border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4 sm:mb-6 leading-tight">
-                Access Official Driving Licence Verification Services in
-                Pakistan
-              </h2>
-              <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
-                Looking to check your driving license in Pakistan? Sello is to
-                guide you through the official driving license verification
-                processes in Punjab, Sindh, Islamabad, Khyber Pakhtunkhwa,
-                Balochistan, Azad Jammu and Kashmir, and Gilgit-Baltistan. Each
-                region has its own licensing and verification systems. Go to the
-                relevant issuing authority, follow the instructions and check
-                out the available licences at the government website. For
-                instance in Punjab residents use the DLIMS platform for online
-                dlims check and in Sindh it is the DLS verification service
-                which is accessed. Also for the traffic police and other
-                regional services in Punjab they should be accessed through the
-                official channels. Sello does not request your CNIC or driving
-                license number here.
-              </p>
-            </div>
-            <div className="relative rounded-2xl overflow-hidden shadow-lg border border-slate-200">
-              <img
-                src={DrivingLicenceVerification}
-                alt="Access Official Driving Licence Verification Services in Pakistan"
-                className="w-full h-auto object-cover max-h-[420px]"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-          </div>
+          <ImageInfoCard
+            id="official-verification"
+            image={DrivingLicenceVerification}
+            imageAlt="Official driving licence verification guidance"
+            icon={ShieldCheck}
+            {...OFFICIAL_VERIFICATION_SECTION}
+          />
         </div>
       </section>
 
-      {/* 2-Column Section 2: How to Check and Verify Your Driving Licence Online in Pakistan */}
+      {/* Online verification steps */}
       <section className="py-12 sm:py-16 bg-white border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div className="lg:order-2">
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4 sm:mb-6 leading-tight">
-                How to Check and Verify Your Driving Licence Online in Pakistan
-              </h2>
-              <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
-                In another region a online driving license check or verification
-                of your record will do to see what we have in the issuing
-                authority’s records. Follow these general steps: Identify your
-                issuing region: Confirm if your license was issued in Punjab,
-                Sindh, KPK, Islamabad or another region. Open the relevant Sello
-                guide: Check out the instructions and official portal link for
-                your location. Visit the government portal: Open up the driving
-                licence verification or tracking service. Enter the required
-                information: give your CNIC, license number or application
-                reference only at the official government website as needed.
-                Review the result: Check out the license details and validity
-                info from the authority. The process for online Punjab driving
-                license check, driving license verification in KPK and Islamabad
-                driving license online check may vary. Follow the instructions
-                which are given by the relevant portal.
-              </p>
-            </div>
-            <div className="relative rounded-2xl overflow-hidden shadow-lg border border-slate-200 lg:order-1">
-              <img
-                src={DrivingLicenceOnline}
-                alt="How to Check and Verify Your Driving Licence Online in Pakistan"
-                className="w-full h-auto object-cover max-h-[420px]"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-          </div>
+          <ImageInfoCard
+            id="verify-online"
+            image={DrivingLicenceOnline}
+            imageAlt="Online driving licence check"
+            icon={Lock}
+            {...VERIFY_ONLINE_SECTION}
+          />
         </div>
       </section>
 

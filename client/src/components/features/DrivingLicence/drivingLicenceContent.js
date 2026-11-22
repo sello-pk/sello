@@ -115,6 +115,33 @@ export const PREPARATION_CHECKLIST = [
   "Existing learner or permanent licence details for renewal or upgrade",
 ];
 
+export const OFFICIAL_VERIFICATION_SECTION = {
+  title: "Access Official Driving Licence Verification Services in Pakistan",
+  summary:
+    "Check your driving licence through the official portal for the province or territory that issued it. Sello helps you find the right authority and never asks for your CNIC or licence number.",
+  points: [
+    "Each province runs its own licensing and verification system.",
+    "Use the issuing authority’s website for licence checks, payments and tracking.",
+    "Punjab drivers use DLIMS; Sindh drivers use the DLS verification service.",
+  ],
+  details:
+    "Choose a province above to see its official portal, document checklist and step-by-step guide. Sello currently covers Punjab, Sindh, Khyber Pakhtunkhwa, Islamabad and Balochistan. For Azad Jammu and Kashmir or Gilgit-Baltistan, use the licensing service listed by your regional government. Enter personal details only on the official government website, and keep your application or payment reference for follow-up.",
+};
+
+export const VERIFY_ONLINE_SECTION = {
+  title: "How to Check and Verify Your Driving Licence Online in Pakistan",
+  summary:
+    "An online check shows the record held by the authority that issued your licence. The exact steps vary by region, but the process is usually the same.",
+  points: [
+    "Confirm which province or territory issued your licence.",
+    "Open the matching Sello guide to find the official portal.",
+    "Enter your CNIC, licence number or application reference only on the government website.",
+    "Review the licence details and validity shown by the authority.",
+  ],
+  details:
+    "Online Punjab driving licence checks, KPK licence verification and Islamabad driving licence checks are handled on separate government systems. Follow the instructions on the official portal and save your reference number in case you need to contact the issuing office.",
+};
+
 export const LANDING_FAQS = [
   {
     question: "How can I verify my driving licence online in Pakistan?",
@@ -124,19 +151,18 @@ export const LANDING_FAQS = [
     a: "You can verify your driving licence through the official online portal of the province or territory that issued it. Select the relevant licensing authority, enter the required information, such as your CNIC or licence number, and follow the verification instructions.",
   },
   {
-    question: "How can I verify my driving licence online in Pakistan?",
+    question: "Is there one driving licence verification website for all of Pakistan?",
     answer:
-      "Identify the province or state in which your license was issued. Go to the official site which does issue the license, put in the required info and check your record.",
-    q: "How can I verify my driving licence online in Pakistan?",
-    a: "No. Pakistan does not currently have one universal public driving licence verification portal. Punjab, Sindh, Islamabad, Khyber Pakhtunkhwa, Balochistan, Azad Jammu & Kashmir and Gilgit-Baltistan have their own licensing systems and verification services.",
+      "No. Pakistan does not have one universal public driving licence verification portal. Punjab, Sindh, Islamabad, Khyber Pakhtunkhwa, Balochistan, Azad Jammu & Kashmir and Gilgit-Baltistan have separate systems, so use the portal for the authority that issued your licence.",
+    q: "Is there one driving licence verification website for all of Pakistan?",
+    a: "No. Pakistan does not have one universal public driving licence verification portal. Punjab, Sindh, Islamabad, Khyber Pakhtunkhwa, Balochistan, Azad Jammu & Kashmir and Gilgit-Baltistan have separate systems, so use the portal for the authority that issued your licence.",
   },
   {
-    question:
-      "Is there one driving licence verification website for all of Pakistan?",
+    question: "Which portal should I use to verify my licence?",
     answer:
-      "Obviously No. Different provinces and regions have separate licensing systems. You must use the portal which issued your license.",
-    q: "Is there one driving licence verification website for all of Pakistan?",
-    a: "Obviously No. Different provinces and regions have separate licensing systems. You must use the portal which issued your license.",
+      "Use the official portal of the province or territory that issued your licence. A licence issued in Punjab, for example, is checked on the Punjab DLIMS service, while a Sindh licence is checked through the Sindh DLS service.",
+    q: "Which portal should I use to verify my licence?",
+    a: "Use the official portal of the province or territory that issued your licence. A licence issued in Punjab, for example, is checked on the Punjab DLIMS service, while a Sindh licence is checked through the Sindh DLS service.",
   },
   {
     question: "Can I check my driving licence using my CNIC number?",
