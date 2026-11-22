@@ -88,9 +88,7 @@ const CarListings = () => {
     <div className="min-h-screen min-w-0 overflow-x-hidden">
       <SEO {...corePageSeo.listings} />
 
-      <header
-        className={`relative overflow-hidden border-b border-slate-200/80 md:h-[375px] `}
-      >
+      <header className={`relative overflow-hidden md:h-[350px] `}>
         <div className="cover-image absolute">
           <img
             src={images.PakistanCarListingsBanner}
