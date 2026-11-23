@@ -1288,26 +1288,42 @@ export const VehicleVerificationPageSchema = () => {
           mainEntity: [
             {
               "@type": "Question",
-              name: "How can I verify car ownership online in Pakistan?",
+              name: "What is vehicle online verification?",
               acceptedAnswer: {
                 "@type": "Answer",
-                text: "You can verify car ownership online on Sello.pk by entering the vehicle's registration number. The lookup checks official MTMIS Excise databases for Punjab, Sindh, Islamabad, and KPK to display the current owner name, registration date, and vehicle specs.",
+                text: "Online vehicle check is a process which goes through relevant authorized databases for info on a car and its history before you buy, sell or transfer a vehicle.",
               },
             },
             {
               "@type": "Question",
-              name: "What details are displayed in an MTMIS vehicle check?",
+              name: "How do I check my car registration in Pakistan?",
               acceptedAnswer: {
                 "@type": "Answer",
-                text: "An MTMIS online check displays the vehicle owner name, make/model, engine and chassis numbers, vehicle body type, registration date, token tax payment status, and CPLC clearance status (for Sindh).",
+                text: "In each province the vehicle registration process varies. Use the appropriate government vehicle registration or verification service which will have the info that corresponds to your vehicle and also your documents.",
               },
             },
             {
               "@type": "Question",
-              name: "Can I check token tax payment history on Sello.pk?",
+              name: "What is the online vehicle history report before you buy a used car?",
               acceptedAnswer: {
                 "@type": "Answer",
-                text: "Yes, Sello.pk vehicle verification provides token tax payment status directly from provincial Excise and Taxation databases to verify if any tax dues remain unpaid.",
+                text: "No. Online verification is a start but also go over the car in person, check the docs and the engine and chassis numbers.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "Is it possible to do bike registration online?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "In some provinces and which services the government provides access to, you may have to check bike registration info online. Also use authorized sources for official verification.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "Why do I need to verify a car before purchase?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Vehicle verification is a step which you may take to compare the seller’s info with what is in the registration records and to identify any issues before you buy.",
               },
             },
           ],

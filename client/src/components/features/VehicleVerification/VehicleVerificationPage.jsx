@@ -176,55 +176,23 @@ const buyingTips = [
 const faqs = [
   {
     q: "What is vehicle online verification?",
-    a: "Online vehicle verification checks authorized databases for registration and history details before you buy, sell, or transfer a vehicle.",
+    a: "Online vehicle check is a process which goes through relevant authorized databases for info on a car and its history before you buy, sell or transfer a vehicle.",
   },
   {
     q: "How do I check my car registration in Pakistan?",
-    a: "Each province has its own process. Use the official government registration or verification service for the province where the vehicle is registered, then compare the result with your documents.",
+    a: "In each province the vehicle registration process varies. Use the appropriate government vehicle registration or verification service which will have the info that corresponds to your vehicle and also your documents.",
   },
   {
-    q: "Is online verification enough before buying a used car?",
-    a: "No. Online verification is a starting point. Also inspect the car in person, review the documents, and match engine and chassis numbers.",
+    q: "What is the online vehicle history report before you buy a used car?",
+    a: "No. Online verification is a start but also go over the car in person, check the docs and the engine and chassis numbers.",
   },
   {
     q: "Is it possible to do bike registration online?",
-    a: "In some provinces, bike registration information is available online through government services. Always use authorized sources, then confirm numbers on the bike itself.",
+    a: "In some provinces and which services the government provides access to, you may have to check bike registration info online. Also use authorized sources for official verification.",
   },
   {
     q: "Why do I need to verify a car before purchase?",
-    a: "Verification lets you compare the seller's claims with registration records and catch issues before you buy.",
-  },
-  {
-    q: "How does vehicle verification work on Sello?",
-    a: "Choose the province where the vehicle is registered to open the Sello guide. From that detail page, continue to the official Excise / MTMIS portal to check records, then compare them with the car and documents in person.",
-  },
-  {
-    q: "Is vehicle verification free?",
-    a: "Yes. Sello does not charge for this guide. Official provincial portals are also free to use, though some offices may charge for extra printed copies or in-person services.",
-  },
-  {
-    q: "Which provinces are currently supported?",
-    a: "Punjab, Islamabad, Sindh, KPK, Balochistan, Gilgit-Baltistan, and Azad Kashmir. Each card opens a Sello guide; official portal links are on the province detail page.",
-  },
-  {
-    q: "Can I verify vehicle ownership details?",
-    a: "Where the authority publishes them, you can review owner name, registration date, and transfer history through official sources.",
-  },
-  {
-    q: "What information do I need to verify a vehicle?",
-    a: "At minimum, the registration number. Some portals also ask for chassis or engine number. Have the original registration book or smart card with you.",
-  },
-  {
-    q: "How accurate is the verification information?",
-    a: "Records come from official provincial databases. Availability and detail vary by province, and updates may not be instant. Always confirm numbers on the vehicle itself.",
-  },
-  {
-    q: "Can I get a printed verification report?",
-    a: "Sello does not generate a separate report. If the official portal allows it, you can print or screenshot the result from that site.",
-  },
-  {
-    q: "How long does it take to get the verification report?",
-    a: "Most official portals return results immediately. If a record is missing or delayed, confirm with the relevant Excise office.",
+    a: "Vehicle verification is a step which you may take to compare the seller’s info with what is in the registration records and to identify any issues before you buy.",
   },
 ];
 
