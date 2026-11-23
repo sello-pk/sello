@@ -24,565 +24,358 @@ const vehicleVerificationGuidePosts = [
   {
     id: 3,
     stepNumber: "03",
-    title: "What information can be checked through vehicle verification?",
+    title: "What Information Can Be Checked Through Vehicle Verification?",
     category: "Registration Records",
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
     image: whatInformationCanBeCheckedThroughVehicleVerification,
     excerpt:
-      "Depending on the provincial system and what authorized channels publish, records may include vehicle registration number, make and model, engine and chassis information, and token status.",
-    body: [
-      "Depending on the provincial system and what authorized channels publish, records may include the items listed below. Use this information to catch issues before you buy. Engine and chassis numbers in the records should match the vehicle and its registration documents.",
-    ],
-    items: [
-      "Vehicle registration number",
-      "Registration date",
-      "Vehicle make and model",
-      "Manufacturing or model year",
-      "Engine information",
-      "Chassis information",
-      "Vehicle body type",
-      "Available ownership-related information",
-      "Token fees or other related listing details",
-      "Other information provided by the relevant authority",
-    ],
-    fullContent: `Depending on the provincial system and what authorized channels publish, records may include the items listed below. Use this information to catch issues before you buy. Engine and chassis numbers in the records should match the vehicle and its registration documents.
+      "According to the specific provincial system and what is made available through authorized channels we may report that which includes:",
+    fullContent: `- Vehicle registration number
+- Registration date
+- Vehicle make and model
+- Manufacturing or model year
+- Engine information
+- Chassis information
+- Vehicle body type
+- Available ownership-related information
+- Token fees or other related listing details.
+- Other info provided by the proper authority.
 
-## Detailed Breakdown of Records
-
-- **Vehicle Registration Number:** The official registration identifier allocated by the provincial excise authority.
-- **Registration Date:** The exact date when the vehicle was first registered in Pakistan.
-- **Vehicle Make and Model:** The verified brand (Toyota, Honda, Suzuki, etc.) and model variant.
-- **Manufacturing or Model Year:** The actual production year, which may differ from the registration year for imported vehicles.
-- **Engine Information:** The serial number stamped on the vehicle's engine block.
-- **Chassis Information:** The Vehicle Identification Number (VIN) stamped on the frame.
-- **Vehicle Body Type:** Sedan, hatchback, SUV, commercial carrier, etc.
-- **Ownership Details:** The registered owner's name and authorized transfer status.
-- **Token Tax Details:** Active payment status, arrears, and penalties if applicable.`,
+This information is to help buyers identify issues before they purchase a vehicle. For instance we see that the engine and chassis numbers reported in the records should be verified against what is present on the car and its registration.`,
   },
   {
     id: 4,
     stepNumber: "04",
-    title: "Why MTMIS and online vehicle verification are important",
+    title: "Why MTMIS and Online Vehicle Verification Are Important",
     category: "Transparency & Security",
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
     image: whyMTMISAndOnlineVehicleVerificationAreImportant,
     excerpt:
-      "When you buy a used car or motorcycle, it is a risk to rely only on what the seller says. A vehicle may pass a visual inspection and still have registration issues. Online tools like MTMIS add transparency.",
-    body: [
-      "When you buy a used car or motorcycle, it is a risk to rely only on what the seller says. A vehicle may pass a visual inspection and still have registration issues. Online tools like MTMIS add transparency so you can review available information before you proceed.",
-      "Online checks are a useful tool when buying cars in Pakistan, but they are only one step. Also inspect the car in person, review documents, compare market prices, and complete a legal ownership transfer.",
-    ],
-    items: [
-      "Display vehicle registration information",
-      "Compare records with vehicle documents",
-      "Help identify possible inconsistencies",
-      "Add transparency during vehicle transactions",
-      "Give buyers access to tax and registration information",
-      "Reduce time spent searching basic registration details",
-    ],
-    fullContent: `When you buy a used car or motorcycle, it is a risk to rely only on what the seller says. A vehicle may pass a visual inspection and still have registration issues. Online tools like MTMIS add transparency so you can review available information before you proceed.
+      "When purchasing a used car or motorcycle it is a risk to only go by what the seller says. A vehicle may pass the inspection fine, but buyers do well to also check into the registration info.",
+    fullContent: `Online vehicle verification tools like MTMIS can put forward greater transparency which in turn allows users to review available info before they proceed with a transaction.
 
-Online checks are a useful tool when buying cars in Pakistan, but they are only one step. Also inspect the car in person, review documents, compare market prices, and complete a legal ownership transfer.
+The main benefits include:
 
-## Key Advantages for Buyers
+- Displaying vehicle registration info to users.
+- Improving the comparison of records to vehicle docs.
+- Helping identify possible inconsistencies
+- Providing greater transparency during vehicle transactions
+- Providing buyers access to tax and registration info.
+- Reducing time spent on manual search of basic registration info.
 
-- **Eliminates Surprises:** Avoid purchasing vehicles with thousands of rupees in overdue token taxes.
-- **Prevents Document Tampering:** Verify if registration cards or books have been altered.
-- **Guarantees Smooth Transfer:** Ensure the vehicle has no legal or police holds preventing biometric transfer.`,
+For those looking to buy cars in Pakistan online is a great tool to use but also only one of many steps in the purchase process. Also include in your process a physical inspection of the car, review of its documents, comparison to market prices and the completion of the proper legal ownership transfer.`,
   },
   {
     id: 5,
     stepNumber: "05",
-    title: "Why is car verification important before buying?",
+    title: "Why Is Car Verification Important Before Buying?",
     category: "Buyer Protection",
     readTime: "6 min read",
     author: "Sello Verification Team",
     date: "November 2026",
     image: whyIsCarVerificationImportantBeforeBuying,
     excerpt:
-      "The used-car market offers a wide choice, but every buyer should review the car carefully before finalizing a deal. Verification can surface issues that do not match what the seller reported.",
-    body: [
-      "The used-car market offers a wide choice, but every buyer should review the car carefully before finalizing a deal. Verification can surface issues that do not match what the seller reported, including chassis number, engine details, registration history, and other available records.",
-      "Online records are a useful resource. They do not replace a physical inspection of the vehicle itself.",
-    ],
-    items: [
-      "Vehicle registration details",
-      "Registration city or province",
-      "Vehicle make and model",
-      "Engine and chassis information",
-      "Available ownership details through authorized sources",
-      "Token tax or related vehicle charges",
-      "Registration documents",
-      "Smart card or registration book details",
-    ],
-    fullContent: `The used-car market offers a wide choice, but every buyer should review the car carefully before finalizing a deal. Verification can surface issues that do not match what the seller reported, including chassis number, engine details, registration history, and other available records.
+      "In the used car market there is a great choice of vehicles but each buyer should take the time to have a look at the car very carefully before finalizing the deal. A good car verification will present issues with what the seller has reported.",
+    fullContent: `For instance people may want to check that the info on the vehicle matches what is in the registration. Also it is important to go over the chassis number, engine details, registration history and any other available info.
 
-Online records are a useful resource. They do not replace a physical inspection of the vehicle itself.
+Before making that buy, you should check:
 
-## How Verification Protects Your Investment
+- Vehicle registration details
+- Registration city or province
+- Vehicle make and model
+- Engine and chassis information
+- Available ownership details through authorized sources
+- Tax on tokens or other related vehicle issues.
+- Registration documents
+- Smart card or registration book details
 
-Buying a vehicle is one of the largest financial investments most people make. A thorough verification ensures:
-
-1. **You are paying a fair market price** based on the actual model year and spec level.
-2. **You do not inherit legal penalties** or unpaid toll/traffic violations.
-3. **The engine has not been illegally swapped** without Excise Department clearance.`,
+Vehicle check should include a physical inspection. While online records are a great resource they do not replace the condition of the vehicle itself.`,
   },
   {
     id: 6,
     stepNumber: "06",
-    title: "How Sello helps with vehicle verification",
+    title: "How Sello Helps with Vehicle Verification",
     category: "Sello Platform",
     readTime: "4 min read",
     author: "Sello Verification Team",
     date: "November 2026",
     image: howSelloHelpsWithVehicleVerification,
     excerpt:
-      "Sello makes buying and selling vehicles clearer by providing tools, vehicle information, and resources so you can make a more informed decision before you buy a used car in Pakistan.",
-    body: [
-      "Sello makes buying and selling vehicles clearer by providing tools, vehicle information, and resources so you can make a more informed decision. Before you buy a used car, use listings, buying guides, and pricing tools together with official registration checks.",
-      "Choosing a car is about more than photos and price. Slow down and think through registration information, inspection, and comparison. Browse used cars for sale in Pakistan on Sello and compare options before you decide.",
-    ],
-    items: [
-      "One-click direct links to provincial verification portals",
-      "Comprehensive buyer guides for all 7 regions of Pakistan",
-      "AI-driven car price estimates to prevent overpaying",
-      "Integrated checklists for physical inspections and document checks",
-    ],
-    fullContent: `Sello makes buying and selling vehicles clearer by providing tools, vehicle information, and resources so you can make a more informed decision. Before you buy a used car, use listings, buying guides, and pricing tools together with official registration checks.
+      "Sello is out to change the game of buying and selling vehicles which up to this point has been less than convenient and transparent. Before you jump in to buy a used car we have put together a host of info for you which includes vehicle info, buying guides, pricing tools which in turn support you in making better decisions.",
+    fullContent: `When it comes to choosing a car out fit out which listings to which cars and what is available in terms of registration info is key. Sello tells buyers to take it slow and to think through their decision beyond just what it looks like or how much it is.
 
-Choosing a car is about more than photos and price. Slow down and think through registration information, inspection, and comparison. Browse used cars for sale in Pakistan on Sello and compare options before you decide.
+The process of buying a car should include research, verification, inspection, and price comparison. These steps will help you determine if a vehicle is a right fit for your budget and needs.
 
-## Sello's Verification Toolkit
-
-- **Direct Provincial Gateway:** Instant access to Punjab MTMIS, Sindh Excise, Islamabad ICT, KPK Excise, Balochistan, GB, and AJK official portals.
-- **Valuation Benchmarks:** Accurate data-backed price checks to identify undervalued or suspiciously cheap listings.
-- **Community Safety First:** We curate verified seller profiles and provide end-to-end guidance from verification to biometric transfer.`,
+Also see what we have of used cars for sale in Pakistan on Sello and compare which one is the best before you decide.`,
   },
   {
     id: 7,
     stepNumber: "07",
-    title: "What information should you check during vehicle verification?",
+    title: "What Information Should You Check During Vehicle Verification?",
     category: "Verification Checklist",
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
     image: whatInformationShouldYouCheckDuringVehicleVerification,
     excerpt:
-      "A proper vehicle verification in Pakistan differs by province and by what the relevant authorities publish. Always compare official information with what the seller is offering.",
-    body: [
-      "A proper vehicle verification in Pakistan differs by province and by what the relevant authorities publish. Always compare official information with what the seller is offering.",
-      "Pay close attention that engine and chassis serial numbers on the vehicle match the official documentation. If anything is inconsistent, look into it before you pay.",
-    ],
-    items: [
-      "Vehicle registration number",
-      "Make and model",
-      "Manufacturing year",
-      "Engine number",
-      "Chassis number",
-      "Registration date",
-      "Registration city",
-      "Available ownership information",
-      "Applicable tax or token status",
-      "Registration document details",
-    ],
-    fullContent: `A proper vehicle verification in Pakistan differs by province and by what the relevant authorities publish. Always compare official information with what the seller is offering.
+      "A proper vehicle verification Pakistan may differ by province and what is put forth by the relevant authorities. But it is up to the buyer to always check out and compare that which the official info presents with what is being offered by the seller.",
+    fullContent: `Important issues to note are the registration number, vehicle make, model, engine size, registration date, and also any other available registration info.
 
-Pay close attention that engine and chassis serial numbers on the vehicle match the official documentation. If anything is inconsistent, look into it before you pay.
+Also pay close attention to the fact that the serial numbers of the engine and chassis on the vehicle do match what is reported in the official documentation.
 
-## Essential Checklist for Buyers
+Here is a list of what is very important:
 
-- **Registration Number:** Ensure the plate format matches the official provincial standards.
-- **Engine Serial:** Clean off grease and inspect the engine block stamping for grinding marks.
-- **Chassis Plate:** Check the firewall or door jamb plate for factory rivets.
-- **Token Tax Status:** Confirm taxes are paid for the current fiscal year.`,
+- Vehicle registration number
+- Make and model
+- Manufacturing year
+- Engine number
+- Chassis number
+- Registration date
+- Registration city
+- Available ownership information
+- Applicable tax or token status
+- Registration document details
+
+If at all there is any inconsistency, it is better to look into that before proceeding with payment.`,
   },
   {
     id: 8,
     stepNumber: "08",
-    title: "Punjab vehicle verification",
+    title: "Punjab Vehicle Verification",
     category: "Punjab Excise",
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
     image: punjabVehicleVerification,
     excerpt:
-      "For Punjab-registered vehicles, use official government vehicle verification services. Punjab vehicle verification helps confirm a vehicle's details across all 36 districts.",
-    body: [
-      "For Punjab-registered vehicles, use official government vehicle verification services. Punjab vehicle verification helps confirm a vehicle's details. Use only authorized official sources for registration information.",
-      "Government database information can change. Verify key details with the right authority when needed. Sello helps you know what to check, but official registration information should still come from the authorized government channel.",
-    ],
-    items: [
-      "Access via Punjab Excise & Taxation official MTMIS portal",
-      "Verifies vehicles registered in Lahore, Rawalpindi, Faisalabad, and more",
-      "Live tracking of token tax status and automated smart card dispatch",
-    ],
-    fullContent: `For Punjab-registered vehicles, use official government vehicle verification services. Punjab vehicle verification helps confirm a vehicle's details. Use only authorized official sources for registration information.
+      "In the case of Punjabi registered vehicles buyers may have to use government vehicle verification services for which the info is available. In Punjab vehicle verification is a service that helps to confirm a vehicle’s details.",
+    fullContent: `When carrying out an online vehicle Punjab makes use of only authorized and official sources for registration info.
 
-Government database information can change. Verify key details with the right authority when needed. Sello helps you know what to check, but official registration information should still come from the authorized government channel.
+Government databases’ info is in a state of change. Thus users are to verify key details with the right authority when needed.
 
-## Punjab MTMIS Highlights
-
-Punjab boasts one of the most mature digitized transport databases in Pakistan.
-- **Portal URL:** \`mtmis.excise.punjab.gov.pk\`
-- **Coverage:** Covers all motor cars, motorcycles, commercial vehicles, and tractors registered in Punjab.
-- **Search Key:** Enter the vehicle registration number (e.g. \`LEA-12-1234\` or \`ICT-99-9999\`).`,
+Sello has tools for you to use in determining what info you will need to check when you buy a vehicle, however official registration info should be verified through the proper authorized government channel.`,
   },
   {
     id: 9,
     stepNumber: "09",
-    title: "Car registration check before buying a used car",
+    title: "Car Registration Check Before Buying a Used Car",
     category: "Used Car Due Diligence",
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
     image: carRegistrationCheckBeforeBuyingAUsedCar,
     excerpt:
-      "A used-car registration check should be near the top of your list. Before you pay or finalize the deal, compare the seller's documents with the vehicle information in front of you.",
-    body: [
-      "A used-car registration check should be near the top of your list. Before you pay or finalize the deal, compare the seller's documents with the vehicle information in front of you.",
-      "Check registration information against the vehicle at inspection, including chassis and engine numbers. In Punjab, a proper registration check through the relevant provincial authority adds extra assurance.",
-      "Records are only part of the picture. Also look at mechanical condition, bodywork, maintenance history, and available ownership documents.",
-    ],
-    items: [
-      "Verify seller documents with physical vehicle badges",
-      "Cross-check original invoice and sales tax receipts",
-      "Inspect maintenance history and mileage consistency",
-    ],
-    fullContent: `A used-car registration check should be near the top of your list. Before you pay or finalize the deal, compare the seller's documents with the vehicle information in front of you.
+      "A used car registration check is what you should do at the top of your list when you are buying a used vehicle. Also before you pay in advance or finalize the deal, check out the seller’s documents against the provided vehicle info.",
+    fullContent: `Check out the registration info against what is present on the vehicle at inspection. Also check the chassis and engine numbers.
 
-Check registration information against the vehicle at inspection, including chassis and engine numbers. In Punjab, a proper registration check through the relevant provincial authority adds extra assurance.
+In Punjab for sure a proper vehicle registration check or approach the relevant provincial authority for verification may also provide you that extra level of assurance when you are buying a vehicle.
 
-Records are only part of the picture. Also look at mechanical condition, bodywork, maintenance history, and available ownership documents.
-
-## Critical Verification Steps
-
-1. Verify that the registration certificate is original, not a duplicate.
-2. Confirm that previous owner transfers were formally logged.
-3. Check for any customs auction history or amnesty scheme notations.`,
+However in many cases what we see is just the tip of the iceberg. Buyers also to look into the mechanical issues the vehicle has, body work, maintenance history and available ownership documents.`,
   },
   {
     id: 10,
     stepNumber: "10",
-    title: "How to check car details before buying",
+    title: "How to Check Car Details Before Buying",
     category: "Step-by-Step Check",
     readTime: "6 min read",
     author: "Sello Verification Team",
     date: "November 2026",
     image: howToCheckCarDetailsBeforeBuying,
     excerpt:
-      "Start with the information the seller has. Ask for the registration number and go over the registration documents, then run the authorized provincial check.",
-    body: [
-      "Start with the information the seller has. Ask for the registration number and go over the registration documents. Then use the authorized vehicle check for the province where the car is registered, and compare the result with the car and its paperwork.",
-      "Also inspect the car in person. Look for accident damage, paint retouches, engine issues, suspension problems, or chassis changes. Taking these related steps together reduces the chance of a bad purchase.",
-    ],
-    items: [
-      "Checking available registration information",
-      "Matching the engine and chassis details",
-      "Inspecting the original documents",
-      "Reviewing the vehicle's physical condition",
-      "Checking maintenance records, if available",
-      "Asking about accident or repair history",
-      "Comparing the asking price with similar models",
-    ],
-    fullContent: `Start with the information the seller has. Ask for the registration number and go over the registration documents. Then use the authorized vehicle check for the province where the car is registered, and compare the result with the car and its paperwork.
+      "If you are looking at what to do to check car info before purchasing a used car start by getting out all the info the seller has. Ask for the registration number and go over the registration documents.",
+    fullContent: `First, go to the proper authorized vehicle check for your area that the car is registered in. Then compare what you see with the car and it’s documentation.
 
-Also inspect the car in person. Look for accident damage, paint retouches, engine issues, suspension problems, or chassis changes. Taking these related steps together reduces the chance of a bad purchase.
+You should also do a physical inspection of the car. Check for signs of accident damage, retouches of paint, engine issues, suspension problems, or changes to the chassis.
 
-## Detailed Procedure
+A safe buying process usually includes:
 
-1. **Digital Search:** Run the registration number on the official MTMIS portal.
-2. **Document Inspection:** Inspect the smart card or registration book under good light.
-3. **Physical Inspection:** Verify serial numbers on the car match the paperwork exactly.
-4. **Market Comparison:** Use Sello's AI estimator to verify if the asking price aligns with real market values.`,
+- Checking available registration information
+- Matching the engine and chassis details
+- Inspecting the original documents
+- Reviewing the vehicle's physical condition
+- Checking maintenance records, if available
+- Asking about accident or repair history
+
+Comparing the price of that which is asked for your vehicle to what other similar models are going for.
+
+Taking this which also includes a series of related actions will reduce your chance of a bad purchase decision.`,
   },
   {
     id: 11,
     stepNumber: "11",
-    title: "Vehicle verification in Lahore and other cities",
+    title: "Vehicle Verification Lahore and Other Cities",
     category: "City Guides",
     readTime: "4 min read",
     author: "Sello Verification Team",
     date: "November 2026",
     image: vehicleVerificationInLahoreAndOtherCities,
     excerpt:
-      "For vehicle verification in Lahore, the process follows where the vehicle is registered, not where it currently sits. A car registered in Lahore should be checked through Punjab records.",
-    body: [
-      "For vehicle verification in Lahore, the process follows where the vehicle is registered, not where it currently sits. A car registered in Lahore should be checked through the relevant Punjab records even if it is now in another city.",
-      "The same rule applies to vehicles in Karachi, Islamabad, Rawalpindi, Faisalabad, and other cities in Pakistan. Always review the registration information and use the correct official portal for that registration.",
-    ],
-    items: [
-      "Verification depends on city of registration, not physical location",
-      "Punjab MTMIS covers Lahore, Faisalabad, Multan, and Rawalpindi",
-      "Sindh Excise covers Karachi, Hyderabad, and Sukkur",
-      "ICT Excise covers Islamabad Capital Territory",
-    ],
-    fullContent: `For vehicle verification in Lahore, the process follows where the vehicle is registered, not where it currently sits. A car registered in Lahore should be checked through the relevant Punjab records even if it is now in another city.
+      "If you are in search of vehicle verification Lahore , it will be a general rule that the verification process is based on where the vehicle is registered and not so much where it currently is.",
+    fullContent: `For instance we see a car registered in Lahore that may have come from out of province. In which case the relevant registration authority in that province is the right place to check for records.
 
-The same rule applies to vehicles in Karachi, Islamabad, Rawalpindi, Faisalabad, and other cities in Pakistan. Always review the registration information and use the correct official portal for that registration.
+In the same way that which plays out for vehicles in Karachi, Islamabad, Rawalpindi, Faisalabad and in other cities of Pakistan.
 
-## Regional Guidelines
-
-- **Vehicles in Lahore:** If registered with a \`LE\` or \`LEA\` series, check via Punjab MTMIS. If registered in Islamabad (\`ICT\` or \`IDN\`), use the Islamabad Excise portal.
-- **Vehicles in Karachi:** Check Sindh Excise vehicle search for \`K\` series plates.
-- **Vehicles in Peshawar:** Use KPK Excise MV records.`,
+Always review the registration information in detail and go to the correct official site for your make of car.`,
   },
   {
     id: 12,
     stepNumber: "12",
-    title: "Punjab Excise vehicle verification",
+    title: "Punjab Excise Vehicle Verification",
     category: "Excise & Taxation",
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
     image: punjabExciseVehicleVerification,
     excerpt:
-      "Many buyers looking at a car or bike in Punjab use Punjab Excise vehicle verification. Registration information is held by the appropriate government bodies, so use official sources.",
-    body: [
-      "Many buyers looking at a car or bike in Punjab use Punjab Excise vehicle verification. Registration information is held by the appropriate government bodies, so use official sources.",
-      "If you have questions about a document's authenticity or title status, contact the relevant Excise and Taxation authority before you purchase.",
-    ],
-    items: [
-      "The registration document",
-      "The vehicle number",
-      "Engine details",
-      "Chassis details",
-      "Available registration information",
-    ],
-    fullContent: `Many buyers looking at a car or bike in Punjab use Punjab Excise vehicle verification. Registration information is held by the appropriate government bodies, so use official sources.
+      "Many when buying a car or bike in Punjab people look up info on Punjab Excise vehicle verification. Info on vehicle registration is with the appropriate government bodies, and buyers are to use official sources for this info.",
+    fullContent: `Before finalizing a vehicle purchase you may want to compare:
 
-If you have questions about a document's authenticity or title status, contact the relevant Excise and Taxation authority before you purchase.
+- The registration document
+- The vehicle number
+- Engine details
+- Chassis details
+- Available registration information
 
-## What Punjab Excise Records Show
-
-- **Engine and Chassis Number:** To compare with the metal stampings.
-- **CPLC / Stolen Verification:** Confirms no police records or FIR holds.
-- **Tax Clearance Certificate:** Details of lifetime or annual token tax payments.`,
+If you have issues with a document’s authenticity or the vehicle’s title status, go to the appropriate Excise and Taxation authority first before purchase.`,
   },
   {
     id: 13,
     stepNumber: "13",
-    title: "Online bike registration check",
+    title: "Online Bike Registration Check",
     category: "Motorcycle Verification",
     readTime: "4 min read",
     author: "Sello Verification Team",
     date: "November 2026",
     image: onlineBikeRegistrationCheck,
     excerpt:
-      "Vehicle checks go beyond cars. An online bike registration check is useful when you buy or sell a used motorcycle to avoid stolen or clone vehicles.",
-    body: [
-      "Vehicle checks go beyond cars. An online bike registration check is useful when you buy or sell a used motorcycle. Before you buy, check registration information, engine and frame numbers, and the registration documents in person.",
-      "Also review the bike's physical condition. Mechanical issues, accident damage, and missing documentation can affect value and how well it runs. A bike registration check is especially important when buying from an individual seller.",
-    ],
-    items: [
-      "Motorcycle frame and engine number verification",
-      "Cross-check against police 15 / CPLC stolen bike database",
-      "Smart card verification for Honda, Yamaha, Suzuki, and Chinese bikes",
-    ],
-    fullContent: `Vehicle checks go beyond cars. An online bike registration check is useful when you buy or sell a used motorcycle. Before you buy, check registration information, engine and frame numbers, and the registration documents in person.
+      "Vehicle check is a service that goes beyond cars. Also available is an online bike registration check for used motorcycles which you may use when buying or selling.",
+    fullContent: `Before you buy a bike, check the registration info in person. Look at the engine and frame numbers and very closely at the registration documents.
 
-Also review the bike's physical condition. Mechanical issues, accident damage, and missing documentation can affect value and how well it runs. A bike registration check is especially important when buying from an individual seller.
+You also should go over the bike’s total physical condition. Mechanical issues, accident damage, and also missing documentation may affect the bike’s value and how well it runs.
 
-## Bike Check Guidelines
-
-1. **Inspect the Frame Neck:** Look for the chassis number stamped near the handlebar column. Ensure it has no welding or grinding marks.
-2. **Check the Crankcase:** Compare the engine number stamped on the left crankcase with the registration card.
-3. **Verify Token Tax:** In Punjab and Sindh, most 70cc-125cc motorcycles have lifetime token taxes paid. Verify that this status is reflected online.`,
+A bike registration check is very important which also goes for when you buy a used motorcycle from an individual seller.`,
   },
   {
     id: 14,
     stepNumber: "14",
-    title: "Can you check the vehicle owner?",
+    title: "Can You Check the Vehicle Owner?",
     category: "Ownership Records",
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
     image: canYouCheckTheVehicleOwner,
     excerpt:
-      "Many users want to check the vehicle owner before buying a car or bike. What is available to the public varies by law, privacy rules, and provincial policies.",
-    body: [
-      "Many users want to check the vehicle owner before buying a car or bike. What is available to the public varies by law, privacy rules, and what official registration authorities publish.",
-      "Use authorized channels only, and only for genuine purchase or transfer needs. The most important step is confirming the seller has the right to sell and that ownership transfer is completed correctly. Never rely on verbal claims alone.",
-    ],
-    items: [
-      "Understand public privacy regulations across provinces",
-      "Verify seller CNIC against the registered owner name",
-      "Ensure an active biometric transfer can be executed immediately",
-    ],
-    fullContent: `Many users want to check the vehicle owner before buying a car or bike. What is available to the public varies by law, privacy rules, and what official registration authorities publish.
+      "Many of our users go online to check vehicle owners before they buy a car or a bike. What is available to the public varies based on which laws are in place, privacy regulations, and what the official vehicle registration authorities put out there.",
+    fullContent: `For private and secure reasons users should only put to use and access information through authorized channels which also pertain to genuine uses.
 
-Use authorized channels only, and only for genuine purchase or transfer needs. The most important step is confirming the seller has the right to sell and that ownership transfer is completed correctly. Never rely on verbal claims alone.
+When it comes to the purchase of a vehicle the most important step is to see that the seller is in fact the proper party to put it up for sale and that the process of ownership transfer is carried out correctly.
 
-## Privacy & Ownership Verification
-
-Due to citizen privacy laws, some provincial portals mask the owner's full father name or CNIC digits. However, you can always:
-- Verify the first name / initial of the registered owner.
-- Confirm whether the vehicle is registered to an individual or a company/bank.
-- Verify the seller's original CNIC matches the registered name prior to transferring funds.`,
+Never base your decision on what is said. We also see to it that you go over the related documents and complete the process as the law requires.`,
   },
   {
     id: 15,
     stepNumber: "15",
-    title: "Vehicle registration and smart card verification",
+    title: "Vehicle Registration and Smart Card Verification",
     category: "Smart Card Verification",
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
     image: vehicleRegistrationAndSmartCardVerification,
     excerpt:
-      "Registration may be an Excise book, smart card, or official document depending on the vehicle and province. Check documents against the physical vehicle.",
-    body: [
-      "Registration may be a book, smart card, or another government-recognized document, depending on the vehicle and authority. Before you buy, check the documents against the physical vehicle.",
-      "For a bike smart-card check or a car document review, verify the registration number, engine number, and chassis number. If details do not add up, do not complete the transaction. It is easier to resolve issues before payment than after.",
-    ],
-    items: [
-      "Verify microchip features and holographic security marks",
-      "Distinguish between original smart cards and duplicate issuances",
-      "Check engine and chassis numbers against registration books",
-    ],
-    fullContent: `Registration may be a book, smart card, or another government-recognized document, depending on the vehicle and authority. Before you buy, check the documents against the physical vehicle.
+      "Vehicle registration may be presented in the form of a registration book, smart card, or any other government recognized documentation which will vary by vehicle and registration authority.",
+    fullContent: `Before you buy a used car, have the documents checked against the physical vehicle. For a bike smart card check or a car document review include verification of the registration number, engine number and chassis number.
 
-For a bike smart-card check or a car document review, verify the registration number, engine number, and chassis number. If details do not add up, do not complete the transaction. It is easier to resolve issues before payment than after.
+Do not go through with a transaction if the details don’t add up or you have issues with the authenticity of the docs.
 
-## Smart Card Security Features
-
-- **Embedded RFID Microchip:** Stores encrypted vehicle and owner data.
-- **Holographic Overlay:** Government seal visible under direct light.
-- **UV Watermark:** Official provincial insignia reactive to ultraviolet lamps.`,
+It is best to clear up issues before making a payment rather than to have problems after the purchase.`,
   },
   {
     id: 16,
     stepNumber: "16",
-    title: "Why physical inspection is also important",
+    title: "Why Physical Inspection Is Also Important",
     category: "Physical Inspection",
     readTime: "6 min read",
     author: "Sello Verification Team",
     date: "November 2026",
     image: whyPhysicalInspectionIsAlsoImportant,
     excerpt:
-      "Online vehicle verification gives registration information, not mechanical condition. A car may have a clean registration history and still have accident repairs.",
-    body: [
-      "Online vehicle verification usually gives registration information, not mechanical condition. A car may have a clean registration history and still have accident repairs or other problems that only show up at inspection. For higher-value cars, a professional inspection is a smart extra step.",
-    ],
-    items: [
-      "Engine performance",
-      "Suspension condition",
-      "Transmission operation",
-      "AC and electrical systems",
-      "Paint and body panels",
-      "Tire condition",
-      "Signs of accident repairs",
-      "Interior condition",
-    ],
-    fullContent: `Online vehicle verification usually gives registration information, not mechanical condition. A car may have a clean registration history and still have accident repairs or other problems that only show up at inspection. For higher-value cars, a professional inspection is a smart extra step.
+      "Online vehicle verification in most cases will give you registration info, but that’s about it.",
+    fullContent: `A car may have a clean registration history but still have mechanical issues, accident repair, or other problems which can be brought up at inspection.
 
-## Key Inspection Areas
+Before buying a used vehicle, inspect:
 
-- **Engine Health:** Check for abnormal smoke (blue or white), oil leaks, blow-by, and cold-start rattle.
-- **Structural Integrity:** Inspect the radiator core support, apron pillars, and trunk floor for rework or welding.
-- **Transmission Functionality:** Smooth engagement in all gears without slipping, jerking, or delay.
-- **Electrical Diagnostics:** Check OBD-II codes, ABS lights, airbag sensors, and infotainment systems.`,
+- Engine performance
+- Suspension condition
+- Transmission operation
+- AC and electrical systems
+- Paint and body panels
+- Tire condition
+- Signs of accident repairs
+- Interior condition
+
+For high end cars we see professional inspection as a smart step.`,
   },
   {
     id: 17,
     stepNumber: "17",
-    title: "Buy and sell vehicles with more confidence",
+    title: "Buy and Sell Vehicles with More Confidence",
     category: "Confident Transactions",
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
     image: buyAndSellVehiclesWithMoreConfidence,
     excerpt:
-      "Vehicle checks are one piece of a smart purchase. Also look at market prices, inspect the vehicle, review documents, and research ownership transfer.",
-    body: [
-      "Vehicle checks are one piece of a smart purchase. Also look at market prices, inspect the vehicle, review documents, and research ownership transfer.",
-      "Sello lets you browse used cars for sale in Pakistan and use resources to buy and sell with more confidence. Take time to compare cars and what they are worth in the market. If you are buying or selling, Sello's AI car estimator can give a market range before you agree on a price.",
-    ],
-    items: [
-      "Real-time market valuation benchmarks",
-      "Biometric transfer compliance support",
-      "Protection from fraudulent middlemen and unregistered dealers",
-    ],
-    fullContent: `Vehicle checks are one piece of a smart purchase. Also look at market prices, inspect the vehicle, review documents, and research ownership transfer.
+      "Vehicle check is just a piece of the puzzle in a smart purchase. Buyers also look at market prices, check the vehicle over, go over the docs and research the ownership transfer.",
+    fullContent: `Sello provides a platform for users to go through used cars for sale in Pakistan and also we have put together a resource center for you to make better buying and selling decisions. Don’t jump into a deal right away, instead take the time to compare which car is best for you and what that car is really worth in the market.
 
-Sello lets you browse used cars for sale in Pakistan and use resources to buy and sell with more confidence. Take time to compare cars and what they are worth in the market. If you are buying or selling, Sello's AI car estimator can give a market range before you agree on a price.
+If you are in to buy or sell, you also have access to Sello’s AI car estimator which will give you the value of a car in the market before you agree on a price.
 
-## Sello's Smart Buying Principles
-
-1. Never finalize a deal without checking the vehicle's online registration records.
-2. Complete the physical inspection during daylight hours.
-3. Process the biometric ownership transfer simultaneously with payment.`,
+Researching, verifying and going in with a fine tooth comb is the way to inform your choice.`,
   },
   {
     id: 18,
     stepNumber: "18",
-    title: "Why choose Sello?",
+    title: "Why Choose Sello?",
     category: "Why Sello",
     readTime: "4 min read",
     author: "Sello Verification Team",
     date: "November 2026",
     image: whyChooseSello,
     excerpt:
-      "Buying or selling a car is more than connecting a buyer and seller. You need to understand the car, review records, check its condition, and verify its market price.",
-    body: [
-      "Buying or selling a car is more than connecting a buyer and a seller. You need to understand the car, review available information, check its condition, and see its price. Sello brings together vehicle tools that support that process.",
-      "Whether you are buying your first car or trading in your current one, research and due diligence make the process safer and easier.",
-    ],
-    items: [
-      "Vehicle listings",
-      "Used-car buying resources",
-      "Vehicle comparison guides",
-      "Car pricing insights",
-      "AI car estimation tools",
-      "Information about buying and selling vehicles",
-    ],
-    fullContent: `Buying or selling a car is more than connecting a buyer and a seller. You need to understand the car, review available information, check its condition, and see its price. Sello brings together vehicle tools that support that process.
+      "Buying into or out of a car is a much larger process then just connecting a buyer with a seller. You need to know the car inside and out, look at the info available on it, check up on its condition, and see its price.",
+    fullContent: `Sello assembles a resourceful set of tools related to vehicles which in turn support users along this trip.
 
-Whether you are buying your first car or trading in your current one, research and due diligence make the process safer and easier.
+With Sello, users can explore:
 
-## Platform Features
+- Vehicle listings
+- Used car buying resources
+- Vehicle comparison guides
+- Car pricing insights
+- AI car estimation tools
+- Information about buying and selling vehicles
 
-- **Transparent Valuation:** Eliminates dealer markups and guesswork.
-- **Verified Sellers:** Direct communication with registered car owners.
-- **National Reach:** Connect with buyers and sellers across Lahore, Karachi, Islamabad, Peshawar, Quetta, and beyond.`,
+When it’s time to buy your first car or trade in your present one take the time to do your research and do your due diligence which in turn will make the process safer and easier.`,
   },
   {
     id: 19,
     stepNumber: "19",
-    title: "Final thoughts",
+    title: "Final Thoughts",
     category: "Expert Advice",
     readTime: "4 min read",
     author: "Sello Verification Team",
     date: "November 2026",
     image: finalThoughts,
     excerpt:
-      "Online vehicle verification is a key step when you buy a used car or bike in Pakistan. Review registration information, compare documents, and inspect thoroughly.",
-    body: [
-      "Online vehicle verification is a key step when you buy a used car or bike in Pakistan. Review registration information, compare documents with the vehicle, and do a thorough physical inspection so you can decide with more confidence.",
-      "For official checks and registration, use only authorized sources. Online verification supports a physical inspection and document review; it does not replace them. Before you finalize a deal, verify the information, inspect the vehicle, and complete ownership transfer correctly.",
-      "Sello provides tools, information, resources, and listings that make buying and selling vehicles clearer so you can make a better decision.",
-    ],
-    items: [
-      "Always verify before paying any deposit or advance",
-      "Inspect chassis and engine serial stampings physically",
-      "Ensure biometric transfer takes place without open-letter delays",
-    ],
-    fullContent: `Online vehicle verification is a key step when you buy a used car or bike in Pakistan. Review registration information, compare documents with the vehicle, and do a thorough physical inspection so you can decide with more confidence.
+      "Online vehicle verification is a key step when you are buying a used car or bike in Pakistan. We look at the registration info in detail, we compare the docs with the car itself and we do a thorough physical inspection which in turn will put you in a better decision making position.",
+    fullContent: `For official car checkups and registration use only authorized sources. Also note that online car verification is a supplement and not a replacement for a physical inspection or review of proper documentation.
 
-For official checks and registration, use only authorized sources. Online verification supports a physical inspection and document review; it does not replace them. Before you finalize a deal, verify the information, inspect the vehicle, and complete ownership transfer correctly.
+Before you finalize a deal take your time to verify the info, do a full inspection of the vehicle, and make sure the ownership transfer is handled right.
 
-Sello provides tools, information, resources, and listings that make buying and selling vehicles clearer so you can make a better decision.
-
-## Summary Checklist Before You Pay
-
-- [ ] Online MTMIS check matches vehicle make, model, and year.
-- [ ] Engine and chassis numbers on paperwork match the physical car.
-- [ ] Token tax is fully cleared up to date.
-- [ ] Seller is the registered owner or holds a legal biometric transfer authority.
-- [ ] Mechanical condition is verified by an experienced inspector.`,
+Sello provides tools, info, resources, and listings that makes the buy and sell process for vehicles better which in turn allows our users to make better decisions.`,
   },
 ];
 
@@ -619,7 +412,10 @@ export default function VehicleVerificationGuideSection() {
         </div>
 
         {/* Alternating Cards Grid */}
-        <GuideCards posts={vehicleVerificationGuidePosts} checklistTitle="Key Checklist & Verification Points:" />
+        <GuideCards
+          posts={vehicleVerificationGuidePosts}
+          checklistTitle="Key Checklist & Verification Points:"
+        />
 
         {/* Enhanced Call to Action */}
         <div className="mt-12 sm:mt-20 relative">
@@ -639,9 +435,9 @@ export default function VehicleVerificationGuideSection() {
                   <span className="text-yellow-300"> Vehicle Records</span>?
                 </h3>
                 <p className="text-base sm:text-xl mb-8 sm:mb-10 text-white/90 max-w-2xl mx-auto leading-relaxed">
-                  Select your province above or click below to check registration
-                  details, token taxes, and ownership records via official MTMIS
-                  portals.
+                  Select your province above or click below to check
+                  registration details, token taxes, and ownership records via
+                  official MTMIS portals.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                   <button

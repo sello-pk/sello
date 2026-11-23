@@ -303,8 +303,8 @@ const VehicleVerificationPage = () => {
     <div className="w-full min-w-0 max-w-full overflow-x-hidden bg-white">
       <SEO
         title="Online Vehicle Verification in Pakistan | Check Car Details"
-        description="Verify your car or bike online through Sello. Check vehicle registration info and key details before you buy or sell a vehicle in Pakistan."
-        keywords="online vehicle verification Pakistan, car verification Pakistan, vehicle registration check, MTMIS, Punjab vehicle verification, Punjab Excise, bike registration check, Lahore vehicle verification"
+        description="Verify your car or bike online through Sello. Check in to vehicle registration info and key details before you buy or sell a vehicle in Pakistan."
+        keywords="online vehicle verification Pakistan, car verification Pakistan, vehicle registration check, MTMIS, Punjab vehicle verification, Punjab Excise, bike registration check, Lahore vehicle verification, vehicle verification Pakistan, car verification Pakistan, online car verification, bike verification Pakistan, motorcycle verification Pakistan, vehicle registration check Pakistan, car registration check online, check vehicle details by registration number, vehicle number check Pakistan, MTMIS Pakistan, MTMIS Punjab, Punjab vehicle verification, Punjab car verification, Punjab bike verification, Lahore vehicle verification, Karachi vehicle verification, Islamabad vehicle verification, Sindh vehicle verification, KPK vehicle verification, vehicle owner details check, vehicle registration details, car ownership verification Pakistan, Excise vehicle verification, Punjab Excise vehicle chec"
       />
 
       <section className="relative w-full overflow-hidden min-h-[52vh] bg-gray-200">
@@ -327,10 +327,15 @@ const VehicleVerificationPage = () => {
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 sm:mb-4 leading-tight text-balance">
               Online Vehicle Verification in Pakistan – Check Your Car Details
             </h1>
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary mb-3 sm:mb-4 leading-tight text-balance">
+              Check Vehicle Details Before You Buy or Sell
+            </h2>
             <p className="text-sm sm:text-base lg:text-lg text-gray-100 mb-5 sm:mb-8 text-pretty">
-              Check car or bike registration details before you buy or sell.
-              Open the official portal for your province, then compare records
-              with the vehicle in person.
+              Buying into a used car or bike is a big decision which is why it
+              is best to do your due diligence on the vehicle before you make a
+              sale. Also we have online vehicle verification which is a great
+              tool for buyers and sellers to look at that important vehicle and
+              registration info before they proceed.
             </p>
             <div className="flex flex-col min-[420px]:flex-row flex-wrap justify-center items-stretch min-[420px]:items-center gap-2.5 sm:gap-3 mb-5 sm:mb-8">
               <a

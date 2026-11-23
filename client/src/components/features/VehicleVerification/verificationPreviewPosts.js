@@ -5,77 +5,34 @@ export const verificationPreviewPosts = [
   {
     id: 1,
     stepNumber: "01",
-    title: "What is online vehicle verification?",
+    title: "What Is Online Vehicle Verification?",
     category: "Online Verification",
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
     image: onlineVehicleVerfication,
     excerpt:
-      "Online vehicle verification reviews official registration records, specs, and tax status before you buy. It lets buyers compare seller claims with government records to avoid fraud.",
-    body: [
-      "Online vehicle verification reviews available vehicle information through relevant, authorized sources. What is published may include registration info, vehicle specs, registration status, and other key records that vary by province.",
-      "Before you buy a car, do not base your decision only on what the seller tells you. A car may look great in pictures or pass a brief inspection, but you should also check the registration and other details to rule out issues.",
-      "An online car registration check is especially useful when you are buying a used car. It lets buyers compare what the seller says with what is on record.",
-    ],
-    items: [
-      "Official verification of registration details",
-      "Cross-referencing seller claims with state records",
-      "Protection against fraudulent documents and duplicates",
-      "Instant access to tax and token clearance records",
-    ],
-    fullContent: `Online vehicle verification reviews available vehicle information through relevant, authorized sources. What is published may include registration info, vehicle specs, registration status, and other key records that vary by province.
+      "Online vehicle verification is a process which goes over available info related to a vehicle via relevant and authorized sources. What is put out may include registration info, vehicle specs, registration status, and other key records which vary by province.",
+    fullContent: `Before you buy a car don’t base your decision only on what the seller tells you. A car may look great in pictures or pass a brief inspection, but we also suggest that you check the registration and other details to rule out any issues.
 
-Before you buy a car, do not base your decision only on what the seller tells you. A car may look great in pictures or pass a brief inspection, but you should also check the registration and other details to rule out issues.
-
-An online car registration check is especially useful when you are buying a used car. It lets buyers compare what the seller says with what is on record.
-
-## Why Online Verification Matters
-
-In Pakistan, the used automotive market involves thousands of daily private and commercial transactions. Without an official verification step, buyers risk purchasing vehicles with:
-
-- **Unpaid token taxes or heavy fines**
-- **Cloned or tampered registration numbers**
-- **Bank-lease encumbrances or court disputes**
-- **Discrepancies in engine or chassis serial numbers**
-
-## How to Get Started
-
-Always ask the seller for the vehicle's registration number and the province of registration. Using official government portals like Punjab MTMIS, Sindh Excise, or Islamabad ICT, you can cross-verify all vital parameters within minutes.`,
+An online car registration check  is a great tool for when you are purchasing a used car. It allows buyers to see that what the seller is saying is in fact what is on record.`,
   },
   {
     id: 2,
     stepNumber: "02",
-    title: "What is MTMIS and how does it relate to vehicle verification?",
+    title: "What Is MTMIS and How Does It Relate to Vehicle Verification?",
     category: "MTMIS System",
     readTime: "6 min read",
     author: "Sello Verification Team",
     date: "November 2026",
     image: smartBuyingTips,
     excerpt:
-      "MTMIS (Motor Transport Management Information System) is an online database used to verify vehicle registration, engine and chassis numbers, and token tax status across provincial Excise boards.",
-    body: [
-      "MTMIS, which stands for Motor Transport Management Information System, is an online vehicle verification tool used to obtain vehicle registration and related information. Through provincial vehicle registration and Excise boards, users can check details of a registered car or motorcycle.",
-      "The information published can vary by province and authority. A typical vehicle check may include make and model, registration date, engine information, chassis information, and tax or token status.",
-      "For a used-car buyer, this is a research tool: compare the seller's claims with registration records before you buy. Online verification is only the start of the purchase process. A full picture also needs a physical inspection, document check, price comparison, and a proper ownership transfer.",
-    ],
-    items: [
-      "Motor Transport Management Information System overview",
-      "Provincial Excise & Taxation automated records",
-      "Verification of engine number, chassis number, and make",
-      "Clearance status of token taxes and historical fees",
-    ],
-    fullContent: `MTMIS, which stands for Motor Transport Management Information System, is an online vehicle verification tool used to obtain vehicle registration and related information. Through provincial vehicle registration and Excise boards, users can check details of a registered car or motorcycle.
+      "MTMIS, which stands for Motor Transport Management Information System, is an online vehicle verification tool which we put up for use in obtaining vehicle registration and related info. Via the various provincial vehicle registration and Excise boards users may check out details of a registered car or motorcycle.",
+    fullContent: `In different provinces and at the hands of different authorities the info which is put out may vary. As a whole a vehicle check up may see to it that users look over registration info which includes what make and model of vehicle it is, registration date, engine info, chassis info, and tax or token status.
 
-The information published can vary by province and authority. A typical vehicle check may include make and model, registration date, engine information, chassis information, and tax or token status.
+For a car buyer which is a used car you can use this info as a tool in your research. It enables buyers to check out what the seller says against what the registration records and reports show before you buy.
 
-For a used-car buyer, this is a research tool: compare the seller's claims with registration records before you buy. Online verification is only the start of the purchase process. A full picture also needs a physical inspection, document check, price comparison, and a proper ownership transfer.
-
-## Core Features of MTMIS
-
-- **Comprehensive Vehicle Specs:** Year of manufacture, engine capacity (cc), body type, and official color code.
-- **Tax Status Details:** Historical token tax records and the exact date up to which taxes have been cleared.
-- **Ownership Transfer Trail:** Verification of whether the current seller is the legal registered owner.`,
+However, in that we are only at the start of the purchase process with online vehicle verification it is also true that for a full picture you should include a physical inspection, document check, price compare, and proper transfer of ownership.`,
   },
 ];
 
