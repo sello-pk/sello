@@ -43,6 +43,7 @@ import chassisPlateIcon from "../../../assets/images/verification/chassisPlate.p
 import engineNumberIcon from "../../../assets/images/verification/engineNumber.png";
 import insuranceIcon from "../../../assets/images/verification/insurance.png";
 import fitnessCertificateIcon from "../../../assets/images/verification/fitnessCertificate.png";
+import smartBuyingTipsImg from "../../../assets/images/smartBuyingTips.webp";
 import { LANDING_PROVINCES } from "./vehicleVerificationContent";
 import VehicleVerificationGuideSection from "./VehicleVerificationGuideSection";
 import { FaqAccordionItem } from "../../common/FaqAccordion";
@@ -442,11 +443,11 @@ const VehicleVerificationPage = () => {
                 ))}
               </div>
             </div>
-            <div className="rounded-2xl overflow-hidden bg-slate-50 min-h-[280px] lg:min-h-[360px]">
+            <div className="rounded-2xl overflow-hidden bg-[#071428] aspect-[4/3] sm:aspect-[5/4] lg:aspect-auto lg:min-h-[380px] lg:h-full">
               <img
-                src={serviceGuidesImg}
-                alt=""
-                className="w-full h-full object-cover min-h-[280px] lg:min-h-[360px]"
+                src={smartBuyingTipsImg}
+                alt="Smart buying tips for vehicle verification"
+                className="w-full h-full object-cover object-center"
               />
             </div>
           </div>
@@ -655,7 +656,7 @@ const VehicleVerificationPage = () => {
           <h2 className="text-3xl font-bold text-slate-900 text-center mb-10">
             Explore More Services on Sello
           </h2>
-          <div className="grid md:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {exploreLinks.map((item) => (
               <Link
                 key={item.title}
@@ -664,7 +665,7 @@ const VehicleVerificationPage = () => {
                 className="group relative block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow"
               >
                 <img src={item.image} alt="" className="block w-full h-full" />
-                <span className="absolute left-5 bottom-2 inline-flex items-center gap-1.5 bg-primary-500 text-white text-xs font-semibold rounded-lg px-3 py-2 group-hover:opacity-90 transition-opacity">
+                <span className="absolute left-4 sm:left-5 bottom-2 inline-flex items-center gap-1.5 bg-primary-500 text-white text-xs font-semibold rounded-lg px-3 py-2 group-hover:opacity-90 transition-opacity">
                   {item.cta} <ArrowRight className="w-4 h-4" />
                 </span>
               </Link>
@@ -677,7 +678,7 @@ const VehicleVerificationPage = () => {
             className="group relative mt-5 block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow"
           >
             <img src={guestPostsImg} alt="" className="block w-full" />
-            <span className="absolute left-20 bottom-8 inline-flex items-center gap-1.5 bg-primary-500 text-white text-sm font-semibold rounded-lg px-4 py-2.5 group-hover:opacity-90 transition-opacity">
+            <span className="absolute left-4 sm:left-8 md:left-20 bottom-4 sm:bottom-8 inline-flex items-center gap-1.5 bg-primary-500 text-white text-sm font-semibold rounded-lg px-4 py-2.5 group-hover:opacity-90 transition-opacity">
               Read Posts <ArrowRight className="w-4 h-4" />
             </span>
           </Link>
