@@ -1,5 +1,5 @@
-import onlineVehicleVerfication from "../../../assets/images/onlineVehicleVerfication.webp";
-import smartBuyingTips from "../../../assets/images/smartBuyingTips.webp";
+import whatIsOnlineVehicleVerification from "../../../assets/vehicleVerification/whatIsOnlineVehicleVerification.webp";
+import whatIsMTMISandHowDoesItRelatetoVehicleVerification from "../../../assets/vehicleVerification/whatIsMTMISandHowDoesItRelatetoVehicleVerification.webp";
 
 export const verificationPreviewPosts = [
   {
@@ -10,7 +10,7 @@ export const verificationPreviewPosts = [
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: onlineVehicleVerfication,
+    image: whatIsOnlineVehicleVerification,
     excerpt:
       "Online vehicle verification is a process which goes over available info related to a vehicle via relevant and authorized sources. What is put out may include registration info, vehicle specs, registration status, and other key records which vary by province.",
     fullContent: `Before you buy a car don’t base your decision only on what the seller tells you. A car may look great in pictures or pass a brief inspection, but we also suggest that you check the registration and other details to rule out any issues.
@@ -25,7 +25,7 @@ An online car registration check  is a great tool for when you are purchasing a 
     readTime: "6 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: smartBuyingTips,
+    image: whatIsMTMISandHowDoesItRelatetoVehicleVerification,
     excerpt:
       "MTMIS, which stands for Motor Transport Management Information System, is an online vehicle verification tool which we put up for use in obtaining vehicle registration and related info. Via the various provincial vehicle registration and Excise boards users may check out details of a registered car or motorcycle.",
     fullContent: `In different provinces and at the hands of different authorities the info which is put out may vary. As a whole a vehicle check up may see to it that users look over registration info which includes what make and model of vehicle it is, registration date, engine info, chassis info, and tax or token status.

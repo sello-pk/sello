@@ -2,22 +2,22 @@ import { ArrowRight, ShieldCheck } from "lucide-react";
 import GuideCards from "../../common/GuideCards";
 import { verificationPreviewPosts } from "./verificationPreviewPosts.js";
 import whatInformationCanBeCheckedThroughVehicleVerification from "../../../assets/images/whatInformationCanBeCheckedThroughVehicleVerification.webp";
-import whyMTMISAndOnlineVehicleVerificationAreImportant from "../../../assets/images/whyMTMISAndOnlineVehicleVerificationAreImportant.webp";
-import whyIsCarVerificationImportantBeforeBuying from "../../../assets/images/whyIsCarVerificationImportantBeforeBuying.webp";
-import howSelloHelpsWithVehicleVerification from "../../../assets/images/howSelloHelpsWithVehicleVerification.webp";
-import whatInformationShouldYouCheckDuringVehicleVerification from "../../../assets/images/whatInformationShouldYouCheckDuringVehicleVerification.webp";
-import punjabVehicleVerification from "../../../assets/images/punjabVehicleVerification.webp";
-import carRegistrationCheckBeforeBuyingAUsedCar from "../../../assets/images/carRegistrationCheckBeforeBuyingAUsedCar.webp";
-import howToCheckCarDetailsBeforeBuying from "../../../assets/images/howToCheckCarDetailsBeforeBuying.webp";
-import vehicleVerificationInLahoreAndOtherCities from "../../../assets/images/vehicleVerificationInLahoreAndOtherCities.webp";
-import punjabExciseVehicleVerification from "../../../assets/images/punjabExciseVehicleVerification.webp";
-import onlineBikeRegistrationCheck from "../../../assets/images/onlineBikeRegistrationCheck.webp";
-import canYouCheckTheVehicleOwner from "../../../assets/images/canYouCheckTheVehicleOwner.webp";
-import vehicleRegistrationAndSmartCardVerification from "../../../assets/images/vehicleRegistrationAndSmartCardVerification.jpeg";
-import whyPhysicalInspectionIsAlsoImportant from "../../../assets/images/whyPhysicalInspectionIsAlsoImportant.jpeg";
-import buyAndSellVehiclesWithMoreConfidence from "../../../assets/images/buyAndSellVehiclesWithMoreConfidence.jpeg";
-import whyChooseSello from "../../../assets/images/whyChooseSello.jpeg";
-import finalThoughts from "../../../assets/images/finalThoughts.jpeg";
+import whatIsMTMISandHowDoesItRelatetoVehicleVerification from "../../../assets/vehicleVerification/whatIsMTMISandHowDoesItRelatetoVehicleVerification.webp";
+import whyIsCarVerificationImportantBeforeBuying from "../../../assets/vehicleVerification/whyIsCarVerificationImportantBeforeBuying.webp";
+import howSelloHelpswithVehicleVerification from "../../../assets/vehicleVerification/howSelloHelpswithVehicleVerification.webp";
+import whatInformationShouldYouCheckDuringVehicleVerification from "../../../assets/vehicleVerification/whatInformationShouldYouCheckDuringVehicleVerification.webp";
+import punjabVehicleVerificationUniquevisualconcept from "../../../assets/vehicleVerification/punjabVehicleVerificationUniquevisualconcept.webp";
+import carRegistrationCheckBeforeBuyingaUsedCar from "../../../assets/vehicleVerification/carRegistrationCheckBeforeBuyingaUsedCar.webp";
+import howtoCheckCarDetailsBeforeBuying from "../../../assets/vehicleVerification/howtoCheckCarDetailsBeforeBuying.webp";
+import vehicleVerificationLahoreandOtherCities from "../../../assets/vehicleVerification/vehicleVerificationLahoreandOtherCities.webp";
+import punjabExciseVehicleVerification from "../../../assets/vehicleVerification/punjabExciseVehicleVerification.webp";
+import onlineBikeRegistrationCheck from "../../../assets/vehicleVerification/onlineBikeRegistrationCheck.webp";
+import canYouChecktheVehicleOwner from "../../../assets/vehicleVerification/canYouChecktheVehicleOwner.webp";
+import vehicleRegistrationandSmartCardVerification from "../../../assets/vehicleVerification/vehicleRegistrationandSmartCardVerification.webp";
+import whyPhysicalInspectionIsAlsoImportant from "../../../assets/vehicleVerification/whyPhysicalInspectionIsAlsoImportant.webp";
+import buyandSellVehicleswithMoreConfidence from "../../../assets/vehicleVerification/buyandSellVehicleswithMoreConfidence.webp";
+import whyChooseSello from "../../../assets/vehicleVerification/whyChooseSello.webp";
+import FinalThoughtsSafeVehicleBuyingandVerification from "../../../assets/vehicleVerification/FinalThoughtsSafeVehicleBuyingandVerification.webp";
 
 const vehicleVerificationGuidePosts = [
   ...verificationPreviewPosts,
@@ -53,7 +53,7 @@ This information is to help buyers identify issues before they purchase a vehicl
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: whyMTMISAndOnlineVehicleVerificationAreImportant,
+    image: whatIsMTMISandHowDoesItRelatetoVehicleVerification,
     excerpt:
       "When purchasing a used car or motorcycle it is a risk to only go by what the seller says. A vehicle may pass the inspection fine, but buyers do well to also check into the registration info.",
     fullContent: `Online vehicle verification tools like MTMIS can put forward greater transparency which in turn allows users to review available info before they proceed with a transaction.
@@ -103,7 +103,7 @@ Vehicle check should include a physical inspection. While online records are a g
     readTime: "4 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: howSelloHelpsWithVehicleVerification,
+    image: howSelloHelpswithVehicleVerification,
     excerpt:
       "Sello is out to change the game of buying and selling vehicles which up to this point has been less than convenient and transparent. Before you jump in to buy a used car we have put together a host of info for you which includes vehicle info, buying guides, pricing tools which in turn support you in making better decisions.",
     fullContent: `When it comes to choosing a car out fit out which listings to which cars and what is available in terms of registration info is key. Sello tells buyers to take it slow and to think through their decision beyond just what it looks like or how much it is.
@@ -150,7 +150,7 @@ If at all there is any inconsistency, it is better to look into that before proc
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: punjabVehicleVerification,
+    image: punjabVehicleVerificationUniquevisualconcept,
     excerpt:
       "In the case of Punjabi registered vehicles buyers may have to use government vehicle verification services for which the info is available. In Punjab vehicle verification is a service that helps to confirm a vehicle’s details.",
     fullContent: `When carrying out an online vehicle Punjab makes use of only authorized and official sources for registration info.
@@ -167,7 +167,7 @@ Sello has tools for you to use in determining what info you will need to check w
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: carRegistrationCheckBeforeBuyingAUsedCar,
+    image: carRegistrationCheckBeforeBuyingaUsedCar,
     excerpt:
       "A used car registration check is what you should do at the top of your list when you are buying a used vehicle. Also before you pay in advance or finalize the deal, check out the seller’s documents against the provided vehicle info.",
     fullContent: `Check out the registration info against what is present on the vehicle at inspection. Also check the chassis and engine numbers.
@@ -184,7 +184,7 @@ However in many cases what we see is just the tip of the iceberg. Buyers also to
     readTime: "6 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: howToCheckCarDetailsBeforeBuying,
+    image: howtoCheckCarDetailsBeforeBuying,
     excerpt:
       "If you are looking at what to do to check car info before purchasing a used car start by getting out all the info the seller has. Ask for the registration number and go over the registration documents.",
     fullContent: `First, go to the proper authorized vehicle check for your area that the car is registered in. Then compare what you see with the car and it’s documentation.
@@ -212,7 +212,7 @@ Taking this which also includes a series of related actions will reduce your cha
     readTime: "4 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: vehicleVerificationInLahoreAndOtherCities,
+    image: vehicleVerificationLahoreandOtherCities,
     excerpt:
       "If you are in search of vehicle verification Lahore , it will be a general rule that the verification process is based on where the vehicle is registered and not so much where it currently is.",
     fullContent: `For instance we see a car registered in Lahore that may have come from out of province. In which case the relevant registration authority in that province is the right place to check for records.
@@ -267,7 +267,7 @@ A bike registration check is very important which also goes for when you buy a u
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: canYouCheckTheVehicleOwner,
+    image: canYouChecktheVehicleOwner,
     excerpt:
       "Many of our users go online to check vehicle owners before they buy a car or a bike. What is available to the public varies based on which laws are in place, privacy regulations, and what the official vehicle registration authorities put out there.",
     fullContent: `For private and secure reasons users should only put to use and access information through authorized channels which also pertain to genuine uses.
@@ -284,7 +284,7 @@ Never base your decision on what is said. We also see to it that you go over the
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: vehicleRegistrationAndSmartCardVerification,
+    image: vehicleRegistrationandSmartCardVerification,
     excerpt:
       "Vehicle registration may be presented in the form of a registration book, smart card, or any other government recognized documentation which will vary by vehicle and registration authority.",
     fullContent: `Before you buy a used car, have the documents checked against the physical vehicle. For a bike smart card check or a car document review include verification of the registration number, engine number and chassis number.
@@ -327,7 +327,7 @@ For high end cars we see professional inspection as a smart step.`,
     readTime: "5 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: buyAndSellVehiclesWithMoreConfidence,
+    image: buyandSellVehicleswithMoreConfidence,
     excerpt:
       "Vehicle check is just a piece of the puzzle in a smart purchase. Buyers also look at market prices, check the vehicle over, go over the docs and research the ownership transfer.",
     fullContent: `Sello provides a platform for users to go through used cars for sale in Pakistan and also we have put together a resource center for you to make better buying and selling decisions. Don’t jump into a deal right away, instead take the time to compare which car is best for you and what that car is really worth in the market.
@@ -368,7 +368,7 @@ When it’s time to buy your first car or trade in your present one take the tim
     readTime: "4 min read",
     author: "Sello Verification Team",
     date: "November 2026",
-    image: finalThoughts,
+    image: FinalThoughtsSafeVehicleBuyingandVerification,
     excerpt:
       "Online vehicle verification is a key step when you are buying a used car or bike in Pakistan. We look at the registration info in detail, we compare the docs with the car itself and we do a thorough physical inspection which in turn will put you in a better decision making position.",
     fullContent: `For official car checkups and registration use only authorized sources. Also note that online car verification is a supplement and not a replacement for a physical inspection or review of proper documentation.
@@ -415,6 +415,7 @@ export default function VehicleVerificationGuideSection() {
         <GuideCards
           posts={vehicleVerificationGuidePosts}
           checklistTitle="Key Checklist & Verification Points:"
+          showStepNumber={false}
         />
 
         {/* Enhanced Call to Action */}

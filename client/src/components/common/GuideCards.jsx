@@ -98,7 +98,12 @@ function formatBlogContent(text) {
   return out.join("");
 }
 
-export default function GuideCards({ posts, checklistTitle = "Key points", initialPostId = null }) {
+export default function GuideCards({
+  posts,
+  checklistTitle = "Key points",
+  initialPostId = null,
+  showStepNumber = true,
+}) {
   const [expandedId, setExpandedId] = useState(initialPostId);
   const idPrefix = useId();
   const reduceMotion = useReducedMotion();
@@ -106,13 +111,15 @@ export default function GuideCards({ posts, checklistTitle = "Key points", initi
   useEffect(() => {
     if (initialPostId === null) return undefined;
     const frame = requestAnimationFrame(() => {
-      document.getElementById(`${idPrefix}-card-${initialPostId}`)?.scrollIntoView({ block: "start" });
+      document
+        .getElementById(`${idPrefix}-card-${initialPostId}`)
+        ?.scrollIntoView({ block: "start" });
     });
     return () => cancelAnimationFrame(frame);
   }, [idPrefix, initialPostId]);
 
   const toggleStep = (id, returnFocus = false) => {
-    setExpandedId((previous) => previous === id ? null : id);
+    setExpandedId((previous) => (previous === id ? null : id));
     const trigger = document.getElementById(`${idPrefix}-trigger-${id}`);
     if (returnFocus) trigger?.focus({ preventScroll: true });
     requestAnimationFrame(() => {
@@ -152,7 +159,11 @@ export default function GuideCards({ posts, checklistTitle = "Key points", initi
                 </div>
 
                 <h3 className="mb-4 break-words text-2xl font-bold leading-tight text-primary-500 lg:text-3xl">
-                  {post.stepNumber && <span className="text-primary-500 mr-2">{post.stepNumber}.</span>}
+                  {showStepNumber && post.stepNumber && (
+                    <span className="text-primary-500 mr-2">
+                      {post.stepNumber}.
+                    </span>
+                  )}
                   {post.title}
                 </h3>
 
@@ -186,15 +197,15 @@ export default function GuideCards({ posts, checklistTitle = "Key points", initi
                   )}
                 </button>
 
-                <div
-                  id={`${idPrefix}-content-${post.id}`}
-                  hidden={!isExpanded}
-                >
+                <div id={`${idPrefix}-content-${post.id}`} hidden={!isExpanded}>
                   {isExpanded && (
                     <Motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      transition={{ duration: reduceMotion ? 0 : 0.18, ease: "easeInOut" }}
+                      transition={{
+                        duration: reduceMotion ? 0 : 0.18,
+                        ease: "easeInOut",
+                      }}
                       className="overflow-hidden"
                     >
                       <div className="mt-8 pt-8 border-t border-stone-200/80">
@@ -248,9 +259,7 @@ export default function GuideCards({ posts, checklistTitle = "Key points", initi
             </div>
 
             {/* Image area */}
-            <div
-              className="relative h-72 w-full overflow-hidden bg-slate-900/5 sm:h-80 lg:h-[360px] lg:w-[480px] lg:flex-shrink-0 lg:self-start xl:w-[520px]"
-            >
+            <div className="relative h-72 w-full overflow-hidden bg-slate-900/5 sm:h-80 lg:h-auto lg:min-h-[360px] lg:w-[480px] lg:flex-shrink-0 lg:self-stretch xl:w-[520px]">
               <img
                 src={post.image}
                 alt={post.title}
