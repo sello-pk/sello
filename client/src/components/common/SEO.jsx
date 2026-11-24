@@ -38,7 +38,7 @@ const SEO = ({
   description = "Find your perfect car on Sello Pakistan. Browse thousands of new and used cars from trusted sellers across Pakistan. Buy or sell your car today!",
   image = "/logo.png",
   type = "website",
-  keywords = "cars, buy cars, sell cars, used cars, new cars, Pakistan, Lahore, Karachi, Islamabad, car marketplace,online vehicle verification,vehicle verification Pakistan,vehicle verification,MTMIS Pakistan,MTMIS online,car verification online Pakistan,vehicle registration check,check vehicle details online,car registration check Pakistan,bike verification online,bike registration check,vehicle owner details check vehicle verification by registration number",
+  keywords = "cars, buy cars, sell cars, used cars, new cars, Pakistan, Lahore, Karachi, Islamabad, car marketplace,online vehicle verification,vehicle verification Pakistan,vehicle verification,MTMIS Pakistan,MTMIS online,car verification online Pakistan,vehicle registration check,check vehicle details online,car registration check Pakistan,bike verification online,bike registration check,vehicle owner details check vehicle verification by registration number,driving licence verification Pakistan,online driving licence verification,driving license check online,driving licence check Pakistan,verify driving licence online,driving licence status check,DLIMS Punjab,driving licence verification by CNIC,driving licence information Pakistan,online licence verification Pakistan",
   author = "Sello",
   url,
   canonical,

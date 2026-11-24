@@ -26,6 +26,7 @@ import {
   paymentFactor,
   readScenario,
 } from "../utils/carLoanCalculator";
+import SEO from "../components/common/SEO.jsx";
 
 const money = new Intl.NumberFormat("en-PK", { maximumFractionDigits: 0 });
 const pkr = (value) => `PKR ${money.format(value)}`;
@@ -325,6 +326,11 @@ export default function CarLoanCalculator() {
 
   return (
     <div className="bg-[#F6F7F9] text-[#0A1025]">
+      <SEO
+        title="Car Loan Calculator Pakistan – Monthly Installment | SELLO"
+        description="Calculate your monthly car loan installment in Pakistan with SELLO. Estimate car financing, down payment and monthly payments easily."
+        keywords="car loan calculator Pakistan,car installment calculator Pakistan,car finance calculator Pakistan,car financing calculator Pakistan,car loan installment calculator,monthly car installment calculator,car payment calculator Pakistan,car leasing calculator Pakistan,car loan calculator online,calculate car installment online,car financing in Pakistan,car installment plan Pakistan,monthly car payment Pakistan,car down payment calculator,car loan monthly payment calculator"
+      />
       <header className="bg-[#0A1025] text-white">
         <div className={`${pageContainer} py-9 sm:py-14`}>
           <nav
@@ -784,7 +790,9 @@ export default function CarLoanCalculator() {
         </section>
 
         <section aria-labelledby="loan-financing-guides">
-          <h2 id="loan-financing-guides" className="sr-only">Car financing guides</h2>
+          <h2 id="loan-financing-guides" className="sr-only">
+            Car financing guides
+          </h2>
           <GuideCards posts={carLoanGuidePosts} />
         </section>
       </div>
