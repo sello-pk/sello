@@ -2,6 +2,7 @@ import { corePageSeo } from "./corePageSeo.js";
 import { matchPath } from "react-router-dom";
 import { getListingsPageCopy } from "./urlBuilders.js";
 import { CAR_LOAN_SEO } from "./carLoanCalculator.js";
+import { fuelPricesSeo } from "./fuelPricesContent.js";
 
 const notFoundSeo = {
   title: "Page Not Found | Sello.pk",
@@ -51,12 +52,6 @@ const adminSections = {
   testimonials: ["Testimonials", "Manage published customer testimonials"],
   auctions: ["Auctions", "Manage auction schedules, lots, and results"],
   settings: ["Settings", "Manage marketplace settings and staff access"],
-};
-
-const fuelPricesSeo = {
-  title: "Fuel Prices in Pakistan Today | Petrol, Diesel & OGRA Rates – Sello.pk",
-  description: "Check current petrol and diesel prices in Pakistan in PKR per litre, with effective dates and changes from the previous notified rates.",
-  canonical: "https://sello.pk/fuel-prices",
 };
 
 const listingDetailSeo = {

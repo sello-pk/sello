@@ -262,7 +262,7 @@ export default function GuideCards({
             <div className="relative h-72 w-full overflow-hidden bg-slate-900/5 sm:h-80 lg:h-auto lg:min-h-[360px] lg:w-[480px] lg:flex-shrink-0 lg:self-stretch xl:w-[520px]">
               <img
                 src={post.image}
-                alt={post.title}
+                alt={post.imageAlt || post.title}
                 className="absolute inset-0 block h-full w-full object-cover object-center opacity-90"
                 loading="lazy"
               />

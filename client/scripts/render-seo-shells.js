@@ -1,5 +1,6 @@
 import { corePageSeo } from "../src/utils/corePageSeo.js";
 import { defaultCompareContent } from "../src/constants/carCompare.js";
+import { fuelPricesSeo, fuelPricesHeading, fuelPriceGuides, fuelPriceFaqs } from "../src/utils/fuelPricesContent.js";
 /**
  * Build-time SEO shells for money pages that stay SPA at runtime.
  *
@@ -467,6 +468,14 @@ function writeMissingRouteShells() {
     if (routePath === "/search-results" || fs.existsSync(outputPathFor(routePath))) continue;
     const seo = getRouteSeo(routePath);
     const canonical = seo.canonical || `${SITE_URL}${routePath}`;
+    if (routePath === "/fuel-prices") {
+      writeShell(routePath, (html) => {
+        let out = applyPageHead(html, { ...fuelPricesSeo, robots: getRobotsForPath(routePath) });
+        out = injectNoscriptBlock(out, `<article><h1>${escapeHtml(fuelPricesHeading)}</h1><p>Check the latest published petrol price in Pakistan today and diesel rates per litre. Live prices and effective dates load when JavaScript is enabled.</p><p>Only petrol and diesel are supplied by the live feed. The other fuel types below are guidance, not live price quotes.</p>${fuelPriceGuides.map(post => `<section><h2>${escapeHtml(post.title)}</h2><p>${escapeHtml(post.excerpt)}</p><ul>${post.items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul></section>`).join("")}<section><h2>Fuel price FAQs</h2>${fuelPriceFaqs.map(item => `<h3>${escapeHtml(item.question)}</h3><p>${escapeHtml(item.answer)}</p>`).join("")}</section></article>`);
+        return injectScript(out, "application/ld+json", "structured-data", safeJson({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: fuelPriceFaqs.map(item => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) }));
+      });
+      continue;
+    }
     writeShell(routePath, (html) => applyPageHead(html, {
       ...seo,
       canonical,
