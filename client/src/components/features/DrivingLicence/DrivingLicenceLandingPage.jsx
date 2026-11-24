@@ -89,13 +89,14 @@ const ImageInfoCard = ({
   summary,
   points,
   details,
+  imageSide = "left",
 }) => {
   const [expanded, setExpanded] = useState(false);
 
   return (
     <article className="overflow-hidden rounded-3xl border border-stone-200/60 bg-[#FDFBF7] shadow-lg">
       <div className="grid sm:grid-cols-2">
-        <div className="relative min-h-[220px] bg-[#FDFBF7] sm:min-h-[260px] md:min-h-[300px] lg:min-h-[340px]">
+        <div className={`relative min-h-[220px] bg-[#FDFBF7] sm:min-h-[260px] md:min-h-[300px] lg:min-h-[340px] ${imageSide === "right" ? "sm:order-2" : ""}`}>
           <img
             src={image}
             alt={imageAlt}
@@ -376,6 +377,7 @@ const DrivingLicenceLandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ImageInfoCard
             id="verify-online"
+            imageSide="right"
             image={DrivingLicenceOnline}
             imageAlt="Online driving licence check"
             icon={Lock}
