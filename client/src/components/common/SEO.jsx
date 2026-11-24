@@ -38,7 +38,7 @@ const SEO = ({
   description = "Find your perfect car on Sello Pakistan. Browse thousands of new and used cars from trusted sellers across Pakistan. Buy or sell your car today!",
   image = "/logo.png",
   type = "website",
-  keywords = "cars, buy cars, sell cars, used cars, new cars, Pakistan, Lahore, Karachi, Islamabad, car marketplace",
+  keywords = "cars, buy cars, sell cars, used cars, new cars, Pakistan, Lahore, Karachi, Islamabad, car marketplace,online vehicle verification,vehicle verification Pakistan,vehicle verification,MTMIS Pakistan,MTMIS online,car verification online Pakistan,vehicle registration check,check vehicle details online,car registration check Pakistan,bike verification online,bike registration check,vehicle owner details check vehicle verification by registration number",
   author = "Sello",
   url,
   canonical,
@@ -120,9 +120,7 @@ const SEO = ({
   const derivedPath =
     location.pathname +
     cleanCanonicalSearch(stripTrackingParams(location.search || ""));
-  const canonicalUrl = toAbsoluteUrl(
-    canonical || url || derivedPath || "/",
-  );
+  const canonicalUrl = toAbsoluteUrl(canonical || url || derivedPath || "/");
 
   if (import.meta.env.DEV && !canonical && !url && !derivedPath) {
     console.warn(
@@ -130,7 +128,10 @@ const SEO = ({
     );
   }
   const siteName = "Sello";
-  const safeTitle = normalizeText(title, "Sello - Buy and Sell Cars in Pakistan");
+  const safeTitle = normalizeText(
+    title,
+    "Sello - Buy and Sell Cars in Pakistan",
+  );
   const safeDescription = normalizeText(
     description,
     "Find your perfect car on Sello Pakistan.",
@@ -147,9 +148,10 @@ const SEO = ({
         : NOINDEX_ROBOTS
       : explicitRobots || DEFAULT_ROBOTS;
   const isNoindex = isNoindexRobots(safeRobots);
-  const fullTitle = exactTitle || safeTitle.includes("Sello")
-    ? safeTitle
-    : `${safeTitle} | Sello`;
+  const fullTitle =
+    exactTitle || safeTitle.includes("Sello")
+      ? safeTitle
+      : `${safeTitle} | Sello`;
   const imageUrl = toAbsoluteUrl(image);
 
   useEffect(() => {
