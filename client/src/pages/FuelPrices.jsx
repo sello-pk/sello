@@ -4,9 +4,14 @@ import { images } from "../assets/assets";
 import GuideCards from "../components/common/GuideCards";
 import SEO from "../components/common/SEO";
 import { FAQSchema } from "../components/common/StructuredData";
-import { fuelPricesSeo, fuelPricesHeading, fuelPriceFaqs } from "../utils/fuelPricesContent.js";
+import {
+  fuelPricesSeo,
+  fuelPricesHeading,
+  fuelPriceFaqs,
+} from "../utils/fuelPricesContent.js";
 import { fuelVerificationPosts } from "../components/features/VehicleVerification/fuelVerificationPosts.js";
 import { useGetFuelPricesQuery } from "../redux/services/api";
+import Faqs from "../components/utils/Faqs.jsx";
 
 const formatPrice = new Intl.NumberFormat("en-PK", {
   minimumFractionDigits: 2,
@@ -50,23 +55,30 @@ function FuelPriceCard({ price }) {
           </time>
         </p>
       )}
-      {price.price_updated_at && /^\d{4}-\d{2}-\d{2}/.test(price.price_updated_at) && (
-        <p className="mt-1 text-xs text-stone-500">
-          Source record updated {price.price_updated_at.slice(0, 10)}
-        </p>
-      )}
+      {price.price_updated_at &&
+        /^\d{4}-\d{2}-\d{2}/.test(price.price_updated_at) && (
+          <p className="mt-1 text-xs text-stone-500">
+            Source record updated {price.price_updated_at.slice(0, 10)}
+          </p>
+        )}
     </article>
   );
 }
 
 export default function FuelPrices() {
-  const { data, isFetching, isError, fulfilledTimeStamp, refetch } = useGetFuelPricesQuery(undefined, {
-    pollingInterval: 300000,
-    refetchOnMountOrArgChange: 300,
-    refetchOnFocus: true,
-    refetchOnReconnect: true,
-  });
-  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Karachi", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+  const { data, isFetching, isError, fulfilledTimeStamp, refetch } =
+    useGetFuelPricesQuery(undefined, {
+      pollingInterval: 300000,
+      refetchOnMountOrArgChange: 300,
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+    });
+  const today = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Karachi",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
   const prices = Array.isArray(data?.prices)
     ? data.prices.filter(
         (price) =>
@@ -92,8 +104,13 @@ export default function FuelPrices() {
         />
         <div className="absolute inset-0 -z-10 bg-[#050B20]/75" />
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-14 lg:px-8">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm">
-            <Link to="/" className="hover:underline">Home</Link>
+          <nav
+            aria-label="Breadcrumb"
+            className="flex items-center gap-2 text-sm"
+          >
+            <Link to="/" className="hover:underline">
+              Home
+            </Link>
             <ChevronRight aria-hidden="true" className="h-4 w-4" />
             <span aria-current="page">Fuel prices</span>
           </nav>
@@ -101,26 +118,58 @@ export default function FuelPrices() {
             {fuelPricesHeading}
           </h1>
           <p className="mt-3 max-w-xl text-white/85">
-            Check the latest published petrol price in Pakistan today and diesel rates per litre. Review the effective date before using a rate to plan your fuel budget.
+            Check the latest published petrol price in Pakistan today and diesel
+            rates per litre. Review the effective date before using a rate to
+            plan your fuel budget.
           </p>
         </div>
       </header>
 
-      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8" aria-labelledby="current-fuel-prices">
-        <h2 id="current-fuel-prices" className="text-xl font-semibold sm:text-2xl">
+      <section
+        className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8"
+        aria-labelledby="current-fuel-prices"
+      >
+        <h2
+          id="current-fuel-prices"
+          className="text-xl font-semibold sm:text-2xl"
+        >
           Latest published petrol and diesel prices
         </h2>
-        {fulfilledTimeStamp && <p className="mt-2 text-xs text-stone-500">Price information checked {new Date(fulfilledTimeStamp).toLocaleString("en-PK", { timeZone: "Asia/Karachi", dateStyle: "medium", timeStyle: "short" })} (Pakistan time).</p>}
-        {isError && prices.length > 0 && <p role="status" className="mt-3 text-sm text-amber-800">The latest refresh failed. These are previously retrieved rates; verify the effective dates against the latest official notification. <button type="button" onClick={refetch} className="underline">Retry update</button></p>}
+        {fulfilledTimeStamp && (
+          <p className="mt-2 text-xs text-stone-500">
+            Price information checked{" "}
+            {new Date(fulfilledTimeStamp).toLocaleString("en-PK", {
+              timeZone: "Asia/Karachi",
+              dateStyle: "medium",
+              timeStyle: "short",
+            })}{" "}
+            (Pakistan time).
+          </p>
+        )}
+        {isError && prices.length > 0 && (
+          <p role="status" className="mt-3 text-sm text-amber-800">
+            The latest refresh failed. These are previously retrieved rates;
+            verify the effective dates against the latest official notification.{" "}
+            <button type="button" onClick={refetch} className="underline">
+              Retry update
+            </button>
+          </p>
+        )}
         {prices.length > 0 ? (
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
-            {prices.map((price) => <FuelPriceCard key={price.slug} price={price} />)}
+            {prices.map((price) => (
+              <FuelPriceCard key={price.slug} price={price} />
+            ))}
           </div>
         ) : isFetching ? (
-          <p role="status" className="mt-5 text-stone-600">Loading fuel prices…</p>
+          <p role="status" className="mt-5 text-stone-600">
+            Loading fuel prices…
+          </p>
         ) : (
           <div className="mt-5 rounded-2xl border border-stone-200 bg-white p-5">
-            <p role="status">Current fuel prices are temporarily unavailable.</p>
+            <p role="status">
+              Current fuel prices are temporarily unavailable.
+            </p>
             <button
               type="button"
               onClick={refetch}
@@ -131,17 +180,51 @@ export default function FuelPrices() {
           </div>
         )}
         <p className="mt-5 text-sm text-stone-600">
-          Rates are supplied by the existing fuel price feed and include their published effective dates. A retrieved rate is not a guarantee that no newer notification exists. Check the <a href="https://www.ogra.org.pk/notified-petroleum-prices" target="_blank" rel="noopener noreferrer" className="underline decoration-primary-500 underline-offset-2">latest official OGRA notification</a> before relying on a rate.
+          Rates are supplied by the existing fuel price feed and include their
+          published effective dates. A retrieved rate is not a guarantee that no
+          newer notification exists. Check the{" "}
+          <a
+            href="https://www.ogra.org.pk/notified-petroleum-prices"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline decoration-primary-500 underline-offset-2"
+          >
+            latest official OGRA notification
+          </a>{" "}
+          before relying on a rate.
         </p>
       </section>
-      <section className="mx-auto max-w-6xl px-4 pb-8 sm:px-6 sm:pb-12 lg:px-8" aria-labelledby="fuel-verification-guides">
-        <h2 id="fuel-verification-guides" className="mb-3 text-2xl font-semibold">Fuel price updates and guides</h2>
-        <p className="mb-8 text-sm leading-relaxed text-stone-600">The live cards currently show petrol and diesel only. The guides below also discuss HSD, LDO, LPG, CNG and kerosene; separate live rates for those products are not provided on this page. Confirm product grades and local supplier prices before purchasing.</p>
-        <GuideCards posts={fuelVerificationPosts} checklistTitle="Fuel price highlights" />
+      <section
+        className="mx-auto max-w-6xl px-4 pb-8 sm:px-6 sm:pb-12 lg:px-8"
+        aria-labelledby="fuel-verification-guides"
+      >
+        <h2
+          id="fuel-verification-guides"
+          className="mb-3 text-2xl font-semibold"
+        >
+          Fuel price updates and guides
+        </h2>
+        <p className="mb-8 text-sm leading-relaxed text-stone-600">
+          The live cards currently show petrol and diesel only. The guides below
+          also discuss HSD, LDO, LPG, CNG and kerosene; separate live rates for
+          those products are not provided on this page. Confirm product grades
+          and local supplier prices before purchasing.
+        </p>
+        <GuideCards
+          posts={fuelVerificationPosts}
+          checklistTitle="Fuel price highlights"
+        />
       </section>
-      <section className="mx-auto max-w-6xl px-4 pb-10 sm:px-6 sm:pb-14 lg:px-8" aria-labelledby="fuel-price-faqs">
-        <h2 id="fuel-price-faqs" className="mb-6 text-2xl font-semibold">Fuel prices in Pakistan: frequently asked questions</h2>
-        <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">{fuelPriceFaqs.map(item => <details key={item.question} className="border-b border-stone-200 last:border-0"><summary className="cursor-pointer px-5 py-4 font-medium marker:text-primary-500">{item.question}</summary><p className="px-5 pb-5 text-sm leading-relaxed text-stone-600">{item.answer}</p></details>)}</div>
+      <section
+        className="mx-auto max-w-6xl px-4 pb-10 sm:px-6 sm:pb-14 lg:px-8"
+        aria-labelledby="fuel-price-faqs"
+      >
+        <h2 id="fuel-price-faqs" className="mb-6 text-2xl font-semibold">
+          Fuel prices in Pakistan: frequently asked questions
+        </h2>
+        <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+          <Faqs faqs={fuelPriceFaqs} />
+        </div>
       </section>
     </div>
   );
