@@ -287,19 +287,17 @@ const VehicleVerificationPage = () => {
           height="600"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-slate-900/25 via-slate-900/40 to-slate-900/50" />
-        <div className="relative z-10 flex min-h-[52vh] flex-col justify-center w-full min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="relative z-10 flex min-h-[52vh] flex-col justify-center w-full min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-7">
           <div className="text-center w-full min-w-0 max-w-3xl mx-auto">
-            <div className="inline-flex max-w-full items-center gap-2 bg-white text-primary-500 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium mb-3 sm:mb-5 shadow-sm">
+            <div className="inline-flex max-w-full items-center gap-1 bg-white text-primary-500 px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-medium mb-2 sm:mb-3 shadow-sm">
               <Sparkles className="w-4 h-4 shrink-0" />
               <span className="truncate">Official MTMIS data sources</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 sm:mb-4 leading-tight text-balance">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-2 sm:mb-3 leading-tight text-balance">
               Online Vehicle Verification in Pakistan – Check Your Car Details
             </h1>
-            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary mb-3 sm:mb-4 leading-tight text-balance">
-              Check Vehicle Details Before You Buy or Sell
-            </h2>
-            <p className="text-sm sm:text-base lg:text-lg text-gray-100 mb-5 sm:mb-8 text-pretty">
+
+            <p className="text-sm sm:text-sm lg:text-base text-gray-100 mb-5 sm:mb-8 text-pretty">
               Buying into a used car or bike is a big decision which is why it
               is best to do your due diligence on the vehicle before you make a
               sale. Also we have online vehicle verification which is a great
@@ -310,7 +308,7 @@ const VehicleVerificationPage = () => {
               <a
                 href="#select-province"
                 onClick={scrollToId("select-province")}
-                className="inline-flex items-center justify-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 hover:-translate-y-0.5 transition-all shadow-lg shadow-primary-500/25"
+                className="inline-flex items-center justify-center gap-2 bg-primary-500 text-white px-6 py-2 rounded-lg font-semibold hover:opacity-90 hover:-translate-y-0.5 transition-all shadow-lg shadow-primary-500/25"
               >
                 <Search className="w-4 h-4 shrink-0" />
                 Verify vehicle
@@ -318,7 +316,7 @@ const VehicleVerificationPage = () => {
               <a
                 href="#how-it-works"
                 onClick={scrollToId("how-it-works")}
-                className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 hover:-translate-y-0.5 transition-all"
+                className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 hover:-translate-y-0.5 transition-all"
               >
                 How it works
               </a>
@@ -344,8 +342,13 @@ const VehicleVerificationPage = () => {
       <section id="select-province" className="scroll-mt-24 py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-slate-900 mb-3">
-              Select Your Province
+            <div className="inline-flex max-w-full items-center gap-1 bg-primary/5 text-primary-500 px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-medium mb-2 sm:mb-3 shadow-sm">
+              <Sparkles className="w-4 h-4 shrink-0" />
+              <span className="truncate">Select Your Province</span>
+            </div>
+            {/* <h2 className="text-3xl font-bold text-slate-900 mb-3"></h2> */}
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-3 sm:mb-4 leading-tight text-balance">
+              Check Vehicle Details Before You Buy or Sell
             </h2>
             <p className="text-base text-slate-600 max-w-2xl mx-auto">
               Choose your province to open the Sello guide. Official portal
@@ -427,7 +430,7 @@ const VehicleVerificationPage = () => {
 
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <div className="flex lg:flex-row sm:flex-col flex-col lg:gap-12 md:gap-8 gap-8 items-center justify-between">
             <div>
               <h2 className="text-3xl font-bold text-slate-900 mb-8">
                 Smart Buying Tips
@@ -443,7 +446,7 @@ const VehicleVerificationPage = () => {
                 ))}
               </div>
             </div>
-            <div className="rounded-2xl overflow-hidden bg-[#071428] aspect-[4/3] sm:aspect-[5/4] lg:aspect-auto lg:min-h-[380px] lg:h-full">
+            <div className="rounded-2xl overflow-hidden bg-[#071428] aspect-[4/3] sm:aspect-[5/4] lg:aspect-auto lg:min-h-[340px] lg:h-full w-[460px]">
               <img
                 src={smartBuyingTipsImg}
                 alt="Smart buying tips for vehicle verification"
