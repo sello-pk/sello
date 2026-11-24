@@ -139,143 +139,143 @@ export default function GuideCards({
           <article
             key={post.id}
             id={`${idPrefix}-card-${post.id}`}
-            className={`group flex scroll-mt-24 flex-col rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 bg-[#FDFBF7] border border-stone-200/60 ${
-              isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"
-            }`}
+            className="group scroll-mt-24 overflow-hidden rounded-3xl border border-stone-200/60 bg-[#FDFBF7] shadow-lg transition-shadow duration-300 hover:shadow-xl"
           >
-            {/* Content area */}
-            <div className="relative flex-1 flex flex-col justify-between p-6 sm:p-8 lg:p-10 min-h-[260px] lg:min-h-0 lg:min-w-0">
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <div className="w-8 h-8 rounded-full bg-gray-200/80 flex items-center justify-center">
-                      <User className="w-4 h-4 text-gray-600" />
-                    </div>
-                    <span className="text-sm font-medium text-gray-700">
-                      {post.author}
-                    </span>
-                  </div>
-                  <span className="text-sm text-gray-500">{post.date}</span>
-                </div>
-
-                <h3 className="mb-4 break-words text-2xl font-bold leading-tight text-primary-500 lg:text-3xl">
-                  {showStepNumber && post.stepNumber && (
-                    <span className="text-primary-500 mr-2">
-                      {post.stepNumber}.
-                    </span>
-                  )}
-                  {post.title}
-                </h3>
-
-                <p className="text-base lg:text-lg leading-relaxed mb-6 text-gray-600">
-                  {post.excerpt}
-                </p>
-
-                <button
-                  type="button"
-                  id={`${idPrefix}-trigger-${post.id}`}
-                  onClick={() => toggleStep(post.id)}
-                  aria-expanded={isExpanded}
-                  aria-controls={`${idPrefix}-content-${post.id}`}
-                  className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 cursor-pointer min-h-11 scroll-mt-24 scroll-mb-8 ${
-                    isExpanded
-                      ? "bg-primary-50 text-primary-800"
-                      : "bg-primary-500 text-white shadow-md hover:shadow-lg hover:opacity-95"
-                  }`}
-                >
-                  <span>{isExpanded ? "Read Less" : "Read More"}</span>
-                  {isExpanded ? (
-                    <ChevronUp
-                      className="w-5 h-5 transition-transform"
-                      aria-hidden
-                    />
-                  ) : (
-                    <ChevronDown
-                      className="w-5 h-5 transition-transform"
-                      aria-hidden
-                    />
-                  )}
-                </button>
-
-                <div id={`${idPrefix}-content-${post.id}`} hidden={!isExpanded}>
-                  {isExpanded && (
-                    <Motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{
-                        duration: reduceMotion ? 0 : 0.18,
-                        ease: "easeInOut",
-                      }}
-                      className="overflow-hidden"
-                    >
-                      <div className="mt-8 pt-8 border-t border-stone-200/80">
-                        {/* Formatted markdown content */}
-                        <div
-                          className="prose prose-lg max-w-none break-words font-normal leading-relaxed text-gray-700"
-                          dangerouslySetInnerHTML={{
-                            __html: formatBlogContent(post.fullContent),
-                          }}
-                        />
-
-                        {/* Key Checklist & Verification Points */}
-                        {post.items && post.items.length > 0 && (
-                          <div className="mt-8 pt-6 border-t border-stone-200/80">
-                            <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                              <ShieldCheck className="w-5 h-5 text-primary-500" />
-                              <span>{checklistTitle}</span>
-                            </h4>
-                            <ul className="grid gap-3 sm:grid-cols-2">
-                              {post.items.map((item) => (
-                                <li
-                                  key={item}
-                                  className="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm"
-                                >
-                                  <span className="w-2 h-2 rounded-full bg-primary-500 shrink-0 mt-2" />
-                                  <span className="text-sm font-medium text-gray-800">
-                                    {item}
-                                  </span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-
-                        {/* Return focus to the primary toggle when closing here. */}
-                        <div className="mt-8 pt-4 border-t border-stone-200/60 flex items-center justify-between">
-                          <button
-                            type="button"
-                            onClick={() => toggleStep(post.id, true)}
-                            className="inline-flex items-center gap-2 text-primary-500 font-semibold hover:text-primary-600 transition-colors py-2 cursor-pointer text-sm sm:text-base"
-                          >
-                            <ChevronUp className="w-4 h-4" />
-                            <span>Read Less</span>
-                          </button>
-                        </div>
+            <div className={`flex flex-col ${isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"}`}>
+              {/* Content area */}
+              <div className="relative flex-1 flex flex-col justify-between p-6 sm:p-8 lg:p-10 min-h-[260px] lg:min-h-0 lg:min-w-0">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <div className="w-8 h-8 rounded-full bg-gray-200/80 flex items-center justify-center">
+                        <User className="w-4 h-4 text-gray-600" />
                       </div>
-                    </Motion.div>
-                  )}
+                      <span className="text-sm font-medium text-gray-700">
+                        {post.author}
+                      </span>
+                    </div>
+                    <span className="text-sm text-gray-500">{post.date}</span>
+                  </div>
+
+                  <h3 className="mb-4 break-words text-2xl font-bold leading-tight text-primary-500 lg:text-3xl">
+                    {showStepNumber && post.stepNumber && (
+                      <span className="text-primary-500 mr-2">
+                        {post.stepNumber}.
+                      </span>
+                    )}
+                    {post.title}
+                  </h3>
+
+                  <p className="text-base lg:text-lg leading-relaxed mb-6 text-gray-600">
+                    {post.excerpt}
+                  </p>
+
+                  <button
+                    type="button"
+                    id={`${idPrefix}-trigger-${post.id}`}
+                    onClick={() => toggleStep(post.id)}
+                    aria-expanded={isExpanded}
+                    aria-controls={`${idPrefix}-content-${post.id}`}
+                    className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 cursor-pointer min-h-11 scroll-mt-24 scroll-mb-8 ${
+                      isExpanded
+                        ? "bg-primary-50 text-primary-800"
+                        : "bg-primary-500 text-white shadow-md hover:shadow-lg hover:opacity-95"
+                    }`}
+                  >
+                    <span>{isExpanded ? "Read Less" : "Read More"}</span>
+                    {isExpanded ? (
+                      <ChevronUp
+                        className="w-5 h-5 transition-transform"
+                        aria-hidden
+                      />
+                    ) : (
+                      <ChevronDown
+                        className="w-5 h-5 transition-transform"
+                        aria-hidden
+                      />
+                    )}
+                  </button>
+
+                </div>
+              </div>
+
+              {/* Image area */}
+              <div className="relative h-72 w-full overflow-hidden bg-slate-900/5 sm:h-80 lg:h-auto lg:min-h-[360px] lg:w-[480px] lg:flex-shrink-0 lg:self-stretch xl:w-[520px]">
+                <img
+                  src={post.image}
+                  alt={post.imageAlt || post.title}
+                  className="absolute inset-0 block h-full w-full object-cover object-center opacity-90"
+                  loading="lazy"
+                />
+                <div className="absolute top-5 left-5">
+                  <span className="inline-flex items-center gap-2 bg-white/95 text-gray-800 px-3 py-1.5 rounded-full text-sm font-semibold shadow">
+                    <span className="w-1.5 h-1.5 bg-primary-500 rounded-full" />
+                    {post.category}
+                  </span>
+                </div>
+                <div className="absolute bottom-5 left-5 flex items-center gap-2 text-white text-sm bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-lg shadow">
+                  <Clock className="w-4 h-4 text-white" aria-hidden />
+                  <span>{post.readTime}</span>
                 </div>
               </div>
             </div>
+            <div id={`${idPrefix}-content-${post.id}`} hidden={!isExpanded}>
+              {isExpanded && (
+                <Motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{
+                    duration: reduceMotion ? 0 : 0.18,
+                    ease: "easeInOut",
+                  }}
+                  className="overflow-hidden"
+                >
+                  <div className="border-t border-stone-200/80 p-6 sm:p-8 lg:p-10">
+                    {/* Formatted markdown content */}
+                    <div
+                      className="prose prose-lg max-w-none break-words font-normal leading-relaxed text-gray-700"
+                      dangerouslySetInnerHTML={{
+                        __html: formatBlogContent(post.fullContent),
+                      }}
+                    />
 
-            {/* Image area */}
-            <div className="relative h-72 w-full overflow-hidden bg-slate-900/5 sm:h-80 lg:h-auto lg:min-h-[360px] lg:w-[480px] lg:flex-shrink-0 lg:self-stretch xl:w-[520px]">
-              <img
-                src={post.image}
-                alt={post.imageAlt || post.title}
-                className="absolute inset-0 block h-full w-full object-cover object-center opacity-90"
-                loading="lazy"
-              />
-              <div className="absolute top-5 left-5">
-                <span className="inline-flex items-center gap-2 bg-white/95 text-gray-800 px-3 py-1.5 rounded-full text-sm font-semibold shadow">
-                  <span className="w-1.5 h-1.5 bg-primary-500 rounded-full" />
-                  {post.category}
-                </span>
-              </div>
-              <div className="absolute bottom-5 left-5 flex items-center gap-2 text-white text-sm bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-lg shadow">
-                <Clock className="w-4 h-4 text-white" aria-hidden />
-                <span>{post.readTime}</span>
-              </div>
+                    {/* Key Checklist & Verification Points */}
+                    {post.items && post.items.length > 0 && (
+                      <div className={post.fullContent ? "mt-8 border-t border-stone-200/80 pt-6" : ""}>
+                        <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                          <ShieldCheck className="w-5 h-5 text-primary-500" />
+                          <span>{checklistTitle}</span>
+                        </h4>
+                        <ul className="grid gap-3 sm:grid-cols-2">
+                          {post.items.map((item) => (
+                            <li
+                              key={item}
+                              className="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm"
+                            >
+                              <span className="w-2 h-2 rounded-full bg-primary-500 shrink-0 mt-2" />
+                              <span className="text-sm font-medium text-gray-800">
+                                {item}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Return focus to the primary toggle when closing here. */}
+                    <div className="mt-8 pt-4 border-t border-stone-200/60 flex items-center justify-between">
+                      <button
+                        type="button"
+                        onClick={() => toggleStep(post.id, true)}
+                        className="inline-flex items-center gap-2 text-primary-500 font-semibold hover:text-primary-600 transition-colors py-2 cursor-pointer text-sm sm:text-base"
+                      >
+                        <ChevronUp className="w-4 h-4" />
+                        <span>Read Less</span>
+                      </button>
+                    </div>
+                  </div>
+                </Motion.div>
+              )}
             </div>
           </article>
         );
