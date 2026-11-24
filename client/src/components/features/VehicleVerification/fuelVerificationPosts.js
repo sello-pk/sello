@@ -1,8 +1,15 @@
-import whatIsOnlineVehicleVerification from "../../../assets/vehicleVerification/whatIsOnlineVehicleVerification.webp";
-import whatIsMTMISandHowDoesItRelatetoVehicleVerification from "../../../assets/vehicleVerification/whatIsMTMISandHowDoesItRelatetoVehicleVerification.webp";
+import petrolPriceinPakistanToday from "../../../assets/images/petrolPriceinPakistanToday.webp";
+import dieselPriceinPakistanToday from "../../../assets/images/dieselPriceinPakistanToday.webp";
+import latestFuelPricesinPakistan from "../../../assets/images/latestFuelPricesinPakistan.webp";
+import petroleumPriceUpdatesinPakistan from "../../../assets/images/petroleumPriceUpdatesinPakistan.webp";
 import { fuelPriceGuides } from "../../../utils/fuelPricesContent.js";
 
-const existingImages = [whatIsOnlineVehicleVerification, whatIsMTMISandHowDoesItRelatetoVehicleVerification];
+const existingImages = [
+  petrolPriceinPakistanToday,
+  dieselPriceinPakistanToday,
+  latestFuelPricesinPakistan,
+  petroleumPriceUpdatesinPakistan,
+];
 
 export const fuelVerificationPosts = fuelPriceGuides.map((post, index) => ({
   ...post,

@@ -141,7 +141,9 @@ export default function GuideCards({
             id={`${idPrefix}-card-${post.id}`}
             className="group scroll-mt-24 overflow-hidden rounded-3xl border border-stone-200/60 bg-[#FDFBF7] shadow-lg transition-shadow duration-300 hover:shadow-xl"
           >
-            <div className={`flex flex-col ${isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"}`}>
+            <div
+              className={`flex flex-col ${isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"}`}
+            >
               {/* Content area */}
               <div className="relative flex-1 flex flex-col justify-between p-6 sm:p-8 lg:p-10 min-h-[260px] lg:min-h-0 lg:min-w-0">
                 <div>
@@ -158,11 +160,6 @@ export default function GuideCards({
                   </div>
 
                   <h3 className="mb-4 break-words text-2xl font-bold leading-tight text-primary-500 lg:text-3xl">
-                    {showStepNumber && post.stepNumber && (
-                      <span className="text-primary-500 mr-2">
-                        {post.stepNumber}.
-                      </span>
-                    )}
                     {post.title}
                   </h3>
 
@@ -195,7 +192,6 @@ export default function GuideCards({
                       />
                     )}
                   </button>
-
                 </div>
               </div>
 
@@ -241,7 +237,13 @@ export default function GuideCards({
 
                     {/* Key Checklist & Verification Points */}
                     {post.items && post.items.length > 0 && (
-                      <div className={post.fullContent ? "mt-8 border-t border-stone-200/80 pt-6" : ""}>
+                      <div
+                        className={
+                          post.fullContent
+                            ? "mt-8 border-t border-stone-200/80 pt-6"
+                            : ""
+                        }
+                      >
                         <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                           <ShieldCheck className="w-5 h-5 text-primary-500" />
                           <span>{checklistTitle}</span>
