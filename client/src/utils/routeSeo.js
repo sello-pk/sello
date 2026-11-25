@@ -243,10 +243,9 @@ const routeSeoConfigs = [
   {
     path: "/driving-licence/sindh",
     seo: {
-      title:
-        "Sindh Driving Licence Online | DLS Apply, Renew & Verify – Sello.pk",
-      description:
-        "Sindh driving licence guide for learner, permanent and renewal services via official DLS Online, with government portal action buttons.",
+      exactTitle: true,
+      title: "How to Apply for a Driving License in Karachi | Step-by-Step Guide",
+      description: "Learn how to apply for a driving license in Karachi. Explore Sindh licence requirements, documents, fees, learner permits, driving tests and renewal.",
       canonical: "https://sello.pk/driving-licence/sindh",
     },
   },

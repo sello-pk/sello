@@ -236,6 +236,12 @@ export default function GuideCards({
                       }}
                     />
 
+                    {post.ctaUrl && post.ctaLabel && (
+                      <a href={post.ctaUrl} target="_blank" rel="noopener noreferrer" className="my-5 inline-flex min-h-11 items-center justify-center rounded-lg bg-primary-500 px-5 py-3 font-semibold text-white hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-500">
+                        {post.ctaLabel}
+                      </a>
+                    )}
+
                     {/* Key Checklist & Verification Points */}
                     {post.items && post.items.length > 0 && (
                       <div

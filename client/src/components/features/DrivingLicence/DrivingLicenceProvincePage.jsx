@@ -13,6 +13,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import SEO from "../../common/SEO";
+import GuideCards from "../../common/GuideCards";
 import NewsLatter from "../../utils/NewsLatter";
 import { AdSenseSlot } from "../../ads";
 import { DrivingLicenceProvinceSchema } from "../../common/StructuredData";
@@ -64,7 +65,7 @@ const DrivingLicenceProvincePage = () => {
 
   const visibleSections = useMemo(() => {
     if (!guide) return [];
-    return CONTENT_SECTIONS.filter((section) => {
+    return (guide.contentSections || CONTENT_SECTIONS).filter((section) => {
       const value = guide[section.key];
       return value && !(Array.isArray(value) && value.length === 0);
     });
@@ -112,6 +113,25 @@ const DrivingLicenceProvincePage = () => {
   const name = provinceDisplayName(slug, guide.name);
   const canonical = `https://sello.pk/driving-licence/${slug}`;
   const otherGuides = DRIVING_LICENCE_GUIDES.filter((g) => g.slug !== slug);
+  const originalGuide = DRIVING_LICENCE_GUIDES.find(item => item.slug === slug);
+  const makeCard = (section, index) => {
+    const content = Array.isArray(section.content) ? section.content.join("\n\n") : section.content || "";
+    const firstParagraph = content.split("\n")[0];
+    return {
+      id: `${slug}-${section.key || index}`,
+      title: section.title,
+      excerpt: firstParagraph.length > 220 ? `${firstParagraph.slice(0, 217).trim()}…` : firstParagraph,
+      fullContent: content,
+      image: section.image || originalGuide?.overviewSections?.[index % originalGuide.overviewSections.length]?.image || listingHero,
+      imageAlt: section.title,
+      author: "SELLO Editorial Team",
+      category: `${name} Driving Licence`,
+      readTime: `${Math.max(1, Math.ceil(content.split(/\s+/).length / 200))} min read`,
+      ctaLabel: section.ctaLabel,
+      ctaUrl: section.ctaUrl,
+    };
+  };
+
 
   return (
     <div className="w-full min-w-0 max-w-full overflow-x-hidden bg-white pb-24 lg:pb-0">
@@ -173,7 +193,7 @@ const DrivingLicenceProvincePage = () => {
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 sm:mb-4 leading-tight text-balance">
-              {name} Driving Licence Guide
+              {guide.pageTitle || `${name} Driving Licence Guide`}
             </h1>
             <p className="text-sm sm:text-base lg:text-lg text-gray-100 mb-6 sm:mb-8 text-pretty whitespace-pre-line">
               {guide.shortDescription}{!guide.heroCopyComplete && " Continue to the official portal when you are ready — Sello never asks for your CNIC or licence number here."}
@@ -293,76 +313,22 @@ const DrivingLicenceProvincePage = () => {
         </div>
       </section>
 
-      {/* 2-Column Overview / Guide Sections */}
+      {/* Illustrated guides use the same inline expansion as other SELLO guides. */}
       {guide.overviewSections?.length ? (
-        <div className="border-b border-slate-100 bg-white">
-          {guide.overviewSections.map((sec, idx) => (
-            <section
-              key={sec.title || idx}
-              className={`py-12 sm:py-16 ${idx % 2 === 1 ? "bg-slate-50/70" : "bg-white"}`}
-            >
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-                  <div className={idx % 2 === 1 ? "lg:order-2" : ""}>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4 sm:mb-6 leading-tight">
-                      {sec.title}
-                    </h2>
-                    <p className="text-base sm:text-lg text-slate-600 leading-relaxed whitespace-pre-line">
-                      {sec.content}
-                    </p>
-                    {sec.ctaLabel && sec.ctaUrl && (
-                      <a href={sec.ctaUrl} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex items-center gap-2 rounded-lg bg-primary-500 px-5 py-3 font-semibold text-white hover:opacity-90">
-                        {sec.ctaLabel}<ExternalLink className="h-4 w-4 shrink-0" />
-                      </a>
-                    )}
-                  </div>
-                  <div
-                    className={`relative rounded-2xl overflow-hidden shadow-lg border border-slate-200 ${
-                      idx % 2 === 1 ? "lg:order-1" : ""
-                    }`}
-                  >
-                    {sec.image && (
-                      <img
-                        src={sec.image}
-                        alt={sec.title}
-                        className="w-full h-auto object-cover max-h-[440px]"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    )}
-                  </div>
-                </div>
-              </div>
-            </section>
-          ))}
-        </div>
+        <section className="border-b border-slate-100 bg-white py-10 sm:py-14">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <GuideCards key={`${slug}-overview`} posts={guide.overviewSections.map(makeCard)} />
+          </div>
+        </section>
       ) : guide.overviewImage ? (
-        <section className="py-12 sm:py-16 bg-white border-b border-slate-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4 sm:mb-6 leading-tight">
-                  {guide.overviewTitle || `How to Apply for a Driving Licence in ${name}`}
-                </h2>
-                <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
-                  {guide.overviewContent || guide.introduction}
-                </p>
-              </div>
-              <div className="relative rounded-2xl overflow-hidden shadow-lg border border-slate-200">
-                <img
-                  src={guide.overviewImage}
-                  alt={guide.overviewTitle || `How to Apply for a Driving Licence in ${name}`}
-                  className="w-full h-auto object-cover max-h-[420px]"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            </div>
+        <section className="border-b border-slate-100 bg-white py-10 sm:py-14">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <GuideCards key={`${slug}-overview`} posts={[makeCard({ title: guide.overviewTitle || `How to Apply for a Driving Licence in ${name}`, content: guide.overviewContent || guide.introduction, image: guide.overviewImage }, 0)]} />
           </div>
         </section>
       ) : null}
 
-      <section className="py-12 sm:py-16 bg-white">
+      {!guide.hideAboutSection && <section className="py-12 sm:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-[minmax(0,1.4fr)_minmax(240px,0.7fr)] gap-8 lg:gap-12 items-start">
             <div className="text-left">
@@ -438,7 +404,7 @@ const DrivingLicenceProvincePage = () => {
             </aside>
           </div>
         </div>
-      </section>
+      </section>}
 
       <div className="bg-white py-6">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -453,7 +419,7 @@ const DrivingLicenceProvincePage = () => {
 
       {visibleSections.length ? (
         <section className="py-12 sm:py-16 bg-white">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className={`${guide.contentSections ? "max-w-7xl" : "max-w-5xl"} mx-auto px-4 sm:px-6 lg:px-8`}>
             <div className="mb-8">
               <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
                 {guide.processTitle || "Process Guide"}
@@ -462,6 +428,9 @@ const DrivingLicenceProvincePage = () => {
                 {guide.processDescription || `Expand each section for step-by-step ${name} licence guidance.`}
               </p>
             </div>
+            {guide.contentSections ? (
+              <GuideCards key={`${slug}-steps`} posts={visibleSections.map((section, index) => makeCard({ ...section, content: guide[section.key] }, index))} />
+            ) : (
             <div className="space-y-3">
               {visibleSections.map((section, i) => {
                 const value = guide[section.key];
@@ -494,6 +463,7 @@ const DrivingLicenceProvincePage = () => {
                 );
               })}
             </div>
+            )}
           </div>
         </section>
       ) : null}

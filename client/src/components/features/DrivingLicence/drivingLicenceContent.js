@@ -1901,6 +1901,99 @@ const BALOCHISTAN_DETAIL_GUIDE = {
   })),
 };
 
+// Karachi / Sindh article copy is used only on the Sindh detail route.
+const SINDH_DETAIL_GUIDE = {
+  ...DRIVING_LICENCE_GUIDES.find(guide => guide.slug === "sindh"),
+  ...{
+  "seoTitle": "How to Apply for a Driving License in Karachi | Step-by-Step Guide",
+  "seoDescription": "Learn how to apply for a driving license in Karachi. Explore Sindh licence requirements, documents, fees, learner permits, driving tests and renewal.",
+  "exactTitle": true,
+  "pageTitle": "How to Apply for a Driving License in Karachi: Step-by-Step Guide",
+  "shortDescription": "Getting a driving license in Karachi allows you to drive legally and confidently on the road. The Sindh Driving License system provides online services for learner permits, permanent licences, renewals and other related applications.\nBefore applying, you can use Sello to check driving license now and explore our learner driving license guide to understand the process, documents and requirements.",
+  "heroCopyComplete": true,
+  "overviewSections": [],
+  "hideAboutSection": true,
+  "processTitle": "Karachi Driving Licence Application Guide",
+  "processDescription": "",
+  "contentSections": [
+    {
+      "key": "ageRequirements",
+      "title": "Step 1: Check Your Eligibility"
+    },
+    {
+      "key": "requiredDocuments",
+      "title": "Step 2: Prepare the Required Documents"
+    },
+    {
+      "key": "learnerProcedure",
+      "title": "Step 3: Apply for a Learner Driving Licence Online"
+    },
+    {
+      "key": "drivingTestGuidelines",
+      "title": "Step 4: Prepare for Your Driving Test"
+    },
+    {
+      "key": "permanentProcedure",
+      "title": "Step 5: Visit the Driving Licence Branch"
+    },
+    {
+      "key": "feesAndPayment",
+      "title": "Driving Licence Types and Fees in Karachi"
+    },
+    {
+      "key": "renewalProcedure",
+      "title": "Renewal, Validity and Appointments"
+    },
+    {
+      "key": "exploreMoreContent",
+      "title": "Explore More on Sello"
+    }
+  ],
+  "faqTitle": "Frequently Asked Questions About Driving Licences in Karachi",
+  "disclaimer": "Sello provides general information and guidance only. It does not issue driving licences or guarantee approvals. Applications, payments and tests are handled by official authorities. Always confirm current fees and requirements through Sindh Police before applying.",
+  "ageRequirements": "Before starting the Sindh driving license process, make sure you meet the minimum age and eligibility requirements. For a motorcycle or motorcar learner licence, the general minimum age is 18 years. Commercial vehicle categories may have higher age and experience requirements.\nYou should also have a valid CNIC and meet the applicable medical fitness conditions.",
+  "requiredDocuments": [
+    "Having your documents ready can make the application process easier. The required documents may vary depending on the licence category and service.",
+    "Valid CNIC: Identity verification",
+    "Recent photograph: Applicant identification",
+    "CNIC front and back copies: Online application",
+    "Learner permit: Permanent licence application",
+    "Previous driving licence: Renewal or relevant applications",
+    "Medical certificate: Where required for the category",
+    "Passport and visa details: International driving permit, where applicable",
+    "Always check the official portal for the latest document requirements before submitting your application."
+  ],
+  "learnerProcedure": "To understand how to apply for driving license in Karachi, begin by visiting the official DLS Online portal or Sindh DLIMS 2.0.\nCreate an account using your CNIC and mobile number. Select the learner licence service, choose your vehicle category and complete the application form. Upload the requested documents, generate the payment reference and pay through an approved payment channel.\nAfter payment confirmation and application processing, follow the portal's instructions to download or print your learner permit.",
+  "drivingTestGuidelines": "For a regular motorcycle or motorcar licence, applicants generally need to complete a 42-day learner period before attempting the practical test.\nIf you are looking for driving test preparation tips Karachi Traffic Police, start by learning traffic signs, road markings, lane discipline and right-of-way rules. Practise starting, stopping, reversing, turning and parking safely.\nTo improve your chances of passing, practise parallel parking between markers, use your indicators correctly and check your mirrors before changing direction. These basic habits can help you understand how to pass driving test in Karachi confidently.\nYou can also check local driving schools, including options in Gulshan-e-Iqbal, if you need professional practice. Confirm their training charges and availability directly. If you need a vehicle for your test, ask the relevant driving branch about vehicle arrangements and any applicable driving test car rental fees.",
+  "permanentProcedure": "Once you complete the learner period, follow the official instructions for your permanent licence test. Carry your original CNIC, learner permit and any additional documents requested.\nDepending on your category, you may need to pass a theoretical or traffic-sign test and a practical driving test. After successfully completing the requirements and paying the applicable charges, your licence will be processed by the licensing authority.",
+  "feesAndPayment": "Pakistan has different driving licence categories based on the vehicle being driven. These include motorcycle, motorcar, motorcycle rickshaw, commercial and international driving permits.\nThe motorcycle rickshaw driving license cost, urgent driving license Karachi fee and international driving license fee depend on the relevant category and official fee schedule. Check the DLS Sindh portal for current charges rather than relying on outdated fee information. You can also explore Sello's Driving license fee guide for related guidance.",
+  "renewalProcedure": "Your driving licence must be renewed according to its expiry date and category. Visit the official portal to check the driving license renewal procedure validity, available renewal options and payment requirements.\nTo book a driving licence appointment in Sindh, use the official DLS Online or DLIMS services and follow the instructions displayed. If you need to reschedule your appointment, sign in and check the available appointment-management options. Contact the licensing authority if online rescheduling is unavailable.\nOverseas Pakistanis can check their eligibility for available online services using valid Pakistani identity documents. However, some verification or testing requirements may require an in-person visit. Confirm the procedure before travelling to Karachi.",
+  "exploreMoreContent": "Whether you are applying for your first licence or renewing an existing one, Sello helps you find useful information. Read our learner driving license guide, explore the Driving license fee guide, and learn how to check Sindh driving license details through official resources.\nYou can also explore our guides to buy and sale cars in Pakistan when looking for your next vehicle.",
+  "faqs": [
+    {
+      "question": "What is the official portal for booking a driving licence appointment in Karachi?",
+      "answer": "Visit the official DLS Online portal or Sindh DLIMS 2.0 and follow the available appointment instructions for your service."
+    },
+    {
+      "question": "How long do I have to wait after getting a learner's permit to attempt the practical test?",
+      "answer": "For regular motorcycle and motorcar licences, applicants generally need to complete a 42-day learner period before attempting the practical test."
+    },
+    {
+      "question": "What documents are required for a driving licence in Karachi?",
+      "answer": "Common requirements include a valid CNIC, recent photograph and learner permit for a permanent licence application. Additional documents may be required depending on the category."
+    },
+    {
+      "question": "Can overseas Pakistanis get a driving licence in Karachi?",
+      "answer": "Overseas Pakistanis can check available online services using valid Pakistani identity documents. However, some testing and verification procedures may require an in-person visit."
+    },
+    {
+      "question": "How can I renew my driving licence in Karachi?",
+      "answer": "Visit the official Sindh driving licence portal, sign in and select the renewal service if available. Follow the instructions for documents, payment and licence delivery or collection."
+    }
+  ]
+},
+};
+
 export const getGuideBySlug = (slug) =>
   slug === "punjab"
     ? PUNJAB_DETAIL_GUIDE
@@ -1910,4 +2003,6 @@ export const getGuideBySlug = (slug) =>
         ? ISLAMABAD_DETAIL_GUIDE
         : slug === "balochistan"
           ? BALOCHISTAN_DETAIL_GUIDE
-          : DRIVING_LICENCE_GUIDES.find((g) => g.slug === slug) || null;
+          : slug === "sindh"
+            ? SINDH_DETAIL_GUIDE
+            : DRIVING_LICENCE_GUIDES.find((g) => g.slug === slug) || null;
