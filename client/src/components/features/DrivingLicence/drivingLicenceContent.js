@@ -1676,6 +1676,231 @@ const ISLAMABAD_DETAIL_GUIDE = {
   })),
 };
 
+// Balochistan replacement copy is scoped to its detail page.
+const BALOCHISTAN_BASE_GUIDE = DRIVING_LICENCE_GUIDES.find(guide => guide.slug === "balochistan");
+const BALOCHISTAN_DETAIL_GUIDE = {
+  ...BALOCHISTAN_BASE_GUIDE,
+  ...{
+  "seoTitle": "Driving License Verification Balochistan Online | QTP DLIMS",
+  "seoDescription": "Verify your Balochistan driving licence online through Quetta Traffic Police. Learn how to check by CNIC, book appointments, apply for a learner permit, renew or get a duplicate licence.",
+  "exactTitle": true,
+  "shortDescription": "Use Quetta Traffic Police (QTP) and Balochistan Police digital services to access driving licence verification and application guidance. You can check your licence online, find learner permit requirements and explore services for renewal, duplicate and international driving licences.\n\nReady to continue? Visit the official government service directly. Sello never asks for your CNIC or driving licence number on this page.",
+  "heroCopyComplete": true,
+  "actionsTitle": "Official Balochistan Driving Licence Actions",
+  "actionsDescription": "These links take you away from Sello to official Quetta Traffic Police or Balochistan Police services. Applications, personal information and payments must be submitted through the relevant government channel.",
+  "aboutTitle": "About Balochistan Driving Licence Services",
+  "introduction": "Driving licence services in Balochistan are provided through the relevant traffic police and Balochistan Police channels. Quetta Traffic Police offers an online driving licence verification service, while Balochistan Police Khidmat Markaz provides several licensing-related services.\n\nThe Khidmat Markaz service list includes learner driving licences, licence renewals, international driving licences, duplicate licences and licence endorsements.\n\nSello.pk provides guidance to help users find the correct government channels. It does not issue licences, process applications, collect payments or access private licence records.",
+  "processTitle": "Balochistan Driving Licence Process Guide",
+  "processDescription": "Expand each section to understand the main steps for applying, renewing or verifying a driving licence in Balochistan. Always confirm the latest instructions with the relevant licensing office.",
+  "faqTitle": "Frequently Asked Questions – Balochistan Driving Licence",
+  "otherProvincesTitle": "Driving Licence Guides for Other Provinces",
+  "otherProvincesDescription": "Looking for a driving licence service in another region? Open the relevant Sello guide and continue to the official government portal.",
+  "disclaimer": "Sello.pk is an independent information platform and is not affiliated with Quetta Traffic Police or Balochistan Police. This page is provided for general guidance only. Licence applications, verification, renewals, appointments, payments and official records are managed by the relevant government authorities.\n\nGovernment procedures, fees, eligibility criteria and portal features may change. Always confirm the latest information through official Quetta Traffic Police or Balochistan Police channels before submitting an application or making a payment. Sello does not request or collect your CNIC, driving licence number or application credentials.",
+  "learnerProcedure": [
+    "Balochistan Police Khidmat Markaz lists learner driving licences among its public services. The published procedure includes the following steps:",
+    "Open the official Balochistan Police Khidmat Markaz website.",
+    "Review the learner driving licence service and its requirements.",
+    "Prepare your original CNIC and a photocopy.",
+    "Obtain the traffic rules and regulations codebook as instructed by Traffic Police.",
+    "Visit the designated Khidmat Markaz or licensing centre.",
+    "Submit the required documents and learner permit fee.",
+    "Follow the instructions for receiving your learner permit.",
+    "Applicants aged 50 or above may also be asked to provide a medical certificate, according to the published service information.",
+    "Official information: https://pkm.balochistanpolice.gov.pk/public/home/services"
+  ],
+  "permanentProcedure": [
+    "To obtain a permanent driving licence, you must first hold a learner permit and complete the required learner period. The published Quetta procedure specifies at least six weeks before applying.",
+    "Prepare your original learner permit, CNIC, passport-size photographs, applicable fee documents and medical certificate if required."
+  ],
+  "renewalProcedure": [
+    "Balochistan Police Khidmat Markaz lists driving licence renewal as an available service. Applicants should prepare the documents requested by the centre, which may include:",
+    "Completed renewal application form.",
+    "Original driving licence.",
+    "Copy of CNIC.",
+    "Two passport-size photographs.",
+    "Medical report, where required.",
+    "Applicable fee ticket.",
+    "The published service information mentions courier delivery for renewed licences, but confirms the current delivery arrangements and processing time before applying."
+  ],
+  "verificationGuide": [
+    "You can complete an online driving licence verification in Balochistan through the Quetta Traffic Police website.",
+    "Open the official Quetta Traffic Police website.",
+    "Navigate to the Driving Licence Verification service.",
+    "Enter your CNIC details as requested by the verification form.",
+    "Submit the information.",
+    "Review the available licence record.",
+    "The verification service is intended to help users check licence information against the official record. If your details do not appear, confirm that you entered the correct CNIC information and contact Quetta Traffic Police for assistance.",
+    "Official verification: https://qtp.gob.pk/main/license-verification/"
+  ],
+  "requiredDocuments": [
+    "The documents required depend on the service you are applying for. The published Khidmat Markaz information lists the following for common licence services:",
+    "Learner licence: Original CNIC and photocopy; traffic rules codebook",
+    "Permanent licence: Learner permit, CNIC, photographs and required fee documents",
+    "Renewal: Original licence, CNIC copy, photographs, application form and medical report where required",
+    "Duplicate licence: CNIC copy, photographs, lost licence report/FIR and other required records",
+    "International licence: Valid local driving licence, CNIC, passport, visa and photographs",
+    "Additional documents may be requested depending on your circumstances. Check the current official requirements before visiting."
+  ],
+  "ageRequirements": [
+    "The published Balochistan Police Khidmat Markaz information lists these minimum ages for learner permits:",
+    "Motorcycle and motorcar: 18 years.",
+    "LTV (including rickshaw, taxi and commercial tractor): 21 years.",
+    "Other vehicle categories may have different eligibility conditions. Confirm the applicable age and requirements with the licensing authority before applying."
+  ],
+  "feesAndPayment": [
+    "The Balochistan driving licence fee depends on the service and vehicle category. Learner permits, permanent licences, renewals, duplicate licences and international driving permits may have different charges.",
+    "The published Khidmat Markaz service information includes a learner permit ticket of Rs. 60, but applicants should confirm whether this amount is still current before making payment. Do not rely on old fee lists or unofficial payment instructions.",
+    "For the latest learner permit fee in Balochistan or other licence charges, contact the relevant licensing centre or check the official government service information."
+  ],
+  "drivingTestGuidelines": [
+    "Applicants for a regular driving licence must complete the prescribed driving test. Prepare by learning traffic signs, road markings, right-of-way rules, lane discipline and safe driving practices.",
+    "Practise basic vehicle control, starting and stopping, turning, reversing and parking. Follow the instructions of the licensing staff during the test. The exact assessment requirements may depend on your vehicle category."
+  ],
+  "trackingInstructions": [
+    "Check the application tracking facility and use your official receipt or reference number where required. Follow the instructions provided by the relevant Khidmat Markaz.",
+    "Continue: https://pkm.balochistanpolice.gov.pk/",
+    "Visit the Official Portal",
+    "Open the Quetta Traffic Police website for driving licence verification and other traffic police services.",
+    "Continue: https://qtp.gob.pk/",
+    "How to Get a Regular Driving Licence in Balochistan",
+    "After obtaining your learner driving permit and completing the required waiting period, you can apply for a regular driving licence in Balochistan.",
+    "Prepare your original learner permit, CNIC, recent passport-size photographs and other documents required by the licensing authority. You may also need a medical certificate and the applicable fee ticket.",
+    "Confirm the latest requirements with Quetta Traffic Police before visiting.",
+    "Regular licence process:",
+    "Obtain a learner driving permit.",
+    "Complete the required learner period.",
+    "Prepare your CNIC, learner permit and supporting documents.",
+    "Visit the relevant licensing office.",
+    "Complete the required driving test and other assessments.",
+    "Pay the applicable fee and follow the licence issuance instructions.",
+    "Quetta Traffic Police / Balochistan Traffic Police",
+    "About Balochistan Driving Licence Services",
+    "Driving licence services in Balochistan are provided through the relevant traffic police and Balochistan Police channels. Quetta Traffic Police offers an online driving licence verification service, while Balochistan Police Khidmat Markaz provides several licensing-related services.",
+    "The Khidmat Markaz service list includes learner driving licences, licence renewals, international driving licences, duplicate licences and licence endorsements.",
+    "Sello.pk provides guidance to help users find the correct government channels. It does not issue licences, process applications, collect payments or access private licence records.",
+    "Balochistan Driving Licence Process Guide",
+    "Expand each section to understand the main steps for applying, renewing or verifying a driving licence in Balochistan. Always confirm the latest instructions with the relevant licensing office.",
+    "Learner Licence Procedure",
+    "Balochistan Police Khidmat Markaz lists learner driving licences among its public services. The published procedure includes the following steps:",
+    "Open the official Balochistan Police Khidmat Markaz website.",
+    "Review the learner driving licence service and its requirements.",
+    "Prepare your original CNIC and a photocopy.",
+    "Obtain the traffic rules and regulations codebook as instructed by Traffic Police.",
+    "Visit the designated Khidmat Markaz or licensing centre.",
+    "Submit the required documents and learner permit fee.",
+    "Follow the instructions for receiving your learner permit.",
+    "Applicants aged 50 or above may also be asked to provide a medical certificate, according to the published service information.",
+    "Official information: https://pkm.balochistanpolice.gov.pk/public/home/services",
+    "Permanent Licence Procedure",
+    "To obtain a permanent driving licence, you must first hold a learner permit and complete the required learner period. The published Quetta procedure specifies at least six weeks before applying.",
+    "Prepare your original learner permit, CNIC, passport-size photographs, applicable fee documents and medical certificate if required.",
+    "Renewal Process",
+    "Balochistan Police Khidmat Markaz lists driving licence renewal as an available service. Applicants should prepare the documents requested by the centre, which may include:",
+    "Completed renewal application form.",
+    "Original driving licence.",
+    "Copy of CNIC.",
+    "Two passport-size photographs.",
+    "Medical report, where required.",
+    "Applicable fee ticket.",
+    "The published service information mentions courier delivery for renewed licences, but confirms the current delivery arrangements and processing time before applying.",
+    "Licence Verification",
+    "You can complete an online driving licence verification in Balochistan through the Quetta Traffic Police website.",
+    "Open the official Quetta Traffic Police website.",
+    "Navigate to the Driving Licence Verification service.",
+    "Enter your CNIC details as requested by the verification form.",
+    "Submit the information.",
+    "Review the available licence record.",
+    "The verification service is intended to help users check licence information against the official record. If your details do not appear, confirm that you entered the correct CNIC information and contact Quetta Traffic Police for assistance.",
+    "Official verification: https://qtp.gob.pk/main/license-verification/",
+    "Required Documents",
+    "The documents required depend on the service you are applying for. The published Khidmat Markaz information lists the following for common licence services:",
+    "Service",
+    "Commonly required documents",
+    "Learner licence",
+    "Original CNIC and photocopy; traffic rules codebook",
+    "Permanent licence",
+    "Learner permit, CNIC, photographs and required fee documents",
+    "Renewal",
+    "Original licence, CNIC copy, photographs, application form and medical report where required",
+    "Duplicate licence",
+    "CNIC copy, photographs, lost licence report/FIR and other required records",
+    "International licence",
+    "Valid local driving licence, CNIC, passport, visa and photographs",
+    "Additional documents may be requested depending on your circumstances. Check the current official requirements before visiting.",
+    "Age Requirements",
+    "The published Balochistan Police Khidmat Markaz information lists these minimum ages for learner permits:",
+    "Motorcycle and motorcar: 18 years.",
+    "LTV (including rickshaw, taxi and commercial tractor): 21 years.",
+    "Other vehicle categories may have different eligibility conditions. Confirm the applicable age and requirements with the licensing authority before applying.",
+    "Fees and Payment",
+    "The Balochistan driving licence fee depends on the service and vehicle category. Learner permits, permanent licences, renewals, duplicate licences and international driving permits may have different charges.",
+    "The published Khidmat Markaz service information includes a learner permit ticket of Rs. 60, but applicants should confirm whether this amount is still current before making payment. Do not rely on old fee lists or unofficial payment instructions.",
+    "For the latest learner permit fee in Balochistan or other licence charges, contact the relevant licensing centre or check the official government service information.",
+    "Driving Test Guidelines",
+    "Applicants for a regular driving licence must complete the prescribed driving test. Prepare by learning traffic signs, road markings, right-of-way rules, lane discipline and safe driving practices.",
+    "Practise basic vehicle control, starting and stopping, turning, reversing and parking. Follow the instructions of the licensing staff during the test. The exact assessment requirements may depend on your vehicle category.",
+    "Track Your Application",
+    "If you have submitted a licence application through a Khidmat Markaz, keep your receipt or application reference number safe. Balochistan Police lists online application tracking among the features of its Police Mobile Khidmat Markaz service.",
+    "Use the official Khidmat Markaz portal and follow the available tracking instructions. If you cannot find your application status online, contact the centre where you submitted your documents.",
+    "Official portal: https://pkm.balochistanpolice.gov.pk/"
+  ],
+  "faqs": [
+    {
+      "question": "How can I verify my driving licence online in Balochistan?",
+      "answer": "Visit the official Quetta Traffic Police verification page at https://qtp.gob.pk/main/license-verification/. Enter your CNIC details as requested by the system and submit the form to check the available licence record."
+    },
+    {
+      "question": "How do I book a driving licence appointment in Balochistan?",
+      "answer": "Visit the official Quetta Traffic Police website and check its online appointment facility for the service you need. If an appointment option is available, enter the requested details, select the relevant service and follow the booking instructions. If you cannot find an online slot, contact the relevant licensing office to confirm its current procedure."
+    },
+    {
+      "question": "What is the minimum age for a learner permit in Balochistan?",
+      "answer": "According to the published Balochistan Police Khidmat Markaz information, applicants must be at least 18 years old for a motorcycle or motorcar learner permit and 21 years old for an LTV learner permit."
+    },
+    {
+      "question": "What documents do I need for a permanent driving licence in Balochistan?",
+      "answer": "You should prepare your original learner permit, CNIC, recent passport-size photographs and applicable fee documents. A medical certificate may also be required. Confirm the complete document list with the licensing office before visiting."
+    },
+    {
+      "question": "How do I renew my driving licence in Balochistan?",
+      "answer": "Visit the official Balochistan Police Khidmat Markaz service page and check the renewal requirements. Prepare your existing licence, CNIC copy, photographs, application form, medical report where required and applicable fee. Submit the application through the designated centre and follow the official delivery instructions."
+    }
+  ],
+  "otherProvinceCards": {
+    "punjab": {
+      "description": "Apply for, renew and verify driving licences through Punjab DLIMS 2.0 and Dastak services.",
+      "ctaLabel": "Explore Guide"
+    },
+    "sindh": {
+      "description": "Find guidance for learner permits, permanent licences, renewals and verification through Sindh Police driving licence services.",
+      "ctaLabel": "Explore Guide"
+    },
+    "kpk": {
+      "description": "Learn about learner permits, permanent licences, renewals and application tracking through Khyber Pakhtunkhwa Transport and Dastak services.",
+      "ctaLabel": "Explore Guide"
+    },
+    "islamabad": {
+      "description": "Find online driving licence guidance, verification and renewal information through Islamabad Traffic Police DLIMS.",
+      "ctaLabel": "Explore Guide"
+    }
+  },
+  "sourceUrls": [
+    "https://pkm.balochistanpolice.gov.pk/public/home/services",
+    "https://qtp.gob.pk/",
+    "https://qtp.gob.pk/main/license-verification/",
+    "https://pkm.balochistanpolice.gov.pk/"
+  ]
+},
+  overviewSections: BALOCHISTAN_BASE_GUIDE.overviewSections.map(section => ({
+    ...section,
+    content: "After obtaining your learner driving permit and completing the required waiting period, you can apply for a regular driving licence in Balochistan. \n\nPrepare your original learner permit, CNIC, recent passport-size photographs and other documents required by the licensing authority. You may also need a medical certificate and the applicable fee ticket.\n\nConfirm the latest requirements with Quetta Traffic Police before visiting.\nRegular licence process:\nObtain a learner driving permit.\nComplete the required learner period.\nPrepare your CNIC, learner permit and supporting documents.\nVisit the relevant licensing office.\nComplete the required driving test and other assessments.\nPay the applicable fee and follow the licence issuance instructions.",
+  })),
+  actionLinks: BALOCHISTAN_BASE_GUIDE.actionLinks.map(link => ({
+    ...link,
+    ...{"learner": {"label": "Apply for a Learner Licence", "note": "Find learner driving licence services through Balochistan Police Khidmat Markaz.", "url": "https://pkm.balochistanpolice.gov.pk/public/home/services", "ctaLabel": "Continue"}, "permanent": {"label": "Apply for a Permanent Licence", "note": "Review the permanent licence requirements and driving test procedure through Quetta Traffic Police. Applicants must complete the required learner period before applying.", "url": "https://qtp.gob.pk/", "ctaLabel": "Continue"}, "verify": {"label": "Verify Driving Licence", "note": "Use the official Quetta Traffic Police verification service to check your Balochistan driving licence using the information requested by the portal.", "url": "https://qtp.gob.pk/main/license-verification/", "ctaLabel": "Continue"}, "renew": {"label": "Renew Your Licence", "note": "Balochistan Police Khidmat Markaz lists driving licence renewal as an available service. Check the documents, fee and centre instructions before visiting.", "url": "https://pkm.balochistanpolice.gov.pk/public/home/services", "ctaLabel": "Continue"}, "track": {"label": "Track Your Application", "note": "Check the application tracking facility and use your official receipt or reference number where required. Follow the instructions provided by the relevant Khidmat Markaz.", "url": "https://pkm.balochistanpolice.gov.pk/", "ctaLabel": "Continue"}, "portal": {"label": "Visit the Official Portal", "note": "Open the Quetta Traffic Police website for driving licence verification and other traffic police services.", "url": "https://qtp.gob.pk/", "ctaLabel": "Continue"}}[link.key],
+  })),
+};
+
 export const getGuideBySlug = (slug) =>
   slug === "punjab"
     ? PUNJAB_DETAIL_GUIDE
@@ -1683,4 +1908,6 @@ export const getGuideBySlug = (slug) =>
       ? KPK_DETAIL_GUIDE
       : slug === "islamabad"
         ? ISLAMABAD_DETAIL_GUIDE
-        : DRIVING_LICENCE_GUIDES.find((g) => g.slug === slug) || null;
+        : slug === "balochistan"
+          ? BALOCHISTAN_DETAIL_GUIDE
+          : DRIVING_LICENCE_GUIDES.find((g) => g.slug === slug) || null;

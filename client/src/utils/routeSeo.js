@@ -271,10 +271,9 @@ const routeSeoConfigs = [
   {
     path: "/driving-licence/balochistan",
     seo: {
-      title:
-        "Balochistan Driving Licence | Quetta Traffic Police Guide – Sello.pk",
-      description:
-        "Balochistan driving licence guide for Quetta Traffic Police appointments, learner/permanent steps and official licence verification.",
+      exactTitle: true,
+      title: "Driving License Verification Balochistan Online | QTP DLIMS",
+      description: "Verify your Balochistan driving licence online through Quetta Traffic Police. Learn how to check by CNIC, book appointments, apply for a learner permit, renew or get a duplicate licence.",
       canonical: "https://sello.pk/driving-licence/balochistan",
     },
   },
