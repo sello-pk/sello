@@ -262,9 +262,9 @@ const routeSeoConfigs = [
   {
     path: "/driving-licence/islamabad",
     seo: {
-      title: "Islamabad Driving Licence Online | ITP-DLIMS Guide – Sello.pk",
-      description:
-        "Islamabad driving licence guide for learner, permanent, renewal and tracking via official Islamabad Traffic Police DLIMS.",
+      exactTitle: true,
+      title: "Islamabad Driving Licence Verification Online | ITP-DLIMS",
+      description: "Check out your Islamabad driving license online at ITP-DLIMS. See how to verify, apply, renew, track your license and also check out official fees and requirements.",
       canonical: "https://sello.pk/driving-licence/islamabad",
     },
   },

@@ -524,7 +524,7 @@ const DrivingLicenceProvincePage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">
-              Other Provinces
+              {guide.otherProvincesTitle || "Other Provinces"}
             </h2>
             <p className="text-base text-slate-600 max-w-2xl mx-auto">
               {guide.otherProvincesDescription || "Open another province guide, then continue to that region’s official portal."}

@@ -1460,9 +1460,227 @@ const KPK_DETAIL_GUIDE = {
   })),
 };
 
+// Islamabad replacement copy is scoped to its detail page.
+const ISLAMABAD_BASE_GUIDE = DRIVING_LICENCE_GUIDES.find(guide => guide.slug === "islamabad");
+const ISLAMABAD_DETAIL_GUIDE = {
+  ...ISLAMABAD_BASE_GUIDE,
+  ...{
+  "seoTitle": "Islamabad Driving Licence Verification Online | ITP-DLIMS",
+  "seoDescription": "Check out your Islamabad driving license online at ITP-DLIMS. See how to verify, apply, renew, track your license and also check out official fees and requirements.",
+  "exactTitle": true,
+  "shortDescription": "In Islamabad Capital Territory use ITP-DLIMS to access online driving license services. \n\nReady to go? Head to the government site directly. Sello does not collect your CNIC, licence number or personal info.",
+  "heroCopyComplete": true,
+  "authorityName": "Islamabad Traffic Police — ITP-DLIMS",
+  "actionsTitle": "Official Islamabad Driving Licence Actions",
+  "actionsDescription": "These links will take you away from Sello to Islamabad Police or ITP-DLIMS. Only via the government services portal should you submit your personal information, documents and payments.",
+  "aboutTitle": "About Islamabad Driving Licence Services",
+  "introduction": "In Islamabad Capital Territory Driving license services are handled by Islamabad Traffic Police (ITP) which is a part of Islamabad Capital Territory Police. Also they have an online system named ITP-DLIMS which we use for licence related services.\n\nThe official portal is home to online learner permit applications and we also have license services and verification. Also to that report from Islamabad Police which said that from 19 October 2026 they will be going live with online applications for learner permits, license renewals and duplicate licenses. Also they have put forth that renewed and duplicate licenses will be made available via courier once the application process is completed.\n\nSello. PK provides a general overview which in turn helps users to understand the process and find the right government links. It does not issue licenses, process applications, collect payments or access private license records.",
+  "lastVerifiedAt": "2026-11-13",
+  "officialChannelLabel": "Islamabad Traffic Police / Islamabad Capital Territory Police",
+  "processTitle": "Islamabad Driving Licence Process Guide",
+  "processDescription": "Expand out each section to see the main steps in which you apply for, renew or verify your Islamabad driving license. Also always follow the latest instructions as displayed by ITP-DLIMS.",
+  "faqTitle": "Frequently Asked Questions About Islamabad Driving Licence",
+  "otherProvincesTitle": "Driving Licence Guides for Other Provinces",
+  "otherProvincesDescription": "Looking for driving licence services outside Islamabad? Pick your province to see the related guide and go to the government portal.",
+  "disclaimer": "Sello. PK is a separate entity and does not work with Islamabad Traffic Police or Islamabad Capital Territory Police. This site is for reference only. Licence issuance and updates, verification, renewals, payments, appointments and official records are handled exclusively by the relevant government authorities.\n\nGovernment policies, rules which pertain to fees structure and eligibility may change. We advise that you check the official Islamabad Police or ITP-DLIMS website for the latest info before you apply or pay. Sello does not ask for your CNIC, licence number or application details.",
+  "learnerProcedure": [
+    "Visit the official ITP-DLIMS portal.",
+    "Register or sign in as instructed.",
+    "Select the learner permit service.",
+    "Fill out the application form with correct details.",
+    "Submit the documents which the portal requested.",
+    "Complete the payment process, if applicable.",
+    "Submit your application and we’ll go over the instructions for your learner permit."
+  ],
+  "permanentProcedure": [
+    "Get your learner permit and complete the required learner period.",
+    "Check if you qualify for the given vehicle type.",
+    "Review the permanent license instructions on ITP-DLIMS.",
+    "Present your CNIC, learner permit and also any other required documents.",
+    "Attend the required medical exam and theory or traffic sign test.",
+    "When you are ready to take the test.",
+    "Pay the due fee and follow the license issue instructions."
+  ],
+  "renewalProcedure": [
+    "In Islamabad you can use the online facility for driving license renewal. First go to the official ITP-DLIMS site and choose the renewal option. Register or log in and put in the required information.",
+    "Check your present licence details, upload the required documents and complete the official payment process. In a move by Islamabad Police to facilitate license renewal the renewed licences will now be delivered via TCS courier, also include your full residential address and active mobile number in your application.",
+    "Do not use out of date fee lists or unofficial payment info. Go to the official portal for the current renewal fees and delivery details."
+  ],
+  "verificationGuide": [
+    "You can check your driving licence or learner permit on the official ITP-DLIMS verification page.",
+    "Open the official verification page.",
+    "Select the appropriate verification type which may be learner or license.",
+    "Fill out the details as requested.",
+    "Complete all extra verification steps as they appear.",
+    "Submit the data and see the results.",
+    "The learner verification option will ask for a CNIC number without dashes and a permit number. For the fields that appear go by what is required for the selected verification type. Sello does not have access to or is able to retrieve your personal licence record."
+  ],
+  "requiredDocuments": [
+    "The exact set of documents required depends on the service and licence category. Applicants may be asked for:",
+    "Original or valid CNIC details.",
+    "Recent photograph.",
+    "Present learner permit for a regular licence.",
+    "Existing driving licence for renewal.",
+    "Medical information or certificate, where required.",
+    "Any also included documents at the official portal.",
+    "Check out the live application form before you submit. Also do not post personal documents to unofficial sites."
+  ],
+  "ageRequirements": [
+    "The age to get a motorcycle or car license is 18 in most cases. For other vehicle types that may be available the rules are different. It is best that applicants check the age, experience and health requirements with Islamabad Traffic Police before applying."
+  ],
+  "feesAndPayment": [
+    "In Islamabad the driving license fee is based on the service and license category. For learner permits, new licenses, renewals, duplicate licenses and other services the charges may differ.",
+    "For the present driving license fees in Islamabad check the official ITP-DLIMS portal or the notice board at Islamabad Police. Use only the payment methods which the government system puts forth and do not forget to get your receipt or payment confirmation."
+  ],
+  "drivingTestGuidelines": [
+    "Applicants for a full driving license may have to complete the required theoretical and traffic sign test and practical driving exam. Study up on road signs, traffic rules, lane discipline, road markings and safe driving practices.",
+    "For the practical test you will do basic vehicle control, turning, reversing, parking and follow traffic instructions. What you will do at the test is based on the licence category and the instructions given out by Islamabad Traffic Police."
+  ],
+  "trackingInstructions": [
+    "Log in to the ITP-DLIMS portal and check the application or service status with the account options at your disposal.",
+    "Visit the Official Islamabad Police Portal",
+    "Find out driving license verification, learner permit applications, renewal info and other Islamabad Police services for citizens.",
+    "How to Apply for a Learner Driving Licence in Islamabad",
+    "In Islamabad in order to drive a car or a motorcycle you will first get a learner permit. Islamabad Traffic Police has an online learner permit service which is available through the ITP-DLIMS portal.",
+    "Visit the official site and go to the learner permit service. Register or log in as the instructions say, fill out the application form and put in the required info. You may have to upload your CNIC and photo. Go over the details carefully and follow the payment instructions given by the system.",
+    "After you submit your application check the portal for updates and to access your learner permit. Also make a copy of the permit and follow all learner driver conditions while you practice.",
+    "How to apply:",
+    "Open the official ITP-DLIMS website.",
+    "Log in to your account.",
+    "Select the online learner permit service.",
+    "Fill out the application and upload the requested documents.",
+    "Follow the official payment and submission guidelines.",
+    "Check out your application and download the permit if the portal has it.",
+    "How to Get a Regular Driving Licence in Islamabad",
+    "After you get your learner permit and complete the required learner period you may go ahead with the regular licensing process. To be eligible applicants must meet the age and other requirements for the vehicle category they wish to obtain. For a motorcycle or car license the minimum age is 18.",
+    "Check out the latest instructions at the ITP-DLIMS portal before you visit the licensing centre. What you will bring depends on your application and license category. You may need your original CNIC, learner permit and other support documents.",
+    "Regular licence process:",
+    "Make sure your learner permit and eligibility requirements are filled out.",
+    "Check out the permanent license instructions on the portal.",
+    "Present your original CNIC, learner permit and other required documents.",
+    "Attend the required medical and driving tests.",
+    "Pass the appropriate tests and pay the official fee.",
+    "Follow the authorities’ guidelines for licence issues.",
+    "Requirements and procedures are subject to change. Check with Islamabad Traffic Police for the latest info before you visit the licensing centre.",
+    "Islamabad Traffic Police — ITP-DLIMS",
+    "About Islamabad Driving Licence Services",
+    "In Islamabad Capital Territory Driving license services are handled by Islamabad Traffic Police (ITP) which is a part of Islamabad Capital Territory Police. Also they have an online system named ITP-DLIMS which we use for licence related services.",
+    "The official portal is home to online learner permit applications and we also have license services and verification. Also to that report from Islamabad Police which said that from 19 October 2026 they will be going live with online applications for learner permits, license renewals and duplicate licenses. Also they have put forth that renewed and duplicate licenses will be made available via courier once the application process is completed.",
+    "Sello. PK provides a general overview which in turn helps users to understand the process and find the right government links. It does not issue licenses, process applications, collect payments or access private license records.",
+    "Last verified: 13 November 2026",
+    "Official authority: Islamabad Traffic Police / Islamabad Capital Territory Police",
+    "Online system: ITP-DLIMS",
+    "Official portal: https://dlims.islamabadpolice.gov.pk/",
+    "Verification portal: https://dlims.islamabadpolice.gov.pk/verify",
+    "Islamabad Driving Licence Process Guide",
+    "Expand out each section to see the main steps in which you apply for, renew or verify your Islamabad driving license. Also always follow the latest instructions as displayed by ITP-DLIMS.",
+    "Learner Licence Procedure",
+    "Visit the official ITP-DLIMS portal.",
+    "Register or sign in as instructed.",
+    "Select the learner permit service.",
+    "Fill out the application form with correct details.",
+    "Submit the documents which the portal requested.",
+    "Complete the payment process, if applicable.",
+    "Submit your application and we’ll go over the instructions for your learner permit.",
+    "Permanent Licence Procedure",
+    "Get your learner permit and complete the required learner period.",
+    "Check if you qualify for the given vehicle type.",
+    "Review the permanent license instructions on ITP-DLIMS.",
+    "Present your CNIC, learner permit and also any other required documents.",
+    "Attend the required medical exam and theory or traffic sign test.",
+    "When you are ready to take the test.",
+    "Pay the due fee and follow the license issue instructions.",
+    "Renewal Process",
+    "In Islamabad you can use the online facility for driving license renewal. First go to the official ITP-DLIMS site and choose the renewal option. Register or log in and put in the required information.",
+    "Check your present licence details, upload the required documents and complete the official payment process. In a move by Islamabad Police to facilitate license renewal the renewed licences will now be delivered via TCS courier, also include your full residential address and active mobile number in your application.",
+    "Do not use out of date fee lists or unofficial payment info. Go to the official portal for the current renewal fees and delivery details.",
+    "Licence Verification",
+    "You can check your driving licence or learner permit on the official ITP-DLIMS verification page.",
+    "Open the official verification page.",
+    "Select the appropriate verification type which may be learner or license.",
+    "Fill out the details as requested.",
+    "Complete all extra verification steps as they appear.",
+    "Submit the data and see the results.",
+    "The learner verification option will ask for a CNIC number without dashes and a permit number. For the fields that appear go by what is required for the selected verification type. Sello does not have access to or is able to retrieve your personal licence record.",
+    "Required Documents",
+    "The exact set of documents required depends on the service and licence category. Applicants may be asked for:",
+    "Original or valid CNIC details.",
+    "Recent photograph.",
+    "Present learner permit for a regular licence.",
+    "Existing driving licence for renewal.",
+    "Medical information or certificate, where required.",
+    "Any also included documents at the official portal.",
+    "Check out the live application form before you submit. Also do not post personal documents to unofficial sites.",
+    "Age Requirements",
+    "The age to get a motorcycle or car license is 18 in most cases. For other vehicle types that may be available the rules are different. It is best that applicants check the age, experience and health requirements with Islamabad Traffic Police before applying.",
+    "Fees and Payment",
+    "In Islamabad the driving license fee is based on the service and license category. For learner permits, new licenses, renewals, duplicate licenses and other services the charges may differ.",
+    "For the present driving license fees in Islamabad check the official ITP-DLIMS portal or the notice board at Islamabad Police. Use only the payment methods which the government system puts forth and do not forget to get your receipt or payment confirmation.",
+    "Driving Test Guidelines",
+    "Applicants for a full driving license may have to complete the required theoretical and traffic sign test and practical driving exam. Study up on road signs, traffic rules, lane discipline, road markings and safe driving practices.",
+    "For the practical test you will do basic vehicle control, turning, reversing, parking and follow traffic instructions. What you will do at the test is based on the licence category and the instructions given out by Islamabad Traffic Police.",
+    "Track Your Application",
+    "To check your Islamabad driving license status go to the official ITP-DLIMS portal and sign in with your registered account. Look for the application status or service option and follow the instructions given.",
+    "If your status is not out, check your submission confirmation and reach out to Islamabad Traffic Police through their support channels. Have your application reference or receipt at hand when you ask for help."
+  ],
+  "faqs": [
+    {
+      "question": "How do I verify a driving licence in Islamabad online?",
+      "answer": "At dlims.islamabadpolice.gov.pk/verify. Choose the relevant option which applies to you, input the details as requested by the system and submit the form to see your results."
+    },
+    {
+      "question": "What details does the Islamabad driving licence verification show?",
+      "answer": "The verification results are based on what is put into the official system and which verification service you choose. We may display license or permit info. For exact field and record details see the official ITP-DLIMS verification page."
+    },
+    {
+      "question": "Do I need an appointment to visit the Islamabad licence branch?",
+      "answer": "Appointment needs may vary by service type. In Islamabad Police we have put in an online appointment feature to our website. Before you visit the licensing branch check that an appointment is required."
+    },
+    {
+      "question": "What should I do if I can’t find my Islamabad driving licence record online?",
+      "answer": "First check what you have entered, the CNIC, permit number etc. must be in the right format. If the record still doesn’t show up, get in touch with Islamabad Traffic Police or go to an authorized licensing center for help. Sello is not able to retrieve or change government license records."
+    },
+    {
+      "question": "Can I renew my Islamabad driving licence online?",
+      "answer": "Yes. ISB Police has introduced an online renewal feature via the ITP-DLIMS portal as of 19 October 2026. What is put forward is that applicants may now file for renewal online and to follow the step by step instructions for documents, payment and delivery."
+    }
+  ],
+  "otherProvinceCards": {
+    "punjab": {
+      "description": "Apply for, renew and verify driving licenses through Punjab DLIMS 2.0 and Dastak.",
+      "ctaLabel": "Explore Guide"
+    },
+    "sindh": {
+      "description": "Find out more on learner permits, permanent licenses, renewals and verification at Sindh Police driving license offices.",
+      "ctaLabel": "Explore Guide"
+    },
+    "kpk": {
+      "description": "Into the world of learner permits, permanent licenses, renewals and application tracking which is brought to you by Khyber Pakhtunkwa Transport and Dastak services.",
+      "ctaLabel": "Explore Guide"
+    },
+    "balochistan": {
+      "description": "Find out from the proper Balochistan Traffic Police offices regarding driving license services, appointments and verification.",
+      "ctaLabel": "Explore Guide"
+    }
+  }
+},
+  overviewSections: ISLAMABAD_BASE_GUIDE.overviewSections.map((section, index) => ({
+    ...section,
+    content: ["In Islamabad in order to drive a car or a motorcycle you will first get a learner permit. Islamabad Traffic Police has an online learner permit service which is available through the ITP-DLIMS portal.\n\nVisit the official site and go to the learner permit service. Register or log in as the instructions say, fill out the application form and put in the required info. You may have to upload your CNIC and photo. Go over the details carefully and follow the payment instructions given by the system.\n\nAfter you submit your application check the portal for updates and to access your learner permit. Also make a copy of the permit and follow all learner driver conditions while you practice.\nHow to apply:\nOpen the official ITP-DLIMS website.\nLog in to your account.\nSelect the online learner permit service.\nFill out the application and upload the requested documents.\nFollow the official payment and submission guidelines.\nCheck out your application and download the permit if the portal has it.", "After you get your learner permit and complete the required learner period you may go ahead with the regular licensing process. To be eligible applicants must meet the age and other requirements for the vehicle category they wish to obtain. For a motorcycle or car license the minimum age is 18.\n\nCheck out the latest instructions at the ITP-DLIMS portal before you visit the licensing centre. What you will bring depends on your application and license category. You may need your original CNIC, learner permit and other support documents. \nRegular licence process:\nMake sure your learner permit and eligibility requirements are filled out.\nCheck out the permanent license instructions on the portal.\nPresent your original CNIC, learner permit and other required documents.\nAttend the required medical and driving tests.\nPass the appropriate tests and pay the official fee.\nFollow the authorities’ guidelines for licence issues.\n\nRequirements and procedures are subject to change. Check with Islamabad Traffic Police for the latest info before you visit the licensing centre."][index],
+  })),
+  actionLinks: ISLAMABAD_BASE_GUIDE.actionLinks.map(link => ({
+    ...link,
+    ...{"learner": {"label": "Apply for a Learner Licence", "note": "Register into ITP-DLIMS and choose the online learner permit service. Follow the portal instructions to complete the application."}, "permanent": {"label": "Apply for a Permanent Licence", "note": "Access the official ITP-DLIMS site for info on regular driving license services, eligibility and required tests."}, "verify": {"label": "Verify Driving Licence", "note": "Go to the official verification page to check your learner permit or driving licence which the system requests."}, "renew": {"label": "Renew Your Licence", "note": "Use the online system which is official to check the available renewal service and to put in your application. Follow present instructions for documents, payment and delivery."}, "track": {"label": "Track Your Application", "note": "Log in to the ITP-DLIMS portal and check the application or service status with the account options at your disposal."}, "portal": {"label": "Visit the Official Islamabad Police Portal", "note": "Find out driving license verification, learner permit applications, renewal info and other Islamabad Police services for citizens."}}[link.key],
+    ...(link.key === "verify" ? { url: "https://dlims.islamabadpolice.gov.pk/verify" } : {}),
+    ctaLabel: "Continue",
+  })),
+};
+
 export const getGuideBySlug = (slug) =>
   slug === "punjab"
     ? PUNJAB_DETAIL_GUIDE
     : slug === "kpk"
       ? KPK_DETAIL_GUIDE
-      : DRIVING_LICENCE_GUIDES.find((g) => g.slug === slug) || null;
+      : slug === "islamabad"
+        ? ISLAMABAD_DETAIL_GUIDE
+        : DRIVING_LICENCE_GUIDES.find((g) => g.slug === slug) || null;
