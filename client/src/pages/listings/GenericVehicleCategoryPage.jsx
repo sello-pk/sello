@@ -54,7 +54,7 @@ const GenericVehicleCategoryPage = () => {
   const [filters, setFilters] = useState(() => {
     const params = {};
     searchParams.forEach((value, key) => {
-      params[key] = value;
+      if (key !== "guide") params[key] = value;
     });
     return params;
   });

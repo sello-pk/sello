@@ -1,7 +1,6 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Clock, User, ArrowRight } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import GuideCards from "../../common/GuideCards";
 import { vehicleCategoryConfig } from "../../../config/vehicleCategoryConfig";
 
 const CATEGORY_ORDER = ["car", "bus", "truck", "van", "bike", "e-bike", "farm"];
@@ -84,56 +83,8 @@ function getPlaceholderImage(slug, title) {
   return `https://placehold.co/520x400/081C2B/94a3b8?text=${text}`;
 }
 
-/** Same as estimator: format markdown-like blog content (headings, bold, lists). */
-function formatBlogContent(text) {
-  if (!text || typeof text !== "string") return "";
-  const blocks = text.split(/\n\n+/);
-  const out = [];
-  const bold = (s) =>
-    s.replace(
-      /\*\*(.*?)\*\*/g,
-      '<strong class="font-semibold text-gray-900">$1</strong>',
-    );
-
-  for (const block of blocks) {
-    const trimmed = block.trim();
-    if (!trimmed) continue;
-    const lines = trimmed.split("\n");
-    const firstLine = lines[0] || "";
-
-    if (firstLine.startsWith("## ") && lines.length === 1) {
-      out.push(
-        `<h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4 first:mt-0">${bold(firstLine.slice(3))}</h2>`,
-      );
-      continue;
-    }
-    if (firstLine.startsWith("### ") && lines.length === 1) {
-      out.push(
-        `<h3 class="text-xl font-bold text-gray-900 mt-8 mb-3">${bold(firstLine.slice(4))}</h3>`,
-      );
-      continue;
-    }
-    if (
-      lines.every((l) => l.trimStart().startsWith("- ") || l.trimStart() === "")
-    ) {
-      out.push('<ul class="list-none space-y-2 my-4">');
-      lines.forEach((l) => {
-        const content = l.replace(/^\s*-\s*/, "").trim();
-        if (content)
-          out.push(
-            `<li class="flex items-start gap-3"><span class=\"w-2 h-2 rounded-full bg-primary-500 flex-shrink-0 mt-2.5\"></span><span class=\"text-gray-700\">${bold(content)}</span></li>`,
-          );
-      });
-      out.push("</ul>");
-      continue;
-    }
-    const para = trimmed.split(/\n/).join(" ");
-    out.push(`<p class="mb-5 text-gray-700 leading-relaxed">${bold(para)}</p>`);
-  }
-  return out.join("");
-}
-
 export default function ListingsCategoryBlogsSection({ categorySlug }) {
+  const [searchParams] = useSearchParams();
   const config = categorySlug ? vehicleCategoryConfig[categorySlug] : null;
   const categories = config
     ? [categorySlug]
@@ -179,7 +130,7 @@ export default function ListingsCategoryBlogsSection({ categorySlug }) {
   });
 
   return (
-    <section className="w-full bg-gradient-to-b from-gray-50 to-white py-16">
+    <section id="listing-guides" className="w-full scroll-mt-24 bg-gradient-to-b from-gray-50 to-white py-16">
       <div className="max-w-8xl mx-auto w-full px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
@@ -192,94 +143,21 @@ export default function ListingsCategoryBlogsSection({ categorySlug }) {
           </p>
         </div>
 
-        <div className="space-y-8 lg:space-y-12">
-          {items.map(({ slug, blog, index, isImageLeft, indexInCategory }) => {
+        <GuideCards
+          key={`${categorySlug || "all"}-${searchParams.get("guide") || ""}`}
+          posts={items.map(({ slug, blog, index, indexInCategory }) => {
             const catConfig = vehicleCategoryConfig[slug];
-            const itemId = `${slug}-${blog.id ?? index}`;
-            const rawImg =
-              indexInCategory === 0
-                ? catConfig?.blogImage
-                : catConfig?.blogImage2;
-            const imageSrc =
-              typeof rawImg === "string"
-                ? rawImg
-                : (rawImg?.default ??
-                  rawImg?.src ??
-                  getPlaceholderImage(slug, catConfig?.title));
-
-            return (
-              <motion.article
-                key={itemId}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.4, delay: index * 0.06 }}
-                className={`group flex flex-col rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#FDFBF7] lg:items-start ${isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"}`}
-              >
-                <div className="relative flex-1 flex flex-col justify-between p-8 lg:p-10 min-h-[280px] lg:min-h-0 lg:min-w-0">
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <div className="w-8 h-8 rounded-full bg-gray-200/80 flex items-center justify-center">
-                          <User className="w-4 h-4 text-gray-600" />
-                        </div>
-                        <span className="text-sm font-medium text-gray-700">
-                          {blog.author}
-                        </span>
-                      </div>
-                      <span className="text-sm text-gray-500">{blog.date}</span>
-                    </div>
-                    <h3 className="text-2xl lg:text-3xl font-bold text-primary-500 mb-4 leading-tight">
-                      {blog.title}
-                    </h3>
-                    <div className="prose prose-lg max-w-none text-gray-700">
-                      <p className="text-base lg:text-lg leading-relaxed mb-6 text-gray-600">
-                        {blog.excerpt}
-                      </p>
-                      <Link
-                        to={`/listings/${slug}/guide/${blog.id}`}
-                        className="inline-flex items-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-xl font-semibold hover:opacity-95 transition-opacity shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 group"
-                      >
-                        Read More
-                        <ArrowRight
-                          className="w-5 h-5 group-hover:translate-x-0.5 transition-transform"
-                          aria-hidden
-                        />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Image area - stretches with card so no gap; image fills and covers */}
-                <div className="relative w-full lg:w-[520px] lg:flex-shrink-0 h-72 lg:h-[400px] lg:min-h-[400px] lg:self-stretch overflow-hidden">
-                  <img
-                    src={imageSrc}
-                    alt={blog.title}
-                    className="absolute inset-0 size-full block object-cover object-center opacity-90"
-                    loading="lazy"
-                    onError={(e) => {
-                      e.target.src = getPlaceholderImage(
-                        slug,
-                        catConfig?.title,
-                      );
-                    }}
-                  />
-                  {/* <div className="absolute inset-0 bg-[#081C2B]/40" /> */}
-                  <div className="absolute top-5 left-5">
-                    <span className="inline-flex items-center gap-2 bg-white/95 text-gray-800 px-3 py-1.5 rounded-full text-sm font-semibold shadow">
-                      <span className="w-1.5 h-1.5 bg-primary-500 rounded-full" />
-                      {catConfig?.title || slug}
-                    </span>
-                  </div>
-                  <div className="absolute bottom-5 left-5 flex items-center gap-2 text-gray-300 text-sm">
-                    <Clock className="w-4 h-4" aria-hidden />
-                    <span>{blog.readTime}</span>
-                  </div>
-                </div>
-              </motion.article>
-            );
+            const rawImg = indexInCategory === 0 ? catConfig?.blogImage : catConfig?.blogImage2;
+            return {
+              ...blog,
+              id: `${slug}-${blog.id ?? index}`,
+              category: catConfig?.title || slug,
+              image: typeof rawImg === "string" ? rawImg : (rawImg?.default ?? rawImg?.src ?? getPlaceholderImage(slug, catConfig?.title)),
+            };
           })}
-        </div>
+          initialPostId={config && items.some(({ blog }) => String(blog.id) === searchParams.get("guide"))
+            ? `${categorySlug}-${searchParams.get("guide")}` : null}
+        />
       </div>
     </section>
   );
