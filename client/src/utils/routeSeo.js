@@ -232,10 +232,11 @@ const routeSeoConfigs = [
   {
     path: "/driving-licence/punjab",
     seo: {
+      exactTitle: true,
       title:
-        "Punjab Driving Licence Online | DLIMS Apply, Renew & Verify – Sello.pk",
+        "Punjab Driving Licence Check Online – DLIMS Verification & Tracking",
       description:
-        "Punjab driving licence guide covering learner, permanent, renewal and tracking via official DLIMS 2.0, with links to the government portal.",
+        "Find out how to apply, renew, verify and track your driving licence in Punjab. You can also view your e-driving licence through DLIMS 2.0.",
       canonical: "https://sello.pk/driving-licence/punjab",
     },
   },

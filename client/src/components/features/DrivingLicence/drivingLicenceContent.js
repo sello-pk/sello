@@ -231,6 +231,192 @@ const VERIFIED_AT = LAST_VERIFIED_AT;
 const disclaimer =
   "Sello.pk publishes guidance only. Applications, payments, tests and licence records are handled exclusively on official government portals. Always confirm current fees, ages and document lists on the official site before applying.";
 
+// Content supplied specifically for the Punjab detail page.
+const PUNJAB_DETAIL_GUIDE = {
+    "slug": "punjab",
+    "name": "Punjab",
+    "order": 1,
+    "seoTitle": "Punjab Driving Licence Check Online – DLIMS Verification & Tracking",
+    "seoDescription": "Find out how to apply, renew, verify and track your driving licence in Punjab. You can also view your e-driving licence through DLIMS 2.0.",
+    "exactTitle": true,
+    "shortDescription": "If you need to check your driving licence in Punjab, Sello can help. Learn how to apply for a learner permit, permanent driving licence, renew your licence, verify and track your application via the Punjab DLIMS 2.0.\nThe services offered are linked to the Dastak portal run by the Government of Punjab. Please see below for instructions on Sello. When you're ready you can view the official government site.\nSello never asks for your CNIC or driving licence number on this page.",
+    "heroCopyComplete": true,
+    "authorityName": "Punjab DLIMS 2.0 / Dastak",
+    "aboutTitle": "Punjab DLIMS 2.0 – Driving License Information Management System",
+    "introduction": "Punjab residents can use the Driving License Information Management System (DLIMS 2.0) to apply for learner permits, permanent licences, renewals, payments, verification and track their application.\nThis service is linked to the Dastak one stop shop run by the Government of Punjab. Apply for your licence using the available online services. Create your payment reference and track your application.\nThe official site can also be used to check your licence online, verify and view your digital licence. If you've used DLIMS before, follow the official instructions to connect your previous records to Dastak.",
+    "importantInformation": [
+        "Sello only provides guidance. Applications must be made via government services.",
+        "We will not collect any CNIC or Licence Numbers.",
+        "Fees and documents vary depending on what service you apply for.",
+        "Always check the latest requirements on the official site."
+    ],
+    "lastVerifiedAt": "2026-11-11",
+    "officialPortalUrl": "https://dlims.punjab.gov.pk/",
+    "sourceUrls": [
+        "https://dlims.punjab.gov.pk/",
+        "https://dastak.punjab.gov.pk/",
+        "https://dlims.punjab.gov.pk/verify",
+        "https://dlims.punjab.gov.pk/track"
+    ],
+    "isPublished": true,
+    "actionsDescription": "These links will take you away from Sello to the official Punjab Government services. Here you can apply, pay, verify and view your licences.",
+    "processTitle": "Punjab Driving Licence Process Guide",
+    "processDescription": "Expand each section to see what you need to do. Then visit the official government service.",
+    "faqTitle": "Frequently Asked Questions About Punjab Driving Licence",
+    "otherProvincesDescription": "Looking for driving licence services outside Punjab? Open another province guide to find its relevant instructions and official government portal.",
+    "disclaimer": "Sello.pk publishes driving licence information and guidance only. Licence applications, payments, driving tests, renewals and verification are handled exclusively through official government portals. Always confirm current fees, eligibility, ages and document requirements on the live official website before applying.",
+    "overviewSections": [
+        {
+            "title": "How to Apply for a Learner Driving Licence in Punjab",
+            "content": "If you plan on driving a car or motorbike in Punjab it is important to have a learners permit. To start this process online, use the official DLIMS services.\nCreate an account or login to the official site. Choose the learner licence service. Complete the form and upload your documents such as your photo and CNIC scans. Create your PSID and pay the required fee.\nOnce you have successfully applied and paid for your licence you will receive your digital learner licence. Whilst learning to drive, ensure you follow the conditions of your learner licence and traffic rules.",
+            "ctaLabel": "Apply for Learner Licence",
+            "ctaUrl": "https://dastak.punjab.gov.pk/",
+            "image": howToApplyLearnerPunjabImg
+        },
+        {
+            "title": "How to Get a Regular Driving Licence in Punjab",
+            "content": "Once you have completed the required learners period, you can apply for your permanent licence.\nYou may need to attend a licensing centre to complete your driving and traffic tests. Once you have passed your tests and paid the required amount your application will be processed.\nAlways check the latest requirements for tests, fees and application process on the official Punjab DLIMS site.",
+            "ctaLabel": "View Permanent Licence Services",
+            "ctaUrl": "https://dastak.punjab.gov.pk/",
+            "image": howToGetRegularPunjabImg
+        }
+    ],
+    "learnerProcedure": [
+        "Visit the official Punjab DLIMS or Dastak site.",
+        "Create an account or login.",
+        "Choose the learner licence application.",
+        "Complete the form with accurate information.",
+        "Upload your requested photo and CNIC documents.",
+        "Create your PSID and pay using an approved payment method.",
+        "Once processed you will receive your digital learner licence."
+    ],
+    "permanentProcedure": [
+        "Complete your learners period.",
+        "Ensure you meet the requirements for your vehicle type.",
+        "Have your original CNIC and valid learner licence ready."
+    ],
+    "renewalProcedure": [
+        "Use the official Dastak site to renew your licence online. Login and choose the permanent licence renewal. Enter the requested information and upload your supporting documents.",
+        "Ensure you know when your licence expires and what the required fee is."
+    ],
+    "verificationGuide": [
+        "To verify your licence using DLIMS Punjab visit the official DLIMS verification page. Follow the instructions and enter the requested information.",
+        "Always complete the traffic police Punjab licence verification using an official service."
+    ],
+    "requiredDocuments": [
+        "Common documents needed:",
+        "Original CNIC with clear front and back scans.",
+        "Recent photo or live photo.",
+        "Existing learner licence.",
+        "Medical certificate if required.",
+        "Any additional documents requested."
+    ],
+    "ageRequirements": [
+        "The minimum age will vary depending on the vehicle type. Commonly it is 18 for motorbike and motorcar learner licences and 21 for LTV. Always check the latest requirements to ensure you meet the criteria."
+    ],
+    "feesAndPayment": [
+        "The driving licence fee will vary depending on the licence type. View the official DLIMS fee guide to see what the charge is for your category. The Dastak site will show you what the service and platform fee is.",
+        "Create your PSID and pay using an approved payment method. Do not use outdated fees."
+    ],
+    "drivingTestGuidelines": [
+        "If you are applying for a permanent licence you must follow the testing requirements.",
+        "The exact process will vary depending on what licence you are applying for."
+    ],
+    "trackingInstructions": [
+        "To check your licence status in Punjab use the official tracking service or your Dastak account.",
+        "Login to the official Dastak or DLIMS site.",
+        "Login using your account.",
+        "Select the application tracking option.",
+        "Enter the requested information.",
+        "View your application status.",
+        "Your driving licence tracking number Punjab or application number may be useful to refer back to. Ensure you keep your payment receipt safe."
+    ],
+    "actionLinks": [
+        {
+            "key": "learner",
+            "label": "Apply for Learner Licence",
+            "url": "https://dastak.punjab.gov.pk/",
+            "note": "Start applying for your learner licence online via Punjab DLIMS services on the Dastak site. Fill out the application and upload the necessary documents.",
+            "ctaLabel": "Continue to Dastak"
+        },
+        {
+            "key": "permanent",
+            "label": "Apply for Permanent Licence",
+            "url": "https://dastak.punjab.gov.pk/",
+            "note": "Find out what you need to do to obtain your permanent licence. Follow the official instructions for your vehicle type.",
+            "ctaLabel": "Continue to Licence Services"
+        },
+        {
+            "key": "verify",
+            "label": "Verify Driving Licence",
+            "url": "https://dlims.punjab.gov.pk/verify",
+            "note": "Use the official verification service to check your licence.",
+            "ctaLabel": "Continue to Verification"
+        },
+        {
+            "key": "renew",
+            "label": "Renew Licence",
+            "url": "https://dastak.punjab.gov.pk/",
+            "note": "Renew your licence using the official renewal service. Please ensure you have the correct documents and fees required.",
+            "ctaLabel": "Continue to Renewal"
+        },
+        {
+            "key": "track",
+            "label": "Track Application",
+            "url": "https://dlims.punjab.gov.pk/track",
+            "note": "Check the status of your application using the official tracking service. View the latest updates.",
+            "ctaLabel": "Continue to Tracking"
+        },
+        {
+            "key": "portal",
+            "label": "Visit Official Portal",
+            "url": "https://dlims.punjab.gov.pk/",
+            "note": "View the Punjab DLIMS 2.0 service to access the services available.",
+            "ctaLabel": "Open Official Portal"
+        }
+    ],
+    "faqs": [
+        {
+            "question": "How do I verify my driving licence on DLIMS Punjab?",
+            "answer": "Go to the official DLIMS verification page and follow the prompts and add the required information. This will allow you to View your records."
+        },
+        {
+            "question": "How can I track my driving licence in Punjab?",
+            "answer": "Log in to your Dastak account . This will allow you to View your application."
+        },
+        {
+            "question": "How do I download my e-licence?",
+            "answer": "Go to the official Dastak/DLIMS website. Follow the prompts to verify your licence and add the required information."
+        },
+        {
+            "question": "Can I renew my driving licence online in Punjab?",
+            "answer": "Yes. Punjab residents can access online renewal services through Dastak. Sign in, select the renewal service, provide the required information and complete the official payment process."
+        },
+        {
+            "question": "How long is a Punjab driving licence valid?",
+            "answer": "Validity depends on the licence type and category. A learner permit is generally valid for six months (180 days). For a regular licence, check the expiry date printed on your licence or displayed through the official DLIMS record."
+        }
+    ],
+    "otherProvinceCards": {
+        "sindh": {
+            "description": "Explore learner, permanent, renewal and International Driving Permit services through Sindh Police DLS Online.",
+            "ctaLabel": "Explore Sindh Guide"
+        },
+        "kpk": {
+            "description": "Find information about learner, permanent, renewal and verification services through the Khyber Pakhtunkhwa Transport Department and available digital platforms.",
+            "ctaLabel": "Explore KPK Guide"
+        },
+        "islamabad": {
+            "description": "Access Islamabad Traffic Police driving licence information, including online verification, learner permits and renewal services.",
+            "ctaLabel": "Explore Islamabad Guide"
+        },
+        "balochistan": {
+            "description": "Find guidance about driving licence appointments, verification and other licensing services through Balochistan Traffic Police.",
+            "ctaLabel": "Explore Balochistan Guide"
+        }
+    }
+};
+
 export const DRIVING_LICENCE_GUIDES = [
   {
     slug: "punjab",
@@ -1150,4 +1336,6 @@ Additional documents may be required depending on the licence category.`,
 ];
 
 export const getGuideBySlug = (slug) =>
-  DRIVING_LICENCE_GUIDES.find((g) => g.slug === slug) || null;
+  slug === "punjab"
+    ? PUNJAB_DETAIL_GUIDE
+    : DRIVING_LICENCE_GUIDES.find((g) => g.slug === slug) || null;

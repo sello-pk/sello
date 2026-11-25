@@ -325,7 +325,7 @@ const Navbar = () => {
             <Link to="/" className="cursor-pointer flex-shrink-0">
               <img
                 className={`w-auto transition-[height] duration-200 ease-out motion-reduce:transition-none ${compactHeader ? "h-[34px] sm:h-[38px] md:h-10 lg:h-11" : "h-9 sm:h-10 md:h-11 lg:h-12"}`}
-                src={isListingsTheme ? images.blackLogo : images.logo}
+                src={images.logo}
                 width="120"
                 height="48"
                 decoding="async"

@@ -24,7 +24,6 @@ import apple from "./images/apple.svg";
 import facebook from "./images/facebook.svg";
 import instagram from "./images/instagram.svg";
 import avatarIcon from "./images/avatarIcon.png";
-import blackLogo from "./images/blackLogo.svg";
 import mutlipleBrandsLogo from "./images/mutlipleBrandsLogo.webp";
 import auto from "./images/carDetails/specs/auto.svg";
 import cc from "./images/carDetails/specs/cc.svg";
@@ -93,7 +92,7 @@ export const images = {
   fuelTypeIcon,
   milesIcon,
   avatarIcon,
-  blackLogo,
+
   mutlipleBrandsLogo,
   auto,
   cc,

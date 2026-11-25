@@ -116,6 +116,7 @@ const DrivingLicenceProvincePage = () => {
   return (
     <div className="w-full min-w-0 max-w-full overflow-x-hidden bg-white pb-24 lg:pb-0">
       <SEO
+        exactTitle={guide.exactTitle || false}
         title={guide.seoTitle}
         description={guide.seoDescription}
         canonical={canonical}
@@ -174,9 +175,8 @@ const DrivingLicenceProvincePage = () => {
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 sm:mb-4 leading-tight text-balance">
               {name} Driving Licence Guide
             </h1>
-            <p className="text-sm sm:text-base lg:text-lg text-gray-100 mb-6 sm:mb-8 text-pretty">
-              {guide.shortDescription} Continue to the official portal when you
-              are ready — Sello never asks for your CNIC or licence number here.
+            <p className="text-sm sm:text-base lg:text-lg text-gray-100 mb-6 sm:mb-8 text-pretty whitespace-pre-line">
+              {guide.shortDescription}{!guide.heroCopyComplete && " Continue to the official portal when you are ready — Sello never asks for your CNIC or licence number here."}
             </p>
 
             <div className="flex flex-col min-[420px]:flex-row flex-wrap justify-start items-stretch min-[420px]:items-center gap-2.5 sm:gap-3 mb-6 sm:mb-8">
@@ -205,7 +205,7 @@ const DrivingLicenceProvincePage = () => {
               </li>
               <li className="inline-flex items-center gap-1 sm:gap-2 whitespace-nowrap rounded-full bg-white/10 px-2 sm:px-3.5 py-1 sm:py-1.5 backdrop-blur-sm">
                 <Building2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-400 shrink-0" />
-                Official portals
+                {guide.heroCopyComplete ? "Official Government Portals" : "Official portals"}
               </li>
               <li className="inline-flex items-center gap-1 sm:gap-2 whitespace-nowrap rounded-full bg-white/10 px-2 sm:px-3.5 py-1 sm:py-1.5 backdrop-blur-sm">
                 <Lock className="w-3 h-3 sm:w-4 sm:h-4 text-blue-300 shrink-0" />
@@ -253,11 +253,10 @@ const DrivingLicenceProvincePage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">
-              Official Actions
+              {guide.actionsDescription ? `Official ${name} Driving Licence Actions` : "Official Actions"}
             </h2>
             <p className="text-base text-slate-600 max-w-2xl mx-auto">
-              These buttons leave Sello and open {name} government services.
-              Applications and payments happen only on official portals.
+              {guide.actionsDescription || `These buttons leave Sello and open ${name} government services. Applications and payments happen only on official portals.`}
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
@@ -285,7 +284,7 @@ const DrivingLicenceProvincePage = () => {
                   {link.note || "Opens official government site"}
                 </p>
                 <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-500 group-hover:gap-2 transition-all">
-                  Continue <ExternalLink className="w-4 h-4" />
+                  {link.ctaLabel || "Continue"} <ExternalLink className="w-4 h-4" />
                 </span>
               </a>
             ))}
@@ -310,6 +309,11 @@ const DrivingLicenceProvincePage = () => {
                     <p className="text-base sm:text-lg text-slate-600 leading-relaxed whitespace-pre-line">
                       {sec.content}
                     </p>
+                    {sec.ctaLabel && sec.ctaUrl && (
+                      <a href={sec.ctaUrl} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex items-center gap-2 rounded-lg bg-primary-500 px-5 py-3 font-semibold text-white hover:opacity-90">
+                        {sec.ctaLabel}<ExternalLink className="h-4 w-4 shrink-0" />
+                      </a>
+                    )}
                   </div>
                   <div
                     className={`relative rounded-2xl overflow-hidden shadow-lg border border-slate-200 ${
@@ -365,9 +369,9 @@ const DrivingLicenceProvincePage = () => {
                 <span className="truncate">{guide.authorityName}</span>
               </p>
               <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4 leading-tight">
-                About {name} driving licences
+                {guide.aboutTitle || `About ${name} driving licences`}
               </h2>
-              <p className="text-slate-600 leading-relaxed text-pretty text-base sm:text-[1.05rem]">
+              <p className="text-slate-600 leading-relaxed text-pretty whitespace-pre-line text-base sm:text-[1.05rem]">
                 {guide.introduction}
               </p>
               <p className="mt-6 inline-flex items-center gap-2 text-sm text-slate-500">
@@ -398,6 +402,14 @@ const DrivingLicenceProvincePage = () => {
                   </p>
                 </div>
               </div>
+              {guide.importantInformation ? (
+                <div>
+                  <h3 className="mb-3 font-semibold text-slate-900">Important Information</h3>
+                  <ul className="space-y-3 text-sm text-slate-600">
+                    {guide.importantInformation.map(point => <li key={point} className="flex items-start gap-2.5"><Shield className="mt-0.5 h-4 w-4 shrink-0 text-primary-500" /><span>{point}</span></li>)}
+                  </ul>
+                </div>
+              ) : (
               <ul className="space-y-3 text-sm text-slate-600">
                 <li className="flex items-start gap-2.5">
                   <Shield className="w-4 h-4 text-primary-500 shrink-0 mt-0.5" />
@@ -412,6 +424,7 @@ const DrivingLicenceProvincePage = () => {
                   Confirm fees and documents on the live official site
                 </li>
               </ul>
+              )}
               <a
                 href={guide.officialPortalUrl}
                 target="_blank"
@@ -442,10 +455,10 @@ const DrivingLicenceProvincePage = () => {
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-8">
               <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
-                Process Guide
+                {guide.processTitle || "Process Guide"}
               </h2>
               <p className="text-slate-600 text-sm sm:text-base">
-                Expand each section for step-by-step {name} licence guidance.
+                {guide.processDescription || `Expand each section for step-by-step ${name} licence guidance.`}
               </p>
             </div>
             <div className="space-y-3">
@@ -513,8 +526,7 @@ const DrivingLicenceProvincePage = () => {
               Other Provinces
             </h2>
             <p className="text-base text-slate-600 max-w-2xl mx-auto">
-              Open another province guide, then continue to that region&apos;s
-              official portal.
+              {guide.otherProvincesDescription || "Open another province guide, then continue to that region’s official portal."}
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -539,8 +551,9 @@ const DrivingLicenceProvincePage = () => {
                     {item.name}
                   </h3>
                   <p className="text-sm text-slate-500 leading-relaxed">
-                    {item.shortDescription}
+                    {guide.otherProvinceCards?.[item.slug]?.description || item.shortDescription}
                   </p>
+                  {guide.otherProvinceCards?.[item.slug]?.ctaLabel && <span className="mt-4 text-sm font-semibold text-primary-500">{guide.otherProvinceCards[item.slug].ctaLabel}</span>}
                 </Link>
               );
             })}
@@ -573,10 +586,7 @@ const DrivingLicenceProvincePage = () => {
               <div className="pr-0 sm:pr-24">
                 <h3 className="font-bold text-slate-900 mb-1">Disclaimer</h3>
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  Sello.pk publishes guidance only. Licence applications,
-                  payments and verification happen on official government
-                  portals. Confirm fees and documents on the live site before
-                  paying.
+                  {guide.disclaimer || "Sello.pk publishes guidance only. Licence applications, payments and verification happen on official government portals. Confirm fees and documents on the live site before paying."}
                 </p>
               </div>
             </div>

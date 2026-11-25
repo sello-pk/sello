@@ -13,7 +13,7 @@ const HeaderLogo = () => {
     >
       <img
         className="h-12 w-auto md:h-16"
-        src={images.blackLogo}
+        src={images.logo}
         alt="Sello logo"
         width="160"
         height="64"
