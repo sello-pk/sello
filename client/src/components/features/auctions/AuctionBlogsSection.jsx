@@ -1,6 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { ArrowRight, Clock, User } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import GuideCards from "../../common/GuideCards";
 import carAuctionImg from "../../../assets/blogs/carAuction.webp";
 import auctionSheetVerificationImg from "../../../assets/blogs/auctionSheetVerification.webp";
 
@@ -76,7 +75,7 @@ export function formatBlogContent(text) {
       out.push("</tr></thead><tbody>");
       dataRows.forEach((row, i) => {
         out.push(
-          `<tr class=\"border-b border-gray-100 ${i % 2 === 0 ? "bg-white" : "bg-gray-50/50"}\">`,
+          `<tr class="border-b border-gray-100 ${i % 2 === 0 ? "bg-white" : "bg-gray-50/50"}">`,
         );
         row.forEach((c) => {
           out.push(`<td class="px-4 py-3 text-gray-700">${bold(c)}</td>`);
@@ -126,7 +125,7 @@ export function formatBlogContent(text) {
         const content = l.replace(/^\s*-\s*/, "").trim();
         if (content)
           out.push(
-            `<li class="flex items-start gap-3"><span class=\"w-2 h-2 rounded-full bg-primary-500 flex-shrink-0 mt-2.5\"></span><span class=\"text-gray-700\">${bold(content)}</span></li>`,
+            `<li class="flex items-start gap-3"><span class="w-2 h-2 rounded-full bg-primary-500 flex-shrink-0 mt-2.5"></span><span class="text-gray-700">${bold(content)}</span></li>`,
           );
       });
       out.push("</ul>");
@@ -291,6 +290,8 @@ Auction sheets protect you from cars with hidden damage, mileage fraud, and poor
 ];
 
 export default function AuctionBlogsSection() {
+  const [searchParams] = useSearchParams();
+  const initialGuide = auctionBlogPosts.find(post => String(post.id) === searchParams.get("guide"));
   return (
     <section className="w-full bg-gradient-to-b from-gray-50 to-white py-12 sm:py-16">
       <div className="max-w-8xl mx-auto w-full px-4 sm:px-6 lg:px-8">
@@ -313,72 +314,8 @@ export default function AuctionBlogsSection() {
           </div>
         </div>
 
-        <div className="space-y-8 lg:space-y-12">
-          {auctionBlogPosts.map((post, index) => {
-            const isImageLeft = index % 2 === 1;
-            return (
-              <article
-                key={post.id}
-                className={`group flex flex-col items-stretch rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#FDFBF7] ${isImageLeft ? "lg:flex-row-reverse" : "lg:flex-row"}`}
-              >
-                <div className="relative flex-1 flex flex-col justify-between p-5 sm:p-8 lg:p-10 min-h-[260px] lg:min-h-0 lg:min-w-0">
-                  <div>
-                    <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-                      <div className="flex items-center gap-2 text-gray-600 min-w-0">
-                        <div className="w-8 h-8 rounded-full bg-gray-200/80 flex items-center justify-center">
-                          <User className="w-4 h-4 text-gray-600" />
-                        </div>
-                        <span className="text-sm font-medium text-gray-700 truncate">
-                          {post.author}
-                        </span>
-                      </div>
-                      <span className="text-xs sm:text-sm text-gray-500">
-                        {post.date}
-                      </span>
-                    </div>
-
-                    <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary-500 mb-4 leading-tight break-words">
-                      {post.title}
-                    </h3>
-
-                    <p className="text-sm sm:text-base lg:text-lg leading-relaxed mb-6 text-gray-600">
-                      {post.excerpt}
-                    </p>
-
-                    <Link
-                      to={`/auctions/guide/${post.id}`}
-                      className="inline-flex items-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-xl font-semibold hover:opacity-95 transition-opacity shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 group"
-                    >
-                      Read More
-                      <ArrowRight
-                        className="w-5 h-5 group-hover:translate-x-0.5 transition-transform"
-                        aria-hidden
-                      />
-                    </Link>
-                  </div>
-                </div>
-
-                <div className="relative w-full lg:w-[480px] xl:w-[520px] lg:flex-shrink-0 h-56 sm:h-72 lg:h-auto min-h-[260px] lg:min-h-0 self-stretch overflow-hidden">
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    className="absolute inset-0 w-full h-full block object-cover object-center opacity-90"
-                    loading="lazy"
-                  />
-                  <div className="absolute top-5 left-5">
-                    <span className="inline-flex items-center gap-2 bg-white/95 text-gray-800 px-3 py-1.5 rounded-full text-sm font-semibold shadow">
-                      <span className="w-1.5 h-1.5 bg-primary-500 rounded-full" />
-                      {post.category}
-                    </span>
-                  </div>
-                  <div className="absolute bottom-5 left-5 flex items-center gap-2 text-gray-200 text-sm">
-                    <Clock className="w-4 h-4" aria-hidden />
-                    <span>{post.readTime}</span>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
+        <div id="auction-guides" className="scroll-mt-24">
+          <GuideCards posts={auctionBlogPosts} initialPostId={initialGuide?.id ?? null} formatContent={formatBlogContent} />
         </div>
       </div>
     </section>

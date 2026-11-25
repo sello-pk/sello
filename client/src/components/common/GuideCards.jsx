@@ -102,7 +102,7 @@ export default function GuideCards({
   posts,
   checklistTitle = "Key points",
   initialPostId = null,
-  showStepNumber = true,
+  formatContent = formatBlogContent,
 }) {
   const [expandedId, setExpandedId] = useState(initialPostId);
   const idPrefix = useId();
@@ -228,10 +228,11 @@ export default function GuideCards({
                 >
                   <div className="border-t border-stone-200/80 p-6 sm:p-8 lg:p-10">
                     {/* Formatted markdown content */}
+                    {post.h1 && <h4 className="mb-5 text-xl font-bold text-gray-900 sm:text-2xl">{post.h1}</h4>}
                     <div
                       className="prose prose-lg max-w-none break-words font-normal leading-relaxed text-gray-700"
                       dangerouslySetInnerHTML={{
-                        __html: formatBlogContent(post.fullContent),
+                        __html: formatContent(post.fullContent),
                       }}
                     />
 
