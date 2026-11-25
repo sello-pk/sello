@@ -127,40 +127,29 @@ const GenericVehicleCategoryPage = () => {
         description={config?.description || `Browse ${vehicleType} for sale in Pakistan`}
       />
       <StructuredData.ItemListSchema cars={cars} />
-      {/* Hero Section */}
-      <div className="relative w-full md:h-[38vh] sm:h-[30vh] h-[24vh] text-white bg-primary-500 overflow-hidden">
-        <div className="relative z-10 flex min-h-[30vh] sm:min-h-[26vh] md:min-h-[24vh] w-full flex-col justify-start items-center px-2 sm:px-4 lg:px-6 py-3 sm:py-5 md:py-6">
+      {/* Content-driven height keeps every category readable on short and narrow screens. */}
+      <header aria-labelledby="category-hero-title" className="w-full bg-primary-500 text-white">
+        <div className="mx-auto w-full max-w-8xl px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
           <Link
             to="/listings"
-            className="absolute left-2 sm:left-4 lg:left-6 top-3 sm:top-6 lg:top-8 z-20 inline-flex items-center gap-1.5 sm:gap-2 text-white/90 hover:text-white transition"
+            className="inline-flex min-h-11 max-w-full items-center gap-2 rounded-md text-sm font-medium text-white transition hover:text-white/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:text-base"
           >
-            <HiOutlineArrowLeft className="flex-shrink-0 w-3.5 h-3.5 sm:w-5 sm:h-5" />
-            <span className="text-xs sm:text-sm font-medium hidden sm:inline">
-              Back to Vehicles
-            </span>
-            <span className="text-xs sm:text-sm font-medium sm:hidden">
-              Back
-            </span>
+            <HiOutlineArrowLeft className="h-5 w-5 shrink-0" aria-hidden="true" />
+            Back to Vehicles
           </Link>
-
-          <div className="flex justify-center items-center w-full px-1 sm:px-0">
-            <div className="text-center w-full max-w-5xl mx-auto px-1 sm:px-4 lg:px-8 py-2 sm:py-4 lg:py-6">
-              <div className="mb-2 sm:mb-4">
-                <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl sm:rounded-2xl bg-white/15">
-                  <Icon className="text-2xl sm:text-3xl lg:text-4xl text-white drop-shadow-md" />
-                </div>
-              </div>
-
-              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-1.5 sm:mb-2 lg:mb-3 text-white drop-shadow-lg leading-tight px-2 sm:px-0">
-                {config.title}
-              </h1>
-              <p className="text-xs sm:text-sm md:text-base lg:text-lg text-white/90 mb-3 sm:mb-4 lg:mb-5 max-w-lg sm:max-w-2xl lg:max-w-3xl mx-auto leading-relaxed drop-shadow-lg px-3 sm:px-0">
-                {config.description}
-              </p>
+          <div className="mx-auto flex w-full max-w-3xl flex-col items-center px-1 pb-3 pt-1 text-center sm:pb-4 sm:pt-1">
+            <div className="mb-2 inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15 sm:h-14 sm:w-14">
+              <Icon className="text-2xl text-white drop-shadow-md sm:text-3xl" aria-hidden="true" />
             </div>
+            <h1 id="category-hero-title" className="mb-2 max-w-full break-words text-2xl font-bold leading-tight text-white sm:text-3xl lg:text-4xl">
+              {config.title}
+            </h1>
+            <p className="max-w-full break-words text-sm leading-relaxed text-white/90 sm:text-base lg:text-lg">
+              {config.description}
+            </p>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Results Section */}
       <div className="max-w-8xl mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 lg:py-8">
