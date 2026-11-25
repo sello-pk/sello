@@ -253,10 +253,9 @@ const routeSeoConfigs = [
   {
     path: "/driving-licence/kpk",
     seo: {
-      title:
-        "KPK Driving Licence Online | Apply & Renew via Dastak – Sello.pk",
-      description:
-        "Khyber Pakhtunkhwa driving licence guide for learner permits, permanent licences, renewal and tracking via Transport KP / Dastak.",
+      exactTitle: true,
+      title: "KPK Driving License Verification Online | DLIMS KPK Guide",
+      description: "Verify your KPK driving license online, track applications and see how to apply for a license, renew or get a learner permit through official KP services.",
       canonical: "https://sello.pk/driving-licence/kpk",
     },
   },

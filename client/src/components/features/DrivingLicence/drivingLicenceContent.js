@@ -1335,7 +1335,134 @@ Additional documents may be required depending on the licence category.`,
   },
 ];
 
+// KPK replacement copy is used only by its detail route, never the landing cards.
+const KPK_BASE_GUIDE = DRIVING_LICENCE_GUIDES.find(guide => guide.slug === "kpk");
+const KPK_DETAIL_GUIDE = {
+  ...KPK_BASE_GUIDE,
+  ...{
+  "seoTitle": "KPK Driving License Verification Online | DLIMS KPK Guide",
+  "seoDescription": "Verify your KPK driving license online, track applications and see how to apply for a license, renew or get a learner permit through official KP services.",
+  "exactTitle": true,
+  "shortDescription": "In Khyber Pakhtunkhwa get info for learner permits, permanent licenses, renewals and application tracking. Use the official KP Transport Department and Dastak services to apply and manage your driving licence.\n\nReady to go? Visit the government portal. Sello provides guidance only and we do not ask you to enter your CNIC or licence number on this page.",
+  "heroCopyComplete": true,
+  "actionsTitle": "Official KPK Driving Licence Actions",
+  "actionsDescription": "These actions take you away from Sello to government offices. Applications, payments, verification and license records are managed by the relevant authorities.",
+  "aboutTitle": "About KPK Driving Licences",
+  "introduction": "The Khyber Pakhtunkhwa Transport Department is the body which provides digital driving license services via the provincial Dastak system. We have learner permits, new permanent licences, renewals, duplicate licences and application tracking available.\n\nFor driving license verification at KPK use the official verification which we recommend over the unofficial sites. The department has put in place a system which requests for your license or registration number and CNIC info.\n\nSello. Pk has put out guidance that goes so Applications, payments, tests and licence records are run through government services. Do not use Punjab or Sindh licence portals for KPK applications.",
+  "lastVerifiedAt": "2026-11-13",
+  "officialChannelLabel": "KP Transport Department / KP Dastak",
+  "portalCtaLabel": "Open Official KP Driving Licence Portal",
+  "processTitle": "KPK Driving Licence Process Guide",
+  "processDescription": "Expand out each section on the published page for step by step guidance.",
+  "faqTitle": "Frequently Asked Questions About KPK Driving Licences",
+  "disclaimer": "Sello.pk reports general info and guidance only. For license applications, payments, tests, tracking and verification you must use government services. Requirements, fees and service availability may change. Before you apply or pay, check the latest info at the official KP Transport Department portal.",
+  "learnerProcedure": [
+    "Open the official KP Transport Department driver’s license page.",
+    "Download and access the official KP Dastak app as per the instructions.",
+    "Register with your CNIC and mobile number.",
+    "Select the Learner Permit service.",
+    "Fill out the required info and upload your CNIC copy.",
+    "Pay through the available payment method.",
+    "Submit your application and follow the portal’s instructions for the permit."
+  ],
+  "permanentProcedure": [
+    "After completion of the required learner period, enroll in the permanent licence service through KP Dastak. Provide the requested information, upload supporting documents and complete any required biometric, medical or appointment based steps.",
+    "Follow the traffic signs as you go and for the practical driving tests. Your licence will be issued once we have your payment and completed requirements."
+  ],
+  "renewalProcedure": [
+    "To renew your KPK driving license go to the official KP Dastak service and choose the renewal option. Put in your present license info, provide the requested documents and finish the payment process.",
+    "If your license has expired for a while see what the licensing authority has put in place for additional charges, tests or application requirements."
+  ],
+  "verificationGuide": [
+    "Visit the official KP Transport licence verification page to check your driving licence.",
+    "The service is asking for your license or tracking number and CNIC without dashes.",
+    "Submit these details only at the official government site.",
+    "For Peshawar driving license verification or LTV license check in KPK use the same official process which will have the relevant license info if it is available."
+  ],
+  "requiredDocuments": [
+    "The KPK issue of driving licenses is a function of the type of license and stage of application. As for what is usually asked for include:",
+    "Valid CNIC.",
+    "CNIC copy or digital identity verification.",
+    "Recent photograph, where requested.",
+    "Present learner permit for permanent license.",
+    "Medical report or health assessment where applicable.",
+    "For past licence information related to renewal or duplicate applications.",
+    "Check out the live application service for the full document list."
+  ],
+  "ageRequirements": [
+    "The age requirement varies by vehicle type and license type. For motorcycle and private car licenses you are usually required to be at 18 years of age or over. For commercial licenses there may be greater age, experience and medical requirements. Check with the relevant licensing body to confirm your eligibility."
+  ],
+  "feesAndPayment": [
+    "In KPK the driving license fee depends on the license category, service and validity period. For learner, permanent, renewal, duplicate and international permit services there may be different charges.",
+    "Check the present amount as displayed by KP Dastak or the official Transport Department before making payment. Do not base it on old fee lists or pay to unofficial agents."
+  ],
+  "drivingTestGuidelines": [
+    "Prepare for the traffic signs test by studying up on road signs, speed limits, road markings and right of way rules. Also spend time with a qualified instructor on the road practicing turning, reversing and parking.",
+    "Follow the proctor’s instructions and before the test make sure to go over the safety rules."
+  ],
+  "trackingInstructions": [
+    "Use the tracking feature in KP Dastak or the official government system. Fill out your application as requested to check progress.",
+    "For your driving license application or tracking ID with KPK keep safe. In the case of delayed status or rejection of application, go over the reason and approach the relevant department for help."
+  ],
+  "faqs": [
+    {
+      "question": "How can I verify my driving licence online in KPK?",
+      "answer": "Visit the KP Transport’s verification page. Fill in your license or tracking number and CNIC as asked to authenticate your license."
+    },
+    {
+      "question": "What is the minimum age to get a learner driving licence in KPK?",
+      "answer": "The age to get a private motorcycle or motorcar learner permit is at 18. For commercial categories this may be different."
+    },
+    {
+      "question": "What documents do I need for a learner permit in KPK?",
+      "answer": "A valid CNIC and CNIC copy are usually required. The official may also ask for a photo, health information or other documents based on your category."
+    },
+    {
+      "question": "How long after a learner permit can I apply for a permanent driving licence?",
+      "answer": "Learner permits usually mature at 45 days for the typical learner to permanent process. Check the exact period for your category with the licensing authority."
+    },
+    {
+      "question": "How do I renew my driving licence in KPK?",
+      "answer": "Go to the official KP Transport Department driving licence site and follow the KP Dastak renewal instructions. Input your present licence info, upload the required documents and pay the fee."
+    }
+  ],
+  "otherProvincesDescription": "Visit another province page and go to that region’s site.",
+  "otherProvinceCards": {
+    "punjab": {
+      "description": "Apply, renew and verify through DLIMS 2.0."
+    },
+    "sindh": {
+      "description": "In Learner, permanent, renewal and IDP services through Sindh DLIMS 2.0."
+    },
+    "islamabad": {
+      "description": "Get to Islamabad Traffic Police for driving license services."
+    },
+    "balochistan": {
+      "description": "Find out local driver’s license and appointment info from the appropriate traffic police authority."
+    }
+  },
+  "provinceNavigationDescriptions": {
+    "Punjab": "Apply, renew and verify through Punjab DLIMS 2.0  Dastak.",
+    "Sindh": "Access to learner, permanent, renewal and verification services provided by Sindh Police.",
+    "Khyber Pakhtunkhwa": "Explore student, permanent, renewal and tracking services.",
+    "Islamabad": "Get to Islamabad Traffic Police for driving license services.",
+    "Balochistan": "Find out about provincial driver’s license and appointment info."
+  }
+},
+  overviewSections: KPK_BASE_GUIDE.overviewSections.map((section, index) => ({
+    ...section,
+    content: ["In Khyber Pakhtunkhwa in order to drive a car or a motorcycle the first step is to get a learner permit. The KP Transport Department provides the online learner permit service through the Dastak app.\n\nRegister with your CNIC and mobile number, choose the learner permit service and fill out the required application information. Upload your CNIC copy and any other documents that the system requests of you. Pay the due fee via the online payment option provided and turn in your application.\n\nOnce the application is reviewed, we ask that you follow the official instructions which will grant you your learner permit. Also you may get in touch with the issues desk at the driving licence office if you have questions.", "After you get your learner permit you must wait the required time before you apply for a permanent license. For the typical learner to have a permanent license process that waiting period is 45 days.\n\nYou can start the process for permanent license through KP Dastak. Fill out the application, upload the required documents and we have also put in instructions for medical assessment, biometric verification and appointment scheduling where applicable.\n\nApplicants may have to complete a traffic signs test and a practical driving test, as per the licence category and applicable requirements. Once the required actions and payments are made the licensing authority processes the application.\nBefore you apply, check in with the official Transport Department."][index],
+  })),
+  actionLinks: KPK_BASE_GUIDE.actionLinks.map(link => ({
+    ...link,
+    note: {"Apply for Learner Licence": "Start a learner permit application through KP Dastak", "Apply for Permanent Licence": "Review the permanent licence application process", "Verify Driving Licence": "Verify an issued licence through the official KP system", "Renew Licence": "Check renewal options through KP Dastak", "Track Application": "Follow application progress using the available tracking service", "Visit Official Portal": "Open the KP Transport Department driving licence page"}[link.label] || link.note,
+    ctaLabel: "Continue",
+  })),
+};
+
 export const getGuideBySlug = (slug) =>
   slug === "punjab"
     ? PUNJAB_DETAIL_GUIDE
-    : DRIVING_LICENCE_GUIDES.find((g) => g.slug === slug) || null;
+    : slug === "kpk"
+      ? KPK_DETAIL_GUIDE
+      : DRIVING_LICENCE_GUIDES.find((g) => g.slug === slug) || null;

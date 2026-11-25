@@ -168,7 +168,7 @@ const DrivingLicenceProvincePage = () => {
             <div className="inline-flex max-w-full items-center gap-2 bg-white text-primary-500 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-5 shadow-sm">
               <Sparkles className="w-4 h-4 shrink-0" />
               <span className="truncate">
-                {PORTAL_LABELS[slug] || guide.authorityName}
+                {guide.officialChannelLabel || PORTAL_LABELS[slug] || guide.authorityName}
               </span>
             </div>
 
@@ -218,6 +218,7 @@ const DrivingLicenceProvincePage = () => {
 
       <section className="border-b border-slate-100 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+
           <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {DRIVING_LICENCE_GUIDES.map((item) => {
               const active = item.slug === slug;
@@ -253,7 +254,7 @@ const DrivingLicenceProvincePage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">
-              {guide.actionsDescription ? `Official ${name} Driving Licence Actions` : "Official Actions"}
+              {guide.actionsTitle || (guide.actionsDescription ? `Official ${name} Driving Licence Actions` : "Official Actions")}
             </h2>
             <p className="text-base text-slate-600 max-w-2xl mx-auto">
               {guide.actionsDescription || `These buttons leave Sello and open ${name} government services. Applications and payments happen only on official portals.`}
@@ -398,7 +399,7 @@ const DrivingLicenceProvincePage = () => {
                     Official channel
                   </p>
                   <p className="text-sm font-bold text-slate-900 truncate">
-                    {PORTAL_LABELS[slug] || guide.authorityName}
+                    {guide.officialChannelLabel || PORTAL_LABELS[slug] || guide.authorityName}
                   </p>
                 </div>
               </div>
@@ -431,7 +432,7 @@ const DrivingLicenceProvincePage = () => {
                 rel="noopener noreferrer"
                 className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary-500 px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
               >
-                Open official portal
+                {guide.portalCtaLabel || "Open official portal"}
                 <ExternalLink className="w-4 h-4" />
               </a>
             </aside>
