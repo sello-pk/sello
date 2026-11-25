@@ -49,14 +49,14 @@ const CountdownTimer = ({ targetDate }) => {
   const pad = (n) => String(n).padStart(2, "0");
 
   return (
-    <div className="grid grid-cols-4 gap-2 text-lg">
+    <div className="grid min-w-0 grid-cols-4 gap-1.5 text-lg sm:gap-2">
       {[
         { val: time.d, label: "Days" },
         { val: time.h, label: "Hours" },
         { val: time.m, label: "Mins" },
         { val: time.s, label: "Secs" },
       ].map((t) => (
-        <div key={t.label} className="bg-white/20 rounded-lg p-2 text-center">
+        <div key={t.label} className="min-w-0 rounded-lg bg-white/20 p-2 text-center">
           <div className="font-bold text-white">{pad(t.val)}</div>
           <div className="text-xs text-white/70">{t.label}</div>
         </div>
@@ -187,7 +187,7 @@ export default function AuctionsActions() {
       />
       <div className="min-h-screen w-full bg-slate-50">
       {/* Hero */}
-      <section className="relative min-h-[72vh] md:h-[68vh] flex items-center overflow-hidden">
+      <section aria-labelledby="auction-hero-title" className="relative isolate overflow-hidden bg-slate-900">
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920"
@@ -200,15 +200,15 @@ export default function AuctionsActions() {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/80 to-slate-900/60" />
         </div>
-        <div className="relative max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
-          <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
-            <div>
+        <div className="relative mx-auto w-full max-w-8xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8 lg:py-16 xl:py-20">
+          <div className="grid min-w-0 items-center gap-8 md:gap-10 lg:grid-cols-2 lg:gap-12">
+            <div className="min-w-0">
               {liveAuction && (
                 <Badge className="bg-red-500 text-white border-0 mb-6 animate-pulse">
                   <Zap className="w-4 h-4 mr-1" /> Live Auction in Progress
                 </Badge>
               )}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 md:mb-6 leading-tight">
+              <h1 id="auction-hero-title" className="mb-4 break-words text-3xl font-bold leading-[1.12] text-white sm:text-4xl md:mb-6 lg:text-[clamp(2.25rem,3.5vw,3.5rem)]">
                 Pakistan's Largest Hybrid
                 <span className="block text-transparent bg-clip-text bg-primary">
                   Car Auction
@@ -220,32 +220,24 @@ export default function AuctionsActions() {
                 online auctions or attend our physical auction events.
               </p>
               <div className="flex items-start sm:items-center gap-2 text-slate-400 mb-6 md:mb-8">
-                <MapPin className="w-5 h-5 text-primary" />
+                <MapPin className="h-5 w-5 shrink-0 text-primary" />
                 <span className="leading-snug">Serving Buyers & Sellers Across Pakistan</span>
               </div>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/auctions/live">
-                  <Button size="lg" className="w-full sm:w-auto">
-                    <Play className="w-5 h-5 mr-2" /> View Live Auction
-                  </Button>
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <Link to="/auctions/live" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary-500 px-5 py-3 text-center text-sm font-semibold text-white shadow-lg transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-500 sm:w-auto sm:text-base">
+                  <Play className="h-5 w-5 shrink-0" aria-hidden="true" /> View Live Auction
                 </Link>
-                <Link to={registerLink}>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="bg-white/10 border-white/30 text-white hover:bg-white/20 w-full sm:w-auto"
-                  >
-                    {registerLabel} <ArrowRight className="w-5 h-5 ml-2" />
-                  </Button>
+                <Link to={registerLink} className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg border-2 border-white/30 bg-white/10 px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:w-auto sm:text-base">
+                  {registerLabel} <ArrowRight className="h-5 w-5 shrink-0" aria-hidden="true" />
                 </Link>
               </div>
             </div>
-            <div className="hidden lg:block">
-              <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20">
+            <aside aria-labelledby="auction-hero-countdown" className="w-full min-w-0 lg:max-w-xl lg:justify-self-end">
+              <div className="rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur-lg sm:rounded-3xl sm:p-6 xl:p-8">
                 <div className="text-center mb-6">
-                  <h3 className="text-white font-semibold text-xl mb-2">
+                  <h2 id="auction-hero-countdown" className="mb-2 text-xl font-semibold text-white">
                     {liveAuction ? "Auction Ends In" : "Next Auction Soon"}
-                  </h3>
+                  </h2>
                   <p className="text-slate-400 text-sm">
                     Auctions held every second day
                   </p>
@@ -257,7 +249,7 @@ export default function AuctionsActions() {
                     No live auction right now
                   </div>
                 )}
-                <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-3 gap-4 text-center">
+                <div className="mt-6 grid grid-cols-3 gap-2 border-t border-white/10 pt-6 text-center sm:gap-4 [&>div]:min-w-0 [&_p]:break-words">
                   <div>
                     <p className="text-2xl font-bold text-white">
                       {liveAuction?.totalCars || 0}
@@ -278,7 +270,7 @@ export default function AuctionsActions() {
                   </div>
                 </div>
               </div>
-            </div>
+            </aside>
           </div>
         </div>
       </section>
