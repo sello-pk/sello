@@ -1,4 +1,4 @@
-import { corePageSeo } from "./corePageSeo.js";
+import { corePageSeo, getCategoryPageSeo } from "./corePageSeo.js";
 import { matchPath } from "react-router-dom";
 import { getListingsPageCopy } from "./urlBuilders.js";
 import { CAR_LOAN_SEO } from "./carLoanCalculator.js";
@@ -87,6 +87,8 @@ const routeSeoConfigs = [
   {
     path: "/listings/:categoryType",
     seo: ({ categoryType }) => {
+      const suppliedSeo = getCategoryPageSeo(categoryType);
+      if (suppliedSeo) return suppliedSeo;
       const categoryName = prettifySlug(categoryType);
       return {
         title: `${categoryName} for Sale in Pakistan | ${categoryName} Listings – Sello.pk`,

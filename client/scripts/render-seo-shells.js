@@ -1,4 +1,4 @@
-import { corePageSeo } from "../src/utils/corePageSeo.js";
+import { corePageSeo, categorySeoKeys, getCategoryPageSeo } from "../src/utils/corePageSeo.js";
 import { defaultCompareContent } from "../src/constants/carCompare.js";
 import { fuelPricesSeo, fuelPricesHeading, fuelPriceGuides, fuelPriceFaqs } from "../src/utils/fuelPricesContent.js";
 /**
@@ -217,24 +217,10 @@ async function mapLimit(items, limit, worker) {
 
 const LISTING_HUBS = [
   { path: "/listings", ...corePageSeo.listings },
-  {
-    path: "/listings/cars",
-    title: "Cars for Sale in Pakistan | Used & New Cars - Sello.pk",
-    description:
-      "Find cars for sale in Pakistan with prices, specifications, and seller contact details on Sello.pk.",
-  },
-  {
-    path: "/listings/bikes",
-    title: "Bikes for Sale in Pakistan | Sello.pk",
-    description:
-      "Browse motorcycles and bikes for sale in Pakistan. Compare prices and contact sellers on Sello.pk.",
-  },
-  {
-    path: "/listings/trucks",
-    title: "Trucks for Sale in Pakistan | Sello.pk",
-    description:
-      "Find trucks for sale in Pakistan with listing details, prices, and seller information on Sello.pk.",
-  },
+  ...Object.keys(categorySeoKeys).map(slug => ({
+    path: `/listings/${slug}`,
+    ...getCategoryPageSeo(slug),
+  })),
   {
     path: "/view-all-brands",
     title: "Car Brands in Pakistan | Browse by Make - Sello.pk",
