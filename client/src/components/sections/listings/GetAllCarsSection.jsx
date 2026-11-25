@@ -157,13 +157,10 @@ const GetAllCarsSection = () => {
       if (tab === "all") params.delete("condition");
       else params.set("condition", tab);
 
-      const basePath =
-        location.pathname === "/cars" || location.pathname.startsWith("/cars/")
-          ? "/cars"
-          : "/listings";
+      const basePath = "/listings";
       navigate(`${basePath}${params.toString() ? `?${params.toString()}` : ""}`);
     },
-    [navigate, searchParams, location.pathname],
+    [navigate, searchParams],
   );
 
   // Handle page change with loading state

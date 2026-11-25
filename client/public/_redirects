@@ -1,3 +1,7 @@
+# Consolidate the duplicate listings entry point (exact paths only)
+/cars  /listings  301
+/cars/  /listings  301
+
 # Old 5-22 MB category backgrounds were replaced by WebP (keep old URLs working)
 /assets/categories/carCat.svg  /assets/categories/carCat.webp  301
 /assets/categories/busCat.svg  /assets/categories/busCat.webp  301

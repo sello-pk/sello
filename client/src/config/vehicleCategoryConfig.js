@@ -453,3 +453,11 @@ If repair costs are high or capacity no longer matches your land, consider selli
     ],
   },
 };
+
+// Public plural category URLs share the existing category data and filters.
+Object.entries({
+  cars: "car", bikes: "bike", buses: "bus", trucks: "truck", vans: "van",
+  "e-bikes": "e-bike", tractors: "farm",
+}).forEach(([slug, category]) => {
+  vehicleCategoryConfig[slug] = vehicleCategoryConfig[category];
+});

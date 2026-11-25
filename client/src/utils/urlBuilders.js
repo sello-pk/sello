@@ -9,7 +9,7 @@
  * - Falls back to "/cars/<id>" if we can't generate a slug.
  */
 export const buildCarUrl = (car) => {
-  if (!car || !car._id) return "/cars";
+  if (!car || !car._id) return "/listings";
 
   const make = car.make ? slugify(car.make) : "";
   const model = car.model ? slugify(car.model) : "";

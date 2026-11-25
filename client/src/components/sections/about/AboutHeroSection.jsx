@@ -36,7 +36,7 @@ const AboutHeroSection = () => {
                 Sell Your Car
               </button>
               <button
-                onClick={() => navigate("/cars")}
+                onClick={() => navigate("/listings")}
                 className="px-6 w-48 py-3 rounded-lg border-[1px] flex items-center justify-center gap-3 border-black text-black hover:bg-primary hover:text-white transition-all ease-in bg-white"
               >
                 Find Your Next Car

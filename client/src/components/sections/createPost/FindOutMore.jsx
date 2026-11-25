@@ -21,7 +21,7 @@ const FindOutMore = () => {
 
             {/* Button */}
             <button
-              onClick={() => navigate("/cars")}
+              onClick={() => navigate("/listings")}
               className="group my-7 flex items-center gap-3 border-2 border-white px-6 py-3 rounded-lg text-lg md:text-xl text-white font-medium transition-all duration-300 hover:bg-white hover:text-black"
             >
               Find Out More

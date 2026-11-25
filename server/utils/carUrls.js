@@ -11,7 +11,7 @@ function slugify(value) {
 }
 
 export function buildCarPath(car) {
-  if (!car?._id) return "/cars";
+  if (!car?._id) return "/listings";
   const id = String(car._id);
   const make = slugify(car.make);
   const model = slugify(car.model);

@@ -307,7 +307,7 @@ const RecentlyViewedCars = () => {
         {/* View All Button */}
         <div className="text-center mt-12">
           <button
-            onClick={() => navigate("/cars")}
+            onClick={() => navigate("/listings")}
             className=" text-primary-500 px-8 py-3 rounded font-semibold transition-all duration-200 hover:opacity-80"
           >
             View All Cars

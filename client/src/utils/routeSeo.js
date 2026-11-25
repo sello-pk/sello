@@ -68,7 +68,6 @@ const routeSeoConfigs = [
   { path: "/", seo: corePageSeo.home },
   { path: "/home", seo: corePageSeo.home },
   { path: "/listings", seo: corePageSeo.listings },
-  { path: "/cars", seo: corePageSeo.listings },
   { path: "/cars/:id", seo: listingDetailSeo },
   { path: "/car-details/:id", seo: listingDetailSeo },
   { path: "/fuel-prices", seo: fuelPricesSeo },

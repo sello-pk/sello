@@ -60,7 +60,7 @@ const FilterResultsSection = ({
           Try adjusting your search criteria or filters
         </p>
         <button
-          onClick={() => navigate("/cars")}
+          onClick={() => navigate("/listings")}
           className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90 transition-colors"
         >
           Go Back

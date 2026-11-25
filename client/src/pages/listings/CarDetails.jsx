@@ -54,7 +54,7 @@ const CarDetails = () => {
   useEffect(() => {
     if (!car?._id) return;
     const canonicalPath = buildCarUrl(car);
-    if (!canonicalPath || canonicalPath === "/cars") return;
+    if (!canonicalPath || canonicalPath === "/listings") return;
     if (location.pathname === canonicalPath) return;
     const isLegacyDetails = location.pathname.startsWith("/car-details/");
     const isCarsPath = location.pathname.startsWith("/cars/");
@@ -99,7 +99,7 @@ const CarDetails = () => {
   }, []);
 
   const breadcrumbItems = [
-    { label: "Cars", path: "/cars" },
+    { label: "Cars", path: "/listings" },
     {
       label: car
         ? `${car.make || ""} ${car.model || ""}`.trim() || "Car Details"
@@ -127,7 +127,7 @@ const CarDetails = () => {
             {error?.data?.message || error?.message || "Please try again later"}
           </p>
           <button
-            onClick={() => navigate("/cars")}
+            onClick={() => navigate("/listings")}
             className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90 transition-colors"
           >
             Back to Cars
@@ -151,7 +151,7 @@ const CarDetails = () => {
             The car ID is missing or invalid.
           </p>
           <button
-            onClick={() => navigate("/cars")}
+            onClick={() => navigate("/listings")}
             className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90 transition-colors"
           >
             Browse Cars
@@ -176,7 +176,7 @@ const CarDetails = () => {
             removed.
           </p>
           <button
-            onClick={() => navigate("/cars")}
+            onClick={() => navigate("/listings")}
             className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:opacity-90 transition-colors"
           >
             Browse Other Cars

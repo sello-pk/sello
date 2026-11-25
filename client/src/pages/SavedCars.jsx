@@ -70,7 +70,7 @@ const SavedCars = () => {
             </p>
             <button
               type="button"
-              onClick={() => navigate("/cars")}
+              onClick={() => navigate("/listings")}
               className="bg-primary-500 hover:opacity-90 text-white px-6 py-3 rounded-lg font-medium transition-opacity"
             >
               Browse Cars

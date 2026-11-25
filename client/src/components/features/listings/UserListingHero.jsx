@@ -33,7 +33,7 @@ const UserListingHero = () => {
                 Add New Listing
               </button>
               <button
-                onClick={() => navigate("/cars")}
+                onClick={() => navigate("/listings")}
                 className="px-6 w-full sm:w-48 py-3 rounded-lg border-[1px] flex items-center justify-center gap-3 border-black text-black hover:bg-primary hover:text-white transition-all ease-in bg-white"
               >
                 Browse Cars

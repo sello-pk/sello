@@ -283,6 +283,12 @@ app.get("/llms.txt", (_req, res) => {
 /* ------------------ SINGLE-SERVICE STATIC + SPA FALLBACK ------------------ */
 if (servesClient) {
   Logger.info(`Serving built client from ${clientDist}`);
+  // Redirect only the duplicate listing root, retaining filters in old links.
+  app.get(['/cars', '/cars/'], (req, res) => {
+    const queryIndex = req.originalUrl.indexOf('?');
+    const query = queryIndex >= 0 ? req.originalUrl.slice(queryIndex) : '';
+    res.redirect(301, `/listings${query}`);
+  });
   app.get(['/cars/compare', '/cars/compare/:slug'], async (req, res, next) => {
     try {
       const { compareHtml } = await import('./utils/compareHtml.js');

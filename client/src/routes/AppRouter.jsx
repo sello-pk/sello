@@ -214,7 +214,7 @@ const AppRouter = () => {
           path="/listings/:categoryType"
           element={<GenericVehicleCategoryPage />}
         />
-        <Route path="/cars" element={<CarListings />} />
+        <Route path="/cars" element={<Navigate to={`/listings${location.search}${location.hash}`} replace />} />
         <Route path="/cars/compare" element={<CarCompare />} />
         <Route path="/cars/compare/:slug" element={<CarCompare />} />
         <Route path="/car-details/:id" element={<CarDetails />} />

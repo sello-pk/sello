@@ -683,7 +683,7 @@ export const goThemBuyOrSell = [
   {
     title: "Are You Looking for a Car?",
     image: electricSvg,
-    redirect: "/cars",
+    redirect: "/listings",
     description:
       "Discover the most available car for sale in Pakistan through Sello.pk. We have what you are looking for from our trusted sellers’ certified listings. Also Sello.pk presents to you a wide range of competitive cars for sale in Karachi, Islamabad, Lahore and other large cities. No matter if you are looking for a car for sale in Pakistan or a person that is into used cars for sale in Pakistan, Sello.pk helps you out in your search and gives you the confidence to choose the best.",
   },
