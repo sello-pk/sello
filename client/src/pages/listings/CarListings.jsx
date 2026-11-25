@@ -141,7 +141,7 @@ const CarListings = () => {
         </div>
       </header>
 
-      <div className="max-w-full mx-auto px-4 sm:px-4 lg:px-1 min-w-0">
+      <div className="max-w-8xl mx-auto w-full min-w-0 px-3 sm:px-4 md:px-6 xl:px-8">
         <GetAllCarsSection />
         <AdSenseSlot slot="listingFeed" />
         <NeedInspiration />
@@ -154,7 +154,7 @@ const CarListings = () => {
             return (
               <div
                 key={cnt.id}
-                className={`mx-3 sm:mx-4 md:mx-6 lg:mx-8 flex flex-col ${
+                className={`flex flex-col ${
                   isReversed ? "lg:flex-row-reverse" : "lg:flex-row"
                 } lg:items-stretch gap-6 bg-gradient-to-b from-primary-50 to-white shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden rounded-xl`}
               >

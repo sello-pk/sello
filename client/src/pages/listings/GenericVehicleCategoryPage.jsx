@@ -129,7 +129,7 @@ const GenericVehicleCategoryPage = () => {
       <StructuredData.ItemListSchema cars={cars} />
       {/* Content-driven height keeps every category readable on short and narrow screens. */}
       <header aria-labelledby="category-hero-title" className="w-full bg-primary-500 text-white">
-        <div className="mx-auto w-full max-w-8xl px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
+        <div className="mx-auto w-full max-w-8xl px-3 py-3 sm:px-4 sm:py-4 md:px-6 xl:px-8">
           <Link
             to="/listings"
             className="inline-flex min-h-11 max-w-full items-center gap-2 rounded-md text-sm font-medium text-white transition hover:text-white/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:text-base"
@@ -152,7 +152,7 @@ const GenericVehicleCategoryPage = () => {
       </header>
 
       {/* Results Section */}
-      <div className="max-w-8xl mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 lg:py-8">
+      <div className="max-w-8xl mx-auto px-3 sm:px-4 md:px-6 xl:px-8 py-4 sm:py-6 lg:py-8">
         <div className="mb-4">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
             {config.title} Listings ({total})

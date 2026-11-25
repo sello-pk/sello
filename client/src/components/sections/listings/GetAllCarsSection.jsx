@@ -232,7 +232,7 @@ const GetAllCarsSection = () => {
   // Show skeleton loaders while loading
   if (isLoading) {
     return (
-      <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-10 md:py-12">
+      <section className={isHomePage ? "px-3 sm:px-4 md:px-6 lg:px-8 py-10 md:py-12" : "py-5 sm:py-7"}>
         {listingsStructuredData}
         <div className="max-w-8xl mx-auto w-full">
           <h2 className="text-2xl md:text-3xl font-bold text-[#0B0C1E] mb-2">
@@ -255,7 +255,7 @@ const GetAllCarsSection = () => {
   // previously indexed that empty-state copy when the listings request failed.
   if (error && cars.length === 0) {
     return (
-      <section className="px-3 sm:px-4 md:px-6 lg:px-8 py-10 md:py-12">
+      <section className={isHomePage ? "px-3 sm:px-4 md:px-6 lg:px-8 py-10 md:py-12" : "py-5 sm:py-7"}>
         {listingsStructuredData}
         <div className="max-w-8xl mx-auto w-full">
           <div className="rounded-xl border border-[#e5e7eb] bg-white py-12 px-6 text-center">
