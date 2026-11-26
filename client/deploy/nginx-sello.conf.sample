@@ -133,6 +133,17 @@ server {
         try_files $uri =404;
     }
 
+    # Estimator canonical is /car-estimator, without a trailing slash.
+    # Serve the prerendered file directly so Nginx's directory redirect cannot
+    # send crawlers to /car-estimator/ against the canonical and sitemap.
+    location = /car-estimator {
+        add_header Cache-Control "no-cache";
+        try_files /car-estimator/index.html /index.html;
+    }
+    location = /car-estimator/ {
+        return 301 /car-estimator$is_args$args;
+    }
+
     # --- Prerendered content pages (initial HTML holds real content) ---
     # Serve files directly; fall back to the SPA only for app routes below.
     location /about/        { try_files $uri $uri/ =404; }

@@ -297,6 +297,17 @@ app.get("/llms.txt", (_req, res) => {
 /* ------------------ SINGLE-SERVICE STATIC + SPA FALLBACK ------------------ */
 if (servesClient) {
   Logger.info(`Serving built client from ${clientDist}`);
+  // Exact estimator root only: preserve the existing no-slash canonical.
+  app.use((req, res, next) => {
+    if (!['GET', 'HEAD'].includes(req.method) || req.path !== '/car-estimator/') return next();
+    const queryIndex = req.originalUrl.indexOf('?');
+    return res.redirect(301, `/car-estimator${queryIndex >= 0 ? req.originalUrl.slice(queryIndex) : ''}`);
+  });
+  app.get('/car-estimator', (_req, res) => {
+    const estimatorShell = path.join(clientDist, 'car-estimator', 'index.html');
+    res.set('Cache-Control', 'no-cache');
+    res.sendFile(fs.existsSync(estimatorShell) ? estimatorShell : clientIndex);
+  });
   // Redirect only the duplicate listing root, retaining filters in old links.
   app.get(['/cars', '/cars/'], (req, res) => {
     const queryIndex = req.originalUrl.indexOf('?');
