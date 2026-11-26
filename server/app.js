@@ -167,6 +167,20 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 /* ------------------------------------ CORS ----------------------------------- */
 const allowedOrigins = SERVER_CONFIG.getAllowedOrigins();
 
+// The built public sitemap contains no private data. Keep browser extractors
+// independent of the API's authenticated-origin policy in single-service mode.
+if (servesClient) {
+  const publicSitemapCors = cors({ origin: '*', credentials: false, methods: ['GET', 'HEAD', 'OPTIONS'] });
+  app.options('/sitemap.xml', publicSitemapCors);
+  app.get('/sitemap.xml', publicSitemapCors, (_req, res) => {
+    res.type('application/xml');
+    res.set('Cache-Control', 'public, max-age=300, must-revalidate');
+    res.sendFile(path.join(clientDist, 'sitemap.xml'), (error) => {
+      if (error && !res.headersSent) res.status(error.statusCode || 500).type('text/plain').send('Sitemap unavailable');
+    });
+  });
+}
+
 app.use(
   cors({
     origin: (origin, callback) => {

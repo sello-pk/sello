@@ -121,7 +121,17 @@ server {
 
     # --- robots.txt + sitemap.xml: short cache so updates are picked up ---
     location = /robots.txt      { add_header Cache-Control "public, max-age=86400"; }
-    location = /sitemap.xml     { add_header Cache-Control "public, max-age=86400"; }
+    # Public XML only: browser-based extractors may read this across origins.
+    # Never serve the SPA shell when a sitemap file is missing.
+    location = /sitemap.xml {
+        types { application/xml xml; }
+        default_type application/xml;
+        add_header Access-Control-Allow-Origin "*" always;
+        add_header Access-Control-Allow-Methods "GET, HEAD, OPTIONS" always;
+        add_header Cache-Control "public, max-age=300, must-revalidate" always;
+        if ($request_method = OPTIONS) { return 204; }
+        try_files $uri =404;
+    }
 
     # --- Prerendered content pages (initial HTML holds real content) ---
     # Serve files directly; fall back to the SPA only for app routes below.
