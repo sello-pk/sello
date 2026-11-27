@@ -1,46 +1,17 @@
-import { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import SEO from "../components/common/SEO";
-import VehicleSelector, {
-  emptyVehicle,
-} from "../components/compare/VehicleSelector";
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { CarFront, Check, ChevronRight, LoaderCircle, Minus, Plus, X } from 'lucide-react';
+import SEO from '../components/common/SEO';
+import VehicleSelector from '../components/compare/VehicleSelector';
 import {
-  useCompareConfigQuery,
-  useCompareResultsMutation,
-  useCompareResearchMutation,
-  useCompareRecommendationMutation,
-} from "../redux/services/compareApi";
-import { useCarCategories } from "../hooks/useCarCategories";
+  useCompareCatalogQuery, useCompareConfigQuery, useCompareResultsMutation,
+  useCompareResearchMutation, useCompareRecommendationMutation,
+} from '../redux/services/compareApi';
 import {
-  compareGroups,
-  compareFields,
-  defaultCompareContent,
-  runningCost,
-  fieldMap,
-} from "../constants/carCompare.js";
+  basicFields, featureFields, fuelFields, electricFields, priceFields, defaultCompareContent,
+} from '../constants/carCompare.js';
 
-const button =
-  "rounded-lg bg-primary-500 px-5 py-3 font-semibold text-[#0A1025] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50";
-const outlineButton =
-  "rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50";
-const format = (value) =>
-  typeof value === "boolean"
-    ? value
-      ? "Yes"
-      : "No"
-    : typeof value === "number"
-      ? value.toLocaleString("en-PK")
-      : value;
-const money = (value) => `PKR ${Math.round(value).toLocaleString("en-PK")}`;
-const name = (row) =>
-  `${row.make} ${row.model} ${row.year} ${row.variant || "(variant unspecified)"}`;
-const date = (value) =>
-  value
-    ? new Date(value).toLocaleString("en-PK", {
-        dateStyle: "medium",
-        timeStyle: "short",
-      })
-    : "";
+const emptyVehicle = () => ({ makeId: '', modelId: '', yearId: '', variant: '', fuelType: '', transmission: '' });
 const selectionKey = (rows) =>
   JSON.stringify(
     rows.map((row) => [
@@ -51,6 +22,8 @@ const selectionKey = (rows) =>
         .trim()
         .replace(/\s+/g, " ")
         .toLowerCase(),
+      row.fuelType,
+      row.transmission,
     ]),
   );
 function readSelection(search) {
@@ -66,7 +39,9 @@ function readSelection(search) {
           ["makeId", "modelId", "yearId"].every(
             (key) => typeof row[key] === "string",
           ) &&
-          (row.variant === undefined || typeof row.variant === "string"),
+          (row.variant === undefined || typeof row.variant === "string") &&
+          typeof row.fuelType === 'string' &&
+          typeof row.transmission === 'string',
       )
     )
       return rows.map((row) => ({
@@ -74,6 +49,8 @@ function readSelection(search) {
         modelId: row.modelId,
         yearId: row.yearId,
         variant: row.variant || "",
+        fuelType: row.fuelType,
+        transmission: row.transmission,
       }));
   } catch {
     /* Invalid share URLs start with an empty form. */
@@ -81,30 +58,34 @@ function readSelection(search) {
   return null;
 }
 const researchMessages = {
-  waiting: "Searching the web for this vehicle…",
+  waiting: "Collecting Pakistan-market sources and extracting specs…",
   not_configured:
-    "Research service needs configuration. Please try again later.",
+    "JAG9 research is not configured on the server. Set JAG9_API_KEY, JAG9_BASE_URL and JAG9_MODEL.",
   ai_credentials:
-    "Research service could not authenticate. Please try again later.",
+    "Research provider authentication failed. Provider calls are paused until credentials are fixed.",
   ai_capacity: "Research is temporarily limited. Please retry shortly.",
-  ai_quota: "Live research is temporarily unavailable. Please try again later.",
-  ai_unavailable: "Research service is temporarily unavailable.",
+  ai_quota: "Research provider quota is exhausted. Provider calls are paused.",
+  ai_unavailable: "Research provider is temporarily unavailable.",
   timeout: "Research timed out. You can retry this vehicle.",
   failed: "Research could not finish. Please try again.",
   no_data:
     "Reliable information for this Pakistan-market selection could not be established.",
   ai_incomplete: "Research returned an incomplete response. Please retry.",
-  search_unavailable: "Live search did not complete. Please retry.",
+  search_unavailable:
+    "No usable Pakistan-market source pages could be fetched for this selection.",
 };
 function friendlyError(error) {
-  if (error?.status === 404)
+  if (error?.status === 404 || error?.originalStatus === 404)
     return "The comparison service has not been deployed to the connected API yet.";
   if (error?.status === 429)
     return "Too many research requests. Please wait a minute and retry.";
-  return (
-    error?.data?.message ||
-    "The comparison service could not be reached. Please try again."
-  );
+  if (error?.status === 'TIMEOUT_ERROR')
+    return 'The comparison request timed out. Please try again.';
+  const apiMessage = typeof error?.data?.message === 'string' ? error.data.message.trim() : '';
+  if (apiMessage) return apiMessage;
+  if (import.meta.env.DEV && (error?.status === 'FETCH_ERROR' || error?.status >= 500 || error?.originalStatus >= 500))
+    return 'The local comparison API is unavailable. Check that the SELLO server is running and reachable, then try again.';
+  return "The comparison service could not be reached. Please try again.";
 }
 export function SeoSections({ sections = defaultCompareContent }) {
   return (
@@ -136,817 +117,363 @@ export function SeoSections({ sections = defaultCompareContent }) {
     </section>
   );
 }
-function Evidence({ entry, label = "Source" }) {
-  if (!entry?.sourceUrl) return null;
+
+const action = 'inline-flex items-center justify-center gap-2 rounded-xl bg-primary-500 px-6 py-3 font-bold text-[#0A1025] hover:bg-primary-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60';
+const number = value => value.toLocaleString('en-PK');
+const vehicleName = ({ make, model, year }) => `${make} ${model} ${year}`;
+const isElectric = vehicle => vehicle.fuelType === 'Electric (EV)';
+const isElectrified = vehicle => isElectric(vehicle) || vehicle.fuelType === 'Plug-in Hybrid (PHEV)';
+const sourceName = url => new URL(url).hostname.replace(/^www\./, '');
+
+function Value({ entry, type, unit, loading, applicable = true }) {
+  if (!applicable) return <span className="text-slate-500">Not applicable</span>;
+  if (loading) return <span className="text-slate-500">Researching…</span>;
+  if (!entry?.sourceUrl || entry.value === 'NOT_VERIFIED') {
+    return <span className="inline-flex items-center gap-1.5 text-slate-500"><Minus size={14} aria-hidden="true" />Not Verified</span>;
+  }
+  const { value } = entry;
+  const priceLabel = { current: 'Current', historical: 'Historical', undated: 'Date unverified', estimate: 'Estimated' }[entry.priceKind];
   return (
-    <a
-      className="ml-2 inline-block rounded border border-primary-200 px-2 py-1 text-xs font-medium text-[#0A1025] underline decoration-primary-500 underline-offset-2 focus-visible:outline focus-visible:outline-2"
-      href={entry.sourceUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={`${label}, opens in a new tab`}
-    >
-      {label.startsWith("Source for ") ? "Source" : label}
-    </a>
-  );
-}
-function ValueCell({ entry, field, loading }) {
-  if (!entry)
-    return loading ? (
-      <span
-        className="inline-block h-4 w-20 animate-pulse rounded bg-slate-200"
-        aria-label="Research in progress"
-      />
-    ) : (
-      <span className="text-slate-500">Not Available</span>
-    );
-  return (
-    <>
-      <span>{format(entry.value)}</span>
-      <Evidence entry={entry} label={`Source for ${field.label}`} />
-      <span className="mt-1 block text-xs font-normal text-slate-600">
-        {entry.status === "estimate" ? "Estimate" : "Web-researched"}
-        {entry.priceKind && entry.priceKind !== "estimate"
-          ? ` · ${entry.priceKind === "undated" ? "Price date unavailable" : `${entry.priceKind} price`}`
-          : ""}
-        {entry.asOf ? ` · as of ${entry.asOf}` : ""}
-      </span>
-    </>
-  );
-}
-function Recommendation({ answer, rows }) {
-  if (!answer) return null;
-  return (
-    <div className="mt-5 space-y-5">
-      <p className="leading-relaxed">{answer.text}</p>
-      <div className="grid gap-4 md:grid-cols-2">
-        {answer.choices?.map((choice, index) => {
-          const row = rows.find((vehicle) => vehicle.key === choice.vehicleKey);
-          if (!row) return null;
-          return (
-            <article
-              key={`${choice.vehicleKey}-${index}`}
-              className="rounded-xl border border-slate-200 p-4"
-            >
-              <h3 className="font-bold">{name(row)}</h3>
-              <p className="mt-1 font-medium">{choice.purpose}</p>
-              <p className="mt-3 text-slate-700">{choice.reason}</p>
-              <p className="mt-3 text-sm text-slate-600">
-                <strong>Trade-off. </strong>
-                {choice.tradeOff}
-              </p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {choice.evidence.map((key) => (
-                  <Evidence
-                    key={key}
-                    entry={row.specs[key]}
-                    label={fieldMap[key]?.label || key}
-                  />
-                ))}
-              </div>
-            </article>
-          );
-        })}
-      </div>
-      {answer.cautions?.length > 0 && (
-        <div className="rounded-xl bg-slate-50 p-4">
-          <h3 className="font-semibold">Information to check before buying</h3>
-          <ul className="mt-2 list-disc space-y-2 pl-5 text-sm text-slate-700">
-            {answer.cautions.map((text, index) => (
-              <li key={index}>{text}</li>
-            ))}
-          </ul>
-        </div>
+    <div>
+      {type === 'feature' ? (
+        value === 'YES'
+          ? <span className="inline-flex items-center gap-1.5 font-semibold text-emerald-700"><Check size={16} aria-hidden="true" />Yes</span>
+          : <span className="inline-flex items-center gap-1.5 font-semibold text-rose-700"><X size={16} aria-hidden="true" />No</span>
+      ) : (
+        <span className="font-medium">
+          {type === 'range' ? `PKR ${value.map(number).join('–')}`
+            : type === 'price' ? `PKR ${number(value)}`
+            : typeof value === 'number' ? `${number(value)} ${unit || ''}` : value}
+        </span>
       )}
+      {entry.basis && <div className="text-xs text-slate-600">{entry.basis === 'manufacturer' ? 'Manufacturer claimed' : 'Real-world'}</div>}
+      {priceLabel && <div className="text-xs text-slate-600">{priceLabel}{entry.asOf ? ` · ${entry.asOf}` : ''}</div>}
+      <a href={entry.sourceUrl} target="_blank" rel="noopener noreferrer" aria-label={`Source from ${sourceName(entry.sourceUrl)}`} className="text-xs font-medium text-slate-600 underline decoration-[#E5B100] underline-offset-2">Source</a>
     </div>
   );
 }
+
+function ResultTable({ title, fields, rows, selected, economy = false }) {
+  return (
+    <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+      <h2 className="px-4 py-4 text-lg font-bold sm:px-6">{title}</h2>
+      <table className="w-full table-fixed border-collapse text-left text-sm">
+        <caption className="sr-only">{title}</caption>
+        <thead className="bg-[#0A1025] text-white">
+          <tr>
+            <th scope="col" className="w-[46%] px-4 py-3 sm:w-1/4 sm:px-6">{economy ? 'Metric' : 'Specification'}</th>
+            {rows.map((row, index) => <th key={row.key} scope="col" className={`break-words px-3 py-3 sm:table-cell ${index === selected ? '' : 'hidden'}`}>{vehicleName(row)}{row.variant && <span className="block text-xs font-normal text-slate-300">{row.variant}</span>}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {fields.map(([key, label, type, unit]) => (
+            <tr key={key} className="border-b border-slate-100 last:border-0 even:bg-slate-50">
+              <th scope="row" className="break-words px-4 py-3 font-medium sm:px-6">{label}{economy && <span className="block text-xs text-slate-500">{unit}</span>}</th>
+              {rows.map((row, index) => (
+                <td key={row.key} className={`break-words px-3 py-3 align-top sm:table-cell ${index === selected ? '' : 'hidden'}`}>
+                  <Value entry={type === 'feature' ? row.features?.[key] : row.specs?.[key]} type={type} unit={unit} loading={row.research.status === 'waiting'}
+                    applicable={
+                      key === 'engineCc' ? !isElectric(row)
+                        : key === 'batteryCapacity' ? isElectrified(row)
+                        : !economy || (unit === 'km/L' ? !isElectric(row) : isElectrified(row))
+                    } />
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  );
+}
+
 export default function CarCompare() {
   const location = useLocation();
-  const navigate = useNavigate();
+  // Same local compare API as validation — avoids prod-/api vs local-:4000 catalog ID drift.
+  const catalogQuery = useCompareCatalogQuery();
+  const catalogRows = Array.isArray(catalogQuery.data) ? catalogQuery.data : [];
+  const makes = useMemo(
+    () => catalogRows.filter((row) => row.subType === 'make'),
+    [catalogRows],
+  );
+  const years = useMemo(
+    () => catalogRows.filter((row) => row.subType === 'year'),
+    [catalogRows],
+  );
+  const getModelsByMake = useMemo(() => {
+    const map = {};
+    for (const row of catalogRows) {
+      if (row.subType !== 'model') continue;
+      const parent = String(row.parentCategory || '');
+      if (!map[parent]) map[parent] = [];
+      map[parent].push(row);
+    }
+    return map;
+  }, [catalogRows]);
+  const catalogLoading = catalogQuery.isLoading;
+  const catalogError = catalogQuery.isError;
+  const retryCatalog = () => catalogQuery.refetch();
   const { data: config } = useCompareConfigQuery();
-  const { makes, models, years } = useCarCategories("Car");
-  const catalog = [...makes, ...models, ...years];
-  const [vehicles, setVehicles] = useState(
-    () => readSelection(location.search) || [emptyVehicle(), emptyVehicle()],
-  );
-  const [submitted, setSubmitted] = useState(() =>
-    readSelection(location.search),
-  );
-  const [results, setResults] = useState([]);
-  const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
-  const [researching, setResearching] = useState(false);
-  const [attempt, setAttempt] = useState(0);
-  const [retryIndex, setRetryIndex] = useState(null);
-  const [differences, setDifferences] = useState(false);
-  const [mobileVehicle, setMobileVehicle] = useState(0);
-  const [costs, setCosts] = useState({
-    distance: 1000,
-    fuelPrice: "",
-    tariff: "",
-    mode: "combinedEconomy",
-  });
-  const [priorities, setPriorities] = useState([]);
+  const [vehicles, setVehicles] = useState(() => readSelection(location.search) || [emptyVehicle(), emptyVehicle()]);
+  const [rows, setRows] = useState([]);
+  const [selected, setSelected] = useState(0);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
   const [answer, setAnswer] = useState(null);
-  const [summaryError, setSummaryError] = useState("");
-  const [summaryAttempt, setSummaryAttempt] = useState(0);
-  const [answerBasis, setAnswerBasis] = useState("");
-  const optionsRef = useRef({ costs, priorities });
-  optionsRef.current = { costs, priorities };
-  const resultRef = useRef(null);
-  const [getResults, { isLoading: validating }] = useCompareResultsMutation();
+  const [shareUrl, setShareUrl] = useState('');
+  const [shareStatus, setShareStatus] = useState('');
+  const [summarizing, setSummarizing] = useState(false);
+  const active = useRef(null);
+  const resultsRef = useRef(null);
+  const [getResults] = useCompareResultsMutation();
   const [research] = useCompareResearchMutation();
-  const [recommend, { isLoading: summarizing }] =
-    useCompareRecommendationMutation();
-  const stale = submitted && selectionKey(vehicles) !== selectionKey(submitted);
-  const basis = JSON.stringify({ costs, priorities });
-  const busy = validating || researching;
-  useEffect(() => {
-    if (config?.fuelPrice)
-      setCosts((previous) => ({
-        ...previous,
-        fuelPrice: previous.fuelPrice || config.fuelPrice,
-      }));
-  }, [config?.fuelPrice]);
-  useEffect(() => {
-    const selected = readSelection(location.search);
-    if (!selected) return;
-    let active = true;
+  const [recommend] = useCompareRecommendationMutation();
+
+  useEffect(() => () => {
+    active.current?.forEach(request => request.abort());
+    active.current = null;
+  }, []);
+
+  const changeVehicles = next => {
+    active.current?.forEach(request => request.abort());
+    active.current = null;
+    setVehicles(next);
+    setShareUrl('');
+    setShareStatus('');
+    setRows([]);
+    setAnswer(null);
+    setError('');
+    setBusy(false);
+    setSummarizing(false);
+  };
+
+  const researchRow = async (vehicle, index, requests) => {
+    const request = research(vehicle);
+    requests.push(request);
+    try {
+      const result = await request.unwrap();
+      if (active.current === requests) setRows(previous => previous.map((row, pos) => pos === index ? result : row));
+      return result;
+    } catch (failure) {
+      if (active.current === requests) setRows(previous => previous.map((row, pos) => pos === index
+        ? { ...row, research: { status: 'failed' }, error: friendlyError(failure) }
+        : row));
+      return null;
+    }
+  };
+
+  const summarize = async (results, requests) => {
+    if (active.current !== requests) return;
+    setBusy(false);
+    const researched = results.filter(row => row?.researchId);
+    if (researched.filter(row => row.research.found > 0).length < 2) {
+      setAnswer({ text: '', reason: 'no_data' });
+      return;
+    }
+    setSummarizing(true);
+    const request = recommend({ researchIds: researched.map(row => row.researchId) });
+    requests.push(request);
+    try {
+      const response = await request.unwrap();
+      if (active.current === requests) setAnswer(response);
+    } catch (failure) {
+      if (active.current === requests) setAnswer({ text: '', error: friendlyError(failure) });
+    } finally {
+      if (active.current === requests) setSummarizing(false);
+    }
+  };
+
+  const submit = async event => {
+    event.preventDefault();
+    if (busy || summarizing) return;
+    if (vehicles.some(row => !row.makeId || !row.modelId || !row.yearId || !row.fuelType || !row.transmission)) {
+      setError('Select a brand, model, year, fuel type and transmission for each vehicle.');
+      return;
+    }
+    if (new Set(vehicles.map(row => selectionKey([row]))).size !== vehicles.length) {
+      setError('Choose different vehicles, years or variants.');
+      return;
+    }
     const requests = [];
-    const call = (promise) => {
-      requests.push(promise);
-      return promise.unwrap();
-    };
-    async function load() {
-      setError("");
-      setNotice("");
-      setAnswer(null);
-      setResearching(true);
-      try {
-        const rows = await call(getResults(selected));
-        if (!active) return;
-        setSubmitted(selected);
-        setResults(rows);
-        resultRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-        await Promise.allSettled(
-          selected.map(async (vehicle, index) => {
-            try {
-              const updated = await call(research(vehicle));
-              if (active)
-                setResults((previous) =>
-                  previous.map((row, position) =>
-                    position === index ? updated : row,
-                  ),
-                );
-            } catch (failure) {
-              if (active) {
-                setError(friendlyError(failure));
-                setResults((previous) =>
-                  previous.map((row, position) =>
-                    position === index
-                      ? { ...row, research: { status: "failed" } }
-                      : row,
-                  ),
-                );
-              }
-            }
-          }),
-        );
-      } catch (failure) {
-        if (active) setError(friendlyError(failure));
-      } finally {
-        if (active) setResearching(false);
+    active.current = requests;
+    setBusy(true);
+    setSelected(0);
+    setShareStatus('');
+    setRows([]);
+    setError('');
+    setAnswer(null);
+    try {
+      const request = getResults(vehicles);
+      requests.push(request);
+      const validated = await request.unwrap();
+      if (active.current !== requests) return;
+      setRows(validated);
+      const slug = validated.map(row => `${vehicleName(row)} ${row.variant}`.trim()).join('-vs-').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      setShareUrl(new URL(`/cars/compare/${slug}?vehicles=${encodeURIComponent(JSON.stringify(vehicles))}`, window.location.origin).href);
+      resultsRef.current?.scrollIntoView({ block: 'start' });
+      const found = await Promise.all(vehicles.map((vehicle, index) => researchRow(vehicle, index, requests)));
+      await summarize(found, requests);
+    } catch (failure) {
+      if (active.current === requests) {
+        setBusy(false);
+        setError(friendlyError(failure));
       }
     }
-    load();
-    return () => {
-      active = false;
-      requests.forEach((request) => request.abort());
-    };
-  }, [location.search, attempt, getResults, research]);
-  useEffect(() => {
-    if (!results.length || researching || retryIndex !== null) return;
-    const ids = results.map((row) => row.researchId);
-    if (ids.some((id) => !id)) {
-      setSummaryError(
-        "Retry unavailable vehicles to prepare a recommendation.",
-      );
-      return;
-    }
-    let active = true;
-    const options = optionsRef.current;
-    const request = recommend({ researchIds: ids, ...options });
-    setSummaryError("");
-    request
-      .unwrap()
-      .then((response) => {
-        if (!active) return;
-        setAnswer(response.text ? response : null);
-        setAnswerBasis(JSON.stringify(options));
-        if (!response.text)
-          setSummaryError(
-            response.reason === "expired"
-              ? "Research expired. Compare again to retrieve current specifications."
-              : "There is insufficient reliable information for a recommendation.",
-          );
-      })
-      .catch((failure) => {
-        if (active) setSummaryError(friendlyError(failure));
-      });
-    return () => {
-      active = false;
-      request.abort();
-    };
-  }, [results, researching, retryIndex, recommend, summaryAttempt]);
-  const submit = (event) => {
-    event.preventDefault();
-    if (
-      vehicles.some(
-        (vehicle) => !vehicle.makeId || !vehicle.modelId || !vehicle.yearId,
-      )
-    ) {
-      setError(
-        "Select a brand, model and year for each vehicle. Variant is optional.",
-      );
-      return;
-    }
-    if (
-      new Set(vehicles.map((vehicle) => selectionKey([vehicle]))).size !==
-      vehicles.length
-    ) {
-      setError("Choose different vehicles, years or variants.");
-      return;
-    }
-    setError("");
-    setNotice("");
-    setResults([]);
+  };
+
+  const retry = async index => {
+    const requests = [];
+    active.current = requests;
+    setBusy(true);
     setAnswer(null);
-    setSubmitted(vehicles);
-    const slug = vehicles
-      .map((vehicle) =>
-        [
-          catalog.find((row) => row._id === vehicle.makeId)?.name,
-          catalog.find((row) => row._id === vehicle.modelId)?.name,
-          catalog.find((row) => row._id === vehicle.yearId)?.name,
-          vehicle.variant,
-        ]
-          .filter(Boolean)
-          .join("-"),
-      )
-      .join("-vs-")
-      .toLowerCase()
-      .replace(/[^a-z0-9-]/g, "-");
-    const target = `/cars/compare/${slug}?vehicles=${encodeURIComponent(JSON.stringify(vehicles))}`;
-    if (`${location.pathname}${location.search}` === target)
-      setAttempt((previous) => previous + 1);
-    else navigate(target);
+    let baseline = [];
+    setRows(previous => {
+      baseline = previous.map((row, pos) => (
+        pos === index
+          ? { ...row, error: '', research: { status: 'waiting', found: 0, total: row.research?.total || featureFields.length } }
+          : row
+      ));
+      return baseline;
+    });
+    const result = await researchRow(vehicles[index], index, requests);
+    const merged = baseline.map((row, pos) => (pos === index ? (result || { ...row, research: { status: 'failed' }, error: row.error || researchMessages.failed }) : row));
+    await summarize(merged, requests);
   };
-  const retry = async (index) => {
-    if (!submitted || stale || retryIndex !== null) return;
-    setRetryIndex(index);
-    setError("");
-    try {
-      const updated = await research(submitted[index]).unwrap();
-      setResults((previous) =>
-        previous.map((row, position) => (position === index ? updated : row)),
-      );
-    } catch (failure) {
-      setError(friendlyError(failure));
-    } finally {
-      setRetryIndex(null);
-    }
-  };
-  const title = results.length
-    ? `${results.map(name).join(" vs ")} | SELLO`
-    : "Car Compare in Pakistan | SELLO";
-  const shownMobileVehicle = Math.min(
-    mobileVehicle,
-    Math.max(0, results.length - 1),
-  );
+
+  const allElectric = rows.length > 0 && rows.every(isElectric);
+  const hasElectrified = rows.some(isElectrified);
+  const economyFields = allElectric ? electricFields : hasElectrified ? [...fuelFields, ...electricFields] : fuelFields;
+  const sources = [...new Set(rows.flatMap(row => [...Object.values(row.specs || {}), ...Object.values(row.features || {})].map(entry => entry.sourceUrl).filter(Boolean)))];
+
   return (
-    <main className="min-h-screen bg-slate-50 py-10 text-[#0A1025]">
-      <SEO
-        title={title}
-        description="Compare Pakistan-market cars, prices, fuel averages, safety and running costs with cited live research."
-        keywords="
-car comparison Pakistan,compare cars in Pakistan,car comparison tool,compare car prices in Pakistan,car specifications comparison,car features comparison,compare two cars online,car price comparison Pakistan,new car comparison Pakistan,used car comparison Pakistan
-"
-        canonical="https://sello.pk/cars/compare"
-        robots={location.search ? "noindex, follow" : "index, follow"}
-      />
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="mb-8 max-w-2xl">
-          <p className="mb-2 font-semibold">SELLO Car Compare</p>
-          <h1 className="text-3xl font-bold tracking-tight sm:text-5xl">
-            Find the car that fits your life.
-          </h1>
-          <p className="mt-4 text-slate-600">
-            Compare two or three Pakistan-market vehicles using live research.
-            Add a variant for more specific equipment and prices, or leave it
-            open.
-          </p>
+    <main className="min-h-screen bg-slate-50 pb-12 text-[#0A1025]">
+      <SEO title={rows.length ? rows.map(vehicleName).join(' vs ') : 'Car Compare in Pakistan'}
+        description="Compare Pakistan-market car specifications, features, fuel averages and prices with live research."
+        canonical="https://sello.pk/cars/compare" robots={location.search ? 'noindex, follow' : 'index, follow'} />
+      <header className="border-b-4 border-[#E5B100] bg-[#0A1025] text-white">
+        <div className="mx-auto max-w-6xl px-4 pb-14 pt-10 sm:px-6 sm:pb-20 sm:pt-16">
+          <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">Compare cars</h1>
+          <p className="mt-4 max-w-xl text-slate-300">Compare the specs, features, fuel averages and prices of up to three cars in Pakistan.</p>
         </div>
-        <form onSubmit={submit} aria-label="Choose comparison vehicles">
-          <div className="grid gap-5 md:grid-cols-3">
+      </header>
+      <div className="mx-auto -mt-6 max-w-6xl px-4 sm:px-6">
+        <form onSubmit={submit} aria-label="Choose comparison vehicles" className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-xl font-bold">Choose vehicles</h2>
+            {vehicles.length === 2 && <button type="button" onClick={() => changeVehicles([...vehicles, emptyVehicle()])} className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-semibold hover:bg-slate-50"><Plus size={16} aria-hidden="true" />Add third car</button>}
+          </div>
+          {catalogError && <p role="alert" className="mt-3 text-sm text-rose-700">Could not load vehicle options. <button type="button" className="underline" onClick={retryCatalog}>Try again</button></p>}
+          <div className={`mt-4 grid gap-4 sm:grid-cols-2 ${vehicles.length === 3 ? 'lg:grid-cols-3' : ''}`}>
             {vehicles.map((vehicle, index) => (
-              <div key={index} className="rounded-2xl border bg-white p-5">
-                <VehicleSelector
-                  value={vehicle}
-                  index={index + 1}
-                  onChange={(value) =>
-                    setVehicles((previous) =>
-                      previous.map((row, position) =>
-                        position === index ? value : row,
-                      ),
-                    )
-                  }
-                />
-                <button
-                  type="button"
-                  className="mt-4 text-sm underline"
-                  onClick={() =>
-                    setVehicles((previous) =>
-                      previous.length === 3
-                        ? previous.filter((_, position) => position !== index)
-                        : previous.map((row, position) =>
-                            position === index ? emptyVehicle() : row,
-                          ),
-                    )
-                  }
-                >
-                  Remove vehicle {index + 1}
-                </button>
+              <div key={index} className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <VehicleSelector value={vehicle} index={index + 1} makes={makes} models={getModelsByMake[vehicle.makeId]} years={years} loading={catalogLoading}
+                  onChange={value => changeVehicles(vehicles.map((row, pos) => pos === index ? value : row))} />
+                {vehicles.length === 3 && <button type="button" className="mt-3 text-sm underline" onClick={() => changeVehicles(vehicles.filter((_, pos) => pos !== index))}>Remove vehicle {index + 1}</button>}
               </div>
             ))}
-            {vehicles.length === 2 && (
-              <button
-                type="button"
-                className="min-h-28 rounded-2xl border-2 border-dashed p-6 hover:bg-white"
-                onClick={() =>
-                  setVehicles((previous) => [...previous, emptyVehicle()])
-                }
-              >
-                + Add a third car
-              </button>
-            )}
           </div>
-          <button disabled={busy && !stale} className={`${button} mt-5`}>
-            {busy && !stale
-              ? "Researching vehicles…"
-              : stale
-                ? "Update comparison"
-                : "Compare cars"}
-          </button>
+          <div className="mt-5 flex flex-wrap items-center gap-4">
+            <button className={action} type="submit" disabled={busy || summarizing || catalogLoading || catalogError}>Compare cars <ChevronRight size={18} aria-hidden="true" /></button>
+            {busy && <span role="status" className="inline-flex items-center gap-2 text-sm text-slate-600"><LoaderCircle size={18} aria-hidden="true" className="motion-safe:animate-spin" />{rows.length ? 'Researching selected vehicles…' : 'Checking vehicle selections…'}</span>}
+          </div>
+          {rows.length > 0 && shareUrl && (
+            <div className="mt-3">
+              <button type="button" className="text-sm font-semibold underline" onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(shareUrl);
+                  setShareStatus('copied');
+                } catch {
+                  setShareStatus('manual');
+                }
+              }}>Copy comparison link</button>
+              {shareStatus === 'copied' && <span role="status" className="ml-2 text-sm text-slate-600">Link copied</span>}
+              {shareStatus === 'manual' && <input aria-label="Comparison link" readOnly value={shareUrl} onFocus={event => event.target.select()} className="mt-2 w-full rounded-lg border p-2 text-sm" />}
+            </div>
+          )}
+          {error && <p role="alert" className="mt-3 text-sm text-rose-700">{error}</p>}
         </form>
-        {error && (
-          <p
-            role="alert"
-            className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-red-800"
-          >
-            {error}
-          </p>
-        )}
-        {notice && (
-          <p role="status" className="mt-4 text-sm text-slate-700">
-            {notice}
-          </p>
-        )}
-        {stale && (
-          <p
-            role="status"
-            className="mt-4 rounded-lg border border-primary-200 bg-primary-50 p-4"
-          >
-            Selections changed. Results below describe the previous selections.
-            Click Update comparison to research your new choices.
-          </p>
-        )}
-        <div ref={resultRef} className="scroll-mt-6" />
-        {results.length > 0 && (
-          <section
-            className="mt-10"
-            aria-label="Comparison results"
-            aria-busy={busy}
-          >
-            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-2xl font-bold">
-                {stale ? "Previous comparison" : "Your comparison"}
-              </h2>
-              <div className="flex items-center gap-4">
-                <label className="text-sm">
-                  <input
-                    type="checkbox"
-                    checked={differences}
-                    onChange={(event) => setDifferences(event.target.checked)}
-                  />{" "}
-                  Show differences only
-                </label>
-                <button
-                  className={outlineButton}
-                  disabled={stale}
-                  onClick={async () => {
-                    try {
-                      await navigator.clipboard.writeText(window.location.href);
-                      setNotice(
-                        "Comparison link copied. Shared links run fresh research.",
-                      );
-                    } catch {
-                      setNotice(
-                        "Copy the page URL from your address bar to share this comparison.",
-                      );
-                    }
-                  }}
-                >
-                  Copy share link
-                </button>
-              </div>
-            </div>
-            {researching && (
-              <p role="status" className="mb-4 text-sm">
-                Researching each vehicle independently. Results appear as each
-                search finishes.
-              </p>
-            )}
-            <div className="mb-6 grid gap-4 md:grid-cols-3" aria-live="polite">
-              {results.map((row, index) => {
-                const loading =
-                  row.research?.status === "waiting" || retryIndex === index;
-                const count = Object.keys(row.specs).length;
-                return (
-                  <article
-                    key={row.key}
-                    className="rounded-xl border bg-white p-5"
-                  >
-                    <h3 className="font-bold">{name(row)}</h3>
-                    <p className="mt-3 font-semibold">
-                      {count} of {compareFields.length} specifications found
+
+        <div ref={resultsRef} className="scroll-mt-24">
+          {rows.length > 0 && (
+            <div className="mt-8 space-y-5">
+              <section aria-label="Selected vehicles" className="grid grid-cols-2 gap-2 sm:gap-4" style={{ gridTemplateColumns: `repeat(${rows.length}, minmax(0, 1fr))` }}>
+                {rows.map((row, index) => (
+                  <article key={row.key} className="min-w-0 break-words rounded-xl border border-slate-200 bg-white p-2.5 sm:p-5">
+                    <CarFront size={22} className="mb-2 text-[#0A1025]" aria-hidden="true" />
+                    <h2 className="text-sm font-bold sm:text-xl">{row.make} {row.model}</h2>
+                    <p className="mt-1 text-xs text-slate-600 sm:text-sm">{row.year} · {row.variant || 'Variant unspecified'}</p>
+                    <p className="mt-1 text-xs font-medium text-slate-700">
+                      <span className="text-slate-500">Selected:</span> {row.fuelType} · {row.transmission}
                     </p>
-                    <div
-                      role="progressbar"
-                      aria-label={`Research completeness for ${name(row)}`}
-                      aria-valuemin={0}
-                      aria-valuemax={compareFields.length}
-                      aria-valuenow={count}
-                      className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200"
-                    >
-                      <div
-                        className="h-full bg-primary-500"
-                        style={{
-                          width: `${(count / compareFields.length) * 100}%`,
-                        }}
-                      />
-                    </div>
-                    {row.research?.retrievedAt && (
-                      <p className="mt-2 text-xs text-slate-600">
-                        Researched {date(row.research.retrievedAt)}
+                    <dl className="mt-3 space-y-2 text-xs sm:text-sm">
+                      {basicFields.filter(([key]) => ['engineCc', 'transmission', 'fuelType'].includes(key)).map(([key, label, type, unit]) => (
+                        <div key={key}>
+                          <dt className="text-slate-600">{key === 'engineCc' ? 'Engine' : `Researched ${label}`}</dt>
+                          <dd>
+                            <Value
+                              entry={row.specs?.[key]}
+                              type={type}
+                              unit={unit}
+                              loading={row.research.status === 'waiting'}
+                              applicable={key !== 'engineCc' || !isElectric(row)}
+                            />
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                    {researchMessages[row.research.status] && (
+                      <div className="mt-3 border-t pt-2 text-xs text-slate-600">
+                        <p role="status">{row.error || researchMessages[row.research.status]}</p>
+                        {!['waiting', 'no_data'].includes(row.research.status) && <button type="button" disabled={busy || summarizing} onClick={() => retry(index)} className="mt-2 font-semibold underline disabled:opacity-50">Retry research</button>}
+                      </div>
+                    )}
+                    {row.research.mismatch && (
+                      <p role="alert" className="mt-3 border-t pt-2 text-xs font-medium text-amber-800">
+                        Fuel type or transmission from research does not match your selection. Treat these specs as unverified until you check the cited source.
                       </p>
                     )}
-                    {!row.variant && (
-                      <p className="mt-2 text-xs text-slate-600">
-                        Shared model-year facts. Equipment that varies by trim
-                        stays unavailable.
-                      </p>
-                    )}
-                    {researchMessages[row.research?.status] && (
-                      <p className="mt-2 text-sm text-slate-600">
-                        {researchMessages[row.research.status]}
-                      </p>
-                    )}
-                    {!loading &&
-                      !busy &&
-                      row.research?.status !== "complete" && (
-                        <button
-                          className={`${outlineButton} mt-3`}
-                          disabled={stale || retryIndex !== null}
-                          onClick={() => retry(index)}
-                        >
-                          Retry {row.make} {row.model}
-                        </button>
-                      )}
                   </article>
-                );
-              })}
-            </div>
-            <p className="mb-4 text-sm text-slate-600">
-              Values link to supporting sources. Estimates are marked
-              separately. A current price requires a documented source date
-              within 90 days; older prices are historical. Undated prices may be
-              outdated.
-            </p>
-            <nav
-              aria-label="Comparison sections"
-              className="mb-5 flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            >
-              {compareGroups.map((group, index) => (
-                <a
-                  className="whitespace-nowrap rounded-full border bg-white px-4 py-2 text-sm"
-                  key={group.title}
-                  href={`#compare-group-${index}`}
-                >
-                  {group.title}
-                </a>
-              ))}
-            </nav>
-            <div className="mb-4 md:hidden">
-              <label className="block text-sm font-semibold">
-                Vehicle to view
-                <select
-                  aria-label="Vehicle to view on mobile"
-                  className="mt-2 w-full rounded-lg border bg-white p-3"
-                  value={shownMobileVehicle}
-                  onChange={(event) =>
-                    setMobileVehicle(Number(event.target.value))
-                  }
-                >
-                  {results.map((row, index) => (
-                    <option value={index} key={row.key}>
-                      {name(row)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-            <div className="rounded-xl border bg-white">
-              <table className="w-full table-fixed text-left text-sm">
-                <thead className="sticky top-14 z-10 bg-slate-100">
-                  <tr>
-                    <th scope="col" className="w-[42%] p-3 md:w-1/4">
-                      Specification
-                    </th>
-                    {results.map((row, index) => (
-                      <th
-                        scope="col"
-                        key={row.key}
-                        className={`${index !== shownMobileVehicle ? "hidden md:table-cell" : ""} break-words p-3`}
-                      >
-                        {name(row)}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {compareGroups.map((group, groupIndex) => {
-                    const fields = group.fields.filter(
-                      (field) =>
-                        !differences ||
-                        new Set(
-                          results.map((row) =>
-                            JSON.stringify(row.specs[field.key]?.value ?? null),
-                          ),
-                        ).size > 1,
-                    );
-                    if (!fields.length) return null;
-                    return (
-                      <GroupRows
-                        key={group.title}
-                        group={group}
-                        groupIndex={groupIndex}
-                        fields={fields}
-                        results={results}
-                        mobileVehicle={shownMobileVehicle}
-                        retryIndex={retryIndex}
-                      />
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-            <section className="mt-8 rounded-2xl border bg-white p-5 sm:p-6">
-              <h2 className="text-2xl font-bold">Fuel and electricity costs</h2>
-              <p className="mt-2 text-sm text-slate-600">
-                Calculated from your distance, energy price and the selected
-                consumption figure. Electricity costs exclude charging losses
-                and other ownership expenses.
-              </p>
-              {config?.fuelDate && (
-                <p className="mt-2 text-sm">
-                  Configured petrol price effective{" "}
-                  {new Date(config.fuelDate).toLocaleDateString("en-PK")}. You
-                  can enter a different price.
-                </p>
-              )}
-              <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {[
-                  ["distance", "Monthly distance (km)"],
-                  ["fuelPrice", "Fuel price (PKR/litre)"],
-                  ["tariff", "Electricity tariff (PKR/kWh)"],
-                ].map(([key, label]) => (
-                  <label key={key} className="text-sm">
-                    {label}
-                    <input
-                      type="number"
-                      min="0"
-                      step="any"
-                      className="mt-1 block w-full rounded-lg border p-3"
-                      value={costs[key]}
-                      onChange={(event) =>
-                        setCosts({ ...costs, [key]: event.target.value })
-                      }
-                    />
-                  </label>
                 ))}
-                <label className="text-sm">
-                  Fuel average
-                  <select
-                    className="mt-1 block w-full rounded-lg border bg-white p-3"
-                    value={costs.mode}
-                    onChange={(event) =>
-                      setCosts({ ...costs, mode: event.target.value })
-                    }
-                  >
-                    {[
-                      ["cityEconomy", "City"],
-                      ["highwayEconomy", "Highway"],
-                      ["combinedEconomy", "Combined"],
-                    ].map(([value, label]) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+              </section>
+              <div className="sticky top-16 z-10 rounded-xl border bg-white p-2 shadow-sm sm:hidden" role="group" aria-label="Vehicle shown in comparison tables">
+                <div className="flex gap-1">
+                  {rows.map((row, index) => <button type="button" key={row.key} aria-pressed={selected === index} onClick={() => setSelected(index)}
+                    className={`min-w-0 flex-1 break-words rounded-lg px-1 py-2 text-xs font-semibold ${selected === index ? 'bg-[#0A1025] text-white' : 'bg-slate-100'}`}>{row.make} {row.model} {row.year}{row.variant && <span className="block">{row.variant}</span>}</button>)}
+                </div>
               </div>
-              <div className="mt-6 grid gap-4 md:grid-cols-3">
-                {results.map((row) => {
-                  const cost = runningCost(
-                    row.specs,
-                    costs.distance,
-                    costs.fuelPrice,
-                    costs.tariff,
-                    costs.mode,
-                  );
-                  return (
-                    <article
-                      className="rounded-xl bg-slate-50 p-4"
-                      key={row.key}
-                    >
-                      <h3 className="font-bold">{name(row)}</h3>
-                      {cost ? (
-                        <>
-                          <p className="mt-2 text-xl">
-                            {money(cost.monthly)} / month
-                          </p>
-                          <p>{money(cost.annual)} / year</p>
-                          <Evidence
-                            entry={
-                              row.specs[
-                                cost.electric ? "energyConsumption" : costs.mode
-                              ]
-                            }
-                            label="Consumption source"
-                          />
-                        </>
-                      ) : (
-                        <p className="mt-2 text-sm text-slate-600">
-                          Not Available. Enter an energy price and select an
-                          available consumption figure.
-                        </p>
-                      )}
-                    </article>
-                  );
-                })}
-              </div>
-            </section>
-            <section
-              className="mt-8 rounded-2xl border bg-white p-5 sm:p-6"
-              aria-label="AI buying recommendation"
-            >
-              <h2 className="text-2xl font-bold">
-                SELLO AI buying recommendation
-              </h2>
-              <p className="mt-2 text-sm text-slate-600">
-                Generated from the researched facts and your calculated costs.
-                Select optional priorities, then update the recommendation.
-              </p>
-              <div className="my-5 flex flex-wrap gap-3">
-                {[
-                  "Fuel Saving",
-                  "Low Maintenance",
-                  "Resale Value",
-                  "Comfort",
-                  "Performance",
-                  "Family Use",
-                ].map((priority) => (
-                  <label
-                    key={priority}
-                    className="rounded-lg border px-3 py-2 text-sm"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={priorities.includes(priority)}
-                      onChange={(event) =>
-                        setPriorities((previous) =>
-                          event.target.checked
-                            ? [...previous, priority]
-                            : previous.filter((item) => item !== priority),
-                        )
-                      }
-                    />{" "}
-                    {priority}
-                  </label>
-                ))}
-              </div>
-              {stale ? (
-                <p>
-                  Update the comparison to get advice for your new selections.
+              <ResultTable title="Basic specifications" fields={basicFields} rows={rows} selected={selected} />
+              <ResultTable title="Features comparison" fields={featureFields} rows={rows} selected={selected} />
+              <ResultTable
+                title={allElectric ? 'EV battery and range' : hasElectrified ? 'Fuel and EV energy' : 'Fuel averages'}
+                fields={economyFields}
+                rows={rows}
+                selected={selected}
+                economy
+              />
+              <ResultTable title="Price comparison" fields={priceFields} rows={rows} selected={selected} />
+              <section className="rounded-2xl border-l-4 border-[#E5B100] bg-[#0A1025] p-5 text-white sm:p-6">
+                <h2 className="text-lg font-bold">AI buying recommendation</h2>
+                <p aria-live="polite" className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-200">
+                  {answer?.text || answer?.error || (answer?.reason === 'expired' ? 'Research expired. Compare again for a new recommendation.'
+                    : answer?.reason === 'no_data' ? 'No sourced specifications were verified yet, so a recommendation cannot be made.'
+                    : answer?.reason === 'partial' ? 'Some vehicles are still missing sourced research. Review the tables above.'
+                    : answer ? 'A recommendation is temporarily unavailable.'
+                    : summarizing ? 'Preparing a recommendation…' : 'A recommendation will appear after research finishes.')}
                 </p>
-              ) : (
-                <>
-                  <button
-                    className={button}
-                    disabled={busy || summarizing || retryIndex !== null}
-                    onClick={() =>
-                      setSummaryAttempt((previous) => previous + 1)
-                    }
-                  >
-                    {summarizing
-                      ? "Preparing recommendation…"
-                      : "Update recommendation"}
-                  </button>
-                  {answer && answerBasis !== basis && (
-                    <p role="status" className="mt-3 text-sm">
-                      Your costs or priorities changed. Update the
-                      recommendation to include them.
-                    </p>
-                  )}
-                  {summaryError && (
-                    <p role="alert" className="mt-4 text-sm text-red-800">
-                      {summaryError}
-                    </p>
-                  )}
-                  <Recommendation answer={answer} rows={results} />
-                </>
+              </section>
+              {sources.length > 0 && (
+                <section className="rounded-2xl border border-slate-200 bg-white p-5">
+                  <h2 className="font-bold">Sources</h2>
+                  <ul className="mt-3 flex flex-wrap gap-2">
+                    {sources.map((url, index) => <li key={url}><a href={url} target="_blank" rel="noopener noreferrer" className="inline-block break-all rounded-full border px-3 py-1 text-sm underline decoration-[#E5B100] underline-offset-2" aria-label={`Source ${index + 1} from ${sourceName(url)}`}>{sourceName(url)}</a></li>)}
+                  </ul>
+                </section>
               )}
-            </section>
-          </section>
-        )}
+            </div>
+          )}
+        </div>
         <SeoSections sections={config?.sections || defaultCompareContent} />
       </div>
     </main>
-  );
-}
-function GroupRows({
-  group,
-  groupIndex,
-  fields,
-  results,
-  mobileVehicle,
-  retryIndex,
-}) {
-  return (
-    <>
-      <tr id={`compare-group-${groupIndex}`} className="scroll-mt-20">
-        <th
-          colSpan={results.length + 1}
-          className="hidden bg-[#0A1025] p-4 text-base text-white md:table-cell"
-        >
-          {group.title}
-        </th>
-        <th
-          colSpan={2}
-          className="bg-[#0A1025] p-4 text-base text-white md:hidden"
-        >
-          {group.title}
-        </th>
-      </tr>
-      {fields.map((field) => {
-        const numeric = results
-          .map((row) => row.specs[field.key]?.value)
-          .filter((value) => typeof value === "number");
-        const best =
-          field.better === "higher"
-            ? Math.max(...numeric)
-            : Math.min(...numeric);
-        return (
-          <tr key={field.key} className="border-b">
-            <th scope="row" className="break-words p-3 font-medium capitalize">
-              {field.label}
-              {field.unit && (
-                <span className="block text-xs font-normal normal-case text-slate-500">
-                  {field.unit}
-                </span>
-              )}
-            </th>
-            {results.map((row, index) => (
-              <td
-                key={row.key}
-                className={`${index !== mobileVehicle ? "hidden md:table-cell" : ""} break-words p-3 align-top ${field.better && new Set(numeric).size > 1 && row.specs[field.key]?.value === best ? "bg-primary-50 font-semibold" : ""}`}
-              >
-                <ValueCell
-                  entry={row.specs[field.key]}
-                  field={field}
-                  loading={
-                    row.research?.status === "waiting" || retryIndex === index
-                  }
-                />
-              </td>
-            ))}
-          </tr>
-        );
-      })}
-    </>
   );
 }

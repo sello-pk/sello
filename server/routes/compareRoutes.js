@@ -5,12 +5,24 @@ import { hasPermission } from '../middlewares/permissionMiddleware.js';
 import Category from '../models/categoryModel.js';
 import Car from '../models/carModel.js';
 import { CompareConfig } from '../models/compareModel.js';
+import { ensureDbConnected } from '../utils/ensureDb.js';
 import { getCompareMetrics } from '../services/compareMonitoring.js';
-import { compareVehicles, researchVehicle, recommendation, getCompareConfig, resolveVehicle } from '../services/compareService.js';
+import {
+  compareVehicles,
+  researchVehicle,
+  recommendation,
+  getCompareConfig,
+  resolveVehicle,
+  clearCompareResearchCache,
+  COMPARE_SCHEMA_VERSION,
+} from '../services/compareService.js';
 const router = express.Router();
 const handle = fn => async (req, res) => { try { res.json({ success: true, data: await fn(req) }); } catch (error) { res.status(error.status || 400).json({ success: false, message: error.message }); } };
 const aiLimit = rateLimit({ windowMs: 60000, max: 12 });
-router.get('/catalog', handle(async () => Category.find({ type: 'car', isActive: true, subType: { $in: ['make', 'model', 'year'] }, vehicleType: { $in: ['Car', null] } }).select('name subType parentCategory image').lean()));
+router.get('/catalog', handle(async () => {
+  ensureDbConnected();
+  return Category.find({ type: 'car', isActive: true, subType: { $in: ['make', 'model', 'year'] }, vehicleType: { $in: ['Car', null] } }).select('name subType parentCategory image').sort({ order: 1, name: 1 }).lean();
+}));
 router.get('/variants', handle(async req => {
   const identity = await resolveVehicle({ ...req.query, variant: 'lookup' });
   const listingVariants = await Car.distinct('variant', { make: identity.make, model: identity.model, year: identity.year });
@@ -18,13 +30,30 @@ router.get('/variants', handle(async req => {
 }));
 router.get('/config', handle(async () => {
   const config = await getCompareConfig();
-  return { aiResearch: config.aiResearch, aiSummary: config.aiSummary, sections: config.sections, fuelPrice: config.fuelPrice, fuelDate: config.fuelDate };
+  return {
+    aiResearch: config.aiResearch,
+    aiSummary: config.aiSummary,
+    sections: config.sections,
+    fuelPrice: config.fuelPrice,
+    fuelDate: config.fuelDate,
+    schemaVersion: COMPARE_SCHEMA_VERSION,
+  };
 }));
 router.post('/results', handle(req => compareVehicles(req.body.vehicles)));
-router.post('/research', aiLimit, handle(req => researchVehicle(req.body.vehicle)));
-router.post('/recommendation', aiLimit, handle(req => recommendation(req.body.researchIds, req.body.priorities, req.body.costs)));
+router.post('/research', aiLimit, handle(req => researchVehicle(req.body.vehicle, {
+  forceRefresh: req.body?.forceRefresh === true,
+})));
+router.post('/recommendation', aiLimit, handle(req => recommendation(req.body.researchIds)));
 router.use('/admin', auth, authorize('admin'), hasPermission('manageCategories'));
 router.get('/admin/metrics', hasPermission('managePlatformSettings'), handle(getCompareMetrics));
+router.post('/admin/research/refresh', hasPermission('managePlatformSettings'), aiLimit, handle(async req => {
+  clearCompareResearchCache();
+  return researchVehicle(req.body.vehicle, { forceRefresh: true });
+}));
+router.post('/admin/research/clear-cache', hasPermission('managePlatformSettings'), handle(async () => {
+  clearCompareResearchCache();
+  return { cleared: true, schemaVersion: COMPARE_SCHEMA_VERSION };
+}));
 router.get('/admin/config', handle(getCompareConfig));
 router.put('/admin/config', hasPermission('managePlatformSettings'), handle(async req => {
   const updates = {};

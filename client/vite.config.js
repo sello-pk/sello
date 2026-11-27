@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
@@ -8,6 +8,7 @@ import { fileURLToPath } from "url";
 // Fix for __dirname in ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const serverPort = loadEnv("development", path.resolve(__dirname, "../server"), "PORT").PORT || "4002";
 
 export default defineConfig({
   base: "/",
@@ -95,12 +96,11 @@ export default defineConfig({
     headers: {
       "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
     },
-    // VITE_API_URL=/api → proxy here (avoids CORS). Default target is production
-    // so brands/categories load even when local Mongo is empty. Override with
-    // VITE_PROXY_TARGET=http://127.0.0.1:4002 for a fully local backend.
+    // Compare always uses the local SELLO server so catalog IDs match validation.
+    // Other /api traffic defaults to production unless VITE_PROXY_TARGET points local.
     proxy: {
       "/api/compare": {
-        target: process.env.VITE_COMPARE_PROXY_TARGET || "http://127.0.0.1:4002",
+        target: process.env.VITE_COMPARE_PROXY_TARGET || `http://127.0.0.1:${serverPort}`,
         changeOrigin: true,
       },
       "/api": {

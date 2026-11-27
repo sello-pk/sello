@@ -23,10 +23,7 @@ export const useCarCategories = (vehicleType = null, { includeYearsAndLocations 
   });
   const { data: allCarCategories, isLoading: carLoading } = carCategoriesQuery;
 
-  const {
-    data: yearCategories,
-    isLoading: yearLoading,
-  } = useGetAllCategoriesQuery(
+  const yearCategoriesQuery = useGetAllCategoriesQuery(
     {
       type: "car",
       subType: "year",
@@ -37,6 +34,7 @@ export const useCarCategories = (vehicleType = null, { includeYearsAndLocations 
       skip: !includeYearsAndLocations,
     },
   );
+  const { data: yearCategories, isLoading: yearLoading } = yearCategoriesQuery;
 
   const {
     data: allLocationCategories,
@@ -313,5 +311,6 @@ export const useCarCategories = (vehicleType = null, { includeYearsAndLocations 
     /** True only while car make/model categories are loading (not years/locations) */
     isCarCategoriesLoading: carLoading,
     carCategoriesQuery,
+    yearCategoriesQuery,
   };
 };

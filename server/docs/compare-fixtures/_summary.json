@@ -1,0 +1,137 @@
+{
+  "at": "2026-11-27T18:11:27.877Z",
+  "summary": [
+    {
+      "label": "Toyota Corolla 2019 GLi",
+      "candidates": 7,
+      "fetched": 4,
+      "hosts": [
+        "www.pakwheels.com",
+        "www.gari.pk"
+      ]
+    },
+    {
+      "label": "Toyota Corolla 2019 Altis",
+      "candidates": 7,
+      "fetched": 4,
+      "hosts": [
+        "www.pakwheels.com",
+        "www.gari.pk"
+      ]
+    },
+    {
+      "label": "Honda Civic 2020 no-variant",
+      "candidates": 6,
+      "fetched": 3,
+      "hosts": [
+        "www.pakwheels.com",
+        "www.gari.pk"
+      ]
+    },
+    {
+      "label": "Suzuki Alto 2022 VX",
+      "candidates": 7,
+      "fetched": 2,
+      "hosts": [
+        "www.pakwheels.com",
+        "www.gari.pk"
+      ]
+    },
+    {
+      "label": "Suzuki Cultus 2021 VXL",
+      "candidates": 7,
+      "fetched": 3,
+      "hosts": [
+        "www.pakwheels.com",
+        "www.gari.pk"
+      ]
+    },
+    {
+      "label": "Toyota Yaris 2021 no-variant",
+      "candidates": 6,
+      "fetched": 4,
+      "hosts": [
+        "www.pakwheels.com",
+        "toyota-indus.com",
+        "www.gari.pk"
+      ]
+    },
+    {
+      "label": "Honda City 2021 no-variant",
+      "candidates": 6,
+      "fetched": 3,
+      "hosts": [
+        "www.pakwheels.com",
+        "www.gari.pk"
+      ]
+    },
+    {
+      "label": "KIA Sportage 2022 no-variant",
+      "candidates": 6,
+      "fetched": 4,
+      "hosts": [
+        "www.pakwheels.com",
+        "kia-luckymotorcorp.com",
+        "www.gari.pk"
+      ]
+    },
+    {
+      "label": "Hyundai Tucson 2022 no-variant",
+      "candidates": 6,
+      "fetched": 4,
+      "hosts": [
+        "www.pakwheels.com",
+        "hyundai-nishat.com",
+        "www.gari.pk"
+      ]
+    },
+    {
+      "label": "MG HS 2023 no-variant",
+      "candidates": 6,
+      "fetched": 2,
+      "hosts": [
+        "mgmotors.com.pk",
+        "www.gari.pk"
+      ]
+    },
+    {
+      "label": "Changan Alsvin 2022 no-variant",
+      "candidates": 6,
+      "fetched": 4,
+      "hosts": [
+        "www.pakwheels.com",
+        "www.changan.com.pk",
+        "www.gari.pk"
+      ]
+    },
+    {
+      "label": "BYD Atto 3 2024 no-variant",
+      "candidates": 6,
+      "fetched": 3,
+      "hosts": [
+        "www.pakwheels.com",
+        "www.gari.pk"
+      ]
+    },
+    {
+      "label": "MG ZS EV 2023 no-variant",
+      "candidates": 6,
+      "fetched": 4,
+      "hosts": [
+        "www.pakwheels.com",
+        "mgmotors.com.pk",
+        "www.gari.pk"
+      ]
+    },
+    {
+      "label": "Toyota Hilux 2021 no-variant",
+      "candidates": 6,
+      "fetched": 4,
+      "hosts": [
+        "www.pakwheels.com",
+        "toyota-indus.com",
+        "www.gari.pk"
+      ]
+    }
+  ]
+}

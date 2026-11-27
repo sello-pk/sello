@@ -11,7 +11,7 @@ export const compareApi = api.injectEndpoints({
     compareVariants: builder.query({ query: vehicle => comparisonPath(`/variants?${new URLSearchParams(vehicle)}`), transformResponse: r => r.data }),
     compareConfig: builder.query({ query: () => comparisonPath('/config'), transformResponse: r => r.data }),
     compareResults: builder.mutation({ query: vehicles => ({ url: comparisonPath('/results'), method: 'POST', body: { vehicles } }), transformResponse: r => r.data }),
-    compareResearch: builder.mutation({ query: vehicle => ({ url: comparisonPath('/research'), method: 'POST', body: { vehicle }, timeout: 95000 }), transformResponse: r => r.data }),
+    compareResearch: builder.mutation({ query: vehicle => ({ url: comparisonPath('/research'), method: 'POST', body: { vehicle }, timeout: 85000 }), transformResponse: r => r.data }),
     compareRecommendation: builder.mutation({ query: body => ({ url: comparisonPath('/recommendation'), method: 'POST', body, timeout: 45000 }), transformResponse: r => r.data }),
     compareMetrics: builder.query({ query: () => comparisonPath('/admin/metrics'), transformResponse: r => r.data }),
     compareAdminConfig: builder.query({ query: () => comparisonPath('/admin/config'), transformResponse: r => r.data }),

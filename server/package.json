@@ -20,6 +20,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@ai-sdk/google": "^4.0.128",
+    "@ai-sdk/openai": "^4.0.125",
+    "ai": "^7.0.183",
     "bcrypt": "^6.0.0",
     "cloudinary": "^1.41.3",
     "compression": "^1.8.1",

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "compare-30-v1",
+  "identity": {
+    "make": "MG",
+    "model": "ZS EV",
+    "year": 2023,
+    "variant": "",
+    "fuelType": "Electric (EV)",
+    "transmission": "Automatic"
+  },
+  "candidateCount": 6,
+  "fetched": [
+    {
+      "url": "https://www.pakwheels.com/new-cars/mg/zs-ev/",
+      "textChars": 12000,
+      "textHead": "MG ZS EV Price in Pakistan, Images, Reviews & Specs | PakWheels Download App via SMS اردو Sign Up Sign In 0 Used Cars Find Used Cars for Sale Search from over 110k options Featured Used Cars View featured cars by PakWheels Sell Your Car Pos"
+    },
+    {
+      "url": "https://www.pakwheels.com/new-cars/mg/zs-ev/specifications/",
+      "textChars": 12000,
+      "textHead": "MG ZS EV Specifications & Features | PakWheels Download App via SMS اردو Sign Up Sign In 0 Used Cars Find Used Cars for Sale Search from over 110k options Featured Used Cars View featured cars by PakWheels Sell Your Car Post a free ad and s"
+    },
+    {
+      "url": "https://mgmotors.com.pk/",
+      "textChars": 4449,
+      "textHead": "MG Motors Pakistan - Ideal Solution for Urban Mobility ALL NEW MG HS MG ZS MG HS PHEV MG U9 MG4 EV Urban MG Cyberster BINGUO EV MG Exchange Financing Schedule a Service Book Test Drive PK Book Now Download Specs Download Specs Book Now Book"
+    },
+    {
+      "url": "https://www.gari.pk/new-cars/mg/zs-ev/",
+      "textChars": 12000,
+      "textHead": "MG ZS EV 2026 Price in Pakistan Gari.pk Used Cars Sell My Car Hot Cars for Sale Search Used Cars Search Used Cars Cars Karachi Cars Lahore Cars Islamabad Cars Rawalpindi Cars Peshawar Cars Quetta Cars Faisalabad Cars Multan Cars Gujranwala "
+    }
+  ]
+}

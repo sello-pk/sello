@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "compare-30-v1",
+  "identity": {
+    "make": "BYD",
+    "model": "Atto 3",
+    "year": 2024,
+    "variant": "",
+    "fuelType": "Electric (EV)",
+    "transmission": "Automatic"
+  },
+  "candidateCount": 6,
+  "fetched": [
+    {
+      "url": "https://www.pakwheels.com/new-cars/byd/atto-3/",
+      "textChars": 12000,
+      "textHead": "BYD Atto 3 2026 Price in Pakistan, Images, Reviews & Specs | PakWheels Download App via SMS اردو Sign Up Sign In 0 Used Cars Find Used Cars for Sale Search from over 110k options Featured Used Cars View featured cars by PakWheels Sell Your "
+    },
+    {
+      "url": "https://www.pakwheels.com/new-cars/byd/atto-3/specifications/",
+      "textChars": 12000,
+      "textHead": "BYD Atto 3 Specifications & Features | PakWheels Download App via SMS اردو Sign Up Sign In 0 Used Cars Find Used Cars for Sale Search from over 110k options Featured Used Cars View featured cars by PakWheels Sell Your Car Post a free ad and"
+    },
+    {
+      "url": "https://www.gari.pk/new-cars/byd/atto-3/",
+      "textChars": 12000,
+      "textHead": "BYD Atto 3 2026 Price in Pakistan Gari.pk Used Cars Sell My Car Hot Cars for Sale Search Used Cars Search Used Cars Cars Karachi Cars Lahore Cars Islamabad Cars Rawalpindi Cars Peshawar Cars Quetta Cars Faisalabad Cars Multan Cars Gujranwal"
+    }
+  ]
+}
