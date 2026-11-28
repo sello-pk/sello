@@ -329,7 +329,7 @@ const Navbar = () => {
                 width="120"
                 height="48"
                 decoding="async"
-                alt="logo"
+                alt="Sello logo"
               />
             </Link>
           </div>

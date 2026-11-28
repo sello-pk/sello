@@ -1,6 +1,6 @@
 import userIcon from "./images/userIcon.png";
 import verified from "./images/verified.png";
-import logo from "./images/logo.svg";
+import logo from "./images/logo.png";
 
 import br1 from "./images/br1.webp";
 import br2 from "./images/br2.webp";

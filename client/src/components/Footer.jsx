@@ -1,5 +1,5 @@
 import React from "react";
-import { footerData } from "../assets/assets";
+import { footerData, images } from "../assets/assets";
 import { Link } from "react-router-dom";
 import { apple, android, facebook, instagram } from "../assets/assets";
 import { trackContact } from "../utils/metaPixel.js";
@@ -277,18 +277,30 @@ const Footer = () => {
 
         {/* Copyright & Legal */}
         <div className="border-t border-white/10 pt-8 pb-20 md:pb-24 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-gray-400">
-            &copy; {new Date().getFullYear()}{" "}
-            <a
-              href={import.meta.env.VITE_SITE_URL || "https://sello.pk"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary-500 hover:text-primary-400 transition-colors duration-200 font-medium"
-            >
-              Sello.pk
-            </a>
-            . All rights reserved.
-          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+            <Link to="/" aria-label="Sello home" className="flex-shrink-0">
+              <img
+                src={images.logo}
+                alt="Sello logo"
+                width="120"
+                height="40"
+                decoding="async"
+                className="h-9 w-auto object-contain"
+              />
+            </Link>
+            <p className="text-sm text-gray-400 text-center sm:text-left">
+              &copy; {new Date().getFullYear()}{" "}
+              <a
+                href={import.meta.env.VITE_SITE_URL || "https://sello.pk"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-500 hover:text-primary-400 transition-colors duration-200 font-medium"
+              >
+                Sello.pk
+              </a>
+              . All rights reserved.
+            </p>
+          </div>
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:gap-x-6 text-sm">
             <Link
               to="/about"

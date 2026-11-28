@@ -6,8 +6,10 @@
     <!-- Responsive -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Favicon / PWA -->
-    <link rel="icon" href="/favicon.png" />
+    <!-- Favicon / PWA (query busts sticky browser tab cache) -->
+    <link rel="icon" type="image/png" href="/favicon.jpg?v=20261128" />
+    <link rel="shortcut icon" type="image/png" href="/favicon.png?v=20261128" />
+    <link rel="apple-touch-icon" href="/favicon.png?v=20261128" />
     <link rel="manifest" href="/manifest.json" />
 
     <!-- Performance: API + Meta CAPI gateway; Facebook only dns-prefetch until deferred pixel loads -->
@@ -95,7 +97,10 @@
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Sello" />
-    <meta property="og:title" content="Buy and Sell Cars in Pakistan | Used Cars Online – Sello.pk" />
+    <meta
+      property="og:title"
+      content="Buy and Sell Cars in Pakistan | Used Cars Online – Sello.pk"
+    />
     <meta
       property="og:description"
       content="Buy and sell cars in Pakistan on Sello.pk. List your used car, join live auctions and use the car price estimator. Start buying or selling today."
@@ -228,7 +233,9 @@
         <a href="/search-results?make=Toyota">Toyota</a>
         <a href="/search-results?make=Honda">Honda</a>
         <a href="/search-results?make=Suzuki">Suzuki</a>
-        <a href="/search-results?make=Toyota&amp;model=Corolla">Toyota Corolla</a>
+        <a href="/search-results?make=Toyota&amp;model=Corolla"
+          >Toyota Corolla</a
+        >
         <a href="/search-results?make=Honda&amp;model=Civic">Honda Civic</a>
         <a href="/used-cars/karachi">Used cars in Karachi</a>
         <a href="/used-cars/lahore">Used cars in Lahore</a>
@@ -256,6 +263,5 @@
     <script type="module" src="/src/main.jsx"></script>
 
     <!-- Marketing pixels: loaded after cookie consent (loadMarketingScripts.js) -->
-
   </body>
 </html>

@@ -184,7 +184,7 @@ const AdminLayout = ({ children }) => {
             >
               <img
                 src={images.logo}
-                alt="logo"
+                alt="Sello logo"
                 className="w-24 h-24 scale-150 object-contain"
               />
             </Link>
