@@ -421,20 +421,28 @@ const WhatsAppChatWidget = () => {
   }
 
   return (
-    <div className="fixed z-50 flex flex-col bg-white shadow-2xl transition-all overflow-hidden bottom-3 left-3 right-3 h-[min(78vh,620px)] rounded-xl sm:bottom-6 sm:left-auto sm:right-6 sm:w-96 sm:h-[600px] sm:rounded-lg">
-      {/* Header */}
-      <div className="bg-primary-700 text-white p-3 sm:p-4 flex justify-between items-center">
-        <div className="flex items-center gap-2">
+    <div
+      className="fixed z-50 flex flex-col bg-white shadow-2xl overflow-hidden rounded-xl
+        bottom-3 left-3 right-3
+        h-[min(70dvh,560px)] max-h-[calc(100dvh-1.5rem)]
+        sm:bottom-6 sm:left-auto sm:right-6 sm:w-96 sm:rounded-lg
+        sm:h-[min(600px,calc(100dvh-3rem))] sm:max-h-[calc(100dvh-3rem)]"
+      role="dialog"
+      aria-label="Support chat"
+    >
+      {/* Header — always visible; panel is bottom-anchored within the viewport */}
+      <div className="bg-primary-500 text-white p-3 sm:p-4 flex justify-between items-center shrink-0">
+        <div className="flex items-center gap-2 min-w-0">
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-            <FiMessageSquare />
+            <FiMessageSquare aria-hidden />
           </div>
           <div className="min-w-0">
             <p className="font-semibold truncate">Support Chat</p>
             <div className="flex items-center gap-2">
               <div
-                className={`w-2 h-2 rounded-full ${socketConnected ? "bg-green-400" : "bg-gray-400"}`}
-              ></div>
-              <p className="text-xs text-white/80">
+                className={`w-2 h-2 rounded-full shrink-0 ${socketConnected ? "bg-green-400" : "bg-gray-400"}`}
+              />
+              <p className="text-xs text-white/90 truncate">
                 {socketConnected ? "Live" : "Polling"}
               </p>
             </div>
@@ -448,18 +456,19 @@ const WhatsAppChatWidget = () => {
             setSelectedChat(null);
             setShowCreateForm(false);
           }}
-          className="hover:bg-white/20 p-1 rounded"
+          className="hover:bg-white/20 p-1 rounded shrink-0"
         >
-          <FiX size={20} />
+          <FiX size={20} aria-hidden />
         </button>
       </div>
 
       {!selectedChat && !showCreateForm ? (
-        <div className="flex-1 overflow-y-auto p-4 bg-[#ECE5DD]">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 bg-[#ECE5DD]">
           <div className="mb-4">
             <button
+              type="button"
               onClick={() => setShowCreateForm(true)}
-              className="w-full bg-primary-500 text-white py-2 px-4 rounded-lg hover:opacity-90 transition"
+              className="w-full bg-primary-500 text-white py-2.5 px-4 rounded-lg hover:opacity-90 transition"
             >
               Start New Chat
             </button>
@@ -509,7 +518,7 @@ const WhatsAppChatWidget = () => {
           )}
         </div>
       ) : showCreateForm ? (
-        <div className="flex-1 overflow-y-auto p-4 bg-[#ECE5DD]">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 bg-[#ECE5DD]">
           <h3 className="font-semibold text-gray-800 mb-4">
             Create Support Request
           </h3>
@@ -604,7 +613,7 @@ const WhatsAppChatWidget = () => {
           {/* Messages */}
           <div
             ref={messagesContainerRef}
-            className="flex-1 overflow-y-auto p-4 space-y-2 bg-[#ECE5DD] bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cdefs%3E%3Cpattern id=%22grid%22 width=%2260%22 height=%2260%22 patternUnits=%22userSpaceOnUse%22%3E%3Cpath d=%22M 60 0 L 0 0 0 60%22 fill=%22none%22 stroke=%22%23d4d4d4%22 stroke-width=%221%22/%3E%3C/pattern%3E%3C/defs%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22url(%23grid)%22 opacity=%220.1%22/%3E%3C/svg%3E')]"
+            className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 space-y-2 bg-[#ECE5DD] bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cdefs%3E%3Cpattern id=%22grid%22 width=%2260%22 height=%2260%22 patternUnits=%22userSpaceOnUse%22%3E%3Cpath d=%22M 60 0 L 0 0 0 60%22 fill=%22none%22 stroke=%22%23d4d4d4%22 stroke-width=%221%22/%3E%3C/pattern%3E%3C/defs%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22url(%23grid)%22 opacity=%220.1%22/%3E%3C/svg%3E')]"
           >
             {messagesLoading ? (
               <div className="flex justify-center py-8">

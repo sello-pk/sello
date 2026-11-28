@@ -7,6 +7,7 @@
  * Primary color palette - using orange/yellow as primary
  */
 export const colors = {
+  // Cap at 500 — darker steps intentionally equal 500.
   primary: {
     DEFAULT: "#FFA602", // primary-500
     50: "#FFF8E6",
@@ -14,11 +15,11 @@ export const colors = {
     200: "#FFDF80",
     300: "#FFD24D",
     400: "#FFC51A",
-    500: "#FFA602", // Main primary color
-    600: "#CC8502",
-    700: "#996402",
-    800: "#664301",
-    900: "#332201",
+    500: "#FFA602",
+    600: "#FFA602",
+    700: "#FFA602",
+    800: "#FFA602",
+    900: "#FFA602",
   },
 
   // Status colors
@@ -85,7 +86,7 @@ export const buttonColors = {
   success: "bg-green-500 hover:bg-green-600 text-white",
   danger: "bg-red-500 hover:bg-red-600 text-white",
   warning: "bg-yellow-500 hover:bg-yellow-600 text-white",
-  info: "bg-primary-100 hover:bg-primary-200 text-primary-700",
+  info: "bg-primary-100 hover:bg-primary-200 text-primary-500",
 };
 
 /**
@@ -96,7 +97,7 @@ export const badgeColors = {
   success: "bg-green-100 text-green-800",
   danger: "bg-red-100 text-red-800",
   warning: "bg-yellow-100 text-yellow-800",
-  info: "bg-primary-50 text-primary-600",
+  info: "bg-primary-50 text-primary-500",
   gray: "bg-gray-100 text-gray-800",
 };
 

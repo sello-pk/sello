@@ -19,18 +19,20 @@ export default {
         },
       },
       colors: {
+        // Brand rule: never darker than primary-500. 600–900 alias 500 so
+        // legacy classes (hover:bg-primary-600, bg-primary-700, etc.) stay capped.
         primary: {
-          DEFAULT: "#FFA602", // Base color
-          50: "#FFF8E6", // Very light
+          DEFAULT: "#FFA602",
+          50: "#FFF8E6",
           100: "#FFECB3",
           200: "#FFDF80",
           300: "#FFD24D",
           400: "#FFC51A",
-          500: "#FFA602", // Matches your base color
-          600: "#CC8502",
-          700: "#996402",
-          800: "#664301",
-          900: "#332201", // Very dark
+          500: "#FFA602",
+          600: "#FFA602",
+          700: "#FFA602",
+          800: "#FFA602",
+          900: "#FFA602",
         },
       },
     },
