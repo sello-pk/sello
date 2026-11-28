@@ -314,20 +314,13 @@ if (servesClient) {
     const query = queryIndex >= 0 ? req.originalUrl.slice(queryIndex) : '';
     res.redirect(301, `/listings${query}`);
   });
-  app.get(['/cars/compare', '/cars/compare/:slug'], async (req, res, next) => {
-    try {
-      const { compareHtml } = await import('./utils/compareHtml.js');
-      const html = await Promise.race([compareHtml(clientIndex, req.query.vehicles), new Promise((_, reject) => setTimeout(() => reject(new Error('Compare rendering timeout')), 3000))]);
-      res.type('html').send(html);
-    } catch { next(); }
-  });
   app.use(express.static(clientDist));
   // SPA fallback: every non-API GET returns the app shell.
   // Prefer a build-time SEO shell when present; otherwise inject meta quickly
   // (hard timeout) so DB slowness never blocks the SPA.
   app.get("*", async (req, res, next) => {
     if (req.path.startsWith("/api")) return next();
-    const carMatch = req.path.startsWith('/cars/compare') ? null : req.path.match(/^\/cars\/([^/]+)\/?$/);
+    const carMatch = req.path.match(/^\/cars\/([^/]+)\/?$/);
     if (carMatch) {
       const slug = carMatch[1];
       const shellFile = path.join(clientDist, "cars", slug, "index.html");

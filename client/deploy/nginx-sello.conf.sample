@@ -63,20 +63,11 @@ server {
         try_files $uri/index.html $uri $uri/ =404;
     }
 
-    # Exact legacy listing redirects; keep /cars/<slug> and /cars/compare intact.
+    # Exact legacy listing redirects; keep /cars/<slug> intact.
     location = /cars { return 301 /listings$is_args$args; }
     location = /cars/ { return 301 /listings$is_args$args; }
 
     # --- Car detail SEO shells: unknown /cars/<slug> must be HTTP 404 (not SPA 200) ---
-    # Car Compare is an application route, including shared comparison slugs.
-    location = /cars/compare {
-        try_files $uri/index.html /index.html;
-    }
-    location ^~ /cars/compare/ {
-        add_header X-Robots-Tag "noindex, follow" always;
-        try_files $uri $uri/ /cars/compare/index.html /index.html;
-    }
-
     # Valid listings are written at build to dist/cars/<slug>/index.html.
     location ^~ /cars/ {
         try_files $uri/index.html $uri $uri/ =404;

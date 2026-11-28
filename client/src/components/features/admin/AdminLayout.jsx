@@ -87,7 +87,6 @@ const AdminLayout = ({ children }) => {
   }, [location.pathname]);
 
   const allMenuItems = [
-    { path: '/admin/car-compare', icon: FiGrid, label: 'Car Compare' },
     { path: "/admin/dashboard", icon: FiLayout, label: "Dashboard" },
     { path: "/admin/users", icon: FiUsers, label: "User Management" },
     { path: "/admin/listings", icon: FiList, label: "Listings" },

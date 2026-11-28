@@ -21,9 +21,7 @@ export const requestTimeout = (defaultTimeoutMs = 30000) => {
       url.includes("/api/users/auction-access/request");
 
     // Longer timeouts for admin operations and file uploads
-    if (/^\/api\/compare\/(research|recommendation)$/.test(req.path)) {
-      timeoutMs = 100000;
-    } else if (req.path.startsWith("/api/admin")) {
+    if (req.path.startsWith("/api/admin")) {
       if (req.path.includes("/blogs")) {
         timeoutMs = 300000; // 5 minutes for blog creation with images
       } else {

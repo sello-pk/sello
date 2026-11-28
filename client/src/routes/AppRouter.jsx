@@ -20,9 +20,6 @@ import CarDetails from "../pages/listings/CarDetails.jsx";
 import AuctionsActions from "../pages/features/auctions/Actions.jsx";
 // Eager like listings/auctions — avoids post-deploy chunk 404s Google indexed on this URL
 import CarEstimator from "../pages/features/CarEstimator.jsx";
-const CarCompare = lazyImport(() => import('../pages/CarCompare.jsx'));
-const CarCompareAdmin = lazyImport(() => import('../pages/admin/CarCompareAdmin.jsx'));
-
 // Public core routes (Lazy)
 const Signup = lazyImport(() => import("../pages/auth/SignUp.jsx"));
 const Blog = lazyImport(() => import("../pages/blog/Blog.jsx"));
@@ -215,8 +212,6 @@ const AppRouter = () => {
           element={<GenericVehicleCategoryPage />}
         />
         <Route path="/cars" element={<Navigate to={`/listings${location.search}${location.hash}`} replace />} />
-        <Route path="/cars/compare" element={<CarCompare />} />
-        <Route path="/cars/compare/:slug" element={<CarCompare />} />
         <Route path="/car-details/:id" element={<CarDetails />} />
         <Route path="/cars/:id" element={<CarDetails />} />
         <Route path="/filter" element={<FilterPage />} />
@@ -331,7 +326,6 @@ const AppRouter = () => {
           <Route path="/admin/testimonials" element={<Testimonials />} />
           <Route path="/admin/auctions" element={<AuctionManagement />} />
           <Route path="/admin/settings" element={<Settings />} />
-          <Route path="/admin/car-compare" element={<CarCompareAdmin />} />
 
           {/* Add other admin routes as needed */}
         </Route>

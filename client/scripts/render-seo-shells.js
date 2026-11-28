@@ -1,5 +1,4 @@
 import { corePageSeo, categorySeoKeys, getCategoryPageSeo } from "../src/utils/corePageSeo.js";
-import { defaultCompareContent } from "../src/constants/carCompare.js";
 import { fuelPricesSeo, fuelPricesHeading, fuelPriceGuides, fuelPriceFaqs } from "../src/utils/fuelPricesContent.js";
 /**
  * Build-time SEO shells for money pages that stay SPA at runtime.
@@ -580,17 +579,6 @@ async function main() {
     writeNoindexShell(shell);
   }
   writeMissingRouteShells();
-  let compareSections = defaultCompareContent;
-  try {
-    const config = await fetchJson(`${API_BASE_URL}/compare/config`, { timeoutMs: 5000, retries: 0 });
-    if (config.data?.sections?.length === 4) compareSections = config.data.sections;
-  } catch { /* A first deployment can build before the new API is live. */ }
-  writeLandingShell({
-    path: '/cars/compare',
-    title: 'Car Compare in Pakistan | SELLO',
-    description: 'Compare Pakistan-market vehicles, prices, fuel economy and safety using cited live research.',
-    noscriptExtra: compareSections.map(section => `<article><h2>${escapeHtml(section.title)}</h2><p>${escapeHtml(section.description)}</p><img src="${escapeHtml(section.image)}" alt="${escapeHtml(section.alt)}" width="640" height="320" loading="lazy"></article>`).join(''),
-  });
   // Write the homepage last so its metadata and noscript content stay local.
   writeHomeShell();
   writeNotFoundPage();

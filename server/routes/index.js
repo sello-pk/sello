@@ -1,7 +1,5 @@
 import express from "express";
 const router = express.Router();
-import compareRoutes from './compareRoutes.js';
-router.use('/compare', compareRoutes);
 
 // Domain Routes (Consolidated)
 import authRoutes from "./authRoutes.js";
